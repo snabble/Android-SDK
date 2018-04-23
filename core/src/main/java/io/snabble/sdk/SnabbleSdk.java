@@ -226,6 +226,8 @@ public class SnabbleSdk {
         //noinspection ResultOfMethodCallIgnored
         internalStorageDirectory.mkdirs();
 
+        userPreferences = new UserPreferences(application);
+
         if (config.endpointBaseUrl.startsWith("http://")
                 || config.endpointBaseUrl.startsWith("https://")) {
             endpointBaseUrl = config.endpointBaseUrl;
@@ -302,8 +304,6 @@ public class SnabbleSdk {
         dbConfig.bundledSchemaVersionMajor = config.productDbBundledSchemaVersionMajor;
         dbConfig.bundledSchemaVersionMinor = config.productDbBundledSchemaVersionMinor;
         dbConfig.autoUpdateIfMissing = true;
-
-        userPreferences = new UserPreferences(application);
 
         productDatabase = new ProductDatabase(this,
                 config.productDbName,
