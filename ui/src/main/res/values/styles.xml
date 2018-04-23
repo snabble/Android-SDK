@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="SnabbleTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/snabble_primaryColor</item>
+        <item name="colorPrimaryDark">@color/snabble_primaryColorDark</item>
+        <item name="colorAccent">@color/snabble_accentColor</item>
+
+        <item name="android:textColorPrimary">@color/snabble_textColorDark</item>
+        <item name="android:textColorPrimaryInverse">@color/snabble_textColorLight</item>
+        <item name="android:textColorSecondary">@color/snabble_textColorDark</item>
+        <item name="android:textColorSecondaryInverse">@color/snabble_textColorLight</item>
+        <item name="android:textColorTertiary">@color/snabble_textColorDark</item>
+        <item name="android:textColorTertiaryInverse">@color/snabble_textColorLight</item>
+
+        <item name="actionBarTheme">@style/SnabbleActionBarTheme</item>
+    </style>
+
+    <style name="SnabbleActionBarTheme" parent="SnabbleTheme">
+        <item name="android:textColorPrimary">@color/snabble_textColorLight</item>
+    </style>
+
+    <style name="SnabbleButton" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/snabble_textColorLight</item>
+        <item name="android:background">@drawable/ic_button</item>
+        <item name="backgroundTint">@color/snabble_primaryColorAction</item>
+    </style>
+
+    <style name="SnabbleButtonWhite" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/snabble_textColorDark</item>
+        <item name="android:background">@drawable/ic_button</item>
+        <item name="backgroundTint">#ffffff</item>
+    </style>
+
+    <style name="SnabbleEditText" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textColor">@color/snabble_textColorDark</item>
+        <item name="android:background">@drawable/ic_round_edittext</item>
+    </style>
+</resources>

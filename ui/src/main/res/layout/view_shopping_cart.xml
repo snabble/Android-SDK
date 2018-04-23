@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/coordinator_layout">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="120dp"
+            android:clipToPadding="false"
+            android:id="@+id/recycler_view" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/pay"
+            style="@style/SnabbleButton"
+            android:layout_width="272dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeMaxTextSize="14sp"
+            android:maxLines="1"
+            app:layout_behavior="io.snabble.sdk.ui.utils.SnackbarPushUpBehavior"
+            tools:text="Pay 47€ for 11 articles" />
+    </android.support.design.widget.CoordinatorLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/empty_state"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_cart_large"
+            app:tint="@color/snabble_primaryColor"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="304dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/snabble_shoppingCart_emptyState_message" />
+    </LinearLayout>
+</FrameLayout>

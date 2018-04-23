@@ -1,0 +1,106 @@
+{
+    "links": {
+        "appdb": {
+            "href": "/api/demo/appdb"
+        },
+        "checkoutInfo": {
+            "href": "/demo/checkout/info"
+        },
+        "news": {
+            "href": "https://snabble.io/media/news.json"
+        },
+        "offerCategories": {
+            "href": "https://snabble.io/media/products/offers.json"
+        },
+        "productByCode": {
+            "href": "/api/demo/products/code/{code}"
+        },
+        "productBySku": {
+            "href": "/api/demo/products/sku/{sku}"
+        },
+        "productByWeighItemId": {
+            "href": "/api/demo/products/weighItemId/{id}"
+        },
+        "self": {
+            "href": "/api/demo/metadata/app/android/testapp"
+        },
+        "shops": {
+            "href": "/demo/shops"
+        }
+    },
+    "metadata": {
+        "enableCheckout": true,
+        "kill": false
+    },
+    "shops": [
+        {
+            "city": "Düsseldorf",
+            "country": "Deutschland",
+            "email": "",
+            "external": null,
+            "externalId": null,
+            "id": "7",
+            "lat": 51.2564016,
+            "links": {
+                "self": {
+                    "href": "https://api.snabble-testing.io/demo/shops/7"
+                }
+            },
+            "lon": 6.7386981,
+            "name": "EuroCIS",
+            "openingHoursSpecification": [],
+            "phone": "012345678",
+            "project": "demo",
+            "services": [],
+            "state": "NRW",
+            "street": "Stockumer Kirchstraße 61",
+            "zip": "40474"
+        },
+        {
+            "city": "Bonn",
+            "country": "Deutschland",
+            "email": "info@snabble.io",
+            "external": null,
+            "externalId": null,
+            "id": "8",
+            "lat": 50.7354364,
+            "links": {
+                "self": {
+                    "href": "https://api.snabble-testing.io/demo/shops/8"
+                }
+            },
+            "lon": 7.0978723,
+            "name": "snabble GmbH",
+            "openingHoursSpecification": [],
+            "phone": "+491717673249",
+            "project": "demo",
+            "services": [],
+            "state": "NRW",
+            "street": "Acherstraße 26",
+            "zip": "53111"
+        },
+        {
+            "city": "Bonn",
+            "country": "Deutschland",
+            "email": "info@tarent.de",
+            "external": null,
+            "externalId": null,
+            "id": "9",
+            "lat": 50.7225904,
+            "links": {
+                "self": {
+                    "href": "https://api.snabble-testing.io/demo/shops/9"
+                }
+            },
+            "lon": 7.0594908,
+            "name": "tarent solutions GmbH",
+            "openingHoursSpecification": [],
+            "phone": "+491717673249",
+            "project": "demo",
+            "services": [],
+            "state": "NRW",
+            "street": "Rochusstraße",
+            "zip": "53123"
+        }
+    ]
+}

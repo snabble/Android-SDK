@@ -1,0 +1,46 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.github.gmazzo.sqlite'
+apply from: '../scripts/seed.gradle'
+
+android {
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
+
+    defaultConfig {
+        applicationId "io.snabble.testapp"
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        versionCode 1
+        versionName project.appVersion
+
+        resValue "string", "project_id", project.projectId
+        resValue "string", "endpoint", project.endpoint
+        resValue "string", "metadata_url", project.metadataUrl
+        resValue "string", "client_token", project.clientToken
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':ui')
+    implementation project(':ui-integration')
+
+    implementation "com.android.support:appcompat-v7:${project.supportLibraryVersion}"
+    implementation 'commons-io:commons-io:2.5'
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}

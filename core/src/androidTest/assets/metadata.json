@@ -1,0 +1,40 @@
+{
+  "links": {
+    "appdb": {
+      "href": "/api/test-b6024ba/appdb"
+    },
+    "productByCode": {
+      "href": "/api/test-b6024ba/products/code/{code}"
+    },
+    "productBySku": {
+      "href": "/api/test-b6024ba/products/sku/{sku}"
+    },
+    "productByWeighItemId": {
+      "href": "/api/test-b6024ba/products/weighItemId/{id}"
+    },
+    "self": {
+      "href": "/api/test-b6024ba/metadata/app/android/test/1.0"
+    },
+    "shops": {
+      "href": "/api/test-b6024ba/shops"
+    }
+  },
+  "metadata": {
+    "kill": false
+  },
+  "shops": [
+    {
+      "city": "Bergisch Gladbach - Bensberg",
+      "country": "DE",
+      "lat": 50.957953,
+      "lon": 7.188349,
+      "name": "Knauber Freizeitmarkt Bensberg",
+      "openingHoursSpecification": [],
+      "phone": "02204-8433-00",
+      "services": [],
+      "state": "Deutschland",
+      "street": "Overather Straße 125",
+      "zip": "51429"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/snabble_primaryColor">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/snabble_checkout_choosePayment_title"
+        android:textColor="@color/snabble_textColorLight"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:id="@+id/choose_payment_title"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/choose_payment_title"
+        android:layout_above="@+id/add_payment_method"
+        android:id="@+id/payment_methods" />
+
+    <TextView
+        android:id="@+id/add_payment_method"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/snabble_checkout_choosePayment_add"
+        android:textColor="@color/snabble_textColorLight"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:paddingTop="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="18dp"
+        android:textSize="17sp"
+        android:visibility="gone" />
+</RelativeLayout>

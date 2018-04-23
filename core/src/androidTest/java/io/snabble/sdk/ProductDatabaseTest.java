@@ -1,0 +1,301 @@
+package io.snabble.sdk;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.support.test.filters.LargeTest;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class ProductDatabaseTest extends SnabbleSdkTest {
+
+    @Test
+    public void testAllPromotionsQuery() throws Throwable {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product[] products = productDatabase.getDiscountedProducts();
+        assertTrue(products.length == 2);
+        assertEquals(products[0].getSku(), "1");
+        assertEquals(products[0].getName(), "Müllermilch Banane 0,4l");
+        assertEquals(products[1].getSku(), "2");
+        assertEquals(products[1].getName(), "Coca-Cola 1l");
+    }
+
+    @Test
+    public void testBoostedPromotionsQuery() throws Throwable {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product[] products = productDatabase.getBoostedProducts(2);
+        assertTrue(products.length == 2);
+        assertEquals(products[0].getSku(), "2");
+        assertEquals(products[1].getSku(), "1");
+
+        products = productDatabase.getBoostedProducts(1);
+        assertTrue(products.length == 1);
+        assertEquals(products[0].getSku(), "2");
+    }
+
+    @Test
+    public void testTextSearch() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Cursor cursor = productDatabase.searchByFoldedName("muller", null);
+        cursor.moveToFirst();
+        Product product = productDatabase.productAtCursor(cursor);
+        assertEquals(product.getSku(), "1");
+        assertEquals(product.getName(), "Müllermilch Banane 0,4l");
+        cursor.close();
+
+        cursor = productDatabase.searchByFoldedName("foo", null);
+        assertEquals(0, cursor.getCount());
+        cursor.close();
+    }
+
+    @Test
+    public void testCodeSearch() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Cursor cursor = productDatabase.searchByCode("402550", null);
+        cursor.moveToFirst();
+        Product product = productDatabase.productAtCursor(cursor);
+        assertEquals(product.getSku(), "1");
+        assertEquals(product.getName(), "Müllermilch Banane 0,4l");
+        cursor.close();
+
+        cursor = productDatabase.searchByCode("02371231", null);
+        assertEquals(0, cursor.getCount());
+        cursor.close();
+    }
+
+    @Test
+    public void testMultipleResultsAreDistinct() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Cursor cursor = productDatabase.searchByCode("5", null);
+        Set<Product> set = new HashSet<>();
+        while(cursor.moveToNext()){
+            Product p = productDatabase.productAtCursor(cursor);
+            if(set.contains(p)){
+                assertFalse(true);
+            }
+            set.add(p);
+        }
+        cursor.close();
+    }
+
+    @Test
+    public void testFindByCode() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product product = productDatabase.findByCode("4025500133627");
+        Product product2 = productDatabase.findByCode("2");
+
+        assertEquals(product.getSku(), "1");
+        assertEquals(product.getName(), "Müllermilch Banane 0,4l");
+        assertEquals(product, product2);
+        assertEquals(product.getScannableCodes().length, 2);
+
+        assertNull(productDatabase.findByCode("unknownCode"));
+    }
+
+    @Test
+    public void testFindBySku() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product product = productDatabase.findBySku("1");
+        assertEquals(product.getSku(), "1");
+        assertEquals(product.getName(), "Müllermilch Banane 0,4l");
+
+        product = productDatabase.findBySku("123");
+        assertNull(product);
+    }
+
+    @Test
+    public void testFindBySkuOnline() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        final Product product = findBySkuBlocking(productDatabase, "online1");
+        assertEquals(product.getSku(), "online1");
+
+        final Product product2 = findBySkuBlocking(productDatabase, "online2");
+        assertEquals(product2.getSku(), "online2");
+
+        assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
+    }
+
+    private Product findBySkuBlocking(ProductDatabase productDatabase, String sku) {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final Product[] productArr = new Product[1];
+
+        productDatabase.findBySkuOnline(sku, new OnProductAvailableListener() {
+            @Override
+            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                productArr[0] = product;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onProductNotFound() {
+                productArr[0] = null;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError() {
+                productArr[0] = null;
+                countDownLatch.countDown();
+            }
+        });
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return productArr[0];
+    }
+
+    @Test
+    public void testFindByMultipleSkus() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product[] products = productDatabase.findBySkus("1", "2", "asdf1234");
+
+        assertEquals(products.length, 2);
+        assertEquals(products[0].getSku(), "1");
+        assertEquals(products[1].getSku(), "2");
+
+        products = productDatabase.findBySkus("1");
+
+        assertEquals(products.length, 1);
+        assertEquals(products[0].getSku(), "1");
+    }
+
+    @Test
+    public void testFindByWeighItemId() {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product product = productDatabase.findByWeighItemId("2810540000000");
+        assertEquals(product.getSku(), "3");
+        assertEquals(product.getName(), "Äpfel");
+
+        product = productDatabase.findByWeighItemId("123");
+        assertNull(product);
+    }
+
+    @Test
+    public void testApplyChangeSet() throws IOException {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        String changeSet = "UPDATE prices SET discountedPrice=59 WHERE sku=1;\n\n" +
+                "DELETE FROM prices WHERE sku=3;\n\n" +
+                "DELETE FROM products WHERE sku=3;\n\n" +
+                "DELETE FROM weighItemIds WHERE sku=3;";
+
+        productDatabase.applyDeltaUpdate(new ByteArrayInputStream(changeSet.getBytes()));
+
+        assertNull(productDatabase.findBySku("3"));
+
+        Product product = productDatabase.findBySku("1");
+        assertEquals(59, product.getDiscountedPrice());
+    }
+
+    @Test
+    public void testApplyChangeSetWithNewLineAtEnd() throws IOException {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        String changeSet = "UPDATE prices SET discountedPrice=59 WHERE sku=1;\n\n" +
+                "DELETE FROM prices WHERE sku=3;\n\n" +
+                "DELETE FROM products WHERE sku=3;\n\n" +
+                "DELETE FROM weighItemIds WHERE sku=3;\n\n";
+
+        productDatabase.applyDeltaUpdate(new ByteArrayInputStream(changeSet.getBytes()));
+
+        assertNull(productDatabase.findBySku("3"));
+
+        Product product = productDatabase.findBySku("1");
+        assertEquals(59, product.getDiscountedPrice());
+    }
+
+    @Test
+    public void testApplyChangeSetInvalidDoesNotModifyDb() throws IOException {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        String changeSet = "UPDATE prices SET discountedPrice=59 WHERE sku=1;\n\n" +
+                "DELETE FROM pricesASDF WHER!E sku=3;\n\n" +
+                "DELETE FROM products WHERE???? sku=3;\n\n" +
+                "DELETE FROM weighIIDHFIDUFHUDSFtemIds WHERE sku=3;\n\n" +
+                "DELETE FROM searchByName WHERE docid=3;";
+
+        Product product = productDatabase.findBySku("1");
+        int p = product.getDiscountedPrice();
+
+        productDatabase.applyDeltaUpdate(new ByteArrayInputStream(changeSet.getBytes()));
+
+        product = productDatabase.findBySku("1");
+        assertEquals(p, product.getDiscountedPrice());
+    }
+
+    @Test
+    public void testFullUpdate() throws IOException {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        productDatabase.applyFullUpdate(context.getAssets().open("testUpdateDb.sqlite3"));
+
+        Product product = productDatabase.findBySku("1");
+        assertEquals("Nutella", product.getName());
+
+        product = productDatabase.findBySku("2");
+        assertNull(product);
+    }
+
+    @Test
+    public void testFullUpdateDoesNotModifyOnCorruptedFile() throws IOException {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("testUpdateDb.sqlite3"));
+        for (int i = 0; i < bytes.length; i++) {
+            if (i % 4 == 0) {
+                bytes[i] = 42;
+            }
+        }
+
+        Product product = productDatabase.findBySku("1");
+        String name = product.getName();
+
+        productDatabase.applyFullUpdate(new ByteArrayInputStream(bytes));
+
+        product = productDatabase.findBySku("1");
+        assertEquals(name, product.getName());
+    }
+
+    @Test
+    public void testFullUpdateDoesNotModifyOnWrongMajorVersion() throws IOException {
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        InputStream is = context.getResources().getAssets().open("testUpdateDb.sqlite3");
+        File outputFile = context.getDatabasePath("testUpdateDb.sqlite3");
+        FileOutputStream fos = new FileOutputStream(outputFile);
+        IOUtils.copy(is, fos);
+
+        SQLiteDatabase db = context.openOrCreateDatabase("testUpdateDb.sqlite3", Context.MODE_PRIVATE, null);
+        db.execSQL("UPDATE metadata SET value = 2 WHERE metadata.key = 'schemaVersionMajor'");
+        db.close();
+
+        Product product = productDatabase.findBySku("1");
+        String name = product.getName();
+
+        productDatabase.applyFullUpdate(new FileInputStream(outputFile));
+
+        product = productDatabase.findBySku("1");
+        assertEquals(name, product.getName());
+    }
+ }

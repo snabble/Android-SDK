@@ -1,0 +1,43 @@
+language: android
+jdk: oraclejdk8
+sudo: false
+android:
+  components:
+  - platform-tools
+  - tools
+  - build-tools-27.0.3
+  - android-27
+  - extra-android-m2repository
+before_install:
+    - yes | sdkmanager "platforms;android-27"
+script:
+- "./gradlew build"
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.android/build-cache"
+env:
+  global:
+    secure: kA7y4Rhci3it9k2kW4/tKmoLR14HKsEj5FU+Jfg+zV00x6pW0LLe4qcMCr8/NsfrdaxIxeomMeXImyrAJdNoqeZBX+TMNWVuS+K+PGzQNeRgTiflVjel9hQvoBdGDdja8KcpKbrGw++YBku4x+EWiOrkY4lIZYHyp5vknKT1+l64nHtiWk0o47MY+0dc3/+S+VMG8MHV8OU0pPlMRN+KAaBCs8/6kHK4+850Q7/A7uEsKv6UVoGPhvSVlNU54VeetV2A4rb3j/uzm+ozpx2HNBQa60VbqvIHhguv6ZYnAzncIbAi0CJ08jVDkdI3FrotNTjuAFOgBgX9jm/a9+1NxrZ03DeKNlQkzyvdzmXKSj7uSt1OhLpCOwNJnhDNbg0dbD+WV9vqUdXBKRfvqfLsKo6wsYLCH0fhw4DEAl41VK5FwqozgfCJgiMBQL6ZpJHthaYhpzGzrNIDNS8eqZHvFSs8HYna74p86imNE7C4sZXBdUq1LLnGN7S8y1BwjzPqgAZIBK3scBtaOwoPUMYfcK/NqQ+w7ovW2t0cK/gwb+82DCaOUauie/RlqWeR7cnAqU7Hiu4526cz0qOGvfL5BRUtrnBFoR+47L5STiuEDSnDOGE6l19h6qRNB+EtfjXmufOwYho4W/ra9p1JzPAWd7uCdMiqhdx2Il+5XSxNT3w=
+deploy:
+  - provider: script
+    script: bash travis_release.sh
+    skip_cleanup: true
+    on:
+      repo: snabble/Android-SDK
+      tags: true
+      branch: master
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: RSusFhQL4TcENHK6SmeJvDWuHGJ8Rsit4cN2Qk2/L86i/dVJhL6YqH9ADQbkubNI/x6hSb9MabPJq6dc3dfKDLA6sDDLCBNKYmEtFQQDsAsTv0eh4PBsve5aKlENU+4JNXdvMM0Z/Cc7fRiKLk1KrwqmHgPjxOKEMmsigLw4UCaIc59PfuNe9CoFQXRroCc7xETwdQbQ+v5TdsbRH6Ic3CNTCEUSNsgTNIOmegzcNkQ+SiWw+uZzj656VfogpbTOmfqpSlxXMU8mcKWIeP5vgCZIKiJ+78M/brner+XzprStnKmwLIrg2EXOdAn+QZHiayonju1fRp45EwqVSR48vk7g9Vt1dmeYeWMfqvrzoQJU41eJ8S4jt/cOrvbz5Bde6Eme+NC1Zu8mSy9SGyyRd31IVu2A3DmajvwicD7zfXG2BlXTvFGyamnmcMnedNxVtKCWHeMzE7sDMVmOOMGuzZYoO/o+wBW7M1QgFQMU2ADk9xvHbYtqELZlZwIkNNkYAV+TeIxahr8FINpTUmQbF53uRWLdgNu4NENhoq5Vrbj9jY4BVSNqOXPv3ZZekIhAwfpUl0t97WILrHCH/RVUmOhswo46JBWy3gF1uMFRp3pi+/AWapKsbycdSARPVl1tCyjw7ZRqmdYAZvu+tZZrmZ+563V7qm0YAu0nOusac3c=
+    file:
+    - "core/build/outputs/aar/core-release.aar"
+    - "ui/build/outputs/aar/ui-release.aar"
+    - "ui-integration/build/outputs/aar/ui-integration-release.aar"
+    - "utils/build/outputs/aar/utils-release.aar"
+    on:
+      repo: snabble/Android-SDK
+      tags: true
+      branch: master

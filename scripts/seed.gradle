@@ -1,0 +1,78 @@
+apply plugin: 'de.undercouch.download'
+
+ext.clientToken='<insert-token-here>'
+ext.appVersion = '1.0'
+ext.projectId='demo'
+ext.endpoint='https://api.snabble-testing.io'
+ext.metadataUrl="/api/${project.projectId}/metadata/app/android/testapp"
+
+task updateBundledData(
+        group: 'seed',
+        description: "Updates bundled app data, such as products and shop data") {
+    doLast {
+        downloadBundledData()
+    }
+}
+
+task updateBundledDataIfNotExists {
+    def productRevision = file('src/main/assets/products.revision')
+    if(!productRevision.exists()) {
+        doLast {
+            downloadBundledData()
+        }
+    }
+}
+
+preBuild.dependsOn(updateBundledDataIfNotExists)
+
+def downloadBundledData() {
+    downloadMetadata(
+            "${project.endpoint}${project.metadataUrl}",
+            'src/main/assets/'
+    )
+
+    downloadProductDb(
+            "${project.endpoint}/api/${project.projectId}/appdb",
+            'src/main/assets/'
+    )
+}
+
+def downloadMetadata(source, destination) {
+    def fileName = destination + "metadata.json"
+
+    download {
+        src source
+        dest fileName
+
+        requestInterceptor = { request, context ->
+            request.addHeader("Client-Token", project.clientToken)
+        }
+    }
+}
+
+def downloadProductDb(source, destination){
+    download {
+        src source
+        dest destination + "products.sqlite3"
+
+        requestInterceptor = { request, context ->
+            request.addHeader("Client-Token", project.clientToken)
+        }
+    }
+
+    def db = openSQLiteDatabase(file(destination + "products.sqlite3"))
+    db.eachRow("SELECT value FROM metadata WHERE key = 'schemaVersionMajor'") { row ->
+        def productRevision = file(destination + 'products.major')
+        productRevision.text = row.getString(1)
+    }
+
+    db.eachRow("SELECT value FROM metadata WHERE key = 'schemaVersionMinor'") { row ->
+        def productRevision = file(destination + 'products.minor')
+        productRevision.text = row.getString(1)
+    }
+
+    db.eachRow("SELECT value FROM metadata WHERE key = 'revision'") { row ->
+        def productRevision = file(destination + 'products.revision')
+        productRevision.text = row.getString(1)
+    }
+}

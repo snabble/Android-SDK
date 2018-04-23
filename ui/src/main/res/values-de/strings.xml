@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="snabble_scanner_addToCart_button_text">In den Warenkorb</string>
+    <string name="snabble_scanner_updateCart_button_text">Warenkorb aktualisieren</string>
+    <string name="snabble_scanner_confirmation_pay_text">Direkt zur Kasse und %s bezahlen</string>
+    <string name="snabble_scanner_light">Licht</string>
+    <string name="snabble_scanner_enterBarcode">Barcode\neingeben</string>
+    <string name="snabble_scanner_title">Barcode scannen</string>
+    <string name="snabble_scanner_noPermission">Um Artikel scannen zu können, muss die Zugriff auf die Kamera gestattet werden</string>
+    <string name="snabble_scanner_productNotFound">Produkt ist nicht verfügbar</string>
+    <string name="snabble_scanner_networkError">Produkt konnte nicht online gesucht werden. Bitte überprüfen Sie ihre Internetverbindung</string>
+    <string name="snabble_scanner_cameraServiceError">Kamera nicht verfügbar</string>
+    <string name="snabble_shoppingCart_info_modifiedByGatekeeper">Ihr Warenkorb wurde durch einen Mitarbeiter kontrolliert und angepasst</string>
+
+    <plurals name="snabble_shoppingCart_checkout_text" tools:ignore="MissingQuantity">
+        <item quantity="other">%1$d Artikel für %2$s bezahlen</item>
+    </plurals>
+
+    <string name="snabble_shoppingCart_emptyState_message">Scannen Sie Produkte um sie dem Einkaufswagen hinzuzufügen</string>
+    <string name="snabble_shoppingCart_undo">Rückgängig machen</string>
+    <string name="snabble_shoppingCart_item_removed">Artikel entfernt</string>
+    <string name="snabble_shoppingCart_remove_item_message">%s wirklich entfernen?</string>
+    <string name="snabble_checkout_choosePayment_title">Wie möchten Sie %s zahlen?</string>
+    <string name="snabble_checkout_choosePayment_add">+ Bezahlart hinzufügen</string>
+    <string name="snabble_checkout_paymentSuccess_message">Vielen Dank für Ihren Einkauf</string>
+    <string name="snabble_checkout_paymentAborted_message">Der Bezahlvorgang wurde abgebrochen</string>
+    <string name="snabble_checkout_paymentSuccess_backButton_title">Zurück zur Startseite</string>
+    <string name="snabble_checkout_error">Fehler bei der Übermittelung des Bezahlvorgangs</string>
+    <string name="snabble_checkout_status_step1_title">Einkauf wird ausgeführt</string>
+    <string name="snabble_checkout_status_step1_message">Verifizierung des Bezahlverfahrens</string>
+    <string name="snabble_checkout_status_step2_title">Lokalisierung</string>
+    <string name="snabble_checkout_status_step2_message">Bitte begeben Sie sich zum Kassenbereich</string>
+    <string name="snabble_checkout_status_step3_title">Freigabe durch Mitarbeiter</string>
+    <string name="snabble_checkout_status_step3_message">Ihr Einkauf wird durch einen Mitarbeiter geprüft, bitte warten Sie einen Moment.</string>
+    <string name="snabble_checkout_qrcode_explanation1">Bitte zeigen Sie diesen Code an der Kasse:</string>
+    <string name="snabble_checkout_qrcode_explanation1_multiple">Bitte zeigen Sie diese Codes an der Kasse:</string>
+    <string name="snabble_checkout_qrcode_explanation2">Der genaue Endpreis wird von der Kasse berechnet und kann vom hier angezeigten abweichen.</string>
+    <string name="snabble_checkout_encodedCodes_paid">Ich habe Bezahlt</string>
+    <string name="snabble_checkout_pay_amount">Zu zahlen: %1$s</string>
+    <string name="snabble_cancel">Abbrechen</string>
+    <string name="snabble_yes">Ja</string>
+    <string name="snabble_no">Nein</string>
+    <string name="snabble_please_wait">Bitte warten…</string>
+    <string name="snabble_paymentmethod_encoded_codes">An der Kasse bezahlen</string>
+    <string name="snabble_paymentmethod_qrcode_pos">An der Info-Theke</string>
+</resources>

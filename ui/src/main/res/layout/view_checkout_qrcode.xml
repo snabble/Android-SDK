@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/snabble_primaryColor">
+
+    <TextView
+        android:id="@+id/pay_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textSize="17sp"
+        android:textColor="@color/snabble_textColorLight"
+        tools:text="@string/snabble_checkout_pay_amount" />
+
+    <TextView
+        android:id="@+id/explanation1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/pay_amount"
+        android:text="@string/snabble_checkout_qrcode_explanation1"
+        android:textColor="@color/snabble_textColorLight"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
+
+    <io.snabble.sdk.ui.scanner.BarcodeView
+        android:id="@+id/qr_code"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="12dp"
+        android:layout_above="@+id/explanation2"
+        android:layout_below="@+id/explanation1"
+        tools:format="QR_CODE"
+        tools:text="357294723482348234283472834732748327493473274832749347327483274947327483274838;"/>
+
+    <TextView
+        android:id="@+id/explanation2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/abort"
+        android:text="@string/snabble_checkout_qrcode_explanation2"
+        android:textColor="@color/snabble_textColorLight"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="14sp"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/abort"
+        style="@style/SnabbleButtonWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="@string/snabble_cancel" />
+</RelativeLayout>

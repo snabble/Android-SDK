@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="304dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:ignore="SmallSp,HardcodedText">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:padding="12dp"
+        android:textSize="14sp"
+        android:background="?android:attr/selectableItemBackground"
+        app:srcCompat="@drawable/ic_close" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/close"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:textSize="10sp"
+        tools:text="Wiha" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/subtitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="Schraubendreher Top G 8,0x1,2" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:textSize="14sp"
+        tools:text="11,99 €" />
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/minus"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/quantity"
+        android:layout_toStartOf="@+id/quantity"
+        android:layout_toLeftOf="@+id/quantity"
+        app:srcCompat="@drawable/ic_button_minus" />
+
+    <android.support.v7.widget.AppCompatEditText
+        style="@style/SnabbleEditText"
+        android:id="@+id/quantity"
+        android:layout_width="96dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/price"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:inputType="number"
+        android:text="1" />
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/plus"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/quantity"
+        android:layout_toEndOf="@+id/quantity"
+        android:layout_toRightOf="@+id/quantity"
+        app:srcCompat="@drawable/ic_button_plus" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/quantity_annotation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/quantity"
+        android:layout_below="@+id/price"
+        android:layout_marginBottom="16dp"
+        android:layout_toEndOf="@+id/quantity"
+        android:layout_toRightOf="@+id/quantity"
+        android:textSize="17sp"
+        android:visibility="gone"
+        tools:text="g" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/addToCart"
+        style="@style/SnabbleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/quantity"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="@string/snabble_scanner_addToCart_button_text" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/pay_now"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_below="@+id/addToCart"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="8dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/snabble_textColorAction"
+        android:textSize="14sp"
+        android:visibility="invisible"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="8sp"
+        app:autoSizeMaxTextSize="14sp"
+        tools:text="Direkt zur Kasse und 11,99 € bezahlen"
+        tools:visibility="visible" />
+</RelativeLayout>

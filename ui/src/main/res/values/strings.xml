@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="snabble_scanner_addToCart_button_text">Add to Cart</string>
+    <string name="snabble_scanner_updateCart_button_text">Update Cart</string>
+    <string name="snabble_scanner_confirmation_pay_text">Direct to checkout and pay %s</string>
+    <string name="snabble_scanner_light">Light</string>
+    <string name="snabble_scanner_enterBarcode">Enter\nbarcode</string>
+    <string name="snabble_scanner_title">Scan barcode</string>
+    <string name="snabble_scanner_noPermission">You need to give camera permission, to be able to scan items</string>
+    <string name="snabble_scanner_productNotFound">Product is not available</string>
+    <string name="snabble_scanner_networkError">Product could not be searched online. Please check your internet connection</string>
+    <string name="snabble_scanner_cameraServiceError">Could not connect to camera service</string>
+    <string name="snabble_shoppingCart_info_modifiedByGatekeeper">Your cart has been checked and adjusted by an employee</string>
+
+    <plurals name="snabble_shoppingCart_checkout_text">
+        <item quantity="one">Pay %2$s for %1$d article</item>
+        <item quantity="other">Pay %2$s for %1$d articles</item>
+    </plurals>
+
+    <string name="snabble_shoppingCart_emptyState_message">Scan products to add them to your shopping cart.</string>
+    <string name="snabble_shoppingCart_undo">Undo</string>
+    <string name="snabble_shoppingCart_remove_item_message">Remove %s from the cart?</string>
+    <string name="snabble_shoppingCart_item_removed">Article removed</string>
+    <string name="snabble_checkout_choosePayment_title">How would you like to pay %s?</string>
+    <string name="snabble_checkout_choosePayment_add">+ Add payment method</string>
+    <string name="snabble_checkout_paymentSuccess_message">Thank you for your purchase</string>
+    <string name="snabble_checkout_paymentAborted_message">Payment process was aborted</string>
+    <string name="snabble_checkout_paymentSuccess_backButton_title">Back to the homepage</string>
+    <string name="snabble_checkout_error">Checkout request could not be made</string>
+    <string name="snabble_checkout_status_step1_title">Purchase is carried out</string>
+    <string name="snabble_checkout_status_step1_message">Verification of payment method</string>
+    <string name="snabble_checkout_status_step2_title">Localization</string>
+    <string name="snabble_checkout_status_step2_message">Please go to the checkout area</string>
+    <string name="snabble_checkout_status_step3_title">Verification by employee</string>
+    <string name="snabble_checkout_status_step3_message">Your purchase will be checked by an employee, please wait a moment.</string>
+    <string name="snabble_checkout_qrcode_explanation1">Please show this QR code to a cashier at a checkstand:</string>
+    <string name="snabble_checkout_qrcode_explanation1_multiple">Please show these QR codes to a cashier at a checkstand:</string>
+    <string name="snabble_checkout_qrcode_explanation2">Please note that the final price will be calculated from the cash register and may slightly differ from the price shown in our app.</string>
+    <string name="snabble_checkout_encodedCodes_paid">I did pay</string>
+    <string name="snabble_checkout_pay_amount">To pay: %1$s</string>
+    <string name="snabble_cancel">Cancel</string>
+    <string name="snabble_yes">Yes</string>
+    <string name="snabble_no">No</string>
+    <string name="snabble_please_wait">Please wait…</string>
+    <string name="snabble_paymentmethod_encoded_codes">Pay at the cash register</string>
+    <string name="snabble_paymentmethod_qrcode_pos">Checkstand</string>
+</resources>

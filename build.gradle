@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'de.undercouch:gradle-download-task:3.4.2'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath "gradle.plugin.gmazzo:sqlite-plugin:0.2"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    project.ext {
+        sdkVersion='0.5.1'
+        versionCode=1
+
+        compileSdkVersion=27
+        minSdkVersion=16
+        targetSdkVersion=27
+
+        buildToolsVersion='27.0.3'
+        supportLibraryVersion='27.1.1'
+        okhttpVersion='3.10.0'
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

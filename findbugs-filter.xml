@@ -1,0 +1,20 @@
+<FindBugsFilter>
+    <!-- All bugs in test classes, except for JUnit-specific bugs -->
+    <Match>
+        <Class name="~.*\.*Test" />
+        <Not>
+            <Bug code="IJU" />
+        </Not>
+    </Match>
+
+    <Match>
+        <Class name="~.*\.R\$.*"/>
+    </Match>
+    <Match>
+        <Class name="~.*\.Manifest\$.*"/>
+    </Match>
+
+    <Match>
+        <Bug code="UwF,Se,UuF,UrF" />
+    </Match>
+</FindBugsFilter>

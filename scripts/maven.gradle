@@ -1,0 +1,69 @@
+apply plugin: 'com.github.dcendents.android-maven'
+
+version = project.sdkVersion
+group = 'io.snabble.sdk'
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives androidSourcesJar
+    archives javadocJar
+}
+
+ext.mavenPomConfig = {
+    whenConfigured { pom ->
+        pom.dependencies.each { dep ->
+            if(dep.groupId == 'io.snabble.sdk'){
+                dep.type = 'aar'
+            }
+        }
+
+        pom.project {
+            inceptionYear '2018'
+            licenses {
+                license {
+                    name 'The MIT License'
+                    url 'https://opensource.org/licenses/MIT'
+                    distribution 'repo'
+                }
+            }
+        }
+    }
+}
+
+install {
+    dependsOn(build)
+
+    repositories {
+        mavenInstaller {
+            pom mavenPomConfig
+        }
+    }
+}
+
+uploadArchives {
+    dependsOn(build)
+
+    repositories {
+        mavenDeployer {
+            pom mavenPomConfig
+
+            repository(url: "file://"+ project.rootDir.absolutePath +"/build/maven-releases/")
+            snapshotRepository(url: "file://"+ project.rootDir.absolutePath +"/build/maven-snapshots/")
+        }
+    }
+}

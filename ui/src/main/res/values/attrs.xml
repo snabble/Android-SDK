@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BarcodeView">
+        <attr name="text" format="string" />
+        <attr name="format" format="string" />
+        <attr name="adjustBrightness" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SelfScanningView">
+        <attr name="addToCartButtonText" format="string" />
+        <attr name="addToCartButtonTint" format="color" />
+        <attr name="titleText" format="string" />
+        <attr name="lightText" format="string" />
+        <attr name="lightIcon" format="reference" />
+        <attr name="enterBarcodeText" format="string" />
+        <attr name="enterBarcodeIcon" format="reference" />
+        <attr name="bottomBarEnabled" format="boolean" />
+        <attr name="payNowText" format="string" />
+        <attr name="payNowTint" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="ShoppingCartView">
+        <attr name="checkoutButtonText" format="string" />
+        <attr name="checkoutButtonTint" format="color" />
+        <attr name="quantityBadgeTextColor" format="color" />
+        <attr name="quantityBadgeTint" format="color" />
+        <attr name="gatekeeperActionPerformedText" format="string" />
+    </declare-styleable>
+</resources>

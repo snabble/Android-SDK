@@ -1,0 +1,52 @@
+apply plugin: 'com.android.library'
+apply from: '../scripts/findbugs.gradle'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion project.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        versionCode project.versionCode
+        versionName project.sdkVersion
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        resValue "string", "okhttp_version", project.okhttpVersion
+    }
+
+    buildTypes {
+        release {
+            postprocessing {
+                removeUnusedCode false
+                removeUnusedResources false
+                obfuscate false
+                optimizeCode false
+                proguardFile 'proguard-rules.pro'
+            }
+        }
+    }
+
+    compileOptions {
+        targetCompatibility 1.7
+        sourceCompatibility 1.7
+    }
+}
+
+dependencies {
+    implementation project(':utils')
+
+    implementation 'commons-io:commons-io:2.5'
+    implementation "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttpVersion}"
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    testImplementation 'junit:junit:4.12'
+
+    androidTestImplementation 'com.android.support.test:rules:1.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:${project.okhttpVersion}"
+}
+
+apply from: '../scripts/maven.gradle'
