@@ -10,7 +10,7 @@ public class Product {
         /**
          * A basic product with price information.
          */
-        Article,
+        Article(0),
 
         /**
          * A product that is pre weighed. The codes from {@link Product#getScannableCodes()} are reference codes that do not
@@ -19,13 +19,23 @@ public class Product {
          * Scanned codes usually have a different code the code you get from {@link Product#getScannableCodes()}, containing the
          * price information.
          */
-        PreWeighed,
+        PreWeighed(1),
 
         /**
          * A product that needs to be user weighed. The price from {@link Product#getPrice()}
          * is a base price of 1000g
          */
-        UserWeighed
+        UserWeighed(2);
+
+        private int databaseValue;
+
+        Type(int databaseValue){
+            this.databaseValue = databaseValue;
+        }
+
+        public int getDatabaseValue(){
+            return databaseValue;
+        }
     }
 
     private String sku;

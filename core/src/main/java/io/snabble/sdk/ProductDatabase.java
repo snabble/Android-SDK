@@ -991,7 +991,7 @@ public class ProductDatabase {
     public Cursor searchByFoldedName(String searchString, CancellationSignal cancellationSignal) {
         return productQuery("JOIN searchByName s ON " + getSearchIndexColumn() + " = p.sku " +
                 "WHERE s.foldedName MATCH ? " +
-                "AND p.weighing != 1 " +
+                "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
                 "LIMIT 100", new String[]{
                 searchString + "*"
