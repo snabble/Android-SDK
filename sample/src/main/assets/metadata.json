@@ -1,31 +1,25 @@
 {
     "links": {
         "appdb": {
-            "href": "/api/demo/appdb"
+            "href": "/api/billa-sk-staging-4f5581/appdb"
         },
         "checkoutInfo": {
-            "href": "/demo/checkout/info"
-        },
-        "news": {
-            "href": "https://snabble.io/media/news.json"
-        },
-        "offerCategories": {
-            "href": "https://snabble.io/media/products/offers.json"
+            "href": "/billa-sk-staging-4f5581/checkout/info"
         },
         "productByCode": {
-            "href": "/api/demo/products/code/{code}"
+            "href": "/api/billa-sk-staging-4f5581/products/code/{code}"
         },
         "productBySku": {
-            "href": "/api/demo/products/sku/{sku}"
+            "href": "/api/billa-sk-staging-4f5581/products/sku/{sku}"
         },
         "productByWeighItemId": {
-            "href": "/api/demo/products/weighItemId/{id}"
+            "href": "/api/billa-sk-staging-4f5581/products/weighItemId/{id}"
         },
         "self": {
-            "href": "/api/demo/metadata/app/android/testapp"
+            "href": "/api/billa-sk-staging-4f5581/metadata/app/android/testapp"
         },
         "shops": {
-            "href": "/demo/shops"
+            "href": "/billa-sk-staging-4f5581/shops"
         }
     },
     "metadata": {
@@ -34,73 +28,68 @@
     },
     "shops": [
         {
-            "city": "Düsseldorf",
-            "country": "Deutschland",
+            "city": "Bratislava",
+            "country": "",
             "email": "",
             "external": null,
             "externalId": null,
-            "id": "7",
-            "lat": 51.2564016,
+            "id": "11",
+            "lat": 48.140264,
             "links": {
                 "self": {
-                    "href": "https://api.snabble-testing.io/demo/shops/7"
+                    "href": "https://api.snabble.io/billa-sk-staging-4f5581/shops/11"
                 }
             },
-            "lon": 6.7386981,
-            "name": "EuroCIS",
-            "openingHoursSpecification": [],
-            "phone": "012345678",
-            "project": "demo",
-            "services": [],
-            "state": "NRW",
-            "street": "Stockumer Kirchstraße 61",
-            "zip": "40474"
-        },
-        {
-            "city": "Bonn",
-            "country": "Deutschland",
-            "email": "info@snabble.io",
-            "external": null,
-            "externalId": null,
-            "id": "8",
-            "lat": 50.7354364,
-            "links": {
-                "self": {
-                    "href": "https://api.snabble-testing.io/demo/shops/8"
+            "lon": 17.119862,
+            "name": "Eurovea",
+            "openingHoursSpecification": [
+                {
+                    "closes": "22:00:51",
+                    "dayOfWeek": "Thursday",
+                    "opens": "08:00:45"
+                },
+                {
+                    "closes": "22:00:12",
+                    "dayOfWeek": "Monday",
+                    "opens": "08:00:55"
+                },
+                {
+                    "closes": "22:00:49",
+                    "dayOfWeek": "Sunday",
+                    "opens": "08:00:42"
+                },
+                {
+                    "closes": "22:00:36",
+                    "dayOfWeek": "Saturday",
+                    "opens": "08:00:30"
+                },
+                {
+                    "closes": "22:00:17",
+                    "dayOfWeek": "Friday",
+                    "opens": "08:00:56"
+                },
+                {
+                    "closes": "22:00:27",
+                    "dayOfWeek": "Tuesday",
+                    "opens": "08:00:19"
+                },
+                {
+                    "closes": "22:00:39",
+                    "dayOfWeek": "Wednesday",
+                    "opens": "08:00:32"
                 }
-            },
-            "lon": 7.0978723,
-            "name": "snabble GmbH",
-            "openingHoursSpecification": [],
-            "phone": "+491717673249",
-            "project": "demo",
-            "services": [],
-            "state": "NRW",
-            "street": "Acherstraße 26",
-            "zip": "53111"
-        },
-        {
-            "city": "Bonn",
-            "country": "Deutschland",
-            "email": "info@tarent.de",
-            "external": null,
-            "externalId": null,
-            "id": "9",
-            "lat": 50.7225904,
-            "links": {
-                "self": {
-                    "href": "https://api.snabble-testing.io/demo/shops/9"
-                }
-            },
-            "lon": 7.0594908,
-            "name": "tarent solutions GmbH",
-            "openingHoursSpecification": [],
-            "phone": "+491717673249",
-            "project": "demo",
-            "services": [],
-            "state": "NRW",
-            "street": "Rochusstraße",
-            "zip": "53123"
+            ],
+            "phone": "+421268230520",
+            "project": "billa-sk-staging-4f5581",
+            "services": [
+                "parking",
+                "bakery",
+                "butchery",
+                "public toilets"
+            ],
+            "state": "",
+            "street": "Pribinova ul. 1/B",
+            "zip": "81109"
         }
     ]
 }

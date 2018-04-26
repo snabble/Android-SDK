@@ -232,9 +232,9 @@ buildNumber.properties
 .mvn/timing.properties
 report.xml
 
-testapp/src/main/assets/products.revision
-testapp/src/main/assets/products.major
-testapp/src/main/assets/products.minor
-testapp/src/main/assets/products.sqlite3
-testapp/src/main/assets/metadata.json
+sample/src/main/assets/products.revision
+sample/src/main/assets/products.major
+sample/src/main/assets/products.minor
+sample/src/main/assets/products.sqlite3
+sample/src/main/assets/metadata.json
 maven-repository

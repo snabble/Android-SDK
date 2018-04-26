@@ -55,12 +55,12 @@ public class App extends Application {
         config.endpointBaseUrl = getString(R.string.endpoint);
         config.clientToken = getString(R.string.client_token);
         config.projectId = getString(R.string.project_id);
-//        config.bundledMetadataAssetPath = "metadata.json";
+        config.bundledMetadataAssetPath = "metadata.json";
         config.productDbName = "products.sqlite3";
-//        config.productDbBundledAssetPath = "products.sqlite3";
-//        config.productDbBundledRevisionId = getBundledRevisionId();
-//        config.productDbBundledSchemaVersionMajor = getBundledMajor();
-//        config.productDbBundledSchemaVersionMinor = getBundledMinor();
+        config.productDbBundledAssetPath = "products.sqlite3";
+        config.productDbBundledRevisionId = getBundledRevisionId();
+        config.productDbBundledSchemaVersionMajor = getBundledMajor();
+        config.productDbBundledSchemaVersionMinor = getBundledMinor();
 
         SnabbleSdk.setup(this, config, new SnabbleSdk.SetupCompletionListener() {
             @Override
