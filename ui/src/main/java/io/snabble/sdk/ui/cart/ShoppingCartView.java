@@ -249,6 +249,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         updatePayText();
         updateEmptyState();
 
+        recyclerViewAdapter.notifyDataSetChanged();
+
         if (snackbar != null) {
             snackbar.dismiss();
         }
