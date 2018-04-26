@@ -9,9 +9,10 @@ android:
   - android-27
   - extra-android-m2repository
 before_install:
-    - yes | sdkmanager "platforms;android-27"
+- yes | sdkmanager "platforms;android-27"
 script:
-- "./gradlew :core:assembleRelease :ui:assembleRelease :ui-integration:assembleRelease :utils:assembleRelease"
+- "./gradlew :core:assembleRelease :ui:assembleRelease :ui-integration:assembleRelease
+  :utils:assembleRelease"
 cache:
   directories:
   - "$HOME/.gradle/caches/"
@@ -21,23 +22,26 @@ env:
   global:
   - secure: N3EBbTG204iyRystHZFo0iMbnfSPxXHO3N+ZNAAP5rFR+ONmvRlIb767q4pByvD9KDdyvbg6XNGDuLVpXcJGlZXauSMykpk6JnizQVLLUHsD7qJYi+v7osez4qvIuEP0kQ/JLUQAgzDL1kLFinDzullpbpqmwY0zIcc5xhclR7+XH7hbDIEgNiVnrDIzRg8cOpOYRFYQeMTq2n7D10LyO9BYEIJxpxukDcUbPe0XOeHYbDjY+eI/OFohsSOjovChmdhz70KpXDePpim0pBBNiYcFdxkTsljb1tOmMWtGL7OcKCzscIOIk+mSGT7+isDTdNmVvHVQAKchlC3+nuI4vIhLy9ErHnfNlKKCJd1cjsFXXXmEnMJRnLk3ULIH9yUSjOCXWnRCCAZPcKyBjdwGinCuHySZ+PcnlzFrY0A6kqPR1jcCZsP+YyQJL8mPsyXAObFAeisK9ipNFsPkEbdrjYnBMO/A1nB++Abw9A/xp0pvar15l2qP4gn2zbo36OYL5v4KvGfO53WMyeyp2elRdnUyMswU4LHt0VLUEiO3/uUfl5MjilQST9xPWE5lZ00elKEoznNXD/djeOLYXvWKcQ/65AX6kjky5NQX3GTjyVemvsKLDQVT0HlioHRwP7YMkrtlD+el0R1DVjFBQ68o7fKFcMXmfiXN5ryyM0DYgn8=
 deploy:
-  - provider: script
-    script: bash travis_release.sh
-    skip_cleanup: true
-    on:
-      repo: snabble/Android-SDK
-      tags: true
-      branch: master
-  - provider: releases
-    skip_cleanup: true
-    api_key:
-      secure: PQssNdRcEOoDdkyHu/ad+p4jHdMpm48oHhhErRWvPTd3Qy9EXtZpYoCwqP4K86GbUrsEdD9/JM7oSUyjgiai1xLOLWh4NrW4y3PknuzI7+OhlB9KsiC4FbgkLr4rrmrPPeERFaKAtlg1sXjUgQSkldyVCHzQ7fOpwBx4vKQugoDsP0aDzrT/HJIlz7yp+M6bvdJbHNZHogq6Wsh3kcJLcJRGHbETVn2JA5CodOWuQbjZhK7lQl+eJn6GZnHuZJx4namDGT08+A1DXkfjz0z/CFl3UDk+yXeTFBDPvnF+VtMxU+408/V3GextW6c6YV0k0ow0HHtiJvTCwFFQ+tBZIdO5mm40fvW4CrUzR69wOmZXpECFf6w5quBOcDyFCgmExAcnSOx1htwKtG62V4bWl3lBxOB+cmgyMd0TZyadV9mJXwP1A0cZcI9EPmhWyiZTGce31kf2fEXCXFD2twY6JEdM7jtZDhj2PoKOO0L0L5oTkRUrJpTpWjTRkl69hKtu36jWQSdkf34cE8C8cTL+jsGYhVqdl6SYQpac78hGiSXveKNfYYDr8m+vYtgHqeGj75X6nQtUgQD3gEEBLBBaKsXPWff4MP5NdGU0QX8w73yavFsoR+sUF3/2A9vvyPdRfV/MlLI3ZWiT8yazdJz95VA7snVvxT1XX3s032s4giw=
-    file:
-    - "core/build/outputs/aar/core-release.aar"
-    - "ui/build/outputs/aar/ui-release.aar"
-    - "ui-integration/build/outputs/aar/ui-integration-release.aar"
-    - "utils/build/outputs/aar/utils-release.aar"
-    on:
-      repo: snabble/Android-SDK
-      tags: true
-      branch: master
+- provider: script
+  script: bash travis_release.sh
+  skip_cleanup: true
+  on:
+    repo: snabble/Android-SDK
+    tags: true
+    branch: master
+- provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: PQssNdRcEOoDdkyHu/ad+p4jHdMpm48oHhhErRWvPTd3Qy9EXtZpYoCwqP4K86GbUrsEdD9/JM7oSUyjgiai1xLOLWh4NrW4y3PknuzI7+OhlB9KsiC4FbgkLr4rrmrPPeERFaKAtlg1sXjUgQSkldyVCHzQ7fOpwBx4vKQugoDsP0aDzrT/HJIlz7yp+M6bvdJbHNZHogq6Wsh3kcJLcJRGHbETVn2JA5CodOWuQbjZhK7lQl+eJn6GZnHuZJx4namDGT08+A1DXkfjz0z/CFl3UDk+yXeTFBDPvnF+VtMxU+408/V3GextW6c6YV0k0ow0HHtiJvTCwFFQ+tBZIdO5mm40fvW4CrUzR69wOmZXpECFf6w5quBOcDyFCgmExAcnSOx1htwKtG62V4bWl3lBxOB+cmgyMd0TZyadV9mJXwP1A0cZcI9EPmhWyiZTGce31kf2fEXCXFD2twY6JEdM7jtZDhj2PoKOO0L0L5oTkRUrJpTpWjTRkl69hKtu36jWQSdkf34cE8C8cTL+jsGYhVqdl6SYQpac78hGiSXveKNfYYDr8m+vYtgHqeGj75X6nQtUgQD3gEEBLBBaKsXPWff4MP5NdGU0QX8w73yavFsoR+sUF3/2A9vvyPdRfV/MlLI3ZWiT8yazdJz95VA7snVvxT1XX3s032s4giw=
+  file:
+  - core/build/outputs/aar/core-release.aar
+  - ui/build/outputs/aar/ui-release.aar
+  - ui-integration/build/outputs/aar/ui-integration-release.aar
+  - utils/build/outputs/aar/utils-release.aar
+  on:
+    repo: snabble/Android-SDK
+    tags: true
+    branch: master
+notifications:
+  slack:
+    secure: hnuQJOWBCZ3pNSc2oP9u0c8Pygq8zcOIZ1bRMU1DW2AWB/9HE6ieqcV3gMatrniSnXoR5yEjn1Eq3PEBpbLfWkOwQfXbg0sKMD23P1lXklTSNvmNo067nyH+32vEtzKUyPm2zQJy096XpRvc632VjUZsrMDrLlSd4o1dTXwrDwoAjMLaqF+NeDqFx1EhooRWTRw1+Z2tiHgPbIAeSm+P1Fzvkw8XKsPctMO7lUGuCkeekn/9AKiUVDgBorIA0PDjoyYZaAMu2Zr5YVqhpXibkNhiId36DwRcbgPPHPM889ED23i9iCfmwe5vartOwE/8d4a4RgnEpV3wFQtoDaruO+YL69o6qzwGAWARPnk2lQhA8g1YbeBl3E3CJbb8PURjo8svFM+Wc4NC/OkSvXL/KT2DkbTcyui+u7e6sFIbnmNpaTz27PO01ZuIB0W1OdFksxaNCrhLn6KwWj6NiRmlgTlUT+VdXqOoJUhKI//8qxUa8/ShvKBy5TK14ve0AB9XwHyWMzkp+4JzBrBHQP4LBzSoGZVJ+f6aIFzffNHttRGbbMkTOnavidvojP5DEAv87LUjc2yIV+93+4PMtT0wcgkiWXPRdppGpkZX/wntamLaSs2iLSzM+R+ltpCo4v+OybI1CSHYj2AM7+XL03ZOfXFEl5o2UJZRShcsEpw6NHM=
