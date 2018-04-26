@@ -52,6 +52,7 @@ public class Checkout {
 
     private static class CartItem {
         private String sku;
+        private String scannedCode;
         private int amount;
     }
 
@@ -681,6 +682,7 @@ public class Checkout {
 
             cart.items[i] = new CartItem();
             cart.items[i].sku = String.valueOf(product.getSku());
+            cart.items[i].scannedCode = shoppingCart.getScannedCode(i);
             cart.items[i].amount = quantity;
         }
 

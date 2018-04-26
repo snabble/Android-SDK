@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'com.android.tools.build:gradle:3.1.2'
         classpath 'de.undercouch:gradle-download-task:3.4.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "gradle.plugin.gmazzo:sqlite-plugin:0.2"
@@ -23,7 +23,7 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.5.2'
+        sdkVersion='0.5.3'
         versionCode=1
 
         compileSdkVersion=27
