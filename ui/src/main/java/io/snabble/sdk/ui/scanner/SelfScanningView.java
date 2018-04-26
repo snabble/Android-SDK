@@ -153,22 +153,33 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         progressDialog.showAfterDelay(300);
         barcodeScanner.pause();
 
-        productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
-            @Override
-            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                handleProductAvailable(product, wasOnlineProduct, scannedCode);
-            }
+        Product product = productDatabase.findByCode(scannedCode);
+        if(product != null){
+            handleProductAvailable(product, false, scannedCode);
+        } else {
+            String weighItemId = Ean13Utils.toWeighItemId(scannedCode);
+            product = productDatabase.findByWeighItemId(weighItemId);
+            if(product != null){
+                handleProductAvailable(product, false, scannedCode);
+            } else {
+                productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
+                    @Override
+                    public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                        handleProductAvailable(product, wasOnlineProduct, scannedCode);
+                    }
 
-            @Override
-            public void onProductNotFound() {
-                searchForWeighItemId(scannedCode);
-            }
+                    @Override
+                    public void onProductNotFound() {
+                        searchForWeighItemId(scannedCode);
+                    }
 
-            @Override
-            public void onError() {
-                handleProductError();
+                    @Override
+                    public void onError() {
+                        handleProductError();
+                    }
+                });
             }
-        });
+        }
     }
 
     @SuppressLint("MissingPermission")
