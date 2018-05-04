@@ -1,0 +1,80 @@
+[[Snabble]]
+    [Snabble.Cancel]
+        en = Cancel
+    [Snabble.Checkout.ID]
+        en = Checkout-ID
+    [Snabble.Checkout.title]
+        en = Checkout
+    [Snabble.Done]
+        en = Done
+    [Snabble.Edit]
+        en = Edit
+    [Snabble.Yes]
+        en = Yes
+    [Snabble.No]
+        en = No
+    [Snabble.Settings]
+        en = Settings
+    [Snabble.remove]
+        en = Remove
+
+    [Snabble.Payment.errorStarting]
+        en = Error starting the payment process
+    [Snabble.PaymentSelection.title]
+        en = Pay
+    [Snabble.PaymentSelection.howToPay]
+        en = How would you like to pay %@?
+    [Snabble.QRCode.didPay]
+        en = I've paid
+    [Snabble.QRCode.nextCode]
+        en = Next Code
+    [Snabble.QRCode.priceMayDiffer]
+        en = Total price is calculated at the register and may differ from the one shown here.
+    [Snabble.QRCode.showThisCode]
+        en = Show this code to the cashier
+    [Snabble.QRCode.showTheseCodes]
+        en = Show these codes to the cashier
+    [Snabble.QRCode.title]
+        en = QR Code
+    [Snabble.QRCode.total]
+        en = `Total: `
+
+    [Snabble.Scanner.Camera.accessDenied]
+        en = Camera access denied
+    [Snabble.Scanner.Camera.allowAccess]
+        en = Please allow camera access to enable barcode scanning
+    [Snabble.Scanner.enterBarcode]
+        en = Enter Barcode
+    [Snabble.Scanner.enterCodeButton]
+        en = Enter\nBarcode
+    [Snabble.Scanner.gotoCheckout]
+        en = Checkout and pay %@ now
+    [Snabble.Scanner.scannedShelfCode]
+        en = Please scan the article's barcode instead
+    [Snabble.Scanner.scanningTitle]
+        en = Scan Barcode
+    [Snabble.Scanner.title]
+        en = Scanner
+    [Snabble.Scanner.torchButton]
+        en = Torch
+    [Snabble.Scanner.unknownBarcode]
+        en = Price information is not available for this product
+    [Snabble.Scanner.updateCart]
+        en = Update Cart
+    [Snabble.Scanner.addToCart]
+        en = Add to Cart
+
+    [Snabble.ShoppingCart.title]
+        en = Shopping Cart
+    [Snabble.Shoppingcart.buyProducts]
+        en = Buy %d products for %@
+    [Snabble.Shoppingcart.emptyState.buttonTitle]
+        en = Scan products
+    [Snabble.Shoppingcart.emptyState.description]
+        en = Scan products to add them to your shopping cart.
+    [Snabble.Shoppingcart.emptyState.title]
+        en = Your Shopping Cart
+    [Snabble.Shoppingcart.removeItem]
+        en = Remove %@ from the cart?
+    [Snabble.Shoppingcart.removeItems]
+        en = Remove all products from shopping cart?
