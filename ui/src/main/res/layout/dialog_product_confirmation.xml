@@ -52,7 +52,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
         android:textSize="14sp"
         tools:text="11,99 €" />
 
@@ -77,6 +76,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:gravity="center"

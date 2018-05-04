@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -125,6 +126,15 @@ public class SnabbleSdk {
          * null = Locale.getDefault()
          */
         public Locale currencyLocale = null;
+
+        /**
+         * Prefixes used in ean codes for pricing
+         */
+        public String[] pricePrefixes = new String[0];
+
+        public String[] weighPrefixes = new String[0];
+
+        public String[] amountPrefixes = new String[0];
     }
 
     private String endpointBaseUrl;
@@ -151,6 +161,10 @@ public class SnabbleSdk {
     private Locale currencyLocale;
 
     private String loyaltyCardId;
+
+    private String[] pricePrefixes = new String[0];
+    private String[] weighPrefixes = new String[0];
+    private String[] amountPrefixes = new String[0];
 
     private SnabbleSdk() {
 
@@ -245,6 +259,10 @@ public class SnabbleSdk {
 
         metadataUrl = absoluteUrl(config.metadataUrl);
         metadataDownloader = new MetadataDownloader(this, config.bundledMetadataAssetPath);
+
+        weighPrefixes = Arrays.copyOf(config.weighPrefixes, config.weighPrefixes.length);
+        pricePrefixes = Arrays.copyOf(config.pricePrefixes, config.pricePrefixes.length);
+        amountPrefixes = Arrays.copyOf(config.amountPrefixes, config.amountPrefixes.length);
 
         updateShops();
 
@@ -381,11 +399,11 @@ public class SnabbleSdk {
         return internalStorageDirectory;
     }
 
-    String getEndpointBaseUrl() {
+    public String getEndpointBaseUrl() {
         return endpointBaseUrl;
     }
 
-    String getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
@@ -423,6 +441,18 @@ public class SnabbleSdk {
 
     String getProductByWeighItemIdUrl() {
         return metadataDownloader.getUrls().get("productByWeighItemId");
+    }
+
+    public String[] getPricePrefixes() {
+        return pricePrefixes;
+    }
+
+    public String[] getWeighPrefixes() {
+        return weighPrefixes;
+    }
+
+    public String[] getAmountPrefixes() {
+        return amountPrefixes;
     }
 
     String absoluteUrl(String url) {

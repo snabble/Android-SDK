@@ -25,12 +25,13 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.utils.Ean13Utils;
 
 class ProductConfirmationDialog {
     private Context context;
@@ -51,7 +52,7 @@ class ProductConfirmationDialog {
     private TextView payNow;
 
     private Product product;
-    private String scannedCode;
+    private ScannableCode scannedCode;
 
     private DialogInterface.OnDismissListener onDismissListener;
     private String payNowText;
@@ -71,7 +72,7 @@ class ProductConfirmationDialog {
         this.snackBarCoordinatorLayout = coordinatorLayout;
     }
 
-    public void show(Product newProduct, String scannedCode) {
+    public void show(Product newProduct, ScannableCode scannedCode) {
         dismiss();
 
         this.product = newProduct;
@@ -128,56 +129,102 @@ class ProductConfirmationDialog {
             quantity.setEnabled(false);
         }
 
-        quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
-        quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE
-                        || (event.getAction() == KeyEvent.ACTION_DOWN
-                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    addToCart();
-                    return true;
-                }
+        price.setVisibility(View.VISIBLE);
 
-                return false;
-            }
-        });
+        if(scannedCode.hasWeighData()) {
+            quantityAnnotation.setText("g");
+            plus.setVisibility(View.GONE);
+            minus.setVisibility(View.GONE);
+            quantityAnnotation.setVisibility(View.VISIBLE);
+        } else if(scannedCode.hasPriceData()){
+            quantityAnnotation.setText(SnabbleUI.getSdkInstance().getCurrency().getSymbol());
+            plus.setVisibility(View.GONE);
+            minus.setVisibility(View.GONE);
+            quantityAnnotation.setVisibility(View.GONE);
+            price.setVisibility(View.GONE);
+        } else if(scannedCode.hasAmountData()){
+            quantityAnnotation.setVisibility(View.GONE);
+            plus.setVisibility(View.GONE);
+            minus.setVisibility(View.GONE);
+        } else {
+            quantityAnnotation.setVisibility(View.GONE);
+        }
 
         quantity.clearFocus();
 
         int cartQuantity = shoppingCart.getQuantity(product);
 
         if (type == Product.Type.Article) {
+            quantityAnnotation.setVisibility(View.GONE);
             quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
         } else if (type == Product.Type.UserWeighed) {
+            quantityAnnotation.setVisibility(View.VISIBLE);
+            quantityAnnotation.setText("g");
             quantity.setText(""); // initial value ?
         } else if (type == Product.Type.PreWeighed) {
-            quantity.setText(String.valueOf(Ean13Utils.gramsOfEan(scannedCode)));
+            if(scannedCode.hasWeighData()) {
+                quantityAnnotation.setText("g");
+                plus.setVisibility(View.GONE);
+                minus.setVisibility(View.GONE);
+                quantityAnnotation.setVisibility(View.VISIBLE);
+                quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
+            } else if(scannedCode.hasPriceData()){
+                quantityAnnotation.setText(SnabbleUI.getSdkInstance().getCurrency().getSymbol());
+                plus.setVisibility(View.GONE);
+                minus.setVisibility(View.GONE);
+                quantityAnnotation.setVisibility(View.GONE);
+                price.setVisibility(View.GONE);
+
+                PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getSdkInstance());
+                quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
+            } else if(scannedCode.hasAmountData()){
+                quantityAnnotation.setVisibility(View.GONE);
+                plus.setVisibility(View.GONE);
+                minus.setVisibility(View.GONE);
+                quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
+            }
         }
 
-        quantity.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        if(type != Product.Type.PreWeighed) {
+            quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
+            quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE
+                            || (event.getAction() == KeyEvent.ACTION_DOWN
+                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                        addToCart();
+                        return true;
+                    }
 
-            }
+                    return false;
+                }
+            });
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            quantity.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // its possible that the callback gets called before a dismiss is dispatched
-                // and when that happens the product is already null
-                if(product == null){
-                    dismiss();
-                    return;
                 }
 
-                updatePayText();
-            }
-        });
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // its possible that the callback gets called before a dismiss is dispatched
+                    // and when that happens the product is already null
+                    if (product == null) {
+                        dismiss();
+                        return;
+                    }
+
+                    updatePayText();
+                }
+            });
+        }
 
         updatePayText();
 
@@ -255,7 +302,9 @@ class ProductConfirmationDialog {
 
         if (product.getType() == Product.Type.Article) {
             shoppingCart.setQuantity(product, q, scannedCode);
-        } else {
+        } else if(product.getType() == Product.Type.PreWeighed){
+            shoppingCart.add(product, 1, scannedCode);
+        } else if(product.getType() == Product.Type.UserWeighed){
             if(q > 0) {
                 shoppingCart.add(product, q, scannedCode);
             } else {

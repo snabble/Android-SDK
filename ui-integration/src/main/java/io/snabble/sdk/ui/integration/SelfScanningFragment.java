@@ -8,6 +8,9 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.SelfScanningView;
 
 public class SelfScanningFragment extends Fragment {
@@ -34,7 +37,7 @@ public class SelfScanningFragment extends Fragment {
         if (args != null) {
             String scannableCode = args.getString("showProductCode");
             if (scannableCode != null) {
-                selfScanningView.lookupAndShowProduct(scannableCode);
+                selfScanningView.lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getSdkInstance(), scannableCode));
             }
         }
     }

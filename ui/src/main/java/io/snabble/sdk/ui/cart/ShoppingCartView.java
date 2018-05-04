@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.cart;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
@@ -33,6 +34,7 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -42,7 +44,6 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.Logger;
 
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private RecyclerView recyclerView;
@@ -192,7 +193,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 snackbar.setAction(R.string.snabble_shoppingCart_undo, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        cart.insert(product, pos, quantity, scannedCode);
+                        ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getSdkInstance(), scannedCode);
+                        cart.insert(product, pos, quantity, parsedCode);
                         recyclerView.getAdapter().notifyDataSetChanged();
                         Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
                     }
@@ -333,9 +335,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             quantityEditApply = itemView.findViewById(R.id.quantity_edit_apply);
         }
 
+        @SuppressLint("SetTextI18n")
         public void bindTo(final int position) {
             final Product product = cart.getProduct(position);
             final int quantity = cart.getQuantity(position);
+            final Integer embeddedPrice = cart.getEmbeddedPrice(position);
+            final Integer embeddedAmount = cart.getEmbeddedAmount(position);
+            final Integer embeddedWeight = cart.getEmbeddedWeight(position);
 
             if (product != null) {
                 Product.Type type = product.getType();
@@ -343,15 +349,26 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 name.setText(product.getName());
 
                 String price = priceFormatter.format(product);
-                String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity));
-                if (type == Product.Type.Article && quantity == 1) {
+
+                if(embeddedPrice != null){
+                    priceTextView.setText(" " + priceFormatter.format(embeddedPrice));
+                } else if(embeddedAmount != null){
+                    priceTextView.setText(String.format(" %s * %s = %s",
+                            String.valueOf(embeddedAmount),
+                            priceFormatter.format(product.getPrice()),
+                            priceFormatter.format(product.getPrice() * embeddedAmount)));
+                } else if(embeddedWeight != null){
+                    priceTextView.setText(String.format(" * %s = %s", price,
+                            priceFormatter.format(product.getPriceForQuantity(embeddedWeight))));
+                } else if (quantity == 1) {
                     priceTextView.setText(" " + price);
                 } else {
-                    priceTextView.setText(String.format(" * %s = %s", price, priceSum));
+                    priceTextView.setText(String.format(" * %s = %s", price,
+                            priceFormatter.format(product.getPriceForQuantity(quantity))));
                 }
 
-                if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
-                    quantityTextView.setText(String.format("%s g", String.valueOf(quantity)));
+                if (type == Product.Type.UserWeighed || embeddedWeight != null) {
+                    quantityTextView.setText(String.format("%s g", String.valueOf(embeddedWeight)));
                 } else {
                     quantityTextView.setText(String.valueOf(quantity));
                 }

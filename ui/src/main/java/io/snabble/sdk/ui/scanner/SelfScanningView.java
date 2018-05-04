@@ -23,14 +23,15 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.Ean13Utils;
 import io.snabble.sdk.utils.Utils;
 
 public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCheckoutStateChangedListener {
@@ -145,7 +146,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         startBarcodeScanner();
     }
 
-    public void lookupAndShowProduct(final String scannedCode) {
+    public void lookupAndShowProduct(final ScannableCode scannedCode) {
         ignore = false;
         productDialog.dismiss();
 
@@ -153,32 +154,40 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         progressDialog.showAfterDelay(300);
         barcodeScanner.pause();
 
-        Product product = productDatabase.findByCode(scannedCode);
-        if(product != null){
-            handleProductAvailable(product, false, scannedCode);
+        if(scannedCode.hasEmbeddedData()){
+            productDatabase.findByWeighItemIdOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
+                @Override
+                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
+                }
+
+                @Override
+                public void onProductNotFound() {
+                    handleProductNotFound(scannedCode);
+                }
+
+                @Override
+                public void onError() {
+                    handleProductError();
+                }
+            });
         } else {
-            String weighItemId = Ean13Utils.toWeighItemId(scannedCode);
-            product = productDatabase.findByWeighItemId(weighItemId);
-            if(product != null){
-                handleProductAvailable(product, false, scannedCode);
-            } else {
-                productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
-                    @Override
-                    public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                        handleProductAvailable(product, wasOnlineProduct, scannedCode);
-                    }
+            productDatabase.findByCodeOnline(scannedCode.getCode(), new OnProductAvailableListener() {
+                @Override
+                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
+                }
 
-                    @Override
-                    public void onProductNotFound() {
-                        searchForWeighItemId(scannedCode);
-                    }
+                @Override
+                public void onProductNotFound() {
+                    handleProductNotFound(scannedCode);
+                }
 
-                    @Override
-                    public void onError() {
-                        handleProductError();
-                    }
-                });
-            }
+                @Override
+                public void onError() {
+                    handleProductError();
+                }
+            });
         }
     }
 
@@ -191,11 +200,11 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(barcode.getText());
+            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getSdkInstance(), barcode.getText()));
         }
     }
 
-    private void handleProductAvailable(Product product, boolean wasOnlineProduct, String scannedCode) {
+    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannableCode scannedCode) {
         if (ignore) {
             return;
         }
@@ -210,7 +219,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
-    private void handleProductNotFound(String scannedCode) {
+    private void handleProductNotFound(ScannableCode scannedCode) {
         if (ignore) {
             return;
         }
@@ -219,7 +228,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         barcodeScanner.resume();
         detectAfterTimeMs = SystemClock.elapsedRealtime() + 2000;
 
-        Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode);
+        Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
         UIUtils.snackbar(SelfScanningView.this,
                 R.string.snabble_scanner_productNotFound,
                 Snackbar.LENGTH_LONG)
@@ -241,35 +250,11 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .show();
     }
 
-    private void searchForWeighItemId(final String scannedCode) {
-        if (ignore) {
-            return;
-        }
-
-        String weighItemId = Ean13Utils.toWeighItemId(scannedCode);
-        productDatabase.findByWeighItemIdOnline(weighItemId, new OnProductAvailableListener() {
-            @Override
-            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                handleProductAvailable(product, wasOnlineProduct, scannedCode);
-            }
-
-            @Override
-            public void onProductNotFound() {
-                handleProductNotFound(scannedCode);
-            }
-
-            @Override
-            public void onError() {
-                handleProductError();
-            }
-        });
-    }
-
     public void showProduct(Product product) {
         showProduct(product, null);
     }
 
-    private void showProduct(Product product, String scannedCode) {
+    private void showProduct(Product product, ScannableCode scannedCode) {
         barcodeScanner.pause();
         allowScan = false;
         showProductDialog(product, scannedCode);
@@ -279,7 +264,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         productDialog.dismiss();
     }
 
-    protected void showProductDialog(Product product, String scannedCode) {
+    protected void showProductDialog(Product product, ScannableCode scannedCode) {
         productDialog.show(product, scannedCode);
     }
 

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.codes.ScannableCode;
+
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 100000;
 
@@ -18,11 +20,28 @@ public class ShoppingCart {
         private String scannedCode;
         private int quantity;
 
-        private Entry(Product product, int quantity, String scannedCode) {
+        private Integer weight = null;
+        private Integer price = null;
+        private Integer amount = null;
+
+        private Entry(Product product, int quantity, ScannableCode scannedCode) {
             this.sku = product.getSku();
             this.product = product;
             this.quantity = quantity;
-            this.scannedCode = scannedCode;
+
+            setScannedCode(scannedCode);
+        }
+
+        public void setScannedCode(ScannableCode scannedCode){
+            this.scannedCode = scannedCode.getCode();
+
+            if(scannedCode.hasWeighData()){
+                weight = scannedCode.getEmbeddedData();
+            } else if(scannedCode.hasPriceData()){
+                price = scannedCode.getEmbeddedData();
+            } else if(scannedCode.hasAmountData()){
+                amount = scannedCode.getEmbeddedData();
+            }
         }
     }
 
@@ -84,7 +103,7 @@ public class ShoppingCart {
         add(product, 1);
     }
 
-    public void add(Product product, String scannedCode) {
+    public void add(Product product, ScannableCode scannedCode) {
         add(product, 1, scannedCode);
     }
 
@@ -92,7 +111,7 @@ public class ShoppingCart {
         insert(product, items.size(), quantity);
     }
 
-    public void add(Product product, int quantity, String scannedCode) {
+    public void add(Product product, int quantity, ScannableCode scannedCode) {
         insert(product, items.size(), quantity, scannedCode);
     }
 
@@ -100,7 +119,7 @@ public class ShoppingCart {
         insert(product, index, 1);
     }
 
-    public void insert(Product product, int index, String scannedCode) {
+    public void insert(Product product, int index, ScannableCode scannedCode) {
         insert(product, index, 1, scannedCode);
     }
 
@@ -108,7 +127,7 @@ public class ShoppingCart {
         insert(product, index, quantity, null);
     }
 
-    public void insert(Product product, int index, int quantity, String scannedCode) {
+    public void insert(Product product, int index, int quantity, ScannableCode scannedCode) {
         Entry e = getEntryBySku(product.getSku());
 
         if (e == null
@@ -127,12 +146,12 @@ public class ShoppingCart {
         setQuantity(index, quantity, null);
     }
 
-    public void setQuantity(int index, int quantity, String scannedCode) {
+    public void setQuantity(int index, int quantity, ScannableCode scannedCode) {
         Entry e = getEntry(index);
 
         if (e != null) {
             if (scannedCode != null) {
-                e.scannedCode = scannedCode;
+                e.setScannedCode(scannedCode);
             }
 
             setEntryQuantity(e, quantity);
@@ -143,13 +162,13 @@ public class ShoppingCart {
         setQuantity(product, quantity, null);
     }
 
-    public void setQuantity(Product product, int quantity, String scannedCode) {
+    public void setQuantity(Product product, int quantity, ScannableCode scannedCode) {
         if (product.getType() == Product.Type.Article) {
             Entry e = getEntryBySku(product.getSku());
 
             if (e != null) {
                 if (scannedCode != null) {
-                    e.scannedCode = scannedCode;
+                    e.setScannedCode(scannedCode);
                 }
 
                 setEntryQuantity(e, quantity);
@@ -188,6 +207,33 @@ public class ShoppingCart {
         }
 
         return entry.scannedCode;
+    }
+
+    public Integer getEmbeddedWeight(int index) {
+        Entry entry = getEntry(index);
+        if (entry == null) {
+            return null;
+        }
+
+        return entry.weight;
+    }
+
+    public Integer getEmbeddedPrice(int index) {
+        Entry entry = getEntry(index);
+        if (entry == null) {
+            return null;
+        }
+
+        return entry.price;
+    }
+
+    public Integer getEmbeddedAmount(int index) {
+        Entry entry = getEntry(index);
+        if (entry == null) {
+            return null;
+        }
+
+        return entry.amount;
     }
 
     public int getQuantity(Product product) {
@@ -305,7 +351,16 @@ public class ShoppingCart {
 
             for (Entry e : items) {
                 Product product = e.product;
-                sum += product.getPriceForQuantity(e.quantity);
+
+                if(e.weight != null){
+                    sum += product.getPriceForQuantity(e.weight);
+                } else if(e.price != null){
+                    sum += e.price;
+                } else if(e.amount != null){
+                    sum += product.getPrice() * e.amount;
+                } else {
+                    sum += product.getPriceForQuantity(e.quantity);
+                }
             }
 
             return sum;
@@ -318,7 +373,8 @@ public class ShoppingCart {
 
             for (Entry e : items) {
                 Product product = e.product;
-                if (product.getType() == Product.Type.UserWeighed || product.getType() == Product.Type.PreWeighed) {
+                if (product.getType() == Product.Type.UserWeighed
+                        || product.getType() == Product.Type.PreWeighed) {
                     sum += 1;
                 } else {
                     sum += e.quantity;

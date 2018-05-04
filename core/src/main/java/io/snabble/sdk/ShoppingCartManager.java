@@ -52,7 +52,7 @@ class ShoppingCartManager {
             } else {
                 shoppingCart = new ShoppingCart(sdkInstance);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             //shopping cart could not be read, create a new one.
             Logger.e("Could not load shopping list from: " + file.getAbsolutePath() + ", creating a new one.");
             shoppingCart = new ShoppingCart(sdkInstance);

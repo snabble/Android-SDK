@@ -54,6 +54,9 @@ public class Checkout {
         private String sku;
         private String scannedCode;
         private int amount;
+        private Integer price;
+        private Integer weight;
+        private Integer units;
     }
 
     private static class Href {
@@ -682,8 +685,11 @@ public class Checkout {
 
             cart.items[i] = new CartItem();
             cart.items[i].sku = String.valueOf(product.getSku());
-            cart.items[i].scannedCode = shoppingCart.getScannedCode(i);
+            cart.items[i].scannedCode =  shoppingCart.getScannedCode(i);
             cart.items[i].amount = quantity;
+            cart.items[i].units = shoppingCart.getEmbeddedAmount(i);
+            cart.items[i].weight = shoppingCart.getEmbeddedWeight(i);
+            cart.items[i].price = shoppingCart.getEmbeddedPrice(i);
         }
 
         return gson.toJson(cart);
