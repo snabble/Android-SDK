@@ -1,6 +1,7 @@
 package io.snabble.sdk;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Class that holds all of the product information.
@@ -156,12 +157,16 @@ public class Product {
     }
 
     public int getPriceForQuantity(int quantity) {
+        return getPriceForQuantity(quantity, RoundingMode.UP);
+    }
+
+    public int getPriceForQuantity(int quantity, RoundingMode roundingMode){
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             BigDecimal pricePerUnit = new BigDecimal(price)
                     .divide(new BigDecimal(1000));
 
             return pricePerUnit.multiply(new BigDecimal(quantity))
-                    .setScale(0, BigDecimal.ROUND_HALF_UP)
+                    .setScale(0, roundingMode)
                     .intValue();
         } else {
             return quantity * price;
