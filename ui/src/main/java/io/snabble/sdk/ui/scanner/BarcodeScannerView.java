@@ -170,7 +170,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         if (running) {
             backgroundHandler.removeCallbacksAndMessages(null);
-
+            isProcessing = false;
             backgroundHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -326,6 +326,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         running = true;
         decodeEnabled = true;
+        isProcessing = false;
 
         setTorchEnabled(torchEnabled);
 
