@@ -2,6 +2,7 @@ package io.snabble.sdk;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -65,6 +66,7 @@ public class Shop implements Serializable {
     @SerializedName("lon")
     private double longitude;
     private OpeningHourSpecification[] openingHoursSpecification;
+    private JsonObject external;
 
     public String getId() {
         return id;
@@ -118,6 +120,10 @@ public class Shop implements Serializable {
         return links;
     }
 
+    public JsonObject getExternal() {
+        return external;
+    }
+
     static Shop[] fromJson(String json) {
         try {
             Gson gson = new GsonBuilder()
@@ -143,6 +149,7 @@ public class Shop implements Serializable {
         private double latitude;
         private double longitude;
         private OpeningHourSpecification[] openingHoursSpecification;
+        private JsonObject external;
 
         public Builder id(String id) {
             this.id = id;
@@ -200,6 +207,11 @@ public class Shop implements Serializable {
             return this;
         }
 
+        public Builder external(JsonObject external) {
+            this.external = external;
+            return this;
+        }
+
         public Shop create() {
             Shop shop = new Shop();
 
@@ -215,6 +227,7 @@ public class Shop implements Serializable {
             shop.latitude = latitude;
             shop.longitude = longitude;
             shop.openingHoursSpecification = openingHoursSpecification;
+            shop.external = external;
 
             return shop;
         }
