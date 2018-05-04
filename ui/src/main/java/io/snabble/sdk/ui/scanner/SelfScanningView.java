@@ -131,12 +131,19 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         });
 
         productDialog = new ProductConfirmationDialog(getContext(), sdkInstance);
-        productDialog.setSnackbarCoordinatorLayout(this);
         productDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 barcodeScanner.resume();
                 allowScan = true;
+            }
+        });
+
+        productDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                allowScan = false;
+                barcodeScanner.pause();
             }
         });
 

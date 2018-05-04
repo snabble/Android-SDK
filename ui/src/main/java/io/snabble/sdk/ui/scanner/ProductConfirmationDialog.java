@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.scanner;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -55,8 +54,8 @@ class ProductConfirmationDialog {
     private ScannableCode scannedCode;
 
     private DialogInterface.OnDismissListener onDismissListener;
+    private DialogInterface.OnShowListener onShowListener;
     private String payNowText;
-    private CoordinatorLayout snackBarCoordinatorLayout;
 
     public ProductConfirmationDialog(Context context,
                                      SnabbleSdk sdkInstance) {
@@ -66,10 +65,6 @@ class ProductConfirmationDialog {
         priceFormatter = new PriceFormatter(sdkInstance);
 
         payNowText = context.getString(R.string.snabble_scanner_confirmation_pay_text);
-    }
-
-    public void setSnackbarCoordinatorLayout(CoordinatorLayout coordinatorLayout){
-        this.snackBarCoordinatorLayout = coordinatorLayout;
     }
 
     public void show(Product newProduct, ScannableCode scannedCode) {
@@ -84,14 +79,8 @@ class ProductConfirmationDialog {
                 .setView(view)
                 .create();
 
-        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (onDismissListener != null) {
-                    onDismissListener.onDismiss(dialog);
-                }
-            }
-        });
+        alertDialog.setOnShowListener(onShowListener);
+        alertDialog.setOnDismissListener(onDismissListener);
 
         quantity = view.findViewById(R.id.quantity);
         subtitle = view.findViewById(R.id.subtitle);
@@ -355,6 +344,7 @@ class ProductConfirmationDialog {
     public void dismiss() {
         if (alertDialog != null) {
             alertDialog.dismiss();
+            alertDialog.setOnDismissListener(null);
             alertDialog = null;
         }
 
@@ -363,5 +353,9 @@ class ProductConfirmationDialog {
 
     public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
         this.onDismissListener = onDismissListener;
+    }
+
+    public void setOnShowListener(DialogInterface.OnShowListener onShowListener){
+        this.onShowListener = onShowListener;
     }
 }
