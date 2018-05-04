@@ -2,7 +2,7 @@ package io.snabble.sdk;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -66,7 +66,7 @@ public class Shop implements Serializable {
     @SerializedName("lon")
     private double longitude;
     private OpeningHourSpecification[] openingHoursSpecification;
-    private JsonObject external;
+    private JsonElement external;
 
     public String getId() {
         return id;
@@ -120,7 +120,7 @@ public class Shop implements Serializable {
         return links;
     }
 
-    public JsonObject getExternal() {
+    public JsonElement getExternal() {
         return external;
     }
 
@@ -149,7 +149,7 @@ public class Shop implements Serializable {
         private double latitude;
         private double longitude;
         private OpeningHourSpecification[] openingHoursSpecification;
-        private JsonObject external;
+        private JsonElement external;
 
         public Builder id(String id) {
             this.id = id;
@@ -207,7 +207,7 @@ public class Shop implements Serializable {
             return this;
         }
 
-        public Builder external(JsonObject external) {
+        public Builder external(JsonElement external) {
             this.external = external;
             return this;
         }
