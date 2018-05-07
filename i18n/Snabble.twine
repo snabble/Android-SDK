@@ -15,8 +15,14 @@
         en = No
     [Snabble.Settings]
         en = Settings
+    [Snabble.Delete]
+        en = Delete
     [Snabble.remove]
         en = Remove
+    [Snabble.pleaseWait]
+        en = Please wait...
+    [Snabble.undo]
+        en = Undo
 
     [Snabble.Payment.errorStarting]
         en = Error starting the payment process
@@ -57,6 +63,8 @@
         en = Scanner
     [Snabble.Scanner.torchButton]
         en = Torch
+    [Snabble.Scanner.networkError]
+        en = Product could not be searched online. Please check your internet connection.
     [Snabble.Scanner.unknownBarcode]
         en = Price information is not available for this product
     [Snabble.Scanner.updateCart]
@@ -66,6 +74,8 @@
 
     [Snabble.ShoppingCart.title]
         en = Shopping Cart
+    [Snabble.Shoppingcart.buyProducts.one]
+        en = Buy %d product for %@
     [Snabble.Shoppingcart.buyProducts]
         en = Buy %d products for %@
     [Snabble.Shoppingcart.emptyState.buttonTitle]
@@ -78,3 +88,22 @@
         en = Remove %@ from the cart?
     [Snabble.Shoppingcart.removeItems]
         en = Remove all products from shopping cart?
+
+    [Snabble.PaymentMethod.encodedCodes]
+        en = Pay at the cash register
+    [Snabble.PaymentMethod.qrCodePOS]
+        en = Checkstand
+
+[[Android]]
+    [Snabble.Payment.aborted]
+        en = Payment process was aborted
+        tags = android
+    [Snabble.Payment.backToHome]
+        en = Back to the homepage
+        tags = android
+    [Snabble.Payment.success]
+        en = Thank you for your purchase
+        tags = android
+    [Snabble.Shoppingcart.articleRemoved]
+        en = Article removed
+        tags = android
