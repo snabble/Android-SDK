@@ -14,6 +14,8 @@ before_install:
 script:
 - "./gradlew :core:assembleRelease :ui:assembleRelease :ui-integration:assembleRelease
   :utils:assembleRelease"
+after_success:
+- "./travis_release.sh"
 cache:
   directories:
   - "$HOME/.gradle/caches/"
@@ -23,13 +25,6 @@ env:
   global:
   - secure: N3EBbTG204iyRystHZFo0iMbnfSPxXHO3N+ZNAAP5rFR+ONmvRlIb767q4pByvD9KDdyvbg6XNGDuLVpXcJGlZXauSMykpk6JnizQVLLUHsD7qJYi+v7osez4qvIuEP0kQ/JLUQAgzDL1kLFinDzullpbpqmwY0zIcc5xhclR7+XH7hbDIEgNiVnrDIzRg8cOpOYRFYQeMTq2n7D10LyO9BYEIJxpxukDcUbPe0XOeHYbDjY+eI/OFohsSOjovChmdhz70KpXDePpim0pBBNiYcFdxkTsljb1tOmMWtGL7OcKCzscIOIk+mSGT7+isDTdNmVvHVQAKchlC3+nuI4vIhLy9ErHnfNlKKCJd1cjsFXXXmEnMJRnLk3ULIH9yUSjOCXWnRCCAZPcKyBjdwGinCuHySZ+PcnlzFrY0A6kqPR1jcCZsP+YyQJL8mPsyXAObFAeisK9ipNFsPkEbdrjYnBMO/A1nB++Abw9A/xp0pvar15l2qP4gn2zbo36OYL5v4KvGfO53WMyeyp2elRdnUyMswU4LHt0VLUEiO3/uUfl5MjilQST9xPWE5lZ00elKEoznNXD/djeOLYXvWKcQ/65AX6kjky5NQX3GTjyVemvsKLDQVT0HlioHRwP7YMkrtlD+el0R1DVjFBQ68o7fKFcMXmfiXN5ryyM0DYgn8=
 deploy:
-- provider: script
-  script: bash travis_release.sh
-  skip_cleanup: true
-  on:
-    repo: snabble/Android-SDK
-    tags: true
-    branch: master
 - provider: releases
   skip_cleanup: true
   api_key:
