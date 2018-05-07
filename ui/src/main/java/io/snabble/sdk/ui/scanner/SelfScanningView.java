@@ -257,10 +257,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .show();
     }
 
-    public void showProduct(Product product) {
-        showProduct(product, null);
-    }
-
     private void showProduct(Product product, ScannableCode scannedCode) {
         barcodeScanner.pause();
         allowScan = false;
