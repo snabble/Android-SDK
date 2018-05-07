@@ -10,6 +10,7 @@ android:
   - extra-android-m2repository
 before_install:
 - yes | sdkmanager "platforms;android-27"
+- gem install twine
 script:
 - "./gradlew :core:assembleRelease :ui:assembleRelease :ui-integration:assembleRelease
   :utils:assembleRelease"
