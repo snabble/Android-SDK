@@ -1,0 +1,42 @@
+apply plugin: 'com.github.jlouns.cpe'
+
+task checkRubyInstalled (
+        type: CrossPlatformExec,
+        description: "Checks if ruby is installed") {
+    standardOutput = new ByteArrayOutputStream()
+    commandLine 'ruby', '--version'
+}
+
+task checkTwineInstalled (
+        type: CrossPlatformExec,
+        description: "Checks if twine is installed",
+        dependsOn: checkRubyInstalled) {
+    standardOutput = new ByteArrayOutputStream()
+    commandLine 'gem', 'list', '-i', 'twine'
+}
+
+task generateLocalizations (
+        type: CrossPlatformExec,
+        group: 'custom',
+        description: "Generate localizations files",
+        dependsOn: checkTwineInstalled) {
+    def absPath = file('.').absolutePath
+    def i18nPath = absPath + "/../i18n/Snabble.twine"
+    def stringsPath = absPath + "/src/main/res/"
+
+    standardOutput = new ByteArrayOutputStream()
+    def cmd = 'twine'
+    println "i18npath " + i18nPath
+    println "stringsPath " + absPath
+    println "os name " + System.getProperty('os.name')
+
+    if(System.getProperty('os.name').toLowerCase().contains('mac')) {
+        cmd = '/usr/local/bin/twine'
+    }
+
+    commandLine cmd, 'generate-all-localization-files', i18nPath, stringsPath, "--tags", "android", "--untagged", "--format", "android"
+}
+
+afterEvaluate {
+    preBuild.dependsOn(generateLocalizations)
+}

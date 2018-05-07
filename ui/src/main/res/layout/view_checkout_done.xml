@@ -21,7 +21,7 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/snabble_checkout_paymentSuccess_message"
+        android:text="@string/Snabble.Payment.success"
         android:textColor="@color/snabble_textColorLight"
         android:layout_centerInParent="true"
         android:layout_marginStart="8dp"
@@ -37,5 +37,5 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
-        android:text="@string/snabble_checkout_paymentSuccess_backButton_title" />
+        android:text="@string/Snabble.Payment.backToHome" />
 </RelativeLayout>

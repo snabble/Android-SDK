@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply from: '../scripts/findbugs.gradle'
+apply from: '../scripts/i18n.gradle'
 
 android {
     compileSdkVersion project.compileSdkVersion

@@ -54,6 +54,6 @@
             android:layout_width="304dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/snabble_shoppingCart_emptyState_message" />
+            android:text="@string/Snabble.Shoppingcart.emptyState.description" />
     </LinearLayout>
 </FrameLayout>

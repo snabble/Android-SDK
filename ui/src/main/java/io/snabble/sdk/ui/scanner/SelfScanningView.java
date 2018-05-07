@@ -109,7 +109,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(getContext().getString(R.string.snabble_please_wait));
+        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setOnCancelListener(progressDialogCancelListener);
 
@@ -237,7 +237,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
         UIUtils.snackbar(SelfScanningView.this,
-                R.string.snabble_scanner_productNotFound,
+                R.string.Snabble_Scanner_unknownBarcode,
                 Snackbar.LENGTH_LONG)
                 .show();
     }
@@ -252,7 +252,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         detectAfterTimeMs = SystemClock.elapsedRealtime() + 2000;
 
         UIUtils.snackbar(SelfScanningView.this,
-                R.string.snabble_scanner_networkError,
+                R.string.Snabble_Scanner_networkError,
                 Snackbar.LENGTH_LONG)
                 .show();
     }
@@ -376,7 +376,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 checkout.removeOnCheckoutStateChangedListener(this);
 
                 UIUtils.snackbar(SelfScanningView.this,
-                        R.string.snabble_checkout_error,
+                        R.string.Snabble_Payment_errorStarting,
                         Snackbar.LENGTH_LONG)
                         .show();
                 break;

@@ -125,7 +125,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraUnavailableView.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        cameraUnavailableView.setText(R.string.snabble_scanner_cameraServiceError);
+        cameraUnavailableView.setText(R.string.Snabble_Scanner_Camera_accessDenied);
         cameraUnavailableView.setGravity(Gravity.CENTER);
         cameraUnavailableView.setVisibility(View.GONE);
         addView(cameraUnavailableView);

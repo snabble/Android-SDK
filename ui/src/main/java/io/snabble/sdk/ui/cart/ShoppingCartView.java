@@ -132,7 +132,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(getContext().getString(R.string.snabble_please_wait));
+        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
 
         pay = findViewById(R.id.pay);
@@ -189,8 +189,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 recyclerView.getAdapter().notifyItemRemoved(pos);
 
                 snackbar = UIUtils.snackbar(coordinatorLayout,
-                        R.string.snabble_shoppingCart_item_removed, 5000);
-                snackbar.setAction(R.string.snabble_shoppingCart_undo, new OnClickListener() {
+                        R.string.Snabble_Shoppingcart_articleRemoved, 5000);
+                snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getSdkInstance(), scannedCode);
@@ -222,7 +222,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
 
         if (state == Checkout.State.CONNECTION_ERROR) {
-            UIUtils.snackbar(coordinatorLayout, R.string.snabble_checkout_error, Snackbar.LENGTH_SHORT)
+            UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }
@@ -242,7 +242,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             int quantity = cart.getTotalQuantity();
             String price = priceFormatter.format(cart.getTotalPrice());
 
-            pay.setText(getResources().getQuantityString(R.plurals.snabble_shoppingCart_checkout_text,
+            pay.setText(getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
                     quantity, quantity, price));
         }
     }
@@ -406,13 +406,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     @Override
                     public void onClick(View v) {
                         String str = getResources().getString(
-                                R.string.snabble_shoppingCart_remove_item_message,
+                                R.string.Snabble_Shoppingcart_removeItem,
                                 product.getName());
                         int q = quantity - 1;
                         if (q <= 0) {
                             new AlertDialog.Builder(getContext())
                                     .setMessage(str)
-                                    .setPositiveButton(R.string.snabble_yes,
+                                    .setPositiveButton(R.string.Snabble_Yes,
                                             new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
@@ -421,7 +421,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                                                     Telemetry.event(Telemetry.Event.DeletedFromCart, product);
                                                 }
                                             })
-                                    .setNegativeButton(R.string.snabble_no, null)
+                                    .setNegativeButton(R.string.Snabble_No, null)
                                     .create()
                                     .show();
                         } else {

@@ -64,7 +64,7 @@ class ProductConfirmationDialog {
         this.checkout = sdkInstance.getCheckout();
         priceFormatter = new PriceFormatter(sdkInstance);
 
-        payNowText = context.getString(R.string.snabble_scanner_confirmation_pay_text);
+        payNowText = context.getString(R.string.Snabble_Scanner_gotoCheckout);
     }
 
     public void show(Product newProduct, ScannableCode scannedCode) {
@@ -243,9 +243,9 @@ class ProductConfirmationDialog {
         });
 
         if (cartQuantity > 0) {
-            addToCart.setText(R.string.snabble_scanner_updateCart_button_text);
+            addToCart.setText(R.string.Snabble_Scanner_addToCart);
         } else {
-            addToCart.setText(R.string.snabble_scanner_addToCart_button_text);
+            addToCart.setText(R.string.Snabble_Scanner_updateCart);
         }
 
         close.setOnClickListener(new View.OnClickListener() {

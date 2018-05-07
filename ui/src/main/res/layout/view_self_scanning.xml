@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:text="@string/snabble_scanner_noPermission"
+        android:text="@string/Snabble.Scanner.Camera.accessDenied"
         android:textColor="@color/snabble_textColorDark"
         android:id="@+id/no_permission"
         android:gravity="center"
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:text="@string/snabble_scanner_title"
+        android:text="@string/Snabble.Scanner.scanningTitle"
         android:textColor="@color/snabble_textColorLight"
         android:id="@+id/title"
         android:textStyle="bold" />
@@ -59,7 +59,7 @@
                 android:gravity="center"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
-                android:text="@string/snabble_scanner_enterBarcode"
+                android:text="@string/Snabble.Scanner.enterCodeButton"
                 android:id="@+id/enter_barcode"
                 android:textColor="@color/snabble_textColorLight" />
         </FrameLayout>
@@ -80,7 +80,7 @@
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
                 android:id="@+id/light"
-                android:text="@string/snabble_scanner_light"
+                android:text="@string/Snabble.Scanner.torchButton"
                 android:textColor="@color/snabble_textColorLight" />
         </FrameLayout>
     </LinearLayout>

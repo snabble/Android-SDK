@@ -113,7 +113,7 @@
         android:layout_below="@+id/quantity"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
-        android:text="@string/snabble_scanner_addToCart_button_text" />
+        android:text="@string/Snabble.Scanner.addToCart" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/pay_now"

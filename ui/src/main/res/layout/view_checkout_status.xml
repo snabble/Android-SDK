@@ -49,7 +49,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="@string/snabble_checkout_status_step2_title"
+                android:text="Localization"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -60,7 +60,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="@string/snabble_checkout_status_step2_message"
+                android:text="Please go to the checkout area"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -80,7 +80,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="@string/snabble_checkout_status_step1_title"
+                android:text="Purchase is carried out"
                 android:textSize="15sp" />
 
             <android.support.v7.widget.AppCompatImageView
@@ -96,7 +96,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="@string/snabble_checkout_status_step1_message"
+                android:text="Verification of payment method"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -121,7 +121,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="@string/snabble_checkout_status_step3_title"
+                android:text="Verification by employee"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -132,7 +132,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:gravity="center"
-                android:text="@string/snabble_checkout_status_step3_message"
+                android:text="Your purchase will be checked by an employee, please wait a moment."
                 android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
@@ -144,6 +144,6 @@
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:padding="16dp"
-        android:text="@string/snabble_cancel"
+        android:text="@string/Snabble.Cancel"
         android:textColor="@color/snabble_primaryColor" />
 </RelativeLayout>

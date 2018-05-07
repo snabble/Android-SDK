@@ -35,14 +35,14 @@ public class ShoppingCartFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete) {
             new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.snabble_shoppingCart_clear)
-                    .setPositiveButton(R.string.snabble_yes, new DialogInterface.OnClickListener() {
+                    .setMessage(R.string.Snabble_Shoppingcart_removeItems)
+                    .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             SnabbleUI.getSdkInstance().getShoppingCart().clear();
                         }
                     })
-                    .setNegativeButton(R.string.snabble_no, null)
+                    .setNegativeButton(R.string.Snabble_No, null)
                     .create()
                     .show();
             return true;

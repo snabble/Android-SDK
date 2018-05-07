@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/snabble_checkout_choosePayment_title"
+        android:text="@string/Snabble.PaymentSelection.howToPay"
         android:textColor="@color/snabble_textColorLight"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
@@ -21,22 +21,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/choose_payment_title"
-        android:layout_above="@+id/add_payment_method"
         android:id="@+id/payment_methods" />
-
-    <TextView
-        android:id="@+id/add_payment_method"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/snabble_checkout_choosePayment_add"
-        android:textColor="@color/snabble_textColorLight"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:paddingTop="16dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="18dp"
-        android:textSize="17sp"
-        android:visibility="gone" />
 </RelativeLayout>

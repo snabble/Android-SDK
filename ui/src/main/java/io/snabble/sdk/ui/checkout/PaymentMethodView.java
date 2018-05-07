@@ -57,8 +57,8 @@ class PaymentMethodView extends FrameLayout {
 
         Resources res = getResources();
         descriptions.clear();
-        descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.snabble_paymentmethod_encoded_codes));
-        descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.snabble_paymentmethod_qrcode_pos));
+        descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.Snabble_PaymentMethod_encodedCodes));
+        descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
 
         SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
         checkout = sdkInstance.getCheckout();
@@ -84,7 +84,7 @@ class PaymentMethodView extends FrameLayout {
 
         PriceFormatter priceFormatter = new PriceFormatter(sdkInstance);
         String totalPriceText = priceFormatter.format(sdkInstance.getShoppingCart().getTotalPrice());
-        title.setText(getResources().getString(R.string.snabble_checkout_choosePayment_title, totalPriceText));
+        title.setText(getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText));
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {

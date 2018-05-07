@@ -55,7 +55,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(getContext().getString(R.string.snabble_please_wait));
+        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
 
         checkout = SnabbleUI.getSdkInstance().getCheckout();
