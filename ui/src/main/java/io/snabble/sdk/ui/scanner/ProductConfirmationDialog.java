@@ -243,9 +243,9 @@ class ProductConfirmationDialog {
         });
 
         if (cartQuantity > 0) {
-            addToCart.setText(R.string.Snabble_Scanner_addToCart);
-        } else {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
+        } else {
+            addToCart.setText(R.string.Snabble_Scanner_addToCart);
         }
 
         close.setOnClickListener(new View.OnClickListener() {
