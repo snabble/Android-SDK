@@ -324,7 +324,13 @@ public class ProductDatabase {
         //occurrences in database rows
         scanner.useDelimiter(";\n\n");
 
-        tempDb.beginTransaction();
+        try {
+            tempDb.beginTransaction();
+        } catch (SQLiteException e){
+            Logger.e("Could not apply delta update: Could not access temp database");
+            return;
+        }
+
         while (scanner.hasNext()) {
             try {
                 String line = scanner.next();
@@ -353,8 +359,13 @@ public class ProductDatabase {
             }
         }
 
-        tempDb.setTransactionSuccessful();
-        tempDb.endTransaction();
+        try {
+            tempDb.setTransactionSuccessful();
+            tempDb.endTransaction();
+        } catch (SQLiteException e){
+            Logger.e("Could not apply delta update: Could not finish transaction on temp database");
+            return;
+        }
 
         //delta updates are making the database grow larger and larger, so we vacuum here
         //to keep the database as small as possible
