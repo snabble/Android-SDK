@@ -310,9 +310,13 @@ class ProductConfirmationDialog {
 
     private void updatePayText() {
         if (checkout.isAvailable()) {
+            SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+
             int totalPrice = shoppingCart.getTotalPrice();
-            totalPrice -= product.getPriceForQuantity(shoppingCart.getQuantity(product));
-            totalPrice += product.getPriceForQuantity(getQuantity());
+            totalPrice -= product.getPriceForQuantity(shoppingCart.getQuantity(product),
+                    sdkInstance.getRoundingMode());
+            totalPrice += product.getPriceForQuantity(getQuantity(),
+                    sdkInstance.getRoundingMode());
             String formattedTotalPrice = priceFormatter.format(totalPrice);
             payNow.setVisibility(totalPrice > 0 ? View.VISIBLE : View.INVISIBLE);
             payNow.setText(String.format(Locale.getDefault(), payNowText, formattedTotalPrice));

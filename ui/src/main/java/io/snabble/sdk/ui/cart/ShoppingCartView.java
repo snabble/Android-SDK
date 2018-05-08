@@ -359,12 +359,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             priceFormatter.format(product.getPrice() * embeddedAmount)));
                 } else if(embeddedWeight != null){
                     priceTextView.setText(String.format(" * %s = %s", price,
-                            priceFormatter.format(product.getPriceForQuantity(embeddedWeight))));
+                            priceFormatter.format(product.getPriceForQuantity(embeddedWeight,
+                                    SnabbleUI.getSdkInstance().getRoundingMode()))));
                 } else if (quantity == 1) {
                     priceTextView.setText(" " + price);
                 } else {
                     priceTextView.setText(String.format(" * %s = %s", price,
-                            priceFormatter.format(product.getPriceForQuantity(quantity))));
+                            priceFormatter.format(product.getPriceForQuantity(quantity,
+                                    SnabbleUI.getSdkInstance().getRoundingMode()))));
                 }
 
                 if (type == Product.Type.UserWeighed || embeddedWeight != null) {

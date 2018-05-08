@@ -156,10 +156,6 @@ public class Product {
         return type;
     }
 
-    public int getPriceForQuantity(int quantity) {
-        return getPriceForQuantity(quantity, RoundingMode.UP);
-    }
-
     public int getPriceForQuantity(int quantity, RoundingMode roundingMode){
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             BigDecimal pricePerUnit = new BigDecimal(price)

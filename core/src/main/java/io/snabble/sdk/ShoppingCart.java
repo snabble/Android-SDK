@@ -52,12 +52,15 @@ public class ShoppingCart {
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
     private transient ProductDatabase productDatabase;
     private transient Handler handler = new Handler(Looper.getMainLooper());
+    private transient SnabbleSdk sdkInstance;
 
     protected ShoppingCart() {
         //empty constructor for gson
     }
 
     void initWithSdkInstance(SnabbleSdk sdkInstance) {
+        this.sdkInstance = sdkInstance;
+
         productDatabase = sdkInstance.getProductDatabase();
         productDatabase.addOnDatabaseUpdateListener(new ProductDatabase.OnDatabaseUpdateListener() {
             @Override
@@ -353,13 +356,13 @@ public class ShoppingCart {
                 Product product = e.product;
 
                 if(e.weight != null){
-                    sum += product.getPriceForQuantity(e.weight);
+                    sum += product.getPriceForQuantity(e.weight, sdkInstance.getRoundingMode());
                 } else if(e.price != null){
                     sum += e.price;
                 } else if(e.amount != null){
                     sum += product.getPrice() * e.amount;
                 } else {
-                    sum += product.getPriceForQuantity(e.quantity);
+                    sum += product.getPriceForQuantity(e.quantity, sdkInstance.getRoundingMode());
                 }
             }
 

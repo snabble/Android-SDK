@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 
 import java.io.File;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
@@ -21,7 +22,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class SnabbleSdk {
-
 
     public static class Config {
         /**
@@ -135,6 +135,8 @@ public class SnabbleSdk {
         public String[] weighPrefixes = new String[0];
 
         public String[] amountPrefixes = new String[0];
+
+        public RoundingMode roundingMode = RoundingMode.UP;
     }
 
     private String endpointBaseUrl;
@@ -165,6 +167,8 @@ public class SnabbleSdk {
     private String[] pricePrefixes = new String[0];
     private String[] weighPrefixes = new String[0];
     private String[] amountPrefixes = new String[0];
+
+    private RoundingMode roundingMode;
 
     private SnabbleSdk() {
 
@@ -263,6 +267,8 @@ public class SnabbleSdk {
         weighPrefixes = Arrays.copyOf(config.weighPrefixes, config.weighPrefixes.length);
         pricePrefixes = Arrays.copyOf(config.pricePrefixes, config.pricePrefixes.length);
         amountPrefixes = Arrays.copyOf(config.amountPrefixes, config.amountPrefixes.length);
+
+        roundingMode = config.roundingMode != null ? config.roundingMode : RoundingMode.UP;
 
         updateShops();
 
@@ -533,6 +539,10 @@ public class SnabbleSdk {
 
     public Locale getCurrencyLocale() {
         return currencyLocale;
+    }
+
+    public RoundingMode getRoundingMode() {
+        return roundingMode;
     }
 
     public Checkout getCheckout() {

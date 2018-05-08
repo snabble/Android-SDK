@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.Currency;
 
@@ -25,7 +26,7 @@ public class PriceFormatter {
 
         BigDecimal bigDecimal = new BigDecimal(price);
         BigDecimal divider = new BigDecimal(10).pow(fractionDigits);
-        BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, BigDecimal.ROUND_HALF_UP);
+        BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, sdkInstance.getRoundingMode());
 
         return numberFormat.format(dividedPrice.doubleValue());
     }
