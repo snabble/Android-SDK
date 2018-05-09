@@ -313,8 +313,6 @@ public class ProductDatabase {
             return;
         }
 
-        tempDbFile.mkdirs();
-
         FileUtils.copyFile(dbFile, tempDbFile);
 
         SQLiteDatabase tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
@@ -418,6 +416,8 @@ public class ProductDatabase {
             Logger.e("Could not apply full update: Could not delete old database download");
             return;
         }
+
+        tempDbFile.getParentFile().mkdirs();
 
         IOUtils.copy(inputStream, new FileOutputStream(tempDbFile));
 
