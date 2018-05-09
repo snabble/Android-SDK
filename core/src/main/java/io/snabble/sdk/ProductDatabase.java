@@ -313,6 +313,8 @@ public class ProductDatabase {
             return;
         }
 
+        tempDbFile.mkdirs();
+
         FileUtils.copyFile(dbFile, tempDbFile);
 
         SQLiteDatabase tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
