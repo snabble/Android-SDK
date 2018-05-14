@@ -384,14 +384,19 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
     }
 
-    private void showError(boolean show) {
-        if (show) {
-            cameraUnavailableView.setVisibility(View.VISIBLE);
-            scanIndicatorView.setVisibility(View.GONE);
-        } else {
-            cameraUnavailableView.setVisibility(View.GONE);
-            scanIndicatorView.setVisibility(View.VISIBLE);
-        }
+    private void showError(final boolean show) {
+        mainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (show) {
+                    cameraUnavailableView.setVisibility(View.VISIBLE);
+                    scanIndicatorView.setVisibility(View.GONE);
+                } else {
+                    cameraUnavailableView.setVisibility(View.GONE);
+                    scanIndicatorView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     /**
