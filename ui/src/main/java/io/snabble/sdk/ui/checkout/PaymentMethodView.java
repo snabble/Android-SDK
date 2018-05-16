@@ -2,6 +2,9 @@ package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -30,8 +33,9 @@ class PaymentMethodView extends FrameLayout {
     private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
-        icons.put(PaymentMethod.CASH, R.drawable.ic_pm_cash);
+        icons.put(PaymentMethod.CASH, R.drawable.ic_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
+        icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
     }
 
     private Checkout checkout;
@@ -79,6 +83,11 @@ class PaymentMethodView extends FrameLayout {
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(null);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        int dividerColor = ResourcesCompat.getColor(getResources(), R.color.snabble_dividerColor, null);
+        dividerItemDecoration.setDrawable(new ColorDrawable(dividerColor));
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
         TextView title = findViewById(R.id.choose_payment_title);
 
