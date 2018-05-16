@@ -90,7 +90,7 @@
         en = Remove all products from shopping cart?
 
     [Snabble.PaymentMethod.encodedCodes]
-        en = Pay at the cash register
+        en = Checkstand
     [Snabble.PaymentMethod.qrCodePOS]
         en = Checkstand
 
