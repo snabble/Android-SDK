@@ -647,7 +647,18 @@ public class ProductDatabase {
                 .setSubtitle(cursor.getString(12))
                 .setBasePrice(cursor.getString(13));
 
+        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(14)));
+        }
+
         return builder.build();
+    }
+
+    private Product.SaleRestriction decodeSaleRestriction(long encodedValue){
+        long type = encodedValue & 0xFF;
+        long value = encodedValue >> 8;
+
+        return Product.SaleRestriction.fromDatabaseField(type, value);
     }
 
     private String anyToString(Cursor cursor, int index) {
@@ -685,9 +696,14 @@ public class ProductDatabase {
                 "pr.discountedPrice," +
                 "(SELECT group_concat(w.weighItemId) FROM weighItemIds w WHERE w.sku = p.sku)," +
                 "p.boost," +
-                "p.subtitle, " +
-                "pr.basePrice " +
-                "FROM products p " +
+                "p.subtitle," +
+                "pr.basePrice";
+
+                if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+                    sql += ",p.saleRestriction";
+                }
+
+                sql += " FROM products p " +
                 "JOIN prices pr ON pr.sku = p.sku " +
                 appendSql;
 

@@ -40,6 +40,7 @@ class ProductApi {
         private int price;
         private int discountedPrice;
         private String basePrice;
+        private Product.SaleRestriction saleRestriction = Product.SaleRestriction.NONE;
         private ApiWeighing weighing;
     }
 
@@ -241,7 +242,8 @@ class ProductApi {
                 .setScannableCodes(apiProduct.eans)
                 .setPrice(apiProduct.price)
                 .setDiscountedPrice(apiProduct.discountedPrice)
-                .setBasePrice(apiProduct.basePrice);
+                .setBasePrice(apiProduct.basePrice)
+                .setSaleRestriction(apiProduct.saleRestriction);
 
         if (apiProduct.weighing != null) {
             builder.setWeighedItemIds(apiProduct.weighing.weighedItemIds);

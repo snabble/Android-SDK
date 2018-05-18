@@ -47,7 +47,7 @@
 	<string name="Snabble.Shoppingcart.emptyState.title">Your Shopping Cart</string>
 	<string name="Snabble.Shoppingcart.removeItem">Remove %s from the cart?</string>
 	<string name="Snabble.Shoppingcart.removeItems">Remove all products from shopping cart?</string>
-	<string name="Snabble.PaymentMethod.encodedCodes">Pay at the cash register</string>
+	<string name="Snabble.PaymentMethod.encodedCodes">Checkstand</string>
 	<string name="Snabble.PaymentMethod.qrCodePOS">Checkstand</string>
 
 	<!-- SECTION: Android -->

@@ -3,7 +3,6 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
 import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -17,9 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -124,6 +121,18 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         product = productDatabase.findBySku("123");
         assertNull(product);
+    }
+
+    @Test
+    public void testSaleRestriction() throws IOException, SnabbleSdk.SnabbleException {
+        setupSdkWithDb("demoDb_1_6.sqlite3");
+
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product product = productDatabase.findBySku("1");
+        assertEquals(product.getSaleRestriction(), Product.SaleRestriction.NONE);
+
+        product = productDatabase.findBySku("37");
+        assertEquals(product.getSaleRestriction(), Product.SaleRestriction.MIN_AGE_16);
     }
 
     @Test

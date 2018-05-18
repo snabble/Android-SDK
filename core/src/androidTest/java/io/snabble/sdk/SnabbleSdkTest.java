@@ -31,11 +31,12 @@ import okio.Buffer;
 public class SnabbleSdkTest {
     protected static final String projectId = "test-b6024ba";
     protected static final String metadataUrl = "/api/" + projectId + "/metadata/app/android/test/1.0";
-    protected static final String testDbName = "testDb.sqlite3";
 
     protected SnabbleSdk snabbleSdk;
     protected Context context;
     protected static MockWebServer mockWebServer;
+
+    protected static Buffer productDbBuffer;
 
     @BeforeClass
     public static void setupMockWebServer() throws Exception {
@@ -45,8 +46,6 @@ public class SnabbleSdkTest {
         mockWebServer.start();
 
         final String metadataJson = IOUtils.toString(context.getAssets().open("metadata.json"), StandardCharsets.UTF_8);
-        final Buffer productDbBuffer = new Buffer();
-        productDbBuffer.readFrom(context.getAssets().open("testDb.sqlite3"));
 
         final Buffer product1Buffer = new Buffer();
         product1Buffer.readFrom(context.getAssets().open("product.json"));
@@ -98,8 +97,16 @@ public class SnabbleSdkTest {
     }
 
     @Before
-    public void setupSdk() throws SnabbleSdk.SnabbleException, IOException, InterruptedException {
+    public void setupSdk() throws SnabbleSdk.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        setupSdkWithDb("testDb.sqlite3");
+    }
+
+    public void setupSdkWithDb(String testDbName) throws IOException, SnabbleSdk.SnabbleException {
+        context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+
+        productDbBuffer = new Buffer();
+        productDbBuffer.readFrom(context.getAssets().open(testDbName));
 
         FileUtils.deleteQuietly(context.getFilesDir());
         FileUtils.deleteQuietly(new File(context.getFilesDir().getParentFile(), "/databases/"));

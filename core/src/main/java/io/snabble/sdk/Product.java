@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -39,6 +41,47 @@ public class Product {
         }
     }
 
+    public enum SaleRestriction {
+        @SerializedName("")
+        NONE(0, 0),
+        @SerializedName("min_age_6")
+        MIN_AGE_6(1, 6),
+        @SerializedName("min_age_12")
+        MIN_AGE_12(1, 12),
+        @SerializedName("min_age_14")
+        MIN_AGE_14(1, 14),
+        @SerializedName("min_age_16")
+        MIN_AGE_16(1, 16),
+        @SerializedName("min_age_18")
+        MIN_AGE_18(1, 18),
+        @SerializedName("min_age_21")
+        MIN_AGE_21(1, 21);
+
+        private long databaseType;
+        private long value;
+
+        private static SaleRestriction[] values = SaleRestriction.values();
+
+        SaleRestriction(int dbType, long value){
+            this.databaseType = dbType;
+            this.value = value;
+        }
+
+        public long getValue(){
+            return value;
+        }
+
+        public static SaleRestriction fromDatabaseField(long dbType, long value){
+            for(SaleRestriction sr : values){
+                if(sr.databaseType == dbType && sr.value == value){
+                    return sr;
+                }
+            }
+
+            return SaleRestriction.NONE;
+        }
+    }
+
     private String sku;
     private String name;
     private String description;
@@ -54,6 +97,7 @@ public class Product {
     private int boost;
     private String subtitle;
     private String basePrice;
+    private SaleRestriction saleRestriction = SaleRestriction.NONE;
 
     /**
      * @return The unique identifier of the product. Usually the same identifier
@@ -154,6 +198,13 @@ public class Product {
      */
     public Type getType() {
         return type;
+    }
+
+    /**
+     * @return The [@link SaleRestriction} of the product.
+     */
+    public SaleRestriction getSaleRestriction() {
+        return saleRestriction;
     }
 
     public int getPriceForQuantity(int quantity, RoundingMode roundingMode){
@@ -266,6 +317,11 @@ public class Product {
 
         public Builder setBasePrice(String basePrice) {
             product.basePrice = basePrice;
+            return this;
+        }
+
+        public Builder setSaleRestriction(SaleRestriction saleRestriction){
+            product.saleRestriction = saleRestriction;
             return this;
         }
 

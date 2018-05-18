@@ -237,4 +237,5 @@ sample/src/main/assets/products.major
 sample/src/main/assets/products.minor
 sample/src/main/assets/products.sqlite3
 sample/src/main/assets/metadata.json
+ui/src/main/res/values/strings.xml
 maven-repository
