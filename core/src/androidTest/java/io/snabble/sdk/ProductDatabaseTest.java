@@ -136,6 +136,18 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
+    public void testSaleStop() throws IOException, SnabbleSdk.SnabbleException {
+        setupSdkWithDb("demoDb_1_6.sqlite3");
+
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Product product = productDatabase.findBySku("1");
+        assertEquals(product.getSaleStop(), false);
+
+        product = productDatabase.findBySku("42");
+        assertEquals(product.getSaleStop(), true);
+    }
+
+    @Test
     public void testFindBySkuOnline() {
         ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
         final Product product = findBySkuBlocking(productDatabase, "online1");

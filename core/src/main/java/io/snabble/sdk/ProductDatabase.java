@@ -649,6 +649,7 @@ public class ProductDatabase {
 
         if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
             builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(14)));
+            builder.setSaleStop(cursor.getInt(15) != 0);
         }
 
         return builder.build();
@@ -701,6 +702,7 @@ public class ProductDatabase {
 
                 if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
                     sql += ",p.saleRestriction";
+                    sql += ",p.saleStop";
                 }
 
                 sql += " FROM products p " +

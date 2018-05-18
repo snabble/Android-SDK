@@ -98,6 +98,7 @@ public class Product {
     private String subtitle;
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
+    private boolean saleStop;
 
     /**
      * @return The unique identifier of the product. Usually the same identifier
@@ -205,6 +206,13 @@ public class Product {
      */
     public SaleRestriction getSaleRestriction() {
         return saleRestriction;
+    }
+
+    /**
+     * @return returns true if this product should not be available for sale anymore.
+     */
+    public boolean getSaleStop(){
+        return saleStop;
     }
 
     public int getPriceForQuantity(int quantity, RoundingMode roundingMode){
@@ -322,6 +330,11 @@ public class Product {
 
         public Builder setSaleRestriction(SaleRestriction saleRestriction){
             product.saleRestriction = saleRestriction;
+            return this;
+        }
+
+        public Builder setSaleStop(boolean saleStop){
+            product.saleStop = saleStop;
             return this;
         }
 
