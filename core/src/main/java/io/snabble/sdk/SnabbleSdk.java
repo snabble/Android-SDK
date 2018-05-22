@@ -136,7 +136,7 @@ public class SnabbleSdk {
 
         public String[] amountPrefixes = new String[0];
 
-        public RoundingMode roundingMode = RoundingMode.UP;
+        public RoundingMode roundingMode = RoundingMode.HALF_UP;
     }
 
     private String endpointBaseUrl;
