@@ -34,7 +34,7 @@ public class EAN13 extends ScannableCode implements Serializable {
             }
         }
 
-        lookupCode = code.substring(0, 6) + "0000000";
+        lookupCode = code.substring(0, 7) + "000000";
         embeddedData = Integer.parseInt(code.substring(7, 12));
     }
 

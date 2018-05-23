@@ -1,26 +1,21 @@
 apply plugin: 'de.undercouch.download'
 
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def localFile = project.rootProject.file('local.properties')
+if(localFile.exists()) {
+    properties.load(localFile.newDataInputStream())
 
-ext.endpoint=properties.getProperty('snabble.endpoint')
-ext.projectId=properties.getProperty('snabble.projectId')
-ext.clientToken=properties.getProperty('snabble.clientToken')
-ext.metadataUrl="/api/${project.projectId}/metadata/app/android/testapp"
+    ext.endpoint = properties.getProperty('snabble.endpoint')
+    ext.projectId = properties.getProperty('snabble.projectId')
+    ext.clientToken = properties.getProperty('snabble.clientToken')
+} else {
+    ext.endpoint = "https://api.snabble-testing.io"
+    ext.projectId = "demo"
+    ext.clientToken = "<no-token-set>"
+}
 
+ext.metadataUrl = "/api/${project.projectId}/metadata/app/android/testapp"
 ext.appVersion = '1.0'
-
-if(ext.endpoint == null) {
-    throw new GradleException('You must specify snabble.endpoint in your local.properties')
-}
-
-if(ext.projectId == null) {
-    throw new GradleException('You must specify snabble.projectId in your local.properties')
-}
-
-if(ext.clientToken == null) {
-    throw new GradleException('You must specify snabble.clientToken in your local.properties')
-}
 
 task updateBundledData(
         group: 'seed',
