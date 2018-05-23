@@ -96,7 +96,6 @@ class ProductConfirmationDialog {
         payNow.setText(payNowText);
 
         name.setText(product.getName());
-        price.setText(priceFormatter.format(product));
 
         if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
             subtitle.setVisibility(View.GONE);
@@ -105,7 +104,7 @@ class ProductConfirmationDialog {
         }
 
         Product.Type type = product.getType();
-        if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
+        if (type == Product.Type.UserWeighed || scannedCode.hasEmbeddedData()) {
             quantityAnnotation.setText("g");
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
@@ -114,7 +113,7 @@ class ProductConfirmationDialog {
             quantityAnnotation.setVisibility(View.GONE);
         }
 
-        if (type == Product.Type.PreWeighed) {
+        if (scannedCode.hasEmbeddedData()) {
             quantity.setEnabled(false);
         }
 
@@ -143,14 +142,7 @@ class ProductConfirmationDialog {
 
         int cartQuantity = shoppingCart.getQuantity(product);
 
-        if (type == Product.Type.Article) {
-            quantityAnnotation.setVisibility(View.GONE);
-            quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
-        } else if (type == Product.Type.UserWeighed) {
-            quantityAnnotation.setVisibility(View.VISIBLE);
-            quantityAnnotation.setText("g");
-            quantity.setText(""); // initial value ?
-        } else if (type == Product.Type.PreWeighed) {
+        if (scannedCode.hasEmbeddedData()) {
             if(scannedCode.hasWeighData()) {
                 quantityAnnotation.setText("g");
                 plus.setVisibility(View.GONE);
@@ -172,9 +164,16 @@ class ProductConfirmationDialog {
                 minus.setVisibility(View.GONE);
                 quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
             }
+        } else if (type == Product.Type.Article) {
+            quantityAnnotation.setVisibility(View.GONE);
+            quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
+        } else if (type == Product.Type.UserWeighed) {
+            quantityAnnotation.setVisibility(View.VISIBLE);
+            quantityAnnotation.setText("g");
+            quantity.setText(""); // initial value ?
         }
 
-        if(type != Product.Type.PreWeighed) {
+        if(!scannedCode.hasEmbeddedData()) {
             quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
             quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
@@ -211,11 +210,13 @@ class ProductConfirmationDialog {
                     }
 
                     updatePayText();
+                    updatePrice();
                 }
             });
         }
 
         updatePayText();
+        updatePrice();
 
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,6 +278,15 @@ class ProductConfirmationDialog {
         window.setLayout(Math.round(336 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
+    private void updatePrice() {
+        if(product.getType() == Product.Type.Article) {
+            price.setText(priceFormatter.format(product.getPriceForQuantity(getQuantity(),
+                    SnabbleUI.getSdkInstance().getRoundingMode())));
+        } else {
+            price.setText(priceFormatter.format(product));
+        }
+    }
+
     private void addToCart() {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
@@ -289,10 +299,10 @@ class ProductConfirmationDialog {
 
         int q = getQuantity();
 
-        if (product.getType() == Product.Type.Article) {
-            shoppingCart.setQuantity(product, q, scannedCode);
-        } else if(product.getType() == Product.Type.PreWeighed){
+        if(scannedCode.hasEmbeddedData()){
             shoppingCart.add(product, 1, scannedCode);
+        } else if (product.getType() == Product.Type.Article) {
+            shoppingCart.setQuantity(product, q, scannedCode);
         } else if(product.getType() == Product.Type.UserWeighed){
             if(q > 0) {
                 shoppingCart.add(product, q, scannedCode);
