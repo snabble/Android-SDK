@@ -712,6 +712,10 @@ public class ProductDatabase {
         return rawQuery(sql, args, cancellationSignal);
     }
 
+    public boolean isAvailableOffline() {
+        return db != null;
+    }
+
     private Cursor productQuery(String appendSql, String[] args, boolean distinct) {
         return productQuery(appendSql, args, distinct, null);
     }

@@ -14,8 +14,13 @@ import android.os.Vibrator;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import io.snabble.sdk.Checkout;
@@ -29,7 +34,6 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Utils;
@@ -94,10 +98,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         enterBarcode.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.showBarcodeSearch();
-                }
+                onClickEnterBarcode();
             }
         });
 
@@ -255,6 +256,36 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 R.string.Snabble_Scanner_networkError,
                 Snackbar.LENGTH_LONG)
                 .show();
+    }
+
+    private void onClickEnterBarcode() {
+        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+        if (callback != null) {
+            if(productDatabase.isAvailableOffline()){
+                callback.showBarcodeSearch();
+            } else {
+                final EditText input = new EditText(getContext());
+                MarginLayoutParams lp = new MarginLayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+                new AlertDialog.Builder(getContext())
+                        .setView(input)
+                        .setTitle(R.string.Snabble_Scanner_enterBarcode)
+                        .setPositiveButton(R.string.Snabble_Done, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getSdkInstance(),
+                                        input.getText().toString()));
+                            }
+                        })
+                        .setNegativeButton(R.string.Snabble_Cancel, null)
+                        .create()
+                        .show();
+            }
+        }
     }
 
     private void showProduct(Product product, ScannableCode scannedCode) {
