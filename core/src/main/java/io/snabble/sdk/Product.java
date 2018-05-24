@@ -217,14 +217,14 @@ public class Product {
 
     public int getPriceForQuantity(int quantity, RoundingMode roundingMode){
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
-            BigDecimal pricePerUnit = new BigDecimal(price)
+            BigDecimal pricePerUnit = new BigDecimal(getDiscountedPrice())
                     .divide(new BigDecimal(1000));
 
             return pricePerUnit.multiply(new BigDecimal(quantity))
                     .setScale(0, roundingMode)
                     .intValue();
         } else {
-            return quantity * price;
+            return quantity * getDiscountedPrice();
         }
     }
 
