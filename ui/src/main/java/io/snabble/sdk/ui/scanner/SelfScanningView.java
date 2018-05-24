@@ -18,7 +18,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,15 +48,12 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private boolean isRunning;
 
     private DelayedProgressDialog progressDialog;
-    private boolean ignore;
     private Checkout checkout;
     private long detectAfterTimeMs;
 
     private DialogInterface.OnCancelListener progressDialogCancelListener = new DialogInterface.OnCancelListener() {
         @Override
         public void onCancel(DialogInterface dialog) {
-            ignore = true;
-
             barcodeScanner.resume();
             checkout.cancel();
         }
@@ -155,8 +151,18 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     public void lookupAndShowProduct(final ScannableCode scannedCode) {
-        ignore = false;
         productDialog.dismiss();
+
+        if(!scannedCode.isEmbeddedDataOk()){
+            delayNextScan();
+
+            Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
+            UIUtils.snackbar(SelfScanningView.this,
+                    R.string.Snabble_Scanner_unknownBarcode,
+                    Snackbar.LENGTH_LONG)
+                    .show();
+            return;
+        }
 
         progressDialog.setOnCancelListener(progressDialogCancelListener);
         progressDialog.showAfterDelay(300);
@@ -199,6 +205,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
+    private void delayNextScan() {
+        detectAfterTimeMs = SystemClock.elapsedRealtime() + 2000;
+    }
+
     @SuppressLint("MissingPermission")
     private void handleBarcodeDetected(final Barcode barcode) {
         if (SystemClock.elapsedRealtime() > detectAfterTimeMs) {
@@ -213,10 +223,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannableCode scannedCode) {
-        if (ignore) {
-            return;
-        }
-
         progressDialog.dismiss();
         showProduct(product, scannedCode);
 
@@ -228,13 +234,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void handleProductNotFound(ScannableCode scannedCode) {
-        if (ignore) {
-            return;
-        }
-
         progressDialog.dismiss();
         barcodeScanner.resume();
-        detectAfterTimeMs = SystemClock.elapsedRealtime() + 2000;
+        delayNextScan();
 
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
         UIUtils.snackbar(SelfScanningView.this,
@@ -244,13 +246,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void handleProductError() {
-        if (ignore) {
-            return;
-        }
-
         progressDialog.dismiss();
         barcodeScanner.resume();
-        detectAfterTimeMs = SystemClock.elapsedRealtime() + 2000;
+        delayNextScan();
 
         UIUtils.snackbar(SelfScanningView.this,
                 R.string.Snabble_Scanner_networkError,

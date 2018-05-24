@@ -39,6 +39,10 @@ public class ScannableCode implements Serializable {
         return false;
     }
 
+    public boolean isEmbeddedDataOk() {
+        return true;
+    }
+
     public static ScannableCode parse(SnabbleSdk snabbleSdk, String code){
         if(EAN13.isEan13(code)){
             return new EAN13(code,
