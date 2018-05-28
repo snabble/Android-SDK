@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import android.support.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
@@ -8,6 +10,7 @@ import java.math.RoundingMode;
 /**
  * Class that holds all of the product information.
  */
+@Keep
 public class Product {
     public enum Type {
         /**

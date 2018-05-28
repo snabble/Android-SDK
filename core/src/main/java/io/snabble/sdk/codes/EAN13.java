@@ -1,9 +1,11 @@
 package io.snabble.sdk.codes;
 
+import android.support.annotation.Keep;
 import android.util.SparseIntArray;
 
 import java.io.Serializable;
 
+@Keep
 public class EAN13 extends ScannableCode implements Serializable {
     private String lookupCode;
     private int embeddedData;
