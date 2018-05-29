@@ -1,7 +1,5 @@
 package io.snabble.sdk;
 
-import android.support.annotation.Keep;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -12,7 +10,6 @@ import java.util.Map;
 
 import io.snabble.sdk.utils.Logger;
 
-@Keep
 public class Shop implements Serializable {
     public enum Service {
         @SerializedName("euro")

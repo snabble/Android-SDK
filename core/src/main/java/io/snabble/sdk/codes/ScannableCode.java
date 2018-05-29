@@ -1,12 +1,9 @@
 package io.snabble.sdk.codes;
 
-import android.support.annotation.Keep;
-
 import java.io.Serializable;
 
 import io.snabble.sdk.SnabbleSdk;
 
-@Keep
 public class ScannableCode implements Serializable {
     private String code;
 

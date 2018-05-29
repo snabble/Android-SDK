@@ -2,7 +2,6 @@ package io.snabble.sdk;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Keep;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +11,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.codes.ScannableCode;
 
-@Keep
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 100000;
 
