@@ -1,9 +1,10 @@
 package io.snabble.sdk.ui;
 
+
+import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.util.Currency;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.NumberFormat;
-import java.util.Currency;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.SnabbleSdk;
