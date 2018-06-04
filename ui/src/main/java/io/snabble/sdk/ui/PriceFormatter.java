@@ -1,10 +1,8 @@
 package io.snabble.sdk.ui;
 
-
-import com.ibm.icu.text.NumberFormat;
-import com.ibm.icu.util.Currency;
-
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Currency;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.SnabbleSdk;
@@ -29,7 +27,18 @@ public class PriceFormatter {
         BigDecimal divider = new BigDecimal(10).pow(fractionDigits);
         BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, sdkInstance.getRoundingMode());
 
-        return numberFormat.format(dividedPrice.doubleValue());
+        String formattedPrice = numberFormat.format(dividedPrice.doubleValue());
+
+        // Android 4.x and 6 (but not 5 and 7+) are shipping with ICU versions
+        // that have the currency symbol set to HUF instead of Ft for Locale hu_HU
+        //
+        // including the whole ICU library as a dependency increased APK size by 10MB
+        // so we are overriding the result here instead for consistency
+        if(currency.getCurrencyCode().equals("HUF")){
+            return formattedPrice.replace("HUF", "Ft");
+        }
+
+        return formattedPrice;
     }
 
     public String format(Product product) {

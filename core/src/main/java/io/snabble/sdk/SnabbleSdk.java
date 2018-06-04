@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import com.ibm.icu.util.Currency;
-
 import java.io.File;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;

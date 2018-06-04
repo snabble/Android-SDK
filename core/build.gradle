@@ -42,8 +42,6 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttpVersion}"
     implementation 'com.google.code.gson:gson:2.8.2'
 
-    api 'com.ibm.icu:icu4j:61.1'
-
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation 'com.android.support.test:rules:1.0.1'
