@@ -48,7 +48,7 @@ public class ScannableCode implements Serializable {
             return new EAN13(code,
                     snabbleSdk.getWeighPrefixes(),
                     snabbleSdk.getPricePrefixes(),
-                    snabbleSdk.getAmountPrefixes());
+                    snabbleSdk.getUnitPrefixes());
         } else {
             return new ScannableCode(code);
         }

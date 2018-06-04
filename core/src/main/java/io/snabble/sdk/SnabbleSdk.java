@@ -2,11 +2,13 @@ package io.snabble.sdk;
 
 import android.app.Activity;
 import android.app.Application;
-import android.os.Bundle;
+
+import com.google.gson.JsonObject;
+
+import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
 import java.math.RoundingMode;
-import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.utils.Downloader;
+import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.Cache;
@@ -106,36 +109,6 @@ public class SnabbleSdk {
          */
         public int productDbBundledSchemaVersionMinor = -1;
 
-        /**
-         * Configures the ISO 4217 currency code to be used. Optional.
-         * <p>
-         * null = EUR
-         */
-        public String currencyIso4217Code = null;
-
-        /**
-         * Overrides the currency fraction digits. Optional.
-         * <p>
-         * -1 = use default
-         */
-        public int currencyFractionDigits = -1;
-
-        /**
-         * Overrides the currency locale, useful if you want to force a display format.
-         * <p>
-         * null = Locale.getDefault()
-         */
-        public Locale currencyLocale = null;
-
-        /**
-         * Prefixes used in ean codes for pricing
-         */
-        public String[] pricePrefixes = new String[0];
-
-        public String[] weighPrefixes = new String[0];
-
-        public String[] amountPrefixes = new String[0];
-
         public RoundingMode roundingMode = RoundingMode.HALF_UP;
     }
 
@@ -166,7 +139,7 @@ public class SnabbleSdk {
 
     private String[] pricePrefixes = new String[0];
     private String[] weighPrefixes = new String[0];
-    private String[] amountPrefixes = new String[0];
+    private String[] unitPrefixes = new String[0];
 
     private RoundingMode roundingMode;
 
@@ -264,11 +237,7 @@ public class SnabbleSdk {
         metadataUrl = absoluteUrl(config.metadataUrl);
         metadataDownloader = new MetadataDownloader(this, config.bundledMetadataAssetPath);
 
-        weighPrefixes = Arrays.copyOf(config.weighPrefixes, config.weighPrefixes.length);
-        pricePrefixes = Arrays.copyOf(config.pricePrefixes, config.pricePrefixes.length);
-        amountPrefixes = Arrays.copyOf(config.amountPrefixes, config.amountPrefixes.length);
-
-        roundingMode = config.roundingMode != null ? config.roundingMode : RoundingMode.UP;
+        roundingMode = config.roundingMode != null ? config.roundingMode : RoundingMode.HALF_UP;
 
         updateShops();
 
@@ -308,19 +277,27 @@ public class SnabbleSdk {
             Logger.e("Metadata does not contain url for product database updates. No product database updates possible");
         }
 
-        if (config.currencyIso4217Code == null) {
-            currency = Currency.getInstance("EUR");
-        } else {
-            currency = Currency.getInstance(config.currencyIso4217Code);
-        }
+        JsonObject projectSettings = metadataDownloader.getProject();
 
-        if (config.currencyLocale == null) {
+        currency = Currency.getInstance(JsonUtils.getStringOpt(projectSettings, "currency", "EUR"));
+
+        String locale = JsonUtils.getStringOpt(projectSettings, "locale", "de_DE");
+
+        try {
+            currencyLocale = LocaleUtils.toLocale(locale);
+        } catch (IllegalArgumentException e){
             currencyLocale = Locale.getDefault();
-        } else {
-            currencyLocale = config.currencyLocale;
         }
 
-        currencyFractionDigits = config.currencyFractionDigits;
+        if(currencyLocale == null){
+            currencyLocale = Locale.getDefault();
+        }
+
+        currencyFractionDigits = JsonUtils.getIntOpt(projectSettings, "decimalDigits", 2);
+
+        weighPrefixes = JsonUtils.getStringArrayOpt(projectSettings, "weighPrefixes", new String[0]);
+        pricePrefixes = JsonUtils.getStringArrayOpt(projectSettings, "pricePrefixes", new String[0]);
+        unitPrefixes = JsonUtils.getStringArrayOpt(projectSettings, "unitPrefixes", new String[0]);
 
         ProductDatabase.Config dbConfig = new ProductDatabase.Config();
         dbConfig.bundledAssetPath = config.productDbBundledAssetPath;
@@ -457,8 +434,8 @@ public class SnabbleSdk {
         return weighPrefixes;
     }
 
-    public String[] getAmountPrefixes() {
-        return amountPrefixes;
+    public String[] getUnitPrefixes() {
+        return unitPrefixes;
     }
 
     String absoluteUrl(String url) {
@@ -506,12 +483,21 @@ public class SnabbleSdk {
     }
 
     /**
-     * A bundle that contains various flags provided by the metadata service.
+     * A json object that contains various flags provided by the metadata service.
      * <p>
      * May also contain additional flags specific to projects.
      */
-    public Bundle getFlags() {
-        return metadataDownloader.getFlags();
+    public JsonObject getFlags() {
+        return metadataDownloader.getMetadata();
+    }
+
+    /**
+     * A json object that contains various flags provided by the metadata service.
+     * <p>
+     * May also contain additional flags specific to projects.
+     */
+    public JsonObject getProjectSettings() {
+        return metadataDownloader.getProject();
     }
 
     /**
