@@ -373,7 +373,6 @@ public class SnabbleSdk {
         }
 
         builder.addInterceptor(new UserAgentInterceptor(application));
-        builder.addInterceptor(new ExponentialRetryRequestInterceptor());
 
         okHttpClient = builder.build();
     }
