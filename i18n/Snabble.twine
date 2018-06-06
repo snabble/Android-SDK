@@ -21,8 +21,6 @@
         en = Remove
     [Snabble.pleaseWait]
         en = Please wait...
-    [Snabble.loadingProductInformation]
-        en = Loading product information...
     [Snabble.undo]
         en = Undo
 
@@ -106,4 +104,7 @@
         tags = android
     [Snabble.Shoppingcart.articleRemoved]
         en = Article removed
+        tags = android
+    [Snabble.loadingProductInformation]
+        en = Loading product information...
         tags = android
