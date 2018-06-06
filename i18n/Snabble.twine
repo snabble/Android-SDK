@@ -21,6 +21,8 @@
         en = Remove
     [Snabble.pleaseWait]
         en = Please wait...
+    [Snabble.loadingProductInformation]
+        en = Loading product information...
     [Snabble.undo]
         en = Undo
 
@@ -53,8 +55,6 @@
         en = Enter Barcode
     [Snabble.Scanner.enterCodeButton]
         en = Enter\nBarcode
-    [Snabble.Scanner.gotoCheckout]
-        en = Checkout and pay %@ now
     [Snabble.Scanner.scannedShelfCode]
         en = Please scan the article's barcode instead
     [Snabble.Scanner.scanningTitle]
