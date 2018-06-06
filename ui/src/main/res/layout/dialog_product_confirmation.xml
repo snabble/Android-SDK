@@ -112,24 +112,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/quantity"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:text="@string/Snabble.Scanner.addToCart" />
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/pay_now"
-        android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:layout_below="@+id/addToCart"
-        android:layout_centerHorizontal="true"
-        android:paddingBottom="8dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:textColor="@color/snabble_textColorAction"
-        android:textSize="14sp"
-        android:visibility="invisible"
-        app:autoSizeTextType="uniform"
-        app:autoSizeMinTextSize="8sp"
-        app:autoSizeMaxTextSize="14sp"
-        tools:text="Direkt zur Kasse und 11,99 € bezahlen"
-        tools:visibility="visible" />
 </RelativeLayout>

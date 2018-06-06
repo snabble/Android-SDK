@@ -15,6 +15,7 @@
 	<string name="Snabble.Delete">Delete</string>
 	<string name="Snabble.remove">Remove</string>
 	<string name="Snabble.pleaseWait">Please wait...</string>
+	<string name="Snabble.loadingProductInformation">Loading product information...</string>
 	<string name="Snabble.undo">Undo</string>
 	<string name="Snabble.Payment.errorStarting">Error starting the payment process</string>
 	<string name="Snabble.PaymentSelection.title">Pay</string>
@@ -30,7 +31,6 @@
 	<string name="Snabble.Scanner.Camera.allowAccess">Please allow camera access to enable barcode scanning</string>
 	<string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
 	<string name="Snabble.Scanner.enterCodeButton">Enter\nBarcode</string>
-	<string name="Snabble.Scanner.gotoCheckout">Checkout and pay %s now</string>
 	<string name="Snabble.Scanner.scannedShelfCode">Please scan the article\'s barcode instead</string>
 	<string name="Snabble.Scanner.scanningTitle">Scan Barcode</string>
 	<string name="Snabble.Scanner.title">Scanner</string>

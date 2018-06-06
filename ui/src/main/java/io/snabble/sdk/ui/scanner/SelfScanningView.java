@@ -106,7 +106,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
+        progressDialog.setMessage(getContext().getString(R.string.Snabble_loadingProductInformation));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setOnCancelListener(progressDialogCancelListener);
 

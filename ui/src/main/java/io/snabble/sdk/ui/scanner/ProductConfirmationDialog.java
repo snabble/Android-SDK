@@ -36,7 +36,6 @@ class ProductConfirmationDialog {
     private Context context;
     private AlertDialog alertDialog;
     private ShoppingCart shoppingCart;
-    private Checkout checkout;
     private PriceFormatter priceFormatter;
 
     private EditText quantity;
@@ -48,23 +47,18 @@ class ProductConfirmationDialog {
     private View close;
     private View plus;
     private View minus;
-    private TextView payNow;
 
     private Product product;
     private ScannableCode scannedCode;
 
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
-    private String payNowText;
 
     public ProductConfirmationDialog(Context context,
                                      SnabbleSdk sdkInstance) {
         this.context = context;
         this.shoppingCart = sdkInstance.getShoppingCart();
-        this.checkout = sdkInstance.getCheckout();
         priceFormatter = new PriceFormatter(sdkInstance);
-
-        payNowText = context.getString(R.string.Snabble_Scanner_gotoCheckout);
     }
 
     public void show(Product newProduct, ScannableCode scannedCode) {
@@ -91,9 +85,6 @@ class ProductConfirmationDialog {
         close = view.findViewById(R.id.close);
         plus = view.findViewById(R.id.plus);
         minus = view.findViewById(R.id.minus);
-        payNow = view.findViewById(R.id.pay_now);
-
-        payNow.setText(payNowText);
 
         name.setText(product.getName());
 
@@ -209,13 +200,11 @@ class ProductConfirmationDialog {
                         return;
                     }
 
-                    updatePayText();
                     updatePrice();
                 }
             });
         }
 
-        updatePayText();
         updatePrice();
 
         plus.setOnClickListener(new View.OnClickListener() {
@@ -254,14 +243,6 @@ class ProductConfirmationDialog {
             public void onClick(View v) {
                 Telemetry.event(Telemetry.Event.RejectedProduct, product);
                 dismiss();
-            }
-        });
-
-        payNow.setOnClickListener(new OneShotClickListener() {
-            @Override
-            public void click() {
-                addToCart();
-                checkout.checkout();
             }
         });
 
@@ -316,23 +297,6 @@ class ProductConfirmationDialog {
         }
 
         dismiss();
-    }
-
-    private void updatePayText() {
-        if (checkout.isAvailable()) {
-            SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
-
-            int totalPrice = shoppingCart.getTotalPrice();
-            totalPrice -= product.getPriceForQuantity(shoppingCart.getQuantity(product),
-                    sdkInstance.getRoundingMode());
-            totalPrice += product.getPriceForQuantity(getQuantity(),
-                    sdkInstance.getRoundingMode());
-            String formattedTotalPrice = priceFormatter.format(totalPrice);
-            payNow.setVisibility(totalPrice > 0 ? View.VISIBLE : View.INVISIBLE);
-            payNow.setText(String.format(Locale.getDefault(), payNowText, formattedTotalPrice));
-        } else {
-            payNow.setVisibility(View.GONE);
-        }
     }
 
     private int getQuantity() {
