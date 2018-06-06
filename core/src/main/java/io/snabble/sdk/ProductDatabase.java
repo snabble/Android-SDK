@@ -295,7 +295,7 @@ public class ProductDatabase {
      * <p>
      * Returns true if successful, false otherwise
      */
-    void applyDeltaUpdate(InputStream inputStream) throws IOException {
+    synchronized void applyDeltaUpdate(InputStream inputStream) throws IOException {
         if(dbName == null){
             return;
         }
@@ -307,6 +307,9 @@ public class ProductDatabase {
 
         File dbFile = application.getDatabasePath(dbName);
         File tempDbFile = application.getDatabasePath("_" + dbName);
+
+        SQLiteDatabase tempDbBUG123 = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
+        tempDbBUG123.beginTransaction();
 
         if (!deleteDatabase(tempDbFile)) {
             Logger.e("Could not apply delta update: Could not delete temp database");
@@ -401,7 +404,7 @@ public class ProductDatabase {
      * <p>
      * If a read error occurs, an IOException will be thrown.
      */
-    void applyFullUpdate(InputStream inputStream) throws IOException {
+    synchronized void applyFullUpdate(InputStream inputStream) throws IOException {
         if(dbName == null){
             return;
         }
