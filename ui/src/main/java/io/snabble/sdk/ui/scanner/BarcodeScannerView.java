@@ -419,8 +419,12 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                     }
                 }
 
-                torchEnabled = enabled;
-                camera.setParameters(parameters);
+                try {
+                    camera.setParameters(parameters);
+                    torchEnabled = enabled;
+                } catch (RuntimeException e){
+                    // this is terrible, but happens on some devices in rare circumstances
+                }
             }
         }
     }
