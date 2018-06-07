@@ -61,14 +61,11 @@ public class App extends Application {
         config.productDbBundledRevisionId = getBundledRevisionId();
         config.productDbBundledSchemaVersionMajor = getBundledMajor();
         config.productDbBundledSchemaVersionMinor = getBundledMinor();
+        config.productDbDownloadIfMissing = false;
 
         SnabbleSdk.setup(this, config, new SnabbleSdk.SetupCompletionListener() {
             @Override
             public void onReady(SnabbleSdk sdk) {
-                // triggers and asynchronous product database update
-                // products can still be queried even while updating
-                sdk.getProductDatabase().update();
-
                 // registers this sdk instance globally for use with ui components
                 SnabbleUI.registerSdkInstance(sdk);
 

@@ -109,6 +109,15 @@ public class SnabbleSdk {
          */
         public int productDbBundledSchemaVersionMinor = -1;
 
+        /**
+         * If set to true, allows the database to be downloaded even if no seed is provided.
+         *
+         * When set to false, calls to {@link ProductDatabase#update()} will still download
+         * the database if its missing, allowing for the ability of database downloads after
+         * sdk initialization
+         */
+        public boolean productDbDownloadIfMissing = true;
+
         public RoundingMode roundingMode = RoundingMode.HALF_UP;
     }
 
@@ -304,7 +313,7 @@ public class SnabbleSdk {
         dbConfig.bundledRevisionId = config.productDbBundledRevisionId;
         dbConfig.bundledSchemaVersionMajor = config.productDbBundledSchemaVersionMajor;
         dbConfig.bundledSchemaVersionMinor = config.productDbBundledSchemaVersionMinor;
-        dbConfig.autoUpdateIfMissing = true;
+        dbConfig.autoUpdateIfMissing = config.productDbDownloadIfMissing;
 
         productDatabase = new ProductDatabase(this,
                 config.productDbName,

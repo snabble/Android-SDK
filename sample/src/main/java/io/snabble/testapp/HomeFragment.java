@@ -30,6 +30,12 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        v.findViewById(R.id.update_db).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                App.get().getSnabbleSdk().getProductDatabase().update();
+            }
+        });
         return v;
     }
 }

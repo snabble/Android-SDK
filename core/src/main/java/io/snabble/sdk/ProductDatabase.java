@@ -129,6 +129,12 @@ public class ProductDatabase {
                         }
                     }
                 });
+            } else {
+                if (productDatabaseReadyListener != null) {
+                    productDatabaseReadyListener.onReady(ProductDatabase.this);
+                }
+
+                Logger.i("Product database is missing. Offline products are not available.");
             }
         }
     }

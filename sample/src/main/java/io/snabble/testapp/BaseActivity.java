@@ -62,6 +62,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         SnabbleUI.registerUiCallbacks(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        SnabbleUI.unregisterUiCallbacks(this);
+
+        super.onDestroy();
+    }
+
     public abstract Fragment onCreateFragment();
 
     public void showShoppingCart() {
