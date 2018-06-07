@@ -308,9 +308,6 @@ public class ProductDatabase {
         File dbFile = application.getDatabasePath(dbName);
         File tempDbFile = application.getDatabasePath("_" + dbName);
 
-        SQLiteDatabase tempDbBUG123 = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
-        tempDbBUG123.beginTransaction();
-
         if (!deleteDatabase(tempDbFile)) {
             Logger.e("Could not apply delta update: Could not delete temp database");
             return;
