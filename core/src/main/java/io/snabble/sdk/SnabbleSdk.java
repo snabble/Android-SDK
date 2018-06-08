@@ -118,6 +118,10 @@ public class SnabbleSdk {
          */
         public boolean productDbDownloadIfMissing = true;
 
+        public String encodedCodesPrefix = null;
+        public String encodedCodesSeperator = null;
+        public String encodedCodesSuffix = null;
+
         public RoundingMode roundingMode = RoundingMode.HALF_UP;
     }
 
@@ -149,6 +153,10 @@ public class SnabbleSdk {
     private String[] pricePrefixes = new String[0];
     private String[] weighPrefixes = new String[0];
     private String[] unitPrefixes = new String[0];
+
+    private String encodedCodesPrefix = null;
+    private String encodedCodesSeperator = null;
+    private String encodedCodesSuffix = null;
 
     private RoundingMode roundingMode;
 
@@ -247,6 +255,10 @@ public class SnabbleSdk {
         metadataDownloader = new MetadataDownloader(this, config.bundledMetadataAssetPath);
 
         roundingMode = config.roundingMode != null ? config.roundingMode : RoundingMode.HALF_UP;
+
+        encodedCodesPrefix = config.encodedCodesPrefix != null ? config.encodedCodesPrefix : "";
+        encodedCodesSeperator = config.encodedCodesSeperator != null ? config.encodedCodesSeperator : "\n";
+        encodedCodesSuffix = config.encodedCodesSuffix != null ? config.encodedCodesSuffix : "";
 
         updateShops();
 
@@ -444,6 +456,18 @@ public class SnabbleSdk {
 
     public String[] getUnitPrefixes() {
         return unitPrefixes;
+    }
+
+    public String getEncodedCodesPrefix() {
+        return encodedCodesPrefix;
+    }
+
+    public String getEncodedCodesSeperator() {
+        return encodedCodesSeperator;
+    }
+
+    public String getEncodedCodesSuffix() {
+        return encodedCodesSuffix;
     }
 
     String absoluteUrl(String url) {

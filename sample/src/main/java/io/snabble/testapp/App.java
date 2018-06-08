@@ -62,6 +62,9 @@ public class App extends Application {
         config.productDbBundledSchemaVersionMajor = getBundledMajor();
         config.productDbBundledSchemaVersionMinor = getBundledMinor();
         config.productDbDownloadIfMissing = false;
+        config.encodedCodesPrefix = "";
+        config.encodedCodesSeperator = "\n";
+        config.encodedCodesSuffix = "";
 
         SnabbleSdk.setup(this, config, new SnabbleSdk.SetupCompletionListener() {
             @Override

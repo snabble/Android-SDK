@@ -26,6 +26,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     private View scrollContainer;
     private ScrollView scrollView;
     private TextView explanationText;
+    private SnabbleSdk sdkInstance;
 
     public CheckoutEncodedCodesView(Context context) {
         super(context);
@@ -48,7 +49,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         scrollContainer = findViewById(R.id.scroll_container);
         scrollView = findViewById(R.id.scroll_view);
 
-        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+        sdkInstance = SnabbleUI.getSdkInstance();
         ShoppingCart shoppingCart = sdkInstance.getShoppingCart();
 
         Button paidButton = findViewById(R.id.paid);
@@ -121,7 +122,6 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
             stringBuilder = new StringBuilder();
 
-            SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
             Checkout checkout = sdkInstance.getCheckout();
             ShoppingCart shoppingCart = sdkInstance.getShoppingCart();
 
@@ -129,12 +129,12 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             barcodeHeight = h - h / 5;
 
             for (String code : checkout.getCodes()) {
-                addLine(code);
+                addScannableCode(code);
             }
 
             for (int i = 0; i < shoppingCart.size(); i++) {
                 for (int j = 0; j < shoppingCart.getQuantity(i); j++) {
-                    addLine(shoppingCart.getScannedCode(i));
+                    addScannableCode(shoppingCart.getScannedCode(i));
                 }
             }
 
@@ -142,12 +142,14 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 barcodeHeight = h;
             }
 
-            addCode(stringBuilder.toString());
-
+            generateView();
             updateExplanationText(getChildCount());
         }
 
-        private void addCode(String code) {
+        private void generateView() {
+            stringBuilder.append(sdkInstance.getEncodedCodesSuffix());
+            String code = stringBuilder.toString();
+
             BarcodeView barcodeView = new BarcodeView(getContext());
             barcodeView.setFormat(BarcodeFormat.QR_CODE);
 
@@ -163,13 +165,19 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             stringBuilder = new StringBuilder();
         }
 
-        private void addLine(String line) {
-            if (stringBuilder.length() + (line.length() + 1) > MAX_CHARS) {
-                addCode(stringBuilder.toString());
+        private void addScannableCode(String scannableCode) {
+            int requiredLength = scannableCode.length() + sdkInstance.getEncodedCodesSuffix().length() + 1;
+            if (stringBuilder.length() + (requiredLength) > MAX_CHARS) {
+                generateView();
             }
 
-            stringBuilder.append(line);
-            stringBuilder.append("\n");
+            if(stringBuilder.length() == 0){
+                stringBuilder.append(sdkInstance.getEncodedCodesPrefix());
+            } else {
+                stringBuilder.append(sdkInstance.getEncodedCodesSeperator());
+            }
+
+            stringBuilder.append(scannableCode);
         }
     }
 }
