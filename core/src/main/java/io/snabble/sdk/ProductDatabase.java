@@ -219,11 +219,13 @@ public class ProductDatabase {
     }
 
     private void putMetaData(String key, String value) {
-        if(db != null) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("key", key);
-            contentValues.put("value", value);
-            db.replace("metadata", null, contentValues);
+        synchronized (dbLock) {
+            if (db != null && db.isOpen()) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("key", key);
+                contentValues.put("value", value);
+                db.replace("metadata", null, contentValues);
+            }
         }
     }
 
