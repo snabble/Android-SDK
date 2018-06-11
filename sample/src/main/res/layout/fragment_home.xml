@@ -24,4 +24,11 @@
         android:padding="8dp"
         android:id="@+id/update_db"
         android:text="Update DB" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:id="@+id/delete_db"
+        android:text="Delete DB" />
 </LinearLayout>

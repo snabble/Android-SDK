@@ -12,6 +12,7 @@ import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.text.format.Formatter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -196,8 +197,9 @@ public class ProductDatabase {
                         return false;
                     }
                 } else {
-                    Logger.d("Loaded product database revision %d, schema version %d.%d",
-                            revisionId, schemaVersionMajor, schemaVersionMinor);
+                    Logger.d("Loaded product database revision %d, schema version %d.%d, %s",
+                            revisionId, schemaVersionMajor, schemaVersionMinor,
+                            Formatter.formatFileSize(application, size()));
                 }
 
                 parseLastUpdateTimestamp();
@@ -217,10 +219,12 @@ public class ProductDatabase {
     }
 
     private void putMetaData(String key, String value) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("key", key);
-        contentValues.put("value", value);
-        db.replace("metadata", null, contentValues);
+        if(db != null) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("key", key);
+            contentValues.put("value", value);
+            db.replace("metadata", null, contentValues);
+        }
     }
 
     private String getMetaData(String key) {
@@ -476,6 +480,34 @@ public class ProductDatabase {
                 }
             }
         });
+    }
+
+    /**
+     * Closes and deletes the locally stored database and falls back to online only mode.
+     */
+    public void delete() {
+        if(db != null){
+            close();
+            application.deleteDatabase(dbName);
+            db = null;
+            revisionId = -1;
+            schemaVersionMinor = -1;
+            schemaVersionMajor = -1;
+
+            Logger.d("Deleted database: " + dbName);
+        }
+    }
+
+    /**
+     * @return Size of the database in bytes.
+     */
+    public long size() {
+        if(db == null){
+            return 0;
+        }
+
+        File dbFile = application.getDatabasePath(dbName);
+        return dbFile.length();
     }
 
     /**

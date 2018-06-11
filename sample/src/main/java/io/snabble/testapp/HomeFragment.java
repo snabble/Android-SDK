@@ -36,6 +36,13 @@ public class HomeFragment extends Fragment {
                 App.get().getSnabbleSdk().getProductDatabase().update();
             }
         });
+
+        v.findViewById(R.id.delete_db).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                App.get().getSnabbleSdk().getProductDatabase().delete();
+            }
+        });
         return v;
     }
 }
