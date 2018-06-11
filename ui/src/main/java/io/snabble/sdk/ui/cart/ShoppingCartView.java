@@ -258,31 +258,39 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
+    public void registerListeners() {
         cart.addListener(shoppingCartListener);
-        checkout.addOnCheckoutStateChangedListener(this);
-
-        Application application = (Application) getContext().getApplicationContext();
-        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+        checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
 
         progressDialog.setOnCancelListener(onCancelListener);
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
+    public void unregisterListeners() {
         cart.removeListener(shoppingCartListener);
-        checkout.removeOnCheckoutStateChangedListener(this);
+        checkout.removeOnCheckoutStateChangedListener(ShoppingCartView.this);
+
+        progressDialog.setOnCancelListener(null);
+        progressDialog.dismiss();
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        registerListeners();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
 
         Application application = (Application) getContext().getApplicationContext();
         application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
-        progressDialog.setOnCancelListener(null);
-        progressDialog.dismiss();
+        unregisterListeners();
     }
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
@@ -290,16 +298,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 @Override
                 public void onActivityStarted(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
-                        cart.addListener(shoppingCartListener);
-                        checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
+                        registerListeners();
                     }
                 }
 
                 @Override
                 public void onActivityStopped(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
-                        cart.removeListener(shoppingCartListener);
-                        checkout.removeOnCheckoutStateChangedListener(ShoppingCartView.this);
+                        unregisterListeners();
                     }
                 }
             };

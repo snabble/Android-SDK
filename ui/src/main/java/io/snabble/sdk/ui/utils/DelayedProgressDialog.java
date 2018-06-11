@@ -7,7 +7,15 @@ import android.os.Looper;
 
 public class DelayedProgressDialog extends ProgressDialog {
     private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable runnable;
+
+    private Runnable showRunnable = new Runnable() {
+        public void run() {
+            if(!isDismissed) {
+                show();
+            }
+        }
+    };
+
     private boolean isDismissed = false;
 
     public DelayedProgressDialog(Context context) {
@@ -15,16 +23,10 @@ public class DelayedProgressDialog extends ProgressDialog {
     }
 
     public void showAfterDelay(long afterDelayMs) {
-        runnable = new Runnable() {
-            public void run() {
-                if(!isDismissed) {
-                    show();
-                }
-            }
-        };
+        stopCallbacks();
 
         isDismissed = false;
-        handler.postDelayed(runnable, afterDelayMs);
+        handler.postDelayed(showRunnable, afterDelayMs);
     }
 
     @Override
@@ -41,7 +43,7 @@ public class DelayedProgressDialog extends ProgressDialog {
 
     private void stopCallbacks() {
         isDismissed = true;
-        handler.removeCallbacks(runnable);
+        handler.removeCallbacks(showRunnable);
         setOnCancelListener(null);
     }
 

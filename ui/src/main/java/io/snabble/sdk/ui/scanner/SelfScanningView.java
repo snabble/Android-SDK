@@ -328,52 +328,63 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         barcodeScanner.removeBarcodeFormat(barcodeFormat);
     }
 
-    @Override
-    public void onAttachedToWindow() {
-        super.onAttachedToWindow();
+    public void registerListeners() {
+        isRunning = true;
 
         progressDialog.setOnCancelListener(progressDialogCancelListener);
-        checkout.addOnCheckoutStateChangedListener(this);
+        checkout.addOnCheckoutStateChangedListener(SelfScanningView.this);
 
         startBarcodeScanner();
-
-        Application application = (Application) getContext().getApplicationContext();
-        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
 
-    @Override
-    public void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
+    public void unregisterListeners() {
+        isRunning = false;
 
         stopBarcodeScanner();
-        checkout.removeOnCheckoutStateChangedListener(this);
-
-        Application application = (Application) getContext().getApplicationContext();
-        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+        checkout.removeOnCheckoutStateChangedListener(SelfScanningView.this);
 
         progressDialog.setOnCancelListener(null);
         progressDialog.dismiss();
         productDialog.dismiss();
     }
 
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        registerListeners();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        unregisterListeners();
+    }
+
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
-                public void onActivityResumed(Activity activity) {
+                public void onActivityStarted(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
-                        isRunning = true;
-                        startBarcodeScanner();
+                        registerListeners();
                     }
                 }
 
                 @Override
-                public void onActivityPaused(Activity activity) {
+                public void onActivityStopped(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
-                        isRunning = false;
-                        stopBarcodeScanner();
+                        unregisterListeners();
                     }
                 }
             };
+
 
     @Override
     public void onStateChanged(Checkout.State state) {
