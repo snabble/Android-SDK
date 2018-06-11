@@ -184,7 +184,7 @@ public class ProductDatabase {
                                     schemaVersionMajor, schemaVersionMinor,
                                     bundledSchemaVersionMajor, bundledSchemaVersionMinor);
                         } else if (isOtherProject) {
-                            Logger.d("Bundled product database is has different projectId (%s -> %s)",
+                            Logger.d("Bundled product database has different projectId (%s -> %s)",
                                     project, sdk.getProjectId());
                         } else {
                             Logger.d("Bundled product database is newer (%d -> %d)",
