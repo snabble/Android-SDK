@@ -193,6 +193,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             backgroundHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    if(!running){
+                        return;
+                    }
+
                     // as stated in the documentation:
                     // focus parameters may not be preserved across preview restarts
                     Camera.Parameters parameters = camera.getParameters();
