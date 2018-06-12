@@ -383,6 +383,13 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         unregisterListeners();
                     }
                 }
+
+                @Override
+                public void onActivityResumed(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        startBarcodeScanner();
+                    }
+                }
             };
 
 
