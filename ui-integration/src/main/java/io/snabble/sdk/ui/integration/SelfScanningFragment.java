@@ -39,6 +39,7 @@ public class SelfScanningFragment extends Fragment {
             if (scannableCode != null) {
                 selfScanningView.lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getSdkInstance(), scannableCode));
             }
+            setArguments(null);
         }
     }
 
