@@ -2,6 +2,9 @@ package io.snabble.sdk;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import com.google.gson.JsonObject;
 
@@ -236,22 +239,43 @@ public class SnabbleSdk {
 
         userPreferences = new UserPreferences(application);
 
-        if (config.endpointBaseUrl.startsWith("http://")
+        projectId = config.projectId;
+
+        if (projectId == null || application == null) {
+            setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
+            return;
+        }
+
+        if(config.endpointBaseUrl == null){
+            endpointBaseUrl = "https://api.snabble.io";
+        } else if (config.endpointBaseUrl.startsWith("http://")
                 || config.endpointBaseUrl.startsWith("https://")) {
             endpointBaseUrl = config.endpointBaseUrl;
         } else {
             endpointBaseUrl = "https://" + config.endpointBaseUrl;
         }
 
-        projectId = config.projectId;
+        if(config.metadataUrl == null){
+            ApplicationInfo applicationInfo = app.getApplicationInfo();
+            int stringId = applicationInfo.labelRes;
+            String label = stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : app.getString(stringId);
+            String version;
 
-        if (endpointBaseUrl == null || projectId == null
-                || application == null || config.metadataUrl == null) {
-            setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
-            return;
+            try {
+                PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
+                version = pInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                version = "";
+            }
+
+            label = label.toLowerCase().replace(" ", "");
+            version = version.toLowerCase().replace(" ", "");
+
+            metadataUrl = "/" + config.projectId + "/metadata/app/android/" + label + "-" + version;
+        } else {
+            metadataUrl = absoluteUrl(config.metadataUrl);
         }
 
-        metadataUrl = absoluteUrl(config.metadataUrl);
         metadataDownloader = new MetadataDownloader(this, config.bundledMetadataAssetPath);
 
         roundingMode = config.roundingMode != null ? config.roundingMode : RoundingMode.HALF_UP;
