@@ -155,6 +155,10 @@ public class ProductDatabase {
             try {
                 db = SQLiteDatabase.openDatabase(file.getAbsolutePath(),
                         null, SQLiteDatabase.OPEN_READWRITE);
+                // since Android 9 the default WAL mode is "normal" instead of "full"
+                // which interferes with full database updates using a temp file
+                // so we disable it here
+                db.disableWriteAheadLogging();
 
                 try {
                     revisionId = Long.parseLong(getMetaData(METADATA_KEY_REVISION));
