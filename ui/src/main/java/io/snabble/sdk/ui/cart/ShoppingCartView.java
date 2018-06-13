@@ -299,6 +299,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 public void onActivityStarted(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
                         registerListeners();
+                        onCartUpdated();
                     }
                 }
 
