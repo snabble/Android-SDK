@@ -399,12 +399,6 @@ public class ProductDatabase {
 
         long time2 = SystemClock.elapsedRealtime() - time;
         Logger.d("Delta update (%d -> %d) took %d ms", fromRevisionId, getRevisionId(), time2);
-
-        updateLastUpdateTimestamp(System.currentTimeMillis());
-
-        notifyOnDatabaseUpdated();
-
-        return;
     }
 
     /**
@@ -437,10 +431,6 @@ public class ProductDatabase {
 
         long time2 = SystemClock.elapsedRealtime() - time;
         Logger.d("Full update took %d ms", time2);
-
-        updateLastUpdateTimestamp(System.currentTimeMillis());
-
-        notifyOnDatabaseUpdated();
     }
 
     /**
@@ -464,6 +454,9 @@ public class ProductDatabase {
         productDatabaseDownloader.loadAsync(new Downloader.Callback() {
             @Override
             protected void onDataLoaded(boolean wasStillValid) {
+                updateLastUpdateTimestamp(System.currentTimeMillis());
+                notifyOnDatabaseUpdated();
+
                 if (callback != null) {
                     callback.success();
                 }
@@ -472,6 +465,9 @@ public class ProductDatabase {
             @Override
             protected void onError() {
                 if (productDatabaseDownloader.wasSameRevision()) {
+                    updateLastUpdateTimestamp(System.currentTimeMillis());
+                    notifyOnDatabaseUpdated();
+
                     if (callback != null) {
                         callback.success();
                     }

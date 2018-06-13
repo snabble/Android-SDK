@@ -43,7 +43,6 @@ class ProductDatabaseDownloader extends Downloader {
     protected void onDownloadFailed(Response response) {
         if (response != null && response.code() == 304) {
             sameRevision = true;
-            productDatabase.updateLastUpdateTimestamp(System.currentTimeMillis());
         } else {
             sameRevision = false;
         }
