@@ -1,5 +1,7 @@
 package io.snabble.sdk.ui.checkout;
 
+import android.app.Activity;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +18,8 @@ import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private ViewAnimator viewAnimator;
@@ -126,22 +130,52 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
+    public void registerListeners() {
         checkout.addOnCheckoutStateChangedListener(this);
-
         progressDialog.setOnCancelListener(onCancelListener);
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
+    public void unregisterListeners() {
         checkout.removeOnCheckoutStateChangedListener(this);
 
         progressDialog.setOnCancelListener(null);
         progressDialog.dismiss();
     }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        registerListeners();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        unregisterListeners();
+    }
+
+    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+            new SimpleActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityStarted(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        registerListeners();
+                    }
+                }
+
+                @Override
+                public void onActivityStopped(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        unregisterListeners();
+                    }
+                }
+            };
 }
