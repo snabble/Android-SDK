@@ -381,7 +381,6 @@ public class Checkout {
 
                 if(paymentMethod.isOfflineMethod()){
                     notifyStateChanged(State.WAIT_FOR_APPROVAL);
-                    return;
                 }
 
                 CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
@@ -403,6 +402,10 @@ public class Checkout {
                 call.enqueue(new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+                        if(paymentMethod.isOfflineMethod()){
+                            return;
+                        }
+
                         if (response.isSuccessful()) {
                             ResponseBody body = response.body();
                             if (body == null) {
@@ -435,6 +438,10 @@ public class Checkout {
 
                     @Override
                     public void onFailure(Call call, IOException e) {
+                        if(paymentMethod.isOfflineMethod()){
+                            return;
+                        }
+
                         if (!call.isCanceled()) {
                             Logger.e("Connection error while creating checkout process");
                             notifyStateChanged(State.CONNECTION_ERROR);
@@ -442,7 +449,9 @@ public class Checkout {
                     }
                 });
 
-                notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
+                if(!paymentMethod.isOfflineMethod()) {
+                    notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
+                }
             }
         }
     }
