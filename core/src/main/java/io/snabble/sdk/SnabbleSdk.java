@@ -273,9 +273,10 @@ public class SnabbleSdk {
 
             metadataUrl = "/" + config.projectId + "/metadata/app/android/" + label + "-" + version;
         } else {
-            metadataUrl = absoluteUrl(config.metadataUrl);
+            metadataUrl = config.metadataUrl;
         }
 
+        metadataUrl = absoluteUrl(metadataUrl);
         metadataDownloader = new MetadataDownloader(this, config.bundledMetadataAssetPath);
 
         roundingMode = config.roundingMode != null ? config.roundingMode : RoundingMode.HALF_UP;
