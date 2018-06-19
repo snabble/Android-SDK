@@ -3,9 +3,11 @@ package io.snabble.sdk.ui.scanner;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -31,6 +33,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.ui.utils.UIUtils;
 
 class ProductConfirmationDialog {
     private Context context;
@@ -261,8 +264,17 @@ class ProductConfirmationDialog {
 
     private void updatePrice() {
         if(product.getType() == Product.Type.Article) {
-            price.setText(priceFormatter.format(product.getPriceForQuantity(getQuantity(),
-                    SnabbleUI.getSdkInstance().getRoundingMode())));
+            String productPrice = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
+                    SnabbleUI.getSdkInstance().getRoundingMode()));
+
+            Product depositProduct = product.getDepositProduct();
+            if(depositProduct != null){
+                String depositPrice = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(),
+                        SnabbleUI.getSdkInstance().getRoundingMode()));
+                UIUtils.setColoredText(price, productPrice + " + " + depositPrice, depositPrice, Color.GRAY);
+            } else {
+                price.setText(productPrice);
+            }
         } else {
             price.setText(priceFormatter.format(product));
         }

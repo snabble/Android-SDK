@@ -364,6 +364,11 @@ public class ShoppingCart {
                 } else {
                     sum += product.getPriceForQuantity(e.quantity, sdkInstance.getRoundingMode());
                 }
+
+                Product depositProduct = product.getDepositProduct();
+                if(depositProduct != null){
+                    sum += depositProduct.getPriceForQuantity(e.quantity, sdkInstance.getRoundingMode());
+                }
             }
 
             return sum;

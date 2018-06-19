@@ -7,6 +7,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
 
@@ -41,5 +44,14 @@ public class UIUtils {
         }
 
         return null;
+    }
+
+    public static void setColoredText(TextView tv, String text, String subText, int color){
+        SpannableString spannableString = new SpannableString(text);
+        ForegroundColorSpan foregroundSpan = new ForegroundColorSpan(color);
+        int start = text.lastIndexOf(subText);
+        int end = start + subText.length();
+        spannableString.setSpan(foregroundSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv.setText(spannableString);
     }
 }

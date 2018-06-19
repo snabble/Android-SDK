@@ -6,6 +6,7 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
@@ -29,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import java.math.RoundingMode;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
@@ -349,6 +352,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             final Integer embeddedPrice = cart.getEmbeddedPrice(position);
             final Integer embeddedAmount = cart.getEmbeddedAmount(position);
             final Integer embeddedWeight = cart.getEmbeddedWeight(position);
+            RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
 
             if (product != null) {
                 Product.Type type = product.getType();
@@ -365,15 +369,32 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             priceFormatter.format(product.getPrice()),
                             priceFormatter.format(product.getPrice() * embeddedAmount)));
                 } else if(embeddedWeight != null){
-                    priceTextView.setText(String.format(" * %s = %s", price,
-                            priceFormatter.format(product.getPriceForQuantity(embeddedWeight,
-                                    SnabbleUI.getSdkInstance().getRoundingMode()))));
+                    String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, roundingMode));
+                    priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 } else if (quantity == 1) {
-                    priceTextView.setText(" " + price);
+                    Product depositProduct = product.getDepositProduct();
+                    if(depositProduct != null) {
+                        String depositPrice = priceFormatter.format(depositProduct);
+                        String text = String.format(" %s + %s", price, depositPrice);
+                        UIUtils.setColoredText(priceTextView, text, depositPrice, Color.GRAY);
+                    } else {
+                        priceTextView.setText(" " + price);
+                    }
                 } else {
-                    priceTextView.setText(String.format(" * %s = %s", price,
-                            priceFormatter.format(product.getPriceForQuantity(quantity,
-                                    SnabbleUI.getSdkInstance().getRoundingMode()))));
+                    Product depositProduct = product.getDepositProduct();
+                    int productPrice = product.getPriceForQuantity(quantity, roundingMode);
+                    if(depositProduct != null) {
+                        String depositPriceText = priceFormatter.format(depositProduct);
+                        int depositPriceSum = depositProduct.getPriceForQuantity(quantity, roundingMode);
+
+                        String priceSum = priceFormatter.format(productPrice + depositPriceSum);
+                        String text = String.format(" * %s + %s = %s", price, depositPriceText, priceSum);
+
+                        UIUtils.setColoredText(priceTextView, text, depositPriceText, Color.GRAY);
+                    } else {
+                        String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, roundingMode));
+                        priceTextView.setText(String.format(" * %s = %s", price, priceSum));
+                    }
                 }
 
                 if (type == Product.Type.UserWeighed || embeddedWeight != null) {
