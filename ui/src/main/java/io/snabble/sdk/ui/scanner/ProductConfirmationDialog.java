@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.scanner;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
@@ -20,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.math.RoundingMode;
 import java.util.Locale;
 
 import io.snabble.sdk.Checkout;
@@ -45,6 +47,7 @@ class ProductConfirmationDialog {
     private TextView subtitle;
     private TextView name;
     private TextView price;
+    private TextView depositPrice;
     private TextView quantityAnnotation;
     private AppCompatButton addToCart;
     private View close;
@@ -56,6 +59,7 @@ class ProductConfirmationDialog {
 
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
+
 
     public ProductConfirmationDialog(Context context,
                                      SnabbleSdk sdkInstance) {
@@ -83,6 +87,7 @@ class ProductConfirmationDialog {
         subtitle = view.findViewById(R.id.subtitle);
         name = view.findViewById(R.id.name);
         price = view.findViewById(R.id.price);
+        depositPrice = view.findViewById(R.id.depositPrice);
         quantityAnnotation = view.findViewById(R.id.quantity_annotation);
         addToCart = view.findViewById(R.id.addToCart);
         close = view.findViewById(R.id.close);
@@ -263,20 +268,27 @@ class ProductConfirmationDialog {
     }
 
     private void updatePrice() {
+        RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
         if(product.getType() == Product.Type.Article) {
-            String productPrice = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
-                    SnabbleUI.getSdkInstance().getRoundingMode()));
+            String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
+                    roundingMode));
 
-            Product depositProduct = product.getDepositProduct();
-            if(depositProduct != null){
-                String depositPrice = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(),
-                        SnabbleUI.getSdkInstance().getRoundingMode()));
-                UIUtils.setColoredText(price, productPrice + " + " + depositPrice, depositPrice, Color.GRAY);
-            } else {
-                price.setText(productPrice);
-            }
+            price.setText(priceText);
         } else {
             price.setText(priceFormatter.format(product));
+        }
+
+        Product depositProduct = product.getDepositProduct();
+        if(depositProduct != null){
+            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(),
+                    roundingMode));
+
+            Resources res = context.getResources();
+            String text = res.getString(R.string.Snabble_Scanner_plusDeposit, depositPriceText);
+            depositPrice.setText(text);
+            depositPrice.setVisibility(View.VISIBLE);
+        } else {
+            depositPrice.setVisibility(View.GONE);
         }
     }
 
