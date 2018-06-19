@@ -186,6 +186,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             }
 
             @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if(recyclerView.getAdapter().getItemViewType(viewHolder.getAdapterPosition())
+                        == Adapter.TYPE_DEPOSIT) {
+                    return 0;
+                }
+
+                return super.getMovementFlags(recyclerView, viewHolder);
+            }
+
+            @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
                 ViewHolder holder = (ViewHolder)viewHolder;
                 holder.hideInput();
