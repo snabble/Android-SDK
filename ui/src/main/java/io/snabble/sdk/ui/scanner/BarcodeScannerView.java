@@ -255,11 +255,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 showError(true);
                 return;
             }
+        } else {
+            camera.stopPreview();
         }
 
         updateDisplayOrientation();
         int displayOrientation = getDisplayOrientation();
-        camera.setDisplayOrientation(displayOrientation);
+
+        try {
+            camera.setDisplayOrientation(displayOrientation);
+        } catch (RuntimeException e){
+            // happens in very rare cases on the HUAWEI Mate 9.
+            // sendCommand: attempt to use a locked camera from a different process
+            // show a user error in that case
+            showError(true);
+            return;
+        }
 
         Camera.Parameters parameters = camera.getParameters();
 
