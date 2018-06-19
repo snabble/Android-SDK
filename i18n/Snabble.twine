@@ -69,6 +69,8 @@
         en = Update Cart
     [Snabble.Scanner.addToCart]
         en = Add to Cart
+    [Snabble.Scanner.plusDeposit]
+        en = + %@ deposit
 
     [Snabble.ShoppingCart.title]
         en = Shopping Cart
@@ -86,6 +88,8 @@
         en = Remove %@ from the cart?
     [Snabble.Shoppingcart.removeItems]
         en = Remove all products from shopping cart?
+    [Snabble.Shoppingcart.deposit]
+        en = Deposit
 
     [Snabble.PaymentMethod.encodedCodes]
         en = Checkstand
