@@ -218,7 +218,10 @@ public class Checkout {
     public void cancel() {
         cancelOutstandingCalls();
 
-        if (state != State.PAYMENT_APPROVED && checkoutProcess != null) {
+        if (state != State.PAYMENT_APPROVED
+                && state != State.DENIED_BY_PAYMENT_PROVIDER
+                && state != State.DENIED_BY_SUPERVISOR
+                && checkoutProcess != null) {
             final Request request = new Request.Builder()
                     .url(sdkInstance.absoluteUrl(checkoutProcess.getSelfLink()))
                     .patch(RequestBody.create(JSON, "{\"aborted\":true}"))
