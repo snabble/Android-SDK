@@ -726,7 +726,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void updateTransform() {
-        if(camera == null){
+        if(camera == null || previewSize == null){
             return;
         }
 
