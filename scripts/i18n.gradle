@@ -1,18 +1,10 @@
 apply plugin: 'com.github.jlouns.cpe'
 
-task checkRubyInstalled (
-        type: CrossPlatformExec,
-        description: "Checks if ruby is installed") {
-    standardOutput = new ByteArrayOutputStream()
-    commandLine 'ruby', '--version'
-}
-
 task checkTwineInstalled (
         type: CrossPlatformExec,
-        description: "Checks if twine is installed",
-        dependsOn: checkRubyInstalled) {
+        description: "Checks if twine is installed") {
     standardOutput = new ByteArrayOutputStream()
-    commandLine 'gem', 'list', '-i', 'twine'
+    commandLine 'which', 'twine'
 }
 
 task generateLocalizations (
@@ -25,16 +17,7 @@ task generateLocalizations (
     def stringsPath = absPath + "/src/main/res/"
 
     standardOutput = new ByteArrayOutputStream()
-    def cmd = 'twine'
-    println "i18npath " + i18nPath
-    println "stringsPath " + absPath
-    println "os name " + System.getProperty('os.name')
-
-    if(System.getProperty('os.name').toLowerCase().contains('mac')) {
-        cmd = '/usr/local/bin/twine'
-    }
-
-    commandLine cmd, 'generate-all-localization-files', i18nPath, stringsPath, "--tags", "android", "--untagged", "--format", "android"
+    commandLine 'twine', 'generate-all-localization-files', i18nPath, stringsPath, "--tags", "android", "--untagged", "--format", "android"
 }
 
 afterEvaluate {

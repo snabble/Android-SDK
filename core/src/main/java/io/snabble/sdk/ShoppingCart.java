@@ -366,6 +366,23 @@ public class ShoppingCart {
                 }
             }
 
+            sum += getTotalDepositPrice();
+
+            return sum;
+        }
+    }
+
+    public int getTotalDepositPrice() {
+        synchronized (lock) {
+            int sum = 0;
+
+            for (Entry e : items) {
+                Product depositProduct = e.product.getDepositProduct();
+                if(depositProduct != null){
+                    sum += depositProduct.getPriceForQuantity(e.quantity, sdkInstance.getRoundingMode());
+                }
+            }
+
             return sum;
         }
     }

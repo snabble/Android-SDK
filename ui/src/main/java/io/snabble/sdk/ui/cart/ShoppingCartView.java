@@ -6,10 +6,19 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +38,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import java.math.RoundingMode;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
@@ -172,6 +183,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                                   RecyclerView.ViewHolder viewHolder,
                                   RecyclerView.ViewHolder target) {
                 return false;
+            }
+
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if(recyclerView.getAdapter().getItemViewType(viewHolder.getAdapterPosition())
+                        == Adapter.TYPE_DEPOSIT) {
+                    return 0;
+                }
+
+                return super.getMovementFlags(recyclerView, viewHolder);
             }
 
             @Override
@@ -349,6 +370,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             final Integer embeddedPrice = cart.getEmbeddedPrice(position);
             final Integer embeddedAmount = cart.getEmbeddedAmount(position);
             final Integer embeddedWeight = cart.getEmbeddedWeight(position);
+            RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
 
             if (product != null) {
                 Product.Type type = product.getType();
@@ -365,15 +387,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             priceFormatter.format(product.getPrice()),
                             priceFormatter.format(product.getPrice() * embeddedAmount)));
                 } else if(embeddedWeight != null){
-                    priceTextView.setText(String.format(" * %s = %s", price,
-                            priceFormatter.format(product.getPriceForQuantity(embeddedWeight,
-                                    SnabbleUI.getSdkInstance().getRoundingMode()))));
+                    String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, roundingMode));
+                    priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 } else if (quantity == 1) {
                     priceTextView.setText(" " + price);
                 } else {
-                    priceTextView.setText(String.format(" * %s = %s", price,
-                            priceFormatter.format(product.getPriceForQuantity(quantity,
-                                    SnabbleUI.getSdkInstance().getRoundingMode()))));
+                    String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, roundingMode));
+                    priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 }
 
                 if (type == Product.Type.UserWeighed || embeddedWeight != null) {
@@ -536,20 +556,65 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     }
 
-    private class Adapter extends RecyclerView.Adapter<ViewHolder> {
+    private class DepositViewHolder extends RecyclerView.ViewHolder {
+        TextView deposit;
+        AppCompatImageView image;
+
+        public DepositViewHolder(View itemView) {
+            super(itemView);
+
+            deposit = itemView.findViewById(R.id.deposit);
+            image = itemView.findViewById(R.id.image);
+        }
+
+        public void update() {
+            PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getSdkInstance());
+            String depositText = priceFormatter.format(cart.getTotalDepositPrice());
+            deposit.setText(depositText);
+        }
+    }
+
+    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private static final int TYPE_ITEM = 0;
+        private static final int TYPE_DEPOSIT = 1;
+
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = View.inflate(getContext(), R.layout.item_shoppingcart_product, null);
-            return new ViewHolder(v);
+        public int getItemViewType(int position) {
+            if(cart.getTotalDepositPrice() > 0 && position == getItemCount() - 1){
+                return TYPE_DEPOSIT;
+            }
+
+            return TYPE_ITEM;
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-            holder.bindTo(position);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if(viewType == TYPE_DEPOSIT) {
+                View v = View.inflate(getContext(), R.layout.item_shoppingcart_deposit, null);
+                return new DepositViewHolder(v);
+            } else {
+                View v = View.inflate(getContext(), R.layout.item_shoppingcart_product, null);
+                return new ViewHolder(v);
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+            if(getItemViewType(position) == TYPE_DEPOSIT){
+                DepositViewHolder viewHolder = (DepositViewHolder)holder;
+                viewHolder.update();
+            } else {
+                ViewHolder viewHolder = (ViewHolder)holder;
+                viewHolder.bindTo(position);
+            }
         }
 
         @Override
         public int getItemCount() {
+            if(cart.getTotalDepositPrice() > 0){
+                return cart.size() + 1;
+            }
+
             return cart.size();
         }
     }

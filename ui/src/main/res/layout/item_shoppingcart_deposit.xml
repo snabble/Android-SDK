@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    tools:ignore="RtlHardcoded">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:src="@drawable/ic_deposit"
+        app:tint="@color/snabble_primaryColor"
+        app:tintMode="multiply"
+        android:id="@+id/image" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/image"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:id="@+id/title"
+        android:text="@string/Snabble.Shoppingcart.deposit"
+        android:textSize="17dp"
+        android:textColor="@color/snabble_textColorDark"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/image"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_below="@+id/title"
+        android:id="@+id/deposit"
+        tools:text="0,25 €"
+        android:textSize="12dp"
+        android:textColor="@color/snabble_textColorDark"/>
+
+</RelativeLayout>
