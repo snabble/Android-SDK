@@ -47,4 +47,8 @@ public class SelfScanningFragment extends Fragment {
         return ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
     }
+
+    public SelfScanningView getSelfScanningView() {
+        return selfScanningView;
+    }
 }
