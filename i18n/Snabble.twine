@@ -71,6 +71,10 @@
         en = Add to Cart
     [Snabble.Scanner.plusDeposit]
         en = + %@ deposit
+    [Snabble.Scanner.introText]
+        en = Scan barcodes on products and place them in your shopping cart.
+    [Snabble.Scanner.start]
+        en = Start scanner
 
     [Snabble.ShoppingCart.title]
         en = Shopping Cart
