@@ -13,15 +13,15 @@
         android:visibility="gone" />
 
     <TextView
-        android:layout_width="304dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"
         android:text="@string/Snabble.Scanner.Camera.accessDenied"
-        android:textColor="@color/snabble_textColorDark"
+        android:textColor="@color/snabble_textColorLight"
         android:id="@+id/no_permission"
         android:gravity="center"
         android:textStyle="bold"
+        android:background="@color/snabble_backgroundColorDark"
         android:visibility="gone" />
 
     <TextView

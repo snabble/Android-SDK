@@ -54,7 +54,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private DialogInterface.OnCancelListener progressDialogCancelListener = new DialogInterface.OnCancelListener() {
         @Override
         public void onCancel(DialogInterface dialog) {
-            barcodeScanner.resume();
+            resumeBarcodeScanner();
             checkout.cancel();
         }
     };
@@ -131,7 +131,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         productDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                barcodeScanner.resume();
+                resumeBarcodeScanner();
                 allowScan = true;
             }
         });
@@ -140,7 +140,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             @Override
             public void onShow(DialogInterface dialog) {
                 allowScan = false;
-                barcodeScanner.pause();
+                pauseBarcodeScanner();
             }
         });
 
@@ -166,7 +166,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog.setOnCancelListener(progressDialogCancelListener);
         progressDialog.showAfterDelay(300);
-        barcodeScanner.pause();
+        pauseBarcodeScanner();
 
         if(scannedCode.hasEmbeddedData()){
             productDatabase.findByWeighItemIdOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
@@ -235,7 +235,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
     private void handleProductNotFound(ScannableCode scannedCode) {
         progressDialog.dismiss();
-        barcodeScanner.resume();
+        resumeBarcodeScanner();
         delayNextScan();
 
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
@@ -247,7 +247,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
     private void handleProductError() {
         progressDialog.dismiss();
-        barcodeScanner.resume();
+        resumeBarcodeScanner();
         delayNextScan();
 
         UIUtils.snackbar(SelfScanningView.this,
@@ -287,15 +287,29 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     public void resume() {
-        barcodeScanner.resume();
+        resumeBarcodeScanner();
     }
 
     public void pause() {
-        barcodeScanner.pause();
+        pauseBarcodeScanner();
+    }
+
+    private void pauseBarcodeScanner() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            barcodeScanner.pause();
+        }
+    }
+
+    private void resumeBarcodeScanner() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            barcodeScanner.resume();
+        }
     }
 
     private void showProduct(Product product, ScannableCode scannedCode) {
-        barcodeScanner.pause();
+        pauseBarcodeScanner();
         allowScan = false;
         showProductDialog(product, scannedCode);
     }
