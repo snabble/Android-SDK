@@ -1034,11 +1034,15 @@ public class ProductDatabase {
     }
 
     /**
+     * This function is deprecated and will be removed from the SDK in the future. There will be no
+     * alternative function to find products by name.
+     *
      * Find a product by its name. Matching is normalized, so "Apple" finds also "apple".
      *
      * @param name The name of the product.
      * @return The first product matching the name, otherwise null if no product was found.
      */
+    @Deprecated
     public Product findByName(String name) {
         if (name == null || name.length() == 0) {
             return null;
@@ -1055,6 +1059,9 @@ public class ProductDatabase {
     }
 
     /**
+     * This function is deprecated and will be removed from the SDK in the future. There will be no
+     * alternative function to search for products.
+     *
      * Returns a {@link Cursor} which can be iterated for items containing the given search
      * string at the start of a word.
      * <p>
@@ -1063,6 +1070,7 @@ public class ProductDatabase {
      *
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
+    @Deprecated
     public Cursor searchByFoldedName(String searchString, CancellationSignal cancellationSignal) {
         return productQuery("JOIN searchByName s ON " + getSearchIndexColumn() + " = p.sku " +
                 "WHERE s.foldedName MATCH ? " +
