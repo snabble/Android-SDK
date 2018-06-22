@@ -150,16 +150,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
 
         startRequested = true;
-        startIfRequestedAsync();
-    }
-
-    private void startIfRequestedAsync(){
-        backgroundHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                startIfRequested();
-            }
-        });
+        startIfRequested();
     }
 
     /**
@@ -169,15 +160,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         isPaused = true;
 
         if (running) {
-            backgroundHandler.removeCallbacksAndMessages(null);
             isProcessing = false;
-            backgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    camera.stopPreview();
-                    decodeEnabled = false;
-                }
-            });
+
+            camera.stopPreview();
+            decodeEnabled = false;
         }
     }
 
@@ -190,31 +176,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         if (!running) {
             start();
         } else {
-            backgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(!running){
-                        return;
-                    }
+            // as stated in the documentation:
+            // focus parameters may not be preserved across preview restarts
+            Camera.Parameters parameters = camera.getParameters();
+            chooseFocusMode(parameters);
+            camera.setParameters(parameters);
+            camera.startPreview();
 
-                    // as stated in the documentation:
-                    // focus parameters may not be preserved across preview restarts
-                    Camera.Parameters parameters = camera.getParameters();
-                    chooseFocusMode(parameters);
-                    camera.setParameters(parameters);
-                    camera.startPreview();
+            clearBuffers();
+            decodeEnabled = true;
 
-                    clearBuffers();
-                    decodeEnabled = true;
-
-                    synchronized (frameBufferLock) {
-                        // some Samsung devices are sometimes unregistering the preview callback
-                        // when calling stopPreview, so we are registering it here again
-                        camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
-                        camera.addCallbackBuffer(backBuffer);
-                    }
-                }
-            });
+            synchronized (frameBufferLock) {
+                // some Samsung devices are sometimes unregistering the preview callback
+                // when calling stopPreview, so we are registering it here again
+                camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
+                camera.addCallbackBuffer(backBuffer);
+            }
         }
     }
 
@@ -327,9 +304,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         // extra buffer that will be used for image rotations
         rotateBuffer = new byte[bufferSize];
 
-        camera.setPreviewCallbackWithBuffer(this);
-        camera.addCallbackBuffer(backBuffer);
-
         if (manualAutoFocus) {
             scheduleAutoFocus();
         }
@@ -344,13 +318,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         isProcessing = false;
 
         setTorchEnabled(torchEnabled);
+        updateTransform();
 
-        mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                updateTransform();
-            }
-        });
+        camera.setPreviewCallbackWithBuffer(this);
+        camera.addCallbackBuffer(backBuffer);
 
         if (isPaused) {
             camera.stopPreview();
@@ -400,18 +371,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void showError(final boolean show) {
-        mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (show) {
-                    cameraUnavailableView.setVisibility(View.VISIBLE);
-                    scanIndicatorView.setVisibility(View.GONE);
-                } else {
-                    cameraUnavailableView.setVisibility(View.GONE);
-                    scanIndicatorView.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+        if (show) {
+            cameraUnavailableView.setVisibility(View.VISIBLE);
+            scanIndicatorView.setVisibility(View.GONE);
+        } else {
+            cameraUnavailableView.setVisibility(View.GONE);
+            scanIndicatorView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -538,24 +504,19 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     public void stop() {
-        backgroundHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (running) {
-                    camera.stopPreview();
-                    camera.release();
-                    camera = null;
-                    running = false;
-                }
+        if (running) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+            running = false;
+        }
 
-                startRequested = false;
-            }
-        });
+        startRequested = false;
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        startIfRequestedAsync();
+        startIfRequested();
 
         surfaceWidth = width;
         surfaceHeight = height;
@@ -602,7 +563,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             }
 
             swapBuffers();
-
             camera.addCallbackBuffer(backBuffer);
 
             isProcessing = true;
