@@ -1,7 +1,5 @@
 package io.snabble.sdk;
 
-import android.os.Bundle;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -23,15 +21,19 @@ class MetadataDownloader extends StringDownloader {
     private JsonObject metadata;
     private JsonObject project;
 
+    private boolean hasData = false;
+
     public MetadataDownloader(SnabbleSdk sdk,
                               String bundledFileAssetPath) {
         super(sdk.getOkHttpClient());
 
         this.sdk = sdk;
+        File storageFile = new File(sdk.getInternalStorageDirectory(), "metadata.json");
 
         if (bundledFileAssetPath != null) {
-            setBundledData(sdk.getApplication(), bundledFileAssetPath,
-                    new File(sdk.getInternalStorageDirectory(), "metadata.json"));
+            setBundledData(sdk.getApplication(), bundledFileAssetPath, storageFile);
+        } else {
+            setStorageFile(storageFile);
         }
 
         setUrl(sdk.getMetadataUrl());
@@ -42,8 +44,6 @@ class MetadataDownloader extends StringDownloader {
         try {
             Map<String, String> urls = new HashMap<>();
             Map<String, String> extras = new HashMap<>();
-            Bundle flags = new Bundle();
-            Bundle projectSettings = new Bundle();
 
             Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(content, JsonObject.class);
@@ -73,9 +73,14 @@ class MetadataDownloader extends StringDownloader {
             this.extras = Collections.unmodifiableMap(extras);
 
             updateStorage(content);
+            hasData = true;
         } catch (JsonSyntaxException e){
             Logger.e(e.getMessage());
         }
+    }
+
+    public boolean hasData() {
+        return hasData;
     }
 
     public Map<String, String> getUrls() {

@@ -42,11 +42,8 @@ public abstract class StringDownloader extends Downloader {
             //so we check for the install time of the app
             //this implicitly means that while developing you always start with the seeded data
             //and that app updates should always contain updated seeds
-            if (storageFile.exists() && storageFile.lastModified() > packageInfo.lastUpdateTime) {
-                FileInputStream fis = new FileInputStream(this.storageFile);
-                Logger.d("Using saved data: %s", storageFile.getAbsolutePath());
-                onDownloadFinished(IOUtils.toString(fis, Charset.forName("UTF-8")));
-                fis.close();
+            if(storageFile.exists() && storageFile.lastModified() > packageInfo.lastUpdateTime) {
+                loadFromSavedData();
             } else {
                 Logger.d("Using initial seed: %s", storageFile.getAbsolutePath());
                 onDownloadFinished(IOUtils.toString(bundledDataInputStream, Charset.forName("UTF-8")));
@@ -56,8 +53,23 @@ public abstract class StringDownloader extends Downloader {
         }
     }
 
+    private void loadFromSavedData() throws IOException {
+        FileInputStream fis = new FileInputStream(storageFile);
+        Logger.d("Using saved data: %s", storageFile.getAbsolutePath());
+        onDownloadFinished(IOUtils.toString(fis, Charset.forName("UTF-8")));
+        fis.close();
+    }
+
     public void setStorageFile(File storageFile) {
         this.storageFile = storageFile;
+
+        if (storageFile.exists()) {
+            try {
+                loadFromSavedData();
+            } catch (IOException e) {
+                Logger.e("Could not load saved data: %s", storageFile.getAbsolutePath());
+            }
+        }
     }
 
     /**
@@ -88,8 +100,6 @@ public abstract class StringDownloader extends Downloader {
         if (body != null) {
             onDownloadFinished(body.string());
             Logger.d("Received data for %s", getUrl());
-        } else {
-            Logger.d("Error receiving data for %s", getUrl());
         }
     }
 

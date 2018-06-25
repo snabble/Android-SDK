@@ -298,7 +298,11 @@ public class SnabbleSdk {
 
                 @Override
                 protected void onError() {
-                    setupError(setupCompletionListener, Error.CONNECTION_TIMEOUT);
+                    if(metadataDownloader.hasData()){
+                        setupSdk(config, setupCompletionListener);
+                    } else {
+                        setupError(setupCompletionListener, Error.CONNECTION_TIMEOUT);
+                    }
                 }
             });
         }
