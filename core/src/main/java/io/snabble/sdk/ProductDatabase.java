@@ -541,9 +541,7 @@ public class ProductDatabase {
 
     private boolean deleteDatabase(File dbFile) {
         if (dbFile.exists()) {
-            if (!application.deleteDatabase(dbFile.getName())) {
-                return false;
-            }
+            return application.deleteDatabase(dbFile.getName());
         }
         return true;
     }
@@ -769,7 +767,12 @@ public class ProductDatabase {
         Cursor cursor;
 
         synchronized (dbLock) {
-            cursor = db.rawQuery(sql, args, cancellationSignal);
+            try {
+                cursor = db.rawQuery(sql, args, cancellationSignal);
+            } catch (Exception e) {
+                // query could not be executed
+                return null;
+            }
         }
 
         //query executes when we call the first function that needs data, not on db.rawQuery
