@@ -32,7 +32,7 @@ public abstract class StringDownloader extends Downloader {
      * uses the app files data unless the app gets updated.
      */
     public void setBundledData(Context context, String assetPath, File storageFile) {
-        setStorageFile(storageFile);
+        this.storageFile = storageFile;
 
         try {
             InputStream bundledDataInputStream = context.getAssets().open(assetPath);

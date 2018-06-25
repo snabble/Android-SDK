@@ -124,8 +124,6 @@ public class SnabbleSdk {
         public String encodedCodesPrefix = null;
         public String encodedCodesSeperator = null;
         public String encodedCodesSuffix = null;
-
-        public RoundingMode roundingMode = RoundingMode.HALF_UP;
     }
 
     private String endpointBaseUrl;
@@ -160,8 +158,6 @@ public class SnabbleSdk {
     private String encodedCodesPrefix = null;
     private String encodedCodesSeperator = null;
     private String encodedCodesSuffix = null;
-
-    private RoundingMode roundingMode;
 
     private SnabbleSdk() {
 
@@ -278,8 +274,6 @@ public class SnabbleSdk {
 
         metadataUrl = absoluteUrl(metadataUrl);
         metadataDownloader = new MetadataDownloader(this, config.bundledMetadataAssetPath);
-
-        roundingMode = config.roundingMode != null ? config.roundingMode : RoundingMode.HALF_UP;
 
         encodedCodesPrefix = config.encodedCodesPrefix != null ? config.encodedCodesPrefix : "";
         encodedCodesSeperator = config.encodedCodesSeperator != null ? config.encodedCodesSeperator : "\n";
@@ -589,7 +583,7 @@ public class SnabbleSdk {
     }
 
     public RoundingMode getRoundingMode() {
-        return roundingMode;
+        return metadataDownloader.getRoundingMode();
     }
 
     public Checkout getCheckout() {

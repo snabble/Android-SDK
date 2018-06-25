@@ -1,10 +1,12 @@
 package io.snabble.sdk;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ class MetadataDownloader extends StringDownloader {
     private JsonObject project;
 
     private boolean hasData = false;
+    private RoundingMode roundingMode;
 
     public MetadataDownloader(SnabbleSdk sdk,
                               String bundledFileAssetPath) {
@@ -63,10 +66,12 @@ class MetadataDownloader extends StringDownloader {
 
             if (jsonObject.has("metadata")) {
                 this.metadata = jsonObject.get("metadata").getAsJsonObject();
+
             }
 
             if (jsonObject.has("project")) {
                 this.project = jsonObject.get("project").getAsJsonObject();
+                this.roundingMode = parseRoundingMode(project.get("roundingMode"));
             }
 
             this.urls = Collections.unmodifiableMap(urls);
@@ -77,6 +82,24 @@ class MetadataDownloader extends StringDownloader {
         } catch (JsonSyntaxException e){
             Logger.e(e.getMessage());
         }
+    }
+
+    public RoundingMode parseRoundingMode(JsonElement jsonElement){
+        if(jsonElement != null){
+            String roundingMode = jsonElement.getAsString();
+            if(roundingMode != null){
+                switch(roundingMode){
+                    case "up":
+                        return RoundingMode.UP;
+                    case "down":
+                        return RoundingMode.DOWN;
+                    case "commercial":
+                        return RoundingMode.HALF_UP;
+                }
+            }
+        }
+
+        return RoundingMode.HALF_UP;
     }
 
     public boolean hasData() {
@@ -97,5 +120,9 @@ class MetadataDownloader extends StringDownloader {
 
     public JsonObject getProject() {
         return project;
+    }
+
+    public RoundingMode getRoundingMode() {
+        return roundingMode;
     }
 }
