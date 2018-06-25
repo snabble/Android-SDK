@@ -149,8 +149,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             throw new RuntimeException("Missing camera permission");
         }
 
-        startRequested = true;
-        startIfRequested();
+        backgroundHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                startRequested = true;
+                startIfRequestedAsync();
+            }
+        });
+    }
+
+    private void startIfRequestedAsync(){
+        backgroundHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                startIfRequested();
+            }
+        });
     }
 
     /**
@@ -160,10 +174,15 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         isPaused = true;
 
         if (running) {
+            backgroundHandler.removeCallbacksAndMessages(null);
             isProcessing = false;
-
-            camera.stopPreview();
-            decodeEnabled = false;
+            backgroundHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    camera.stopPreview();
+                    decodeEnabled = false;
+                }
+            });
         }
     }
 
@@ -176,22 +195,31 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         if (!running) {
             start();
         } else {
-            // as stated in the documentation:
-            // focus parameters may not be preserved across preview restarts
-            Camera.Parameters parameters = camera.getParameters();
-            chooseFocusMode(parameters);
-            camera.setParameters(parameters);
-            camera.startPreview();
+            backgroundHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(!running){
+                        return;
+                    }
 
-            clearBuffers();
-            decodeEnabled = true;
+                    // as stated in the documentation:
+                    // focus parameters may not be preserved across preview restarts
+                    Camera.Parameters parameters = camera.getParameters();
+                    chooseFocusMode(parameters);
+                    camera.setParameters(parameters);
+                    camera.startPreview();
 
-            synchronized (frameBufferLock) {
-                // some Samsung devices are sometimes unregistering the preview callback
-                // when calling stopPreview, so we are registering it here again
-                camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
-                camera.addCallbackBuffer(backBuffer);
-            }
+                    clearBuffers();
+                    decodeEnabled = true;
+
+                    synchronized (frameBufferLock) {
+                        // some Samsung devices are sometimes unregistering the preview callback
+                        // when calling stopPreview, so we are registering it here again
+                        camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
+                        camera.addCallbackBuffer(backBuffer);
+                    }
+                }
+            });
         }
     }
 
@@ -304,6 +332,9 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         // extra buffer that will be used for image rotations
         rotateBuffer = new byte[bufferSize];
 
+        camera.setPreviewCallbackWithBuffer(this);
+        camera.addCallbackBuffer(backBuffer);
+
         if (manualAutoFocus) {
             scheduleAutoFocus();
         }
@@ -318,10 +349,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         isProcessing = false;
 
         setTorchEnabled(torchEnabled);
-        updateTransform();
 
-        camera.setPreviewCallbackWithBuffer(this);
-        camera.addCallbackBuffer(backBuffer);
+        mainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                updateTransform();
+            }
+        });
 
         if (isPaused) {
             camera.stopPreview();
@@ -371,13 +405,18 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void showError(final boolean show) {
-        if (show) {
-            cameraUnavailableView.setVisibility(View.VISIBLE);
-            scanIndicatorView.setVisibility(View.GONE);
-        } else {
-            cameraUnavailableView.setVisibility(View.GONE);
-            scanIndicatorView.setVisibility(View.VISIBLE);
-        }
+        mainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (show) {
+                    cameraUnavailableView.setVisibility(View.VISIBLE);
+                    scanIndicatorView.setVisibility(View.GONE);
+                } else {
+                    cameraUnavailableView.setVisibility(View.GONE);
+                    scanIndicatorView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     /**
@@ -399,7 +438,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                     }
                 }
-
+                startRequested = true;
+                startIfRequestedAsync();
                 try {
                     camera.setParameters(parameters);
                     torchEnabled = enabled;
@@ -504,19 +544,24 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     public void stop() {
-        if (running) {
-            camera.stopPreview();
-            camera.release();
-            camera = null;
-            running = false;
-        }
+        backgroundHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (running) {
+                    camera.stopPreview();
+                    camera.release();
+                    camera = null;
+                    running = false;
+                }
 
-        startRequested = false;
+                startRequested = false;
+            }
+        });
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        startIfRequested();
+        startIfRequestedAsync();
 
         surfaceWidth = width;
         surfaceHeight = height;
@@ -563,6 +608,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             }
 
             swapBuffers();
+
             camera.addCallbackBuffer(backBuffer);
 
             isProcessing = true;
