@@ -396,8 +396,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 }
 
-                if (type == Product.Type.UserWeighed || embeddedWeight != null) {
+                if(embeddedWeight != null) {
                     quantityTextView.setText(String.format("%s g", String.valueOf(embeddedWeight)));
+                } else if (type == Product.Type.UserWeighed) {
+                    quantityTextView.setText(String.format("%s g", String.valueOf(quantity)));
                 } else {
                     quantityTextView.setText(String.valueOf(quantity));
                 }
