@@ -240,7 +240,7 @@ class ProductConfirmationDialog {
             }
         });
 
-        if (cartQuantity > 0) {
+        if (cartQuantity > 0 && product.getType() == Product.Type.Article) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
