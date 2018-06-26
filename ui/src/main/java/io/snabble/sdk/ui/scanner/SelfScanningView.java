@@ -153,7 +153,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     public void lookupAndShowProduct(final ScannableCode scannedCode) {
         productDialog.dismiss();
 
-        if(!scannedCode.isEmbeddedDataOk()){
+        if(scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()){
             delayNextScan();
 
             Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());

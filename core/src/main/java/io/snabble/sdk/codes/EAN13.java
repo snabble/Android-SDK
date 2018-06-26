@@ -18,31 +18,33 @@ public class EAN13 extends ScannableCode implements Serializable {
             throw new IllegalArgumentException("Not a valid EAN13 code");
         }
 
-        if(isEmbeddedDataOk()) {
-            for (String prefix : weighPrefixes) {
-                if (code.startsWith(prefix)) {
-                    hasWeighData = true;
-                }
+        for (String prefix : weighPrefixes) {
+            if (code.startsWith(prefix)) {
+                hasWeighData = true;
             }
-
-            for (String prefix : pricePrefixes) {
-                if (code.startsWith(prefix)) {
-                    hasPriceData = true;
-                }
-            }
-
-            for (String prefix : amountPrefixes) {
-                if (code.startsWith(prefix)) {
-                    hasAmountData = true;
-                }
-            }
-
-            lookupCode = code.substring(0, 6) + "0000000";
-        } else {
-            lookupCode = code;
         }
 
-        embeddedData = Integer.parseInt(code.substring(7, 12));
+        for (String prefix : pricePrefixes) {
+            if (code.startsWith(prefix)) {
+                hasPriceData = true;
+            }
+        }
+
+        for (String prefix : amountPrefixes) {
+            if (code.startsWith(prefix)) {
+                hasAmountData = true;
+            }
+        }
+
+        if(isEmbeddedDataOk()) {
+            lookupCode = code.substring(0, 6) + "0000000";
+            embeddedData = Integer.parseInt(code.substring(7, 12));
+        } else {
+            lookupCode = code;
+            hasWeighData = false;
+            hasAmountData = false;
+            hasPriceData = false;
+        }
     }
 
     @Override
@@ -78,7 +80,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     @Override
     public boolean isEmbeddedDataOk() {
         if(!hasEmbeddedData()){
-            return true;
+            return false;
         }
 
         String code = getCode();
@@ -109,9 +111,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     public static boolean checkChecksum(String ean) {
         if (isValidString(ean)) {
             int d = Character.digit(ean.charAt(ean.length() - 1), 10);
-            if (d == checksum(ean.substring(0, ean.length() - 1))) {
-                return true;
-            }
+            return d == checksum(ean.substring(0, ean.length() - 1));
         }
 
         return false;
@@ -153,19 +153,13 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     private static boolean isValidString(String ean) {
-        if (ean != null && ean.length() == 13 && allDigits(ean)) {
-            return true;
-        }
+        return ean != null && ean.length() == 13 && allDigits(ean);
 
-        return false;
     }
 
     public static boolean isEan13(String ean) {
-        if (isValidString(ean) && checkChecksum(ean)) {
-            return true;
-        }
+        return isValidString(ean) && checkChecksum(ean);
 
-        return false;
     }
 
     private static SparseIntArray check5plus = new SparseIntArray();
