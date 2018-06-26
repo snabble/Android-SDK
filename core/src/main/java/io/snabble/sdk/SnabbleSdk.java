@@ -314,34 +314,7 @@ public class SnabbleSdk {
     }
 
     private void setupSdk(Config config, final SetupCompletionListener setupCompletionListener) {
-        updateShops();
-
-        Map<String, String> urls = metadataDownloader.getUrls();
-        if (urls == null || urls.get("appdb") == null) {
-            Logger.e("Metadata does not contain url for product database updates. No product database updates possible");
-        }
-
-        JsonObject projectSettings = metadataDownloader.getProject();
-
-        currency = Currency.getInstance(JsonUtils.getStringOpt(projectSettings, "currency", "EUR"));
-
-        String locale = JsonUtils.getStringOpt(projectSettings, "locale", "de_DE");
-
-        try {
-            currencyLocale = LocaleUtils.toLocale(locale);
-        } catch (IllegalArgumentException e){
-            currencyLocale = Locale.getDefault();
-        }
-
-        if(currencyLocale == null){
-            currencyLocale = Locale.getDefault();
-        }
-
-        currencyFractionDigits = JsonUtils.getIntOpt(projectSettings, "decimalDigits", 2);
-
-        weighPrefixes = JsonUtils.getStringArrayOpt(projectSettings, "weighPrefixes", new String[0]);
-        pricePrefixes = JsonUtils.getStringArrayOpt(projectSettings, "pricePrefixes", new String[0]);
-        unitPrefixes = JsonUtils.getStringArrayOpt(projectSettings, "unitPrefixes", new String[0]);
+        readMetadata();
 
         ProductDatabase.Config dbConfig = new ProductDatabase.Config();
         dbConfig.bundledAssetPath = config.productDbBundledAssetPath;
@@ -377,6 +350,37 @@ public class SnabbleSdk {
                         }
                     }
                 });
+    }
+
+    private void readMetadata() {
+        updateShops();
+
+        Map<String, String> urls = metadataDownloader.getUrls();
+        if (urls == null || urls.get("appdb") == null) {
+            Logger.e("Metadata does not contain url for product database updates. No product database updates possible");
+        }
+
+        JsonObject projectSettings = metadataDownloader.getProject();
+
+        currency = Currency.getInstance(JsonUtils.getStringOpt(projectSettings, "currency", "EUR"));
+
+        String locale = JsonUtils.getStringOpt(projectSettings, "locale", "de_DE");
+
+        try {
+            currencyLocale = LocaleUtils.toLocale(locale);
+        } catch (IllegalArgumentException e){
+            currencyLocale = Locale.getDefault();
+        }
+
+        if(currencyLocale == null){
+            currencyLocale = Locale.getDefault();
+        }
+
+        currencyFractionDigits = JsonUtils.getIntOpt(projectSettings, "decimalDigits", 2);
+
+        weighPrefixes = JsonUtils.getStringArrayOpt(projectSettings, "weighPrefixes", new String[0]);
+        pricePrefixes = JsonUtils.getStringArrayOpt(projectSettings, "pricePrefixes", new String[0]);
+        unitPrefixes = JsonUtils.getStringArrayOpt(projectSettings, "unitPrefixes", new String[0]);
     }
 
     private void setupOk(final SetupCompletionListener setupCompletionListener) {
@@ -611,6 +615,8 @@ public class SnabbleSdk {
             @Override
             protected void onDataLoaded(boolean wasStillValid) {
                 if (!wasStillValid) {
+                    readMetadata();
+
                     for (OnMetadataUpdateListener listener : onMetaDataUpdateListeners) {
                         listener.onMetaDataUpdated();
                     }
