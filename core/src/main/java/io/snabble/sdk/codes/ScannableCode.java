@@ -45,10 +45,7 @@ public class ScannableCode implements Serializable {
 
     public static ScannableCode parse(SnabbleSdk snabbleSdk, String code){
         if(EAN13.isEan13(code)){
-            return new EAN13(code,
-                    snabbleSdk.getWeighPrefixes(),
-                    snabbleSdk.getPricePrefixes(),
-                    snabbleSdk.getUnitPrefixes());
+            return new EAN13(code, snabbleSdk);
         } else {
             return new ScannableCode(code);
         }

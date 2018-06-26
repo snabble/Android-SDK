@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringDownloader;
 
@@ -25,6 +26,7 @@ class MetadataDownloader extends StringDownloader {
 
     private boolean hasData = false;
     private RoundingMode roundingMode;
+    private boolean verifyInternalEanChecksum;
 
     public MetadataDownloader(SnabbleSdk sdk,
                               String bundledFileAssetPath) {
@@ -72,6 +74,7 @@ class MetadataDownloader extends StringDownloader {
             if (jsonObject.has("project")) {
                 this.project = jsonObject.get("project").getAsJsonObject();
                 this.roundingMode = parseRoundingMode(project.get("roundingMode"));
+                this.verifyInternalEanChecksum = JsonUtils.getBooleanOpt(project, "verifyInternalEanChecksum", true);
             }
 
             this.urls = Collections.unmodifiableMap(urls);
@@ -124,5 +127,9 @@ class MetadataDownloader extends StringDownloader {
 
     public RoundingMode getRoundingMode() {
         return roundingMode;
+    }
+
+    public boolean isVerifyingInternalEanChecksum() {
+        return verifyInternalEanChecksum;
     }
 }

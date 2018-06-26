@@ -590,6 +590,10 @@ public class SnabbleSdk {
         return metadataDownloader.getRoundingMode();
     }
 
+    public boolean isVerifyingInternalEanChecksum() {
+        return metadataDownloader.isVerifyingInternalEanChecksum();
+    }
+
     public Checkout getCheckout() {
         return checkout;
     }

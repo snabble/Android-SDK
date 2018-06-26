@@ -4,35 +4,41 @@ import android.util.SparseIntArray;
 
 import java.io.Serializable;
 
+import io.snabble.sdk.SnabbleSdk;
+
 public class EAN13 extends ScannableCode implements Serializable {
     private String lookupCode;
     private int embeddedData;
-    private boolean hasAmountData;
+    private boolean hasUnitData;
     private boolean hasPriceData;
     private boolean hasWeighData;
 
-    public EAN13(String code, String[] weighPrefixes, String[] pricePrefixes, String[] amountPrefixes) {
+    private boolean verifyInternalEanChecksum;
+
+    EAN13(String code, SnabbleSdk snabbleSdk) {
         super(code);
 
         if(!isEan13(code)){
             throw new IllegalArgumentException("Not a valid EAN13 code");
         }
 
-        for (String prefix : weighPrefixes) {
+        verifyInternalEanChecksum = snabbleSdk.isVerifyingInternalEanChecksum();
+
+        for (String prefix : snabbleSdk.getWeighPrefixes()) {
             if (code.startsWith(prefix)) {
                 hasWeighData = true;
             }
         }
 
-        for (String prefix : pricePrefixes) {
+        for (String prefix : snabbleSdk.getPricePrefixes()) {
             if (code.startsWith(prefix)) {
                 hasPriceData = true;
             }
         }
 
-        for (String prefix : amountPrefixes) {
+        for (String prefix : snabbleSdk.getUnitPrefixes()) {
             if (code.startsWith(prefix)) {
-                hasAmountData = true;
+                hasUnitData = true;
             }
         }
 
@@ -42,7 +48,7 @@ public class EAN13 extends ScannableCode implements Serializable {
         } else {
             lookupCode = code;
             hasWeighData = false;
-            hasAmountData = false;
+            hasUnitData = false;
             hasPriceData = false;
         }
     }
@@ -59,7 +65,7 @@ public class EAN13 extends ScannableCode implements Serializable {
 
     @Override
     public boolean hasAmountData() {
-        return hasAmountData;
+        return hasUnitData;
     }
 
     @Override
@@ -74,13 +80,17 @@ public class EAN13 extends ScannableCode implements Serializable {
 
     @Override
     public boolean hasEmbeddedData(){
-        return hasAmountData || hasPriceData || hasWeighData;
+        return hasUnitData || hasPriceData || hasWeighData;
     }
 
     @Override
     public boolean isEmbeddedDataOk() {
         if(!hasEmbeddedData()){
             return false;
+        }
+
+        if(!verifyInternalEanChecksum){
+            return true;
         }
 
         String code = getCode();
