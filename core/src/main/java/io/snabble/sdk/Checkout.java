@@ -229,7 +229,7 @@ public class Checkout {
 
             okHttpClient.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(Call call, Response response) {
                     if (response.isSuccessful()) {
                         Logger.d("Payment aborted");
                     } else {
@@ -702,6 +702,11 @@ public class Checkout {
             cart.items[i].units = shoppingCart.getEmbeddedAmount(i);
             cart.items[i].weight = shoppingCart.getEmbeddedWeight(i);
             cart.items[i].price = shoppingCart.getEmbeddedPrice(i);
+
+            if(product.getType() == Product.Type.UserWeighed){
+                cart.items[i].amount = 1;
+                cart.items[i].weight = quantity;
+            }
         }
 
         return gson.toJson(cart);
