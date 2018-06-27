@@ -52,8 +52,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
         android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:textSize="17sp"
-        tools:text="11,99 €" />
+        tools:text="2 * 1,00€ = 2,00€" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/depositPrice"
