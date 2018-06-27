@@ -92,7 +92,7 @@ class PaymentMethodView extends FrameLayout {
         TextView title = findViewById(R.id.choose_payment_title);
 
         PriceFormatter priceFormatter = new PriceFormatter(sdkInstance);
-        String totalPriceText = priceFormatter.format(sdkInstance.getShoppingCart().getTotalPrice());
+        String totalPriceText = priceFormatter.format(sdkInstance.getCheckout().getPriceToPay());
         title.setText(getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText));
     }
 

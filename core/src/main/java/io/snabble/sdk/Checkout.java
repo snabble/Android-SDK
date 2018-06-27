@@ -176,6 +176,7 @@ public class Checkout {
     private SignedCheckoutInfo signedCheckoutInfo;
     private CheckoutProcessResponse checkoutProcess;
     private PaymentMethod paymentMethod;
+    private int priceToPay;
 
     private List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
 
@@ -301,6 +302,7 @@ public class Checkout {
         checkoutProcess = null;
         signedCheckoutInfo = null;
         paymentMethod = null;
+        priceToPay = 0;
 
         notifyStateChanged(State.HANDSHAKING);
 
@@ -324,6 +326,25 @@ public class Checkout {
                     InputStream inputStream = body.byteStream();
                     String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
                     signedCheckoutInfo = gson.fromJson(json, SignedCheckoutInfo.class);
+
+                    Logger.d("Local price: " + shoppingCart.getTotalPrice()
+                            + ", Remote price: " + signedCheckoutInfo.checkoutInfo.get("price"));
+
+                    if(signedCheckoutInfo.checkoutInfo.has("price")
+                            && signedCheckoutInfo.checkoutInfo.get("price").getAsJsonObject().has("price")) {
+                        priceToPay = signedCheckoutInfo.checkoutInfo
+                                .get("price")
+                                .getAsJsonObject()
+                                .get("price")
+                                .getAsInt();
+                    } else {
+                        priceToPay = shoppingCart.getTotalPrice();
+                    }
+
+                    if(priceToPay != shoppingCart.getTotalPrice()){
+                        Logger.w("Warning local price is different from remotely calculated price! (Local: "
+                                + shoppingCart.getTotalPrice() + ", Remote: " + priceToPay);
+                    }
 
                     PaymentMethod[] availablePaymentMethods = getAvailablePaymentMethods();
                     if (availablePaymentMethods != null && availablePaymentMethods.length > 0) {
@@ -594,6 +615,10 @@ public class Checkout {
      */
     public PaymentMethod getSelectedPaymentMethod() {
         return paymentMethod;
+    }
+
+    public int getPriceToPay() {
+        return priceToPay;
     }
 
     /**

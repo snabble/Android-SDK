@@ -59,8 +59,5 @@ public class EAN13Test extends SnabbleSdkTest {
 
     private void checkInternalChecksum(int checksum, String code){
         Assert.assertEquals(checksum, EAN13.internalChecksum(code));
-
-        ScannableCode scannableCode = ScannableCode.parse(snabbleSdk, code);
-        Assert.assertEquals(true, scannableCode.isEmbeddedDataOk());
     }
 }

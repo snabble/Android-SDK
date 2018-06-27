@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import io.snabble.sdk.codes.ScannableCode;
 
 public class ShoppingCart {
-    public static final int MAX_QUANTITY = 100000;
+    public static final int MAX_QUANTITY = 99999;
 
     private static class Entry {
         private Product product;
