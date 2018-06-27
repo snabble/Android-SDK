@@ -4,11 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -18,13 +18,11 @@ import android.view.Window;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.math.RoundingMode;
-import java.util.Locale;
-
-import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.SnabbleSdk;
@@ -34,8 +32,6 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
-import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.UIUtils;
 
 class ProductConfirmationDialog {
     private Context context;
@@ -263,19 +259,45 @@ class ProductConfirmationDialog {
         window.setGravity(Gravity.BOTTOM);
         alertDialog.show();
 
+        if(product.getType() == Product.Type.UserWeighed){
+            quantity.requestFocus();
+
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager inputMethodManager = (InputMethodManager)context
+                            .getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.showSoftInput(quantity, 0);
+                }
+            });
+        }
+
         float density = context.getResources().getDisplayMetrics().density;
         window.setLayout(Math.round(336 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void updatePrice() {
         RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
-        if(product.getType() == Product.Type.Article) {
-            String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
-                    roundingMode));
 
-            price.setText(priceText);
+        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
+                roundingMode));
+        String singlePrice = priceFormatter.format(product);
+
+        int q = getQuantity();
+        if(q > 1){
+            if(scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed){
+                price.setText(String.format("%sg * %s = %s", String.valueOf(q), singlePrice, priceText));
+            } else if(scannedCode.hasAmountData()){
+                price.setText(String.format("%s * %s = %s",
+                        String.valueOf(q),
+                        priceFormatter.format(product.getPrice()),
+                        priceFormatter.format(product.getPrice() * q)));
+            } else {
+                price.setText(String.format("%s * %s = %s", String.valueOf(q), singlePrice, priceText));
+            }
         } else {
-            price.setText(priceFormatter.format(product));
+            price.setText(singlePrice);
         }
 
         Product depositProduct = product.getDepositProduct();
