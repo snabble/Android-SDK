@@ -327,9 +327,6 @@ public class Checkout {
                     String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
                     signedCheckoutInfo = gson.fromJson(json, SignedCheckoutInfo.class);
 
-                    Logger.d("Local price: " + shoppingCart.getTotalPrice()
-                            + ", Remote price: " + signedCheckoutInfo.checkoutInfo.get("price"));
-
                     if(signedCheckoutInfo.checkoutInfo.has("price")
                             && signedCheckoutInfo.checkoutInfo.get("price").getAsJsonObject().has("price")) {
                         priceToPay = signedCheckoutInfo.checkoutInfo
@@ -343,7 +340,7 @@ public class Checkout {
 
                     if(priceToPay != shoppingCart.getTotalPrice()){
                         Logger.w("Warning local price is different from remotely calculated price! (Local: "
-                                + shoppingCart.getTotalPrice() + ", Remote: " + priceToPay);
+                                + shoppingCart.getTotalPrice() + ", Remote: " + priceToPay + ")");
                     }
 
                     PaymentMethod[] availablePaymentMethods = getAvailablePaymentMethods();

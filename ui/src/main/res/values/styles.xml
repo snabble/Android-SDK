@@ -39,4 +39,11 @@
         <item name="android:textColor">@color/snabble_textColorDark</item>
         <item name="android:background">@drawable/ic_round_edittext</item>
     </style>
+
+    <style name="SnabbleSearchEditText" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textColor">@color/snabble_textColorDark</item>
+        <item name="android:background">@drawable/ic_round_searchedittext</item>
+        <item name="android:elevation" tools:targetApi="lollipop">3dp</item>
+    </style>
 </resources>

@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
-
+    android:clipChildren="true">
     <EditText
-        style="@style/SnabbleEditText"
+        style="@style/SnabbleSearchEditText"
         android:id="@+id/search_bar"
+        android:hint="@string/Snabble.Scanner.enterBarcode"
         android:inputType="number"
-        android:imeOptions="actionDone"
+        android:imeOptions="flagNoExtractUi|actionDone"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:maxLines="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp" />
@@ -17,5 +20,19 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/search_bar"
         android:id="@+id/recycler_view" />
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/add_code_as_is"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/search_bar"
+        android:layout_marginTop="56dp"
+        android:padding="16dp"
+        android:gravity="center"
+        android:background="?attr/selectableItemBackground"
+        android:textColor="@color/snabble_textColorAction"
+        tools:text="Add 2623237002494 as is" />
+</RelativeLayout>

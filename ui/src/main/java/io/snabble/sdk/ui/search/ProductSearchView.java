@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -21,10 +20,11 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
 public class ProductSearchView extends FrameLayout {
-    private RecyclerView recyclerView;
     private SearchableProductAdapter searchableProductAdapter;
     private EditText searchBar;
     private boolean searchBarEnabled;
+    private TextView addCodeAsIs;
+    private String lastSearchQuery;
 
     public ProductSearchView(Context context) {
         super(context);
@@ -44,7 +44,9 @@ public class ProductSearchView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.view_search_product, this);
 
-        recyclerView = findViewById(R.id.recycler_view);
+        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         searchBar = findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -59,7 +61,7 @@ public class ProductSearchView extends FrameLayout {
 
             @Override
             public void afterTextChanged(Editable s) {
-                searchableProductAdapter.search(s.toString());
+                search(s.toString());
             }
         });
 
@@ -84,13 +86,7 @@ public class ProductSearchView extends FrameLayout {
             }
         });
 
-        setSdkInstance(SnabbleUI.getSdkInstance());
-    }
-
-    public void setSdkInstance(SnabbleSdk sdkInstance) {
-        if (sdkInstance == null) {
-            return;
-        }
+        addCodeAsIs = findViewById(R.id.add_code_as_is);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         searchableProductAdapter = new SearchableProductAdapter(sdkInstance.getProductDatabase());
@@ -99,15 +95,34 @@ public class ProductSearchView extends FrameLayout {
         searchableProductAdapter.setOnProductSelectedListener(new OnProductSelectedListener() {
             @Override
             public void onProductSelected(String scannableCode) {
-                Telemetry.event(Telemetry.Event.ManuallyEnteredProduct, scannableCode);
-
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.showScannerWithCode(scannableCode);
-                }
+                showScannerWithCode(scannableCode);
             }
         });
+
+        searchableProductAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                onSearchUpdated();
+            }
+        });
+
+        addCodeAsIs.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showScannerWithCode(lastSearchQuery);
+            }
+        });
+
         recyclerView.setAdapter(searchableProductAdapter);
+    }
+
+    private void showScannerWithCode(String scannableCode) {
+        Telemetry.event(Telemetry.Event.ManuallyEnteredProduct, scannableCode);
+
+        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+        if (callback != null) {
+            callback.showScannerWithCode(scannableCode);
+        }
     }
 
     public void setSearchBarEnabled(boolean searchBarEnabled) {
@@ -125,22 +140,17 @@ public class ProductSearchView extends FrameLayout {
             searchBar.setText(searchQuery);
         }
 
+        lastSearchQuery = searchQuery;
         searchableProductAdapter.search(searchQuery);
     }
 
-
-    public void show() {
-        setVisibility(View.VISIBLE);
-        searchBar.setText("");
-
-        if (searchBar.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager) getContext()
-                    .getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(searchBar, InputMethodManager.SHOW_IMPLICIT);
+    private void onSearchUpdated() {
+        if(searchableProductAdapter.getItemCount() == 0
+                && lastSearchQuery != null && lastSearchQuery.length() > 0){
+            addCodeAsIs.setText(getResources().getString(R.string.Snabble_Scanner_addCodeAsIs, lastSearchQuery));
+            addCodeAsIs.setVisibility(View.VISIBLE);
+        } else {
+            addCodeAsIs.setVisibility(View.GONE);
         }
-    }
-
-    public void hide() {
-        setVisibility(View.GONE);
     }
 }
