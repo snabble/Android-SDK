@@ -50,6 +50,17 @@ import io.snabble.sdk.utils.Logger;
  * For a list of supported formats see {@link BarcodeFormat}.
  */
 public class BarcodeScannerView extends FrameLayout implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
+    // the camera handler needs to be static because we can only access the camera
+    // one time, if the camera is still releasing in another BarcodeScannerView in the background
+    // and we try to start it while its releasing we would cause a crash
+    //
+    // to ensure that a camera is released properly first the camera handler is static so that
+    // all events posted are processed in proper order
+    private static Handler cameraHandler;
+
+    private Handler barcodeProcessingHandler;
+    private Handler mainThreadHandler;
+
     private Callback callback;
     private Camera camera;
 
@@ -60,8 +71,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
     private boolean isProcessing;
 
-    private Handler mainThreadHandler;
-    private Handler backgroundHandler;
     private Camera.Size previewSize;
     private Camera.CameraInfo cameraInfo;
     private MultiFormatReader multiFormatReader;
@@ -102,10 +111,15 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void init() {
+        if(cameraHandler == null) {
+            HandlerThread cameraHandlerThread = new HandlerThread("CameraHandler");
+            cameraHandlerThread.start();
+            cameraHandler = new Handler(cameraHandlerThread.getLooper());
+        }
+
         HandlerThread frameProcessingThread = new HandlerThread("BarcodeFrameProcessor");
         frameProcessingThread.start();
-        backgroundHandler = new Handler(frameProcessingThread.getLooper());
-
+        barcodeProcessingHandler = new Handler(frameProcessingThread.getLooper());
         mainThreadHandler = new Handler(Looper.getMainLooper());
 
         textureView = new TextureView(getContext());
@@ -149,17 +163,19 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             throw new RuntimeException("Missing camera permission");
         }
 
-        backgroundHandler.post(new Runnable() {
+        cameraHandler.post(new Runnable() {
             @Override
             public void run() {
-                startRequested = true;
-                startIfRequestedAsync();
+                if(!running) {
+                    startRequested = true;
+                    startIfRequested();
+                }
             }
         });
     }
 
     private void startIfRequestedAsync(){
-        backgroundHandler.post(new Runnable() {
+        cameraHandler.post(new Runnable() {
             @Override
             public void run() {
                 startIfRequested();
@@ -171,36 +187,33 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
      * Pauses the camera preview and barcode scanning, but keeps the camera intact.
      */
     public void pause() {
-        isPaused = true;
+        cameraHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                isPaused = true;
 
-        if (running) {
-            backgroundHandler.removeCallbacksAndMessages(null);
-            isProcessing = false;
-            backgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
+                if (running) {
+                    isProcessing = false;
                     camera.stopPreview();
                     decodeEnabled = false;
                 }
-            });
-        }
+            }
+        });
     }
 
     /**
      * Resumes the camera preview and barcode scanning.
      */
     public void resume() {
-        isPaused = false;
+        cameraHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                isPaused = false;
 
-        if (!running) {
-            start();
-        } else {
-            backgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(!running){
-                        return;
-                    }
+                if(!running){
+                    start();
+                } else {
+                    isPaused = false;
 
                     // as stated in the documentation:
                     // focus parameters may not be preserved across preview restarts
@@ -219,14 +232,14 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                         camera.addCallbackBuffer(backBuffer);
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     private void startIfRequested() {
         final SurfaceTexture surface = textureView.getSurfaceTexture();
 
-        if (surface == null || running || !startRequested) {
+        if (surface == null || running || !startRequested || isPaused) {
             return;
         }
 
@@ -438,8 +451,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                     }
                 }
-                startRequested = true;
-                startIfRequestedAsync();
+
                 try {
                     camera.setParameters(parameters);
                     torchEnabled = enabled;
@@ -497,6 +509,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
 
         hints.put(DecodeHintType.POSSIBLE_FORMATS, formats);
+        //hints.put(DecodeHintType.TRY_HARDER, true);
         multiFormatReader.setHints(hints);
     }
 
@@ -544,7 +557,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     public void stop() {
-        backgroundHandler.post(new Runnable() {
+        cameraHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (running) {
@@ -614,7 +627,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             isProcessing = true;
             nextDetectionTimeMs = SystemClock.elapsedRealtime() + detectionDelayMs;
 
-            backgroundHandler.post(new Runnable() {
+            barcodeProcessingHandler.post(new Runnable() {
                 @SuppressWarnings("SuspiciousNameCombination")
                 @Override
                 public void run() {
@@ -665,6 +678,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                                             result.getText(),
                                             result.getTimestamp());
 
+                                    Logger.d("Detected barcode: " + barcode.toString());
                                     callback.onBarcodeDetected(barcode);
                                 }
                             }
