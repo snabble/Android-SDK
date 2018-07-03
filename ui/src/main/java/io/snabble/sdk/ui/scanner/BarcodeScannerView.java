@@ -57,8 +57,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     // to ensure that a camera is released properly first the camera handler is static so that
     // all events posted are processed in proper order
     private static Handler cameraHandler;
+    private static Handler barcodeProcessingHandler;
 
-    private Handler barcodeProcessingHandler;
     private Handler mainThreadHandler;
 
     private Callback callback;
@@ -93,7 +93,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private boolean isAttachedToWindow;
     private TextView cameraUnavailableView;
     private int displayOrientation;
-    private boolean restrictScanningToIndicator = true;
+    private boolean restrictScanningToCenter = true;
 
     public BarcodeScannerView(Context context) {
         super(context);
@@ -117,9 +117,12 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             cameraHandler = new Handler(cameraHandlerThread.getLooper());
         }
 
-        HandlerThread frameProcessingThread = new HandlerThread("BarcodeFrameProcessor");
-        frameProcessingThread.start();
-        barcodeProcessingHandler = new Handler(frameProcessingThread.getLooper());
+        if(barcodeProcessingHandler == null) {
+            HandlerThread frameProcessingThread = new HandlerThread("BarcodeFrameProcessor");
+            frameProcessingThread.start();
+            barcodeProcessingHandler = new Handler(frameProcessingThread.getLooper());
+        }
+
         mainThreadHandler = new Handler(Looper.getMainLooper());
 
         textureView = new TextureView(getContext());
@@ -636,57 +639,28 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                         return;
                     }
 
-                    int width = previewSize.width;
-                    int height = previewSize.height;
-                    byte[] buf = getRotatedDataIfNeeded();
-
-                    if (isInPortraitMode()) {
-                        int tmp = width;
-                        width = height;
-                        height = tmp;
+                    Result result = detect(false);
+                    if(result == null) {
+                        result = detect(true);
                     }
 
-                    int left = clamp(0, width, cameraImageDetectionRect.left);
-                    int top = clamp(0, height, cameraImageDetectionRect.top);
-                    int rw = clamp(0, width - left, cameraImageDetectionRect.width());
-                    int rh = clamp(0, height - top, cameraImageDetectionRect.height());
-
-                    // special case for reverse-landscape, we don't flip the image
-                    // because zxing is able to detect flipped images
-                    // but we need to adjust the camera region
-                    if (getDisplayOrientation() == 180) {
-                        top = height - top - rh;
-                    }
-
-                    LuminanceSource luminanceSource = new PlanarYUVLuminanceSource(buf,
-                            width, height,
-                            left, top, rw, rh,
-                            false);
-
-                    Binarizer binarizer = new HybridBinarizer(luminanceSource);
-                    BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
-
-                    try {
-                        final Result result = multiFormatReader.decodeWithState(binaryBitmap);
+                    if(result != null) {
+                        final Result finalResult = result;
 
                         mainThreadHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 if (decodeEnabled && callback != null && isAttachedToWindow) {
                                     Barcode barcode = new Barcode(
-                                            BarcodeFormat.valueOf(result.getBarcodeFormat()),
-                                            result.getText(),
-                                            result.getTimestamp());
+                                            BarcodeFormat.valueOf(finalResult.getBarcodeFormat()),
+                                            finalResult.getText(),
+                                            finalResult.getTimestamp());
 
                                     Logger.d("Detected barcode: " + barcode.toString());
                                     callback.onBarcodeDetected(barcode);
                                 }
                             }
                         });
-                    } catch (ReaderException e) {
-                        //could not detect a barcode, ignore
-                    } finally {
-                        multiFormatReader.reset();
                     }
 
                     isProcessing = false;
@@ -695,8 +669,63 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
     }
 
-    private int clamp(int min, int max, int value) {
-        return Math.max(min, Math.min(max, value));
+    private Result detect(boolean rotate) {
+        long time = SystemClock.elapsedRealtime();
+
+        int width = previewSize.width;
+        int height = previewSize.height;
+        byte[] buf;
+
+        if (rotate) {
+            int tmp = width;
+            width = height;
+            height = tmp;
+
+            buf = getRotatedData(90);
+        } else {
+            buf = getRotatedData(0);
+        }
+
+        int sX, sY, sWidth, sHeight;
+
+        if(restrictScanningToCenter) {
+            int shortSide = width > height ? height : width;
+            int padding = shortSide / 12;
+            int size = shortSide - padding * 2;
+            int halfSize = size / 2;
+
+            sX = width / 2 - halfSize;
+            sY = height / 2 - halfSize;
+            sWidth = size;
+            sHeight = size;
+        } else {
+            sX = 0;
+            sY = 0;
+            sWidth = width;
+            sHeight = height;
+        }
+
+        LuminanceSource luminanceSource = new PlanarYUVLuminanceSource(buf,
+                width, height,
+                sX, sY, sWidth, sHeight,
+                false);
+
+        Binarizer binarizer = new HybridBinarizer(luminanceSource);
+        BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
+
+        try {
+            return multiFormatReader.decodeWithState(binaryBitmap);
+        } catch (ReaderException e) {
+            // could not detect a barcode, ignore
+        } catch (Exception e) {
+            // catch any other exceptions that may be thrown by zxing
+            Logger.e("Zxing Internal Error: %s", e.toString());
+        } finally {
+            multiFormatReader.reset();
+        }
+
+        Logger.d("Detect took (" + (rotate ? "rotated, " : ", ") + "unsuccessful): " + (SystemClock.elapsedRealtime() - time) + " ms");
+        return null;
     }
 
     private void clearBuffers() {
@@ -737,12 +766,12 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     /**
-     * Set to true, if you want to restrict barcode scanning to the indicator rectangle.
+     * Set to true, if you want to restrict barcode scanning to the center.
      * <p>
      * Default: true
      */
-    public void setRestrictScanningToIndicator(boolean restrictScanningToIndicator) {
-        this.restrictScanningToIndicator = restrictScanningToIndicator;
+    public void setRestrictScanningToCenter(boolean restrictScanningToCenter) {
+        this.restrictScanningToCenter = restrictScanningToCenter;
     }
 
     private void updateTransform() {
@@ -753,22 +782,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         float surfaceWidth = (float) this.surfaceWidth;
         float surfaceHeight = (float) this.surfaceHeight;
 
-        float previewWidth = (float) previewSize.width;
-        float previewHeight = (float) previewSize.height;
+        float rotatedPreviewWidth = (float) previewSize.width;
+        float rotatedPreviewHeight = (float) previewSize.height;
 
-        if (surfaceWidth <= 0 || surfaceHeight <= 0 || previewWidth <= 0 || previewHeight <= 0) {
+        if (surfaceWidth <= 0 || surfaceHeight <= 0 || rotatedPreviewWidth <= 0 || rotatedPreviewHeight <= 0) {
             return;
         }
 
         if (isInPortraitMode()) {
-            float tmp = previewWidth;
+            float tmp = rotatedPreviewWidth;
             //noinspection SuspiciousNameCombination
-            previewWidth = previewHeight;
-            previewHeight = tmp;
+            rotatedPreviewWidth = rotatedPreviewHeight;
+            rotatedPreviewHeight = tmp;
         }
 
         float surfaceAspectRatio = surfaceWidth / surfaceHeight;
-        float previewAspectRatio = previewWidth / previewHeight;
+        float previewAspectRatio = rotatedPreviewWidth / rotatedPreviewHeight;
 
         Matrix adjustAspectRatioMatrix = new Matrix();
 
@@ -806,31 +835,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             transform.postScale(fitScale, fitScale, surfaceWidth / 2, surfaceHeight / 2);
         }
 
-        if (restrictScanningToIndicator) {
-            float destWidthScaled = destWidth * fitScale;
-            float destHeightScaled = destHeight * fitScale;
-
-            float offsetX = (destWidthScaled - surfaceWidth) / 2;
-            float offsetY = (destHeightScaled - surfaceHeight) / 2;
-
-            Rect rect = scanIndicatorView.getIndicatorRect();
-
-            float left = offsetX + surfaceWidth * ((float) rect.left / surfaceWidth);
-            float top = offsetY + surfaceHeight * ((float) rect.top / surfaceHeight);
-            float right = offsetX + surfaceWidth * ((float) rect.right / surfaceWidth);
-            float bottom = offsetY + surfaceHeight * ((float) rect.bottom / surfaceHeight);
-
-            float leftNormalized = left / destWidthScaled;
-            float topNormalized = top / destHeightScaled;
-            float rightNormalized = right / destWidthScaled;
-            float bottomNormalized = bottom / destHeightScaled;
-
-            cameraImageDetectionRect.left = Math.round(previewWidth * leftNormalized);
-            cameraImageDetectionRect.top = Math.round(previewHeight * topNormalized);
-            cameraImageDetectionRect.right = Math.round(previewWidth * rightNormalized);
-            cameraImageDetectionRect.bottom = Math.round(previewHeight * bottomNormalized);
-        }
-
         textureView.setTransform(transform);
     }
 
@@ -838,8 +842,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         return getDisplayOrientation() % 180 != 0;
     }
 
-    private byte[] getRotatedDataIfNeeded() {
-        int count = getDisplayOrientation() / 90;
+    private byte[] getRotatedData(int displayOrientation) {
+        int count = displayOrientation / 90;
         int width = previewSize.width;
         int height = previewSize.height;
         byte[] buf = rotateBuffer;
