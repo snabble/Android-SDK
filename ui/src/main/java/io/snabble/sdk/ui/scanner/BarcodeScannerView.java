@@ -668,8 +668,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private Result detect(boolean rotate) {
-        long time = SystemClock.elapsedRealtime();
-
         int width = cameraImageDetectionRect.width();
         int height = cameraImageDetectionRect.height();
         byte[] buf;

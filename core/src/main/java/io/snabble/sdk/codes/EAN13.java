@@ -2,11 +2,17 @@ package io.snabble.sdk.codes;
 
 import android.util.SparseIntArray;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.Serializable;
 
 import io.snabble.sdk.SnabbleSdk;
 
 public class EAN13 extends ScannableCode implements Serializable {
+    private final static String[] germanPrintPrefixes = new String[] {
+            "414", "419", "434", "449"
+    };
+
     private String lookupCode;
     private int embeddedData;
     private boolean hasUnitData;
@@ -14,6 +20,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     private boolean hasWeighData;
 
     private boolean verifyInternalEanChecksum;
+    private boolean useGermanPrintPrefix;
 
     EAN13(String code, SnabbleSdk snabbleSdk) {
         super(code);
@@ -23,6 +30,7 @@ public class EAN13 extends ScannableCode implements Serializable {
         }
 
         verifyInternalEanChecksum = snabbleSdk.isVerifyingInternalEanChecksum();
+        useGermanPrintPrefix = snabbleSdk.isUsingGermanPrintPrefix();
 
         for (String prefix : snabbleSdk.getWeighPrefixes()) {
             if (code.startsWith(prefix)) {
@@ -42,7 +50,11 @@ public class EAN13 extends ScannableCode implements Serializable {
             }
         }
 
-        if(isEmbeddedDataOk()) {
+        if(containsGermanPrintPrefix()) {
+            lookupCode = code.substring(0, 3) + "0000000000";
+            embeddedData = Integer.parseInt(code.substring(8, 12));
+            hasPriceData = true;
+        } else if(isEmbeddedDataOk()) {
             lookupCode = code.substring(0, 6) + "0000000";
             embeddedData = Integer.parseInt(code.substring(7, 12));
         } else {
@@ -51,6 +63,14 @@ public class EAN13 extends ScannableCode implements Serializable {
             hasUnitData = false;
             hasPriceData = false;
         }
+    }
+
+    private boolean containsGermanPrintPrefix() {
+        if(!useGermanPrintPrefix){
+            return false;
+        }
+
+        return ArrayUtils.contains(germanPrintPrefixes, getCode().substring(0, 3));
     }
 
     @Override
@@ -85,6 +105,10 @@ public class EAN13 extends ScannableCode implements Serializable {
 
     @Override
     public boolean isEmbeddedDataOk() {
+        if(containsGermanPrintPrefix()){
+            return true;
+        }
+
         if(!hasEmbeddedData()){
             return false;
         }
