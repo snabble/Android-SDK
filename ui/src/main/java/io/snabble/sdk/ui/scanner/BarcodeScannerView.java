@@ -699,7 +699,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             multiFormatReader.reset();
         }
 
-        Logger.d("Detect took (" + (rotate ? "rotated, " : ", ") + "unsuccessful): " + (SystemClock.elapsedRealtime() - time) + " ms");
         return null;
     }
 
