@@ -259,7 +259,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private void onClickEnterBarcode() {
         SnabbleUICallback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
-            if(productDatabase.isAvailableOffline()){
+            if(productDatabase.isAvailableOffline() && productDatabase.isUpToDate()){
                 callback.showBarcodeSearch();
             } else {
                 final EditText input = new EditText(getContext());

@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.Logger;
@@ -754,6 +755,17 @@ public class ProductDatabase {
         return db != null;
     }
 
+    public boolean isUpToDate() {
+        if(lastUpdateDate != null){
+            long time = lastUpdateDate.getTime();
+            long currentTime = new Date().getTime();
+            long t = time + TimeUnit.HOURS.toMillis(1);
+            return t > currentTime;
+        }
+
+        return false;
+    }
+
     private Cursor productQuery(String appendSql, String[] args, boolean distinct) {
         return productQuery(appendSql, args, distinct, null);
     }
@@ -775,7 +787,7 @@ public class ProductDatabase {
             }
         }
 
-        //query executes when we call the first function that needs data, not on db.rawQuery
+        // query executes when we call the first function that needs data, not on db.rawQuery
         int count = cursor.getCount();
 
         long time2 = SystemClock.elapsedRealtime() - time;
@@ -897,7 +909,7 @@ public class ProductDatabase {
             return;
         }
 
-        if (onlineOnly) {
+        if (onlineOnly || !isUpToDate()) {
             productApi.findBySku(sku, productAvailableListener);
         } else {
             Product local = findBySku(sku);
@@ -930,7 +942,7 @@ public class ProductDatabase {
             return;
         }
 
-        if (onlineOnly) {
+        if (onlineOnly || !isUpToDate()) {
             productApi.findByCode(code, productAvailableListener);
         } else {
             Product local = findByCode(code);
@@ -1024,7 +1036,7 @@ public class ProductDatabase {
             return;
         }
 
-        if (onlineOnly) {
+        if (onlineOnly || !isUpToDate()) {
             productApi.findByWeighItemId(weighItemId, productAvailableListener);
         } else {
             Product local = findByWeighItemId(weighItemId);
