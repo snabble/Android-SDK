@@ -643,6 +643,7 @@ public class SnabbleSdk {
         @Override
         public void onActivityStarted(Activity activity) {
             updateMetadata();
+            getShoppingCart().validate();
         }
     };
 

@@ -555,7 +555,7 @@ public class Checkout {
 
     private void approve(){
         Logger.d("Payment approved");
-        shoppingCart.clear();
+        shoppingCart.invalidate();
         clearCodes();
         notifyStateChanged(State.PAYMENT_APPROVED);
     }

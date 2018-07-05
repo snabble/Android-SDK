@@ -2,17 +2,20 @@ package io.snabble.sdk;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannableCode;
 
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
+    public static final long KEEP_ALIVE_TIME = TimeUnit.HOURS.toMillis(4);
 
     private static class Entry {
         private Product product;
@@ -48,6 +51,7 @@ public class ShoppingCart {
     private final transient Object lock = new Object();
 
     private String id;
+    private long lastModificationTime;
     private List<Entry> items = new ArrayList<>();
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
     private transient ProductDatabase productDatabase;
@@ -56,6 +60,13 @@ public class ShoppingCart {
 
     protected ShoppingCart() {
         //empty constructor for gson
+    }
+
+    ShoppingCart(SnabbleSdk sdkInstance) {
+        id = UUID.randomUUID().toString();
+        updateTimestamp();
+
+        initWithSdkInstance(sdkInstance);
     }
 
     void initWithSdkInstance(SnabbleSdk sdkInstance) {
@@ -69,12 +80,8 @@ public class ShoppingCart {
             }
         });
 
+        validate();
         updateEntries();
-    }
-
-    ShoppingCart(SnabbleSdk sdkInstance) {
-        id = UUID.randomUUID().toString();
-        initWithSdkInstance(sdkInstance);
     }
 
     private void updateEntries() {
@@ -286,6 +293,13 @@ public class ShoppingCart {
         clear();
     }
 
+    public void validate() {
+        long currentTime = SystemClock.elapsedRealtime();
+        if(lastModificationTime + KEEP_ALIVE_TIME < currentTime){
+            clear();
+        }
+    }
+
     private void setEntryQuantity(Entry e, int newQuantity) {
         if (e != null) {
             if (newQuantity > 0) {
@@ -405,6 +419,10 @@ public class ShoppingCart {
         }
     }
 
+    private void updateTimestamp() {
+        lastModificationTime = SystemClock.elapsedRealtime();
+    }
+
     /**
      * Adds a {@link ShoppingCartListener} to the list of listeners if it does not already exist.
      *
@@ -470,6 +488,8 @@ public class ShoppingCart {
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Product product) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -481,6 +501,8 @@ public class ShoppingCart {
     }
 
     private void notifyItemRemoved(final ShoppingCart list, final Product product) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -492,6 +514,8 @@ public class ShoppingCart {
     }
 
     private void notifyQuantityChanged(final ShoppingCart list, final Product product) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -503,6 +527,8 @@ public class ShoppingCart {
     }
 
     private void notifyItemMoved(final ShoppingCart list, final int fromIndex, final int toIndex) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -519,6 +545,8 @@ public class ShoppingCart {
      * @param list the {@link ShoppingCart}
      */
     private void notifyCleared(final ShoppingCart list) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
