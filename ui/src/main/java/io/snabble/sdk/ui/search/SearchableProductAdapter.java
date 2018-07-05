@@ -28,12 +28,13 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         FOLDED_NAME
     }
 
+    private static Handler backgroundHandler;
+    private Handler uiHandler;
+
     private OnProductSelectedListener productSelectedListener;
     private SearchType searchType = SearchType.FOLDED_NAME;
     private ProductDatabase productDatabase;
     private Cursor cursor;
-    private Handler backgroundHandler;
-    private Handler uiHandler;
     private CancellationSignal cancellationSignal;
     private int itemCount = 0;
     private boolean showBarcode = true;
@@ -46,9 +47,11 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     public SearchableProductAdapter(ProductDatabase productDatabase) {
         this.productDatabase = productDatabase;
 
-        HandlerThread handlerThread = new HandlerThread("SearchableProductAdapter");
-        handlerThread.start();
-        backgroundHandler = new Handler(handlerThread.getLooper());
+        if(backgroundHandler == null) {
+            HandlerThread frameProcessingThread = new HandlerThread("SearchableProductAdapter");
+            frameProcessingThread.start();
+            backgroundHandler = new Handler(frameProcessingThread.getLooper());
+        }
 
         uiHandler = new Handler(Looper.getMainLooper());
     }
