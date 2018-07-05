@@ -392,17 +392,13 @@ public class Checkout {
     }
 
     private void pay(final PaymentMethod paymentMethod, boolean force) {
-        if (signedCheckoutInfo != null || paymentMethod.isOfflineMethod()) {
+        if (signedCheckoutInfo != null) {
             boolean isRequestingPaymentMethod = (state == State.REQUEST_PAYMENT_METHOD);
             boolean wasRequestingPaymentMethod = (lastState == State.REQUEST_PAYMENT_METHOD
                     || lastState == State.VERIFYING_PAYMENT_METHOD);
 
             if (force || isRequestingPaymentMethod || (state == State.CONNECTION_ERROR && wasRequestingPaymentMethod)) {
                 this.paymentMethod = paymentMethod;
-
-                if(paymentMethod.isOfflineMethod()){
-                    notifyStateChanged(State.WAIT_FOR_APPROVAL);
-                }
 
                 CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
                 checkoutProcessRequest.paymentMethod = paymentMethod;
@@ -423,10 +419,6 @@ public class Checkout {
                 call.enqueue(new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        if(paymentMethod.isOfflineMethod()){
-                            return;
-                        }
-
                         if (response.isSuccessful()) {
                             ResponseBody body = response.body();
                             if (body == null) {
@@ -459,10 +451,6 @@ public class Checkout {
 
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        if(paymentMethod.isOfflineMethod()){
-                            return;
-                        }
-
                         if (!call.isCanceled()) {
                             Logger.e("Connection error while creating checkout process");
                             notifyStateChanged(State.CONNECTION_ERROR);
@@ -470,9 +458,7 @@ public class Checkout {
                     }
                 });
 
-                if(!paymentMethod.isOfflineMethod()) {
-                    notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
-                }
+                notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
             }
         }
     }
@@ -634,8 +620,7 @@ public class Checkout {
                     List<PaymentMethod> result = new ArrayList<>();
 
                     for (PaymentMethod clientPaymentMethod : clientAcceptedPaymentMethods) {
-                        if(paymentMethods.contains(clientPaymentMethod)
-                                || clientPaymentMethod.isOfflineMethod()){
+                        if(paymentMethods.contains(clientPaymentMethod)){
                             result.add(clientPaymentMethod);
                         }
                     }
