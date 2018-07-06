@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -205,7 +207,7 @@ public class ShoppingCart {
         return entry.price;
     }
 
-    public Integer getEmbeddedAmount(int index) {
+    public Integer getEmbeddedUnits(int index) {
         Entry entry = getEntry(index);
         if (entry == null) {
             return null;

@@ -46,6 +46,7 @@ public class SnabbleSdk {
     private Shop[] shops;
     private Checkout checkout;
     private ShoppingCartManager shoppingCartManager;
+    private Events events;
 
     private UserPreferences userPreferences;
 
@@ -63,6 +64,7 @@ public class SnabbleSdk {
     private String encodedCodesPrefix = null;
     private String encodedCodesSeperator = null;
     private String encodedCodesSuffix = null;
+
 
     private void init(final Application app,
                       final Config config,
@@ -243,6 +245,7 @@ public class SnabbleSdk {
                         SnabbleSdk.this.productDatabase = productDatabase;
                         shoppingCartManager = new ShoppingCartManager(SnabbleSdk.this);
                         checkout = new Checkout(SnabbleSdk.this);
+                        events = new Events(SnabbleSdk.this);
                         setupOk(setupCompletionListener);
                     }
 
@@ -354,6 +357,10 @@ public class SnabbleSdk {
 
     Application getApplication() {
         return application;
+    }
+
+    String getEventsUrl() {
+        return metadataDownloader.getUrls().get("appEvents");
     }
 
     String getAppDbUrl() {
@@ -606,6 +613,10 @@ public class SnabbleSdk {
 
     public Checkout getCheckout() {
         return checkout;
+    }
+
+    Events getEvents() {
+        return events;
     }
 
     /**

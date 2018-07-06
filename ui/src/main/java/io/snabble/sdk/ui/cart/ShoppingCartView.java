@@ -6,17 +6,9 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DividerItemDecoration;
@@ -368,7 +360,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             final Product product = cart.getProduct(position);
             final int quantity = cart.getQuantity(position);
             final Integer embeddedPrice = cart.getEmbeddedPrice(position);
-            final Integer embeddedAmount = cart.getEmbeddedAmount(position);
+            final Integer embeddedAmount = cart.getEmbeddedUnits(position);
             final Integer embeddedWeight = cart.getEmbeddedWeight(position);
             RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
 
