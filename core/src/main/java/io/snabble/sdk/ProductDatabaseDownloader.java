@@ -14,6 +14,7 @@ class ProductDatabaseDownloader extends Downloader {
     private ProductDatabase productDatabase;
 
     private boolean sameRevision;
+    private boolean deltaUpdateOnly;
 
     public ProductDatabaseDownloader(SnabbleSdk sdk,
                                      ProductDatabase productDatabase) {
@@ -21,6 +22,11 @@ class ProductDatabaseDownloader extends Downloader {
 
         this.sdk = sdk;
         this.productDatabase = productDatabase;
+    }
+
+    public void update(Callback callback, boolean deltaUpdateOnly) {
+        this.deltaUpdateOnly = deltaUpdateOnly;
+        loadAsync(callback);
     }
 
     @Override
@@ -41,11 +47,7 @@ class ProductDatabaseDownloader extends Downloader {
 
     @Override
     protected void onDownloadFailed(Response response) {
-        if (response != null && response.code() == 304) {
-            sameRevision = true;
-        } else {
-            sameRevision = false;
-        }
+        sameRevision = response != null && response.code() == 304;
     }
 
     public boolean wasSameRevision() {
@@ -65,6 +67,11 @@ class ProductDatabaseDownloader extends Downloader {
                         productDatabase.applyDeltaUpdate(body.byteStream());
                         break;
                     case MIMETYPE_FULL:
+                        if(deltaUpdateOnly){
+                            body.close();
+                            throw new IOException();
+                        }
+
                         productDatabase.applyFullUpdate(body.byteStream());
                         break;
                     default:

@@ -15,7 +15,7 @@ import io.snabble.sdk.codes.ScannableCode;
 
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
-    public static final long KEEP_ALIVE_TIME = TimeUnit.HOURS.toMillis(4);
+    public static final long TIMEOUT = TimeUnit.HOURS.toMillis(4);
 
     private static class Entry {
         private Product product;
@@ -54,7 +54,6 @@ public class ShoppingCart {
     private long lastModificationTime;
     private List<Entry> items = new ArrayList<>();
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
-    private transient ProductDatabase productDatabase;
     private transient Handler handler = new Handler(Looper.getMainLooper());
     private transient SnabbleSdk sdkInstance;
 
@@ -71,38 +70,7 @@ public class ShoppingCart {
 
     void initWithSdkInstance(SnabbleSdk sdkInstance) {
         this.sdkInstance = sdkInstance;
-
-        productDatabase = sdkInstance.getProductDatabase();
-        productDatabase.addOnDatabaseUpdateListener(new ProductDatabase.OnDatabaseUpdateListener() {
-            @Override
-            public void onDatabaseUpdated() {
-                updateEntries();
-            }
-        });
-
-        validate();
-        updateEntries();
-    }
-
-    private void updateEntries() {
-        synchronized (lock) {
-            List<Entry> removables = new ArrayList<>();
-
-            for (Entry e : items) {
-                Product product = productDatabase.findBySku(e.sku);
-                if (product != null) {
-                    // update the product when there is a local version available
-                    e.product = product;
-                } else if (e.product == null) {
-                    // when there is no serialized product of an online only version
-                    // (in case of an upgrade of an older version of the shopping list)
-                    // we remove the product
-                    removables.add(e);
-                }
-            }
-
-            items.removeAll(removables);
-        }
+        checkForTimeout();
     }
 
     public String getId() {
@@ -293,10 +261,11 @@ public class ShoppingCart {
         clear();
     }
 
-    public void validate() {
+    public void checkForTimeout() {
         long currentTime = SystemClock.elapsedRealtime();
-        if(lastModificationTime + KEEP_ALIVE_TIME < currentTime){
-            clear();
+
+        if(lastModificationTime + TIMEOUT < currentTime){
+            invalidate();
         }
     }
 
