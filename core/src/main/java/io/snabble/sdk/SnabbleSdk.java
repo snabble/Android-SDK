@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
@@ -65,13 +68,12 @@ public class SnabbleSdk {
     private String encodedCodesSeperator = null;
     private String encodedCodesSuffix = null;
 
-
     private void init(final Application app,
                       final Config config,
                       final SetupCompletionListener setupCompletionListener) {
         application = app;
 
-        createOkHttpClient(config.clientToken);
+        createOkHttpClient(config.clientToken, config.sslSocketFactory, config.x509TrustManager);
         internalStorageDirectory = new File(app.getFilesDir(), "snabble/" + config.projectId + "/");
         //noinspection ResultOfMethodCallIgnored
         internalStorageDirectory.mkdirs();
@@ -145,6 +147,38 @@ public class SnabbleSdk {
                 }
             });
         }
+    }
+
+    private void createOkHttpClient(String clientToken,
+                                    SSLSocketFactory sslSocketFactory,
+                                    X509TrustManager x509TrustManager) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+        builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
+
+        builder.retryOnConnectionFailure(true);
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
+                new HttpLoggingInterceptor.Logger() {
+                    @Override
+                    public void log(String message) {
+                        Logger.i(message);
+                    }
+                });
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        builder.addInterceptor(logging);
+
+        if (clientToken != null) {
+            builder.addInterceptor(new SnabbleAuthorizationInterceptor(this, clientToken));
+        }
+
+        builder.addInterceptor(new UserAgentInterceptor(application));
+
+        if(sslSocketFactory != null && x509TrustManager != null) {
+            builder.sslSocketFactory(sslSocketFactory, x509TrustManager);
+        }
+
+        okHttpClient = builder.build();
     }
 
     private SnabbleSdk() {
@@ -313,108 +347,6 @@ public class SnabbleSdk {
         }
     }
 
-    private void createOkHttpClient(String clientToken) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-
-        builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
-
-        builder.retryOnConnectionFailure(true);
-
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
-                new HttpLoggingInterceptor.Logger() {
-                    @Override
-                    public void log(String message) {
-                        Logger.i(message);
-                    }
-                });
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        builder.addInterceptor(logging);
-
-        if (clientToken != null) {
-            builder.addInterceptor(new SnabbleAuthorizationInterceptor(this, clientToken));
-        }
-
-        builder.addInterceptor(new UserAgentInterceptor(application));
-
-        okHttpClient = builder.build();
-    }
-
-    File getInternalStorageDirectory() {
-        return internalStorageDirectory;
-    }
-
-    public String getEndpointBaseUrl() {
-        return endpointBaseUrl;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    OkHttpClient getOkHttpClient() {
-        return okHttpClient;
-    }
-
-    Application getApplication() {
-        return application;
-    }
-
-    String getEventsUrl() {
-        return metadataDownloader.getUrls().get("appEvents");
-    }
-
-    String getAppDbUrl() {
-        return metadataDownloader.getUrls().get("appdb");
-    }
-
-    String getCheckoutUrl() {
-        return metadataDownloader.getUrls().get("checkoutInfo");
-    }
-
-    String getMetadataUrl() {
-        if (loyaltyCardId != null) {
-            return metadataUrl + "?loyaltyCard=" + loyaltyCardId;
-        } else {
-            return metadataUrl;
-        }
-    }
-
-    String getProductBySkuUrl() {
-        return metadataDownloader.getUrls().get("productBySku");
-    }
-
-    String getProductByCodeUrl() {
-        return metadataDownloader.getUrls().get("productByCode");
-    }
-
-    String getProductByWeighItemIdUrl() {
-        return metadataDownloader.getUrls().get("productByWeighItemId");
-    }
-
-    public String[] getPricePrefixes() {
-        return pricePrefixes;
-    }
-
-    public String[] getWeighPrefixes() {
-        return weighPrefixes;
-    }
-
-    public String[] getUnitPrefixes() {
-        return unitPrefixes;
-    }
-
-    public String getEncodedCodesPrefix() {
-        return encodedCodesPrefix;
-    }
-
-    public String getEncodedCodesSeperator() {
-        return encodedCodesSeperator;
-    }
-
-    public String getEncodedCodesSuffix() {
-        return encodedCodesSuffix;
-    }
-
     public static class Config {
         /**
          * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
@@ -507,11 +439,101 @@ public class SnabbleSdk {
          */
         public boolean productDbDownloadIfMissing = true;
 
+        /**
+         * Optional SSLSocketFactory that gets used for HTTP requests.
+         *
+         * Requires also x509TrustManager to be set.
+         */
+        public SSLSocketFactory sslSocketFactory = null;
+
+        /**
+         * Optional X509TrustManager that gets used for HTTP requests.
+         *
+         * Requires also sslSocketFactory to be set.
+         */
+        public X509TrustManager x509TrustManager = null;
+
         public boolean useGermanPrintPrefix = false;
 
         public String encodedCodesPrefix = null;
         public String encodedCodesSeperator = null;
         public String encodedCodesSuffix = null;
+    }
+
+    File getInternalStorageDirectory() {
+        return internalStorageDirectory;
+    }
+
+    public String getEndpointBaseUrl() {
+        return endpointBaseUrl;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    OkHttpClient getOkHttpClient() {
+        return okHttpClient;
+    }
+
+    Application getApplication() {
+        return application;
+    }
+
+    String getEventsUrl() {
+        return metadataDownloader.getUrls().get("appEvents");
+    }
+
+    String getAppDbUrl() {
+        return metadataDownloader.getUrls().get("appdb");
+    }
+
+    String getCheckoutUrl() {
+        return metadataDownloader.getUrls().get("checkoutInfo");
+    }
+
+    String getMetadataUrl() {
+        if (loyaltyCardId != null) {
+            return metadataUrl + "?loyaltyCard=" + loyaltyCardId;
+        } else {
+            return metadataUrl;
+        }
+    }
+
+    String getProductBySkuUrl() {
+        return metadataDownloader.getUrls().get("productBySku");
+    }
+
+    String getProductByCodeUrl() {
+        return metadataDownloader.getUrls().get("productByCode");
+    }
+
+    String getProductByWeighItemIdUrl() {
+        return metadataDownloader.getUrls().get("productByWeighItemId");
+    }
+
+    public String[] getPricePrefixes() {
+        return pricePrefixes;
+    }
+
+    public String[] getWeighPrefixes() {
+        return weighPrefixes;
+    }
+
+    public String[] getUnitPrefixes() {
+        return unitPrefixes;
+    }
+
+    public String getEncodedCodesPrefix() {
+        return encodedCodesPrefix;
+    }
+
+    public String getEncodedCodesSeperator() {
+        return encodedCodesSeperator;
+    }
+
+    public String getEncodedCodesSuffix() {
+        return encodedCodesSuffix;
     }
 
     String absoluteUrl(String url) {
