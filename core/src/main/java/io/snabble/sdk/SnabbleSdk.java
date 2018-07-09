@@ -31,8 +31,118 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class SnabbleSdk {
+    public static class Config {
+        /**
+         * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
+         */
+        public String endpointBaseUrl;
 
-    private boolean useGermanPrintPrefix = false;
+        /**
+         * The project identifier, which is used in the communication with the backend.
+         */
+        public String projectId;
+
+        /**
+         * The JWT based client token required for all requests to the backend.
+         */
+        public String clientToken;
+
+        /**
+         * Relative url to the metadata.
+         * <p>
+         * In the format: /api/{projectId}/metadata/app/{platform}/{version}
+         */
+        public String metadataUrl;
+
+        /**
+         * Relative path from the assets folder which points to a bundled file which contains the metadata
+         * from the metadataUrl specified before.
+         * <p>
+         * This file gets initially used to initialize the sdk before network requests are made,
+         * or be able to use the sdk in the case of no network connection.
+         * <p>
+         * Optional. If no file is specified every time the sdk is initialized we wait for a network response
+         * from the backend.
+         * <p>
+         * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
+         * without having a network connection.
+         */
+        public String bundledMetadataAssetPath;
+
+        /**
+         * The name if the product database which will be used to store the database under
+         * the default android database directory.
+         * <p>
+         * The resulting path is the path from {@link android.content.Context#getDatabasePath(String)}
+         *
+         * If set to null, only online lookup of products is available.
+         *
+         */
+        public String productDbName;
+
+        /**
+         * Relative path from the assets folder which points to a bundled file which contains the products
+         * as an sqlite3 database.
+         * <p>
+         * This file gets initially used to initialize the product database before network requests are made,
+         * or be able to use the product database in the case of no network connection.
+         * <p>
+         * Optional. If no file is specified and no product database is already present, the sdk initialization
+         * is delayed until the network request for the product db is successful.
+         * <p>
+         * It is HIGHLY recommended to provide a bundled database to allow the sdk to function
+         * without having a network connection.
+         */
+        public String productDbBundledAssetPath;
+
+        /**
+         * This is the revision id of the bundled product database. This is used to prevent
+         * extracting the bundled database when the stored database is already newer.
+         * <p>
+         * When the bundled database revision is newer then the stored database, the stored
+         * database will be overwritten by the bundled database
+         */
+        public int productDbBundledRevisionId = -1;
+
+        /**
+         * The bundled major schema version.
+         */
+        public int productDbBundledSchemaVersionMajor = -1;
+
+        /**
+         * The bundled minor schema version.
+         */
+        public int productDbBundledSchemaVersionMinor = -1;
+
+        /**
+         * If set to true, allows the database to be downloaded even if no seed is provided.
+         *
+         * When set to false, calls to {@link ProductDatabase#update()} will still download
+         * the database if its missing, allowing for the ability of database downloads after
+         * sdk initialization
+         */
+        public boolean productDbDownloadIfMissing = true;
+
+        /**
+         * Optional SSLSocketFactory that gets used for HTTP requests.
+         *
+         * Requires also x509TrustManager to be set.
+         */
+        public SSLSocketFactory sslSocketFactory = null;
+
+        /**
+         * Optional X509TrustManager that gets used for HTTP requests.
+         *
+         * Requires also sslSocketFactory to be set.
+         */
+        public X509TrustManager x509TrustManager = null;
+
+        public boolean useGermanPrintPrefix = false;
+
+        public String encodedCodesPrefix = null;
+        public String encodedCodesSeperator = null;
+        public String encodedCodesSuffix = null;
+    }
 
     private String endpointBaseUrl;
     private String metadataUrl;
@@ -67,6 +177,8 @@ public class SnabbleSdk {
     private String encodedCodesPrefix = null;
     private String encodedCodesSeperator = null;
     private String encodedCodesSuffix = null;
+
+    private boolean useGermanPrintPrefix = false;
 
     private void init(final Application app,
                       final Config config,
@@ -345,119 +457,6 @@ public class SnabbleSdk {
         if (setupCompletionListener != null) {
             setupCompletionListener.onError(error);
         }
-    }
-
-    public static class Config {
-        /**
-         * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
-         */
-        public String endpointBaseUrl;
-
-        /**
-         * The project identifier, which is used in the communication with the backend.
-         */
-        public String projectId;
-
-        /**
-         * The JWT based client token required for all requests to the backend.
-         */
-        public String clientToken;
-
-        /**
-         * Relative url to the metadata.
-         * <p>
-         * In the format: /api/{projectId}/metadata/app/{platform}/{version}
-         */
-        public String metadataUrl;
-
-        /**
-         * Relative path from the assets folder which points to a bundled file which contains the metadata
-         * from the metadataUrl specified before.
-         * <p>
-         * This file gets initially used to initialize the sdk before network requests are made,
-         * or be able to use the sdk in the case of no network connection.
-         * <p>
-         * Optional. If no file is specified every time the sdk is initialized we wait for a network response
-         * from the backend.
-         * <p>
-         * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
-         * without having a network connection.
-         */
-        public String bundledMetadataAssetPath;
-
-        /**
-         * The name if the product database which will be used to store the database under
-         * the default android database directory.
-         * <p>
-         * The resulting path is the path from {@link android.content.Context#getDatabasePath(String)}
-         *
-         * If set to null, only online lookup of products is available.
-         *
-         */
-        public String productDbName;
-
-        /**
-         * Relative path from the assets folder which points to a bundled file which contains the products
-         * as an sqlite3 database.
-         * <p>
-         * This file gets initially used to initialize the product database before network requests are made,
-         * or be able to use the product database in the case of no network connection.
-         * <p>
-         * Optional. If no file is specified and no product database is already present, the sdk initialization
-         * is delayed until the network request for the product db is successful.
-         * <p>
-         * It is HIGHLY recommended to provide a bundled database to allow the sdk to function
-         * without having a network connection.
-         */
-        public String productDbBundledAssetPath;
-
-        /**
-         * This is the revision id of the bundled product database. This is used to prevent
-         * extracting the bundled database when the stored database is already newer.
-         * <p>
-         * When the bundled database revision is newer then the stored database, the stored
-         * database will be overwritten by the bundled database
-         */
-        public int productDbBundledRevisionId = -1;
-
-        /**
-         * The bundled major schema version.
-         */
-        public int productDbBundledSchemaVersionMajor = -1;
-
-        /**
-         * The bundled minor schema version.
-         */
-        public int productDbBundledSchemaVersionMinor = -1;
-
-        /**
-         * If set to true, allows the database to be downloaded even if no seed is provided.
-         *
-         * When set to false, calls to {@link ProductDatabase#update()} will still download
-         * the database if its missing, allowing for the ability of database downloads after
-         * sdk initialization
-         */
-        public boolean productDbDownloadIfMissing = true;
-
-        /**
-         * Optional SSLSocketFactory that gets used for HTTP requests.
-         *
-         * Requires also x509TrustManager to be set.
-         */
-        public SSLSocketFactory sslSocketFactory = null;
-
-        /**
-         * Optional X509TrustManager that gets used for HTTP requests.
-         *
-         * Requires also sslSocketFactory to be set.
-         */
-        public X509TrustManager x509TrustManager = null;
-
-        public boolean useGermanPrintPrefix = false;
-
-        public String encodedCodesPrefix = null;
-        public String encodedCodesSeperator = null;
-        public String encodedCodesSuffix = null;
     }
 
     File getInternalStorageDirectory() {
