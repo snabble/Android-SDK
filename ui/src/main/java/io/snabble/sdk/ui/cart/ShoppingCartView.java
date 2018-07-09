@@ -223,8 +223,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         if (state == Checkout.State.HANDSHAKING) {
             progressDialog.setOnCancelListener(onCancelListener);
             progressDialog.showAfterDelay(500);
-        } else {
-            progressDialog.dismiss();
         }
 
         if (state == Checkout.State.REQUEST_PAYMENT_METHOD || state == Checkout.State.WAIT_FOR_APPROVAL) {
@@ -232,11 +230,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             if (callback != null) {
                 callback.showCheckout();
             }
+            progressDialog.dismiss();
         }
 
         if (state == Checkout.State.CONNECTION_ERROR) {
             UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
                     .show();
+            progressDialog.dismiss();
         }
     }
 
