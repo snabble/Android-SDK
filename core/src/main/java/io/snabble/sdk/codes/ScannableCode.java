@@ -7,7 +7,7 @@ import io.snabble.sdk.SnabbleSdk;
 public class ScannableCode implements Serializable {
     protected String code;
 
-    public ScannableCode(String code) {
+    ScannableCode(String code) {
         this.code = code;
     }
 

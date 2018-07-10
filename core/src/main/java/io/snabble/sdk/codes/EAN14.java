@@ -1,7 +1,7 @@
 package io.snabble.sdk.codes;
 
 public class EAN14 extends ScannableCode {
-    public EAN14(String code) {
+    EAN14(String code) {
         super(code);
 
         if (code.length() == 16) {
