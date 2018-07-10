@@ -5,13 +5,13 @@ import java.io.Serializable;
 import io.snabble.sdk.SnabbleSdk;
 
 public class ScannableCode implements Serializable {
-    private String code;
+    protected String code;
 
-    public ScannableCode(String code){
+    public ScannableCode(String code) {
         this.code = code;
     }
 
-    public String getCode(){
+    public String getCode() {
         return code;
     }
 
@@ -35,7 +35,7 @@ public class ScannableCode implements Serializable {
         return false;
     }
 
-    public boolean hasEmbeddedData(){
+    public boolean hasEmbeddedData() {
         return false;
     }
 
@@ -43,9 +43,11 @@ public class ScannableCode implements Serializable {
         return true;
     }
 
-    public static ScannableCode parse(SnabbleSdk snabbleSdk, String code){
-        if(EAN13.isEan13(code)){
+    public static ScannableCode parse(SnabbleSdk snabbleSdk, String code) {
+        if (EAN13.isEan13(code)) {
             return new EAN13(code, snabbleSdk);
+        } else if (EAN14.isEan14(code)) {
+            return new EAN14(code);
         } else {
             return new ScannableCode(code);
         }
