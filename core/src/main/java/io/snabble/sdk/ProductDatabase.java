@@ -1011,7 +1011,15 @@ public class ProductDatabase {
                 code
         }, false);
 
-        return getFirstProductAndClose(cursor);
+        Product p = getFirstProductAndClose(cursor);
+
+        if (p != null) {
+            return p;
+        } else if (code.startsWith("0")){
+            return findByCode(code.substring(1, code.length()));
+        } else {
+            return null;
+        }
     }
 
     /**
