@@ -233,7 +233,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             progressDialog.dismiss();
         }
 
-        if (state == Checkout.State.CONNECTION_ERROR) {
+        if (state == Checkout.State.CONNECTION_ERROR || state == Checkout.State.PAYMENT_ABORTED) {
             UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
                     .show();
             progressDialog.dismiss();
