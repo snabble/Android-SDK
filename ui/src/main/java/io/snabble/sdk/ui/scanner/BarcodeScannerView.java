@@ -14,6 +14,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
@@ -95,6 +96,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private int displayOrientation;
     private boolean restrictScanningToIndicator = true;
     private int bitsPerPixel;
+    private boolean indicatorEnabled = true;
+    private FrameLayout splashView;
 
     public BarcodeScannerView(Context context) {
         super(context);
@@ -127,26 +130,34 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         mainThreadHandler = new Handler(Looper.getMainLooper());
 
         textureView = new TextureView(getContext());
-        textureView.setLayoutParams(new FrameLayout.LayoutParams(
+        textureView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
         addView(textureView);
 
         scanIndicatorView = new ScanIndicatorView(getContext());
-        textureView.setLayoutParams(new FrameLayout.LayoutParams(
+        scanIndicatorView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         addView(scanIndicatorView);
 
         cameraUnavailableView = new TextView(getContext());
-        cameraUnavailableView.setLayoutParams(new FrameLayout.LayoutParams(
+        cameraUnavailableView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         cameraUnavailableView.setText(R.string.Snabble_Scanner_Camera_accessDenied);
         cameraUnavailableView.setGravity(Gravity.CENTER);
         cameraUnavailableView.setVisibility(View.GONE);
         addView(cameraUnavailableView);
+
+        splashView = new FrameLayout(getContext());
+        splashView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        splashView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
+                R.color.snabble_backgroundColorDark, null));
+        addView(splashView);
 
         textureView.setSurfaceTextureListener(this);
     }
@@ -179,6 +190,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void startIfRequestedAsync(){
+        splashView.setVisibility(View.VISIBLE);
         cameraHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -371,6 +383,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             }
         });
 
+        showError(false);
+
         if (isPaused) {
             camera.stopPreview();
         }
@@ -424,11 +438,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             public void run() {
                 if (show) {
                     cameraUnavailableView.setVisibility(View.VISIBLE);
-                    scanIndicatorView.setVisibility(View.GONE);
                 } else {
                     cameraUnavailableView.setVisibility(View.GONE);
-                    scanIndicatorView.setVisibility(View.VISIBLE);
                 }
+
+                setScanIndicatorVisible(!show);
             }
         });
     }
@@ -591,7 +605,9 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
+        if (running) {
+            splashView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -726,7 +742,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
      * @param enabled false to disable the {@link ScanIndicatorView}. Defaults to true.
      */
     public void setIndicatorEnabled(boolean enabled) {
-        if (enabled) {
+        indicatorEnabled = enabled;
+        setScanIndicatorVisible(enabled);
+        updateTransform();
+    }
+
+    private void setScanIndicatorVisible(boolean visible) {
+        if (indicatorEnabled && visible){
             scanIndicatorView.setVisibility(View.VISIBLE);
         } else {
             scanIndicatorView.setVisibility(View.GONE);
@@ -807,39 +829,42 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             transform.postScale(fitScale, fitScale, surfaceWidth / 2, surfaceHeight / 2);
         }
 
-        if (restrictScanningToIndicator) {
-            float destWidthScaled = destWidth * fitScale;
-            float destHeightScaled = destHeight * fitScale;
+        float destWidthScaled = destWidth * fitScale;
+        float destHeightScaled = destHeight * fitScale;
 
-            float offsetX = (destWidthScaled - surfaceWidth) / 2;
-            float offsetY = (destHeightScaled - surfaceHeight) / 2;
+        float offsetX = (destWidthScaled - surfaceWidth) / 2;
+        float offsetY = (destHeightScaled - surfaceHeight) / 2;
 
-            Rect rect = scanIndicatorView.getIndicatorRect();
-
-            float left = offsetX + surfaceWidth * ((float) rect.left / surfaceWidth);
-            float top = offsetY + surfaceHeight * ((float) rect.top / surfaceHeight);
-            float right = offsetX + surfaceWidth * ((float) rect.right / surfaceWidth);
-            float bottom = offsetY + surfaceHeight * ((float) rect.bottom / surfaceHeight);
-
-            float leftNormalized = left / destWidthScaled;
-            float topNormalized = top / destHeightScaled;
-            float rightNormalized = right / destWidthScaled;
-            float bottomNormalized = bottom / destHeightScaled;
-
-            if(isInPortraitMode()){
-                cameraImageDetectionRect.left = Math.round(previewSize.width * topNormalized);
-                cameraImageDetectionRect.top = Math.round(previewSize.height * leftNormalized);
-                cameraImageDetectionRect.right = Math.round(previewSize.width * bottomNormalized);
-                cameraImageDetectionRect.bottom = Math.round(previewSize.height * rightNormalized);
-            } else {
-                cameraImageDetectionRect.left = Math.round(rotatedPreviewWidth * leftNormalized);
-                cameraImageDetectionRect.top = Math.round(rotatedPreviewHeight * topNormalized);
-                cameraImageDetectionRect.right = Math.round(rotatedPreviewWidth * rightNormalized);
-                cameraImageDetectionRect.bottom = Math.round(rotatedPreviewHeight * bottomNormalized);
-            }
-
-            cropBuffer = new byte[cameraImageDetectionRect.width() * cameraImageDetectionRect.height() * bitsPerPixel / 8];
+        Rect rect;
+        if (indicatorEnabled && restrictScanningToIndicator) {
+            rect = scanIndicatorView.getIndicatorRect();
+        } else {
+            rect = new Rect(0, 0, getWidth(), getHeight());
         }
+
+        float left = offsetX + surfaceWidth * ((float) rect.left / surfaceWidth);
+        float top = offsetY + surfaceHeight * ((float) rect.top / surfaceHeight);
+        float right = offsetX + surfaceWidth * ((float) rect.right / surfaceWidth);
+        float bottom = offsetY + surfaceHeight * ((float) rect.bottom / surfaceHeight);
+
+        float leftNormalized = left / destWidthScaled;
+        float topNormalized = top / destHeightScaled;
+        float rightNormalized = right / destWidthScaled;
+        float bottomNormalized = bottom / destHeightScaled;
+
+        if(isInPortraitMode()){
+            cameraImageDetectionRect.left = Math.round(previewSize.width * topNormalized);
+            cameraImageDetectionRect.top = Math.round(previewSize.height * leftNormalized);
+            cameraImageDetectionRect.right = Math.round(previewSize.width * bottomNormalized);
+            cameraImageDetectionRect.bottom = Math.round(previewSize.height * rightNormalized);
+        } else {
+            cameraImageDetectionRect.left = Math.round(rotatedPreviewWidth * leftNormalized);
+            cameraImageDetectionRect.top = Math.round(rotatedPreviewHeight * topNormalized);
+            cameraImageDetectionRect.right = Math.round(rotatedPreviewWidth * rightNormalized);
+            cameraImageDetectionRect.bottom = Math.round(rotatedPreviewHeight * bottomNormalized);
+        }
+
+        cropBuffer = new byte[cameraImageDetectionRect.width() * cameraImageDetectionRect.height() * bitsPerPixel / 8];
 
         textureView.setTransform(transform);
     }
