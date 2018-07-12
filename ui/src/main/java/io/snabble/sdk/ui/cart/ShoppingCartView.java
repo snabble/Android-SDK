@@ -151,6 +151,17 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             }
         });
 
+        View scanProducts = findViewById(R.id.scan_products);
+        scanProducts.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                if (callback != null) {
+                    callback.showScannerWithCode(null);
+                }
+            }
+        });
+
         createItemTouchHelper();
 
         SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
