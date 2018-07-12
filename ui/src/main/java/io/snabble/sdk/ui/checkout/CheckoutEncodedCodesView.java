@@ -29,6 +29,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     private ScrollView scrollView;
     private TextView explanationText;
     private SnabbleSdk sdkInstance;
+    private int codeCount;
 
     public CheckoutEncodedCodesView(Context context) {
         super(context);
@@ -123,8 +124,6 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
             stringBuilder = new StringBuilder();
 
-
-
             int h = scrollContainer.getHeight();
             barcodeHeight = h - h / 5;
 
@@ -149,6 +148,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             for (int i = 0; i < shoppingCart.size(); i++) {
                 Product product = shoppingCart.getProduct(i);
                 if(product.getType() == Product.Type.UserWeighed){
+                    //encoding weight in ean
                     String[] weighItemIds = product.getWeighedItemIds();
                     if(weighItemIds != null && weighItemIds.length > 0){
                         StringBuilder code = new StringBuilder(weighItemIds[0]);
@@ -191,11 +191,13 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                     barcodeHeight));
 
             stringBuilder = new StringBuilder();
+            codeCount = 0;
         }
 
         private void addScannableCode(String scannableCode) {
             int requiredLength = scannableCode.length() + sdkInstance.getEncodedCodesSuffix().length() + 1;
-            if (stringBuilder.length() + (requiredLength) > MAX_CHARS) {
+            if (codeCount + 1 > sdkInstance.getEncodedCodesMaxCodes()
+                    || stringBuilder.length() + (requiredLength) > MAX_CHARS) {
                 generateView();
             }
 
@@ -206,6 +208,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             }
 
             stringBuilder.append(scannableCode);
+            codeCount++;
         }
     }
 }

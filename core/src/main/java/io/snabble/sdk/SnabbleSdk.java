@@ -142,6 +142,7 @@ public class SnabbleSdk {
         public String encodedCodesPrefix = null;
         public String encodedCodesSeperator = null;
         public String encodedCodesSuffix = null;
+        public int encodedCodesMaxCodes = 100;
     }
 
     private String endpointBaseUrl;
@@ -177,6 +178,7 @@ public class SnabbleSdk {
     private String encodedCodesPrefix = null;
     private String encodedCodesSeperator = null;
     private String encodedCodesSuffix = null;
+    private int encodedCodesMaxCodes;
 
     private boolean useGermanPrintPrefix = false;
 
@@ -235,6 +237,7 @@ public class SnabbleSdk {
         encodedCodesPrefix = config.encodedCodesPrefix != null ? config.encodedCodesPrefix : "";
         encodedCodesSeperator = config.encodedCodesSeperator != null ? config.encodedCodesSeperator : "\n";
         encodedCodesSuffix = config.encodedCodesSuffix != null ? config.encodedCodesSuffix : "";
+        encodedCodesMaxCodes = config.encodedCodesMaxCodes;
 
         useGermanPrintPrefix = config.useGermanPrintPrefix;
 
@@ -533,6 +536,10 @@ public class SnabbleSdk {
 
     public String getEncodedCodesSuffix() {
         return encodedCodesSuffix;
+    }
+
+    public int getEncodedCodesMaxCodes() {
+        return encodedCodesMaxCodes;
     }
 
     String absoluteUrl(String url) {
