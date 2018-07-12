@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -48,16 +49,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private boolean isRunning;
 
     private DelayedProgressDialog progressDialog;
-    private Checkout checkout;
     private long detectAfterTimeMs;
-
-    private DialogInterface.OnCancelListener progressDialogCancelListener = new DialogInterface.OnCancelListener() {
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            resumeBarcodeScanner();
-            checkout.cancel();
-        }
-    };
+    private boolean ignoreNextDialog;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -76,6 +69,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
     private void inflateView() {
         inflate(getContext(), R.layout.view_self_scanning, this);
+
+        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
@@ -108,15 +103,21 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_loadingProductInformation));
         progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setOnCancelListener(progressDialogCancelListener);
+        progressDialog.setCancelable(false);
+        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    resumeBarcodeScanner();
+                    progressDialog.dismiss();
 
-        setSdkInstance(SnabbleUI.getSdkInstance());
-    }
+                    ignoreNextDialog = true;
 
-    private void setSdkInstance(SnabbleSdk sdkInstance) {
-        if (sdkInstance == null) {
-            return;
-        }
+                    return true;
+                }
+                return false;
+            }
+        });
 
         this.productDatabase = sdkInstance.getProductDatabase();
 
@@ -144,14 +145,13 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             }
         });
 
-        checkout = sdkInstance.getCheckout();
-
         isInitialized = true;
         startBarcodeScanner();
     }
 
     public void lookupAndShowProduct(final ScannableCode scannedCode) {
         productDialog.dismiss();
+        ignoreNextDialog = false;
 
         if(scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()){
             delayNextScan();
@@ -164,7 +164,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             return;
         }
 
-        progressDialog.setOnCancelListener(progressDialogCancelListener);
         progressDialog.showAfterDelay(300);
         pauseBarcodeScanner();
 
@@ -223,6 +222,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannableCode scannedCode) {
+        if (ignoreNextDialog) {
+            return;
+        }
+
         progressDialog.dismiss();
         showProduct(product, scannedCode);
 
@@ -353,9 +356,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     public void registerListeners() {
         isRunning = true;
 
-        progressDialog.setOnCancelListener(progressDialogCancelListener);
-        checkout.addOnCheckoutStateChangedListener(SelfScanningView.this);
-
         startBarcodeScanner();
     }
 
@@ -363,9 +363,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         isRunning = false;
 
         stopBarcodeScanner();
-        checkout.removeOnCheckoutStateChangedListener(SelfScanningView.this);
 
-        progressDialog.setOnCancelListener(null);
         progressDialog.dismiss();
         productDialog.dismiss();
     }
@@ -423,7 +421,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         switch (state) {
             case HANDSHAKING:
-                progressDialog.setOnCancelListener(progressDialogCancelListener);
                 progressDialog.showAfterDelay(500);
                 break;
             case REQUEST_PAYMENT_METHOD:
@@ -434,11 +431,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 }
 
                 progressDialog.dismiss();
-                checkout.removeOnCheckoutStateChangedListener(this);
                 break;
             case CONNECTION_ERROR:
                 progressDialog.dismiss();
-                checkout.removeOnCheckoutStateChangedListener(this);
 
                 UIUtils.snackbar(SelfScanningView.this,
                         R.string.Snabble_Payment_errorStarting,

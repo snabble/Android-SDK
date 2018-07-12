@@ -377,7 +377,7 @@ public class Checkout {
             boolean wasRequestingPaymentMethod = (lastState == State.REQUEST_PAYMENT_METHOD
                     || lastState == State.VERIFYING_PAYMENT_METHOD);
 
-            if (force || isRequestingPaymentMethod || (state == State.CONNECTION_ERROR && wasRequestingPaymentMethod)) {
+            if (force || isRequestingPaymentMethod || ((state == State.CONNECTION_ERROR || state == State.NONE) && wasRequestingPaymentMethod)) {
                 this.paymentMethod = paymentMethod;
 
                 CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
@@ -418,13 +418,11 @@ public class Checkout {
                             inputStream.close();
                         } else {
                             if (!call.isCanceled()) {
-                                if (response.code() == 400) {
-                                    Logger.e("Bad request - aborting");
-                                    notifyStateChanged(State.PAYMENT_ABORTED);
-                                } else {
-                                    Logger.e("Connection error while creating checkout process");
-                                    notifyStateChanged(State.CONNECTION_ERROR);
-                                }
+                                Logger.e("Connection error while creating checkout process");
+                                notifyStateChanged(State.CONNECTION_ERROR);
+                            } else {
+                                Logger.e("Bad request - aborting");
+                                notifyStateChanged(State.PAYMENT_ABORTED);
                             }
                         }
                     }

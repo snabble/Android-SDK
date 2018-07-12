@@ -60,13 +60,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
 
-    private DialogInterface.OnCancelListener onCancelListener = new DialogInterface.OnCancelListener() {
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            checkout.cancel();
-        }
-    };
-
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, Product product) {
@@ -137,6 +130,17 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    checkout.cancel();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         pay = findViewById(R.id.pay);
         pay.setOnClickListener(new OneShotClickListener() {
@@ -221,21 +225,18 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     @Override
     public void onStateChanged(Checkout.State state) {
         if (state == Checkout.State.HANDSHAKING) {
-            progressDialog.setOnCancelListener(onCancelListener);
             progressDialog.showAfterDelay(500);
-        }
-
-        if (state == Checkout.State.REQUEST_PAYMENT_METHOD || state == Checkout.State.WAIT_FOR_APPROVAL) {
+        } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD || state == Checkout.State.WAIT_FOR_APPROVAL) {
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
                 callback.showCheckout();
             }
             progressDialog.dismiss();
-        }
-
-        if (state == Checkout.State.CONNECTION_ERROR || state == Checkout.State.PAYMENT_ABORTED) {
+        } else if (state == Checkout.State.CONNECTION_ERROR) {
             UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
                     .show();
+            progressDialog.dismiss();
+        } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {
             progressDialog.dismiss();
         }
     }
@@ -274,15 +275,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     public void registerListeners() {
         cart.addListener(shoppingCartListener);
         checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
-
-        progressDialog.setOnCancelListener(onCancelListener);
     }
 
     public void unregisterListeners() {
         cart.removeListener(shoppingCartListener);
         checkout.removeOnCheckoutStateChangedListener(ShoppingCartView.this);
 
-        progressDialog.setOnCancelListener(null);
         progressDialog.dismiss();
     }
 
