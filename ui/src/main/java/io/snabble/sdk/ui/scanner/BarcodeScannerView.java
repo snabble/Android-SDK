@@ -84,7 +84,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private int surfaceHeight;
     private TextureView textureView;
     private boolean zoomToFitView = true;
-    private Rect cameraImageDetectionRect = new Rect();
+    private Rect detectionRect = new Rect();
     private ScanIndicatorView scanIndicatorView;
     private boolean torchEnabled;
     private boolean decodeEnabled;
@@ -365,13 +365,12 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             scheduleAutoFocus();
         }
 
-        cameraImageDetectionRect.left = 0;
-        cameraImageDetectionRect.top = 0;
-        cameraImageDetectionRect.right = previewSize.width;
-        cameraImageDetectionRect.bottom = previewSize.height;
+        detectionRect.left = 0;
+        detectionRect.top = 0;
+        detectionRect.right = previewSize.width;
+        detectionRect.bottom = previewSize.height;
 
         running = true;
-        decodeEnabled = true;
         isProcessing = false;
 
         setTorchEnabled(torchEnabled);
@@ -380,6 +379,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             @Override
             public void run() {
                 updateTransform();
+                decodeEnabled = true;
             }
         });
 
@@ -684,8 +684,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private Result detect(boolean rotate) {
-        int width = cameraImageDetectionRect.width();
-        int height = cameraImageDetectionRect.height();
+        int width = detectionRect.width();
+        int height = detectionRect.height();
         byte[] buf;
 
         if (rotate) {
@@ -853,18 +853,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         float bottomNormalized = bottom / destHeightScaled;
 
         if(isInPortraitMode()){
-            cameraImageDetectionRect.left = Math.round(previewSize.width * topNormalized);
-            cameraImageDetectionRect.top = Math.round(previewSize.height * leftNormalized);
-            cameraImageDetectionRect.right = Math.round(previewSize.width * bottomNormalized);
-            cameraImageDetectionRect.bottom = Math.round(previewSize.height * rightNormalized);
+            detectionRect.left = Math.round(previewSize.width * topNormalized);
+            detectionRect.top = Math.round(previewSize.height * leftNormalized);
+            detectionRect.right = Math.round(previewSize.width * bottomNormalized);
+            detectionRect.bottom = Math.round(previewSize.height * rightNormalized);
         } else {
-            cameraImageDetectionRect.left = Math.round(rotatedPreviewWidth * leftNormalized);
-            cameraImageDetectionRect.top = Math.round(rotatedPreviewHeight * topNormalized);
-            cameraImageDetectionRect.right = Math.round(rotatedPreviewWidth * rightNormalized);
-            cameraImageDetectionRect.bottom = Math.round(rotatedPreviewHeight * bottomNormalized);
+            detectionRect.left = Math.round(rotatedPreviewWidth * leftNormalized);
+            detectionRect.top = Math.round(rotatedPreviewHeight * topNormalized);
+            detectionRect.right = Math.round(rotatedPreviewWidth * rightNormalized);
+            detectionRect.bottom = Math.round(rotatedPreviewHeight * bottomNormalized);
         }
 
-        cropBuffer = new byte[cameraImageDetectionRect.width() * cameraImageDetectionRect.height() * bitsPerPixel / 8];
+        int size = detectionRect.width() * detectionRect.height() * bitsPerPixel / 8;
+
+        if(cropBuffer == null || cropBuffer.length != size) {
+            cropBuffer = new byte[detectionRect.width() * detectionRect.height() * bitsPerPixel / 8];
+        }
 
         textureView.setTransform(transform);
     }
@@ -876,13 +880,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         byte[] buf = cropBuffer;
         byte[] data = frontBuffer;
 
-        int left = cameraImageDetectionRect.left;
-        int top = cameraImageDetectionRect.top;
-        int right = cameraImageDetectionRect.right;
-        int bottom = cameraImageDetectionRect.bottom;
+        int left = detectionRect.left;
+        int top = detectionRect.top;
+        int right = detectionRect.right;
+        int bottom = detectionRect.bottom;
 
-        int tWidth = cameraImageDetectionRect.width();
-        int tHeight = cameraImageDetectionRect.height();
+        int tWidth = detectionRect.width();
+        int tHeight = detectionRect.height();
 
         // special cases for reversed orientations, we don't flip the image
         // because zxing is able to detect flipped images
