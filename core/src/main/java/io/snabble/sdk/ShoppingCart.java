@@ -4,8 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,24 +27,10 @@ public class ShoppingCart {
         private Integer price = null;
         private Integer amount = null;
 
-        private Entry(Product product, int quantity, ScannableCode scannedCode) {
+        private Entry(Product product, int quantity) {
             this.sku = product.getSku();
             this.product = product;
             this.quantity = quantity;
-
-            setScannedCode(scannedCode);
-        }
-
-        public void setScannedCode(ScannableCode scannedCode){
-            this.scannedCode = scannedCode.getCode();
-
-            if(scannedCode.hasWeighData()){
-                weight = scannedCode.getEmbeddedData();
-            } else if(scannedCode.hasPriceData()){
-                price = scannedCode.getEmbeddedData();
-            } else if(scannedCode.hasAmountData()){
-                amount = scannedCode.getEmbeddedData();
-            }
         }
     }
 
@@ -114,7 +98,8 @@ public class ShoppingCart {
                 || product.getType() == Product.Type.UserWeighed
                 || product.getType() == Product.Type.PreWeighed) {
             if(quantity > 0) {
-                Entry entry = new Entry(product, quantity, scannedCode);
+                Entry entry = new Entry(product, quantity);
+                setScannedCodeForEntry(entry, scannedCode);
                 addEntry(entry, index);
             }
         } else {
@@ -131,7 +116,7 @@ public class ShoppingCart {
 
         if (e != null) {
             if (scannedCode != null) {
-                e.setScannedCode(scannedCode);
+                setScannedCodeForEntry(e, scannedCode);
             }
 
             setEntryQuantity(e, quantity);
@@ -148,7 +133,7 @@ public class ShoppingCart {
 
             if (e != null) {
                 if (scannedCode != null) {
-                    e.setScannedCode(scannedCode);
+                    setScannedCodeForEntry(e, scannedCode);
                 }
 
                 setEntryQuantity(e, quantity);
@@ -311,6 +296,37 @@ public class ShoppingCart {
 
             return null;
         }
+    }
+
+    private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode){
+        entry.scannedCode = findCodeByScannedCode(entry.product, scannedCode);
+
+        if(scannedCode.hasWeighData()){
+            entry.weight = scannedCode.getEmbeddedData();
+        } else if(scannedCode.hasPriceData()){
+            entry.price = scannedCode.getEmbeddedData();
+        } else if(scannedCode.hasAmountData()){
+            entry.amount = scannedCode.getEmbeddedData();
+        }
+    }
+
+    // finds the code matching the code in the product if it was scanned with leading zeros
+    // and the leading zeros are missing in the scannableCodes of the product
+    private String findCodeByScannedCode(Product product, ScannableCode scannableCode) {
+        String scannedCode = scannableCode.getCode();
+
+        for(String code : product.getScannableCodes()){
+            if(code.equals(scannedCode)){
+                return code;
+            }
+        }
+
+        if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
+            scannedCode = scannedCode.substring(1, scannedCode.length());
+            return findCodeByScannedCode(product, ScannableCode.parse(sdkInstance, scannedCode));
+        }
+
+        return scannedCode;
     }
 
     private int indexOf(Entry e) {
