@@ -383,8 +383,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 if(embeddedPrice != null){
                     priceTextView.setText(" " + priceFormatter.format(embeddedPrice));
                 } else if(embeddedAmount != null){
-                    priceTextView.setText(String.format(" %s * %s = %s",
-                            String.valueOf(embeddedAmount),
+                    priceTextView.setText(String.format(" * %s = %s",
                             priceFormatter.format(product.getPrice()),
                             priceFormatter.format(product.getPrice() * embeddedAmount)));
                 } else if(embeddedWeight != null){
@@ -399,6 +398,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 if(embeddedWeight != null) {
                     quantityTextView.setText(String.format("%s g", String.valueOf(embeddedWeight)));
+                } else if (embeddedAmount != null) {
+                    quantityTextView.setText(String.valueOf(embeddedAmount));
                 } else if (type == Product.Type.UserWeighed) {
                     quantityTextView.setText(String.format("%s g", String.valueOf(quantity)));
                 } else {
@@ -413,8 +414,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 switch (type) {
                     case Article:
-                        controlsDefault.setVisibility(View.VISIBLE);
-                        controlsUserWeighed.setVisibility(View.INVISIBLE);
+                        if (embeddedAmount != null) {
+                            controlsDefault.setVisibility(View.GONE);
+                            controlsUserWeighed.setVisibility(View.GONE);
+                        } else {
+                            controlsDefault.setVisibility(View.VISIBLE);
+                            controlsUserWeighed.setVisibility(View.INVISIBLE);
+                        }
                         break;
                     case PreWeighed:
                         controlsDefault.setVisibility(View.GONE);
