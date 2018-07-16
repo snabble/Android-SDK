@@ -57,6 +57,18 @@ public class EAN13 extends ScannableCode implements Serializable {
         } else if(isEmbeddedDataOk()) {
             lookupCode = code.substring(0, 6) + "0000000";
             embeddedData = Integer.parseInt(code.substring(7, 12));
+
+            if (hasUnitData && embeddedData == 0) {
+                embeddedData = 1;
+
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(code.substring(0, code.length() - 2));
+                stringBuilder.append("1");
+                stringBuilder.replace(6, 7, String.valueOf(internalChecksum(stringBuilder.toString())));
+                stringBuilder.append(String.valueOf(checksum(stringBuilder.toString())));
+
+                this.code = stringBuilder.toString();
+            }
         } else {
             lookupCode = code;
             hasWeighData = false;
