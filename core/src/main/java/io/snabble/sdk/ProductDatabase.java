@@ -448,7 +448,7 @@ public class ProductDatabase {
 
             synchronized (dbLock) {
                 Cursor cursor;
-                cursor = rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='namesearch'", null, null);
+                cursor = rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='searchByName'", null, null);
                 boolean hasFTS = cursor != null && cursor.getCount() == 1;
                 if(cursor != null){
                     cursor.close();
@@ -457,8 +457,8 @@ public class ProductDatabase {
                 if(!hasFTS) {
                     db.beginTransaction();
 
-                    exec("DROP TABLE IF EXISTS namesearch");
-                    exec("CREATE VIRTUAL TABLE namesearch USING fts4(sku TEXT, foldedName TEXT)");
+                    exec("DROP TABLE IF EXISTS searchByName");
+                    exec("CREATE VIRTUAL TABLE searchByName USING fts4(sku TEXT, foldedName TEXT)");
 
                     ContentValues contentValues = new ContentValues(2);
                     cursor = rawQuery("SELECT sku, name FROM products", null, null);
@@ -467,7 +467,7 @@ public class ProductDatabase {
                             contentValues.clear();
                             contentValues.put("sku", cursor.getString(0));
                             contentValues.put("foldedName", StringNormalizer.normalize(cursor.getString(1)));
-                            db.insert("namesearch", null, contentValues);
+                            db.insert("searchByName", null, contentValues);
                         }
                         cursor.close();
                     } else {
@@ -881,7 +881,7 @@ public class ProductDatabase {
 
         StringNormalizer.normalize(name);
 
-        Cursor cursor = productQuery("JOIN namesearch ns ON ns.sku = p.sku " +
+        Cursor cursor = productQuery("JOIN searchByName ns ON ns.sku = p.sku " +
                 "WHERE ns.foldedName MATCH ? LIMIT 1", new String[]{
                 name
         }, false);
@@ -1166,7 +1166,7 @@ public class ProductDatabase {
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
     public Cursor searchByFoldedName(String searchString, CancellationSignal cancellationSignal) {
-        return productQuery("JOIN namesearch ns ON ns.sku = p.sku " +
+        return productQuery("JOIN searchByName ns ON ns.sku = p.sku " +
                 "WHERE ns.foldedName MATCH ? " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
