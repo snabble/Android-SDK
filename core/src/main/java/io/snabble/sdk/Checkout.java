@@ -39,26 +39,6 @@ public class Checkout {
      *
      * https://github.com/snabble/docs/blob/master/api_checkout.md
      */
-    private static class Cart {
-        private String session;
-        private String shopID;
-        private CartCustomer customer;
-        private CartItem[] items;
-    }
-
-    private static class CartCustomer {
-        private String loyaltyCard;
-    }
-
-    private static class CartItem {
-        private String sku;
-        private String scannedCode;
-        private int amount;
-        private Integer price;
-        private Integer weight;
-        private Integer units;
-    }
-
     private static class Href {
         private String href;
     }
@@ -306,7 +286,7 @@ public class Checkout {
 
         notifyStateChanged(State.HANDSHAKING);
 
-        String json = shoppingCartToCheckoutCart();
+        String json = sdkInstance.getEvents().getPayloadCartJson();
         final Request request = new Request.Builder()
                 .url(sdkInstance.absoluteUrl(checkoutUrl))
                 .post(RequestBody.create(JSON, json))
@@ -397,7 +377,7 @@ public class Checkout {
             boolean wasRequestingPaymentMethod = (lastState == State.REQUEST_PAYMENT_METHOD
                     || lastState == State.VERIFYING_PAYMENT_METHOD);
 
-            if (force || isRequestingPaymentMethod || (state == State.CONNECTION_ERROR && wasRequestingPaymentMethod)) {
+            if (force || isRequestingPaymentMethod || ((state == State.CONNECTION_ERROR || state == State.NONE) && wasRequestingPaymentMethod)) {
                 this.paymentMethod = paymentMethod;
 
                 CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
@@ -438,13 +418,11 @@ public class Checkout {
                             inputStream.close();
                         } else {
                             if (!call.isCanceled()) {
-                                if (response.code() == 400) {
-                                    Logger.e("Bad request - aborting");
-                                    notifyStateChanged(State.PAYMENT_ABORTED);
-                                } else {
-                                    Logger.e("Connection error while creating checkout process");
-                                    notifyStateChanged(State.CONNECTION_ERROR);
-                                }
+                                Logger.e("Connection error while creating checkout process");
+                                notifyStateChanged(State.CONNECTION_ERROR);
+                            } else {
+                                Logger.e("Bad request - aborting");
+                                notifyStateChanged(State.PAYMENT_ABORTED);
                             }
                         }
                     }
@@ -555,7 +533,7 @@ public class Checkout {
 
     private void approve(){
         Logger.d("Payment approved");
-        shoppingCart.clear();
+        shoppingCart.invalidate();
         clearCodes();
         notifyStateChanged(State.PAYMENT_APPROVED);
     }
@@ -586,11 +564,16 @@ public class Checkout {
         codes.clear();
     }
 
+    public Shop getShop() {
+        return shop;
+    }
+
     /**
      * Sets the shop used for identification in the payment process.
      */
     public void setShop(Shop shop) {
         this.shop = shop;
+        sdkInstance.getEvents().updateShop(shop);
     }
 
     /**
@@ -678,46 +661,6 @@ public class Checkout {
         return state;
     }
 
-    private String shoppingCartToCheckoutCart() {
-        Cart cart = new Cart();
-        cart.session = shoppingCart.getId();
-        cart.shopID = "unknown";
-
-        String loyaltyCardId = sdkInstance.getLoyaltyCardId();
-        if (loyaltyCardId != null) {
-            cart.customer = new CartCustomer();
-            cart.customer.loyaltyCard = loyaltyCardId;
-        }
-
-        if (shop != null) {
-            String id = shop.getId();
-            if (id != null) {
-                cart.shopID = id;
-            }
-        }
-
-        cart.items = new CartItem[shoppingCart.size()];
-
-        for (int i = 0; i < shoppingCart.size(); i++) {
-            Product product = shoppingCart.getProduct(i);
-            int quantity = shoppingCart.getQuantity(i);
-
-            cart.items[i] = new CartItem();
-            cart.items[i].sku = String.valueOf(product.getSku());
-            cart.items[i].scannedCode =  shoppingCart.getScannedCode(i);
-            cart.items[i].amount = quantity;
-            cart.items[i].units = shoppingCart.getEmbeddedAmount(i);
-            cart.items[i].weight = shoppingCart.getEmbeddedWeight(i);
-            cart.items[i].price = shoppingCart.getEmbeddedPrice(i);
-
-            if(product.getType() == Product.Type.UserWeighed){
-                cart.items[i].amount = 1;
-                cart.items[i].weight = quantity;
-            }
-        }
-
-        return gson.toJson(cart);
-    }
 
     public interface OnCheckoutStateChangedListener {
         void onStateChanged(State state);

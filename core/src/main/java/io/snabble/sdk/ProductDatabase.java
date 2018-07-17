@@ -523,17 +523,47 @@ public class ProductDatabase {
      * <p>
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
+     */
+    public void update() {
+        update(null);
+    }
+
+    /**
+     * Updates the current database in the background by requesting new data from the backend.
+     * <p>
+     * Updates can be either delta updates or full updates depending on how big the difference between
+     * the last update was.
+     * <p>
+     * While updating, the database can still be queried for data, after the update completes calls to the database
+     * return the updated data.
      *
      * @param callback A {@link UpdateCallback} that returns success when the operation is successfully completed.
      *                 Or error() in case a network error occurred.
      */
     public void update(final UpdateCallback callback) {
+        update(callback, false);
+    }
+
+    /**
+     * Updates the current database in the background by requesting new data from the backend.
+     * <p>
+     * Updates can be either delta updates or full updates depending on how big the difference between
+     * the last update was.
+     * <p>
+     * While updating, the database can still be queried for data, after the update completes calls to the database
+     * return the updated data.
+     *
+     * @param callback A {@link UpdateCallback} that returns success when the operation is successfully completed.
+     *                 Or error() in case a network error occurred. Can be null.
+     * @param deltaUpdateOnly set to true if you want to only update when the update would be an delta update
+     */
+    public void update(final UpdateCallback callback, boolean deltaUpdateOnly) {
         if(dbName == null){
             return;
         }
 
         productDatabaseDownloader.invalidate();
-        productDatabaseDownloader.loadAsync(new Downloader.Callback() {
+        productDatabaseDownloader.update(new Downloader.Callback() {
             @Override
             protected void onDataLoaded(boolean wasStillValid) {
                 updateLastUpdateTimestamp(System.currentTimeMillis());
@@ -559,8 +589,30 @@ public class ProductDatabase {
                     }
                 }
             }
-        });
+        }, deltaUpdateOnly);
     }
+
+    /**
+     * Cancels a database update, if one is currently running.
+     */
+    public void cancelUpdate() {
+        productDatabaseDownloader.cancel();
+    }
+
+    /**
+     * @return true if a database update is currently running, false otherwise.
+     */
+    public boolean isUpdating() {
+        return productDatabaseDownloader.isLoading();
+    }
+
+    private boolean deleteDatabase(File dbFile) {
+        if (dbFile.exists()) {
+            return application.deleteDatabase(dbFile.getName());
+        }
+        return true;
+    }
+
 
     /**
      * Closes and deletes the locally stored database and falls back to online only mode.
@@ -588,40 +640,6 @@ public class ProductDatabase {
 
         File dbFile = application.getDatabasePath(dbName);
         return dbFile.length();
-    }
-
-    /**
-     * Updates the current database in the background by requesting new data from the backend.
-     * <p>
-     * Updates can be either delta updates or full updates depending on how big the difference between
-     * the last update was.
-     * <p>
-     * While updating, the database can still be queried for data, after the update completes calls to the database
-     * return the updated data.
-     */
-    public void update() {
-        update(null);
-    }
-
-    /**
-     * Cancels a database update, if one is currently running.
-     */
-    public void cancelUpdate() {
-        productDatabaseDownloader.cancel();
-    }
-
-    /**
-     * @return true if a database update is currently running, false otherwise.
-     */
-    public boolean isUpdating() {
-        return productDatabaseDownloader.isLoading();
-    }
-
-    private boolean deleteDatabase(File dbFile) {
-        if (dbFile.exists()) {
-            return application.deleteDatabase(dbFile.getName());
-        }
-        return true;
     }
 
     private void swap(File otherDbFile) throws IOException {
@@ -1072,7 +1090,15 @@ public class ProductDatabase {
                 code
         }, false);
 
-        return getFirstProductAndClose(cursor);
+        Product p = getFirstProductAndClose(cursor);
+
+        if (p != null) {
+            return p;
+        } else if (code.startsWith("0")){
+            return findByCode(code.substring(1, code.length()));
+        } else {
+            return null;
+        }
     }
 
     /**

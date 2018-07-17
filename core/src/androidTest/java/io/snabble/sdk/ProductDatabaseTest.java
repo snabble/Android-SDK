@@ -103,11 +103,13 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
         Product product = productDatabase.findByCode("4025500133627");
         Product product2 = productDatabase.findByCode("2");
+        Product product3 = productDatabase.findByCode("000000000000004025500133627");
 
         assertEquals(product.getSku(), "1");
         assertEquals(product.getName(), "Müllermilch Banane 0,4l");
         assertEquals(product, product2);
         assertEquals(product.getScannableCodes().length, 2);
+        assertEquals(product, product3);
 
         assertNull(productDatabase.findByCode("unknownCode"));
     }

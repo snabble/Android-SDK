@@ -6,17 +6,9 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DividerItemDecoration;
@@ -67,13 +59,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private View emptyState;
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
-
-    private DialogInterface.OnCancelListener onCancelListener = new DialogInterface.OnCancelListener() {
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            checkout.cancel();
-        }
-    };
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
@@ -145,6 +130,17 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    checkout.cancel();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         pay = findViewById(R.id.pay);
         pay.setOnClickListener(new OneShotClickListener() {
@@ -152,6 +148,17 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             public void click() {
                 checkout.checkout();
                 Telemetry.event(Telemetry.Event.ClickCheckout);
+            }
+        });
+
+        View scanProducts = findViewById(R.id.scan_products);
+        scanProducts.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                if (callback != null) {
+                    callback.showScannerWithCode(null);
+                }
             }
         });
 
@@ -229,22 +236,19 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     @Override
     public void onStateChanged(Checkout.State state) {
         if (state == Checkout.State.HANDSHAKING) {
-            progressDialog.setOnCancelListener(onCancelListener);
             progressDialog.showAfterDelay(500);
-        } else {
-            progressDialog.dismiss();
-        }
-
-        if (state == Checkout.State.REQUEST_PAYMENT_METHOD || state == Checkout.State.WAIT_FOR_APPROVAL) {
+        } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD || state == Checkout.State.WAIT_FOR_APPROVAL) {
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
                 callback.showCheckout();
             }
-        }
-
-        if (state == Checkout.State.CONNECTION_ERROR) {
+            progressDialog.dismiss();
+        } else if (state == Checkout.State.CONNECTION_ERROR) {
             UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
                     .show();
+            progressDialog.dismiss();
+        } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {
+            progressDialog.dismiss();
         }
     }
 
@@ -282,15 +286,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     public void registerListeners() {
         cart.addListener(shoppingCartListener);
         checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
-
-        progressDialog.setOnCancelListener(onCancelListener);
     }
 
     public void unregisterListeners() {
         cart.removeListener(shoppingCartListener);
         checkout.removeOnCheckoutStateChangedListener(ShoppingCartView.this);
 
-        progressDialog.setOnCancelListener(null);
         progressDialog.dismiss();
     }
 
@@ -368,7 +369,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             final Product product = cart.getProduct(position);
             final int quantity = cart.getQuantity(position);
             final Integer embeddedPrice = cart.getEmbeddedPrice(position);
-            final Integer embeddedAmount = cart.getEmbeddedAmount(position);
+            final Integer embeddedAmount = cart.getEmbeddedUnits(position);
             final Integer embeddedWeight = cart.getEmbeddedWeight(position);
             RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
 
@@ -382,8 +383,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 if(embeddedPrice != null){
                     priceTextView.setText(" " + priceFormatter.format(embeddedPrice));
                 } else if(embeddedAmount != null){
-                    priceTextView.setText(String.format(" %s * %s = %s",
-                            String.valueOf(embeddedAmount),
+                    priceTextView.setText(String.format(" * %s = %s",
                             priceFormatter.format(product.getPrice()),
                             priceFormatter.format(product.getPrice() * embeddedAmount)));
                 } else if(embeddedWeight != null){
@@ -398,6 +398,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 if(embeddedWeight != null) {
                     quantityTextView.setText(String.format("%s g", String.valueOf(embeddedWeight)));
+                } else if (embeddedAmount != null) {
+                    quantityTextView.setText(String.valueOf(embeddedAmount));
                 } else if (type == Product.Type.UserWeighed) {
                     quantityTextView.setText(String.format("%s g", String.valueOf(quantity)));
                 } else {
@@ -412,8 +414,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 switch (type) {
                     case Article:
-                        controlsDefault.setVisibility(View.VISIBLE);
-                        controlsUserWeighed.setVisibility(View.INVISIBLE);
+                        if (embeddedAmount != null) {
+                            controlsDefault.setVisibility(View.GONE);
+                            controlsUserWeighed.setVisibility(View.GONE);
+                        } else {
+                            controlsDefault.setVisibility(View.VISIBLE);
+                            controlsUserWeighed.setVisibility(View.INVISIBLE);
+                        }
                         break;
                     case PreWeighed:
                         controlsDefault.setVisibility(View.GONE);

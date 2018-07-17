@@ -2,17 +2,20 @@ package io.snabble.sdk;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannableCode;
 
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
+    public static final long TIMEOUT = TimeUnit.HOURS.toMillis(4);
 
     private static class Entry {
         private Product product;
@@ -24,33 +27,19 @@ public class ShoppingCart {
         private Integer price = null;
         private Integer amount = null;
 
-        private Entry(Product product, int quantity, ScannableCode scannedCode) {
+        private Entry(Product product, int quantity) {
             this.sku = product.getSku();
             this.product = product;
             this.quantity = quantity;
-
-            setScannedCode(scannedCode);
-        }
-
-        public void setScannedCode(ScannableCode scannedCode){
-            this.scannedCode = scannedCode.getCode();
-
-            if(scannedCode.hasWeighData()){
-                weight = scannedCode.getEmbeddedData();
-            } else if(scannedCode.hasPriceData()){
-                price = scannedCode.getEmbeddedData();
-            } else if(scannedCode.hasAmountData()){
-                amount = scannedCode.getEmbeddedData();
-            }
         }
     }
 
     private final transient Object lock = new Object();
 
     private String id;
+    private long lastModificationTime;
     private List<Entry> items = new ArrayList<>();
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
-    private transient ProductDatabase productDatabase;
     private transient Handler handler = new Handler(Looper.getMainLooper());
     private transient SnabbleSdk sdkInstance;
 
@@ -58,44 +47,16 @@ public class ShoppingCart {
         //empty constructor for gson
     }
 
-    void initWithSdkInstance(SnabbleSdk sdkInstance) {
-        this.sdkInstance = sdkInstance;
-
-        productDatabase = sdkInstance.getProductDatabase();
-        productDatabase.addOnDatabaseUpdateListener(new ProductDatabase.OnDatabaseUpdateListener() {
-            @Override
-            public void onDatabaseUpdated() {
-                updateEntries();
-            }
-        });
-
-        updateEntries();
-    }
-
     ShoppingCart(SnabbleSdk sdkInstance) {
         id = UUID.randomUUID().toString();
+        updateTimestamp();
+
         initWithSdkInstance(sdkInstance);
     }
 
-    private void updateEntries() {
-        synchronized (lock) {
-            List<Entry> removables = new ArrayList<>();
-
-            for (Entry e : items) {
-                Product product = productDatabase.findBySku(e.sku);
-                if (product != null) {
-                    // update the product when there is a local version available
-                    e.product = product;
-                } else if (e.product == null) {
-                    // when there is no serialized product of an online only version
-                    // (in case of an upgrade of an older version of the shopping list)
-                    // we remove the product
-                    removables.add(e);
-                }
-            }
-
-            items.removeAll(removables);
-        }
+    void initWithSdkInstance(SnabbleSdk sdkInstance) {
+        this.sdkInstance = sdkInstance;
+        checkForTimeout();
     }
 
     public String getId() {
@@ -137,7 +98,8 @@ public class ShoppingCart {
                 || product.getType() == Product.Type.UserWeighed
                 || product.getType() == Product.Type.PreWeighed) {
             if(quantity > 0) {
-                Entry entry = new Entry(product, quantity, scannedCode);
+                Entry entry = new Entry(product, quantity);
+                setScannedCodeForEntry(entry, scannedCode);
                 addEntry(entry, index);
             }
         } else {
@@ -154,7 +116,7 @@ public class ShoppingCart {
 
         if (e != null) {
             if (scannedCode != null) {
-                e.setScannedCode(scannedCode);
+                setScannedCodeForEntry(e, scannedCode);
             }
 
             setEntryQuantity(e, quantity);
@@ -171,7 +133,7 @@ public class ShoppingCart {
 
             if (e != null) {
                 if (scannedCode != null) {
-                    e.setScannedCode(scannedCode);
+                    setScannedCodeForEntry(e, scannedCode);
                 }
 
                 setEntryQuantity(e, quantity);
@@ -230,7 +192,7 @@ public class ShoppingCart {
         return entry.price;
     }
 
-    public Integer getEmbeddedAmount(int index) {
+    public Integer getEmbeddedUnits(int index) {
         Entry entry = getEntry(index);
         if (entry == null) {
             return null;
@@ -286,6 +248,14 @@ public class ShoppingCart {
         clear();
     }
 
+    public void checkForTimeout() {
+        long currentTime = SystemClock.elapsedRealtime();
+
+        if(lastModificationTime + TIMEOUT < currentTime){
+            invalidate();
+        }
+    }
+
     private void setEntryQuantity(Entry e, int newQuantity) {
         if (e != null) {
             if (newQuantity > 0) {
@@ -326,6 +296,37 @@ public class ShoppingCart {
 
             return null;
         }
+    }
+
+    private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode){
+        entry.scannedCode = findCodeByScannedCode(entry.product, scannedCode);
+
+        if(scannedCode.hasWeighData()){
+            entry.weight = scannedCode.getEmbeddedData();
+        } else if(scannedCode.hasPriceData()){
+            entry.price = scannedCode.getEmbeddedData();
+        } else if(scannedCode.hasAmountData()){
+            entry.amount = scannedCode.getEmbeddedData();
+        }
+    }
+
+    // finds the code matching the code in the product if it was scanned with leading zeros
+    // and the leading zeros are missing in the scannableCodes of the product
+    private String findCodeByScannedCode(Product product, ScannableCode scannableCode) {
+        String scannedCode = scannableCode.getCode();
+
+        for(String code : product.getScannableCodes()){
+            if(code.equals(scannedCode)){
+                return code;
+            }
+        }
+
+        if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
+            scannedCode = scannedCode.substring(1, scannedCode.length());
+            return findCodeByScannedCode(product, ScannableCode.parse(sdkInstance, scannedCode));
+        }
+
+        return scannedCode;
     }
 
     private int indexOf(Entry e) {
@@ -405,6 +406,10 @@ public class ShoppingCart {
         }
     }
 
+    private void updateTimestamp() {
+        lastModificationTime = SystemClock.elapsedRealtime();
+    }
+
     /**
      * Adds a {@link ShoppingCartListener} to the list of listeners if it does not already exist.
      *
@@ -470,6 +475,8 @@ public class ShoppingCart {
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Product product) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -481,6 +488,8 @@ public class ShoppingCart {
     }
 
     private void notifyItemRemoved(final ShoppingCart list, final Product product) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -492,6 +501,8 @@ public class ShoppingCart {
     }
 
     private void notifyQuantityChanged(final ShoppingCart list, final Product product) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -503,6 +514,8 @@ public class ShoppingCart {
     }
 
     private void notifyItemMoved(final ShoppingCart list, final int fromIndex, final int toIndex) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -519,6 +532,8 @@ public class ShoppingCart {
      * @param list the {@link ShoppingCart}
      */
     private void notifyCleared(final ShoppingCart list) {
+        updateTimestamp();
+
         handler.post(new Runnable() {
             @Override
             public void run() {

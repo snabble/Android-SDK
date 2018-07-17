@@ -7,7 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -22,6 +25,7 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+    private CoordinatorLayout coordinatorLayout;
     private ViewAnimator viewAnimator;
     private Checkout checkout;
 
@@ -29,13 +33,6 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     private Checkout.State previousState;
     private DelayedProgressDialog progressDialog;
-
-    private DialogInterface.OnCancelListener onCancelListener = new DialogInterface.OnCancelListener() {
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            checkout.cancel();
-        }
-    };
 
     public CheckoutView(Context context) {
         super(context);
@@ -55,22 +52,32 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     private void inflateView() {
         inflate(getContext(), R.layout.view_checkout, this);
 
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
         viewAnimator = findViewById(R.id.view_animator);
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    checkout.cancel();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         checkout = SnabbleUI.getSdkInstance().getCheckout();
-
         onStateChanged(checkout.getState());
     }
 
     @Override
     public void onStateChanged(Checkout.State state) {
         if (state == Checkout.State.VERIFYING_PAYMENT_METHOD) {
-            progressDialog.setOnCancelListener(onCancelListener);
             progressDialog.showAfterDelay(500);
         } else {
             progressDialog.dismiss();
@@ -102,6 +109,13 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
             case DENIED_BY_SUPERVISOR:
                 displayView(new CheckoutAbortedView(getContext()));
                 break;
+            case CONNECTION_ERROR:
+                UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
+                        .show();
+                break;
+            case NONE:
+
+                break;
         }
 
         previousState = state;
@@ -132,13 +146,10 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     public void registerListeners() {
         checkout.addOnCheckoutStateChangedListener(this);
-        progressDialog.setOnCancelListener(onCancelListener);
     }
 
     public void unregisterListeners() {
         checkout.removeOnCheckoutStateChangedListener(this);
-
-        progressDialog.setOnCancelListener(null);
         progressDialog.dismiss();
     }
 
@@ -150,6 +161,13 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
         registerListeners();
+
+        if (checkout.getState() == Checkout.State.NONE) {
+            Activity activity = UIUtils.getHostActivity(getContext());
+            if(activity != null) {
+                activity.onBackPressed();
+            }
+        }
     }
 
     @Override

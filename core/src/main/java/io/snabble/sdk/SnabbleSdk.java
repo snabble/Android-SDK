@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
@@ -28,7 +31,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class SnabbleSdk {
-
     public static class Config {
         /**
          * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
@@ -122,19 +124,25 @@ public class SnabbleSdk {
         public boolean productDbDownloadIfMissing = true;
 
         /**
-         * If set to true, creates an full text index to support searching in the product database
-         * using findByName or searchByName.
+         * Optional SSLSocketFactory that gets used for HTTP requests.
          *
-         * Note that this increases setup time of the SDK and it is highly recommended to use
-         * the non-blocking initialization function.
+         * Requires also x509TrustManager to be set.
          */
-        public boolean generateSearchIndex = false;
+        public SSLSocketFactory sslSocketFactory = null;
+
+        /**
+         * Optional X509TrustManager that gets used for HTTP requests.
+         *
+         * Requires also sslSocketFactory to be set.
+         */
+        public X509TrustManager x509TrustManager = null;
 
         public boolean useGermanPrintPrefix = false;
 
         public String encodedCodesPrefix = null;
         public String encodedCodesSeperator = null;
         public String encodedCodesSuffix = null;
+        public int encodedCodesMaxCodes = 100;
     }
 
     private String endpointBaseUrl;
@@ -152,6 +160,7 @@ public class SnabbleSdk {
     private Shop[] shops;
     private Checkout checkout;
     private ShoppingCartManager shoppingCartManager;
+    private Events events;
 
     private UserPreferences userPreferences;
 
@@ -169,59 +178,16 @@ public class SnabbleSdk {
     private String encodedCodesPrefix = null;
     private String encodedCodesSeperator = null;
     private String encodedCodesSuffix = null;
+    private int encodedCodesMaxCodes;
 
     private boolean useGermanPrintPrefix = false;
-
-    private SnabbleSdk() {
-
-    }
-
-    private void setupSdk(Config config, final SetupCompletionListener setupCompletionListener) {
-        readMetadata();
-
-        ProductDatabase.Config dbConfig = new ProductDatabase.Config();
-        dbConfig.bundledAssetPath = config.productDbBundledAssetPath;
-        dbConfig.bundledRevisionId = config.productDbBundledRevisionId;
-        dbConfig.bundledSchemaVersionMajor = config.productDbBundledSchemaVersionMajor;
-        dbConfig.bundledSchemaVersionMinor = config.productDbBundledSchemaVersionMinor;
-        dbConfig.autoUpdateIfMissing = config.productDbDownloadIfMissing;
-        dbConfig.generateSearchIndex = config.generateSearchIndex;
-
-        productDatabase = new ProductDatabase(this,
-                config.productDbName,
-                dbConfig,
-                new ProductDatabase.ProductDatabaseReadyListener() {
-                    @Override
-                    public void onReady(ProductDatabase productDatabase) {
-                        SnabbleSdk.this.productDatabase = productDatabase;
-                        shoppingCartManager = new ShoppingCartManager(SnabbleSdk.this);
-                        checkout = new Checkout(SnabbleSdk.this);
-                        setupOk(setupCompletionListener);
-                    }
-
-                    @Override
-                    public void onError(ProductDatabase.Error error) {
-                        switch (error) {
-                            case CONNECTION_TIMEOUT:
-                                setupError(setupCompletionListener, Error.CONNECTION_TIMEOUT);
-                                break;
-                            case INTERNAL_STORAGE_FULL:
-                                setupError(setupCompletionListener, Error.INTERNAL_STORAGE_FULL);
-                                break;
-                            default:
-                                setupError(setupCompletionListener, Error.UNSPECIFIED_ERROR);
-                                break;
-                        }
-                    }
-                });
-    }
 
     private void init(final Application app,
                       final Config config,
                       final SetupCompletionListener setupCompletionListener) {
         application = app;
 
-        createOkHttpClient(config.clientToken);
+        createOkHttpClient(config.clientToken, config.sslSocketFactory, config.x509TrustManager);
         internalStorageDirectory = new File(app.getFilesDir(), "snabble/" + config.projectId + "/");
         //noinspection ResultOfMethodCallIgnored
         internalStorageDirectory.mkdirs();
@@ -271,6 +237,7 @@ public class SnabbleSdk {
         encodedCodesPrefix = config.encodedCodesPrefix != null ? config.encodedCodesPrefix : "";
         encodedCodesSeperator = config.encodedCodesSeperator != null ? config.encodedCodesSeperator : "\n";
         encodedCodesSuffix = config.encodedCodesSuffix != null ? config.encodedCodesSuffix : "";
+        encodedCodesMaxCodes = config.encodedCodesMaxCodes;
 
         useGermanPrintPrefix = config.useGermanPrintPrefix;
 
@@ -295,6 +262,42 @@ public class SnabbleSdk {
                 }
             });
         }
+    }
+
+    private void createOkHttpClient(String clientToken,
+                                    SSLSocketFactory sslSocketFactory,
+                                    X509TrustManager x509TrustManager) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+        builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
+
+        builder.retryOnConnectionFailure(true);
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
+                new HttpLoggingInterceptor.Logger() {
+                    @Override
+                    public void log(String message) {
+                        Logger.i(message);
+                    }
+                });
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        builder.addInterceptor(logging);
+
+        if (clientToken != null) {
+            builder.addInterceptor(new SnabbleAuthorizationInterceptor(this, clientToken));
+        }
+
+        builder.addInterceptor(new UserAgentInterceptor(application));
+
+        if(sslSocketFactory != null && x509TrustManager != null) {
+            builder.sslSocketFactory(sslSocketFactory, x509TrustManager);
+        }
+
+        okHttpClient = builder.build();
+    }
+
+    private SnabbleSdk() {
+
     }
 
     /**
@@ -357,6 +360,10 @@ public class SnabbleSdk {
         return snabbleSdk[0];
     }
 
+    public boolean isUsingGermanPrintPrefix() {
+        return useGermanPrintPrefix;
+    }
+
     private void updateShops() {
         String shopsJson = metadataDownloader.getExtras().get("shops");
         if (shopsJson != null) {
@@ -366,6 +373,46 @@ public class SnabbleSdk {
         if (shops == null) {
             shops = new Shop[0];
         }
+    }
+
+    private void setupSdk(Config config, final SetupCompletionListener setupCompletionListener) {
+        readMetadata();
+
+        ProductDatabase.Config dbConfig = new ProductDatabase.Config();
+        dbConfig.bundledAssetPath = config.productDbBundledAssetPath;
+        dbConfig.bundledRevisionId = config.productDbBundledRevisionId;
+        dbConfig.bundledSchemaVersionMajor = config.productDbBundledSchemaVersionMajor;
+        dbConfig.bundledSchemaVersionMinor = config.productDbBundledSchemaVersionMinor;
+        dbConfig.autoUpdateIfMissing = config.productDbDownloadIfMissing;
+
+        productDatabase = new ProductDatabase(this,
+                config.productDbName,
+                dbConfig,
+                new ProductDatabase.ProductDatabaseReadyListener() {
+                    @Override
+                    public void onReady(ProductDatabase productDatabase) {
+                        SnabbleSdk.this.productDatabase = productDatabase;
+                        shoppingCartManager = new ShoppingCartManager(SnabbleSdk.this);
+                        checkout = new Checkout(SnabbleSdk.this);
+                        events = new Events(SnabbleSdk.this);
+                        setupOk(setupCompletionListener);
+                    }
+
+                    @Override
+                    public void onError(ProductDatabase.Error error) {
+                        switch (error) {
+                            case CONNECTION_TIMEOUT:
+                                setupError(setupCompletionListener, Error.CONNECTION_TIMEOUT);
+                                break;
+                            case INTERNAL_STORAGE_FULL:
+                                setupError(setupCompletionListener, Error.INTERNAL_STORAGE_FULL);
+                                break;
+                            default:
+                                setupError(setupCompletionListener, Error.UNSPECIFIED_ERROR);
+                                break;
+                        }
+                    }
+                });
     }
 
     private void readMetadata() {
@@ -415,32 +462,6 @@ public class SnabbleSdk {
         }
     }
 
-    private void createOkHttpClient(String clientToken) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-
-        builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
-
-        builder.retryOnConnectionFailure(true);
-
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
-                new HttpLoggingInterceptor.Logger() {
-                    @Override
-                    public void log(String message) {
-                        Logger.i(message);
-                    }
-                });
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        builder.addInterceptor(logging);
-
-        if (clientToken != null) {
-            builder.addInterceptor(new SnabbleAuthorizationInterceptor(this, clientToken));
-        }
-
-        builder.addInterceptor(new UserAgentInterceptor(application));
-
-        okHttpClient = builder.build();
-    }
-
     File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
@@ -459,6 +480,10 @@ public class SnabbleSdk {
 
     Application getApplication() {
         return application;
+    }
+
+    String getEventsUrl() {
+        return metadataDownloader.getUrls().get("appEvents");
     }
 
     String getAppDbUrl() {
@@ -513,8 +538,8 @@ public class SnabbleSdk {
         return encodedCodesSuffix;
     }
 
-    public boolean isUsingGermanPrintPrefix() {
-        return useGermanPrintPrefix;
+    public int getEncodedCodesMaxCodes() {
+        return encodedCodesMaxCodes;
     }
 
     String absoluteUrl(String url) {
@@ -618,6 +643,10 @@ public class SnabbleSdk {
         return checkout;
     }
 
+    Events getEvents() {
+        return events;
+    }
+
     /**
      * Sets the customer loyalty card number for user identification with the backend.
      * <p>
@@ -653,6 +682,7 @@ public class SnabbleSdk {
         @Override
         public void onActivityStarted(Activity activity) {
             updateMetadata();
+            getShoppingCart().checkForTimeout();
         }
     };
 

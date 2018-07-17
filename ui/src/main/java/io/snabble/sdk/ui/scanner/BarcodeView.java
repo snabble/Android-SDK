@@ -39,7 +39,6 @@ public class BarcodeView extends AppCompatImageView {
     private boolean adjustBrightness = true;
 
     private Handler uiHandler;
-    private Handler backgroundHandler;
     private int backgroundColor;
 
     public BarcodeView(Context context) {
@@ -59,10 +58,6 @@ public class BarcodeView extends AppCompatImageView {
 
     private void init(Context context, AttributeSet attrs) {
         uiHandler = new Handler(Looper.getMainLooper());
-
-        HandlerThread handlerThread = new HandlerThread("BarcodeView");
-        handlerThread.start();
-        backgroundHandler = new Handler(handlerThread.getLooper());
 
         if (attrs != null) {
             TypedArray arr = context.getTheme().obtainStyledAttributes(
@@ -155,6 +150,9 @@ public class BarcodeView extends AppCompatImageView {
                 height = h;
                 generatedText = text;
 
+                final HandlerThread handlerThread = new HandlerThread("BarcodeView");
+                handlerThread.start();
+                final Handler backgroundHandler = new Handler(handlerThread.getLooper());
                 backgroundHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -220,6 +218,8 @@ public class BarcodeView extends AppCompatImageView {
                                 }
                             });
                         }
+
+                        handlerThread.quit();
                     }
                 });
             }
