@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.SnabbleSdk;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;

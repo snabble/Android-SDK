@@ -124,6 +124,15 @@ public class SnabbleSdk {
         public boolean productDbDownloadIfMissing = true;
 
         /**
+         * If set to true, creates an full text index to support searching in the product database
+         * using findByName or searchByName.
+         *
+         * Note that this increases setup time of the SDK and it is highly recommended to use
+         * the non-blocking initialization function.
+         */
+        public boolean generateSearchIndex = false;
+
+        /**
          * Optional SSLSocketFactory that gets used for HTTP requests.
          *
          * Requires also x509TrustManager to be set.
@@ -384,6 +393,7 @@ public class SnabbleSdk {
         dbConfig.bundledSchemaVersionMajor = config.productDbBundledSchemaVersionMajor;
         dbConfig.bundledSchemaVersionMinor = config.productDbBundledSchemaVersionMinor;
         dbConfig.autoUpdateIfMissing = config.productDbDownloadIfMissing;
+        dbConfig.generateSearchIndex = config.generateSearchIndex;
 
         productDatabase = new ProductDatabase(this,
                 config.productDbName,

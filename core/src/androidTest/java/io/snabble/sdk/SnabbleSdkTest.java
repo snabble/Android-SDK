@@ -55,7 +55,7 @@ public class SnabbleSdkTest {
 
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
-            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
+            public MockResponse dispatch(RecordedRequest request) {
                 if (request.getPath().equals(metadataUrl)) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json; charset=utf-8")
@@ -116,18 +116,19 @@ public class SnabbleSdkTest {
         config.metadataUrl = metadataUrl;
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
         config.productDbName = testDbName;
+        config.generateSearchIndex = true;
 
         snabbleSdk = SnabbleSdk.setupBlocking((Application) context.getApplicationContext(), config);
     }
 
     @After
-    public void teardownSdk() throws IOException {
+    public void teardownSdk() {
         FileUtils.deleteQuietly(context.getFilesDir());
         FileUtils.deleteQuietly(new File(context.getFilesDir().getParentFile(), "/databases/"));
     }
 
     @Test
-    public void testSdkInitialization() throws IOException {
+    public void testSdkInitialization() {
         String endpointBaseUrl = snabbleSdk.getEndpointBaseUrl();
         String metadataUrl = snabbleSdk.getMetadataUrl();
         String appDbUrl = snabbleSdk.getAppDbUrl();

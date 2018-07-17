@@ -46,6 +46,7 @@ public class ProductDatabase {
         int bundledSchemaVersionMajor;
         int bundledSchemaVersionMinor;
         boolean autoUpdateIfMissing;
+        boolean generateSearchIndex;
     }
 
     private SQLiteDatabase db;
@@ -64,6 +65,7 @@ public class ProductDatabase {
     private Date lastUpdateDate;
     private int schemaVersionMajor;
     private int schemaVersionMinor;
+    private boolean generateSearchIndex;
 
     private SnabbleSdk sdk;
     private Application application;
@@ -88,6 +90,7 @@ public class ProductDatabase {
         this.bundledRevisionId = config.bundledRevisionId;
         this.bundledSchemaVersionMajor = config.bundledSchemaVersionMajor;
         this.bundledSchemaVersionMinor = config.bundledSchemaVersionMinor;
+        this.generateSearchIndex = config.generateSearchIndex;
 
         this.productDatabaseDownloader = new ProductDatabaseDownloader(sdk, this);
         this.productApi = new ProductApi(sdk);
@@ -207,6 +210,7 @@ public class ProductDatabase {
                             Formatter.formatFileSize(application, size()));
                 }
 
+                createFTSIndexIfNecessary();
                 parseLastUpdateTimestamp();
                 return true;
             } catch (Exception e) {
@@ -436,6 +440,79 @@ public class ProductDatabase {
 
         long time2 = SystemClock.elapsedRealtime() - time;
         Logger.d("Full update took %d ms", time2);
+    }
+
+    private void createFTSIndexIfNecessary() {
+        if(generateSearchIndex) {
+            long time = SystemClock.elapsedRealtime();
+
+            synchronized (dbLock) {
+                Cursor cursor;
+                cursor = rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='searchByName'", null, null);
+                boolean hasFTS = cursor != null && cursor.getCount() == 1;
+                if(cursor != null){
+                    cursor.close();
+                }
+
+                if(!hasFTS) {
+                    db.beginTransaction();
+
+                    exec("DROP TABLE IF EXISTS searchByName");
+                    exec("CREATE VIRTUAL TABLE searchByName USING fts4(sku TEXT, foldedName TEXT)");
+
+                    ContentValues contentValues = new ContentValues(2);
+                    cursor = rawQuery("SELECT sku, name FROM products", null, null);
+                    if (cursor != null) {
+                        while (cursor.moveToNext()) {
+                            contentValues.clear();
+                            contentValues.put("sku", cursor.getString(0));
+                            contentValues.put("foldedName", StringNormalizer.normalize(cursor.getString(1)));
+                            db.insert("searchByName", null, contentValues);
+                        }
+                        cursor.close();
+                    } else {
+                        Logger.d("Could not create FTS4 index, no products");
+                    }
+
+                    db.setTransactionSuccessful();
+                    db.endTransaction();
+
+                    Logger.d("Created FTS4 index in " + (SystemClock.elapsedRealtime() - time) + " ms");
+                } else {
+                    Logger.d("Already has FTS4 index");
+                }
+            }
+        }
+    }
+
+    private Cursor rawQuery(String sql, String[] args, CancellationSignal cancellationSignal) {
+        if (db == null) {
+            return null;
+        }
+
+        long time = SystemClock.elapsedRealtime();
+        Cursor cursor;
+
+        synchronized (dbLock) {
+            try {
+                cursor = db.rawQuery(sql, args, cancellationSignal);
+            } catch (Exception e) {
+                // query could not be executed
+                Logger.e(e.toString());
+                return null;
+            }
+        }
+
+        // query executes when we call the first function that needs data, not on db.rawQuery
+        int count = cursor.getCount();
+
+        long time2 = SystemClock.elapsedRealtime() - time;
+        if (time2 > 16) {
+            Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
+                    time2, count, bindArgs(sql, args));
+        }
+
+        return cursor;
     }
 
     /**
@@ -788,33 +865,35 @@ public class ProductDatabase {
         return productQuery(appendSql, args, distinct, null);
     }
 
-    private Cursor rawQuery(String sql, String[] args, CancellationSignal cancellationSignal) {
-        if (db == null) {
+    /**
+     * This function is deprecated and will be removed from the SDK in the future. There will be no
+     * alternative function to find products by name.
+     *
+     * Find a product by its name. Matching is normalized, so "Apple" finds also "apple".
+     *
+     * @param name The name of the product.
+     * @return The first product matching the name, otherwise null if no product was found.
+     */
+    public Product findByName(String name) {
+        if (name == null || name.length() == 0) {
             return null;
         }
 
-        long time = SystemClock.elapsedRealtime();
-        Cursor cursor;
+        StringNormalizer.normalize(name);
 
-        synchronized (dbLock) {
-            try {
-                cursor = db.rawQuery(sql, args, cancellationSignal);
-            } catch (Exception e) {
-                // query could not be executed
-                return null;
-            }
+        Cursor cursor = productQuery("JOIN searchByName ns ON ns.sku = p.sku " +
+                "WHERE ns.foldedName MATCH ? LIMIT 1", new String[]{
+                name
+        }, false);
+
+        return getFirstProductAndClose(cursor);
+    }
+
+    private void exec(String sql){
+        Cursor cursor = rawQuery(sql, null, null);
+        if(cursor != null){
+            cursor.close();
         }
-
-        // query executes when we call the first function that needs data, not on db.rawQuery
-        int count = cursor.getCount();
-
-        long time2 = SystemClock.elapsedRealtime() - time;
-        if (time2 > 16) {
-            Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
-                    time2, count, bindArgs(sql, args));
-        }
-
-        return cursor;
     }
 
     private String bindArgs(String sql, String[] args) {
@@ -1076,31 +1155,6 @@ public class ProductDatabase {
 
     /**
      * This function is deprecated and will be removed from the SDK in the future. There will be no
-     * alternative function to find products by name.
-     *
-     * Find a product by its name. Matching is normalized, so "Apple" finds also "apple".
-     *
-     * @param name The name of the product.
-     * @return The first product matching the name, otherwise null if no product was found.
-     */
-    @Deprecated
-    public Product findByName(String name) {
-        if (name == null || name.length() == 0) {
-            return null;
-        }
-
-        StringNormalizer.normalize(name);
-
-        Cursor cursor = productQuery("JOIN searchByName s ON " + getSearchIndexColumn() + " = p.sku " +
-                "WHERE s.foldedName MATCH ? LIMIT 1", new String[]{
-                name
-        }, false);
-
-        return getFirstProductAndClose(cursor);
-    }
-
-    /**
-     * This function is deprecated and will be removed from the SDK in the future. There will be no
      * alternative function to search for products.
      *
      * Returns a {@link Cursor} which can be iterated for items containing the given search
@@ -1111,29 +1165,14 @@ public class ProductDatabase {
      *
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
-    @Deprecated
     public Cursor searchByFoldedName(String searchString, CancellationSignal cancellationSignal) {
-        return productQuery("JOIN searchByName s ON " + getSearchIndexColumn() + " = p.sku " +
-                "WHERE s.foldedName MATCH ? " +
+        return productQuery("JOIN searchByName ns ON ns.sku = p.sku " +
+                "WHERE ns.foldedName MATCH ? " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
                 "LIMIT 100", new String[]{
                 searchString + "*"
         }, true, cancellationSignal);
-    }
-
-    private String getSearchIndexColumn() {
-        // older schema version used the docid field as a primary key
-        // we changed skus to be TEXT instead of INTEGER keys, so we cant use docid anymore
-        // to still support older version we set the field name here
-        String indexColumn;
-
-        if(schemaVersionMajor == 1 && schemaVersionMinor <= 4){
-            indexColumn = "s.docid";
-        } else {
-            indexColumn = "s.sku";
-        }
-        return indexColumn;
     }
 
     /**

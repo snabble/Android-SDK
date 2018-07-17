@@ -54,13 +54,32 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testTextSearch() {
+    public void testTextSearch() throws IOException, SnabbleSdk.SnabbleException {
+        setupSdkWithDb("demoDb_1_6.sqlite3");
+
         ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
-        Cursor cursor = productDatabase.searchByFoldedName("muller", null);
+        Cursor cursor = productDatabase.searchByFoldedName("gold", null);
         cursor.moveToFirst();
         Product product = productDatabase.productAtCursor(cursor);
-        assertEquals(product.getSku(), "1");
-        assertEquals(product.getName(), "Müllermilch Banane 0,4l");
+        assertEquals(product.getSku(), "31");
+        assertEquals(product.getName(), "Goldbären 200g");
+        cursor.close();
+
+        cursor = productDatabase.searchByFoldedName("foo", null);
+        assertEquals(0, cursor.getCount());
+        cursor.close();
+    }
+
+    @Test
+    public void testTextSearchNoFTS() throws IOException, SnabbleSdk.SnabbleException {
+        setupSdkWithDb("demoDb_1_6_no_fts.sqlite3");
+
+        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        Cursor cursor = productDatabase.searchByFoldedName("gold", null);
+        cursor.moveToFirst();
+        Product product = productDatabase.productAtCursor(cursor);
+        assertEquals(product.getSku(), "31");
+        assertEquals(product.getName(), "Goldbären 200g");
         cursor.close();
 
         cursor = productDatabase.searchByFoldedName("foo", null);
