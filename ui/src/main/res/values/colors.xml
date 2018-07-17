@@ -8,6 +8,7 @@
     <color name="snabble_textColorLight">#FFFFFF</color>
     <color name="snabble_textColorDark">#1D1F24</color>
     <color name="snabble_textColorAction">@color/snabble_primaryColor</color>
+    <color name="snabble_textColorError">#ff0000</color>
     <color name="snabble_dividerColor">#D8D8D8</color>
     <color name="snabble_backgroundColorDark">#0d0d0d</color>
 </resources>

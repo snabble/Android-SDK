@@ -113,4 +113,19 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
+
+    @Override
+    public void showSEPACardInput() {
+
+    }
+
+    @Override
+    public void showPaymentMethodList() {
+
+    }
+
+    @Override
+    public void goBack() {
+
+    }
 }

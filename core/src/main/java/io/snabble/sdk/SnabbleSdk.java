@@ -567,6 +567,10 @@ public class SnabbleSdk {
         return userPreferences.getClientId();
     }
 
+    public UserPreferences getUserPreferences() {
+        return userPreferences;
+    }
+
     /**
      * Enables debug logging.
      */

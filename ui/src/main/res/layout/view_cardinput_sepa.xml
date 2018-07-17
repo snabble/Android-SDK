@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_sepa"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="32dp"
+                android:id="@+id/imageView"/>
+
+        <TextView
+                android:text="@string/Snabble.Payment.SEPA.Owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imageView"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:id="@+id/title_owner"/>
+
+        <EditText
+                style="@style/SnabbleEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_owner"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:maxLength="11"
+                android:maxLines="1"
+                android:hint="@string/Snabble.Payment.SEPA.Owner"
+                android:id="@+id/input_owner"/>
+
+        <TextView
+                android:text="@string/Snabble.Payment.SEPA.InvalidName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_owner"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/snabble_textColorError"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:id="@+id/input_invalid_owner"/>
+
+        <TextView
+                android:text="@string/Snabble.Payment.SEPA.BIC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_invalid_owner"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:id="@+id/title_bic"/>
+
+        <EditText
+                style="@style/SnabbleEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_bic"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:maxLength="11"
+                android:maxLines="1"
+                android:hint="@string/Snabble.Payment.SEPA.BIC"
+                android:id="@+id/input_bic"/>
+
+        <TextView
+                android:text="@string/Snabble.Payment.SEPA.InvalidBIC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_bic"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/snabble_textColorError"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:id="@+id/input_invalid_bic"/>
+
+        <TextView
+                android:text="@string/Snabble.Payment.SEPA.IBAN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_invalid_bic"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:id="@+id/title_iban"/>
+
+        <EditText
+                style="@style/SnabbleEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_iban"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:maxLength="11"
+                android:maxLines="1"
+                android:hint="@string/Snabble.Payment.SEPA.IBAN"
+                android:id="@+id/input_iban"/>
+
+        <TextView
+                android:text="@string/Snabble.Payment.SEPA.InvalidIBAN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_iban"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/snabble_textColorError"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:id="@+id/input_invalid_iban"/>
+
+        <Button
+                style="@style/SnabbleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_invalid_iban"
+                android:layout_margin="24dp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/save"
+                android:text="@string/Snabble.Save"/>
+    </RelativeLayout>
+</ScrollView>
