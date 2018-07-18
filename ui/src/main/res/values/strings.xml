@@ -63,9 +63,10 @@
 	<string name="Snabble.Save">Save</string>
 
 	<string name="Snabble.Payment.emptyState.message">You don\'t have any payment methods added yet. Add one now to conveniently check out.</string>
-	<string name="Snabble.Payment.emptyState.add">Add</string>
+	<string name="Snabble.Payment.emptyState.add">Add payment method</string>
+	<string name="Snabble.Payment.delete.message">Are you sure you want to remove this payment method?</string>
 
-	<string name="Snabble.Payment.add">Add</string>
+	<string name="Snabble.Payment.add">Add payment method</string>
 
 	<!-- SECTION: Android -->
 	<string name="Snabble.Payment.aborted">Payment process was aborted</string>

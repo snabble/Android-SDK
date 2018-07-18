@@ -10,10 +10,7 @@ import android.widget.TextView;
 
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
-import io.snabble.sdk.ui.integration.CheckoutFragment;
-import io.snabble.sdk.ui.integration.ProductSearchFragment;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
-import io.snabble.sdk.ui.integration.ShoppingCartFragment;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUICallback {
     private ProgressBar progressIndicator;
@@ -116,16 +113,24 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     @Override
     public void showSEPACardInput() {
-
+        Intent intent = new Intent(this, SEPACardInputActivity.class);
+        startActivity(intent);
     }
 
     @Override
-    public void showPaymentMethodList() {
+    public void showUserPaymentMethodList() {
+        Intent intent = new Intent(this, UserPaymentMethodListActivity.class);
+        startActivity(intent);
+    }
 
+    @Override
+    public void showUserPaymentMethodSelect() {
+        Intent intent = new Intent(this, UserPaymentMethodSelectActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public void goBack() {
-
+        onBackPressed();
     }
 }

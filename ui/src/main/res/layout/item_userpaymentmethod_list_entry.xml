@@ -7,27 +7,32 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:background="?android:attr/selectableItemBackground">
+
     <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="8dp"
             android:id="@+id/icon"
             android:src="@drawable/ic_sepa"/>  <!-- TODO small icons -->
+
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/icon"
             android:layout_toEndOf="@+id/icon"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:id="@+id/text"
-            tools:text="DE00 1234 1234 1234 1234 12"/>
+            tools:text="DE00 1234 1234 1234 1234 12" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="8dp"
-            android:id="@+id/chevron"
-            android:src="@drawable/ic_check"/> <!-- TODO delete icon -->
+            android:id="@+id/delete"
+            android:tint="@color/snabble_black"
+            android:src="@drawable/ic_delete_white_48dp"/> <!-- TODO delete icon -->
 </RelativeLayout>

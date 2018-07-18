@@ -1,6 +1,9 @@
 package io.snabble.sdk.ui.payment;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
@@ -57,6 +60,46 @@ public class SEPACardInputView extends FrameLayout {
                 saveCard();
             }
         });
+
+        ibanInput.setFilters(new InputFilter[] {
+                new InputFilter.AllCaps()
+        });
+
+        ibanInput.addTextChangedListener(new TextWatcher() {
+            boolean isUpdating;
+            String oldStr = "";
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String str = s.toString().replace(" ", "");
+                StringBuilder sb = new StringBuilder();
+
+                if (isUpdating) {
+                    oldStr = str;
+                    isUpdating = false;
+                    return;
+                }
+
+                for (int i = 0; i < str.length(); i++) {
+                    if ((i != 0 && i % 4 == 0)) {
+                        sb.append(' ');
+                    }
+
+                    sb.append(str.charAt(i));
+                }
+
+                isUpdating = true;
+
+                String text = sb.toString();
+                ibanInput.setText(text);
+                ibanInput.setSelection(text.length());
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void saveCard() {
@@ -68,15 +111,17 @@ public class SEPACardInputView extends FrameLayout {
             ownerError.setVisibility(View.INVISIBLE);
         } else {
             ownerError.setVisibility(View.VISIBLE);
+            shake(ownerInput);
             ok = false;
         }
 
-        String iban = ibanInput.getText().toString();
+        String iban = ibanInput.getText().toString().replace(" ", "");
 
         if(SEPACard.validateIBAN(iban)) {
             ibanError.setVisibility(View.INVISIBLE);
         } else {
             ibanError.setVisibility(View.VISIBLE);
+            shake(ibanInput);
             ok = false;
         }
 
@@ -85,6 +130,7 @@ public class SEPACardInputView extends FrameLayout {
             bicError.setVisibility(View.INVISIBLE);
         } else {
             bicError.setVisibility(View.VISIBLE);
+            shake(bicInput);
             ok = false;
         }
 
@@ -100,9 +146,9 @@ public class SEPACardInputView extends FrameLayout {
     }
 
     private void shake(View view) {
-        TranslateAnimation shake = new TranslateAnimation(0, 10 * getResources().getDisplayMetrics().density, 0, 0);
+        TranslateAnimation shake = new TranslateAnimation(0, 1.5f * getResources().getDisplayMetrics().density, 0, 0);
         shake.setDuration(500);
-        shake.setInterpolator(new CycleInterpolator(7));
+        shake.setInterpolator(new CycleInterpolator(5));
         view.startAnimation(shake);
     }
 }

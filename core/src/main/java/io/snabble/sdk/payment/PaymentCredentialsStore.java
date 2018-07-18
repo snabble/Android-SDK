@@ -2,12 +2,17 @@ package io.snabble.sdk.payment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.telecom.Call;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import io.snabble.sdk.UserPreferences;
 
 public class PaymentCredentialsStore {
     private static final String SHARED_PREFERENCES_TAG = "snabble_prefs";
@@ -16,25 +21,36 @@ public class PaymentCredentialsStore {
     private SharedPreferences sharedPreferences;
     public List<SEPACard> sepaCards = new ArrayList<>();
 
+    private List<Callback> callbacks = new CopyOnWriteArrayList<>();
+
     public PaymentCredentialsStore(Context context) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
 
         loadFromLocalStore();
     }
 
-    public List<SEPACard> getSEPACards() {
-        return Collections.unmodifiableList(sepaCards);
+    public List<UserPaymentMethod> getUserPaymentMethods() {
+        List<UserPaymentMethod> userPaymentMethods = new ArrayList<>();
+        userPaymentMethods.addAll(sepaCards);
+        return userPaymentMethods;
     }
 
-    public void add(SEPACard sepaCard) {
-        sepaCards.add(sepaCard);
+    public void add(UserPaymentMethod sepaCard) {
+        if (sepaCard instanceof SEPACard) {
+            sepaCards.add((SEPACard)sepaCard);
+        }
+
+        saveToLocalStore();
+        notifyChanged();
     }
 
-    public void remove(SEPACard sepaCard) {
-        sepaCards.remove(sepaCard);
-    }
+    public void remove(UserPaymentMethod sepaCard) {
+        if (sepaCard instanceof SEPACard) {
+            sepaCards.remove(sepaCard);
+        }
 
-    // TODO encryption
+        notifyChanged();
+    }
 
     private void saveToLocalStore() {
         Gson gson = new Gson();
@@ -53,5 +69,25 @@ public class PaymentCredentialsStore {
                 sepaCards = new ArrayList<>();
             }
         }
+    }
+
+    public void notifyChanged() {
+        for(Callback cb : callbacks) {
+            cb.onChanged();
+        }
+    }
+
+    public void addCallback(Callback cb) {
+        if(!callbacks.contains(cb)) {
+            callbacks.add(cb);
+        }
+    }
+
+    public void removeCallback(Callback cb) {
+        callbacks.remove(cb);
+    }
+
+    public interface Callback {
+        void onChanged();
     }
 }
