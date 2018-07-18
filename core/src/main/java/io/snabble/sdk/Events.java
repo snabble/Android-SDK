@@ -1,6 +1,7 @@
 package io.snabble.sdk;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -29,10 +31,12 @@ class Events {
     private Gson gson;
 
     private String cartId;
-    private String shopId;
+    private Shop shop;
 
     private Handler handler = new Handler(Looper.getMainLooper());
     private SimpleDateFormat simpleDateFormat;
+    private boolean isResumed = false;
+    private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
     public Events(SnabbleSdk sdkInstance) {
@@ -45,7 +49,7 @@ class Events {
         sdkInstance.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
             public void onChanged(ShoppingCart list) {
-                if(!list.getId().equals(cartId)){
+                if(cartId != null && !list.getId().equals(cartId)){
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
                     post(payloadSessionEnd);
@@ -54,12 +58,28 @@ class Events {
                 post(getPayloadCart());
             }
         });
+
+        sdkInstance.getApplication().registerActivityLifecycleCallbacks(new SimpleActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityResumed(Activity activity) {
+                isResumed = true;
+
+                if(!hasSentSessionStart) {
+                    updateShop(shop);
+                }
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+                isResumed = false;
+            }
+        });
     }
 
-    public void updateShop(Shop shop) {
-        if(shop != null){
+    public void updateShop(Shop newShop) {
+        if(newShop != null){
             cartId = sdkInstance.getShoppingCart().getId();
-            shopId = shop.getId();
+            shop = newShop;
 
             PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
             payloadSessionStart.session = cartId;
@@ -70,14 +90,23 @@ class Events {
             payloadSessionEnd.session = cartId;
             post(payloadSessionEnd);
 
-            shopId = null;
+            shop = null;
         }
     }
 
     private <T extends Payload> void post(final T payload) {
+        if(!isResumed) {
+            Logger.d("Could not send event, app is not active: " + payload.getEventType());
+            return;
+        }
+
         String url = sdkInstance.getEventsUrl();
         if(url == null){
             Logger.e("Could not post event: no events url");
+            return;
+        }
+
+        if(shop == null) {
             return;
         }
 
@@ -85,7 +114,7 @@ class Events {
         event.type = payload.getEventType();
         event.appId = sdkInstance.getClientId();
         event.project = sdkInstance.getProjectId();
-        event.shopId = shopId;
+        event.shopId = shop.getId();
         event.timestamp = simpleDateFormat.format(new Date());
         event.payload = gson.toJsonTree(payload);
 
@@ -118,6 +147,10 @@ class Events {
 
             }
         }, event.type, SystemClock.uptimeMillis() + 2000);
+
+        if(event.type == EventType.SESSION_START) {
+            hasSentSessionStart = true;
+        }
     }
 
     private PayloadCart getPayloadCart() {
