@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.payment;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -31,6 +32,8 @@ public class UserPaymentMethodView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.view_userpaymentmethod, this);
         viewAnimator = findViewById(R.id.view_animator);
+
+        displayView(new UserPaymentMethodListView(getContext()));
     }
 
     public void displayView(View view) {
@@ -38,5 +41,16 @@ public class UserPaymentMethodView extends FrameLayout {
         viewAnimator.addView(view, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    @Nullable
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        return super.onSaveInstanceState();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
     }
 }
