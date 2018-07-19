@@ -69,8 +69,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         entries.clear();
 
-        SnabbleSdk snabbleSdk = SnabbleUI.getSdkInstance();
-        paymentCredentialsStore = snabbleSdk.getUserPreferences().getPaymentCredentialsStore();
+        paymentCredentialsStore = SnabbleSdk.getUserPreferences().getPaymentCredentialsStore();
         onChanged();
     }
 
@@ -177,7 +176,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     public void click() {
                         SnabbleUICallback callback = SnabbleUI.getUiCallback();
                         if (callback != null) {
-                            callback.showUserPaymentMethodSelect();
+                            callback.showSEPACardInput();
                         }
                     }
                 });
@@ -188,7 +187,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     public void click() {
                         SnabbleUICallback callback = SnabbleUI.getUiCallback();
                         if (callback != null) {
-                            callback.showUserPaymentMethodSelect();
+                            callback.showSEPACardInput();
                         }
                     }
                 });

@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.payment;
 import android.content.Context;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
@@ -20,12 +21,8 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 public class SEPACardInputView extends FrameLayout {
     private Button save;
     private EditText ibanInput;
-    private EditText bicInput;
-    private EditText ownerInput;
 
     private View ibanError;
-    private View bicError;
-    private View ownerError;
 
     public SEPACardInputView(Context context) {
         super(context);
@@ -46,12 +43,7 @@ public class SEPACardInputView extends FrameLayout {
         inflate(getContext(), R.layout.view_cardinput_sepa, this);
 
         ibanInput = findViewById(R.id.input_iban);
-        bicInput = findViewById(R.id.input_bic);
-        ownerInput = findViewById(R.id.input_owner);
-
         ibanError = findViewById(R.id.input_invalid_iban);
-        bicError = findViewById(R.id.input_invalid_bic);
-        ownerError = findViewById(R.id.input_invalid_owner);
 
         save = findViewById(R.id.save);
         save.setOnClickListener(new OnClickListener() {
@@ -61,30 +53,24 @@ public class SEPACardInputView extends FrameLayout {
             }
         });
 
-        bicInput.setFilters(new InputFilter[] {
-                new InputFilter.AllCaps()
-        });
-
         ibanInput.setFilters(new InputFilter[] {
                 new InputFilter.AllCaps()
         });
 
         ibanInput.addTextChangedListener(new TextWatcher() {
             boolean isUpdating;
-            String oldStr = "";
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String str = s.toString().replace(" ", "");
-                StringBuilder sb = new StringBuilder();
-
                 if (isUpdating) {
-                    oldStr = str;
-                    isUpdating = false;
                     return;
                 }
 
+                String originalInput = s.toString();
+                String str = originalInput.replace(" ", "");
+                StringBuilder sb = new StringBuilder();
+
                 for (int i = 0; i < str.length(); i++) {
-                    if ((i != 0 && i % 4 == 0)) {
+                    if (((i+2) != 0 && (i+2) % 4 == 0)) {
                         sb.append(' ');
                     }
 
@@ -94,8 +80,14 @@ public class SEPACardInputView extends FrameLayout {
                 isUpdating = true;
 
                 String text = sb.toString();
-                ibanInput.setText(text);
-                ibanInput.setSelection(text.length());
+                int selection = ibanInput.getSelectionEnd();
+                selection += Math.max(0, text.length() - originalInput.length());
+
+                // not using setText because that causes the keyboard state to be reset
+                ibanInput.getText().replace(0, ibanInput.getText().length(), text, 0, text.length());
+                ibanInput.setSelection(Math.min(ibanInput.length(), selection));
+
+                isUpdating = false;
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -111,17 +103,8 @@ public class SEPACardInputView extends FrameLayout {
     private void saveCard() {
         boolean ok = true;
 
-        String owner = ownerInput.getText().toString();
 
-        if(owner.length() > 0){
-            ownerError.setVisibility(View.INVISIBLE);
-        } else {
-            ownerError.setVisibility(View.VISIBLE);
-            shake(ownerInput);
-            ok = false;
-        }
-
-        String iban = ibanInput.getText().toString().replace(" ", "");
+        String iban = "DE" + ibanInput.getText().toString().replace(" ", "");
 
         if(SEPAPaymentCredentials.validateIBAN(iban)) {
             ibanError.setVisibility(View.INVISIBLE);
@@ -131,18 +114,9 @@ public class SEPACardInputView extends FrameLayout {
             ok = false;
         }
 
-        String bic = bicInput.getText().toString();
-        if(SEPAPaymentCredentials.validateBIC(bic)) {
-            bicError.setVisibility(View.INVISIBLE);
-        } else {
-            bicError.setVisibility(View.VISIBLE);
-            shake(bicInput);
-            ok = false;
-        }
 
         if (ok) {
-            SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
-            sdkInstance.getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(owner, iban, bic));
+            SnabbleSdk.getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(iban));
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){

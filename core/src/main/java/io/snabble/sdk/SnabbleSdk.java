@@ -154,6 +154,8 @@ public class SnabbleSdk {
         public int encodedCodesMaxCodes = 100;
     }
 
+    private static UserPreferences userPreferences;
+
     private String endpointBaseUrl;
     private String metadataUrl;
     private String projectId;
@@ -170,8 +172,6 @@ public class SnabbleSdk {
     private Checkout checkout;
     private ShoppingCartManager shoppingCartManager;
     private Events events;
-
-    private UserPreferences userPreferences;
 
     private File internalStorageDirectory;
     private Currency currency;
@@ -561,17 +561,6 @@ public class SnabbleSdk {
     }
 
     /**
-     * Unique identifier, different over device installations
-     */
-    public String getClientId(){
-        return userPreferences.getClientId();
-    }
-
-    public UserPreferences getUserPreferences() {
-        return userPreferences;
-    }
-
-    /**
      * Enables debug logging.
      */
     public static void setDebugLoggingEnabled(boolean enabled) {
@@ -702,6 +691,17 @@ public class SnabbleSdk {
 
     public static String getVersion() {
         return BuildConfig.VERSION_NAME;
+    }
+
+    /**
+     * Unique identifier, different over device installations
+     */
+    public static String getClientId(){
+        return userPreferences.getClientId();
+    }
+
+    public static UserPreferences getUserPreferences() {
+        return userPreferences;
     }
 
     /**

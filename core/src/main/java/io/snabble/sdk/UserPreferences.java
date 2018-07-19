@@ -15,8 +15,6 @@ public class UserPreferences {
     private SharedPreferences sharedPreferences;
     private PaymentCredentialsStore paymentCredentialsStore;
 
-    private Gson gson = new Gson();
-
     UserPreferences(Context context) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
 

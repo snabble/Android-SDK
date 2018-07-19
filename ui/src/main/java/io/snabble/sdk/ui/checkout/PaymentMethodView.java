@@ -80,7 +80,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         sdkInstance = SnabbleUI.getSdkInstance();
         checkout = sdkInstance.getCheckout();
-        paymentCredentialsStore = sdkInstance.getUserPreferences().getPaymentCredentialsStore();
+        paymentCredentialsStore = SnabbleSdk.getUserPreferences().getPaymentCredentialsStore();
 
 
         recyclerView = findViewById(R.id.payment_methods);
@@ -198,10 +198,12 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 imageView.setVisibility(View.VISIBLE);
             }
 
+            TextView textView = holder.text;
             if (e.text != null) {
-                TextView textView = holder.text;
                 textView.setText(e.text);
                 textView.setVisibility(View.VISIBLE);
+            } else {
+                textView.setVisibility(View.GONE);
             }
 
             if(e.onClickListener != null){
