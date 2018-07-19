@@ -19,27 +19,29 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
-public class UserPaymentMethodSelectView extends FrameLayout {
-    private List<Entry> entries;
+public class PaymentCredentialsSelectView extends FrameLayout {
 
-    public UserPaymentMethodSelectView(Context context) {
+    private List<Entry> entries;
+    private boolean skipOnResume = false;
+
+    public PaymentCredentialsSelectView(Context context) {
         super(context);
         inflateView();
     }
 
-    public UserPaymentMethodSelectView(Context context, AttributeSet attrs) {
+    public PaymentCredentialsSelectView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public UserPaymentMethodSelectView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PaymentCredentialsSelectView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }
@@ -48,18 +50,19 @@ public class UserPaymentMethodSelectView extends FrameLayout {
         inflate(getContext(), R.layout.view_userpaymentmethod_select, this);
 
         entries = new ArrayList<>();
-        entries.add(new Entry(R.drawable.ic_sepa_small, "SEPA", new OnClickListener() {
+        entries.add(new Entry(R.drawable.ic_sepa_small, "SEPA", new OneShotClickListener() {
             @Override
-            public void onClick(View view) {
+            public void click() {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
+                    skipOnResume = true;
                     callback.showSEPACardInput();
                 }
             }
         }));
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setAdapter(new UserPaymentMethodSelectView.Adapter());
+        recyclerView.setAdapter(new PaymentCredentialsSelectView.Adapter());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -98,7 +101,7 @@ public class UserPaymentMethodSelectView extends FrameLayout {
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(getContext()).inflate(R.layout.item_userpaymentmethod_list_entry, parent, false);
+            View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_select, parent, false);
             return new ViewHolder(v);
         }
 
@@ -116,4 +119,37 @@ public class UserPaymentMethodSelectView extends FrameLayout {
             return entries.size();
         }
     }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    }
+
+    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+            new SimpleActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityResumed(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        if (skipOnResume) {
+                            skipOnResume = false;
+
+                            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                            if (callback != null) {
+                                callback.goBack();
+                            }
+                        }
+                    }
+                }
+            };
 }

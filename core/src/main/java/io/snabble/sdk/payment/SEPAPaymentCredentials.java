@@ -2,14 +2,14 @@ package io.snabble.sdk.payment;
 
 import org.iban4j.*;
 
-public class SEPACard extends UserPaymentMethod {
+public class SEPAPaymentCredentials extends PaymentCredentials {
     private String ownerName;
     private String obfuscatedIBAN;
 
     private String encryptedIBAN;
     private String encryptedBIC;
 
-    public SEPACard(String ownerName, String iban, String bic) {
+    public SEPAPaymentCredentials(String ownerName, String iban, String bic) {
         if(ownerName == null || ownerName.length() == 0) {
             throw new IllegalArgumentException("Invalid ownerName");
         }
@@ -42,7 +42,8 @@ public class SEPACard extends UserPaymentMethod {
         return sb.toString();
     }
 
-    public String getObfuscatedIBAN() {
+    @Override
+    public String getObfuscatedId() {
         return obfuscatedIBAN;
     }
 

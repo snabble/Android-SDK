@@ -21,7 +21,7 @@
             android:id="@+id/image"
             android:gravity="center"
             android:visibility="gone"
-            tools:src="@drawable/ic_pm_cash"
+            tools:src="@drawable/ic_sepa"
             tools:visibility="visible" />
 
         <TextView
@@ -31,7 +31,8 @@
             android:gravity="center"
             android:id="@+id/text"
             android:visibility="gone"
-            tools:text="Bar"
+            android:layout_marginTop="8dp"
+            tools:text="*****************1234"
             tools:visibility="visible" />
     </LinearLayout>
 

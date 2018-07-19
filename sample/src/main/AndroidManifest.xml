@@ -27,8 +27,8 @@
         <activity android:name=".CheckoutActivity" />
         <activity android:name=".ShoppingCartActivity" />
         <activity android:name=".SEPACardInputActivity" />
-        <activity android:name=".UserPaymentMethodListActivity" />
-        <activity android:name=".UserPaymentMethodSelectActivity" />
+        <activity android:name=".PaymentCredentialsListActivity" />
+        <activity android:name=".PaymentCredentialsSelectActivity" />
     </application>
 
 </manifest>

@@ -1,7 +1,7 @@
 package io.snabble.sdk;
 
 
-import io.snabble.sdk.payment.SEPACard;
+import io.snabble.sdk.payment.SEPAPaymentCredentials;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,11 +38,11 @@ public class SEPATest extends SnabbleSdkTest {
     }
 
     private void testInvalidBIC(String bic){
-        Assert.assertEquals(false, SEPACard.validateBIC(bic));
+        Assert.assertEquals(false, SEPAPaymentCredentials.validateBIC(bic));
     }
 
     private void testBIC(String bic){
-        Assert.assertEquals(true, SEPACard.validateBIC(bic));
+        Assert.assertEquals(true, SEPAPaymentCredentials.validateBIC(bic));
     }
 }
 

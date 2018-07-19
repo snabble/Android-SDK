@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.telecom.Call;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,39 +23,40 @@ import java.util.List;
 
 import io.snabble.sdk.SnabbleSdk;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
-import io.snabble.sdk.payment.SEPACard;
-import io.snabble.sdk.payment.UserPaymentMethod;
+import io.snabble.sdk.payment.SEPAPaymentCredentials;
+import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
-public class UserPaymentMethodListView extends FrameLayout implements PaymentCredentialsStore.Callback {
+public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {
     private List<Entry> entries = new ArrayList<>();
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
 
-    public UserPaymentMethodListView(Context context) {
+    public PaymentCredentialsListView(Context context) {
         super(context);
         inflateView();
     }
 
-    public UserPaymentMethodListView(Context context, AttributeSet attrs) {
+    public PaymentCredentialsListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public UserPaymentMethodListView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PaymentCredentialsListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_userpaymentmethod_list, this);
+        inflate(getContext(), R.layout.view_payment_credentials_list, this);
 
         recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setAdapter(new UserPaymentMethodListView.Adapter());
+        recyclerView.setAdapter(new PaymentCredentialsListView.Adapter());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -77,10 +77,10 @@ public class UserPaymentMethodListView extends FrameLayout implements PaymentCre
     private static class Entry {
         int drawableRes;
         String text;
-        UserPaymentMethod userPaymentMethod;
+        PaymentCredentials paymentCredentials;
 
-        Entry(UserPaymentMethod userPaymentMethod, int drawableRes, String text) {
-            this.userPaymentMethod = userPaymentMethod;
+        Entry(PaymentCredentials paymentCredentials, int drawableRes, String text) {
+            this.paymentCredentials = paymentCredentials;
             this.drawableRes = drawableRes;
             this.text = text;
         }
@@ -122,12 +122,12 @@ public class UserPaymentMethodListView extends FrameLayout implements PaymentCre
     public void onChanged() {
         entries.clear();
 
-        List<UserPaymentMethod> userPaymentMethods = paymentCredentialsStore.getUserPaymentMethods();
+        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getUserPaymentMethods();
 
-        for(UserPaymentMethod pm : userPaymentMethods) {
-            if(pm instanceof SEPACard) {
-                SEPACard sepaCard = (SEPACard) pm;
-                entries.add(new Entry(pm, R.drawable.ic_sepa_small, sepaCard.getObfuscatedIBAN()));
+        for(PaymentCredentials pm : paymentCredentials) {
+            if(pm instanceof SEPAPaymentCredentials) {
+                SEPAPaymentCredentials sepaPaymentCredentials = (SEPAPaymentCredentials) pm;
+                entries.add(new Entry(pm, R.drawable.ic_sepa_small, sepaPaymentCredentials.getObfuscatedId()));
             }
         }
 
@@ -142,13 +142,13 @@ public class UserPaymentMethodListView extends FrameLayout implements PaymentCre
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if(viewType == TYPE_EMPTYSTATE) {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_userpaymentmethod_list_emptystate, parent, false);
+                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_emptystate, parent, false);
                 return new EmptyStateViewHolder(v);
             } else if(viewType == TYPE_ADD) {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_userpaymentmethod_list_add, parent, false);
+                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_add, parent, false);
                 return new AddViewHolder(v);
             } else {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_userpaymentmethod_list_entry, parent, false);
+                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_entry, parent, false);
                 return new EntryViewHolder(v);
             }
         }
@@ -172,9 +172,9 @@ public class UserPaymentMethodListView extends FrameLayout implements PaymentCre
 
             if(type == TYPE_EMPTYSTATE) {
                 EmptyStateViewHolder vh = (EmptyStateViewHolder)holder;
-                vh.add.setOnClickListener(new OnClickListener() {
+                vh.add.setOnClickListener(new OneShotClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void click() {
                         SnabbleUICallback callback = SnabbleUI.getUiCallback();
                         if (callback != null) {
                             callback.showUserPaymentMethodSelect();
@@ -183,9 +183,9 @@ public class UserPaymentMethodListView extends FrameLayout implements PaymentCre
                 });
             } else if(type == TYPE_ADD) {
                 AddViewHolder vh = (AddViewHolder)holder;
-                vh.add.setOnClickListener(new OnClickListener() {
+                vh.add.setOnClickListener(new OneShotClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void click() {
                         SnabbleUICallback callback = SnabbleUI.getUiCallback();
                         if (callback != null) {
                             callback.showUserPaymentMethodSelect();
@@ -206,7 +206,7 @@ public class UserPaymentMethodListView extends FrameLayout implements PaymentCre
                                 .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        paymentCredentialsStore.remove(e.userPaymentMethod);
+                                        paymentCredentialsStore.remove(e.paymentCredentials);
                                     }
                                 })
                                 .setNegativeButton(R.string.Snabble_No, null)
@@ -225,6 +225,7 @@ public class UserPaymentMethodListView extends FrameLayout implements PaymentCre
 
     public void registerListeners() {
         paymentCredentialsStore.addCallback(this);
+        onChanged();
     }
 
     public void unregisterListeners() {

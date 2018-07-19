@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import io.snabble.sdk.SnabbleSdk;
-import io.snabble.sdk.payment.SEPACard;
+import io.snabble.sdk.payment.SEPAPaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -61,6 +61,10 @@ public class SEPACardInputView extends FrameLayout {
             }
         });
 
+        bicInput.setFilters(new InputFilter[] {
+                new InputFilter.AllCaps()
+        });
+
         ibanInput.setFilters(new InputFilter[] {
                 new InputFilter.AllCaps()
         });
@@ -95,9 +99,11 @@ public class SEPACardInputView extends FrameLayout {
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -117,7 +123,7 @@ public class SEPACardInputView extends FrameLayout {
 
         String iban = ibanInput.getText().toString().replace(" ", "");
 
-        if(SEPACard.validateIBAN(iban)) {
+        if(SEPAPaymentCredentials.validateIBAN(iban)) {
             ibanError.setVisibility(View.INVISIBLE);
         } else {
             ibanError.setVisibility(View.VISIBLE);
@@ -126,7 +132,7 @@ public class SEPACardInputView extends FrameLayout {
         }
 
         String bic = bicInput.getText().toString();
-        if(SEPACard.validateBIC(bic)) {
+        if(SEPAPaymentCredentials.validateBIC(bic)) {
             bicError.setVisibility(View.INVISIBLE);
         } else {
             bicError.setVisibility(View.VISIBLE);
@@ -136,7 +142,7 @@ public class SEPACardInputView extends FrameLayout {
 
         if (ok) {
             SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
-            sdkInstance.getUserPreferences().getPaymentCredentialsStore().add(new SEPACard(owner, iban, bic));
+            sdkInstance.getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(owner, iban, bic));
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){
