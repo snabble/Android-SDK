@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,6 +42,7 @@ class PaymentMethodView extends FrameLayout {
 
     private Checkout checkout;
     private List<PaymentMethod> availablePaymentMethods;
+    private RecyclerView recyclerView;
 
     public PaymentMethodView(Context context) {
         super(context);
@@ -74,15 +77,33 @@ class PaymentMethodView extends FrameLayout {
             }
         }
 
-        RecyclerView recyclerView = findViewById(R.id.payment_methods);
+        recyclerView = findViewById(R.id.payment_methods);
         recyclerView.setAdapter(new Adapter());
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setStackFromEnd(true);
-        layoutManager.scrollToPosition(0);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+
+        final NestedScrollView scrollView = findViewById(R.id.scroller);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(null);
+
+        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                scrollView.post(new Runnable() {
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         int dividerColor = ResourcesCompat.getColor(getResources(), R.color.snabble_dividerColor, null);
