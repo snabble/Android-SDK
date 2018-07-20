@@ -120,7 +120,7 @@ public class SEPACardInputView extends FrameLayout {
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){
-                callback.goBack();
+                callback.showCheckout();
             }
         }
     }

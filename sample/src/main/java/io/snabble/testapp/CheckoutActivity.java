@@ -14,8 +14,9 @@ public class CheckoutActivity extends BaseActivity implements SnabbleUICallback 
 
     @Override
     public void showMainscreen() {
-        super.showMainscreen();
         finish();
+
+        super.showMainscreen();
     }
 }
 

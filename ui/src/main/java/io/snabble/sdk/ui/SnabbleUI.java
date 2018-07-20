@@ -31,6 +31,7 @@ public class SnabbleUI {
      * Calling this multiple times overwrites the old callback
      */
     public static void registerUiCallbacks(SnabbleUICallback callback) {
+        Logger.d("Register ui callback: " + callback.getClass().getSimpleName());
         uiCallback = callback;
     }
 
@@ -38,7 +39,9 @@ public class SnabbleUI {
      * Unregisters a callback that was previously registered.
      */
     public static void unregisterUiCallbacks(SnabbleUICallback callback) {
+        Logger.d("unregister ui callback: " + callback.getClass().getSimpleName());
         if (uiCallback == callback) {
+            Logger.d("unregister (real) ui callback: " + callback.getClass().getSimpleName());
             uiCallback = null;
         }
     }

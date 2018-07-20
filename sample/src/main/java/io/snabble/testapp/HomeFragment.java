@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
         v.findViewById(R.id.show_pm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((BaseActivity)getActivity()).showUserPaymentMethodList();
+                ((BaseActivity)getActivity()).showPaymentCredentialsList();
             }
         });
         return v;
