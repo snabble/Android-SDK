@@ -201,7 +201,9 @@ public class SnabbleSdk {
         //noinspection ResultOfMethodCallIgnored
         internalStorageDirectory.mkdirs();
 
-        userPreferences = new UserPreferences(application);
+        if (userPreferences == null) {
+            userPreferences = new UserPreferences(application);
+        }
 
         projectId = config.projectId;
 
