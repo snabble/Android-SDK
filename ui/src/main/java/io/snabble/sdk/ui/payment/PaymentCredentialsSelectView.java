@@ -47,7 +47,7 @@ public class PaymentCredentialsSelectView extends FrameLayout {
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_userpaymentmethod_select, this);
+        inflate(getContext(), R.layout.view_payment_credentials_select, this);
 
         entries = new ArrayList<>();
         entries.add(new Entry(R.drawable.ic_sepa_small, "SEPA", new OneShotClickListener() {
