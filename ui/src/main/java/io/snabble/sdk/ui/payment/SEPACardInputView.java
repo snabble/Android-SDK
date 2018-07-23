@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -130,9 +131,16 @@ public class SEPACardInputView extends FrameLayout {
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){
+                hideSoftKeyboard(ibanInput);
+                hideSoftKeyboard(nameInput);
                 callback.goBack();
             }
         }
+    }
+
+    private void hideSoftKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     private void shake(View view) {
