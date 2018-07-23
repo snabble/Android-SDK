@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.payment;
 import android.content.Context;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,7 +21,6 @@ public class SEPACardInputView extends FrameLayout {
     private Button save;
     private EditText nameInput;
     private EditText ibanInput;
-
     private View nameError;
     private View ibanError;
 
@@ -112,9 +110,9 @@ public class SEPACardInputView extends FrameLayout {
         String iban = "DE" + ibanInput.getText().toString().replace(" ", "");
 
         if(name.length() > 0) {
-            ibanError.setVisibility(View.INVISIBLE);
+            nameError.setVisibility(View.INVISIBLE);
         } else {
-            ibanError.setVisibility(View.VISIBLE);
+            nameError.setVisibility(View.VISIBLE);
             shake(nameInput);
             ok = false;
         }
