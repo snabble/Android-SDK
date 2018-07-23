@@ -758,9 +758,8 @@ public class ProductDatabase {
 
         String depositSku = anyToString(cursor, 4);
 
-        builder.setDepositProductSku(anyToString(cursor, 4))
-                .setIsDeposit(cursor.getInt(5) != 0)
-                .setType(productTypes[cursor.getInt(6)]);
+        builder.setIsDeposit(cursor.getInt(5) != 0)
+               .setType(productTypes[cursor.getInt(6)]);
 
         builder.setDepositProduct(findBySku(depositSku));
 
@@ -784,6 +783,10 @@ public class ProductDatabase {
         if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
             builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(14)));
             builder.setSaleStop(cursor.getInt(15) != 0);
+        }
+
+        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
+            builder.setBundleProducts(findBundlesOfProduct(builder.build()));
         }
 
         return builder.build();
@@ -1151,6 +1154,30 @@ public class ProductDatabase {
                 productApi.findByWeighItemId(weighItemId, productAvailableListener);
             }
         }
+    }
+
+    private Product[] findBundlesOfProduct(Product product) {
+        if (product != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
+            Cursor cursor = productQuery("WHERE p.bundledSku = ?", new String[]{
+                    product.getSku()
+            }, false);
+
+            if (cursor != null) {
+                Product[] products = new Product[cursor.getCount()];
+
+                int i = 0;
+                while (cursor.moveToNext()) {
+                    products[i] = productAtCursor(cursor);
+                    i++;
+                }
+
+                cursor.close();
+
+                return products;
+            }
+        }
+
+        return new Product[0];
     }
 
     /**

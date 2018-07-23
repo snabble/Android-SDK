@@ -18,6 +18,7 @@ public class Telemetry {
         ToggleTorch,
         DeletedFromCart,
         UndoDeleteFromCart,
+        SelectedBundleProduct,
     }
 
     private static OnEventListener onEventListener;

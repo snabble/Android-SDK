@@ -227,12 +227,17 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
 
         progressDialog.dismiss();
-        showProduct(product, scannedCode);
 
-        if (wasOnlineProduct) {
-            Telemetry.event(Telemetry.Event.ScannedOnlineProduct, product);
+        if(product.getBundleProducts().length > 0){
+            showBundleDialog(product);
         } else {
-            Telemetry.event(Telemetry.Event.ScannedProduct, product);
+            showProduct(product, scannedCode);
+
+            if (wasOnlineProduct) {
+                Telemetry.event(Telemetry.Event.ScannedOnlineProduct, product);
+            } else {
+                Telemetry.event(Telemetry.Event.ScannedProduct, product);
+            }
         }
     }
 
@@ -309,6 +314,28 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 == PackageManager.PERMISSION_GRANTED) {
             barcodeScanner.resume();
         }
+    }
+
+    private void showBundleDialog(Product product) {
+        pauseBarcodeScanner();
+        allowScan = false;
+
+        SelectBundleDialog.show(getContext(), product, new SelectBundleDialog.Callback() {
+            @Override
+            public void onProductSelected(Product product) {
+                Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
+
+                String[] codes = product.getScannableCodes();
+                if(codes.length > 0) {
+                    showProduct(product, ScannableCode.parse(SnabbleUI.getSdkInstance(), codes[0]));
+                }
+            }
+
+            @Override
+            public void onDismissed() {
+                resumeBarcodeScanner();
+            }
+        });
     }
 
     private void showProduct(Product product, ScannableCode scannedCode) {

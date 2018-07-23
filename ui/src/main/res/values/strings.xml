@@ -38,6 +38,7 @@
 	<string name="Snabble.Scanner.unknownBarcode">Price information is not available for this product</string>
 	<string name="Snabble.Scanner.updateCart">Update Cart</string>
 	<string name="Snabble.Scanner.addToCart">Add to Cart</string>
+	<string name="Snabble.Scanner.BundleDialog.headline">Please select an item</string>
 	<string name="Snabble.Scanner.plusDeposit">+ %s deposit</string>
 	<string name="Snabble.Scanner.introText">Scan barcodes on products and place them in your shopping cart.</string>
 	<string name="Snabble.Scanner.start">Start scanner</string>
