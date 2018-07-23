@@ -20,6 +20,30 @@
                 android:layout_margin="24dp"
                 android:id="@+id/imageView"/>
 
+        <EditText
+            style="@style/SnabbleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:maxLines="1"
+            android:hint="@string/Snabble.Payment.SEPA.Name"
+            android:id="@+id/input_name"/>
+
+        <TextView
+            android:text="@string/Snabble.Payment.SEPA.InvalidName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/input_name"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textColor="@color/snabble_textColorError"
+            android:visibility="invisible"
+            tools:visibility="visible"
+            android:id="@+id/input_invalid_name"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/prefix"
-                android:layout_below="@+id/imageView"
+                android:layout_below="@+id/input_invalid_name"
+                android:layout_marginTop="8dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="16dp"
                 android:inputType="number"

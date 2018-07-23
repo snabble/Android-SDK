@@ -5,8 +5,13 @@ import org.iban4j.*;
 public class SEPAPaymentCredentials extends PaymentCredentials {
     private String obfuscatedIBAN;
     private String encryptedIBAN;
+    private String encryptedName;
 
-    public SEPAPaymentCredentials(String iban) {
+    public SEPAPaymentCredentials(String name, String iban) {
+        if(name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Invalid Name");
+        }
+
         if(!validateIBAN(iban)) {
             throw new IllegalArgumentException("Invalid IBAN");
         }
@@ -14,6 +19,7 @@ public class SEPAPaymentCredentials extends PaymentCredentials {
         this.obfuscatedIBAN = obfuscate(iban);
 
         // TODO encrypt
+        this.encryptedName = "";
         this.encryptedIBAN = "";
     }
 
@@ -36,6 +42,10 @@ public class SEPAPaymentCredentials extends PaymentCredentials {
 
     public String getEncryptedIBAN() {
         return encryptedIBAN;
+    }
+
+    public String getEncryptedName() {
+        return encryptedName;
     }
 
     public static boolean validateIBAN(String iban) {

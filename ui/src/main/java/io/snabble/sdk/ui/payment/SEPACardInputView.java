@@ -20,8 +20,10 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 
 public class SEPACardInputView extends FrameLayout {
     private Button save;
+    private EditText nameInput;
     private EditText ibanInput;
 
+    private View nameError;
     private View ibanError;
 
     public SEPACardInputView(Context context) {
@@ -41,6 +43,9 @@ public class SEPACardInputView extends FrameLayout {
 
     private void inflateView() {
         inflate(getContext(), R.layout.view_cardinput_sepa, this);
+
+        nameInput = findViewById(R.id.input_name);
+        nameError = findViewById(R.id.input_invalid_name);
 
         ibanInput = findViewById(R.id.input_iban);
         ibanError = findViewById(R.id.input_invalid_iban);
@@ -103,8 +108,16 @@ public class SEPACardInputView extends FrameLayout {
     private void saveCard() {
         boolean ok = true;
 
-
+        String name = nameInput.getText().toString();
         String iban = "DE" + ibanInput.getText().toString().replace(" ", "");
+
+        if(name.length() > 0) {
+            ibanError.setVisibility(View.INVISIBLE);
+        } else {
+            ibanError.setVisibility(View.VISIBLE);
+            shake(nameInput);
+            ok = false;
+        }
 
         if(SEPAPaymentCredentials.validateIBAN(iban)) {
             ibanError.setVisibility(View.INVISIBLE);
@@ -114,13 +127,12 @@ public class SEPACardInputView extends FrameLayout {
             ok = false;
         }
 
-
         if (ok) {
-            SnabbleSdk.getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(iban));
+            SnabbleSdk.getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(name, iban));
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){
-                callback.showCheckout();
+                callback.goBack();
             }
         }
     }

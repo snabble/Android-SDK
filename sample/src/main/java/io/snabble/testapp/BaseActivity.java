@@ -91,12 +91,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     @Override
-    public void showMainscreen() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
     public void showScannerWithCode(String scannableCode) {
         Intent intent = new Intent(this, SelfScanningActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -130,8 +130,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private void update() {
         entries = new ArrayList<>();
 
-        // TODO refactor
-
         List<PaymentMethod> availablePaymentMethods = Arrays.asList(checkout.getAvailablePaymentMethods());
         for (PaymentMethod paymentMethod : availablePaymentMethods) {
             if (icons.containsKey(paymentMethod) || descriptions.containsKey(paymentMethod)) {
