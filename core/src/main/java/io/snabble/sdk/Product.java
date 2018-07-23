@@ -90,8 +90,8 @@ public class Product {
     private int price;
     private int discountedPrice;
     private String imageUrl;
-    private String depositProductSku;
     private Product depositProduct;
+    private Product[] bundleProducts;
     private Type type;
     private boolean isDeposit;
     private int boost;
@@ -158,20 +158,14 @@ public class Product {
     }
 
     /**
-     * Deprecated: use getDepositProduct instead.
-     *
-     * @return The sku of the deposit product.
-     */
-    @Deprecated
-    public String getDepositProductSku() {
-        return depositProductSku;
-    }
-
-    /**
      * Returns the deposit product, or null if the product has no deposit product
      */
     public Product getDepositProduct() {
         return depositProduct;
+    }
+
+    public Product[] getBundleProducts() {
+        return bundleProducts;
     }
 
     /**
@@ -293,13 +287,13 @@ public class Product {
             return this;
         }
 
-        public Builder setDepositProductSku(String sku) {
-            product.depositProductSku = sku;
+        public Builder setDepositProduct(Product depositProduct) {
+            product.depositProduct = depositProduct;
             return this;
         }
 
-        public Builder setDepositProduct(Product depositProduct) {
-            product.depositProduct = depositProduct;
+        public Builder setBundleProducts(Product[] bundleProducts) {
+            product.bundleProducts = bundleProducts;
             return this;
         }
 
@@ -345,6 +339,10 @@ public class Product {
 
             if (product.weighedItemIds == null) {
                 product.weighedItemIds = new String[0];
+            }
+
+            if (product.bundleProducts == null) {
+                product.bundleProducts = new Product[0];
             }
 
             return product;

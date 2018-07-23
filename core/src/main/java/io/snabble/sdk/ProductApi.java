@@ -235,7 +235,6 @@ class ProductApi {
                 .setDescription(apiProduct.description)
                 .setSubtitle(apiProduct.subtitle)
                 .setBoost(apiProduct.boost)
-                .setDepositProductSku(apiProduct.depositProduct)
                 .setDepositProduct(depositProduct)
                 .setIsDeposit("deposit".equals(apiProduct.productType))
                 .setImageUrl(apiProduct.imageUrl)
