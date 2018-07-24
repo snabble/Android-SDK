@@ -176,10 +176,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         updatePayText();
         updateEmptyState();
-
-        if (checkout.getState() != Checkout.State.CONNECTION_ERROR) {
-            onStateChanged(checkout.getState());
-        }
     }
 
     private void createItemTouchHelper() {
@@ -284,6 +280,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     public void registerListeners() {
+        SnabbleUI.getSdkInstance().getCheckout().cancel();
+
         cart.addListener(shoppingCartListener);
         checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
     }
