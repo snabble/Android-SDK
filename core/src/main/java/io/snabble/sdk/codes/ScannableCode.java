@@ -23,7 +23,7 @@ public class ScannableCode implements Serializable {
         return 0;
     }
 
-    public boolean hasAmountData() {
+    public boolean hasUnitData() {
         return false;
     }
 

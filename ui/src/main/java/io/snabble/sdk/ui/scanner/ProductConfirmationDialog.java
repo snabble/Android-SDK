@@ -26,12 +26,14 @@ import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
+import io.snabble.sdk.ui.utils.UIUtils;
 
 class ProductConfirmationDialog {
     private Context context;
@@ -108,7 +110,7 @@ class ProductConfirmationDialog {
             quantityAnnotation.setVisibility(View.GONE);
         }
 
-        if (scannedCode.hasEmbeddedData()) {
+        if (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0) {
             quantity.setEnabled(false);
         }
 
@@ -125,7 +127,7 @@ class ProductConfirmationDialog {
             minus.setVisibility(View.GONE);
             quantityAnnotation.setVisibility(View.GONE);
             price.setVisibility(View.GONE);
-        } else if(scannedCode.hasAmountData()){
+        } else if(scannedCode.hasUnitData()){
             quantityAnnotation.setVisibility(View.GONE);
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
@@ -153,11 +155,18 @@ class ProductConfirmationDialog {
 
                 PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getSdkInstance());
                 quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
-            } else if(scannedCode.hasAmountData()){
-                quantityAnnotation.setVisibility(View.GONE);
-                plus.setVisibility(View.GONE);
-                minus.setVisibility(View.GONE);
-                quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
+            } else if(scannedCode.hasUnitData()){
+                if(scannedCode.getEmbeddedData() == 0) {
+                    quantityAnnotation.setVisibility(View.GONE);
+                    plus.setVisibility(View.VISIBLE);
+                    minus.setVisibility(View.VISIBLE);
+                    quantity.setText("1");
+                } else {
+                    quantityAnnotation.setVisibility(View.GONE);
+                    plus.setVisibility(View.GONE);
+                    minus.setVisibility(View.GONE);
+                    quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
+                }
             }
         } else if (type == Product.Type.Article) {
             quantityAnnotation.setVisibility(View.GONE);
@@ -168,46 +177,44 @@ class ProductConfirmationDialog {
             quantity.setText(""); // initial value ?
         }
 
-        if(!scannedCode.hasEmbeddedData()) {
-            quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
-            quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE
-                            || (event.getAction() == KeyEvent.ACTION_DOWN
-                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                        addToCart();
-                        return true;
-                    }
-
-                    return false;
-                }
-            });
-
-            quantity.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
+        quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE
+                        || (event.getAction() == KeyEvent.ACTION_DOWN
+                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    addToCart();
+                    return true;
                 }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                return false;
+            }
+        });
 
+        quantity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // its possible that the callback gets called before a dismiss is dispatched
+                // and when that happens the product is already null
+                if (product == null) {
+                    dismiss();
+                    return;
                 }
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // its possible that the callback gets called before a dismiss is dispatched
-                    // and when that happens the product is already null
-                    if (product == null) {
-                        dismiss();
-                        return;
-                    }
-
-                    updatePrice();
-                }
-            });
-        }
+                 updatePrice();
+            }
+        });
 
         updatePrice();
 
@@ -288,7 +295,7 @@ class ProductConfirmationDialog {
         if(q > 1){
             if(scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed){
                 price.setText(String.format("%sg * %s = %s", String.valueOf(q), singlePrice, priceText));
-            } else if(scannedCode.hasAmountData()){
+            } else if(scannedCode.hasUnitData()){
                 price.setText(String.format("%s * %s = %s",
                         String.valueOf(q),
                         priceFormatter.format(product.getPrice()),
@@ -327,22 +334,57 @@ class ProductConfirmationDialog {
         int q = getQuantity();
 
         if(scannedCode.hasEmbeddedData()){
-            shoppingCart.add(product, 1, scannedCode);
+            // generate new code when the embedded data contains 0
+            if (scannedCode.getEmbeddedData() == 0) {
+                generateNewCodeWithEmbeddedData();
+            }
+
+            // if the user entered 0, shake
+            if(scannedCode.getEmbeddedData() == 0) {
+                shake();
+                return;
+            } else {
+                shoppingCart.add(product, 1, scannedCode);
+            }
         } else if (product.getType() == Product.Type.Article) {
             shoppingCart.setQuantity(product, q, scannedCode);
         } else if(product.getType() == Product.Type.UserWeighed){
             if(q > 0) {
                 shoppingCart.add(product, q, scannedCode);
             } else {
-                TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
-                shake.setDuration(500);
-                shake.setInterpolator(new CycleInterpolator(7));
-                quantity.startAnimation(shake);
+                shake();
                 return;
             }
         }
 
         dismiss();
+    }
+
+    private void shake() {
+        float density =  context.getResources().getDisplayMetrics().density;
+        TranslateAnimation shake = new TranslateAnimation(0, 3 * density, 0, 0);
+        shake.setDuration(500);
+        shake.setInterpolator(new CycleInterpolator(7));
+        quantity.startAnimation(shake);
+    }
+
+    private void generateNewCodeWithEmbeddedData() {
+        String code = scannedCode.getCode();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(code.substring(0, code.length() - 6));
+        String dataStr = String.valueOf(getQuantity());
+
+        int remaining = 5 - dataStr.length();
+        for(int i=0; i<remaining; i++) {
+            stringBuilder.append("0");
+        }
+
+        stringBuilder.append(dataStr);
+        stringBuilder.replace(6, 7, String.valueOf(EAN13.internalChecksum(stringBuilder.toString())));
+        stringBuilder.append(String.valueOf(EAN13.checksum(stringBuilder.toString())));
+
+        scannedCode = ScannableCode.parse(SnabbleUI.getSdkInstance(), stringBuilder.toString());
     }
 
     private int getQuantity() {
