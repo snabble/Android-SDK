@@ -45,7 +45,7 @@ class MetadataDownloader extends StringDownloader {
     }
 
     @Override
-    protected void onDownloadFinished(String content) {
+    protected synchronized void onDownloadFinished(String content) {
         try {
             Map<String, String> urls = new HashMap<>();
             Map<String, String> extras = new HashMap<>();
@@ -68,7 +68,6 @@ class MetadataDownloader extends StringDownloader {
 
             if (jsonObject.has("metadata")) {
                 this.metadata = jsonObject.get("metadata").getAsJsonObject();
-
             }
 
             if (jsonObject.has("project")) {
@@ -82,7 +81,7 @@ class MetadataDownloader extends StringDownloader {
 
             updateStorage(content);
             hasData = true;
-        } catch (JsonSyntaxException e){
+        } catch (Exception e) {
             Logger.e(e.getMessage());
         }
     }
