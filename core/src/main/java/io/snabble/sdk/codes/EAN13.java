@@ -84,7 +84,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     @Override
-    public boolean hasAmountData() {
+    public boolean hasUnitData() {
         return hasUnitData;
     }
 

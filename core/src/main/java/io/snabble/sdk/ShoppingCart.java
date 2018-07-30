@@ -305,7 +305,7 @@ public class ShoppingCart {
             entry.weight = scannedCode.getEmbeddedData();
         } else if(scannedCode.hasPriceData()){
             entry.price = scannedCode.getEmbeddedData();
-        } else if(scannedCode.hasAmountData()){
+        } else if(scannedCode.hasUnitData()){
             entry.amount = scannedCode.getEmbeddedData();
         }
     }
