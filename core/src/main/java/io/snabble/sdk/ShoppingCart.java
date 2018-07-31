@@ -27,6 +27,11 @@ public class ShoppingCart {
         private Integer price = null;
         private Integer amount = null;
 
+        // flag for products that have the quantity normally encoded in code
+        // but can still be modified in the cart because the initial amount was set by the user
+        // which happens when the amount of the original scanned code is 0
+        private boolean isZeroAmountProduct = false;
+
         private Entry(Product product, int quantity) {
             this.sku = product.getSku();
             this.product = product;
@@ -79,6 +84,10 @@ public class ShoppingCart {
         insert(product, items.size(), quantity, scannedCode);
     }
 
+    public void add(Product product, int quantity, ScannableCode scannedCode, boolean isZeroAmountProduct) {
+        insert(product, items.size(), quantity, scannedCode, isZeroAmountProduct);
+    }
+
     public void insert(Product product, int index) {
         insert(product, index, 1);
     }
@@ -91,20 +100,25 @@ public class ShoppingCart {
         insert(product, index, quantity, null);
     }
 
-    public void insert(Product product, int index, int quantity, ScannableCode scannedCode) {
+    public void insert(Product product, int index, int quantity, ScannableCode scannedCode, boolean isZeroAmountProduct) {
         Entry e = getEntryBySku(product.getSku());
 
-        if (e == null
+        if (e == null || scannedCode.hasUnitData()
                 || product.getType() == Product.Type.UserWeighed
                 || product.getType() == Product.Type.PreWeighed) {
             if(quantity > 0) {
                 Entry entry = new Entry(product, quantity);
                 setScannedCodeForEntry(entry, scannedCode);
+                entry.isZeroAmountProduct = isZeroAmountProduct;
                 addEntry(entry, index);
             }
         } else {
             setEntryQuantity(e, e.quantity + quantity);
         }
+    }
+
+    public void insert(Product product, int index, int quantity, ScannableCode scannedCode) {
+        insert(product, index, quantity, scannedCode, false);
     }
 
     public void setQuantity(int index, int quantity) {
@@ -119,7 +133,7 @@ public class ShoppingCart {
                 setScannedCodeForEntry(e, scannedCode);
             }
 
-            setEntryQuantity(e, quantity);
+             setEntryQuantity(e, quantity);
         }
     }
 
@@ -172,6 +186,11 @@ public class ShoppingCart {
         }
 
         return entry.scannedCode;
+    }
+
+    public boolean isZeroAmountProduct(int index) {
+        Entry entry = getEntry(index);
+        return entry != null && entry.isZeroAmountProduct;
     }
 
     public Integer getEmbeddedWeight(int index) {
@@ -298,6 +317,13 @@ public class ShoppingCart {
         }
     }
 
+    public void setScannedCode(int index, ScannableCode scannableCode) {
+        Entry e = getEntry(index);
+        if(e != null) {
+            setScannedCodeForEntry(e, scannableCode);
+        }
+    }
+
     private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode){
         entry.scannedCode = findCodeByScannedCode(entry.product, scannedCode);
 
@@ -308,6 +334,8 @@ public class ShoppingCart {
         } else if(scannedCode.hasUnitData()){
             entry.amount = scannedCode.getEmbeddedData();
         }
+
+        notifyQuantityChanged(this, entry.product);
     }
 
     // finds the code matching the code in the product if it was scanned with leading zeros

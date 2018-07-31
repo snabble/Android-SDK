@@ -47,6 +47,7 @@ class ProductApi {
     private static class ApiWeighing {
         private String[] weighedItemIds;
         private boolean weighByCustomer;
+        private String encodingUnit;
     }
 
     private Gson gson;
@@ -251,7 +252,11 @@ class ProductApi {
             if (apiProduct.weighing.weighByCustomer) {
                 builder.setType(Product.Type.UserWeighed);
             } else {
-                builder.setType(Product.Type.PreWeighed);
+                if("piece".equals(apiProduct.weighing.encodingUnit)) {
+                    builder.setType(Product.Type.Article);
+                } else {
+                    builder.setType(Product.Type.PreWeighed);
+                }
             }
         } else {
             builder.setType(Product.Type.Article);

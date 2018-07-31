@@ -37,6 +37,7 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
@@ -415,7 +416,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 switch (type) {
                     case Article:
                         if (embeddedAmount != null) {
-                            controlsDefault.setVisibility(View.GONE);
+                            if (cart.isZeroAmountProduct(position)) {
+                                controlsDefault.setVisibility(View.VISIBLE);
+                            } else {
+                                controlsDefault.setVisibility(View.GONE);
+                            }
+
                             controlsUserWeighed.setVisibility(View.GONE);
                         } else {
                             controlsDefault.setVisibility(View.VISIBLE);
@@ -423,7 +429,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         }
                         break;
                     case PreWeighed:
-                        controlsDefault.setVisibility(View.GONE);
+                        if (cart.isZeroAmountProduct(position)) {
+                            controlsDefault.setVisibility(View.VISIBLE);
+                        } else {
+                            controlsDefault.setVisibility(View.GONE);
+                        }
+
                         controlsUserWeighed.setVisibility(View.GONE);
                         break;
                     case UserWeighed:
@@ -435,7 +446,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 plus.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        cart.setQuantity(getAdapterPosition(), quantity + 1);
+                        int p = getAdapterPosition();
+
+                        if(cart.isZeroAmountProduct(p)){
+                            cart.setScannedCode(p,
+                                    EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getSdkInstance(),
+                                    cart.getScannedCode(p), embeddedAmount + 1));
+                        } else {
+                            cart.setQuantity(p, quantity + 1);
+                        }
+
                         recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
                     }
                 });
@@ -443,10 +463,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 minus.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        int p = getAdapterPosition();
+
                         String str = getResources().getString(
                                 R.string.Snabble_Shoppingcart_removeItem,
                                 product.getName());
-                        int q = quantity - 1;
+                        boolean isZeroAmountProduct = cart.isZeroAmountProduct(p);
+                        int q = isZeroAmountProduct ? embeddedAmount - 1 : quantity - 1;
                         if (q <= 0) {
                             new AlertDialog.Builder(getContext())
                                     .setMessage(str)
@@ -463,7 +486,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                                     .create()
                                     .show();
                         } else {
-                            cart.setQuantity(getAdapterPosition(), q);
+                            if(isZeroAmountProduct){
+                                cart.setScannedCode(p,
+                                        EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getSdkInstance(),
+                                                cart.getScannedCode(p), q));
+                            } else {
+                                cart.setQuantity(p, q);
+                            }
+
                             recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
                         }
                     }
