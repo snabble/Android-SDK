@@ -520,6 +520,10 @@ public class SnabbleSdk {
         return metadataDownloader.getUrls().get("productByCode");
     }
 
+    String getBundlesOfProductUrl() {
+        return metadataDownloader.getUrls().get("bundlesForSku");
+    }
+
     String getProductByWeighItemIdUrl() {
         return metadataDownloader.getUrls().get("productByWeighItemId");
     }

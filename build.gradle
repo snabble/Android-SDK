@@ -24,7 +24,7 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.8.18'
+        sdkVersion='0.8.19'
         versionCode=1
 
         compileSdkVersion=28
@@ -38,8 +38,6 @@ allprojects {
         sdkVersion += project.getProperties().get("versionSuffix", "")
     }
 }
-
-
 
 task clean(type: Delete) {
     delete rootProject.buildDir
