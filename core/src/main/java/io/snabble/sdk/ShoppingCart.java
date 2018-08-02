@@ -46,21 +46,21 @@ public class ShoppingCart {
     private List<Entry> items = new ArrayList<>();
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
     private transient Handler handler = new Handler(Looper.getMainLooper());
-    private transient SnabbleSdk sdkInstance;
+    private transient Project project;
 
     protected ShoppingCart() {
         //empty constructor for gson
     }
 
-    ShoppingCart(SnabbleSdk sdkInstance) {
+    ShoppingCart(Project project) {
         id = UUID.randomUUID().toString();
         updateTimestamp();
 
-        initWithSdkInstance(sdkInstance);
+        initWithProject(project);
     }
 
-    void initWithSdkInstance(SnabbleSdk sdkInstance) {
-        this.sdkInstance = sdkInstance;
+    void initWithProject(Project project) {
+        this.project = project;
         checkForTimeout();
     }
 
@@ -351,7 +351,7 @@ public class ShoppingCart {
 
         if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
             scannedCode = scannedCode.substring(1, scannedCode.length());
-            return findCodeByScannedCode(product, ScannableCode.parse(sdkInstance, scannedCode));
+            return findCodeByScannedCode(product, ScannableCode.parse(project, scannedCode));
         }
 
         return scannedCode;
@@ -385,13 +385,13 @@ public class ShoppingCart {
                 Product product = e.product;
 
                 if(e.weight != null){
-                    sum += product.getPriceForQuantity(e.weight, sdkInstance.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.weight, project.getRoundingMode());
                 } else if(e.price != null){
                     sum += e.price;
                 } else if(e.amount != null){
                     sum += product.getPrice() * e.amount;
                 } else {
-                    sum += product.getPriceForQuantity(e.quantity, sdkInstance.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.quantity, project.getRoundingMode());
                 }
             }
 
@@ -408,7 +408,7 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product depositProduct = e.product.getDepositProduct();
                 if(depositProduct != null){
-                    sum += depositProduct.getPriceForQuantity(e.quantity, sdkInstance.getRoundingMode());
+                    sum += depositProduct.getPriceForQuantity(e.quantity, project.getRoundingMode());
                 }
             }
 

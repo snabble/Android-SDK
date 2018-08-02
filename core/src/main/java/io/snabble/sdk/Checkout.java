@@ -149,7 +149,7 @@ public class Checkout {
 
     private static MediaType JSON = MediaType.parse("application/json");
 
-    private SnabbleSdk sdkInstance;
+    private Project sdkInstance;
     private OkHttpClient okHttpClient;
     private ShoppingCart shoppingCart;
     private Gson gson;
@@ -179,9 +179,9 @@ public class Checkout {
         }
     };
 
-    Checkout(SnabbleSdk sdkInstance) {
+    Checkout(Project sdkInstance) {
         this.sdkInstance = sdkInstance;
-        this.okHttpClient = sdkInstance.getOkHttpClient();
+        this.okHttpClient = Snabble.getInstance().getOkHttpClient();
         this.shoppingCart = sdkInstance.getShoppingCart();
 
         this.gson = new GsonBuilder().create();
@@ -204,7 +204,7 @@ public class Checkout {
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
             final Request request = new Request.Builder()
-                    .url(sdkInstance.absoluteUrl(checkoutProcess.getSelfLink()))
+                    .url(Snabble.getInstance().absoluteUrl(checkoutProcess.getSelfLink()))
                     .patch(RequestBody.create(JSON, "{\"aborted\":true}"))
                     .build();
 
@@ -288,7 +288,7 @@ public class Checkout {
 
         String json = sdkInstance.getEvents().getPayloadCartJson();
         final Request request = new Request.Builder()
-                .url(sdkInstance.absoluteUrl(checkoutUrl))
+                .url(Snabble.getInstance().absoluteUrl(checkoutUrl))
                 .post(RequestBody.create(JSON, json))
                 .build();
 
@@ -391,7 +391,7 @@ public class Checkout {
 
                 String json = gson.toJson(checkoutProcessRequest);
                 final Request request = new Request.Builder()
-                        .url(sdkInstance.absoluteUrl(url))
+                        .url(Snabble.getInstance().absoluteUrl(url))
                         .post(RequestBody.create(JSON, json))
                         .build();
 
@@ -459,7 +459,7 @@ public class Checkout {
         }
 
         final Request request = new Request.Builder()
-                .url(sdkInstance.absoluteUrl(url))
+                .url(Snabble.getInstance().absoluteUrl(url))
                 .get()
                 .build();
 

@@ -41,7 +41,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     private String lastQuery = "";
 
     public SearchableProductAdapter() {
-        this(SnabbleUI.getSdkInstance().getProductDatabase());
+        this(SnabbleUI.getProject().getProductDatabase());
     }
 
     public SearchableProductAdapter(ProductDatabase productDatabase) {

@@ -7,11 +7,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 class SnabbleAuthorizationInterceptor implements Interceptor {
-    private SnabbleSdk sdk;
     private String clientToken;
 
-    public SnabbleAuthorizationInterceptor(SnabbleSdk sdk, String clientToken) {
-        this.sdk = sdk;
+    public SnabbleAuthorizationInterceptor(String clientToken) {
         this.clientToken = clientToken;
     }
 
@@ -21,10 +19,10 @@ class SnabbleAuthorizationInterceptor implements Interceptor {
 
         String url = request.url().toString();
 
-        if (url.startsWith(sdk.getEndpointBaseUrl())) {
+        if (url.startsWith(Snabble.getInstance().getEndpointBaseUrl())) {
             request = request.newBuilder()
                     .addHeader("Client-Token", clientToken)
-                    .addHeader("Client-ID", sdk.getClientId())
+                    .addHeader("Client-ID", Snabble.getInstance().getClientId())
                     .build();
         }
 

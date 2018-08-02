@@ -25,7 +25,7 @@ import android.widget.TextView;
 import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
@@ -59,7 +59,7 @@ class ProductConfirmationDialog {
 
 
     public ProductConfirmationDialog(Context context,
-                                     SnabbleSdk sdkInstance) {
+                                     Project sdkInstance) {
         this.context = context;
         this.shoppingCart = sdkInstance.getShoppingCart();
         priceFormatter = new PriceFormatter(sdkInstance);
@@ -118,13 +118,13 @@ class ProductConfirmationDialog {
                 quantityAnnotation.setVisibility(View.VISIBLE);
                 quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
             } else if(scannedCode.hasPriceData()){
-                quantityAnnotation.setText(SnabbleUI.getSdkInstance().getCurrency().getSymbol());
+                quantityAnnotation.setText(SnabbleUI.getProject().getCurrency().getSymbol());
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
                 quantityAnnotation.setVisibility(View.GONE);
                 price.setVisibility(View.GONE);
 
-                PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getSdkInstance());
+                PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
                 quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
             } else if(scannedCode.hasUnitData()){
                 if(scannedCode.getEmbeddedData() == 0) {
@@ -258,7 +258,7 @@ class ProductConfirmationDialog {
     }
 
     private void updatePrice() {
-        RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
+        RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
 
         String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
                 roundingMode));
@@ -312,7 +312,7 @@ class ProductConfirmationDialog {
 
             // generate new code when the embedded data contains 0
             if (scannedCode.getEmbeddedData() == 0) {
-                scannedCode = EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getSdkInstance(),
+                scannedCode = EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
                         scannedCode.getCode(), getQuantity());
                 isZeroAmountProduct = true;
             }

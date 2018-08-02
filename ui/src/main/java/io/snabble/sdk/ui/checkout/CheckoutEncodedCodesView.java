@@ -15,7 +15,7 @@ import android.widget.TextView;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
@@ -30,7 +30,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     private ScrollView scrollView;
     private TextView explanationText;
     private TextView explanationText2;
-    private SnabbleSdk sdkInstance;
+    private Project sdkInstance;
     private int codeCount;
 
     public CheckoutEncodedCodesView(Context context) {
@@ -54,13 +54,13 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         scrollContainer = findViewById(R.id.scroll_container);
         scrollView = findViewById(R.id.scroll_view);
 
-        sdkInstance = SnabbleUI.getSdkInstance();
+        sdkInstance = SnabbleUI.getProject();
 
         Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+                Project sdkInstance = SnabbleUI.getProject();
                 sdkInstance.getCheckout().approveOfflineMethod();
 
                 SnabbleUICallback uiCallback = SnabbleUI.getUiCallback();
@@ -215,7 +215,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             if (stringBuilder.length() == 0) {
                 stringBuilder.append(sdkInstance.getEncodedCodesPrefix());
             } else {
-                stringBuilder.append(sdkInstance.getEncodedCodesSeperator());
+                stringBuilder.append(sdkInstance.getEncodedCodesSeparator());
             }
 
             stringBuilder.append(scannableCode);

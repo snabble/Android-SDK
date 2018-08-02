@@ -5,12 +5,12 @@ import java.text.NumberFormat;
 import java.util.Currency;
 
 import io.snabble.sdk.Product;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 
 public class PriceFormatter {
-    private SnabbleSdk sdkInstance;
+    private Project sdkInstance;
 
-    public PriceFormatter(SnabbleSdk sdkInstance) {
+    public PriceFormatter(Project sdkInstance) {
         this.sdkInstance = sdkInstance;
     }
 

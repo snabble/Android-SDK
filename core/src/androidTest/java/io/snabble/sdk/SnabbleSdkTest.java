@@ -32,7 +32,7 @@ public class SnabbleSdkTest {
     protected static final String projectId = "test-b6024ba";
     protected static final String metadataUrl = "/api/" + projectId + "/metadata/app/android/test/1.0";
 
-    protected SnabbleSdk snabbleSdk;
+    protected Project project;
     protected Context context;
     protected static MockWebServer mockWebServer;
 
@@ -97,12 +97,12 @@ public class SnabbleSdkTest {
     }
 
     @Before
-    public void setupSdk() throws SnabbleSdk.SnabbleException, IOException {
+    public void setupSdk() throws Project.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         setupSdkWithDb("testDb.sqlite3");
     }
 
-    public void setupSdkWithDb(String testDbName) throws IOException, SnabbleSdk.SnabbleException {
+    public void setupSdkWithDb(String testDbName) throws IOException, Project.SnabbleException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         productDbBuffer = new Buffer();
@@ -111,14 +111,14 @@ public class SnabbleSdkTest {
         FileUtils.deleteQuietly(context.getFilesDir());
         FileUtils.deleteQuietly(new File(context.getFilesDir().getParentFile(), "/databases/"));
 
-        final SnabbleSdk.Config config = new SnabbleSdk.Config();
+        final Project.Config config = new Project.Config();
         config.projectId = projectId;
         config.metadataUrl = metadataUrl;
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
         config.productDbName = testDbName;
         config.generateSearchIndex = true;
 
-        snabbleSdk = SnabbleSdk.setupBlocking((Application) context.getApplicationContext(), config);
+        project = Project.setupBlocking((Application) context.getApplicationContext(), config);
     }
 
     @After
@@ -129,14 +129,14 @@ public class SnabbleSdkTest {
 
     @Test
     public void testSdkInitialization() {
-        String endpointBaseUrl = snabbleSdk.getEndpointBaseUrl();
-        String metadataUrl = snabbleSdk.getMetadataUrl();
-        String appDbUrl = snabbleSdk.getAppDbUrl();
+        String endpointBaseUrl = project.getEndpointBaseUrl();
+        String metadataUrl = project.getMetadataUrl();
+        String appDbUrl = project.getAppDbUrl();
 
         Assert.assertNotNull(endpointBaseUrl);
         Assert.assertNotNull(metadataUrl);
         Assert.assertNotNull(appDbUrl);
-        Assert.assertTrue(snabbleSdk.getProductDatabase().getRevisionId() > 0);
-        Assert.assertTrue(snabbleSdk.getShops().length > 0);
+        Assert.assertTrue(project.getProductDatabase().getRevisionId() > 0);
+        Assert.assertTrue(project.getShops().length > 0);
     }
 }

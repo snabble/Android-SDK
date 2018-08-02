@@ -2,7 +2,7 @@ package io.snabble.sdk.codes;
 
 import java.io.Serializable;
 
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 
 public class ScannableCode implements Serializable {
     protected String code;
@@ -43,9 +43,9 @@ public class ScannableCode implements Serializable {
         return true;
     }
 
-    public static ScannableCode parse(SnabbleSdk snabbleSdk, String code) {
+    public static ScannableCode parse(Project project, String code) {
         if (EAN13.isEan13(code)) {
-            return new EAN13(code, snabbleSdk);
+            return new EAN13(code, project);
         } else if (EAN14.isEan14(code)) {
             return new EAN14(code);
         } else {

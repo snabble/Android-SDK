@@ -67,19 +67,18 @@ public class ProductDatabase {
     private int schemaVersionMinor;
     private boolean generateSearchIndex;
 
-    private SnabbleSdk sdk;
+    private Project sdk;
     private Application application;
     private ProductDatabaseDownloader productDatabaseDownloader;
 
     private Handler handler = new Handler(Looper.getMainLooper());
     private ProductApi productApi;
 
-    ProductDatabase(SnabbleSdk sdk,
+    ProductDatabase(Project project,
                     String name,
-                    Config config,
-                    final ProductDatabaseReadyListener productDatabaseReadyListener) {
-        this.sdk = sdk;
-        this.application = sdk.getApplication();
+                    Config config) {
+        this.sdk = project;
+        this.application = Snabble.getInstance().getApplication();
         this.dbName = name;
 
         if(config == null){
@@ -92,60 +91,34 @@ public class ProductDatabase {
         this.bundledSchemaVersionMinor = config.bundledSchemaVersionMinor;
         this.generateSearchIndex = config.generateSearchIndex;
 
-        this.productDatabaseDownloader = new ProductDatabaseDownloader(sdk, this);
-        this.productApi = new ProductApi(sdk);
+        this.productDatabaseDownloader = new ProductDatabaseDownloader(project, this);
+        this.productApi = new ProductApi(project);
 
         if(dbName != null) {
             File file = application.getDatabasePath(dbName);
 
             if (!file.exists()) {
                 if (bundledAssetPath != null) {
-                    if (!copyDbFromAssets()) {
-                        if (productDatabaseReadyListener != null) {
-                            productDatabaseReadyListener.onError(Error.INTERNAL_STORAGE_FULL);
-                        }
-                    }
+                    copyDbFromAssets();
                 }
             }
         } else {
             Logger.i("Product database is missing. Offline products are not available.");
         }
 
-        if (open(true)) {
-            if (productDatabaseReadyListener != null) {
-                productDatabaseReadyListener.onReady(this);
-            }
-        } else {
+        if (!open(true)) {
             if (dbName != null && config.autoUpdateIfMissing) {
                 revisionId = -1;
 
-                update(new UpdateCallback() {
-                    @Override
-                    public void success() {
-                        if (productDatabaseReadyListener != null) {
-                            productDatabaseReadyListener.onReady(ProductDatabase.this);
-                        }
-                    }
-
-                    @Override
-                    public void error() {
-                        if (productDatabaseReadyListener != null) {
-                            productDatabaseReadyListener.onError(Error.CONNECTION_TIMEOUT);
-                        }
-                    }
-                });
+                update();
             } else {
-                if (productDatabaseReadyListener != null) {
-                    productDatabaseReadyListener.onReady(ProductDatabase.this);
-                }
-
                 Logger.i("Product database is missing. Offline products are not available.");
             }
         }
     }
 
-    private ProductDatabase(SnabbleSdk sdk, String name){
-        this(sdk, name, null, null);
+    private ProductDatabase(Project sdk, String name){
+        this(sdk, name, null);
     }
 
     private boolean open(boolean allowCopyFromBundle) {
@@ -179,7 +152,7 @@ public class ProductDatabase {
                         || bundledSchemaVersionMinor > schemaVersionMinor);
 
                 String project = getMetaData(METADATA_KEY_PROJECT);
-                boolean isOtherProject = !sdk.getProjectId().equals(project);
+                boolean isOtherProject = !sdk.getId().equals(project);
 
                 if (allowCopyFromBundle && (revisionId < bundledRevisionId
                                 || bundleHasNewerSchema
@@ -193,7 +166,7 @@ public class ProductDatabase {
                                     bundledSchemaVersionMajor, bundledSchemaVersionMinor);
                         } else if (isOtherProject) {
                             Logger.d("Bundled product database has different projectId (%s -> %s)",
-                                    project, sdk.getProjectId());
+                                    project, sdk.getId());
                         } else {
                             Logger.d("Bundled product database is newer (%d -> %d)",
                                     revisionId, bundledRevisionId);
@@ -1244,18 +1217,6 @@ public class ProductDatabase {
      */
     public void removeOnDatabaseUpdateListener(OnDatabaseUpdateListener onDatabaseUpdateListener) {
         onDatabaseUpdateListeners.remove(onDatabaseUpdateListener);
-    }
-
-    enum Error {
-        INTERNAL_STORAGE_FULL,
-        CONNECTION_TIMEOUT,
-        DATABASE_MISSING,
-    }
-
-    interface ProductDatabaseReadyListener {
-        void onReady(ProductDatabase productDatabase);
-
-        void onError(Error error);
     }
 
     public interface OnDatabaseUpdateListener {

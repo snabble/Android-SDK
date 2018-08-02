@@ -18,6 +18,6 @@ public class CheckoutFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        SnabbleUI.getSdkInstance().getCheckout().cancel();
+        SnabbleUI.getProject().getCheckout().cancel();
     }
 }

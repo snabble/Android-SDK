@@ -6,7 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.Serializable;
 
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 
 public class EAN13 extends ScannableCode implements Serializable {
     private final static String[] germanPrintPrefixes = new String[] {
@@ -22,29 +22,29 @@ public class EAN13 extends ScannableCode implements Serializable {
     private boolean verifyInternalEanChecksum;
     private boolean useGermanPrintPrefix;
 
-    EAN13(String code, SnabbleSdk snabbleSdk) {
+    EAN13(String code, Project project) {
         super(code);
 
         if(!isEan13(code)){
             throw new IllegalArgumentException("Not a valid EAN13 code");
         }
 
-        verifyInternalEanChecksum = snabbleSdk.isVerifyingInternalEanChecksum();
-        useGermanPrintPrefix = snabbleSdk.isUsingGermanPrintPrefix();
+        verifyInternalEanChecksum = project.isVerifyingInternalEanChecksum();
+        useGermanPrintPrefix = project.isUsingGermanPrintPrefix();
 
-        for (String prefix : snabbleSdk.getWeighPrefixes()) {
+        for (String prefix : project.getWeighPrefixes()) {
             if (code.startsWith(prefix)) {
                 hasWeighData = true;
             }
         }
 
-        for (String prefix : snabbleSdk.getPricePrefixes()) {
+        for (String prefix : project.getPricePrefixes()) {
             if (code.startsWith(prefix)) {
                 hasPriceData = true;
             }
         }
 
-        for (String prefix : snabbleSdk.getUnitPrefixes()) {
+        for (String prefix : project.getUnitPrefixes()) {
             if (code.startsWith(prefix)) {
                 hasUnitData = true;
             }
@@ -123,7 +123,7 @@ public class EAN13 extends ScannableCode implements Serializable {
         return check == digit;
     }
 
-    public static EAN13 generateNewCodeWithEmbeddedData(SnabbleSdk sdkInstance,
+    public static EAN13 generateNewCodeWithEmbeddedData(Project sdkInstance,
                                                   String code,
                                                   int newEmbeddedData) {
         StringBuilder stringBuilder = new StringBuilder();

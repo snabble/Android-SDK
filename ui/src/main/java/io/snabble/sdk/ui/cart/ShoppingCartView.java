@@ -35,8 +35,8 @@ import java.math.RoundingMode;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.SnabbleSdk;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
@@ -165,7 +165,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         createItemTouchHelper();
 
-        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+        Project sdkInstance = SnabbleUI.getProject();
 
         if (cart != null) {
             cart.removeListener(shoppingCartListener);
@@ -222,7 +222,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getSdkInstance(), scannedCode);
+                        ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getProject(), scannedCode);
                         cart.insert(product, pos, quantity, parsedCode);
                         recyclerView.getAdapter().notifyDataSetChanged();
                         Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
@@ -372,7 +372,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             final Integer embeddedPrice = cart.getEmbeddedPrice(position);
             final Integer embeddedAmount = cart.getEmbeddedUnits(position);
             final Integer embeddedWeight = cart.getEmbeddedWeight(position);
-            RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
+            RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
 
             if (product != null) {
                 Product.Type type = product.getType();
@@ -450,7 +450,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                         if(cart.isZeroAmountProduct(p)){
                             cart.setScannedCode(p,
-                                    EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getSdkInstance(),
+                                    EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
                                     cart.getScannedCode(p), embeddedAmount + 1));
                         } else {
                             cart.setQuantity(p, quantity + 1);
@@ -488,7 +488,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         } else {
                             if(isZeroAmountProduct){
                                 cart.setScannedCode(p,
-                                        EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getSdkInstance(),
+                                        EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
                                                 cart.getScannedCode(p), q));
                             } else {
                                 cart.setQuantity(p, q);
@@ -607,7 +607,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
 
         public void update() {
-            PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getSdkInstance());
+            PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
             String depositText = priceFormatter.format(cart.getTotalDepositPrice());
             deposit.setText(depositText);
         }

@@ -27,7 +27,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 class Events {
-    private SnabbleSdk sdkInstance;
+    private Project sdkInstance;
     private Gson gson;
 
     private String cartId;
@@ -39,7 +39,7 @@ class Events {
     private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
-    public Events(SnabbleSdk sdkInstance) {
+    public Events(Project sdkInstance) {
         this.sdkInstance = sdkInstance;
         this.gson = new GsonBuilder().create();
 
@@ -59,7 +59,7 @@ class Events {
             }
         });
 
-        sdkInstance.getApplication().registerActivityLifecycleCallbacks(new SimpleActivityLifecycleCallbacks() {
+        Snabble.getInstance().getApplication().registerActivityLifecycleCallbacks(new SimpleActivityLifecycleCallbacks() {
             @Override
             public void onActivityResumed(Activity activity) {
                 isResumed = true;
@@ -112,8 +112,8 @@ class Events {
 
         Event event = new Event();
         event.type = payload.getEventType();
-        event.appId = sdkInstance.getClientId();
-        event.project = sdkInstance.getProjectId();
+        event.appId = Snabble.getInstance().getClientId();
+        event.project = sdkInstance.getId();
         event.shopId = shop.getId();
         event.timestamp = simpleDateFormat.format(new Date());
         event.payload = gson.toJsonTree(payload);
@@ -128,7 +128,7 @@ class Events {
         handler.postAtTime(new Runnable() {
             @Override
             public void run() {
-                OkHttpClient okHttpClient = sdkInstance.getOkHttpClient();
+                OkHttpClient okHttpClient = Snabble.getInstance().getOkHttpClient();
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) {

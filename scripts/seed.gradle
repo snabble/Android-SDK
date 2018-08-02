@@ -6,16 +6,16 @@ if(localFile.exists()) {
     properties.load(localFile.newDataInputStream())
 
     ext.endpoint = properties.getProperty('snabble.endpoint')
-    ext.projectId = properties.getProperty('snabble.projectId')
+    ext.appId = properties.getProperty('snabble.appId')
     ext.clientToken = properties.getProperty('snabble.clientToken')
 } else {
     ext.endpoint = "https://api.snabble-testing.io"
-    ext.projectId = "demo"
+    ext.appId = ""
     ext.clientToken = "<no-token-set>"
 }
 
-ext.metadataUrl = "/api/${project.projectId}/metadata/app/android/testapp"
 ext.appVersion = '1.0'
+ext.metadataUrl = "/metadata/app/${project.appId}/android/${ext.appVersion}"
 
 task updateBundledData(
         group: 'seed',
@@ -41,11 +41,6 @@ def downloadBundledData() {
             "${project.endpoint}${project.metadataUrl}",
             'src/main/assets/'
     )
-
-    downloadProductDb(
-            "${project.endpoint}/api/${project.projectId}/appdb",
-            'src/main/assets/'
-    )
 }
 
 def downloadMetadata(source, destination) {
@@ -61,29 +56,29 @@ def downloadMetadata(source, destination) {
     }
 }
 
-def downloadProductDb(source, destination){
-    download {
-        src source
-        dest destination + "products.sqlite3"
-
-        requestInterceptor = { request, context ->
-            request.addHeader("Client-Token", project.clientToken)
-        }
-    }
-
-    def db = openSQLiteDatabase(file(destination + "products.sqlite3"))
-    db.eachRow("SELECT value FROM metadata WHERE key = 'schemaVersionMajor'") { row ->
-        def productRevision = file(destination + 'products.major')
-        productRevision.text = row.getString(1)
-    }
-
-    db.eachRow("SELECT value FROM metadata WHERE key = 'schemaVersionMinor'") { row ->
-        def productRevision = file(destination + 'products.minor')
-        productRevision.text = row.getString(1)
-    }
-
-    db.eachRow("SELECT value FROM metadata WHERE key = 'revision'") { row ->
-        def productRevision = file(destination + 'products.revision')
-        productRevision.text = row.getString(1)
-    }
-}
+//def downloadProductDb(source, destination){
+//    download {
+//        src source
+//        dest destination + "products.sqlite3"
+//
+//        requestInterceptor = { request, context ->
+//            request.addHeader("Client-Token", project.clientToken)
+//        }
+//    }
+//
+//    def db = openSQLiteDatabase(file(destination + "products.sqlite3"))
+//    db.eachRow("SELECT value FROM metadata WHERE key = 'schemaVersionMajor'") { row ->
+//        def productRevision = file(destination + 'products.major')
+//        productRevision.text = row.getString(1)
+//    }
+//
+//    db.eachRow("SELECT value FROM metadata WHERE key = 'schemaVersionMinor'") { row ->
+//        def productRevision = file(destination + 'products.minor')
+//        productRevision.text = row.getString(1)
+//    }
+//
+//    db.eachRow("SELECT value FROM metadata WHERE key = 'revision'") { row ->
+//        def productRevision = file(destination + 'products.revision')
+//        productRevision.text = row.getString(1)
+//    }
+//}

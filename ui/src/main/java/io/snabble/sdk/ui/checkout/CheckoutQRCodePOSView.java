@@ -6,8 +6,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import io.snabble.sdk.Checkout;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -40,11 +39,11 @@ class CheckoutQRCodePOSView extends FrameLayout {
         findViewById(R.id.abort).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SnabbleUI.getSdkInstance().getCheckout().cancel();
+                SnabbleUI.getProject().getCheckout().cancel();
             }
         });
 
-        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+        Project sdkInstance = SnabbleUI.getProject();
 
         PriceFormatter priceFormatter = new PriceFormatter(sdkInstance);
         String formattedAmount = priceFormatter.format(sdkInstance.getCheckout().getPriceToPay());

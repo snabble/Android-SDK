@@ -27,7 +27,7 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -70,7 +70,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private void inflateView() {
         inflate(getContext(), R.layout.view_self_scanning, this);
 
-        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+        Project sdkInstance = SnabbleUI.getProject();
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
@@ -217,7 +217,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getSdkInstance(), barcode.getText()));
+            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()));
         }
     }
 
@@ -283,7 +283,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setPositiveButton(R.string.Snabble_Done, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getSdkInstance(),
+                                lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(),
                                         input.getText().toString()));
                             }
                         })
@@ -327,7 +327,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
                 String[] codes = product.getScannableCodes();
                 if(codes.length > 0) {
-                    showProduct(product, ScannableCode.parse(SnabbleUI.getSdkInstance(), codes[0]));
+                    showProduct(product, ScannableCode.parse(SnabbleUI.getProject(), codes[0]));
                 }
             }
 

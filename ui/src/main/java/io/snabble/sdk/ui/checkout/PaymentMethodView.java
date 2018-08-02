@@ -24,7 +24,7 @@ import java.util.Map;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -67,7 +67,7 @@ class PaymentMethodView extends FrameLayout {
         descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.Snabble_PaymentMethod_encodedCodes));
         descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
 
-        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+        Project sdkInstance = SnabbleUI.getProject();
         checkout = sdkInstance.getCheckout();
         availablePaymentMethods = new ArrayList<>();
 

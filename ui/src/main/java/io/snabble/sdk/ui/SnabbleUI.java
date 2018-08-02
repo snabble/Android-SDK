@@ -1,25 +1,19 @@
 package io.snabble.sdk.ui;
 
 
-import android.app.Application;
-
-import java.lang.ref.WeakReference;
-
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.utils.Logger;
 
 public class SnabbleUI {
-    private static SnabbleSdk sdkInstance;
+    private static Project project;
     private static SnabbleUICallback uiCallback;
 
     /**
-     * Registers a globally used sdk instance for use with views.
+     * Registers a globally used project for use with views.
      * <p>
-     * Should be called in the {@link SnabbleSdk#setup(Application, SnabbleSdk.Config,
-     * SnabbleSdk.SetupCompletionListener)} callback.
      */
-    public static void registerSdkInstance(SnabbleSdk sdkInstance) {
-        SnabbleUI.sdkInstance = sdkInstance;
+    public static void registerProject(Project sdkInstance) {
+        SnabbleUI.project = sdkInstance;
     }
 
     /**
@@ -51,12 +45,12 @@ public class SnabbleUI {
         return uiCallback;
     }
 
-    public static SnabbleSdk getSdkInstance() {
-        if (sdkInstance == null) {
-            throw new RuntimeException("No SnabbleSdk instance set." +
-                    " Use SnabbleUI.registerSdkInstance after Sdk initialization.");
+    public static Project getProject() {
+        if (project == null) {
+            throw new RuntimeException("No Project instance set." +
+                    " Use SnabbleUI.registerProject after SDK initialization.");
         }
 
-        return sdkInstance;
+        return project;
     }
 }

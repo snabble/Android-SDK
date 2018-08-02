@@ -65,13 +65,13 @@ class ProductApi {
     }
 
     private Gson gson;
-    private SnabbleSdk sdkInstance;
+    private Project sdkInstance;
     private OkHttpClient okHttpClient;
     private Handler handler;
 
-    ProductApi(SnabbleSdk sdkInstance) {
+    ProductApi(Project sdkInstance) {
         this.sdkInstance = sdkInstance;
-        this.okHttpClient = sdkInstance.getOkHttpClient();
+        this.okHttpClient = Snabble.getInstance().getOkHttpClient();
         this.gson = new GsonBuilder().create();
         this.handler = new Handler(Looper.getMainLooper());
     }
@@ -160,7 +160,7 @@ class ProductApi {
         url = url.replace("{bundledSku}", sku);
 
         final Request request = new Request.Builder()
-                .url(sdkInstance.absoluteUrl(url))
+                .url(Snabble.getInstance().absoluteUrl(url))
                 .get()
                 .build();
 
@@ -255,7 +255,7 @@ class ProductApi {
 
     private void get(final String url, final OnProductAvailableListener productAvailableListener) {
         final Request request = new Request.Builder()
-                .url(sdkInstance.absoluteUrl(url))
+                .url(Snabble.getInstance().absoluteUrl(url))
                 .get()
                 .build();
 

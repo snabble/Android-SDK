@@ -31,7 +31,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testAllPromotionsQuery() throws Throwable {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getDiscountedProducts();
         assertTrue(products.length == 2);
         assertEquals(products[0].getSku(), "1");
@@ -42,7 +42,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testBoostedPromotionsQuery() throws Throwable {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getBoostedProducts(2);
         assertTrue(products.length == 2);
         assertEquals(products[0].getSku(), "2");
@@ -54,10 +54,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testTextSearch() throws IOException, SnabbleSdk.SnabbleException {
+    public void testTextSearch() throws IOException, Project.SnabbleException {
         setupSdkWithDb("demoDb_1_6.sqlite3");
 
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
         cursor.moveToFirst();
         Product product = productDatabase.productAtCursor(cursor);
@@ -71,10 +71,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testTextSearchNoFTS() throws IOException, SnabbleSdk.SnabbleException {
+    public void testTextSearchNoFTS() throws IOException, Project.SnabbleException {
         setupSdkWithDb("demoDb_1_6_no_fts.sqlite3");
 
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
         cursor.moveToFirst();
         Product product = productDatabase.productAtCursor(cursor);
@@ -89,7 +89,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testCodeSearch() {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByCode("402550", null);
         cursor.moveToFirst();
         Product product = productDatabase.productAtCursor(cursor);
@@ -104,7 +104,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testMultipleResultsAreDistinct() {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByCode("5", null);
         Set<Product> set = new HashSet<>();
         while(cursor.moveToNext()){
@@ -119,7 +119,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindByCode() {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findByCode("4025500133627");
         Product product2 = productDatabase.findByCode("2");
         Product product3 = productDatabase.findByCode("000000000000004025500133627");
@@ -135,7 +135,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindBySku() {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("1");
         assertEquals(product.getSku(), "1");
         assertEquals(product.getName(), "Müllermilch Banane 0,4l");
@@ -145,10 +145,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testSaleRestriction() throws IOException, SnabbleSdk.SnabbleException {
+    public void testSaleRestriction() throws IOException, Project.SnabbleException {
         setupSdkWithDb("demoDb_1_6.sqlite3");
 
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("1");
         assertEquals(product.getSaleRestriction(), Product.SaleRestriction.NONE);
 
@@ -157,10 +157,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testSaleStop() throws IOException, SnabbleSdk.SnabbleException {
+    public void testSaleStop() throws IOException, Project.SnabbleException {
         setupSdkWithDb("demoDb_1_6.sqlite3");
 
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("1");
         assertEquals(product.getSaleStop(), false);
 
@@ -170,7 +170,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindBySkuOnline() {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         final Product product = findBySkuBlocking(productDatabase, "online1");
         assertEquals(product.getSku(), "online1");
 
@@ -215,7 +215,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindByMultipleSkus() {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.findBySkus("1", "2", "asdf1234");
 
         assertEquals(products.length, 2);
@@ -230,7 +230,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindByWeighItemId() {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findByWeighItemId("2810540000000");
         assertEquals(product.getSku(), "3");
         assertEquals(product.getName(), "Äpfel");
@@ -241,7 +241,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testApplyChangeSet() throws IOException {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         String changeSet = "UPDATE prices SET discountedPrice=59 WHERE sku=1;\n\n" +
                 "DELETE FROM prices WHERE sku=3;\n\n" +
                 "DELETE FROM products WHERE sku=3;\n\n" +
@@ -257,7 +257,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testApplyChangeSetWithNewLineAtEnd() throws IOException {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         String changeSet = "UPDATE prices SET discountedPrice=59 WHERE sku=1;\n\n" +
                 "DELETE FROM prices WHERE sku=3;\n\n" +
                 "DELETE FROM products WHERE sku=3;\n\n" +
@@ -273,7 +273,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testApplyChangeSetInvalidDoesNotModifyDb() throws IOException {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         String changeSet = "UPDATE prices SET discountedPrice=59 WHERE sku=1;\n\n" +
                 "DELETE FROM pricesASDF WHER!E sku=3;\n\n" +
                 "DELETE FROM products WHERE???? sku=3;\n\n" +
@@ -291,7 +291,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFullUpdate() throws IOException {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         productDatabase.applyFullUpdate(context.getAssets().open("testUpdateDb.sqlite3"));
 
         Product product = productDatabase.findBySku("1");
@@ -303,7 +303,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFullUpdateDoesNotModifyOnCorruptedFile() throws IOException {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         byte[] bytes = IOUtils.toByteArray(context.getAssets().open("testUpdateDb.sqlite3"));
         for (int i = 0; i < bytes.length; i++) {
             if (i % 4 == 0) {
@@ -322,7 +322,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFullUpdateDoesNotModifyOnWrongMajorVersion() throws IOException {
-        ProductDatabase productDatabase = snabbleSdk.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
         InputStream is = context.getResources().getAssets().open("testUpdateDb.sqlite3");
         File outputFile = context.getDatabasePath("testUpdateDb.sqlite3");
         FileOutputStream fos = new FileOutputStream(outputFile);
