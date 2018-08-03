@@ -343,9 +343,6 @@ public class Project {
 
     /**
      * Sets the customer loyalty card number for user identification with the backend.
-     * <p>
-     * Setting this causes the metadata to be updated and it may contain different
-     * information then before. (e.g. Feature-toggle flags, different URL's)
      */
     public void setLoyaltyCardId(String loyaltyCardId) {
         this.loyaltyCardId = loyaltyCardId;
@@ -361,5 +358,4 @@ public class Project {
             getShoppingCart().checkForTimeout();
         }
     };
-
 }

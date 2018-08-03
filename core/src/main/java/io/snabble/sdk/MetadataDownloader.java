@@ -14,16 +14,15 @@ class MetadataDownloader extends StringDownloader {
 
     public MetadataDownloader(String bundledFileAssetPath) {
         super(Snabble.getInstance().getOkHttpClient());
+        gson = new Gson();
 
-        File storageFile = new File(Snabble.getInstance().getInternalStorageDirectory(), "metadata.json");
+        File storageFile = new File(Snabble.getInstance().getInternalStorageDirectory(), "metadata_v2.json");
 
         if (bundledFileAssetPath != null) {
             setBundledData(Snabble.getInstance().getApplication(), bundledFileAssetPath, storageFile);
         } else {
             setStorageFile(storageFile);
         }
-
-        gson = new Gson();
 
         setUrl(Snabble.getInstance().getMetadataUrl());
     }

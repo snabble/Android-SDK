@@ -823,7 +823,7 @@ public class ProductDatabase {
     }
 
     public boolean isAvailableOffline() {
-        return db != null;
+        return db != null && isUpToDate();
     }
 
     public boolean isUpToDate() {
