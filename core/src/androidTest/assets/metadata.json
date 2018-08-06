@@ -62,11 +62,6 @@
           "externalId": null,
           "id": "8",
           "lat": 50.7352963,
-          "links": {
-            "self": {
-              "href": "https://api.snabble-testing.io/test/shops/8"
-            }
-          },
           "lon": 7.1001417,
           "name": "snabble GmbH",
           "openingHoursSpecification": [],
