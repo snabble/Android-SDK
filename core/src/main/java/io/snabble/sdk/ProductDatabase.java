@@ -40,15 +40,6 @@ public class ProductDatabase {
     private static final String METADATA_KEY_PROJECT = "project";
     private static final String METADATA_KEY_LAST_UPDATE_TIMESTAMP = "app_lastUpdateTimestamp";
 
-    public static class Config {
-        String bundledAssetPath;
-        long bundledRevisionId;
-        int bundledSchemaVersionMajor;
-        int bundledSchemaVersionMinor;
-        boolean autoUpdateIfMissing;
-        boolean generateSearchIndex;
-    }
-
     private SQLiteDatabase db;
     private Product.Type[] productTypes = Product.Type.values();
 
@@ -56,10 +47,6 @@ public class ProductDatabase {
 
     private final Object dbLock = new Object();
     private String dbName;
-    private String bundledAssetPath;
-    private long bundledRevisionId;
-    private int bundledSchemaVersionMajor;
-    private int bundledSchemaVersionMinor;
 
     private List<OnDatabaseUpdateListener> onDatabaseUpdateListeners = new CopyOnWriteArrayList<>();
     private Date lastUpdateDate;
@@ -74,54 +61,26 @@ public class ProductDatabase {
     private Handler handler = new Handler(Looper.getMainLooper());
     private ProductApi productApi;
 
-    ProductDatabase(Project project,
-                    String name,
-                    Config config) {
+    ProductDatabase(Project project, String name, boolean generateSearchIndex) {
         this.sdk = project;
         this.application = Snabble.getInstance().getApplication();
         this.dbName = name;
 
-        if(config == null){
-            config = new Config();
-        }
-
-        this.bundledAssetPath = config.bundledAssetPath;
-        this.bundledRevisionId = config.bundledRevisionId;
-        this.bundledSchemaVersionMajor = config.bundledSchemaVersionMajor;
-        this.bundledSchemaVersionMinor = config.bundledSchemaVersionMinor;
-        this.generateSearchIndex = config.generateSearchIndex;
+        this.generateSearchIndex = generateSearchIndex;
 
         this.productDatabaseDownloader = new ProductDatabaseDownloader(project, this);
         this.productApi = new ProductApi(project);
 
-        if(dbName != null) {
-            File file = application.getDatabasePath(dbName);
-
-            if (!file.exists()) {
-                if (bundledAssetPath != null) {
-                    copyDbFromAssets();
-                }
-            }
-        } else {
+        if (!open()) {
             Logger.i("Product database is missing. Offline products are not available.");
-        }
-
-        if (!open(true)) {
-            if (dbName != null && config.autoUpdateIfMissing) {
-                revisionId = -1;
-
-                update();
-            } else {
-                Logger.i("Product database is missing. Offline products are not available.");
-            }
         }
     }
 
     private ProductDatabase(Project sdk, String name){
-        this(sdk, name, null);
+        this(sdk, name, false);
     }
 
-    private boolean open(boolean allowCopyFromBundle) {
+    private boolean open() {
         if(dbName == null){
             return true;
         }
@@ -130,6 +89,10 @@ public class ProductDatabase {
             File file = application.getDatabasePath(dbName);
 
             try {
+                if(!file.exists()) {
+                    return false;
+                }
+
                 db = SQLiteDatabase.openDatabase(file.getAbsolutePath(),
                         null, SQLiteDatabase.OPEN_READWRITE);
                 // since Android 9 the default WAL mode is "normal" instead of "full"
@@ -146,43 +109,6 @@ public class ProductDatabase {
                 schemaVersionMajor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MAJOR));
                 schemaVersionMinor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MINOR));
 
-                boolean bundleHasNewerSchema = bundledSchemaVersionMajor != -1
-                        && bundledSchemaVersionMinor != -1
-                        && (bundledSchemaVersionMajor > schemaVersionMajor
-                        || bundledSchemaVersionMinor > schemaVersionMinor);
-
-                String project = getMetaData(METADATA_KEY_PROJECT);
-                boolean isOtherProject = !sdk.getId().equals(project);
-
-                if (allowCopyFromBundle && (revisionId < bundledRevisionId
-                                || bundleHasNewerSchema
-                                || isOtherProject)) {
-                    close();
-
-                    if (copyDbFromAssets()) {
-                        if (bundleHasNewerSchema) {
-                            Logger.d("Bundled product database has newer schema (%d.%d -> %d.%d)",
-                                    schemaVersionMajor, schemaVersionMinor,
-                                    bundledSchemaVersionMajor, bundledSchemaVersionMinor);
-                        } else if (isOtherProject) {
-                            Logger.d("Bundled product database has different projectId (%s -> %s)",
-                                    project, sdk.getId());
-                        } else {
-                            Logger.d("Bundled product database is newer (%d -> %d)",
-                                    revisionId, bundledRevisionId);
-                        }
-
-                        open(false);
-                    } else {
-                        close();
-                        return false;
-                    }
-                } else {
-                    Logger.d("Loaded product database revision %d, schema version %d.%d, %s",
-                            revisionId, schemaVersionMajor, schemaVersionMinor,
-                            Formatter.formatFileSize(application, size()));
-                }
-
                 createFTSIndexIfNecessary();
                 parseLastUpdateTimestamp();
                 return true;
@@ -197,6 +123,64 @@ public class ProductDatabase {
             if (db != null) {
                 db.close();
             }
+        }
+    }
+
+    /**
+     * Loads the a database from a file located int the assets folder.
+     *
+     * If the loaded database is older then the one currently used, nothing will happen.
+     *
+     * Make sure to provide the correct revision, major or minor, or else the database may be copied
+     * even if its older then the one currently used.
+     */
+    public void loadDatabaseBundle(String assetPath, long revision, int major, int minor) {
+        try {
+            loadDatabaseBundle(application.getResources().getAssets().open(assetPath), revision, major, minor);
+        } catch (IOException e) {
+            Logger.e("Could load database from bundle: " + e.toString());
+        }
+    }
+
+    /**
+     * Loads the a database from an InputStream.
+     *
+     * If the loaded database is older then the one currently used, nothing will happen.
+     *
+     * Make sure to provide the correct revision, major or minor, or else the database may be copied
+     * even if its older then the one currently used.
+     */
+    public void loadDatabaseBundle(InputStream inputStream, long revision, int major, int minor) {
+        boolean bundleHasNewerSchema = major != -1 && minor != -1
+                && (major > schemaVersionMajor || minor > schemaVersionMinor);
+
+        String project = getMetaData(METADATA_KEY_PROJECT);
+        boolean isOtherProject = !sdk.getId().equals(project);
+
+        if (revisionId < revision || bundleHasNewerSchema || isOtherProject) {
+            close();
+
+            if (copyDb(inputStream)) {
+                if (bundleHasNewerSchema) {
+                    Logger.d("Bundled product database has newer schema (%d.%d -> %d.%d)",
+                            schemaVersionMajor, schemaVersionMinor,
+                            major, minor);
+                } else if (isOtherProject) {
+                    Logger.d("Bundled product database has different projectId (%s -> %s)",
+                            project, sdk.getId());
+                } else {
+                    Logger.d("Bundled product database is newer (%d -> %d)",
+                            revisionId, revision);
+                }
+            } else {
+                Logger.e("Could not copy database from assets");
+            }
+
+            open();
+        } else {
+            Logger.d("Loaded product database revision %d, schema version %d.%d, %s",
+                    revisionId, schemaVersionMajor, schemaVersionMinor,
+                    Formatter.formatFileSize(application, size()));
         }
     }
 
@@ -620,7 +604,7 @@ public class ProductDatabase {
 
         ProductDatabase otherDb = new ProductDatabase(sdk, otherDbFile.getName());
         try {
-            otherDb.open(false);
+            otherDb.open();
 
             if (!otherDb.verify()) {
                 ok = false;
@@ -632,8 +616,7 @@ public class ProductDatabase {
         otherDb.close();
 
         if (!ok) {
-            Logger.e("Could not swap database: " +
-                    "malformed database or unknown schema version");
+            Logger.e("Could not swap database: malformed database or unknown schema version");
             application.deleteDatabase(otherDbFile.getName());
             return;
         }
@@ -650,19 +633,13 @@ public class ProductDatabase {
 
             boolean openOk;
             try {
-                openOk = open(false);
+                openOk = open();
             } catch (SQLiteException e) {
                 openOk = false;
             }
 
             if (!openOk) {
-                Logger.e("Could not open database after applying full update");
-                Logger.d("Recovering from database in assets");
-
-                close();
-                application.deleteDatabase(dbName);
-                copyDbFromAssets();
-                open(false);
+                Logger.e("Could not open database after applying full update, falling back to online only mode");
             }
         }
     }
@@ -688,20 +665,19 @@ public class ProductDatabase {
         return true;
     }
 
-    private boolean copyDbFromAssets() {
-        if (dbName == null || bundledAssetPath == null) {
+    private boolean copyDb(InputStream inputStream) {
+        if (dbName == null || inputStream == null) {
             return false;
         }
 
         long time = SystemClock.elapsedRealtime();
 
         try {
-            InputStream is = application.getResources().getAssets().open(bundledAssetPath);
             File outputFile = application.getDatabasePath(dbName);
             //noinspection ResultOfMethodCallIgnored
             outputFile.getParentFile().mkdirs();
             FileOutputStream fos = new FileOutputStream(outputFile);
-            IOUtils.copy(is, fos);
+            IOUtils.copy(inputStream, fos);
         } catch (IOException e) {
             return false;
         }
@@ -823,7 +799,7 @@ public class ProductDatabase {
     }
 
     public boolean isAvailableOffline() {
-        return db != null && isUpToDate();
+        return db != null;
     }
 
     public boolean isUpToDate() {

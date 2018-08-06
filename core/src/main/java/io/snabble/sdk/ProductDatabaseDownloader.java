@@ -16,11 +16,11 @@ class ProductDatabaseDownloader extends Downloader {
     private boolean sameRevision;
     private boolean deltaUpdateOnly;
 
-    public ProductDatabaseDownloader(Project sdk,
+    public ProductDatabaseDownloader(Project project,
                                      ProductDatabase productDatabase) {
-        super(Snabble.getInstance().getOkHttpClient());
+        super(project.getOkHttpClient());
 
-        this.sdk = sdk;
+        this.sdk = project;
         this.productDatabase = productDatabase;
     }
 

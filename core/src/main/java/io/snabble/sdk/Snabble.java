@@ -18,19 +18,19 @@ import java.util.concurrent.CountDownLatch;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import io.snabble.sdk.auth.TokenRegistry;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public class Snabble {
     private static Snabble instance = new Snabble();
 
     private List<Project> projects;
     private OkHttpClient okHttpClient;
+    private TokenRegistry tokenRegistry;
     private Application application;
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
@@ -46,9 +46,16 @@ public class Snabble {
     public void setup(Application app, Config config, final SetupCompletionListener setupCompletionListener) {
         this.application = app;
         this.config = config;
-        createOkHttpClient();
 
-        this.userPreferences = new UserPreferences(app);
+        if(config.appId == null || config.secret == null) {
+            setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
+            return;
+        }
+
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
+        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
+
+        userPreferences = new UserPreferences(app);
 
         internalStorageDirectory = new File(application.getFilesDir(), "snabble/" + config.appId + "/");
         //noinspection ResultOfMethodCallIgnored
@@ -67,20 +74,24 @@ public class Snabble {
             config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
         }
 
-        String version;
+        String version = config.versionName;
 
-        try {
-            PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
-            version = pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            version = "0.1";
+        if(version == null) {
+            try {
+                PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
+                if (pInfo != null && pInfo.versionName != null) {
+                    version = pInfo.versionName.toLowerCase().replace(" ", "");
+                } else {
+                    version = "1.0";
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                version = "1.0";
+            }
         }
-
-        version = version.toLowerCase().replace(" ", "");
 
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
 
-        this.metadataDownloader = new MetadataDownloader(config.bundledMetadataAssetPath);
+        this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
 
         if (config.bundledMetadataAssetPath != null) {
             readMetadata();
@@ -108,15 +119,18 @@ public class Snabble {
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
 
-    // TODO alternative name
-    public boolean shouldKillApp() {
+    /**
+     * Return true when the SDK is not compatible with the backend anymore and the app should
+     * notify the user that it will not function anymore.
+     */
+    public boolean isOutdatedSDK() {
         JsonObject jsonObject = metadataDownloader.getJsonObject();
         return jsonObject.has("metadata") && JsonUtils.getBooleanOpt(jsonObject, "metadata", false);
     }
 
     private void readMetadata() {
         JsonObject jsonObject = metadataDownloader.getJsonObject();
-        if(jsonObject.has("projects")) {
+        if(jsonObject != null && jsonObject.has("projects")) {
             JsonArray jsonArray = jsonObject.get("projects").getAsJsonArray();
             List<Project> newProjects = new ArrayList<>();
 
@@ -158,8 +172,8 @@ public class Snabble {
         return application;
     }
 
-    OkHttpClient getOkHttpClient() {
-        return okHttpClient;
+    TokenRegistry getTokenRegistry() {
+        return tokenRegistry;
     }
 
     public List<Project> getProjects() {
@@ -172,8 +186,8 @@ public class Snabble {
      * Blocks until every initialization is completed, that includes waiting for necessary
      * network calls if bundled data is not provided.
      * <p>
-     * If all needed bundled data is provided (See {@link Project.Config}), initialization requires
-     * no network calls and returns after initialization of the product database.
+     * If all needed bundled data is provided (See {@link Config}), initialization requires
+     * no network calls.
      *
      * @throws SnabbleException If an error occurs while initializing the sdk.
      */
@@ -203,36 +217,6 @@ public class Snabble {
         if (snabbleError[0] != null) {
             throw new SnabbleException(snabbleError[0]);
         }
-    }
-
-    private void createOkHttpClient() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-
-        builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
-
-        builder.retryOnConnectionFailure(true);
-
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
-                new HttpLoggingInterceptor.Logger() {
-                    @Override
-                    public void log(String message) {
-                        Logger.i(message);
-                    }
-                });
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        builder.addInterceptor(logging);
-
-        if (config.clientToken != null) {
-            builder.addInterceptor(new SnabbleAuthorizationInterceptor(config.clientToken));
-        }
-
-        builder.addInterceptor(new UserAgentInterceptor(application));
-
-        if(config.sslSocketFactory != null && config.x509TrustManager != null) {
-            builder.sslSocketFactory(config.sslSocketFactory, config.x509TrustManager);
-        }
-
-        okHttpClient = builder.build();
     }
 
     public static String getVersion() {
@@ -287,6 +271,10 @@ public class Snabble {
         Logger.setEnabled(enabled);
     }
 
+    Config getConfig() {
+        return config;
+    }
+
     /**
      * Unique identifier, different over device installations
      */
@@ -332,18 +320,12 @@ public class Snabble {
 
     public static class Config {
         /**
-         * The JWT based client token required for all requests to the backend.
-         */
-        public String clientToken;
-
-        /**
          * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
          */
         public String endpointBaseUrl;
 
         /**
          * Relative path from the assets folder which points to a bundled file which contains the metadata
-         * from the metadataUrl specified before.
          * <p>
          * This file gets initially used to initialize the sdk before network requests are made,
          * or be able to use the sdk in the case of no network connection.
@@ -360,6 +342,19 @@ public class Snabble {
          * The project identifier, which is used in the communication with the backend.
          */
         public String appId;
+
+        /**
+         * The secret needed for Totp token generation
+         */
+        public String secret;
+        /**
+         * Optional. Used to override the versionName appended to the metadata url.
+         *
+         * Defaults to the versionName in the app package.
+         *
+         * Must be in the format %d.%d
+         */
+        public String versionName;
 
         /**
          * Optional SSLSocketFactory that gets used for HTTP requests.
@@ -379,8 +374,8 @@ public class Snabble {
          * If set to true, creates an full text index to support searching in the product database
          * using findByName or searchByName.
          *
-         * Note that this increases setup time of the SDK and it is highly recommended to use
-         * the non-blocking initialization function.
+         * Note that this increases setup time of the ProductDatabase, and it may not be
+         * immediately available offline.
          */
         public boolean generateSearchIndex = false;
     }

@@ -2,6 +2,7 @@ package io.snabble.sdk;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
@@ -19,6 +20,8 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
@@ -29,9 +32,6 @@ import okio.Buffer;
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class SnabbleSdkTest {
-    protected static final String projectId = "test-b6024ba";
-    protected static final String metadataUrl = "/api/" + projectId + "/metadata/app/android/test/1.0";
-
     protected Project project;
     protected Context context;
     protected static MockWebServer mockWebServer;
@@ -56,31 +56,40 @@ public class SnabbleSdkTest {
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
-                if (request.getPath().equals(metadataUrl)) {
+                if (request.getPath().contains("/metadata/app")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json; charset=utf-8")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(metadataJson);
-                } else if (request.getPath().contains("/api/" + projectId + "/appdb")) {
+                } else if (request.getPath().contains("appdb")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(productDbBuffer);
-                } else if (request.getPath().contains("/api/" + projectId + "/products/sku/online1")) {
+                } else if (request.getPath().contains("/products/sku/online1")) {
                     return new MockResponse()
-                            .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
+                            .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product1Buffer);
-                } else if (request.getPath().contains("/api/" + projectId + "/products/sku/online2")) {
+                } else if (request.getPath().contains("/products/sku/online2")) {
                     return new MockResponse()
-                            .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
+                            .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product2Buffer);
-                } else if (request.getPath().contains("/api/" + projectId + "/products/")) {
+                } else if (request.getPath().contains("/products/")) {
                     return new MockResponse()
-                            .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
+                            .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setResponseCode(404);
+                } else if (request.getPath().contains("token")) {
+                    return new MockResponse()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Cache-Control", "no-cache")
+                            .setBody("{\"token\":\"\"," +
+                                    "\"issuedAt\":" + (System.currentTimeMillis() / 1000) + "," +
+                                    "\"expiresAt\":"+ (System.currentTimeMillis() / 1000 + TimeUnit.HOURS.toSeconds(1))
+                                    + "}")
+                            .setResponseCode(200);
                 }
 
 
@@ -97,12 +106,12 @@ public class SnabbleSdkTest {
     }
 
     @Before
-    public void setupSdk() throws Project.SnabbleException, IOException {
+    public void setupSdk() throws Snabble.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         setupSdkWithDb("testDb.sqlite3");
     }
 
-    public void setupSdkWithDb(String testDbName) throws IOException, Project.SnabbleException {
+    public void setupSdkWithDb(String testDbName) throws IOException, Snabble.SnabbleException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         productDbBuffer = new Buffer();
@@ -111,14 +120,35 @@ public class SnabbleSdkTest {
         FileUtils.deleteQuietly(context.getFilesDir());
         FileUtils.deleteQuietly(new File(context.getFilesDir().getParentFile(), "/databases/"));
 
-        final Project.Config config = new Project.Config();
-        config.projectId = projectId;
-        config.metadataUrl = metadataUrl;
+        final Snabble.Config config = new Snabble.Config();
+        config.appId = "test";
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
-        config.productDbName = testDbName;
+        config.secret = "asdf";
         config.generateSearchIndex = true;
 
-        project = Project.setupBlocking((Application) context.getApplicationContext(), config);
+        Snabble snabble = Snabble.getInstance();
+        snabble.setupBlocking((Application) context.getApplicationContext(), config);
+
+        project = snabble.getProjects().get(0);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
+            @Override
+            public void success() {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void error() {
+                countDownLatch.countDown();
+            }
+        });
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @After
@@ -129,12 +159,8 @@ public class SnabbleSdkTest {
 
     @Test
     public void testSdkInitialization() {
-        String endpointBaseUrl = project.getEndpointBaseUrl();
-        String metadataUrl = project.getMetadataUrl();
         String appDbUrl = project.getAppDbUrl();
 
-        Assert.assertNotNull(endpointBaseUrl);
-        Assert.assertNotNull(metadataUrl);
         Assert.assertNotNull(appDbUrl);
         Assert.assertTrue(project.getProductDatabase().getRevisionId() > 0);
         Assert.assertTrue(project.getShops().length > 0);

@@ -69,9 +69,9 @@ class ProductApi {
     private OkHttpClient okHttpClient;
     private Handler handler;
 
-    ProductApi(Project sdkInstance) {
-        this.sdkInstance = sdkInstance;
-        this.okHttpClient = Snabble.getInstance().getOkHttpClient();
+    ProductApi(Project project) {
+        this.sdkInstance = project;
+        this.okHttpClient = project.getOkHttpClient();
         this.gson = new GsonBuilder().create();
         this.handler = new Handler(Looper.getMainLooper());
     }

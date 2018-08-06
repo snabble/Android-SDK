@@ -52,9 +52,8 @@ public class App extends Application {
 
         Snabble.Config config = new Snabble.Config();
         config.endpointBaseUrl = getString(R.string.endpoint);
-        config.clientToken = getString(R.string.client_token);
+        config.secret = getString(R.string.secret);
         config.appId = getString(R.string.app_id);
-        config.bundledMetadataAssetPath = "metadata.json";
 
         final Snabble snabble = Snabble.getInstance();
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
@@ -69,6 +68,8 @@ public class App extends Application {
                 if (project.getShops().length > 0) {
                     project.getCheckout().setShop(project.getShops()[0]);
                 }
+
+                project.getProductDatabase().update();
 
                 // optionally set a loyalty card id for identification, for demo purposes
                 // we invent one here
@@ -103,27 +104,27 @@ public class App extends Application {
         return project;
     }
 
-    private int getBundledRevisionId() {
+    private int getBundledRevisionId(String projectId) {
         try {
-            return Integer.parseInt(IOUtils.toString(getAssets().open("products.revision"),
+            return Integer.parseInt(IOUtils.toString(getAssets().open(projectId + ".revision"),
                     Charset.forName("UTF-8")));
         } catch (IOException e) {
             return -1;
         }
     }
 
-    private int getBundledMajor() {
+    private int getBundledMajor(String projectId) {
         try {
-            return Integer.parseInt(IOUtils.toString(getAssets().open("products.major"),
+            return Integer.parseInt(IOUtils.toString(getAssets().open(projectId + ".major"),
                     Charset.forName("UTF-8")));
         } catch (IOException e) {
             return -1;
         }
     }
 
-    private int getBundledMinor() {
+    private int getBundledMinor(String projectId) {
         try {
-            return Integer.parseInt(IOUtils.toString(getAssets().open("products.minor"),
+            return Integer.parseInt(IOUtils.toString(getAssets().open(projectId + ".minor"),
                     Charset.forName("UTF-8")));
         } catch (IOException e) {
             return -1;

@@ -54,7 +54,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testTextSearch() throws IOException, Project.SnabbleException {
+    public void testTextSearch() throws IOException, Snabble.SnabbleException {
         setupSdkWithDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
@@ -71,7 +71,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testTextSearchNoFTS() throws IOException, Project.SnabbleException {
+    public void testTextSearchNoFTS() throws IOException, Snabble.SnabbleException {
         setupSdkWithDb("demoDb_1_6_no_fts.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
@@ -145,7 +145,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testSaleRestriction() throws IOException, Project.SnabbleException {
+    public void testSaleRestriction() throws IOException, Snabble.SnabbleException {
         setupSdkWithDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
@@ -157,7 +157,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testSaleStop() throws IOException, Project.SnabbleException {
+    public void testSaleStop() throws IOException, Snabble.SnabbleException {
         setupSdkWithDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();

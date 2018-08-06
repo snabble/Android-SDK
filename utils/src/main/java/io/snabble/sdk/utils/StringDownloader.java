@@ -77,7 +77,7 @@ public abstract class StringDownloader extends Downloader {
             onDownloadFinished(IOUtils.toString(bundledDataInputStream, Charset.forName("UTF-8")));
             bundledDataInputStream.close();
         } catch (IOException e) {
-            Logger.e("Could not bundled data: %s", e.toString());
+            Logger.e("Could not load bundled data: %s", e.toString());
         }
     }
 
