@@ -172,7 +172,7 @@ public class Snabble {
         return application;
     }
 
-    TokenRegistry getTokenRegistry() {
+    public TokenRegistry getTokenRegistry() {
         return tokenRegistry;
     }
 

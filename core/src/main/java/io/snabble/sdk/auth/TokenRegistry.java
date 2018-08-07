@@ -109,7 +109,10 @@ public class TokenRegistry {
             long seconds = getOffsetTime();
             if(seconds >= invalidAt) {
                 Logger.d("Token timed out, requesting new token");
-                token = refreshToken(project, false);
+                Token newToken = refreshToken(project, false);
+                if (newToken != null) {
+                    token = newToken;
+                }
             }
         } else {
             token = refreshToken(project, false);

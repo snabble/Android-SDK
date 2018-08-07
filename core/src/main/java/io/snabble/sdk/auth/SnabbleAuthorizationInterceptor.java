@@ -17,9 +17,9 @@ public class SnabbleAuthorizationInterceptor implements Interceptor {
     private Project project;
     private TokenRegistry tokenRegistry;
 
-    public SnabbleAuthorizationInterceptor(TokenRegistry tokenRegistry, Project project) {
+    public SnabbleAuthorizationInterceptor(Project project) {
         this.project = project;
-        this.tokenRegistry = tokenRegistry;
+        this.tokenRegistry = Snabble.getInstance().getTokenRegistry();
     }
 
     @Override

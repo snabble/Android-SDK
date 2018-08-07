@@ -30,10 +30,9 @@ class OkHttpClientFactory {
         builder.addInterceptor(logging);
 
         Snabble.Config config = Snabble.getInstance().getConfig();
-        TokenRegistry tokenRegistry = Snabble.getInstance().getTokenRegistry();
 
         if (project != null) {
-            builder.addInterceptor(new SnabbleAuthorizationInterceptor(tokenRegistry, project));
+            builder.addInterceptor(new SnabbleAuthorizationInterceptor(project));
         }
 
         builder.addInterceptor(new UserAgentInterceptor(application));
