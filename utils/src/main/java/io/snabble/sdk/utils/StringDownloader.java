@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -20,6 +21,8 @@ import okhttp3.ResponseBody;
 
 public abstract class StringDownloader extends Downloader {
     private File storageFile = null;
+    private String assetPath;
+    private Context context;
 
     public StringDownloader(OkHttpClient okHttpClient) {
         super(okHttpClient);
@@ -32,10 +35,11 @@ public abstract class StringDownloader extends Downloader {
      * uses the app files data unless the app gets updated.
      */
     public void setBundledData(Context context, String assetPath, File storageFile) {
+        this.context = context;
         this.storageFile = storageFile;
+        this.assetPath = assetPath;
 
         try {
-            InputStream bundledDataInputStream = context.getAssets().open(assetPath);
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 
             //you can not check for file modified time in the android assets folder,
@@ -46,18 +50,35 @@ public abstract class StringDownloader extends Downloader {
                 loadFromSavedData();
             } else {
                 Logger.d("Using initial seed: %s", storageFile.getAbsolutePath());
-                onDownloadFinished(IOUtils.toString(bundledDataInputStream, Charset.forName("UTF-8")));
+                loadFromBundledData();
             }
         } catch (IOException | PackageManager.NameNotFoundException e) {
             Logger.e("Could not load saved data: %s", storageFile.getAbsolutePath());
+            loadFromBundledData();
         }
     }
 
     private void loadFromSavedData() throws IOException {
         FileInputStream fis = new FileInputStream(storageFile);
         Logger.d("Using saved data: %s", storageFile.getAbsolutePath());
-        onDownloadFinished(IOUtils.toString(fis, Charset.forName("UTF-8")));
+        String savedData = IOUtils.toString(fis, Charset.forName("UTF-8"));
+        if(savedData != null && savedData.length() > 0){
+            onDownloadFinished(savedData);
+        } else {
+            Logger.d("Data corrupted, using initial seed: %s", storageFile.getAbsolutePath());
+            loadFromBundledData();
+        }
         fis.close();
+    }
+
+    private void loadFromBundledData() {
+        try {
+            InputStream bundledDataInputStream = context.getAssets().open(assetPath);
+            onDownloadFinished(IOUtils.toString(bundledDataInputStream, Charset.forName("UTF-8")));
+            bundledDataInputStream.close();
+        } catch (IOException e) {
+            Logger.e("Could not load bundled data: %s", e.toString());
+        }
     }
 
     public void setStorageFile(File storageFile) {
@@ -67,7 +88,7 @@ public abstract class StringDownloader extends Downloader {
             try {
                 loadFromSavedData();
             } catch (IOException e) {
-                Logger.e("Could not load saved data: %s", storageFile.getAbsolutePath());
+                Logger.e("Could not load saved data: %s", e.toString());
             }
         }
     }
@@ -78,17 +99,22 @@ public abstract class StringDownloader extends Downloader {
      * Note that app updates are causing the updated data written here to be overwritten again,
      * as it is assumed that new builds always have newer data.
      */
-    public void updateStorage(String content) {
+    public synchronized void updateStorage(String content) {
         if (storageFile != null) {
-            FileUtils.deleteQuietly(storageFile);
-
             try {
-                FileOutputStream fos = new FileOutputStream(storageFile);
+                File tempFile = new File(FilenameUtils.getFullPath(storageFile.getPath())
+                        + FilenameUtils.getBaseName(storageFile.getName())
+                        + "_temp." + FilenameUtils.getExtension(storageFile.getName()));
+
+                FileOutputStream fos = new FileOutputStream(tempFile);
                 IOUtils.write(content, fos, Charset.forName("UTF-8"));
                 fos.close();
+
+                FileUtils.deleteQuietly(storageFile);
+                FileUtils.moveFile(tempFile, storageFile);
                 Logger.d("Updated saved data:%s", storageFile.getAbsolutePath());
             } catch (IOException e) {
-                Logger.e("Could not update saved data %s", storageFile.getAbsolutePath());
+                Logger.e("Could not update saved data %s", e.toString());
             }
         }
     }

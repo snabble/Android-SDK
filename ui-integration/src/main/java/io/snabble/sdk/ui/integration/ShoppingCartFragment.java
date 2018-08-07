@@ -39,7 +39,7 @@ public class ShoppingCartFragment extends Fragment {
                     .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            SnabbleUI.getSdkInstance().getShoppingCart().clear();
+                            SnabbleUI.getProject().getShoppingCart().clear();
                         }
                     })
                     .setNegativeButton(R.string.Snabble_No, null)

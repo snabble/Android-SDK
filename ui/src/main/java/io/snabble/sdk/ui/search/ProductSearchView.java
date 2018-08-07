@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -44,7 +44,7 @@ public class ProductSearchView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.view_search_product, this);
 
-        SnabbleSdk sdkInstance = SnabbleUI.getSdkInstance();
+        Project project = SnabbleUI.getProject();
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         searchBar = findViewById(R.id.search_bar);
@@ -89,7 +89,7 @@ public class ProductSearchView extends FrameLayout {
         addCodeAsIs = findViewById(R.id.add_code_as_is);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        searchableProductAdapter = new SearchableProductAdapter(sdkInstance.getProductDatabase());
+        searchableProductAdapter = new SearchableProductAdapter(project.getProductDatabase());
         searchableProductAdapter.setShowBarcode(true);
         searchableProductAdapter.setSearchType(SearchableProductAdapter.SearchType.BARCODE);
         searchableProductAdapter.setOnProductSelectedListener(new OnProductSelectedListener() {

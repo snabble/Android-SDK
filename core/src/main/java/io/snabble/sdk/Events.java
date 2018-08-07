@@ -27,7 +27,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 class Events {
-    private SnabbleSdk sdkInstance;
+    private Project project;
     private Gson gson;
 
     private String cartId;
@@ -39,14 +39,14 @@ class Events {
     private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
-    public Events(SnabbleSdk sdkInstance) {
-        this.sdkInstance = sdkInstance;
+    public Events(Project project) {
+        this.project = project;
         this.gson = new GsonBuilder().create();
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        sdkInstance.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
+        project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
             public void onChanged(ShoppingCart list) {
                 if(cartId != null && !list.getId().equals(cartId)){
@@ -59,7 +59,7 @@ class Events {
             }
         });
 
-        sdkInstance.getApplication().registerActivityLifecycleCallbacks(new SimpleActivityLifecycleCallbacks() {
+        Snabble.getInstance().getApplication().registerActivityLifecycleCallbacks(new SimpleActivityLifecycleCallbacks() {
             @Override
             public void onActivityResumed(Activity activity) {
                 isResumed = true;
@@ -78,7 +78,7 @@ class Events {
 
     public void updateShop(Shop newShop) {
         if(newShop != null){
-            cartId = sdkInstance.getShoppingCart().getId();
+            cartId = project.getShoppingCart().getId();
             shop = newShop;
 
             PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
@@ -100,7 +100,7 @@ class Events {
             return;
         }
 
-        String url = sdkInstance.getEventsUrl();
+        String url = project.getEventsUrl();
         if(url == null){
             Logger.e("Could not post event: no events url");
             return;
@@ -112,8 +112,8 @@ class Events {
 
         Event event = new Event();
         event.type = payload.getEventType();
-        event.appId = sdkInstance.getClientId();
-        event.project = sdkInstance.getProjectId();
+        event.appId = Snabble.getInstance().getClientId();
+        event.project = project.getId();
         event.shopId = shop.getId();
         event.timestamp = simpleDateFormat.format(new Date());
         event.payload = gson.toJsonTree(payload);
@@ -128,7 +128,7 @@ class Events {
         handler.postAtTime(new Runnable() {
             @Override
             public void run() {
-                OkHttpClient okHttpClient = sdkInstance.getOkHttpClient();
+                OkHttpClient okHttpClient = project.getOkHttpClient();
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) {
@@ -154,19 +154,19 @@ class Events {
     }
 
     private PayloadCart getPayloadCart() {
-        ShoppingCart shoppingCart = sdkInstance.getShoppingCart();
+        ShoppingCart shoppingCart = project.getShoppingCart();
 
         PayloadCart payloadCart = new PayloadCart();
         payloadCart.session = shoppingCart.getId();
         payloadCart.shopId = "unknown";
 
-        String loyaltyCardId = sdkInstance.getLoyaltyCardId();
+        String loyaltyCardId = project.getLoyaltyCardId();
         if (loyaltyCardId != null) {
             payloadCart.customer = new PayloadCartCustomer();
             payloadCart.customer.loyaltyCard = loyaltyCardId;
         }
 
-        Shop shop = sdkInstance.getCheckout().getShop();
+        Shop shop = project.getCheckout().getShop();
         if (shop != null) {
             String id = shop.getId();
             if (id != null) {

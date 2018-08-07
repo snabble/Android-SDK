@@ -18,15 +18,15 @@ import java.nio.charset.Charset;
 import io.snabble.sdk.utils.Logger;
 
 class ShoppingCartManager {
-    private SnabbleSdk sdkInstance;
+    private Project project;
     private ShoppingCart shoppingCart;
     private File file;
     private Gson gson;
     private Handler backgroundHandler;
 
-    public ShoppingCartManager(final SnabbleSdk sdkInstance) {
-        this.sdkInstance = sdkInstance;
-        file = new File(sdkInstance.getInternalStorageDirectory(), "shoppingCart.json");
+    public ShoppingCartManager(final Project project) {
+        this.project = project;
+        file = new File(Snabble.getInstance().getInternalStorageDirectory(), "shoppingCart.json");
         gson = new GsonBuilder().create();
 
         HandlerThread handlerThread = new HandlerThread("ShoppingCartManager");
@@ -48,14 +48,14 @@ class ShoppingCartManager {
             if (file.exists()) {
                 String contents = IOUtils.toString(new FileInputStream(file), Charset.forName("UTF-8"));
                 shoppingCart = gson.fromJson(contents, ShoppingCart.class);
-                shoppingCart.initWithSdkInstance(sdkInstance);
+                shoppingCart.initWithProject(project);
             } else {
-                shoppingCart = new ShoppingCart(sdkInstance);
+                shoppingCart = new ShoppingCart(project);
             }
         } catch (Exception e) {
             //shopping cart could not be read, create a new one.
             Logger.e("Could not load shopping list from: " + file.getAbsolutePath() + ", creating a new one.");
-            shoppingCart = new ShoppingCart(sdkInstance);
+            shoppingCart = new ShoppingCart(project);
         }
     }
 

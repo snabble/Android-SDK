@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.gmazzo.sqlite'
-apply from: '../scripts/seed.gradle'
+//apply from: '../scripts/seed.gradle'
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -11,12 +11,21 @@ android {
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
         versionCode 1
-        versionName project.appVersion
+        versionName "1.0"
 
-        resValue "string", "project_id", project.projectId
-        resValue "string", "endpoint", project.endpoint
-        resValue "string", "metadata_url", project.metadataUrl
-        resValue "string", "client_token", project.clientToken
+        Properties properties = new Properties()
+        def localFile = project.rootProject.file('local.properties')
+        if (localFile.exists()) {
+            properties.load(localFile.newDataInputStream())
+
+            resValue "string", "app_id", properties.getProperty('snabble.appId')
+            resValue "string", "endpoint", properties.getProperty('snabble.endpoint')
+            resValue "string", "secret", properties.getProperty('snabble.secret')
+        } else {
+            resValue "string", "app_id", ""
+            resValue "string", "endpoint", ""
+            resValue "string", "secret", ""
+        }
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

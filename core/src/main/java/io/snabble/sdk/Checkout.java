@@ -149,7 +149,7 @@ public class Checkout {
 
     private static MediaType JSON = MediaType.parse("application/json");
 
-    private SnabbleSdk sdkInstance;
+    private Project project;
     private OkHttpClient okHttpClient;
     private ShoppingCart shoppingCart;
     private Gson gson;
@@ -179,10 +179,10 @@ public class Checkout {
         }
     };
 
-    Checkout(SnabbleSdk sdkInstance) {
-        this.sdkInstance = sdkInstance;
-        this.okHttpClient = sdkInstance.getOkHttpClient();
-        this.shoppingCart = sdkInstance.getShoppingCart();
+    Checkout(Project project) {
+        this.project = project;
+        this.okHttpClient = project.getOkHttpClient();
+        this.shoppingCart = project.getShoppingCart();
 
         this.gson = new GsonBuilder().create();
 
@@ -204,7 +204,7 @@ public class Checkout {
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
             final Request request = new Request.Builder()
-                    .url(sdkInstance.absoluteUrl(checkoutProcess.getSelfLink()))
+                    .url(Snabble.getInstance().absoluteUrl(checkoutProcess.getSelfLink()))
                     .patch(RequestBody.create(JSON, "{\"aborted\":true}"))
                     .build();
 
@@ -251,8 +251,7 @@ public class Checkout {
     }
 
     public boolean isAvailable() {
-        String checkoutUrl = sdkInstance.getCheckoutUrl();
-        return checkoutUrl != null;
+        return project.getCheckoutUrl() != null && project.isCheckoutAvailable();
     }
 
     /**
@@ -266,7 +265,7 @@ public class Checkout {
      * to pay with that payment method.
      */
     public void checkout() {
-        String checkoutUrl = sdkInstance.getCheckoutUrl();
+        String checkoutUrl = project.getCheckoutUrl();
         if (checkoutUrl == null) {
             Logger.e("Could not checkout, no checkout url provided in metadata");
             notifyStateChanged(State.CONNECTION_ERROR);
@@ -286,9 +285,9 @@ public class Checkout {
 
         notifyStateChanged(State.HANDSHAKING);
 
-        String json = sdkInstance.getEvents().getPayloadCartJson();
+        String json = project.getEvents().getPayloadCartJson();
         final Request request = new Request.Builder()
-                .url(sdkInstance.absoluteUrl(checkoutUrl))
+                .url(Snabble.getInstance().absoluteUrl(checkoutUrl))
                 .post(RequestBody.create(JSON, json))
                 .build();
 
@@ -391,7 +390,7 @@ public class Checkout {
 
                 String json = gson.toJson(checkoutProcessRequest);
                 final Request request = new Request.Builder()
-                        .url(sdkInstance.absoluteUrl(url))
+                        .url(Snabble.getInstance().absoluteUrl(url))
                         .post(RequestBody.create(JSON, json))
                         .build();
 
@@ -459,7 +458,7 @@ public class Checkout {
         }
 
         final Request request = new Request.Builder()
-                .url(sdkInstance.absoluteUrl(url))
+                .url(Snabble.getInstance().absoluteUrl(url))
                 .get()
                 .build();
 
@@ -573,7 +572,7 @@ public class Checkout {
      */
     public void setShop(Shop shop) {
         this.shop = shop;
-        sdkInstance.getEvents().updateShop(shop);
+        project.getEvents().updateShop(shop);
     }
 
     /**

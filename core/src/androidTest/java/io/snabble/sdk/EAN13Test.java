@@ -10,16 +10,16 @@ import io.snabble.sdk.codes.ScannableCode;
 public class EAN13Test extends SnabbleSdkTest {
     @Test
     public void testEAN13() {
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001801").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001802").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001803").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001804").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001805").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001806").getClass());
-        Assert.assertEquals(EAN13.class, ScannableCode.parse(snabbleSdk, "4029764001807").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001808").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001809").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(snabbleSdk, "4029764001800").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001801").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001802").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001803").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001804").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001805").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001806").getClass());
+        Assert.assertEquals(EAN13.class, ScannableCode.parse(project, "4029764001807").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001808").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001809").getClass());
+        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001800").getClass());
 
         Assert.assertEquals(7, EAN13.checksum("402976400180"));
         Assert.assertEquals(0, EAN13.checksum("200123400000"));

@@ -28,7 +28,8 @@ import java.util.Map;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.payment.SEPAPaymentCredentials;
@@ -53,7 +54,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
     private Checkout checkout;
     private List<Entry> entries;
-    private SnabbleSdk sdkInstance;
+    private Project project;
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
 
@@ -80,9 +81,9 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.Snabble_PaymentMethod_encodedCodes));
         descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
 
-        sdkInstance = SnabbleUI.getSdkInstance();
-        checkout = sdkInstance.getCheckout();
-        paymentCredentialsStore = SnabbleSdk.getUserPreferences().getPaymentCredentialsStore();
+        project = SnabbleUI.getProject();
+        checkout = project.getCheckout();
+        paymentCredentialsStore = Snabble.getInstance().getUserPreferences().getPaymentCredentialsStore();
 
 
         recyclerView = findViewById(R.id.payment_methods);
@@ -120,8 +121,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         TextView title = findViewById(R.id.choose_payment_title);
 
-        PriceFormatter priceFormatter = new PriceFormatter(sdkInstance);
-        String totalPriceText = priceFormatter.format(sdkInstance.getCheckout().getPriceToPay());
+        PriceFormatter priceFormatter = new PriceFormatter(project);
+        String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
         title.setText(getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText));
 
         update();

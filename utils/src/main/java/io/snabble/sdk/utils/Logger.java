@@ -38,31 +38,51 @@ public class Logger {
 
     public static void i(String message, Object... args) {
         if (isEnabled && message != null) {
-            Log.i(getTag(), String.format(message, args));
+            try {
+                Log.i(getTag(), String.format(message, args));
+            } catch(Exception e) {
+                // ignore any possible errors while formatting the string
+            }
         }
     }
 
     public static void d(String message, Object... args) {
         if (isEnabled && message != null) {
-            Log.d(getTag(), String.format(message, args));
+            try {
+                Log.d(getTag(), String.format(message, args));
+            } catch(Exception e) {
+                // ignore any possible errors while formatting the string
+            }
         }
     }
 
     public static void w(String message, Object... args) {
         if (isEnabled && message != null) {
-            Log.w(getTag(), String.format(message, args));
+            try {
+                Log.w(getTag(), String.format(message, args));
+            } catch(Exception e) {
+                // ignore any possible errors while formatting the string
+            }
         }
     }
 
     public static void e(String message, Object... args) {
         if (isEnabled && message != null) {
-            Log.e(getTag(), String.format(message, args));
+            try {
+                Log.e(getTag(), String.format(message, args));
+            } catch(Exception e) {
+                // ignore any possible errors while formatting the string
+            }
         }
     }
 
     public static void v(String message, Object... args) {
         if (isEnabled && message != null) {
-            Log.v(getTag(), String.format(message, args));
+            try {
+                Log.v(getTag(), String.format(message, args));
+            } catch(Exception e) {
+                // ignore any possible errors while formatting the string
+            }
         }
     }
 }

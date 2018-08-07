@@ -10,17 +10,17 @@ class ProductDatabaseDownloader extends Downloader {
     private static final String MIMETYPE_DELTA = "application/vnd+sellfio.appdb+sql";
     private static final String MIMETYPE_FULL = "application/vnd+sellfio.appdb+sqlite3";
 
-    private SnabbleSdk sdk;
+    private Project sdk;
     private ProductDatabase productDatabase;
 
     private boolean sameRevision;
     private boolean deltaUpdateOnly;
 
-    public ProductDatabaseDownloader(SnabbleSdk sdk,
+    public ProductDatabaseDownloader(Project project,
                                      ProductDatabase productDatabase) {
-        super(sdk.getOkHttpClient());
+        super(project.getOkHttpClient());
 
-        this.sdk = sdk;
+        this.sdk = project;
         this.productDatabase = productDatabase;
     }
 

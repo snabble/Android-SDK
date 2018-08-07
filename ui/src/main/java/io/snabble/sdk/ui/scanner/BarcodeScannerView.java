@@ -580,6 +580,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                     camera.release();
                     camera = null;
                     running = false;
+                    decodeEnabled = false;
                 }
 
                 startRequested = false;
@@ -664,11 +665,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                         mainThreadHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                if (decodeEnabled && callback != null && isAttachedToWindow) {
+                                if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
                                     Barcode barcode = new Barcode(
                                             BarcodeFormat.valueOf(finalResult.getBarcodeFormat()),
-                                            finalResult.getText(),
-                                            finalResult.getTimestamp());
+                                                                  finalResult.getText(),
+                                                                  finalResult.getTimestamp());
 
                                     Logger.d("Detected barcode: " + barcode.toString());
                                     callback.onBarcodeDetected(barcode);

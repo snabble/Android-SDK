@@ -33,14 +33,14 @@ public class HomeFragment extends Fragment {
         v.findViewById(R.id.update_db).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.get().getSnabbleSdk().getProductDatabase().update();
+                App.get().getProject().getProductDatabase().update();
             }
         });
 
         v.findViewById(R.id.delete_db).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.get().getSnabbleSdk().getProductDatabase().delete();
+                App.get().getProject().getProductDatabase().delete();
             }
         });
 

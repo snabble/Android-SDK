@@ -25,7 +25,8 @@ import android.widget.TextView;
 import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
@@ -58,10 +59,10 @@ class ProductConfirmationDialog {
 
 
     public ProductConfirmationDialog(Context context,
-                                     SnabbleSdk sdkInstance) {
+                                     Project project) {
         this.context = context;
-        this.shoppingCart = sdkInstance.getShoppingCart();
-        priceFormatter = new PriceFormatter(sdkInstance);
+        this.shoppingCart = project.getShoppingCart();
+        priceFormatter = new PriceFormatter(project);
     }
 
     public void show(Product newProduct, ScannableCode scannedCode) {
@@ -98,42 +99,14 @@ class ProductConfirmationDialog {
             subtitle.setText(product.getSubtitle());
         }
 
-        Product.Type type = product.getType();
-        if (type == Product.Type.UserWeighed || scannedCode.hasEmbeddedData()) {
-            quantityAnnotation.setText("g");
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
-            quantityAnnotation.setVisibility(View.VISIBLE);
-        } else {
-            quantityAnnotation.setVisibility(View.GONE);
-        }
-
-        if (scannedCode.hasEmbeddedData()) {
+        if (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0) {
             quantity.setEnabled(false);
         }
 
         price.setVisibility(View.VISIBLE);
-
-        if(scannedCode.hasWeighData()) {
-            quantityAnnotation.setText("g");
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
-            quantityAnnotation.setVisibility(View.VISIBLE);
-        } else if(scannedCode.hasPriceData()){
-            quantityAnnotation.setText(SnabbleUI.getSdkInstance().getCurrency().getSymbol());
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
-            quantityAnnotation.setVisibility(View.GONE);
-            price.setVisibility(View.GONE);
-        } else if(scannedCode.hasAmountData()){
-            quantityAnnotation.setVisibility(View.GONE);
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
-        } else {
-            quantityAnnotation.setVisibility(View.GONE);
-        }
-
         quantity.clearFocus();
+
+        Product.Type type = product.getType();
 
         int cartQuantity = shoppingCart.getQuantity(product);
 
@@ -145,19 +118,26 @@ class ProductConfirmationDialog {
                 quantityAnnotation.setVisibility(View.VISIBLE);
                 quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
             } else if(scannedCode.hasPriceData()){
-                quantityAnnotation.setText(SnabbleUI.getSdkInstance().getCurrency().getSymbol());
+                quantityAnnotation.setText(SnabbleUI.getProject().getCurrency().getSymbol());
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
                 quantityAnnotation.setVisibility(View.GONE);
                 price.setVisibility(View.GONE);
 
-                PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getSdkInstance());
+                PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
                 quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
-            } else if(scannedCode.hasAmountData()){
-                quantityAnnotation.setVisibility(View.GONE);
-                plus.setVisibility(View.GONE);
-                minus.setVisibility(View.GONE);
-                quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
+            } else if(scannedCode.hasUnitData()){
+                if(scannedCode.getEmbeddedData() == 0) {
+                    quantityAnnotation.setVisibility(View.GONE);
+                    plus.setVisibility(View.VISIBLE);
+                    minus.setVisibility(View.VISIBLE);
+                    quantity.setText("1");
+                } else {
+                    quantityAnnotation.setVisibility(View.GONE);
+                    plus.setVisibility(View.GONE);
+                    minus.setVisibility(View.GONE);
+                    quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
+                }
             }
         } else if (type == Product.Type.Article) {
             quantityAnnotation.setVisibility(View.GONE);
@@ -165,49 +145,49 @@ class ProductConfirmationDialog {
         } else if (type == Product.Type.UserWeighed) {
             quantityAnnotation.setVisibility(View.VISIBLE);
             quantityAnnotation.setText("g");
-            quantity.setText(""); // initial value ?
+            plus.setVisibility(View.GONE);
+            minus.setVisibility(View.GONE);
+            quantity.setText("");
         }
 
-        if(!scannedCode.hasEmbeddedData()) {
-            quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
-            quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE
-                            || (event.getAction() == KeyEvent.ACTION_DOWN
-                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                        addToCart();
-                        return true;
-                    }
-
-                    return false;
-                }
-            });
-
-            quantity.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
+        quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE
+                        || (event.getAction() == KeyEvent.ACTION_DOWN
+                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    addToCart();
+                    return true;
                 }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                return false;
+            }
+        });
 
+        quantity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // its possible that the callback gets called before a dismiss is dispatched
+                // and when that happens the product is already null
+                if (product == null) {
+                    dismiss();
+                    return;
                 }
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // its possible that the callback gets called before a dismiss is dispatched
-                    // and when that happens the product is already null
-                    if (product == null) {
-                        dismiss();
-                        return;
-                    }
-
-                    updatePrice();
-                }
-            });
-        }
+                 updatePrice();
+            }
+        });
 
         updatePrice();
 
@@ -236,7 +216,7 @@ class ProductConfirmationDialog {
             }
         });
 
-        if (cartQuantity > 0 && product.getType() == Product.Type.Article) {
+        if (cartQuantity > 0 && product.getType() == Product.Type.Article && !scannedCode.hasUnitData()) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
@@ -278,17 +258,18 @@ class ProductConfirmationDialog {
     }
 
     private void updatePrice() {
-        RoundingMode roundingMode = SnabbleUI.getSdkInstance().getRoundingMode();
+        RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
 
         String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
                 roundingMode));
         String singlePrice = priceFormatter.format(product);
 
         int q = getQuantity();
-        if(q > 1){
-            if(scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed){
-                price.setText(String.format("%sg * %s = %s", String.valueOf(q), singlePrice, priceText));
-            } else if(scannedCode.hasAmountData()){
+
+        if(q > 0 && (scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed)){
+            price.setText(String.format("%sg * %s = %s", String.valueOf(q), singlePrice, priceText));
+        } else if(q > 1){
+            if(scannedCode.hasUnitData()){
                 price.setText(String.format("%s * %s = %s",
                         String.valueOf(q),
                         priceFormatter.format(product.getPrice()),
@@ -327,22 +308,42 @@ class ProductConfirmationDialog {
         int q = getQuantity();
 
         if(scannedCode.hasEmbeddedData()){
-            shoppingCart.add(product, 1, scannedCode);
+            boolean isZeroAmountProduct = false;
+
+            // generate new code when the embedded data contains 0
+            if (scannedCode.getEmbeddedData() == 0) {
+                scannedCode = EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
+                        scannedCode.getCode(), getQuantity());
+                isZeroAmountProduct = true;
+            }
+
+            // if the user entered 0, shake
+            if(scannedCode.getEmbeddedData() == 0) {
+                shake();
+                return;
+            } else {
+                shoppingCart.add(product, 1, scannedCode, isZeroAmountProduct);
+            }
         } else if (product.getType() == Product.Type.Article) {
             shoppingCart.setQuantity(product, q, scannedCode);
         } else if(product.getType() == Product.Type.UserWeighed){
             if(q > 0) {
                 shoppingCart.add(product, q, scannedCode);
             } else {
-                TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
-                shake.setDuration(500);
-                shake.setInterpolator(new CycleInterpolator(7));
-                quantity.startAnimation(shake);
+                shake();
                 return;
             }
         }
 
         dismiss();
+    }
+
+    private void shake() {
+        float density =  context.getResources().getDisplayMetrics().density;
+        TranslateAnimation shake = new TranslateAnimation(0, 3 * density, 0, 0);
+        shake.setDuration(500);
+        shake.setInterpolator(new CycleInterpolator(7));
+        quantity.startAnimation(shake);
     }
 
     private int getQuantity() {

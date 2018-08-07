@@ -1,40 +1,85 @@
 {
   "links": {
-    "appdb": {
-      "href": "/api/test-b6024ba/appdb"
-    },
-    "productByCode": {
-      "href": "/api/test-b6024ba/products/code/{code}"
-    },
-    "productBySku": {
-      "href": "/api/test-b6024ba/products/sku/{sku}"
-    },
-    "productByWeighItemId": {
-      "href": "/api/test-b6024ba/products/weighItemId/{id}"
-    },
     "self": {
-      "href": "/api/test-b6024ba/metadata/app/android/test/1.0"
-    },
-    "shops": {
-      "href": "/api/test-b6024ba/shops"
+      "href": "/metadata/app/test/android/1.0"
     }
   },
   "metadata": {
     "kill": false
   },
-  "shops": [
+  "projects": [
     {
-      "city": "Bergisch Gladbach - Bensberg",
-      "country": "DE",
-      "lat": 50.957953,
-      "lon": 7.188349,
-      "name": "Knauber Freizeitmarkt Bensberg",
-      "openingHoursSpecification": [],
-      "phone": "02204-8433-00",
-      "services": [],
-      "state": "Deutschland",
-      "street": "Overather Straße 125",
-      "zip": "51429"
+      "currency": "EUR",
+      "decimalDigits": 2,
+      "enableCheckout": true,
+      "id": "test",
+      "links": {
+        "appEvents": {
+          "href": "/test/events"
+        },
+        "appdb": {
+          "href": "/test/appdb"
+        },
+        "bundlesForSku": {
+          "href": "/test/products/bundlesForSku/{bundledSku}"
+        },
+        "checkoutInfo": {
+          "href": "/test/checkout/info"
+        },
+        "productByCode": {
+          "href": "/test/products/code/{code}"
+        },
+        "productBySku": {
+          "href": "/test/products/sku/{sku}"
+        },
+        "productByWeighItemId": {
+          "href": "/test/products/weighItemId/{id}"
+        },
+        "productsBySku": {
+          "href": "/test/products/search/bySkus"
+        },
+        "self": {
+          "href": "/metadata/project/test"
+        },
+        "shops": {
+          "href": "/test/shops"
+        },
+        "tokens": {
+          "href": "/test/tokens"
+        }
+      },
+      "locale": "de_DE",
+      "pricePrefixes": [
+        "26"
+      ],
+      "roundingMode": "up",
+      "shops": [
+        {
+          "city": "Bonn",
+          "country": "Deutschland",
+          "email": "info@snabble.io",
+          "external": null,
+          "externalId": null,
+          "id": "8",
+          "lat": 50.7352963,
+          "lon": 7.1001417,
+          "name": "snabble GmbH",
+          "openingHoursSpecification": [],
+          "phone": "+491717673249",
+          "project": "test",
+          "services": [],
+          "state": "NRW",
+          "street": "Acherstraße 26",
+          "zip": "53111"
+        }
+      ],
+      "unitPrefixes": [
+        "25"
+      ],
+      "verifyInternalEanChecksum": true,
+      "weighPrefixes": [
+        "24"
+      ]
     }
   ]
 }

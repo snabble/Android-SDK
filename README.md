@@ -63,34 +63,53 @@ dependencies {
 ## Usage
 ```
 //you may enable debug logging to see requests made by the sdk, and other various logs
-SnabbleSdk.setDebugLoggingEnabled(true);
+        //you may enable debug logging to see requests made by the sdk, and other various logs
+        Snabble.setDebugLoggingEnabled(true);
 
-SnabbleSdk.Config config = new SnabbleSdk.Config();
-config.metadataUrl = "/api/{projectId}/metadata/app/android/android/{appVersion}";
-config.endpointBaseUrl = "api.snabble.io";
-config.clientToken = clientToken;
-config.projectId = "demo";
-config.bundledMetadataAssetPath = "metadata.json";
-config.productDbName = "products.sqlite3";
-config.productDbBundledAssetPath = "products.sqlite3";
-config.productDbBundledRevisionId = getBundledRevisionId();
-config.productDbBundledSchemaVersionMajor = getBundledMajor();
-config.productDbBundledSchemaVersionMinor = getBundledMinor();
+        Snabble.Config config = new Snabble.Config();
+        config.endpointBaseUrl = https://api.snabble.io
+        config.secret = <your secret>
+        config.appId = <your app id>
+        
+        // optional: provide a metadata file, store in the assets. That allows the sdk 
+        // init without requiring a network connection.
+        config.bundledMetadataAssetPath = "metadata.json";
 
-SnabbleSdk.setup(this, config, new SnabbleSdk.SetupCompletionListener() {
-    @Override
-    public void onReady(SnabbleSdk sdk) {
-        //registers this sdk instance globally for use with ui components
-        SnabbleUI.registerSdkInstance(sdk);
-    }
+        final Snabble snabble = Snabble.getInstance();
+        snabble.setup(this, config, new Snabble.SetupCompletionListener() {
+            @Override
+            public void onReady() {
+                // get the first project, there can be multiple projects per app
+                project = snabble.getProjects().get(0);
 
-    @Override
-    public void onError(final SnabbleSdk.Error error) {
-        //various errors, like no space left on device
-        //network connections could not be made (if no bundled data is provided)
-        //see the enum declaration for more info
-    }
-});
+                // registers this project globally for use with ui components
+                SnabbleUI.registerProject(project);
+
+                // select the first shop for demo purposes
+                if (project.getShops().length > 0) {
+                    project.getCheckout().setShop(project.getShops()[0]);
+                }
+
+                // optional: download the latest product database for offline availability
+                project.getProductDatabase().update();
+
+                // optional: set a loyalty card id for identification, for demo purposes
+                // we invent one here
+                project.setLoyaltyCardId("testAppUserLoyaltyCardId");
+                
+                // optional: load a bundled database file from the assets folder
+                // this lowers the download size of database updates and the database is immediatly
+                // available offline
+                project.getProductDatabase().loadDatabaseBundle("db.sqlite3", revision, major, minor);
+
+                callback.done();
+            }
+
+            @Override
+            public void onError(Snabble.Error error) {
+                callback.error("SdkError: " + error.toString());
+            }
+        });
 ```
 
 ## Author

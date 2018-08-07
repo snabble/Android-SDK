@@ -11,14 +11,15 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
 public class App extends Application {
     private static App instance;
 
-    private SnabbleSdk snabbleSdk;
+    private Project project;
 
     public interface InitCallback {
         void done();
@@ -41,51 +42,44 @@ public class App extends Application {
     }
 
     public void init(final InitCallback callback) {
-        if(snabbleSdk != null){
+        if(project != null){
             callback.done();
             return;
         }
 
         //you may enable debug logging to see requests made by the sdk, and other various logs
-        SnabbleSdk.setDebugLoggingEnabled(true);
+        Snabble.setDebugLoggingEnabled(true);
 
-        SnabbleSdk.Config config = new SnabbleSdk.Config();
-        config.metadataUrl = getString(R.string.metadata_url);
+        Snabble.Config config = new Snabble.Config();
         config.endpointBaseUrl = getString(R.string.endpoint);
-        config.clientToken = getString(R.string.client_token);
-        config.projectId = getString(R.string.project_id);
-        config.bundledMetadataAssetPath = "metadata.json";
-        config.productDbName = "products.sqlite3";
-        config.productDbBundledAssetPath = "products.sqlite3";
-        config.productDbBundledRevisionId = getBundledRevisionId();
-        config.productDbBundledSchemaVersionMajor = getBundledMajor();
-        config.productDbBundledSchemaVersionMinor = getBundledMinor();
-        config.productDbDownloadIfMissing = false;
-        config.encodedCodesPrefix = "";
-        config.encodedCodesSeperator = "\n";
-        config.encodedCodesSuffix = "";
+        config.secret = getString(R.string.secret);
+        config.appId = getString(R.string.app_id);
 
-        SnabbleSdk.setup(this, config, new SnabbleSdk.SetupCompletionListener() {
+        final Snabble snabble = Snabble.getInstance();
+        snabble.setup(this, config, new Snabble.SetupCompletionListener() {
             @Override
-            public void onReady(SnabbleSdk sdk) {
+            public void onReady() {
+                project = snabble.getProjects().get(0);
+
                 // registers this sdk instance globally for use with ui components
-                SnabbleUI.registerSdkInstance(sdk);
+                SnabbleUI.registerProject(project);
 
                 // select the first shop for demo purposes
-                if (sdk.getShops().length > 0) {
-                    sdk.getCheckout().setShop(sdk.getShops()[0]);
+                if (project.getShops().length > 0) {
+                    project.getCheckout().setShop(project.getShops()[0]);
                 }
+
+                project.getProductDatabase().update();
 
                 // optionally set a loyalty card id for identification, for demo purposes
                 // we invent one here
-                sdk.setLoyaltyCardId("testAppUserLoyaltyCardId");
+                project.setLoyaltyCardId("testAppUserLoyaltyCardId");
 
-                snabbleSdk = sdk;
                 callback.done();
             }
 
             @Override
-            public void onError(final SnabbleSdk.Error error) {
+            public void onError(Snabble.Error error) {
                 callback.error("SdkError: " + error.toString());
             }
         });
@@ -106,31 +100,31 @@ public class App extends Application {
         });
     }
 
-    public SnabbleSdk getSnabbleSdk() {
-        return snabbleSdk;
+    public Project getProject() {
+        return project;
     }
 
-    private int getBundledRevisionId() {
+    private int getBundledRevisionId(String projectId) {
         try {
-            return Integer.parseInt(IOUtils.toString(getAssets().open("products.revision"),
+            return Integer.parseInt(IOUtils.toString(getAssets().open(projectId + ".revision"),
                     Charset.forName("UTF-8")));
         } catch (IOException e) {
             return -1;
         }
     }
 
-    private int getBundledMajor() {
+    private int getBundledMajor(String projectId) {
         try {
-            return Integer.parseInt(IOUtils.toString(getAssets().open("products.major"),
+            return Integer.parseInt(IOUtils.toString(getAssets().open(projectId + ".major"),
                     Charset.forName("UTF-8")));
         } catch (IOException e) {
             return -1;
         }
     }
 
-    private int getBundledMinor() {
+    private int getBundledMinor(String projectId) {
         try {
-            return Integer.parseInt(IOUtils.toString(getAssets().open("products.minor"),
+            return Integer.parseInt(IOUtils.toString(getAssets().open(projectId + ".minor"),
                     Charset.forName("UTF-8")));
         } catch (IOException e) {
             return -1;

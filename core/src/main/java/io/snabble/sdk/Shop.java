@@ -124,7 +124,7 @@ public class Shop implements Serializable {
         return external;
     }
 
-    static Shop[] fromJson(String json) {
+    static Shop[] fromJson(JsonElement json) {
         try {
             Gson gson = new GsonBuilder()
                     .create();
