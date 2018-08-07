@@ -125,7 +125,9 @@ public class Snabble {
      */
     public boolean isOutdatedSDK() {
         JsonObject jsonObject = metadataDownloader.getJsonObject();
-        return jsonObject.has("metadata") && JsonUtils.getBooleanOpt(jsonObject, "metadata", false);
+
+        return jsonObject.has("metadata") &&
+                JsonUtils.getBooleanOpt(jsonObject.get("metadata").getAsJsonObject(), "kill", false);
     }
 
     private void readMetadata() {
