@@ -123,7 +123,7 @@ public class EAN13 extends ScannableCode implements Serializable {
         return check == digit;
     }
 
-    public static EAN13 generateNewCodeWithEmbeddedData(Project sdkInstance,
+    public static EAN13 generateNewCodeWithEmbeddedData(Project project,
                                                   String code,
                                                   int newEmbeddedData) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -139,7 +139,7 @@ public class EAN13 extends ScannableCode implements Serializable {
         stringBuilder.replace(6, 7, String.valueOf(EAN13.internalChecksum(stringBuilder.toString())));
         stringBuilder.append(String.valueOf(EAN13.checksum(stringBuilder.toString())));
 
-        return (EAN13)ScannableCode.parse(sdkInstance, stringBuilder.toString());
+        return (EAN13)ScannableCode.parse(project, stringBuilder.toString());
     }
 
     /**

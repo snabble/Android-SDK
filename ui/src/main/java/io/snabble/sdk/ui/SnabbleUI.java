@@ -12,8 +12,8 @@ public class SnabbleUI {
      * Registers a globally used project for use with views.
      * <p>
      */
-    public static void registerProject(Project sdkInstance) {
-        SnabbleUI.project = sdkInstance;
+    public static void registerProject(Project project) {
+        SnabbleUI.project = project;
     }
 
     /**

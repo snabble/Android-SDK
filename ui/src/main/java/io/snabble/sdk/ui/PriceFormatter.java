@@ -8,24 +8,24 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 
 public class PriceFormatter {
-    private Project sdkInstance;
+    private Project project;
 
-    public PriceFormatter(Project sdkInstance) {
-        this.sdkInstance = sdkInstance;
+    public PriceFormatter(Project project) {
+        this.project = project;
     }
 
     public String format(int price) {
-        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(sdkInstance.getCurrencyLocale());
-        Currency currency = sdkInstance.getCurrency();
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
+        Currency currency = project.getCurrency();
         numberFormat.setCurrency(currency);
 
-        int fractionDigits = sdkInstance.getCurrencyFractionDigits();
+        int fractionDigits = project.getCurrencyFractionDigits();
         numberFormat.setMinimumFractionDigits(fractionDigits);
         numberFormat.setMaximumFractionDigits(fractionDigits);
 
         BigDecimal bigDecimal = new BigDecimal(price);
         BigDecimal divider = new BigDecimal(10).pow(fractionDigits);
-        BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, sdkInstance.getRoundingMode());
+        BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, project.getRoundingMode());
 
         String formattedPrice = numberFormat.format(dividedPrice.doubleValue());
 

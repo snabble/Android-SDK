@@ -59,10 +59,10 @@ class ProductConfirmationDialog {
 
 
     public ProductConfirmationDialog(Context context,
-                                     Project sdkInstance) {
+                                     Project project) {
         this.context = context;
-        this.shoppingCart = sdkInstance.getShoppingCart();
-        priceFormatter = new PriceFormatter(sdkInstance);
+        this.shoppingCart = project.getShoppingCart();
+        priceFormatter = new PriceFormatter(project);
     }
 
     public void show(Product newProduct, ScannableCode scannedCode) {

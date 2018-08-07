@@ -70,7 +70,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private void inflateView() {
         inflate(getContext(), R.layout.view_self_scanning, this);
 
-        Project sdkInstance = SnabbleUI.getProject();
+        Project project = SnabbleUI.getProject();
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
@@ -119,7 +119,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             }
         });
 
-        this.productDatabase = sdkInstance.getProductDatabase();
+        this.productDatabase = project.getProductDatabase();
 
         barcodeScanner.setCallback(new BarcodeScannerView.Callback() {
             @Override
@@ -128,7 +128,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             }
         });
 
-        productDialog = new ProductConfirmationDialog(getContext(), sdkInstance);
+        productDialog = new ProductConfirmationDialog(getContext(), project);
         productDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {

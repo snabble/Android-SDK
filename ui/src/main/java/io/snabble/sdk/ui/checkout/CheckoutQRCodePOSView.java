@@ -43,10 +43,10 @@ class CheckoutQRCodePOSView extends FrameLayout {
             }
         });
 
-        Project sdkInstance = SnabbleUI.getProject();
+        Project project = SnabbleUI.getProject();
 
-        PriceFormatter priceFormatter = new PriceFormatter(sdkInstance);
-        String formattedAmount = priceFormatter.format(sdkInstance.getCheckout().getPriceToPay());
+        PriceFormatter priceFormatter = new PriceFormatter(project);
+        String formattedAmount = priceFormatter.format(project.getCheckout().getPriceToPay());
 
         TextView textView = findViewById(R.id.pay_amount);
         textView.setText(getContext().getString(R.string.Snabble_PaymentSelection_title) + " " + formattedAmount);

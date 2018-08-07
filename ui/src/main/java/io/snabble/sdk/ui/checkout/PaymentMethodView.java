@@ -67,8 +67,8 @@ class PaymentMethodView extends FrameLayout {
         descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.Snabble_PaymentMethod_encodedCodes));
         descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
 
-        Project sdkInstance = SnabbleUI.getProject();
-        checkout = sdkInstance.getCheckout();
+        Project project = SnabbleUI.getProject();
+        checkout = project.getCheckout();
         availablePaymentMethods = new ArrayList<>();
 
         for (PaymentMethod paymentMethod : checkout.getAvailablePaymentMethods()) {
@@ -112,8 +112,8 @@ class PaymentMethodView extends FrameLayout {
 
         TextView title = findViewById(R.id.choose_payment_title);
 
-        PriceFormatter priceFormatter = new PriceFormatter(sdkInstance);
-        String totalPriceText = priceFormatter.format(sdkInstance.getCheckout().getPriceToPay());
+        PriceFormatter priceFormatter = new PriceFormatter(project);
+        String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
         title.setText(getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText));
     }
 

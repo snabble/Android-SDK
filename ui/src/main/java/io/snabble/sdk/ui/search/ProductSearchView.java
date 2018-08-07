@@ -44,7 +44,7 @@ public class ProductSearchView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.view_search_product, this);
 
-        Project sdkInstance = SnabbleUI.getProject();
+        Project project = SnabbleUI.getProject();
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         searchBar = findViewById(R.id.search_bar);
@@ -89,7 +89,7 @@ public class ProductSearchView extends FrameLayout {
         addCodeAsIs = findViewById(R.id.add_code_as_is);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        searchableProductAdapter = new SearchableProductAdapter(sdkInstance.getProductDatabase());
+        searchableProductAdapter = new SearchableProductAdapter(project.getProductDatabase());
         searchableProductAdapter.setShowBarcode(true);
         searchableProductAdapter.setSearchType(SearchableProductAdapter.SearchType.BARCODE);
         searchableProductAdapter.setOnProductSelectedListener(new OnProductSelectedListener() {

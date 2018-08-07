@@ -65,12 +65,12 @@ class ProductApi {
     }
 
     private Gson gson;
-    private Project sdkInstance;
+    private Project project;
     private OkHttpClient okHttpClient;
     private Handler handler;
 
     ProductApi(Project project) {
-        this.sdkInstance = project;
+        this.project = project;
         this.okHttpClient = project.getOkHttpClient();
         this.gson = new GsonBuilder().create();
         this.handler = new Handler(Looper.getMainLooper());
@@ -81,7 +81,7 @@ class ProductApi {
             return;
         }
 
-        String url = sdkInstance.getProductBySkuUrl();
+        String url = project.getProductBySkuUrl();
         if (url == null) {
             Logger.e("Could not check product online, no productBySku url provided in metadata");
             productAvailableListener.onError();
@@ -103,7 +103,7 @@ class ProductApi {
             return;
         }
 
-        String url = sdkInstance.getProductByCodeUrl();
+        String url = project.getProductByCodeUrl();
         if (url == null) {
             Logger.e("Could not check product online, no productByCode url provided in metadata");
             productAvailableListener.onError();
@@ -125,7 +125,7 @@ class ProductApi {
             return;
         }
 
-        String url = sdkInstance.getProductByWeighItemIdUrl();
+        String url = project.getProductByWeighItemIdUrl();
         if (url == null) {
             Logger.e("Could not check product online, no productByWeighItemId url provided in metadata");
             productAvailableListener.onError();
@@ -143,7 +143,7 @@ class ProductApi {
     }
 
     private void getBundlesOfProduct(final String sku, final ApiProductGroupCallback callback) {
-        String url = sdkInstance.getBundlesOfProductUrl();
+        String url = project.getBundlesOfProductUrl();
         if (url == null) {
             Logger.e("Could not check product bundles online, no bundlesOfProduct url provided in metadata");
 

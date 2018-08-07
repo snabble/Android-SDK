@@ -30,7 +30,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     private ScrollView scrollView;
     private TextView explanationText;
     private TextView explanationText2;
-    private Project sdkInstance;
+    private Project project;
     private int codeCount;
 
     public CheckoutEncodedCodesView(Context context) {
@@ -54,14 +54,14 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         scrollContainer = findViewById(R.id.scroll_container);
         scrollView = findViewById(R.id.scroll_view);
 
-        sdkInstance = SnabbleUI.getProject();
+        project = SnabbleUI.getProject();
 
         Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Project sdkInstance = SnabbleUI.getProject();
-                sdkInstance.getCheckout().approveOfflineMethod();
+                Project project = SnabbleUI.getProject();
+                project.getCheckout().approveOfflineMethod();
 
                 SnabbleUICallback uiCallback = SnabbleUI.getUiCallback();
                 if (uiCallback != null) {
@@ -70,8 +70,8 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             }
         });
 
-        PriceFormatter priceFormatter = new PriceFormatter(sdkInstance);
-        String formattedAmount = priceFormatter.format(sdkInstance.getCheckout().getPriceToPay());
+        PriceFormatter priceFormatter = new PriceFormatter(project);
+        String formattedAmount = priceFormatter.format(project.getCheckout().getPriceToPay());
 
         TextView textView = findViewById(R.id.pay_amount);
         textView.setText(getContext().getString(R.string.Snabble_PaymentSelection_title) + " " + formattedAmount);
@@ -149,8 +149,8 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         }
 
         private void addCodes() {
-            Checkout checkout = sdkInstance.getCheckout();
-            ShoppingCart shoppingCart = sdkInstance.getShoppingCart();
+            Checkout checkout = project.getCheckout();
+            ShoppingCart shoppingCart = project.getShoppingCart();
 
             for (String code : checkout.getCodes()) {
                 addScannableCode(code);
@@ -186,7 +186,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         }
 
         private void generateView() {
-            stringBuilder.append(sdkInstance.getEncodedCodesSuffix());
+            stringBuilder.append(project.getEncodedCodesSuffix());
             String code = stringBuilder.toString();
 
             BarcodeView barcodeView = new BarcodeView(getContext());
@@ -206,16 +206,16 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         }
 
         private void addScannableCode(String scannableCode) {
-            int requiredLength = scannableCode.length() + sdkInstance.getEncodedCodesSuffix().length() + 1;
-            if (codeCount + 1 > sdkInstance.getEncodedCodesMaxCodes()
+            int requiredLength = scannableCode.length() + project.getEncodedCodesSuffix().length() + 1;
+            if (codeCount + 1 > project.getEncodedCodesMaxCodes()
                     || stringBuilder.length() + (requiredLength) > MAX_CHARS) {
                 generateView();
             }
 
             if (stringBuilder.length() == 0) {
-                stringBuilder.append(sdkInstance.getEncodedCodesPrefix());
+                stringBuilder.append(project.getEncodedCodesPrefix());
             } else {
-                stringBuilder.append(sdkInstance.getEncodedCodesSeparator());
+                stringBuilder.append(project.getEncodedCodesSeparator());
             }
 
             stringBuilder.append(scannableCode);

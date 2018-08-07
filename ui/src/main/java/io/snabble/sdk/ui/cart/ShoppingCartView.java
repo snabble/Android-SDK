@@ -165,15 +165,15 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         createItemTouchHelper();
 
-        Project sdkInstance = SnabbleUI.getProject();
+        Project project = SnabbleUI.getProject();
 
         if (cart != null) {
             cart.removeListener(shoppingCartListener);
         }
 
-        cart = sdkInstance.getShoppingCart();
-        checkout = sdkInstance.getCheckout();
-        priceFormatter = new PriceFormatter(sdkInstance);
+        cart = project.getShoppingCart();
+        checkout = project.getCheckout();
+        priceFormatter = new PriceFormatter(project);
 
         updatePayText();
         updateEmptyState();
