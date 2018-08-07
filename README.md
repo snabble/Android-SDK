@@ -67,9 +67,8 @@ dependencies {
         Snabble.setDebugLoggingEnabled(true);
 
         Snabble.Config config = new Snabble.Config();
-        config.endpointBaseUrl = https://api.snabble.io
-        config.secret = <your secret>
         config.appId = <your app id>
+        config.secret = <your secret>
         
         // optional: provide a metadata file, store in the assets. That allows the sdk 
         // init without requiring a network connection.
