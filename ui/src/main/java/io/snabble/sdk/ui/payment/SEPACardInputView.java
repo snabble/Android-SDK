@@ -12,7 +12,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import io.snabble.sdk.SnabbleSdk;
+
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.SEPAPaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -127,7 +128,7 @@ public class SEPACardInputView extends FrameLayout {
         }
 
         if (ok) {
-            SnabbleSdk.getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(name, iban));
+            Snabble.getInstance().getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(name, iban));
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){

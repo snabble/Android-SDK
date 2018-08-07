@@ -21,7 +21,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.snabble.sdk.SnabbleSdk;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.payment.SEPAPaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -69,7 +69,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         entries.clear();
 
-        paymentCredentialsStore = SnabbleSdk.getUserPreferences().getPaymentCredentialsStore();
+        paymentCredentialsStore = Snabble.getInstance().getUserPreferences().getPaymentCredentialsStore();
         onChanged();
     }
 
