@@ -38,6 +38,7 @@ public class Snabble {
     private String metadataUrl;
     private Config config;
     private List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
+    private String versionName;
 
     private Snabble() {
 
@@ -47,7 +48,7 @@ public class Snabble {
         this.application = app;
         this.config = config;
 
-        if(config.appId == null || config.secret == null) {
+        if (config.appId == null || config.secret == null) {
             setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
             return;
         }
@@ -68,15 +69,14 @@ public class Snabble {
             return;
         }
 
-        if(config.endpointBaseUrl == null){
+        if (config.endpointBaseUrl == null) {
             config.endpointBaseUrl = "https://api.snabble.io";
         } else if (!config.endpointBaseUrl.startsWith("http://") && !config.endpointBaseUrl.startsWith("https://")) {
             config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
         }
 
         String version = config.versionName;
-
-        if(version == null) {
+        if (version == null) {
             try {
                 PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
                 if (pInfo != null && pInfo.versionName != null) {
@@ -89,6 +89,7 @@ public class Snabble {
             }
         }
 
+        versionName = version;
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
@@ -106,7 +107,7 @@ public class Snabble {
 
                 @Override
                 protected void onError() {
-                    if(metadataDownloader.hasData()){
+                    if (metadataDownloader.hasData()) {
                         readMetadata();
                         setupCompletionListener.onReady();
                     } else {
@@ -117,6 +118,10 @@ public class Snabble {
         }
 
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    }
+
+    public String getVersionName() {
+        return versionName;
     }
 
     /**
@@ -130,19 +135,42 @@ public class Snabble {
                 JsonUtils.getBooleanOpt(jsonObject.get("metadata").getAsJsonObject(), "kill", false);
     }
 
-    private void readMetadata() {
+    private synchronized void readMetadata() {
         JsonObject jsonObject = metadataDownloader.getJsonObject();
-        if(jsonObject != null && jsonObject.has("projects")) {
+        if (jsonObject != null && jsonObject.has("projects")) {
             JsonArray jsonArray = jsonObject.get("projects").getAsJsonArray();
             List<Project> newProjects = new ArrayList<>();
 
-            for (int i=0; i<jsonArray.size(); i++) {
+            for (int i = 0; i < jsonArray.size(); i++) {
                 JsonObject jsonProject = jsonArray.get(i).getAsJsonObject();
-                try {
-                    Project project = new Project(jsonProject);
-                    newProjects.add(project);
-                } catch (IllegalArgumentException e) {
-                    // malformed project, do nothing
+
+                // first try to find an already existing project and update it, so that
+                // the object reference can be stored somewhere and still be up to date
+                boolean updated = false;
+                if (jsonProject.has("id")) {
+                    for (Project p : projects) {
+                        if (p.getId().equals(jsonProject.get("id").getAsString())) {
+                            try {
+                                p.parse(jsonProject);
+                                newProjects.add(p);
+                            } catch (IllegalArgumentException e) {
+                                // malformed project, do nothing
+                            }
+
+                            updated = true;
+                            break;
+                        }
+                    }
+
+                    // if it does not exist, add it
+                    if (!updated) {
+                        try {
+                            Project project = new Project(jsonProject);
+                            newProjects.add(project);
+                        } catch (IllegalArgumentException e) {
+                            // malformed project, do nothing
+                        }
+                    }
                 }
             }
 
@@ -280,7 +308,7 @@ public class Snabble {
     /**
      * Unique identifier, different over device installations
      */
-    public String getClientId(){
+    public String getClientId() {
         return userPreferences.getClientId();
     }
 
@@ -290,6 +318,7 @@ public class Snabble {
 
     public interface SetupCompletionListener {
         void onReady();
+
         void onError(Error error);
     }
 
@@ -351,23 +380,23 @@ public class Snabble {
         public String secret;
         /**
          * Optional. Used to override the versionName appended to the metadata url.
-         *
+         * <p>
          * Defaults to the versionName in the app package.
-         *
+         * <p>
          * Must be in the format %d.%d
          */
         public String versionName;
 
         /**
          * Optional SSLSocketFactory that gets used for HTTP requests.
-         *
+         * <p>
          * Requires also x509TrustManager to be set.
          */
         public SSLSocketFactory sslSocketFactory = null;
 
         /**
          * Optional X509TrustManager that gets used for HTTP requests.
-         *
+         * <p>
          * Requires also sslSocketFactory to be set.
          */
         public X509TrustManager x509TrustManager = null;
@@ -375,7 +404,7 @@ public class Snabble {
         /**
          * If set to true, creates an full text index to support searching in the product database
          * using findByName or searchByName.
-         *
+         * <p>
          * Note that this increases setup time of the ProductDatabase, and it may not be
          * immediately available offline.
          */

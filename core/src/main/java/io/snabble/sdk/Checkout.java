@@ -183,7 +183,6 @@ public class Checkout {
         this.project = project;
         this.okHttpClient = project.getOkHttpClient();
         this.shoppingCart = project.getShoppingCart();
-
         this.gson = new GsonBuilder().create();
 
         HandlerThread handlerThread = new HandlerThread("Checkout");

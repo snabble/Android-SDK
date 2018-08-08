@@ -26,7 +26,7 @@ class ShoppingCartManager {
 
     public ShoppingCartManager(final Project project) {
         this.project = project;
-        file = new File(Snabble.getInstance().getInternalStorageDirectory(), "shoppingCart.json");
+        file = new File(project.getInternalStorageDirectory(), "shoppingCart.json");
         gson = new GsonBuilder().create();
 
         HandlerThread handlerThread = new HandlerThread("ShoppingCartManager");
