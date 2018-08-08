@@ -100,12 +100,16 @@ public class Project {
 
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
-        // TODO remove temporary flags when contained in the metadata json
-        if(id.equals("edeka-paschmann-84f311")) {
-            encodedCodesPrefix = "XE";
-            encodedCodesSeparator = "XE";
-            encodedCodesSuffix = "XZ";
-            encodedCodesMaxCodes = 30;
+        if(jsonObject.has("encodedCodes")) {
+            JsonElement encodedCodes = jsonObject.get("encodedCodes");
+            if(!encodedCodes.isJsonNull()) {
+                JsonObject object = encodedCodes.getAsJsonObject();
+
+                encodedCodesPrefix = JsonUtils.getStringOpt(object, "prefix", "");
+                encodedCodesSeparator = JsonUtils.getStringOpt(object, "separator", "\n");
+                encodedCodesSuffix = JsonUtils.getStringOpt(object, "suffix", "");
+                encodedCodesMaxCodes = JsonUtils.getIntOpt(object, "maxCodes", 100);
+            }
         } else {
             encodedCodesPrefix = "";
             encodedCodesSeparator = "\n";
@@ -113,9 +117,7 @@ public class Project {
             encodedCodesMaxCodes = 100;
         }
 
-        if(id.equals("demo") || id.equals("edeka-paschmann-84f311")) {
-            useGermanPrintPrefix = true;
-        }
+        useGermanPrintPrefix = JsonUtils.getBooleanOpt(jsonObject, "useGermanPrintPrefix", false);
 
         if (jsonObject.has("shops")) {
             shops = Shop.fromJson(jsonObject.get("shops"));
