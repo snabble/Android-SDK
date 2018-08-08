@@ -8,12 +8,14 @@ import com.google.gson.JsonObject;
 
 import org.apache.commons.lang3.LocaleUtils;
 
+import java.io.File;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import io.snabble.sdk.utils.JsonUtils;
@@ -22,7 +24,6 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
 
 public class Project {
-
     private String id;
 
     private ProductDatabase productDatabase;
@@ -56,7 +57,30 @@ public class Project {
 
     private OkHttpClient okHttpClient;
 
+    private File internalStorageDirectory;
+
     Project(JsonObject jsonObject) throws IllegalArgumentException {
+        Logger.d("New project: %s, %d", id, System.identityHashCode(this));
+
+        Snabble snabble = Snabble.getInstance();
+
+        parse(jsonObject);
+
+        internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(Snabble.getInstance().getApplication(), this);
+
+        boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
+
+        productDatabase = new ProductDatabase(this, id + ".sqlite3", generateSearchIndex);
+        shoppingCartManager = new ShoppingCartManager(this);
+        checkout = new Checkout(this);
+        events = new Events(this);
+
+        Application app = Snabble.getInstance().getApplication();
+        app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    }
+
+    void parse(JsonObject jsonObject) {
         Snabble snabble = Snabble.getInstance();
 
         Map<String, String> urls = new HashMap<>();
@@ -100,12 +124,16 @@ public class Project {
 
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
-        // TODO remove temporary flags when contained in the metadata json
-        if(id.equals("edeka-paschmann-84f311")) {
-            encodedCodesPrefix = "XE";
-            encodedCodesSeparator = "XE";
-            encodedCodesSuffix = "XZ";
-            encodedCodesMaxCodes = 30;
+        if(jsonObject.has("encodedCodes")) {
+            JsonElement encodedCodes = jsonObject.get("encodedCodes");
+            if(!encodedCodes.isJsonNull()) {
+                JsonObject object = encodedCodes.getAsJsonObject();
+
+                encodedCodesPrefix = JsonUtils.getStringOpt(object, "prefix", "");
+                encodedCodesSeparator = JsonUtils.getStringOpt(object, "separator", "\n");
+                encodedCodesSuffix = JsonUtils.getStringOpt(object, "suffix", "");
+                encodedCodesMaxCodes = JsonUtils.getIntOpt(object, "maxCodes", 100);
+            }
         } else {
             encodedCodesPrefix = "";
             encodedCodesSeparator = "\n";
@@ -113,9 +141,7 @@ public class Project {
             encodedCodesMaxCodes = 100;
         }
 
-        if(id.equals("demo") || id.equals("edeka-paschmann-84f311")) {
-            useGermanPrintPrefix = true;
-        }
+        useGermanPrintPrefix = JsonUtils.getBooleanOpt(jsonObject, "useGermanPrintPrefix", false);
 
         if (jsonObject.has("shops")) {
             shops = Shop.fromJson(jsonObject.get("shops"));
@@ -125,17 +151,11 @@ public class Project {
             shops = new Shop[0];
         }
 
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(Snabble.getInstance().getApplication(), this);
+        Logger.d("Updated project: %s, %d", id, System.identityHashCode(this));
+    }
 
-        boolean generateSearchIndex = Snabble.getInstance().getConfig().generateSearchIndex;
-        productDatabase = new ProductDatabase(this, id + ".sqlite3", generateSearchIndex);
-
-        shoppingCartManager = new ShoppingCartManager(this);
-        checkout = new Checkout(this);
-        events = new Events(this);
-
-        Application app = Snabble.getInstance().getApplication();
-        app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    public File getInternalStorageDirectory() {
+        return internalStorageDirectory;
     }
 
     private RoundingMode parseRoundingMode(JsonElement jsonElement){

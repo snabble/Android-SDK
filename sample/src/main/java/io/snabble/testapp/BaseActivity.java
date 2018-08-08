@@ -38,7 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.content, onCreateFragment())
-                                .commit();
+                                .commitAllowingStateLoss();
                     }
                 });
             }
