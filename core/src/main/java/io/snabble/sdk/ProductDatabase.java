@@ -54,7 +54,7 @@ public class ProductDatabase {
     private int schemaVersionMinor;
     private boolean generateSearchIndex;
 
-    private Project sdk;
+    private Project project;
     private Application application;
     private ProductDatabaseDownloader productDatabaseDownloader;
 
@@ -62,7 +62,7 @@ public class ProductDatabase {
     private ProductApi productApi;
 
     ProductDatabase(Project project, String name, boolean generateSearchIndex) {
-        this.sdk = project;
+        this.project = project;
         this.application = Snabble.getInstance().getApplication();
         this.dbName = name;
 
@@ -76,8 +76,8 @@ public class ProductDatabase {
         }
     }
 
-    private ProductDatabase(Project sdk, String name){
-        this(sdk, name, false);
+    private ProductDatabase(Project project, String name){
+        this(project, name, false);
     }
 
     private boolean open() {
@@ -154,8 +154,8 @@ public class ProductDatabase {
         boolean bundleHasNewerSchema = major != -1 && minor != -1
                 && (major > schemaVersionMajor || minor > schemaVersionMinor);
 
-        String project = getMetaData(METADATA_KEY_PROJECT);
-        boolean isOtherProject = !sdk.getId().equals(project);
+        String dbProject = getMetaData(METADATA_KEY_PROJECT);
+        boolean isOtherProject = !project.getId().equals(dbProject);
 
         if (revisionId < revision || bundleHasNewerSchema || isOtherProject) {
             close();
@@ -167,7 +167,7 @@ public class ProductDatabase {
                             major, minor);
                 } else if (isOtherProject) {
                     Logger.d("Bundled product database has different projectId (%s -> %s)",
-                            project, sdk.getId());
+                            dbProject, project.getId());
                 } else {
                     Logger.d("Bundled product database is newer (%d -> %d)",
                             revisionId, revision);
@@ -602,7 +602,7 @@ public class ProductDatabase {
     private void swap(File otherDbFile) throws IOException {
         boolean ok = true;
 
-        ProductDatabase otherDb = new ProductDatabase(sdk, otherDbFile.getName());
+        ProductDatabase otherDb = new ProductDatabase(project, otherDbFile.getName());
         try {
             otherDb.open();
 
