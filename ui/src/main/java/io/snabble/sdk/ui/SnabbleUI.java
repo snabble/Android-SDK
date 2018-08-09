@@ -12,7 +12,7 @@ public class SnabbleUI {
      * Registers a globally used project for use with views.
      * <p>
      */
-    public static void registerProject(Project project) {
+    public static void useProject(Project project) {
         SnabbleUI.project = project;
     }
 

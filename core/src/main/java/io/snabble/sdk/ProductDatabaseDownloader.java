@@ -10,7 +10,7 @@ class ProductDatabaseDownloader extends Downloader {
     private static final String MIMETYPE_DELTA = "application/vnd+sellfio.appdb+sql";
     private static final String MIMETYPE_FULL = "application/vnd+sellfio.appdb+sqlite3";
 
-    private Project sdk;
+    private Project project;
     private ProductDatabase productDatabase;
 
     private boolean sameRevision;
@@ -20,7 +20,7 @@ class ProductDatabaseDownloader extends Downloader {
                                      ProductDatabase productDatabase) {
         super(project.getOkHttpClient());
 
-        this.sdk = project;
+        this.project = project;
         this.productDatabase = productDatabase;
     }
 
@@ -35,13 +35,13 @@ class ProductDatabaseDownloader extends Downloader {
         sameRevision = false;
 
         if (productDatabase.getRevisionId() != -1) {
-            String url = sdk.getAppDbUrl()
+            String url = project.getAppDbUrl()
                     + "?havingRevision=" + productDatabase.getRevisionId()
                     + "&schemaVersion=" + productDatabase.getSchemaVersionMajor()
                     + "." + productDatabase.getSchemaVersionMinor();
             setUrl(url);
         } else {
-            setUrl(sdk.getAppDbUrl());
+            setUrl(project.getAppDbUrl());
         }
     }
 

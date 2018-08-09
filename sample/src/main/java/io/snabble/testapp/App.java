@@ -62,7 +62,7 @@ public class App extends Application {
                 project = snabble.getProjects().get(0);
 
                 // registers this sdk instance globally for use with ui components
-                SnabbleUI.registerProject(project);
+                SnabbleUI.useProject(project);
 
                 // select the first shop for demo purposes
                 if (project.getShops().length > 0) {
