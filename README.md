@@ -4,6 +4,13 @@
 
 Android SDK for Snabble
 
+## Requirements
+
+```
+minSdkVersion = 16
+compileSdkVersion = 28
+```
+
 ## Installation
 
 #### Using the snabble github Repository
@@ -63,52 +70,51 @@ dependencies {
 ## Usage
 ```
 //you may enable debug logging to see requests made by the sdk, and other various logs
-        //you may enable debug logging to see requests made by the sdk, and other various logs
-        Snabble.setDebugLoggingEnabled(true);
+Snabble.setDebugLoggingEnabled(true);
 
-        Snabble.Config config = new Snabble.Config();
-        config.appId = <your app id>
-        config.secret = <your secret>
+Snabble.Config config = new Snabble.Config();
+config.appId = <your app id>
+config.secret = <your secret>
+
+// optional: provide a metadata file, store in the assets. That allows the sdk 
+// init without requiring a network connection.
+config.bundledMetadataAssetPath = "metadata.json";
+
+final Snabble snabble = Snabble.getInstance();
+snabble.setup(this, config, new Snabble.SetupCompletionListener() {
+    @Override
+    public void onReady() {
+        // get the first project, there can be multiple projects per app
+        project = snabble.getProjects().get(0);
+
+        // registers this project globally for use with ui components
+        SnabbleUI.useProject(project);
+
+        // select the first shop for demo purposes, ideally this should be done with
+        // geofencing or a manual user selection
+        if (project.getShops().length > 0) {
+            project.getCheckout().setShop(project.getShops()[0]);
+        }
+
+        // optional: set a loyalty card id for identification, for demo purposes
+        // we invent one here
+        project.setLoyaltyCardId("testAppUserLoyaltyCardId");
         
-        // optional: provide a metadata file, store in the assets. That allows the sdk 
-        // init without requiring a network connection.
-        config.bundledMetadataAssetPath = "metadata.json";
+        // optional: load a bundled database file from the assets folder
+        // this lowers the download size of database updates and the database is immediatly
+        // available offline
+        project.getProductDatabase().loadDatabaseBundle("db.sqlite3", revision, major, minor);
+        
+        // optional: download the latest product database for offline availability
+        project.getProductDatabase().update();
+    }
 
-        final Snabble snabble = Snabble.getInstance();
-        snabble.setup(this, config, new Snabble.SetupCompletionListener() {
-            @Override
-            public void onReady() {
-                // get the first project, there can be multiple projects per app
-                project = snabble.getProjects().get(0);
-
-                // registers this project globally for use with ui components
-                SnabbleUI.registerProject(project);
-
-                // select the first shop for demo purposes
-                if (project.getShops().length > 0) {
-                    project.getCheckout().setShop(project.getShops()[0]);
-                }
-
-                // optional: download the latest product database for offline availability
-                project.getProductDatabase().update();
-
-                // optional: set a loyalty card id for identification, for demo purposes
-                // we invent one here
-                project.setLoyaltyCardId("testAppUserLoyaltyCardId");
-                
-                // optional: load a bundled database file from the assets folder
-                // this lowers the download size of database updates and the database is immediatly
-                // available offline
-                project.getProductDatabase().loadDatabaseBundle("db.sqlite3", revision, major, minor);
-
-                callback.done();
-            }
-
-            @Override
-            public void onError(Snabble.Error error) {
-                callback.error("SdkError: " + error.toString());
-            }
-        });
+    @Override
+    public void onError(Snabble.Error error) {
+        // connecton error if no metadata file is bundled or config error
+        // if no appId or secret is provided
+    }
+});
 ```
 
 ## Author
