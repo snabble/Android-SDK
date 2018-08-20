@@ -60,6 +60,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private View emptyState;
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
+    private boolean hasAnyImages;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
@@ -177,6 +178,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         updatePayText();
         updateEmptyState();
+        scanForImages();
 
         if (checkout.getState() != Checkout.State.CONNECTION_ERROR) {
             onStateChanged(checkout.getState());
@@ -276,11 +278,25 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void onCartUpdated() {
         updatePayText();
         updateEmptyState();
+        scanForImages();
 
         recyclerViewAdapter.notifyDataSetChanged();
 
         if (snackbar != null) {
             snackbar.dismiss();
+        }
+    }
+
+    private void scanForImages() {
+        hasAnyImages = false;
+
+        for(int i=0; i<cart.size(); i++) {
+            Product product = cart.getProduct(i);
+            String url = product.getImageUrl();
+            if(url != null && url.length() > 0) {
+                hasAnyImages = true;
+                break;
+            }
         }
     }
 
@@ -558,7 +574,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     image.setVisibility(View.VISIBLE);
                     Picasso.with(getContext()).load(imageUrl).into(image);
                 } else {
-                    image.setVisibility(View.GONE);
+                    image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
                     image.setImageBitmap(null);
                 }
             } else {
