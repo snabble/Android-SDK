@@ -95,6 +95,14 @@ public class TokenRegistry {
         return (System.currentTimeMillis() + timeOffset) / 1000;
     }
 
+    /**
+     * Synchronously retrieves a token for the project.
+     *
+     * May do synchronous http requests, if the token is invalid.
+     * If a valid token is available, it will be returned without doing http requests.
+     *
+     * Returns null if not valid token could be generated. (invalid secret, timeouts, no connection)
+     */
     public synchronized Token getToken(Project project) {
         if (project == null) {
             return null;
