@@ -31,7 +31,7 @@ allprojects {
         minSdkVersion=16
         targetSdkVersion=28
 
-        buildToolsVersion='28.0.2'
+        buildToolsVersion='27.0.3'
         supportLibraryVersion='27.1.1'
         okhttpVersion='3.11.0'
 
