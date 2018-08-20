@@ -7,6 +7,7 @@ import android.os.HandlerThread;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -65,10 +66,11 @@ class ShoppingCartManager {
             public void run() {
                 String json = gson.toJson(shoppingCart);
                 try {
+                    FileUtils.forceMkdirParent(file);
                     IOUtils.write(json, new FileOutputStream(file), Charset.forName("UTF-8"));
                 } catch (IOException e) {
                     //could not save shopping cart, silently ignore
-                    Logger.e("Could not save shopping list to " + file.getAbsolutePath());
+                    Logger.e("Could not save shopping list for " + project.getId() + ": " + e.getMessage());
                 }
             }
         });
