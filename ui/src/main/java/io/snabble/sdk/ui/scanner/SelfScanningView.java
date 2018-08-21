@@ -231,12 +231,23 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product);
         } else {
-            showProduct(product, scannedCode);
+            if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
+                UIUtils.snackbar(SelfScanningView.this,
+                        R.string.Snabble_Scanner_scannedShelfCode,
+                        Snackbar.LENGTH_LONG)
+                        .show();
 
-            if (wasOnlineProduct) {
-                Telemetry.event(Telemetry.Event.ScannedOnlineProduct, product);
+                progressDialog.dismiss();
+                resumeBarcodeScanner();
+                delayNextScan();
             } else {
-                Telemetry.event(Telemetry.Event.ScannedProduct, product);
+                showProduct(product, scannedCode);
+
+                if (wasOnlineProduct) {
+                    Telemetry.event(Telemetry.Event.ScannedOnlineProduct, product);
+                } else {
+                    Telemetry.event(Telemetry.Event.ScannedProduct, product);
+                }
             }
         }
     }
