@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.File;
+
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringDownloader;
 import okhttp3.OkHttpClient;

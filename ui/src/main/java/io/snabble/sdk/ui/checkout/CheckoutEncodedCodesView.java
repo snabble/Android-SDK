@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
-import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;

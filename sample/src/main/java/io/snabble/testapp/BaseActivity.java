@@ -10,10 +10,7 @@ import android.widget.TextView;
 
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
-import io.snabble.sdk.ui.integration.CheckoutFragment;
-import io.snabble.sdk.ui.integration.ProductSearchFragment;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
-import io.snabble.sdk.ui.integration.ShoppingCartFragment;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUICallback {
     private ProgressBar progressIndicator;

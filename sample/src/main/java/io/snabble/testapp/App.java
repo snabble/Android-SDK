@@ -60,6 +60,12 @@ public class App extends Application {
             @Override
             public void onReady() {
                 project = snabble.getProjects().get(0);
+                project.addOnUpdateListener(new Project.OnProjectUpdatedListener() {
+                    @Override
+                    public void onProjectUpdated(Project p) {
+                        Log.d("Test", p.getId() + " updated");
+                    }
+                });
 
                 // registers this sdk instance globally for use with ui components
                 SnabbleUI.useProject(project);

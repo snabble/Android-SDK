@@ -3,7 +3,6 @@ package io.snabble.sdk;
 import android.app.Application;
 
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
-import io.snabble.sdk.auth.TokenRegistry;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;

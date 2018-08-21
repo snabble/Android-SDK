@@ -23,9 +23,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.math.RoundingMode;
+
 import io.snabble.sdk.Product;
-import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;

@@ -46,8 +46,8 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private RecyclerView recyclerView;

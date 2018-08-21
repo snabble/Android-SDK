@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
-import io.snabble.sdk.ui.integration.ShoppingCartFragment;
 
 public class SelfScanningActivity extends BaseActivity implements SnabbleUICallback {
     @Override

@@ -11,13 +11,13 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.WindowManager;
-import android.os.Handler;
 
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
