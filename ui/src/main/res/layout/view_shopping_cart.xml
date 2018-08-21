@@ -43,29 +43,28 @@
         android:visibility="gone"
         android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_cart_large"
-            app:tint="@color/snabble_primaryColor"
-            android:layout_marginBottom="16dp" />
+        <io.snabble.sdk.ui.scanner.BarcodeView
+            android:layout_width="200dp"
+            android:layout_height="72dp"
+            android:background="?android:attr/windowBackground"
+            app:format="EAN_13"
+            app:text="0000000000000"
+            app:adjustBrightness="false"
+            android:layout_marginBottom="24dp" />
 
         <TextView
             android:layout_width="288dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="24dp"
             android:text="@string/Snabble.Shoppingcart.emptyState.description" />
 
-        <TextView
+        <Button
+            style="@style/SnabbleButton"
             android:id="@+id/scan_products"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@color/snabble_textColorAction"
-            android:textSize="15sp"
-            android:padding="16dp"
-            android:background="?attr/selectableItemBackground"
             android:text="@string/Snabble.Shoppingcart.emptyState.buttonTitle" />
     </LinearLayout>
 </FrameLayout>

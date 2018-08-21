@@ -21,7 +21,6 @@ import android.view.WindowManager;
 
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
-import com.google.zxing.common.BitArray;
 import com.google.zxing.common.BitMatrix;
 
 import io.snabble.sdk.ui.R;
@@ -84,7 +83,7 @@ public class BarcodeView extends AppCompatImageView {
         }
 
         Drawable background = getBackground();
-        if(background instanceof ColorDrawable){
+        if (background instanceof ColorDrawable) {
             backgroundColor = ((ColorDrawable) background).getColor();
         } else {
             backgroundColor = Color.WHITE;
@@ -158,40 +157,25 @@ public class BarcodeView extends AppCompatImageView {
                     public void run() {
                         MultiFormatWriter writer = new MultiFormatWriter();
                         try {
-                            int paddingWidth = getPaddingRight() - getPaddingLeft();
-                            int paddingHeight = getPaddingBottom() - getPaddingTop();
+                            int paddingWidth = getPaddingRight() + getPaddingLeft();
+                            int paddingHeight = getPaddingBottom() + getPaddingTop();
 
-                            int paddingHalfWidth = paddingWidth / 2;
+                            int tw = w - paddingWidth;
+                            int th = h - paddingHeight;
 
-                            BitMatrix bm = writer.encode(text, format.getZxingBarcodeFormat(),
-                                    w - paddingWidth,
-                                    h - paddingHeight);
+                            BitMatrix bm = writer.encode(text, format.getZxingBarcodeFormat(), tw, th);
 
                             int[] pixels = new int[w * h];
-                            int[] enclosingRect = bm.getEnclosingRectangle();
 
-                            int left = Math.max(0, enclosingRect[0] - getPaddingLeft());
-                            int top = Math.max(0, enclosingRect[1] - getPaddingTop());
-                            int right = Math.min(w, enclosingRect[0] + enclosingRect[2] + getPaddingRight());
-                            int bottom = Math.min(h, enclosingRect[1] + enclosingRect[3] + getPaddingBottom());
+                            for (int y = 0; y < th; y++) {
+                                final int stride = y * tw;
 
-                            BitArray row = new BitArray(w);
-
-                            for (int y = 0; y < h; y++) {
-                                final int stride = y * w;
-                                bm.getRow(y, row);
-
-                                final int tw = w - paddingHalfWidth;
-                                for (int x = paddingHalfWidth; x < tw; x++) {
-                                    if(x > left && y > top && x < right && y < bottom) {
-                                        pixels[x + stride] = row.get(x) ? Color.BLACK : backgroundColor;
-                                    } else {
-                                        pixels[x + stride] = Color.TRANSPARENT;
-                                    }
+                                for (int x = 0; x < tw; x++) {
+                                    pixels[x + stride] = bm.get(x, y) ? Color.BLACK : backgroundColor;
                                 }
                             }
 
-                            Bitmap bitmap = Bitmap.createBitmap(pixels, w, h, Bitmap.Config.ARGB_8888);
+                            Bitmap bitmap = Bitmap.createBitmap(pixels, tw, th, Bitmap.Config.ARGB_8888);
 
                             if (isNumberDisplayEnabled) {
                                 if (format == BarcodeFormat.EAN_13) {
@@ -296,7 +280,7 @@ public class BarcodeView extends AppCompatImageView {
     /**
      * When set to true, adjusts the screen brightness when the view is visible
      */
-    public void setAdjustBrightness(boolean enabled){
+    public void setAdjustBrightness(boolean enabled) {
         adjustBrightness = enabled;
     }
 
@@ -304,7 +288,7 @@ public class BarcodeView extends AppCompatImageView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if(!isInEditMode() && adjustBrightness) {
+        if (!isInEditMode() && adjustBrightness) {
             Activity activity = UIUtils.getHostActivity(getContext());
             if (activity != null && isShown()) {
                 WindowManager.LayoutParams localLayoutParams = activity.getWindow().getAttributes();
@@ -318,7 +302,7 @@ public class BarcodeView extends AppCompatImageView {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        if(!isInEditMode() && adjustBrightness) {
+        if (!isInEditMode() && adjustBrightness) {
             Activity activity = UIUtils.getHostActivity(getContext());
             if (activity != null) {
                 WindowManager.LayoutParams localLayoutParams = activity.getWindow().getAttributes();
