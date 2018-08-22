@@ -73,9 +73,11 @@ public abstract class StringDownloader extends Downloader {
 
     private void loadFromBundledData() {
         try {
-            InputStream bundledDataInputStream = context.getAssets().open(assetPath);
-            onDownloadFinished(IOUtils.toString(bundledDataInputStream, Charset.forName("UTF-8")));
-            bundledDataInputStream.close();
+            if(assetPath != null) {
+                InputStream bundledDataInputStream = context.getAssets().open(assetPath);
+                onDownloadFinished(IOUtils.toString(bundledDataInputStream, Charset.forName("UTF-8")));
+                bundledDataInputStream.close();
+            }
         } catch (IOException e) {
             Logger.e("Could not load bundled data: %s", e.toString());
         }
