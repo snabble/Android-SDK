@@ -51,6 +51,7 @@ public class Shop implements Serializable {
     }
 
     private String id;
+    private String externalId;
     private String name;
     private Service[] services;
     private String street;
@@ -70,6 +71,10 @@ public class Shop implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public String getExternalId() {
+        return externalId;
     }
 
     public Service[] getServices() {
@@ -138,6 +143,7 @@ public class Shop implements Serializable {
 
     public static class Builder {
         private String id;
+        private String externalId;
         private String name;
         private Shop.Service[] services;
         private String street;
@@ -207,6 +213,11 @@ public class Shop implements Serializable {
             return this;
         }
 
+        public Builder externalId(String externalId) {
+            this.externalId = externalId;
+            return this;
+        }
+
         public Builder external(JsonElement external) {
             this.external = external;
             return this;
@@ -216,6 +227,7 @@ public class Shop implements Serializable {
             Shop shop = new Shop();
 
             shop.id = id;
+            shop.externalId = externalId;
             shop.name = name;
             shop.services = services;
             shop.street = street;
