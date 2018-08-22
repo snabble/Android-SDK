@@ -27,7 +27,7 @@ public class SelfScanningFragment extends Fragment {
     private ViewGroup rootView;
     private View permissionContainer;
     private Button askForPermission;
-    private boolean canAskAgain = false;
+    private boolean canAskAgain = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +77,7 @@ public class SelfScanningFragment extends Fragment {
             selfScanningView = new SelfScanningView(getContext());
             rootView.addView(selfScanningView);
             permissionContainer.setVisibility(View.GONE);
+            canAskAgain = true;
 
             handleBundleArgs();
         }
@@ -107,9 +108,6 @@ public class SelfScanningFragment extends Fragment {
                 canAskAgain = ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permissions[0]);
                 showPermissionRationale();
             }
-        } else {
-            canAskAgain = false;
-            showPermissionRationale();
         }
     }
 
