@@ -5,33 +5,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:id="@+id/permission_denied_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:clipChildren="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="gone"
-        android:orientation="vertical">
-        <ImageView
+        android:fillViewport="true">
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_camera_large"/>
-
-        <TextView
-            android:layout_width="288dp"
-            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:layout_marginBottom="24dp"
-            android:text="@string/Snabble.Scanner.Camera.allowAccess"/>
+            android:clipChildren="false"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:src="@drawable/ic_camera_large"/>
 
-        <Button
-            style="@style/SnabbleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/open_settings"
-            android:text="@string/Snabble.goToSettings"/>
-    </LinearLayout>
+            <TextView
+                android:layout_width="288dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"
+                android:text="@string/Snabble.Scanner.Camera.allowAccess"/>
+
+            <Button
+                style="@style/SnabbleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/open_settings"
+                android:text="@string/Snabble.goToSettings"/>
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>

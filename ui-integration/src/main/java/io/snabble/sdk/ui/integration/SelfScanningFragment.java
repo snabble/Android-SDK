@@ -27,7 +27,8 @@ public class SelfScanningFragment extends Fragment {
     private ViewGroup rootView;
     private View permissionContainer;
     private Button askForPermission;
-    private boolean canAskAgain = true;
+    private boolean canAskAgain = false;
+    private boolean isStart;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,27 +36,14 @@ public class SelfScanningFragment extends Fragment {
         permissionContainer = rootView.findViewById(R.id.permission_denied_container);
         askForPermission = rootView.findViewById(R.id.open_settings);
 
-        checkPermission();
-
         return rootView;
-    }
-
-    private void checkPermission() {
-        if (isPermissionGranted()) {
-            createSelfScanningView();
-        } else {
-            rootView.removeView(selfScanningView);
-            selfScanningView = null;
-
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, 0);
-        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        checkPermission();
+        isStart = true;
     }
 
     @Override
@@ -68,8 +56,14 @@ public class SelfScanningFragment extends Fragment {
             rootView.removeView(selfScanningView);
             selfScanningView = null;
 
-            showPermissionRationale();
+            if(isVisible() && isStart) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, 0);
+            } else {
+                showPermissionRationale();
+            }
         }
+
+        isStart = false;
     }
 
     private void createSelfScanningView() {
