@@ -44,6 +44,8 @@ public class ShoppingCart {
     private String id;
     private long lastModificationTime;
     private List<Entry> items = new ArrayList<>();
+    private int modCount = 0;
+    private int addCount = 0;
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
     private transient Handler handler = new Handler(Looper.getMainLooper());
     private transient Project project;
@@ -249,6 +251,7 @@ public class ShoppingCart {
     private void removeAll(Entry e) {
         if (e != null) {
             items.remove(e);
+            modCount++;
             notifyItemRemoved(this, e.product);
         }
     }
@@ -259,6 +262,8 @@ public class ShoppingCart {
 
     public void clear() {
         items.clear();
+        modCount = 0;
+        addCount = 0;
         notifyCleared(this);
     }
 
@@ -280,6 +285,7 @@ public class ShoppingCart {
             if (newQuantity > 0) {
                 if (newQuantity != e.quantity) {
                     e.quantity = Math.max(0, Math.min(MAX_QUANTITY, newQuantity));
+                    modCount++;
                     notifyQuantityChanged(this, e.product);
                 }
             } else {
@@ -293,6 +299,8 @@ public class ShoppingCart {
             setEntryQuantity(e, e.quantity + 1);
         } else {
             items.add(index, e);
+            modCount++;
+            addCount++;
             notifyItemAdded(this, e.product);
         }
     }
@@ -335,6 +343,7 @@ public class ShoppingCart {
             entry.amount = scannedCode.getEmbeddedData();
         }
 
+        modCount++;
         notifyQuantityChanged(this, entry.product);
     }
 
@@ -365,6 +374,14 @@ public class ShoppingCart {
         return items.contains(e);
     }
 
+    public int getAddCount() {
+        return addCount;
+    }
+
+    public int getModCount() {
+        return modCount;
+    }
+
     /**
      * Swaps the position of two entries based on their index.
      * <p>
@@ -373,6 +390,7 @@ public class ShoppingCart {
     public void swap(int fromIndex, int toIndex) {
         if (fromIndex >= 0 && fromIndex < items.size() && toIndex >= 0 && toIndex < items.size() && fromIndex != toIndex) {
             Collections.swap(items, fromIndex, toIndex);
+            modCount++;
             notifyItemMoved(this, fromIndex, toIndex);
         }
     }

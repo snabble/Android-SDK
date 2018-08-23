@@ -11,6 +11,7 @@
 	<string name="Snabble.Edit">Edit</string>
 	<string name="Snabble.Yes">Yes</string>
 	<string name="Snabble.No">No</string>
+	<string name="Snabble.OK">OK</string>
 	<string name="Snabble.Settings">Settings</string>
 	<string name="Snabble.Delete">Delete</string>
 	<string name="Snabble.remove">Remove</string>
@@ -55,6 +56,8 @@
 	<string name="Snabble.Shoppingcart.deposit">Deposit</string>
 	<string name="Snabble.PaymentMethod.encodedCodes">Checkstand</string>
 	<string name="Snabble.PaymentMethod.qrCodePOS">Checkstand</string>
+	<string name="Snabble.Hints.title">Hint from %s</string>
+	<string name="Snabble.Hints.closedBags">Please make it easy for the cashier and do not put your items directly in closed pockets. Thank you!</string>
 
 	<!-- SECTION: Android -->
 	<string name="Snabble.askForPermission">Ask for permission</string>

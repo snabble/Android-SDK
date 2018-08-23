@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -28,12 +29,15 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Shop;
+import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
@@ -51,6 +55,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private DelayedProgressDialog progressDialog;
     private long detectAfterTimeMs;
     private boolean ignoreNextDialog;
+    private ShoppingCart shoppingCart;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -71,6 +76,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         inflate(getContext(), R.layout.view_self_scanning, this);
 
         Project project = SnabbleUI.getProject();
+
+        shoppingCart = project.getShoppingCart();
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
@@ -305,6 +312,43 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
+    public void showHints() {
+        Project project = SnabbleUI.getProject();
+        Shop currentShop = project.getCheckout().getShop();
+
+        if(currentShop != null) {
+            Context context = getContext();
+
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(R.layout.dialog_hints, null, false);
+
+            TextView textView = view.findViewById(R.id.title);
+            textView.setText(context.getString(R.string.Snabble_Hints_title, currentShop.getName()));
+
+            final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                    .setView(view)
+                    .setPositiveButton(R.string.Snabble_OK, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setCancelable(true)
+                    .create();
+
+            alertDialog.setCanceledOnTouchOutside(true);
+
+            view.findViewById(R.id.close).setOnClickListener(new OneShotClickListener() {
+                @Override
+                public void click() {
+                    alertDialog.dismiss();
+                }
+            });
+
+            alertDialog.show();
+        }
+    }
+
     public void resume() {
         resumeBarcodeScanner();
     }
@@ -395,6 +439,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         isRunning = true;
 
         startBarcodeScanner();
+        shoppingCart.addListener(shoppingCartListener);
     }
 
     public void unregisterListeners() {
@@ -404,6 +449,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog.dismiss();
         productDialog.dismiss();
+        shoppingCart.removeListener(shoppingCartListener);
     }
 
     @Override
@@ -425,6 +471,35 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         unregisterListeners();
     }
+
+    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
+        @Override
+        public void onItemAdded(ShoppingCart list, Product product) {
+            if(list.getAddCount() == 1) {
+                showHints();
+            }
+        }
+
+        @Override
+        public void onQuantityChanged(ShoppingCart list, Product product) {
+
+        }
+
+        @Override
+        public void onCleared(ShoppingCart list) {
+
+        }
+
+        @Override
+        public void onItemMoved(ShoppingCart list, int fromIndex, int toIndex) {
+
+        }
+
+        @Override
+        public void onItemRemoved(ShoppingCart list, Product product) {
+
+        }
+    };
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
