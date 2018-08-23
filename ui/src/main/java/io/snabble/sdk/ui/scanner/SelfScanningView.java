@@ -166,7 +166,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
             UIUtils.snackbar(SelfScanningView.this,
                     R.string.Snabble_Scanner_unknownBarcode,
-                    Snackbar.LENGTH_LONG)
+                    UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                     .show();
             return;
         }
@@ -241,7 +241,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
                 UIUtils.snackbar(SelfScanningView.this,
                         R.string.Snabble_Scanner_scannedShelfCode,
-                        Snackbar.LENGTH_LONG)
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show();
 
                 progressDialog.dismiss();
@@ -267,7 +267,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
         UIUtils.snackbar(SelfScanningView.this,
                 R.string.Snabble_Scanner_unknownBarcode,
-                Snackbar.LENGTH_LONG)
+                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                 .show();
     }
 
@@ -278,7 +278,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         UIUtils.snackbar(SelfScanningView.this,
                 R.string.Snabble_Scanner_networkError,
-                Snackbar.LENGTH_LONG)
+                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                 .show();
     }
 
@@ -550,7 +550,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
                 UIUtils.snackbar(SelfScanningView.this,
                         R.string.Snabble_Payment_errorStarting,
-                        Snackbar.LENGTH_LONG)
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show();
                 break;
             default:

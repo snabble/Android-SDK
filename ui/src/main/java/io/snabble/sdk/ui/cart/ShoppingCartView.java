@@ -220,7 +220,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 recyclerView.getAdapter().notifyItemRemoved(pos);
 
                 snackbar = UIUtils.snackbar(coordinatorLayout,
-                        R.string.Snabble_Shoppingcart_articleRemoved, 5000);
+                        R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
                 snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -247,7 +247,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             }
             progressDialog.dismiss();
         } else if (state == Checkout.State.CONNECTION_ERROR) {
-            UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
+            UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                     .show();
             progressDialog.dismiss();
         } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {
