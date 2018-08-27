@@ -154,7 +154,7 @@ public class ShoppingCart {
 
                 setEntryQuantity(e, quantity);
             } else {
-                add(product, quantity, scannedCode);
+                insert(product, 0, quantity, scannedCode);
             }
         }
     }

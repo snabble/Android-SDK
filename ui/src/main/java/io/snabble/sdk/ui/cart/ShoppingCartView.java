@@ -70,7 +70,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public void onQuantityChanged(ShoppingCart list, Product product) {
-            onCartUpdated();
+            
         }
 
         @Override
@@ -214,10 +214,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 final Product product = cart.getProduct(pos);
                 final String scannedCode = cart.getScannedCode(pos);
                 final int quantity = cart.getQuantity(pos);
+                final boolean isZeroAmountProduct = cart.isZeroAmountProduct(pos);
 
                 cart.removeAll(pos);
                 Telemetry.event(Telemetry.Event.DeletedFromCart, product);
                 recyclerView.getAdapter().notifyItemRemoved(pos);
+                update();
 
                 snackbar = UIUtils.snackbar(coordinatorLayout,
                         R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
@@ -225,7 +227,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     @Override
                     public void onClick(View v) {
                         ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getProject(), scannedCode);
-                        cart.insert(product, pos, quantity, parsedCode);
+                        cart.insert(product, pos, quantity, parsedCode, isZeroAmountProduct);
                         recyclerView.getAdapter().notifyDataSetChanged();
                         Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
                     }
@@ -276,11 +278,15 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void onCartUpdated() {
+        update();
+
+        recyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    private void update() {
         updatePayText();
         updateEmptyState();
         scanForImages();
-
-        recyclerViewAdapter.notifyDataSetChanged();
 
         if (snackbar != null) {
             snackbar.dismiss();
@@ -473,6 +479,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         }
 
                         recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
+                        update();
                     }
                 });
 
@@ -495,6 +502,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     cart.removeAll(getAdapterPosition());
                                                     recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
+                                                    update();
                                                     Telemetry.event(Telemetry.Event.DeletedFromCart, product);
                                                 }
                                             })
@@ -511,6 +519,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             }
 
                             recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
+                            update();
                         }
                     }
                 });
@@ -521,6 +530,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         int pos = getAdapterPosition();
                         cart.setQuantity(pos, getQuantityEditValue());
                         recyclerViewAdapter.notifyItemChanged(pos);
+                        update();
 
                         hideInput();
                     }

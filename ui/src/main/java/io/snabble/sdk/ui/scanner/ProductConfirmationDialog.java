@@ -323,13 +323,13 @@ class ProductConfirmationDialog {
                 shake();
                 return;
             } else {
-                shoppingCart.add(product, 1, scannedCode, isZeroAmountProduct);
+                shoppingCart.insert(product, 0, 1, scannedCode, isZeroAmountProduct);
             }
         } else if (product.getType() == Product.Type.Article) {
             shoppingCart.setQuantity(product, q, scannedCode);
         } else if(product.getType() == Product.Type.UserWeighed){
             if(q > 0) {
-                shoppingCart.add(product, q, scannedCode);
+                shoppingCart.insert(product, 0, q, scannedCode);
             } else {
                 shake();
                 return;
