@@ -9,6 +9,8 @@ public class Telemetry {
         CheckoutSuccessful,
         CheckoutDeniedBySupervisor,
         CheckoutDeniedByPaymentProvider,
+        CheckoutFinishByUser,
+        CheckoutAbortByUser,
         ManuallyEnteredProduct,
         ScannedProduct,
         ScannedOnlineProduct,

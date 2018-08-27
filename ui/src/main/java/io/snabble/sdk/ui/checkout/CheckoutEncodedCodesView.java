@@ -25,6 +25,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
+import io.snabble.sdk.ui.telemetry.Telemetry;
 
 class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
     private static final int MAX_CHARS = 2953; // qr-code 8 bit max
@@ -69,6 +70,8 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 if (uiCallback != null) {
                     uiCallback.showMainscreen();
                 }
+
+                Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
             }
         });
 
