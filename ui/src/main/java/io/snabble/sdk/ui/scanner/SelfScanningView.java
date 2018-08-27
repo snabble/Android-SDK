@@ -319,31 +319,14 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         if(currentShop != null) {
             Context context = getContext();
 
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.dialog_hints, null, false);
-
-            TextView textView = view.findViewById(R.id.title);
-            textView.setText(context.getString(R.string.Snabble_Hints_title, currentShop.getName()));
-
             final AlertDialog alertDialog = new AlertDialog.Builder(context)
-                    .setView(view)
-                    .setPositiveButton(R.string.Snabble_OK, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
+                    .setTitle(context.getString(R.string.Snabble_Hints_title, currentShop.getName()))
+                    .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
+                    .setPositiveButton(R.string.Snabble_OK, null)
                     .setCancelable(true)
                     .create();
 
             alertDialog.setCanceledOnTouchOutside(true);
-
-            view.findViewById(R.id.close).setOnClickListener(new OneShotClickListener() {
-                @Override
-                public void click() {
-                    alertDialog.dismiss();
-                }
-            });
 
             alertDialog.show();
         }
