@@ -29,6 +29,7 @@ public class SelfScanningFragment extends Fragment {
     private Button askForPermission;
     private boolean canAskAgain = false;
     private boolean isStart;
+    private boolean allowShowingHints;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,10 +70,11 @@ public class SelfScanningFragment extends Fragment {
     private void createSelfScanningView() {
         if(selfScanningView == null) {
             selfScanningView = new SelfScanningView(getContext());
+            selfScanningView.setAllowShowingHints(allowShowingHints);
+
             rootView.addView(selfScanningView);
             permissionContainer.setVisibility(View.GONE);
             canAskAgain = true;
-
             handleBundleArgs();
         }
     }
@@ -125,6 +127,10 @@ public class SelfScanningFragment extends Fragment {
                 }
             });
         }
+    }
+
+    public void setAllowShowingHints(boolean allowShowingHints) {
+        this.allowShowingHints = allowShowingHints;
     }
 
     public void goToSettings() {

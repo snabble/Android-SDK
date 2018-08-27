@@ -56,6 +56,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private long detectAfterTimeMs;
     private boolean ignoreNextDialog;
     private ShoppingCart shoppingCart;
+    private boolean allowShowingHints;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -312,23 +313,29 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
-    public void showHints() {
-        Project project = SnabbleUI.getProject();
-        Shop currentShop = project.getCheckout().getShop();
+    public void setAllowShowingHints(boolean allowShowingHints) {
+        this.allowShowingHints = allowShowingHints;
+    }
 
-        if(currentShop != null) {
-            Context context = getContext();
+    private void showHints() {
+        if(allowShowingHints) {
+            Project project = SnabbleUI.getProject();
+            Shop currentShop = project.getCheckout().getShop();
 
-            final AlertDialog alertDialog = new AlertDialog.Builder(context)
-                    .setTitle(context.getString(R.string.Snabble_Hints_title, currentShop.getName()))
-                    .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
-                    .setPositiveButton(R.string.Snabble_OK, null)
-                    .setCancelable(true)
-                    .create();
+            if (currentShop != null) {
+                Context context = getContext();
 
-            alertDialog.setCanceledOnTouchOutside(true);
+                final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                        .setTitle(context.getString(R.string.Snabble_Hints_title, currentShop.getName()))
+                        .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
+                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setCancelable(true)
+                        .create();
 
-            alertDialog.show();
+                alertDialog.setCanceledOnTouchOutside(true);
+
+                alertDialog.show();
+            }
         }
     }
 
