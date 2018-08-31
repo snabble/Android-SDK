@@ -255,7 +255,7 @@ class ProductConfirmationDialog {
         }
 
         float density = context.getResources().getDisplayMetrics().density;
-        window.setLayout(Math.round(336 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setLayout(Math.round(320 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void updatePrice() {
