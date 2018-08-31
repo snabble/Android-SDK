@@ -7,6 +7,8 @@ import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -339,5 +341,35 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         product = productDatabase.findBySku("1");
         assertEquals(name, product.getName());
+    }
+
+    @Test
+    public void testFindProductWithByEan8WhenScanningEan13() throws IOException, Snabble.SnabbleException {
+        setupSdkWithDb("demoDb_1_6.sqlite3");
+
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product product = productDatabase.findByCode("42276630");
+        Assert.assertNotNull(product);
+
+        String[] codes = product.getScannableCodes();
+        Assert.assertTrue(ArrayUtils.contains(codes, "42276630"));
+
+        Product product2 = productDatabase.findByCode("0000042276630");
+        Assert.assertNotNull(product2);
+
+        String[] codes2 = product2.getScannableCodes();
+        Assert.assertTrue(ArrayUtils.contains(codes2, "42276630"));
+    }
+
+    @Test
+    public void testFindProductWithEan13ByEan8() throws IOException, Snabble.SnabbleException {
+        setupSdkWithDb("demoDb_1_6.sqlite3");
+
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product product = productDatabase.findByCode("40084015");
+        Assert.assertNotNull(product);
+
+        String[] codes = product.getScannableCodes();
+        Assert.assertTrue(ArrayUtils.contains(codes, "0000040084015"));
     }
  }

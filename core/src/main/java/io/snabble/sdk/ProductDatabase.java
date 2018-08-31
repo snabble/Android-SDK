@@ -16,6 +16,7 @@ import android.text.format.Formatter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -1033,6 +1034,10 @@ public class ProductDatabase {
      * @return The first product containing the given EAN, otherwise null if no product was found.
      */
     public Product findByCode(String code) {
+        return findByCodeInternal(code, true);
+    }
+
+    private Product findByCodeInternal(String code, boolean recursive) {
         if (code == null || code.length() == 0) {
             return null;
         }
@@ -1046,11 +1051,16 @@ public class ProductDatabase {
 
         if (p != null) {
             return p;
-        } else if (code.startsWith("0")){
-            return findByCode(code.substring(1, code.length()));
-        } else {
-            return null;
+        } else if (recursive) {
+            if (code.startsWith("0")){
+                return findByCodeInternal(code.substring(1, code.length()), true);
+            } else if (code.length() >= 8 && code.length() < 13) {
+                String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
+                return findByCodeInternal(newCode, false);
+            }
         }
+
+        return null;
     }
 
     /**
