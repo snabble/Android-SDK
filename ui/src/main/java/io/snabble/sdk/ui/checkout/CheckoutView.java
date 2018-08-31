@@ -110,7 +110,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayView(new CheckoutAbortedView(getContext()));
                 break;
             case CONNECTION_ERROR:
-                UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
+                UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show();
                 break;
             case NONE:

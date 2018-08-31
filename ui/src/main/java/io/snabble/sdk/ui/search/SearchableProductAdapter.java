@@ -48,9 +48,9 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         this.productDatabase = productDatabase;
 
         if(backgroundHandler == null) {
-            HandlerThread frameProcessingThread = new HandlerThread("SearchableProductAdapter");
-            frameProcessingThread.start();
-            backgroundHandler = new Handler(frameProcessingThread.getLooper());
+            HandlerThread thread = new HandlerThread("SearchableProductAdapter");
+            thread.start();
+            backgroundHandler = new Handler(thread.getLooper());
         }
 
         uiHandler = new Handler(Looper.getMainLooper());

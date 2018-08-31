@@ -13,13 +13,13 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.utils.JsonUtils;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
 
@@ -31,6 +31,8 @@ public class Project {
     private Checkout checkout;
     private ShoppingCartManager shoppingCartManager;
     private Events events;
+
+    private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
     private Currency currency;
     private int currencyFractionDigits;
@@ -60,8 +62,6 @@ public class Project {
     private File internalStorageDirectory;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
-        Logger.d("New project: %s, %d", id, System.identityHashCode(this));
-
         Snabble snabble = Snabble.getInstance();
 
         parse(jsonObject);
@@ -151,7 +151,7 @@ public class Project {
             shops = new Shop[0];
         }
 
-        Logger.d("Updated project: %s, %d", id, System.identityHashCode(this));
+        notifyUpdate();
     }
 
     public File getInternalStorageDirectory() {
@@ -326,4 +326,28 @@ public class Project {
             getShoppingCart().checkForTimeout();
         }
     };
+
+    private void notifyUpdate() {
+        for(OnProjectUpdatedListener l : updateListeners) {
+            l.onProjectUpdated(this);
+        }
+    }
+
+    /**
+     * Adds a listener that gets called every time the metadata updates
+     */
+    public void addOnUpdateListener(OnProjectUpdatedListener l) {
+        updateListeners.add(l);
+    }
+
+    /**
+     * Removes an already added listener
+     */
+    public void removeOnUpdateListener(OnProjectUpdatedListener l) {
+        updateListeners.remove(l);
+    }
+
+    public interface OnProjectUpdatedListener {
+        void onProjectUpdated(Project project);
+    }
 }

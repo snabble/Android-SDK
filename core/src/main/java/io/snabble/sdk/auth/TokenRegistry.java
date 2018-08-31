@@ -5,6 +5,7 @@ import android.util.Base64;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,14 @@ public class TokenRegistry {
                 String.valueOf(time / 30));
 
         String auth = appId + ":" + totp.generate(time);
-        String base64 = Base64.encodeToString(auth.getBytes(), Base64.NO_WRAP);
+        String base64;
+
+        try {
+            base64 = Base64.encodeToString(auth.getBytes("UTF-8"), Base64.NO_WRAP);
+        } catch (UnsupportedEncodingException e) {
+            // cant recover from this
+            return null;
+        }
 
         String url = project.getTokensUrl() + "?role=retailerApp";
 
@@ -95,6 +103,14 @@ public class TokenRegistry {
         return (System.currentTimeMillis() + timeOffset) / 1000;
     }
 
+    /**
+     * Synchronously retrieves a token for the project.
+     *
+     * May do synchronous http requests, if the token is invalid.
+     * If a valid token is available, it will be returned without doing http requests.
+     *
+     * Returns null if not valid token could be generated. (invalid secret, timeouts, no connection)
+     */
     public synchronized Token getToken(Project project) {
         if (project == null) {
             return null;

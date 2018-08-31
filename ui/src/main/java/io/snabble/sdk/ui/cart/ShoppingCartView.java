@@ -46,8 +46,8 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private RecyclerView recyclerView;
@@ -60,6 +60,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private View emptyState;
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
+    private boolean hasAnyImages;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
@@ -69,7 +70,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public void onQuantityChanged(ShoppingCart list, Product product) {
-            onCartUpdated();
+
         }
 
         @Override
@@ -177,6 +178,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         updatePayText();
         updateEmptyState();
+        scanForImages();
     }
 
     private void createItemTouchHelper() {
@@ -208,18 +210,20 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 final Product product = cart.getProduct(pos);
                 final String scannedCode = cart.getScannedCode(pos);
                 final int quantity = cart.getQuantity(pos);
+                final boolean isZeroAmountProduct = cart.isZeroAmountProduct(pos);
 
                 cart.removeAll(pos);
                 Telemetry.event(Telemetry.Event.DeletedFromCart, product);
                 recyclerView.getAdapter().notifyItemRemoved(pos);
+                update();
 
                 snackbar = UIUtils.snackbar(coordinatorLayout,
-                        R.string.Snabble_Shoppingcart_articleRemoved, 5000);
+                        R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
                 snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getProject(), scannedCode);
-                        cart.insert(product, pos, quantity, parsedCode);
+                        cart.insert(product, pos, quantity, parsedCode, isZeroAmountProduct);
                         recyclerView.getAdapter().notifyDataSetChanged();
                         Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
                     }
@@ -241,7 +245,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             }
             progressDialog.dismiss();
         } else if (state == Checkout.State.CONNECTION_ERROR) {
-            UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, Snackbar.LENGTH_SHORT)
+            UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                     .show();
             progressDialog.dismiss();
         } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {
@@ -270,13 +274,31 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void onCartUpdated() {
-        updatePayText();
-        updateEmptyState();
+        update();
 
         recyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    private void update() {
+        updatePayText();
+        updateEmptyState();
+        scanForImages();
 
         if (snackbar != null) {
             snackbar.dismiss();
+        }
+    }
+
+    private void scanForImages() {
+        hasAnyImages = false;
+
+        for(int i=0; i<cart.size(); i++) {
+            Product product = cart.getProduct(i);
+            String url = product.getImageUrl();
+            if(url != null && url.length() > 0) {
+                hasAnyImages = true;
+                break;
+            }
         }
     }
 
@@ -455,6 +477,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         }
 
                         recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
+                        update();
                     }
                 });
 
@@ -477,6 +500,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     cart.removeAll(getAdapterPosition());
                                                     recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
+                                                    update();
                                                     Telemetry.event(Telemetry.Event.DeletedFromCart, product);
                                                 }
                                             })
@@ -493,6 +517,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             }
 
                             recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
+                            update();
                         }
                     }
                 });
@@ -503,6 +528,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         int pos = getAdapterPosition();
                         cart.setQuantity(pos, getQuantityEditValue());
                         recyclerViewAdapter.notifyItemChanged(pos);
+                        update();
 
                         hideInput();
                     }
@@ -556,7 +582,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     image.setVisibility(View.VISIBLE);
                     Picasso.with(getContext()).load(imageUrl).into(image);
                 } else {
-                    image.setVisibility(View.GONE);
+                    image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
                     image.setImageBitmap(null);
                 }
             } else {

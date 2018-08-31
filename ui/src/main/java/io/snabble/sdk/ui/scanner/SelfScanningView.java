@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -28,14 +29,17 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Shop;
+import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
 public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCheckoutStateChangedListener {
@@ -51,6 +55,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private DelayedProgressDialog progressDialog;
     private long detectAfterTimeMs;
     private boolean ignoreNextDialog;
+    private ShoppingCart shoppingCart;
+    private boolean allowShowingHints;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -71,6 +77,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         inflate(getContext(), R.layout.view_self_scanning, this);
 
         Project project = SnabbleUI.getProject();
+
+        shoppingCart = project.getShoppingCart();
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
@@ -159,7 +167,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
             UIUtils.snackbar(SelfScanningView.this,
                     R.string.Snabble_Scanner_unknownBarcode,
-                    Snackbar.LENGTH_LONG)
+                    UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                     .show();
             return;
         }
@@ -231,12 +239,23 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product);
         } else {
-            showProduct(product, scannedCode);
+            if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
+                UIUtils.snackbar(SelfScanningView.this,
+                        R.string.Snabble_Scanner_scannedShelfCode,
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .show();
 
-            if (wasOnlineProduct) {
-                Telemetry.event(Telemetry.Event.ScannedOnlineProduct, product);
+                progressDialog.dismiss();
+                resumeBarcodeScanner();
+                delayNextScan();
             } else {
-                Telemetry.event(Telemetry.Event.ScannedProduct, product);
+                showProduct(product, scannedCode);
+
+                if (wasOnlineProduct) {
+                    Telemetry.event(Telemetry.Event.ScannedOnlineProduct, product);
+                } else {
+                    Telemetry.event(Telemetry.Event.ScannedProduct, product);
+                }
             }
         }
     }
@@ -249,7 +268,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
         UIUtils.snackbar(SelfScanningView.this,
                 R.string.Snabble_Scanner_unknownBarcode,
-                Snackbar.LENGTH_LONG)
+                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                 .show();
     }
 
@@ -260,7 +279,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         UIUtils.snackbar(SelfScanningView.this,
                 R.string.Snabble_Scanner_networkError,
-                Snackbar.LENGTH_LONG)
+                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                 .show();
     }
 
@@ -290,6 +309,32 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setNegativeButton(R.string.Snabble_Cancel, null)
                         .create()
                         .show();
+            }
+        }
+    }
+
+    public void setAllowShowingHints(boolean allowShowingHints) {
+        this.allowShowingHints = allowShowingHints;
+    }
+
+    private void showHints() {
+        if(allowShowingHints) {
+            Project project = SnabbleUI.getProject();
+            Shop currentShop = project.getCheckout().getShop();
+
+            if (currentShop != null) {
+                Context context = getContext();
+
+                final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                        .setTitle(context.getString(R.string.Snabble_Hints_title, currentShop.getName()))
+                        .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
+                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setCancelable(true)
+                        .create();
+
+                alertDialog.setCanceledOnTouchOutside(true);
+
+                alertDialog.show();
             }
         }
     }
@@ -384,6 +429,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         isRunning = true;
 
         startBarcodeScanner();
+        shoppingCart.addListener(shoppingCartListener);
     }
 
     public void unregisterListeners() {
@@ -393,6 +439,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog.dismiss();
         productDialog.dismiss();
+        shoppingCart.removeListener(shoppingCartListener);
     }
 
     @Override
@@ -414,6 +461,35 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         unregisterListeners();
     }
+
+    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
+        @Override
+        public void onItemAdded(ShoppingCart list, Product product) {
+            if(list.getAddCount() == 1) {
+                showHints();
+            }
+        }
+
+        @Override
+        public void onQuantityChanged(ShoppingCart list, Product product) {
+
+        }
+
+        @Override
+        public void onCleared(ShoppingCart list) {
+
+        }
+
+        @Override
+        public void onItemMoved(ShoppingCart list, int fromIndex, int toIndex) {
+
+        }
+
+        @Override
+        public void onItemRemoved(ShoppingCart list, Product product) {
+
+        }
+    };
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
@@ -464,7 +540,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
                 UIUtils.snackbar(SelfScanningView.this,
                         R.string.Snabble_Payment_errorStarting,
-                        Snackbar.LENGTH_LONG)
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show();
                 break;
             default:

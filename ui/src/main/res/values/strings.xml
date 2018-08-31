@@ -11,11 +11,13 @@
 	<string name="Snabble.Edit">Edit</string>
 	<string name="Snabble.Yes">Yes</string>
 	<string name="Snabble.No">No</string>
+	<string name="Snabble.OK">OK</string>
 	<string name="Snabble.Settings">Settings</string>
 	<string name="Snabble.Delete">Delete</string>
 	<string name="Snabble.remove">Remove</string>
 	<string name="Snabble.pleaseWait">Please wait...</string>
 	<string name="Snabble.undo">Undo</string>
+	<string name="Snabble.goToSettings">Open Settings</string>
 	<string name="Snabble.Payment.errorStarting">Error starting the payment process</string>
 	<string name="Snabble.PaymentSelection.title">Pay</string>
 	<string name="Snabble.PaymentSelection.howToPay">How would you like to pay %s?</string>
@@ -54,6 +56,8 @@
 	<string name="Snabble.Shoppingcart.deposit">Deposit</string>
 	<string name="Snabble.PaymentMethod.encodedCodes">Checkstand</string>
 	<string name="Snabble.PaymentMethod.qrCodePOS">Checkstand</string>
+	<string name="Snabble.Hints.title">Hint from %s</string>
+	<string name="Snabble.Hints.closedBags">Please make it easy for the cashier and do not put your items directly in closed pockets. Thank you!</string>
 
 	<string name="Snabble.Payment.SEPA.Name">Name</string>
 	<string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
@@ -69,6 +73,7 @@
 	<string name="Snabble.Payment.add">Add SEPA credentials</string>
 
 	<!-- SECTION: Android -->
+	<string name="Snabble.askForPermission">Ask for permission</string>
 	<string name="Snabble.Payment.aborted">Payment process was aborted</string>
 	<string name="Snabble.Payment.backToHome">Back to the homepage</string>
 	<string name="Snabble.Payment.success">Thank you for your purchase</string>

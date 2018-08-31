@@ -2,6 +2,8 @@ package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
@@ -14,8 +16,8 @@ import android.widget.TextView;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
-import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
@@ -23,6 +25,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
+import io.snabble.sdk.ui.telemetry.Telemetry;
 
 class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
     private static final int MAX_CHARS = 2953; // qr-code 8 bit max
@@ -67,6 +70,8 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 if (uiCallback != null) {
                     uiCallback.goBack();
                 }
+
+                Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
             }
         });
 
@@ -106,21 +111,29 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                int oldLeft, int oldTop, int oldRight, int oldBottom) {
         if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
-            if (scrollContainer.getWidth() > 0 && scrollContainer.getHeight() > 0) {
-                scrollView.removeAllViews();
-                CodeListView codeListView = new CodeListView(getContext());
-                scrollView.addView(codeListView, new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-            }
+            // posting using a handler too force adding after the layout pass.
+            // this avoids a bug in <= API 16 where added views while layouting were discarded
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (scrollContainer.getWidth() > 0 && scrollContainer.getHeight() > 0) {
+                        scrollView.removeAllViews();
+                        CodeListView codeListView = new CodeListView(getContext());
+                        scrollView.addView(codeListView, new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT));
+                    }
 
-            Resources resources = getResources();
+                    Resources resources = getResources();
 
-            int h = Math.round(scrollContainer.getHeight() * resources.getDisplayMetrics().density);
-            if (h < 160) {
-                explanationText.setVisibility(View.GONE);
-                explanationText2.setVisibility(View.GONE);
-            }
+                    int h = Math.round(scrollContainer.getHeight() * resources.getDisplayMetrics().density);
+                    if (h < 160) {
+                        explanationText.setVisibility(View.GONE);
+                        explanationText2.setVisibility(View.GONE);
+                    }
+                }
+            });
         }
     }
 

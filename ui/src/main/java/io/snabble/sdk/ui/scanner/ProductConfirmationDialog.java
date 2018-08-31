@@ -23,9 +23,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.math.RoundingMode;
+
 import io.snabble.sdk.Product;
-import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.PriceFormatter;
@@ -254,7 +255,7 @@ class ProductConfirmationDialog {
         }
 
         float density = context.getResources().getDisplayMetrics().density;
-        window.setLayout(Math.round(336 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setLayout(Math.round(320 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void updatePrice() {
@@ -322,13 +323,13 @@ class ProductConfirmationDialog {
                 shake();
                 return;
             } else {
-                shoppingCart.add(product, 1, scannedCode, isZeroAmountProduct);
+                shoppingCart.insert(product, 0, 1, scannedCode, isZeroAmountProduct);
             }
         } else if (product.getType() == Product.Type.Article) {
             shoppingCart.setQuantity(product, q, scannedCode);
         } else if(product.getType() == Product.Type.UserWeighed){
             if(q > 0) {
-                shoppingCart.add(product, q, scannedCode);
+                shoppingCart.insert(product, 0, q, scannedCode);
             } else {
                 shake();
                 return;

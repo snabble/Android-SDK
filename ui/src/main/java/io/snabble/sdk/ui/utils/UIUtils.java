@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.TextView;
 
 public class UIUtils {
+    public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
+
     public static Snackbar snackbar(View view, @StringRes int stringResId, int duration) {
         Snackbar snackbar = Snackbar.make(view, stringResId, duration);
         fixTextColor(snackbar);

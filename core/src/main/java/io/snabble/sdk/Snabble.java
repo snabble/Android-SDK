@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -64,11 +65,6 @@ public class Snabble {
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
-        if (config.appId == null || application == null) {
-            setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
-            return;
-        }
-
         if (config.endpointBaseUrl == null) {
             config.endpointBaseUrl = "https://api.snabble.io";
         } else if (!config.endpointBaseUrl.startsWith("http://") && !config.endpointBaseUrl.startsWith("https://")) {
@@ -80,7 +76,7 @@ public class Snabble {
             try {
                 PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
                 if (pInfo != null && pInfo.versionName != null) {
-                    version = pInfo.versionName.toLowerCase().replace(" ", "");
+                    version = pInfo.versionName.toLowerCase(Locale.ROOT).replace(" ", "");
                 } else {
                     version = "1.0";
                 }
