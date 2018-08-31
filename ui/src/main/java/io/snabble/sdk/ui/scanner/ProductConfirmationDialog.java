@@ -10,6 +10,7 @@ import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -254,8 +255,9 @@ class ProductConfirmationDialog {
             });
         }
 
-        float density = context.getResources().getDisplayMetrics().density;
-        window.setLayout(Math.round(336 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+        DisplayMetrics dm =  context.getResources().getDisplayMetrics();
+        float density = dm.density;
+        window.setLayout(Math.round(320 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void updatePrice() {

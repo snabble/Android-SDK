@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
+import io.snabble.sdk.ui.scanner.ProductResolver;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUICallback {
     private ProgressBar progressIndicator;
@@ -55,6 +57,15 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
                 });
             }
         });
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_MULTIPLE) {
+            String barcode = event.getCharacters();
+            new ProductResolver.Builder(this).setCode(barcode).create().show();
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
