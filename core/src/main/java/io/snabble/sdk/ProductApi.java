@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.utils.Logger;
@@ -36,14 +37,19 @@ class ProductApi {
         private boolean deleted;
         private String imageUrl;
         private String productType;
-        @SerializedName(value = "eans", alternate = "scannableCodes")
         private String[] eans;
         private int price;
         private int discountedPrice;
         private String basePrice;
         private boolean saleStop;
+        private ApiScannableCode[] codes;
         private Product.SaleRestriction saleRestriction = Product.SaleRestriction.NONE;
         private ApiWeighing weighing;
+    }
+
+    private static class ApiScannableCode {
+        private String code;
+        private String transmissionCode;
     }
 
     private static class ApiWeighing {
@@ -376,6 +382,12 @@ class ProductApi {
                 .setBasePrice(apiProduct.basePrice)
                 .setSaleRestriction(apiProduct.saleRestriction)
                 .setSaleStop(apiProduct.saleStop);
+
+        if(apiProduct.codes != null) {
+            for (ApiScannableCode apiScannableCode : apiProduct.codes) {
+                builder.addTransmissionCode(apiScannableCode.code, apiScannableCode.transmissionCode);
+            }
+        }
 
         if (apiProduct.weighing != null) {
             builder.setWeighedItemIds(apiProduct.weighing.weighedItemIds);

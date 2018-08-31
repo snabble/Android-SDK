@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -175,9 +176,13 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         ProductDatabase productDatabase = project.getProductDatabase();
         final Product product = findBySkuBlocking(productDatabase, "online1");
         assertEquals(product.getSku(), "online1");
+        assertArrayEquals(product.getScannableCodes(), new String[]{"0"});
+        assertEquals(product.getTransmissionCode("0"), "0");
 
         final Product product2 = findBySkuBlocking(productDatabase, "online2");
         assertEquals(product2.getSku(), "online2");
+        assertArrayEquals(product2.getScannableCodes(), new String[]{"1"});
+        assertEquals(product2.getTransmissionCode("1"), "000001");
 
         assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
     }
@@ -371,5 +376,16 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         String[] codes = product.getScannableCodes();
         Assert.assertTrue(ArrayUtils.contains(codes, "0000040084015"));
+    }
+
+    @Test
+    public void testTransmissionCodeIsSameOnOldDbVersion() throws IOException, Snabble.SnabbleException {
+        setupSdkWithDb("demoDb_1_6.sqlite3");
+
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product product = productDatabase.findBySku("48");
+        Assert.assertNotNull(product);
+
+        Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), product.getScannableCodes()[0]);
     }
  }
