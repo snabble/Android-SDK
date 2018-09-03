@@ -785,7 +785,7 @@ public class ProductDatabase {
         return in;
     }
 
-    private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
+    private String productSqlString(String appendSql, boolean distinct) {
         String sql = "SELECT " + (distinct ? "DISTINCT " : "") +
                 "p.sku," +
                 "p.name," +
@@ -802,19 +802,23 @@ public class ProductDatabase {
                 "p.subtitle," +
                 "pr.basePrice";
 
-                if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-                    sql += ",p.saleRestriction";
-                    sql += ",p.saleStop";
-                }
+        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+            sql += ",p.saleRestriction";
+            sql += ",p.saleStop";
+        }
 
-                if(schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-                    sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
-                }
+        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+            sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
+        }
 
-                sql += " FROM products p JOIN prices pr ON pr.sku = p.sku ";
-                sql += appendSql;
+        sql += " FROM products p JOIN prices pr ON pr.sku = p.sku ";
+        sql += appendSql;
 
-        return rawQuery(sql, args, cancellationSignal);
+        return sql;
+    }
+
+    private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
+        return rawQuery(productSqlString(appendSql, distinct), args, cancellationSignal);
     }
 
     public boolean isAvailableOffline() {
@@ -1183,14 +1187,28 @@ public class ProductDatabase {
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
     public Cursor searchByCode(String searchString, CancellationSignal cancellationSignal) {
-        return productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
-                "WHERE s.code GLOB ? OR s.code GLOB ? " +
+        // constructing a common query that gets repeated two times, one for the search
+        // using the "00000" prefix to match ean 8 in ean 13 codes
+        // and one for all other matches
+
+        // UNION ALL is used for two reasons:
+        // 1) sorting the ean 8 matches on top without using ORDER BY for performance reasons
+        // 2) avoiding the usage of OR between two GLOB's because in sqlite versions < 3.8
+        // the query optimizer chooses to do a full table search instead of a scan
+        String commonSql = "JOIN scannableCodes s ON s.sku = p.sku " +
+                "WHERE s.code GLOB ? " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
-                "AND p.isDeposit = 0 " +
-                "LIMIT 100", new String[]{
+                "AND p.isDeposit = 0 ";
+
+        String query = productSqlString(commonSql, true);
+        query += " UNION ALL ";
+        query += productSqlString(commonSql, true);
+        query += " LIMIT 100";
+
+        return rawQuery(query, new String[]{
                 "00000" + searchString + "*",
                 searchString + "*"
-        }, true, cancellationSignal);
+        }, cancellationSignal);
     }
 
     private void notifyOnDatabaseUpdated() {
