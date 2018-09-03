@@ -93,6 +93,10 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         if (showBarcode) {
             for (String code : product.getScannableCodes()) {
                 if (code.contains(lastQuery)) {
+                    if (code.startsWith("00000")) {
+                        code = code.replace("00000", "");
+                    }
+
                     Spannable spannable = highlight(lastQuery, code);
                     holder.code.setText(spannable);
                     selectedCode = code;

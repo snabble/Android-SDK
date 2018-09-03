@@ -1155,8 +1155,7 @@ public class ProductDatabase {
     }
 
     /**
-     * This function is deprecated and will be removed from the SDK in the future. There will be no
-     * alternative function to search for products.
+     * This function needs config value generateSearchIndex set to true
      *
      * Returns a {@link Cursor} which can be iterated for items containing the given search
      * string at the start of a word.
@@ -1185,10 +1184,11 @@ public class ProductDatabase {
      */
     public Cursor searchByCode(String searchString, CancellationSignal cancellationSignal) {
         return productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
-                "WHERE s.code GLOB ? " +
-                "AND p.weighing != 1 " +
+                "WHERE s.code GLOB ? OR s.code GLOB ? " +
+                "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
                 "LIMIT 100", new String[]{
+                "00000" + searchString + "*",
                 searchString + "*"
         }, true, cancellationSignal);
     }
