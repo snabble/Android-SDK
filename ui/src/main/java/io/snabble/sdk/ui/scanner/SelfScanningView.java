@@ -43,15 +43,12 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
-    private ProductConfirmationDialog productDialog;
-    private boolean allowScan = true;
     private View enterBarcode;
     private View noPermission;
     private boolean isRunning;
 
     private DelayedProgressDialog progressDialog;
     private long detectAfterTimeMs;
-    private boolean ignoreNextDialog;
     private ShoppingCart shoppingCart;
     private boolean allowShowingHints;
 
@@ -116,8 +113,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                     resumeBarcodeScanner();
                     progressDialog.dismiss();
 
-                    ignoreNextDialog = true;
-
                     return true;
                 }
                 return false;
@@ -133,80 +128,28 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             }
         });
 
-        productDialog = new ProductConfirmationDialog(getContext(), project);
-        productDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                resumeBarcodeScanner();
-                allowScan = true;
-            }
-        });
-
-        productDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                allowScan = false;
-                pauseBarcodeScanner();
-            }
-        });
-
         isInitialized = true;
         startBarcodeScanner();
     }
 
     public void lookupAndShowProduct(final ScannableCode scannedCode) {
-        productDialog.dismiss();
-        ignoreNextDialog = false;
-
-        if (scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()) {
-            delayNextScan();
-
-            Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
-            UIUtils.snackbar(SelfScanningView.this,
-                    R.string.Snabble_Scanner_unknownBarcode,
-                    UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                    .show();
-            return;
-        }
-
-        progressDialog.showAfterDelay(300);
-        pauseBarcodeScanner();
-
-        if (scannedCode.hasEmbeddedData()) {
-            productDatabase.findByWeighItemIdOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
-                @Override
-                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
-                }
-
-                @Override
-                public void onProductNotFound() {
-                    handleProductNotFound(scannedCode);
-                }
-
-                @Override
-                public void onError() {
-                    handleProductError();
-                }
-            });
-        } else {
-            productDatabase.findByCodeOnline(scannedCode.getCode(), new OnProductAvailableListener() {
-                @Override
-                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
-                }
-
-                @Override
-                public void onProductNotFound() {
-                    handleProductNotFound(scannedCode);
-                }
-
-                @Override
-                public void onError() {
-                    handleProductError();
-                }
-            });
-        }
+        new ProductResolver.Builder(getContext())
+                .setCode(scannedCode.getCode())
+                .setOnShowListener(new ProductResolver.OnShowListener() {
+                    @Override
+                    public void onShow() {
+                        pauseBarcodeScanner();
+                    }
+                })
+                .setOnDismissListener(new ProductResolver.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        resumeBarcodeScanner();
+                        delayNextScan();
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void delayNextScan() {
@@ -222,79 +165,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            new ProductResolver.Builder(getContext())
-                    .setCode(barcode.getText())
-                    .setOnShowListener(new ProductResolver.OnShowListener() {
-                        @Override
-                        public void onShow() {
-                            pauseBarcodeScanner();
-                        }
-                    })
-                    .setOnDismissListener(new ProductResolver.OnDismissListener() {
-                        @Override
-                        public void onDismiss() {
-                              resumeBarcodeScanner();
-                        }
-                    })
-                    .create()
-                    .show();
-
-            //lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()));
+            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()));
         }
-    }
-
-    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannableCode scannedCode) {
-        if (ignoreNextDialog) {
-            return;
-        }
-
-        progressDialog.dismiss();
-
-        if (product.getBundleProducts().length > 0) {
-            showBundleDialog(product);
-        } else {
-            if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
-                UIUtils.snackbar(SelfScanningView.this,
-                        R.string.Snabble_Scanner_scannedShelfCode,
-                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .show();
-
-                progressDialog.dismiss();
-                resumeBarcodeScanner();
-                delayNextScan();
-            } else {
-                showProduct(product, scannedCode);
-
-                if (wasOnlineProduct) {
-                    Telemetry.event(Telemetry.Event.ScannedOnlineProduct, product);
-                } else {
-                    Telemetry.event(Telemetry.Event.ScannedProduct, product);
-                }
-            }
-        }
-    }
-
-    private void handleProductNotFound(ScannableCode scannedCode) {
-        progressDialog.dismiss();
-        resumeBarcodeScanner();
-        delayNextScan();
-
-        Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
-        UIUtils.snackbar(SelfScanningView.this,
-                R.string.Snabble_Scanner_unknownBarcode,
-                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                .show();
-    }
-
-    private void handleProductError() {
-        progressDialog.dismiss();
-        resumeBarcodeScanner();
-        delayNextScan();
-
-        UIUtils.snackbar(SelfScanningView.this,
-                R.string.Snabble_Scanner_networkError,
-                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                .show();
     }
 
     private void onClickEnterBarcode() {
@@ -375,46 +247,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
-    private void showBundleDialog(Product product) {
-        pauseBarcodeScanner();
-        allowScan = false;
-
-        SelectBundleDialog.show(getContext(), product, new SelectBundleDialog.Callback() {
-            @Override
-            public void onProductSelected(Product product) {
-                Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
-
-                String[] codes = product.getScannableCodes();
-                if (codes.length > 0) {
-                    showProduct(product, ScannableCode.parse(SnabbleUI.getProject(), codes[0]));
-                }
-            }
-
-            @Override
-            public void onDismissed() {
-                resumeBarcodeScanner();
-            }
-        });
-    }
-
-    private void showProduct(Product product, ScannableCode scannedCode) {
-        pauseBarcodeScanner();
-        allowScan = false;
-        showProductDialog(product, scannedCode);
-    }
-
-    public void hideProduct() {
-        productDialog.dismiss();
-    }
-
-    protected void showProductDialog(Product product, ScannableCode scannedCode) {
-        productDialog.show(product, scannedCode);
-    }
-
     private void startBarcodeScanner() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-            if (isInitialized && allowScan) {
+            if (isInitialized) {
                 noPermission.setVisibility(View.GONE);
                 barcodeScanner.setVisibility(View.VISIBLE);
                 barcodeScanner.start();
@@ -452,7 +288,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         stopBarcodeScanner();
 
         progressDialog.dismiss();
-        productDialog.dismiss();
         shoppingCart.removeListener(shoppingCartListener);
     }
 
