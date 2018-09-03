@@ -16,6 +16,7 @@ import android.text.format.Formatter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -713,8 +714,11 @@ public class ProductDatabase {
         builder.setDepositProduct(findBySku(depositSku));
 
         String codes = cursor.getString(7);
+        String[] scannableCodes = null;
+
         if (codes != null) {
-            builder.setScannableCodes(codes.split(","));
+            scannableCodes = codes.split(",");
+            builder.setScannableCodes(scannableCodes);
         }
 
         builder.setPrice(cursor.getInt(8))
@@ -738,6 +742,18 @@ public class ProductDatabase {
             builder.setBundleProducts(findBundlesOfProduct(builder.build()));
         }
 
+        if(scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+            String transmissionCodesStr = cursor.getString(16);
+            if (transmissionCodesStr != null) {
+                String[] transmissionCodes = transmissionCodesStr.split(",");
+                for(int i=0; i<transmissionCodes.length; i++) {
+                    String tc = transmissionCodes[i];
+                    if(!tc.equals("")){
+                        builder.addTransmissionCode(scannableCodes[i], tc);
+                    }
+                }
+            }
+        }
         return builder.build();
     }
 
@@ -791,9 +807,12 @@ public class ProductDatabase {
                     sql += ",p.saleStop";
                 }
 
-                sql += " FROM products p " +
-                "JOIN prices pr ON pr.sku = p.sku " +
-                appendSql;
+                if(schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+                    sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
+                }
+
+                sql += " FROM products p JOIN prices pr ON pr.sku = p.sku ";
+                sql += appendSql;
 
         return rawQuery(sql, args, cancellationSignal);
     }
@@ -818,9 +837,6 @@ public class ProductDatabase {
     }
 
     /**
-     * This function is deprecated and will be removed from the SDK in the future. There will be no
-     * alternative function to find products by name.
-     *
      * Find a product by its name. Matching is normalized, so "Apple" finds also "apple".
      *
      * @param name The name of the product.
@@ -1033,6 +1049,10 @@ public class ProductDatabase {
      * @return The first product containing the given EAN, otherwise null if no product was found.
      */
     public Product findByCode(String code) {
+        return findByCodeInternal(code, true);
+    }
+
+    private Product findByCodeInternal(String code, boolean recursive) {
         if (code == null || code.length() == 0) {
             return null;
         }
@@ -1046,11 +1066,16 @@ public class ProductDatabase {
 
         if (p != null) {
             return p;
-        } else if (code.startsWith("0")){
-            return findByCode(code.substring(1, code.length()));
-        } else {
-            return null;
+        } else if (recursive) {
+            if (code.startsWith("0")){
+                return findByCodeInternal(code.substring(1, code.length()), true);
+            } else if (code.length() >= 8 && code.length() < 13) {
+                String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
+                return findByCodeInternal(newCode, false);
+            }
         }
+
+        return null;
     }
 
     /**

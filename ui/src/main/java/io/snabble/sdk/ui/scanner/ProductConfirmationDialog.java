@@ -255,8 +255,7 @@ class ProductConfirmationDialog {
             });
         }
 
-        DisplayMetrics dm =  context.getResources().getDisplayMetrics();
-        float density = dm.density;
+        float density = context.getResources().getDisplayMetrics().density;
         window.setLayout(Math.round(320 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 

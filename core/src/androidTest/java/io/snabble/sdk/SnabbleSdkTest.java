@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +44,7 @@ public class SnabbleSdkTest {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
 
-        final String metadataJson = IOUtils.toString(context.getAssets().open("metadata.json"), StandardCharsets.UTF_8);
+        final String metadataJson = IOUtils.toString(context.getAssets().open("metadata.json"), Charset.forName("UTF-8"));
 
         final Buffer product1Buffer = new Buffer();
         product1Buffer.readFrom(context.getAssets().open("product.json"));
