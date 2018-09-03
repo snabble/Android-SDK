@@ -6,14 +6,13 @@ import android.os.Looper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.utils.Logger;
@@ -104,7 +103,7 @@ class ProductApi {
         get(url, productAvailableListener);
     }
 
-    public void findByCode(String code, final OnProductAvailableListener productAvailableListener) {
+    public void findByCode(final String code, final OnProductAvailableListener productAvailableListener) {
         if (productAvailableListener == null) {
             return;
         }
@@ -123,7 +122,28 @@ class ProductApi {
 
         url = url.replace("{code}", code);
 
-        get(url, productAvailableListener);
+        // TODO remove when backend has implemented ean8->ean13 lookups
+        get(url, new OnProductAvailableListener() {
+            @Override
+            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                success(productAvailableListener, product);
+            }
+
+            @Override
+            public void onProductNotFound() {
+                if (code.length() >= 8 && code.length() < 13) {
+                    String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
+                    findByCode(newCode, productAvailableListener);
+                } else {
+                    notFound(productAvailableListener);
+                }
+            }
+
+            @Override
+            public void onError() {
+                error(productAvailableListener);
+            }
+        });
     }
 
     public void findByWeighItemId(String weighItemId, final OnProductAvailableListener productAvailableListener) {
