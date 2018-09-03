@@ -388,4 +388,16 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), product.getScannableCodes()[0]);
     }
+
+
+    @Test
+    public void testTransmissionCode() throws IOException, Snabble.SnabbleException {
+        setupSdkWithDb("demoDb_1_11.sqlite3");
+
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product product = productDatabase.findBySku("48");
+        Assert.assertNotNull(product);
+
+        Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), "00000" + product.getScannableCodes()[0]);
+    }
  }

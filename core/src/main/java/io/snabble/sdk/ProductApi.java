@@ -385,7 +385,9 @@ class ProductApi {
 
         if(apiProduct.codes != null) {
             for (ApiScannableCode apiScannableCode : apiProduct.codes) {
-                builder.addTransmissionCode(apiScannableCode.code, apiScannableCode.transmissionCode);
+                if(apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
+                    builder.addTransmissionCode(apiScannableCode.code, apiScannableCode.transmissionCode);
+                }
             }
         }
 
