@@ -409,8 +409,11 @@ public class Checkout {
                             checkoutProcess = gson.fromJson(json, CheckoutProcessResponse.class);
                             if (!handleProcessResponse(checkoutProcess)) {
                                 notifyStateChanged(State.WAIT_FOR_APPROVAL);
-                                scheduleNextPoll();
-                                Logger.d("Waiting for approval...");
+
+                                if (!checkoutProcess.paymentMethod.isOfflineMethod()) {
+                                    scheduleNextPoll();
+                                    Logger.d("Waiting for approval...");
+                                }
                             }
 
                             inputStream.close();
