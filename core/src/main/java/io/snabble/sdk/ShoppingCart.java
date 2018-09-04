@@ -363,7 +363,7 @@ public class ShoppingCart {
         if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
             scannedCode = scannedCode.substring(1, scannedCode.length());
             return findCodeByScannedCode(product, ScannableCode.parse(project, scannedCode));
-        } else if (scannedCode.length() >= 8 && scannedCode.length() < 13) {
+        } else if (scannedCode.length() < 13) {
             scannedCode = StringUtils.repeat('0', 13 - scannedCode.length()) + scannedCode;
             return findCodeByScannedCode(product, ScannableCode.parse(project, scannedCode));
         }
