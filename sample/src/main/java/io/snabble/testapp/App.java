@@ -59,7 +59,7 @@ public class App extends Application {
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
             @Override
             public void onReady() {
-                project = snabble.getProjects().get(0);
+                project = snabble.getProjects().get(2);
 
                 // registers this sdk instance globally for use with ui components
                 SnabbleUI.useProject(project);
@@ -69,7 +69,7 @@ public class App extends Application {
                     project.getCheckout().setShop(project.getShops()[0]);
                 }
 
-                project.getProductDatabase().update();
+                //project.getProductDatabase().update();
 
                 // optionally set a loyalty card id for identification, for demo purposes
                 // we invent one here

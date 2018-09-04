@@ -7,8 +7,14 @@
   "price": 399,
   "decimalDigits": 2,
   "taxCategory": "normal",
-  "scannableCodes": [
+  "eans": [
     "1"
+  ],
+  "codes": [
+    {
+      "code": "1",
+      "transmissionCode": "000001"
+    }
   ],
   "productType": "default"
 }

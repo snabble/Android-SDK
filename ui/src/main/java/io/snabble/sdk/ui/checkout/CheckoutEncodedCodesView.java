@@ -192,7 +192,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                     }
                 } else {
                     for (int j = 0; j < shoppingCart.getQuantity(i); j++) {
-                        addScannableCode(shoppingCart.getScannedCode(i));
+                        addScannableCode(product.getTransmissionCode(shoppingCart.getScannedCode(i)));
                     }
                 }
             }

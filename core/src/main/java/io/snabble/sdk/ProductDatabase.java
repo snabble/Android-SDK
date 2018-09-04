@@ -16,6 +16,7 @@ import android.text.format.Formatter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -713,8 +714,11 @@ public class ProductDatabase {
         builder.setDepositProduct(findBySku(depositSku));
 
         String codes = cursor.getString(7);
+        String[] scannableCodes = null;
+
         if (codes != null) {
-            builder.setScannableCodes(codes.split(","));
+            scannableCodes = codes.split(",");
+            builder.setScannableCodes(scannableCodes);
         }
 
         builder.setPrice(cursor.getInt(8))
@@ -738,6 +742,18 @@ public class ProductDatabase {
             builder.setBundleProducts(findBundlesOfProduct(builder.build()));
         }
 
+        if(scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+            String transmissionCodesStr = cursor.getString(16);
+            if (transmissionCodesStr != null) {
+                String[] transmissionCodes = transmissionCodesStr.split(",");
+                for(int i=0; i<transmissionCodes.length; i++) {
+                    String tc = transmissionCodes[i];
+                    if(!tc.equals("")){
+                        builder.addTransmissionCode(scannableCodes[i], tc);
+                    }
+                }
+            }
+        }
         return builder.build();
     }
 
@@ -769,7 +785,7 @@ public class ProductDatabase {
         return in;
     }
 
-    private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
+    private String productSqlString(String appendSql, boolean distinct) {
         String sql = "SELECT " + (distinct ? "DISTINCT " : "") +
                 "p.sku," +
                 "p.name," +
@@ -786,16 +802,23 @@ public class ProductDatabase {
                 "p.subtitle," +
                 "pr.basePrice";
 
-                if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-                    sql += ",p.saleRestriction";
-                    sql += ",p.saleStop";
-                }
+        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+            sql += ",p.saleRestriction";
+            sql += ",p.saleStop";
+        }
 
-                sql += " FROM products p " +
-                "JOIN prices pr ON pr.sku = p.sku " +
-                appendSql;
+        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+            sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
+        }
 
-        return rawQuery(sql, args, cancellationSignal);
+        sql += " FROM products p JOIN prices pr ON pr.sku = p.sku ";
+        sql += appendSql;
+
+        return sql;
+    }
+
+    private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
+        return rawQuery(productSqlString(appendSql, distinct), args, cancellationSignal);
     }
 
     public boolean isAvailableOffline() {
@@ -818,9 +841,6 @@ public class ProductDatabase {
     }
 
     /**
-     * This function is deprecated and will be removed from the SDK in the future. There will be no
-     * alternative function to find products by name.
-     *
      * Find a product by its name. Matching is normalized, so "Apple" finds also "apple".
      *
      * @param name The name of the product.
@@ -1033,6 +1053,10 @@ public class ProductDatabase {
      * @return The first product containing the given EAN, otherwise null if no product was found.
      */
     public Product findByCode(String code) {
+        return findByCodeInternal(code, true);
+    }
+
+    private Product findByCodeInternal(String code, boolean recursive) {
         if (code == null || code.length() == 0) {
             return null;
         }
@@ -1046,11 +1070,16 @@ public class ProductDatabase {
 
         if (p != null) {
             return p;
-        } else if (code.startsWith("0")){
-            return findByCode(code.substring(1, code.length()));
-        } else {
-            return null;
+        } else if (recursive) {
+            if (code.startsWith("0")){
+                return findByCodeInternal(code.substring(1, code.length()), true);
+            } else if (code.length() >= 8 && code.length() < 13) {
+                String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
+                return findByCodeInternal(newCode, false);
+            }
         }
+
+        return null;
     }
 
     /**
@@ -1130,8 +1159,7 @@ public class ProductDatabase {
     }
 
     /**
-     * This function is deprecated and will be removed from the SDK in the future. There will be no
-     * alternative function to search for products.
+     * This function needs config value generateSearchIndex set to true
      *
      * Returns a {@link Cursor} which can be iterated for items containing the given search
      * string at the start of a word.
@@ -1159,13 +1187,28 @@ public class ProductDatabase {
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
     public Cursor searchByCode(String searchString, CancellationSignal cancellationSignal) {
-        return productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
+        // constructing a common query that gets repeated two times, one for the search
+        // using the "00000" prefix to match ean 8 in ean 13 codes
+        // and one for all other matches
+
+        // UNION ALL is used for two reasons:
+        // 1) sorting the ean 8 matches on top without using ORDER BY for performance reasons
+        // 2) avoiding the usage of OR between two GLOB's because in sqlite versions < 3.8
+        // the query optimizer chooses to do a full table search instead of a scan
+        String commonSql = "JOIN scannableCodes s ON s.sku = p.sku " +
                 "WHERE s.code GLOB ? " +
-                "AND p.weighing != 1 " +
-                "AND p.isDeposit = 0 " +
-                "LIMIT 100", new String[]{
+                "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
+                "AND p.isDeposit = 0 ";
+
+        String query = productSqlString(commonSql, true);
+        query += " UNION ALL ";
+        query += productSqlString(commonSql, true);
+        query += " LIMIT 100";
+
+        return rawQuery(query, new String[]{
+                "00000" + searchString + "*",
                 searchString + "*"
-        }, true, cancellationSignal);
+        }, cancellationSignal);
     }
 
     private void notifyOnDatabaseUpdated() {

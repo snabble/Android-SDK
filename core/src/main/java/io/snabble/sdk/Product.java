@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class that holds all of the product information.
@@ -98,6 +100,7 @@ public class Product {
     private String subtitle;
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
+    private Map<String, String> transmissionCodes;
     private boolean saleStop;
 
     /**
@@ -118,6 +121,17 @@ public class Product {
 
     public String[] getScannableCodes() {
         return scannableCodes;
+    }
+
+    public String getTransmissionCode(String code) {
+        if(transmissionCodes != null) {
+            String newCode = transmissionCodes.get(code);
+            if(newCode != null) {
+                return newCode;
+            }
+        }
+
+        return code;
     }
 
     public String[] getWeighedItemIds() {
@@ -329,6 +343,15 @@ public class Product {
 
         public Builder setSaleStop(boolean saleStop){
             product.saleStop = saleStop;
+            return this;
+        }
+
+        public Builder addTransmissionCode(String fromCode, String transmissionCode){
+            if(product.transmissionCodes == null) {
+                product.transmissionCodes = new HashMap<>();
+            }
+
+            product.transmissionCodes.put(fromCode, transmissionCode);
             return this;
         }
 
