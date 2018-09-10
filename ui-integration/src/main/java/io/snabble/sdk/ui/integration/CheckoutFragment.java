@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
@@ -21,16 +20,16 @@ public class CheckoutFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        Project project = SnabbleUI.getProject();
-
-        if(project != null) {
-            Checkout checkout = project.getCheckout();
+        try {
+            Checkout checkout = SnabbleUI.getProject().getCheckout();
             checkout.cancel();
 
             if (checkout.getState() != Checkout.State.PAYMENT_APPROVED
                     && checkout.getState() != Checkout.State.NONE) {
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
             }
+        } catch (RuntimeException e) {
+            // ignore exception that is thrown when no project is set
         }
     }
 }
