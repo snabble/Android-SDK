@@ -289,6 +289,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             if(productDatabase.isAvailableOffline() && productDatabase.isUpToDate()){
                 callback.showBarcodeSearch();
             } else {
+                pauseBarcodeScanner();
+
                 final EditText input = new EditText(getContext());
                 MarginLayoutParams lp = new MarginLayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -307,8 +309,15 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                             }
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                resumeBarcodeScanner();
+                            }
+                        })
                         .create()
                         .show();
+
             }
         }
     }
