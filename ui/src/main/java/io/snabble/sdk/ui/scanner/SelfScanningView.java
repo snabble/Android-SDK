@@ -11,14 +11,13 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -37,7 +36,6 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
-import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
@@ -160,20 +158,17 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     public void lookupAndShowProduct(final ScannableCode scannedCode) {
         productDialog.dismiss();
         ignoreNextDialog = false;
+        pauseBarcodeScanner();
 
         if(scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()){
             delayNextScan();
 
             Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
-            UIUtils.snackbar(SelfScanningView.this,
-                    R.string.Snabble_Scanner_unknownBarcode,
-                    UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                    .show();
+            showInfo(R.string.Snabble_Scanner_unknownBarcode);
             return;
         }
 
         progressDialog.showAfterDelay(300);
-        pauseBarcodeScanner();
 
         if(scannedCode.hasEmbeddedData()){
             productDatabase.findByWeighItemIdOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
@@ -240,13 +235,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             showBundleDialog(product);
         } else {
             if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
-                UIUtils.snackbar(SelfScanningView.this,
-                        R.string.Snabble_Scanner_scannedShelfCode,
-                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .show();
+
+                showInfo(R.string.Snabble_Scanner_scannedShelfCode);
 
                 progressDialog.dismiss();
-                resumeBarcodeScanner();
                 delayNextScan();
             } else {
                 showProduct(product, scannedCode);
@@ -262,25 +254,27 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
     private void handleProductNotFound(ScannableCode scannedCode) {
         progressDialog.dismiss();
-        resumeBarcodeScanner();
         delayNextScan();
 
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
-        UIUtils.snackbar(SelfScanningView.this,
-                R.string.Snabble_Scanner_unknownBarcode,
-                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                .show();
+
+        showInfo(R.string.Snabble_Scanner_unknownBarcode);
     }
 
     private void handleProductError() {
         progressDialog.dismiss();
-        resumeBarcodeScanner();
         delayNextScan();
 
-        UIUtils.snackbar(SelfScanningView.this,
-                R.string.Snabble_Scanner_networkError,
-                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                .show();
+        showInfo(R.string.Snabble_Scanner_networkError);
+    }
+
+    private void showInfo(@StringRes int resId) {
+        UIUtils.info(getContext(), resId, new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                resumeBarcodeScanner();
+            }
+        });
     }
 
     private void onClickEnterBarcode() {

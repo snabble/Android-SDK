@@ -3,18 +3,31 @@ package io.snabble.sdk.ui.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import io.snabble.sdk.ui.R;
+
 public class UIUtils {
     public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
+
+    public static void info(Context context, @StringRes int stringResId, DialogInterface.OnDismissListener onDismissListener) {
+        new AlertDialog.Builder(context)
+                .setMessage(stringResId)
+                .setPositiveButton(R.string.Snabble_OK, null)
+                .setOnDismissListener(onDismissListener)
+                .create()
+                .show();
+    }
 
     public static Snackbar snackbar(View view, @StringRes int stringResId, int duration) {
         Snackbar snackbar = Snackbar.make(view, stringResId, duration);
