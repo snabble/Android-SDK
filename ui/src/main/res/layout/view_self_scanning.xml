@@ -84,4 +84,13 @@
                 android:textColor="@color/snabble_textColorLight" />
         </FrameLayout>
     </LinearLayout>
+
+    <TextView android:id="@+id/info"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/snabble_infoColor"
+              android:textColor="@color/snabble_infoTextColor"
+              android:gravity="center"
+              tools:text="Unfortunately we could not query the product, please check your internet connection."
+              android:padding="16dp" />
 </merge>

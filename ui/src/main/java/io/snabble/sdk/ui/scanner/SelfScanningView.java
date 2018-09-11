@@ -9,6 +9,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.support.annotation.StringRes;
@@ -55,6 +57,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private boolean ignoreNextDialog;
     private ShoppingCart shoppingCart;
     private boolean allowShowingHints;
+    private TextView info;
+    private Handler infoHandler = new Handler(Looper.getMainLooper());
 
     public SelfScanningView(Context context) {
         super(context);
@@ -80,6 +84,16 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
+        info = findViewById(R.id.info);
+        info.setVisibility(View.GONE);
+        info.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                info.setTranslationY(-info.getHeight());
+                info.setVisibility(View.VISIBLE);
+            }
+        });
 
         enterBarcode = findViewById(R.id.enter_barcode);
         TextView light = findViewById(R.id.light);
@@ -269,12 +283,17 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void showInfo(@StringRes int resId) {
-        UIUtils.info(getContext(), resId, new DialogInterface.OnDismissListener() {
+        info.setVisibility(View.VISIBLE);
+        info.setText(resId);
+        info.animate().translationY(0).start();
+
+        infoHandler.removeCallbacksAndMessages(null);
+        infoHandler.postDelayed(new Runnable() {
             @Override
-            public void onDismiss(DialogInterface dialog) {
-                resumeBarcodeScanner();
+            public void run() {
+                info.animate().translationY(-info.getHeight()).start();
             }
-        });
+        }, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
     }
 
     private void onClickEnterBarcode() {
