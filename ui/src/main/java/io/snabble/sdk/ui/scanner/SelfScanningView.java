@@ -85,7 +85,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
         info = findViewById(R.id.info);
-        info.setVisibility(View.GONE);
+        info.setVisibility(View.INVISIBLE);
         info.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View view, int left, int top, int right, int bottom,
