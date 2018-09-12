@@ -175,6 +175,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         pauseBarcodeScanner();
 
         if(scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()){
+            resumeBarcodeScanner();
             delayNextScan();
 
             Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
@@ -249,10 +250,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             showBundleDialog(product);
         } else {
             if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
-
                 showInfo(R.string.Snabble_Scanner_scannedShelfCode);
 
                 progressDialog.dismiss();
+                resumeBarcodeScanner();
                 delayNextScan();
             } else {
                 showProduct(product, scannedCode);
@@ -268,6 +269,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
     private void handleProductNotFound(ScannableCode scannedCode) {
         progressDialog.dismiss();
+        resumeBarcodeScanner();
         delayNextScan();
 
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
@@ -277,6 +279,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
     private void handleProductError() {
         progressDialog.dismiss();
+        resumeBarcodeScanner();
         delayNextScan();
 
         showInfo(R.string.Snabble_Scanner_networkError);
