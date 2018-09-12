@@ -2,7 +2,6 @@ package io.snabble.sdk;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -275,7 +274,7 @@ public class ShoppingCart {
     }
 
     public void checkForTimeout() {
-        long currentTime = SystemClock.elapsedRealtime();
+        long currentTime = System.currentTimeMillis();
 
         if(lastModificationTime + TIMEOUT < currentTime){
             invalidate();
@@ -458,7 +457,7 @@ public class ShoppingCart {
     }
 
     private void updateTimestamp() {
-        lastModificationTime = SystemClock.elapsedRealtime();
+        lastModificationTime = System.currentTimeMillis();
     }
 
     /**
