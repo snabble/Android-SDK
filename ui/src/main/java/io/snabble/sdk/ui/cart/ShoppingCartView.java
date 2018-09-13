@@ -288,6 +288,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         updateEmptyState();
         scanForImages();
 
+        Adapter adapter = (Adapter) recyclerView.getAdapter();
+        adapter.updateDeposit();
+
         if (snackbar != null) {
             snackbar.dismiss();
         }
@@ -640,8 +643,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private static final int TYPE_ITEM = 0;
-        private static final int TYPE_DEPOSIT = 1;
+        public static final int TYPE_ITEM = 0;
+        public static final int TYPE_DEPOSIT = 1;
 
         @Override
         public int getItemViewType(int position) {
@@ -671,6 +674,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             } else {
                 ViewHolder viewHolder = (ViewHolder)holder;
                 viewHolder.bindTo(position);
+            }
+        }
+
+        public void updateDeposit() {
+            for(int i=0; i<getItemCount(); i++) {
+                if(getItemViewType(i) == TYPE_DEPOSIT) {
+                    notifyItemChanged(i);
+                }
             }
         }
 

@@ -64,13 +64,17 @@ public class Product {
 
         private static SaleRestriction[] values = SaleRestriction.values();
 
-        SaleRestriction(int dbType, long value){
+        SaleRestriction(long dbType, long value){
             this.databaseType = dbType;
             this.value = value;
         }
 
         public long getValue(){
             return value;
+        }
+
+        public boolean isAgeRestriction() {
+            return databaseType == 1;
         }
 
         public static SaleRestriction fromDatabaseField(long dbType, long value){

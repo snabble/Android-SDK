@@ -14,9 +14,6 @@
       "enableCheckout": true,
       "id": "test",
       "links": {
-        "appEvents": {
-          "href": "/test/events"
-        },
         "appdb": {
           "href": "/test/appdb"
         },

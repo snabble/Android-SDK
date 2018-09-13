@@ -107,10 +107,14 @@ public class SnabbleSdkTest {
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        setupSdkWithDb("testDb.sqlite3");
+        withDb("testDb.sqlite3");
     }
 
-    public void setupSdkWithDb(String testDbName) throws IOException, Snabble.SnabbleException {
+    public void withDb(String testDbName) throws IOException, Snabble.SnabbleException {
+        withDb(testDbName, false);
+    }
+
+    public void withDb(String testDbName, boolean generateSearchIndex) throws IOException, Snabble.SnabbleException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         productDbBuffer = new Buffer();
@@ -123,12 +127,13 @@ public class SnabbleSdkTest {
         config.appId = "test";
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
         config.secret = "asdf";
-        config.generateSearchIndex = true;
+        config.generateSearchIndex = generateSearchIndex;
 
         Snabble snabble = Snabble.getInstance();
         snabble.setupBlocking((Application) context.getApplicationContext(), config);
 
         project = snabble.getProjects().get(0);
+        project.getShoppingCart().clear();
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {

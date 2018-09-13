@@ -14,11 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.Product;
+import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -28,13 +28,12 @@ import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
 class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
-    private static final int MAX_CHARS = 2953; // qr-code 8 bit max
     private View scrollContainer;
     private ScrollView scrollView;
     private TextView explanationText;
     private TextView explanationText2;
     private Project project;
-    private int codeCount;
+    private EncodedCodesGenerator encodedCodesGenerator;
 
     public CheckoutEncodedCodesView(Context context) {
         super(context);
@@ -58,6 +57,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         scrollView = findViewById(R.id.scroll_view);
 
         project = SnabbleUI.getProject();
+        encodedCodesGenerator = new EncodedCodesGenerator(project.getEncodedCodesOptions());
 
         Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OnClickListener() {
@@ -138,7 +138,6 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     }
 
     public class CodeListView extends LinearLayout {
-        private StringBuilder stringBuilder;
         private int barcodeHeight;
 
         public CodeListView(@NonNull Context context) {
@@ -146,93 +145,40 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
             setOrientation(VERTICAL);
 
-            stringBuilder = new StringBuilder();
-
-            int h = scrollContainer.getHeight();
-            barcodeHeight = h - h / 5;
-
             addCodes();
-
-            if (getChildCount() == 0) {
-                barcodeHeight = h;
-            }
-
             generateView();
             updateExplanationText(getChildCount());
         }
 
         private void addCodes() {
             Checkout checkout = project.getCheckout();
-            ShoppingCart shoppingCart = project.getShoppingCart();
 
             for (String code : checkout.getCodes()) {
-                addScannableCode(code);
+                encodedCodesGenerator.add(code);
             }
 
-            for (int i = 0; i < shoppingCart.size(); i++) {
-                Product product = shoppingCart.getProduct(i);
-                if (product.getType() == Product.Type.UserWeighed) {
-                    //encoding weight in ean
-                    String[] weighItemIds = product.getWeighedItemIds();
-                    if (weighItemIds != null && weighItemIds.length > 0) {
-                        StringBuilder code = new StringBuilder(weighItemIds[0]);
-                        if (code.length() == 13) {
-                            StringBuilder embeddedWeight = new StringBuilder();
-                            String quantity = String.valueOf(shoppingCart.getQuantity(i));
-                            int leadingZeros = 5 - quantity.length();
-                            for (int j = 0; j < leadingZeros; j++) {
-                                embeddedWeight.append('0');
-                            }
-                            embeddedWeight.append(quantity);
-                            code.replace(7, 12, embeddedWeight.toString());
-                            code.setCharAt(6, Character.forDigit(EAN13.internalChecksum(code.toString()), 10));
-                            code.setCharAt(12, Character.forDigit(EAN13.checksum(code.substring(0, 12)), 10));
-                            addScannableCode(code.toString());
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < shoppingCart.getQuantity(i); j++) {
-                        addScannableCode(product.getTransmissionCode(shoppingCart.getScannedCode(i)));
-                    }
-                }
-            }
+            encodedCodesGenerator.add(project.getShoppingCart());
         }
 
         private void generateView() {
-            stringBuilder.append(project.getEncodedCodesSuffix());
-            String code = stringBuilder.toString();
+            ArrayList<String> codes = encodedCodesGenerator.generate();
 
-            BarcodeView barcodeView = new BarcodeView(getContext());
-            barcodeView.setFormat(BarcodeFormat.QR_CODE);
+            int h = scrollContainer.getHeight();
+            barcodeHeight = codes.size() == 1 ? h : h - h / 5;
 
-            int padding = Math.round(12.0f * getResources().getDisplayMetrics().density);
-            barcodeView.setPadding(padding, padding, padding, padding);
+            for(String code : codes) {
+                BarcodeView barcodeView = new BarcodeView(getContext());
+                barcodeView.setFormat(BarcodeFormat.QR_CODE);
 
-            barcodeView.setText(code);
+                int padding = Math.round(12.0f * getResources().getDisplayMetrics().density);
+                barcodeView.setPadding(padding, padding, padding, padding);
 
-            addView(barcodeView, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    barcodeHeight));
+                barcodeView.setText(code);
 
-            stringBuilder = new StringBuilder();
-            codeCount = 0;
-        }
-
-        private void addScannableCode(String scannableCode) {
-            int requiredLength = scannableCode.length() + project.getEncodedCodesSuffix().length() + 1;
-            if (codeCount + 1 > project.getEncodedCodesMaxCodes()
-                    || stringBuilder.length() + (requiredLength) > MAX_CHARS) {
-                generateView();
+                addView(barcodeView, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        barcodeHeight));
             }
-
-            if (stringBuilder.length() == 0) {
-                stringBuilder.append(project.getEncodedCodesPrefix());
-            } else {
-                stringBuilder.append(project.getEncodedCodesSeparator());
-            }
-
-            stringBuilder.append(scannableCode);
-            codeCount++;
         }
     }
 }
