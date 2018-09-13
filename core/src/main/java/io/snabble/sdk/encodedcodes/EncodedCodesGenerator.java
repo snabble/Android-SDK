@@ -11,10 +11,11 @@ public class EncodedCodesGenerator {
     private EncodedCodesOptions options;
     private boolean addedCodeWithCheck;
 
-    private ArrayList<String> encodedCodes = new ArrayList<>();
+    private ArrayList<String> encodedCodes;
     private int codeCount;
 
     public EncodedCodesGenerator(EncodedCodesOptions encodedCodesOptions) {
+        encodedCodes = new ArrayList<>();
         stringBuilder = new StringBuilder();
         options = encodedCodesOptions;
     }
@@ -35,7 +36,7 @@ public class EncodedCodesGenerator {
 
         finishCode();
         ArrayList<String> ret = encodedCodes;
-        encodedCodes = null;
+        encodedCodes = new ArrayList<>();
         return ret;
     }
 
