@@ -29,6 +29,12 @@ public class EncodedCodesGenerator {
         addProducts(shoppingCart, true);
     }
 
+    public void clear() {
+        encodedCodes.clear();
+        stringBuilder = new StringBuilder();
+        addedCodeWithCheck = false;
+    }
+
     public ArrayList<String> generate() {
         if(options.finalCode.length() != 0) {
             append(options.finalCode);
@@ -36,7 +42,7 @@ public class EncodedCodesGenerator {
 
         finishCode();
         ArrayList<String> ret = encodedCodes;
-        encodedCodes = new ArrayList<>();
+        clear();
         return ret;
     }
 

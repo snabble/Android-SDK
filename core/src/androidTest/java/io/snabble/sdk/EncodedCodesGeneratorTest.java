@@ -61,7 +61,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals("+foo;bar;baz-", codes.get(0));
         Assert.assertEquals("+asdf-", codes.get(1));
     }
-    
+
     @Test
     @UiThreadTest
     public void testSplitAtMaxCodes() {
