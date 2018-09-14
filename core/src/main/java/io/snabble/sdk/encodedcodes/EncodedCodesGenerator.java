@@ -9,10 +9,9 @@ import io.snabble.sdk.codes.EAN13;
 public class EncodedCodesGenerator {
     private StringBuilder stringBuilder;
     private EncodedCodesOptions options;
-    private boolean addedCodeWithCheck;
-
     private ArrayList<String> encodedCodes;
     private int codeCount;
+    private boolean hasAgeRestrictedCode;
 
     public EncodedCodesGenerator(EncodedCodesOptions encodedCodesOptions) {
         encodedCodes = new ArrayList<>();
@@ -21,7 +20,7 @@ public class EncodedCodesGenerator {
     }
 
     public void add(String code) {
-        addScannableCode(code);
+        addScannableCode(code, false);
     }
 
     public void add(ShoppingCart shoppingCart) {
@@ -30,9 +29,8 @@ public class EncodedCodesGenerator {
     }
 
     public void clear() {
-        encodedCodes.clear();
+        encodedCodes = new ArrayList<>();
         stringBuilder = new StringBuilder();
-        addedCodeWithCheck = false;
     }
 
     public ArrayList<String> generate() {
@@ -46,21 +44,35 @@ public class EncodedCodesGenerator {
         return ret;
     }
 
-    private void addProducts(ShoppingCart shoppingCart, boolean ageRestricted) {
+    private boolean hasAgeRestrictedCode(ShoppingCart shoppingCart) {
         for (int i = 0; i < shoppingCart.size(); i++) {
             Product product = shoppingCart.getProduct(i);
-            if(ageRestricted != product.getSaleRestriction().isAgeRestriction()) {
-                continue;
-            }
 
-            if (ageRestricted
-                    && options.nextCodeWithCheck.length() != 0
-                    && !addedCodeWithCheck
-                    && product.getSaleRestriction().isAgeRestriction()
+            if (product.getSaleRestriction().isAgeRestriction()
                     && product.getSaleRestriction().getValue() >= 16) {
-                addedCodeWithCheck = true;
-                append(options.nextCodeWithCheck);
-                finishCode();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isAgeRestricted(Product product) {
+        if (product.getSaleRestriction().isAgeRestriction()
+                && product.getSaleRestriction().getValue() >= 16) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void addProducts(ShoppingCart shoppingCart, boolean ageRestricted) {
+        hasAgeRestrictedCode = hasAgeRestrictedCode(shoppingCart);
+
+        for (int i = 0; i < shoppingCart.size(); i++) {
+            Product product = shoppingCart.getProduct(i);
+            if(ageRestricted != isAgeRestricted(product)) {
+                continue;
             }
 
             if (product.getType() == Product.Type.UserWeighed) {
@@ -79,13 +91,13 @@ public class EncodedCodesGenerator {
                         code.replace(7, 12, embeddedWeight.toString());
                         code.setCharAt(6, Character.forDigit(EAN13.internalChecksum(code.toString()), 10));
                         code.setCharAt(12, Character.forDigit(EAN13.checksum(code.substring(0, 12)), 10));
-                        addScannableCode(code.toString());
+                        addScannableCode(code.toString(), ageRestricted);
                     }
                 }
             } else {
                 int q = shoppingCart.getQuantity(i);
                 for (int j = 0; j < q; j++) {
-                    addScannableCode(product.getTransmissionCode(shoppingCart.getScannedCode(i)));
+                    addScannableCode(product.getTransmissionCode(shoppingCart.getScannedCode(i)), ageRestricted);
                 }
             }
         }
@@ -99,16 +111,30 @@ public class EncodedCodesGenerator {
         codeCount = 0;
     }
 
-    private void addScannableCode(String scannableCode) {
+    private boolean needsToAddNextCodeWithCheck() {
+        return hasAgeRestrictedCode && encodedCodes.size() == 0 && options.nextCodeWithCheck.length() > 0;
+    }
+
+    private void addScannableCode(String scannableCode, boolean isAgeRestricted) {
+        String nextCode = needsToAddNextCodeWithCheck() ? options.nextCodeWithCheck : options.nextCode;
+
+        if (isAgeRestricted
+                && hasAgeRestrictedCode
+                && encodedCodes.size() == 0
+                && options.nextCodeWithCheck.length() > 0) {
+            append(options.nextCodeWithCheck);
+            finishCode();
+        }
+
         int charsLeft = options.maxChars - stringBuilder.length();
-        int suffixCodeLength = Math.max(options.nextCode.length(), options.finalCode.length());
+        int suffixCodeLength = Math.max(nextCode.length(), options.finalCode.length());
         int requiredLength = scannableCode.length()
                 + suffixCodeLength
                 + options.separator.length() * (suffixCodeLength > 0 ? 2 : 1)
                 + options.suffix.length();
 
         if (charsLeft < requiredLength || (codeCount + (suffixCodeLength > 0 ? 2 : 1)) > options.maxCodes) {
-            append(options.nextCode);
+            append(nextCode);
             finishCode();
         }
 
