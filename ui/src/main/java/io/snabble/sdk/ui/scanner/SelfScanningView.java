@@ -59,6 +59,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private boolean allowShowingHints;
     private TextView info;
     private Handler infoHandler = new Handler(Looper.getMainLooper());
+    private boolean isShowingHint;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -152,7 +153,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         productDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                resumeBarcodeScanner();
+                if(!isShowingHint) {
+                    resumeBarcodeScanner();
+                }
+
                 allowScan = true;
             }
         });
@@ -348,6 +352,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             Shop currentShop = project.getCheckout().getShop();
 
             if (currentShop != null) {
+                pauseBarcodeScanner();
+
                 Context context = getContext();
 
                 final AlertDialog alertDialog = new AlertDialog.Builder(context)
@@ -355,11 +361,18 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .setCancelable(true)
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                resumeBarcodeScanner();
+                                isShowingHint = false;
+                            }
+                        })
                         .create();
 
                 alertDialog.setCanceledOnTouchOutside(true);
-
                 alertDialog.show();
+                isShowingHint = true;
             }
         }
     }
