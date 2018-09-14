@@ -128,12 +128,13 @@ public class EncodedCodesGenerator {
 
         int charsLeft = options.maxChars - stringBuilder.length();
         int suffixCodeLength = Math.max(nextCode.length(), options.finalCode.length());
+        int codesNeeded = (suffixCodeLength > 0 ? 2 : 1);
         int requiredLength = scannableCode.length()
                 + suffixCodeLength
-                + options.separator.length() * (suffixCodeLength > 0 ? 2 : 1)
+                + options.separator.length() * codesNeeded
                 + options.suffix.length();
 
-        if (charsLeft < requiredLength || (codeCount + (suffixCodeLength > 0 ? 2 : 1)) > options.maxCodes) {
+        if (charsLeft < requiredLength || (codeCount + codesNeeded) > options.maxCodes) {
             append(nextCode);
             finishCode();
         }
