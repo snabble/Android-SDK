@@ -118,16 +118,17 @@
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/addToCart"
         style="@style/SnabbleButton"
-        android:layout_width="wrap_content"
+        android:layout_width="272dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/quantity"
         android:layout_centerHorizontal="true"
         android:text="@string/Snabble.Scanner.addToCart" />
 
+
     <!-- invisible view as a margin, marginBottom does not work on API 16-18 -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="16dp"
         android:layout_below="@id/addToCart"
         android:visibility="invisible" />
 </RelativeLayout>
