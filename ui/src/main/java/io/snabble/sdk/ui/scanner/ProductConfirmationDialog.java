@@ -285,7 +285,6 @@ class ProductConfirmationDialog {
             price.setText(singlePrice);
         }
 
-        // TODO TEST
         if(scannedCode.hasPriceData()){
             int embeddedPrice = scannedCode.getEmbeddedData();
             price.setText(priceFormatter.format(embeddedPrice));
