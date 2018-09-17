@@ -142,7 +142,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         ArrayList<String> codes = generator.generate();
         Assert.assertEquals(3, codes.size());
         Assert.assertEquals("+4008400301020;4008400301020;####-", codes.get(0));
-        Assert.assertEquals("+4008400301020;4008287051124;****-", codes.get(1));
+        Assert.assertEquals("+4008400301020;4008287051124;####-", codes.get(1));
         Assert.assertEquals("+4008287051124;4008287051124;%%%%-", codes.get(2));
     }
 
@@ -173,10 +173,10 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         ArrayList<String> codes = generator.generate();
         Assert.assertEquals(6, codes.size());
         Assert.assertEquals("+4008400301020;####-", codes.get(0));
-        Assert.assertEquals("+4008400301020;****-", codes.get(1));
-        Assert.assertEquals("+4008400301020;****-", codes.get(2));
-        Assert.assertEquals("+4008287051124;****-", codes.get(3));
-        Assert.assertEquals("+4008287051124;****-", codes.get(4));
+        Assert.assertEquals("+4008400301020;####-", codes.get(1));
+        Assert.assertEquals("+4008400301020;####-", codes.get(2));
+        Assert.assertEquals("+4008287051124;####-", codes.get(3));
+        Assert.assertEquals("+4008287051124;####-", codes.get(4));
         Assert.assertEquals("+4008287051124;%%%%-", codes.get(5));
     }
 

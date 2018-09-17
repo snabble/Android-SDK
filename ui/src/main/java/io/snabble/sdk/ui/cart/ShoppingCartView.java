@@ -449,8 +449,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                             controlsUserWeighed.setVisibility(View.GONE);
                         } else {
-                            controlsDefault.setVisibility(View.VISIBLE);
-                            controlsUserWeighed.setVisibility(View.INVISIBLE);
+                            if(embeddedPrice != null) {
+                                controlsDefault.setVisibility(View.GONE);
+                                controlsUserWeighed.setVisibility(View.GONE);
+                            } else {
+                                controlsDefault.setVisibility(View.VISIBLE);
+                                controlsUserWeighed.setVisibility(View.INVISIBLE);
+                            }
                         }
                         break;
                     case PreWeighed:

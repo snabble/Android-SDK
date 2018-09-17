@@ -107,6 +107,7 @@ public class ShoppingCart {
         Entry e = getEntryBySku(product.getSku());
 
         if (e == null || scannedCode.hasUnitData()
+                || scannedCode.hasPriceData()
                 || product.getType() == Product.Type.UserWeighed
                 || product.getType() == Product.Type.PreWeighed) {
             if(quantity > 0) {

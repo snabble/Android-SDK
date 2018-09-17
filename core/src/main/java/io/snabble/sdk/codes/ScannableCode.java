@@ -16,6 +16,10 @@ public class ScannableCode implements Serializable {
     }
 
     public String getLookupCode() {
+        return code;
+    }
+
+    public String getMaskedCode() {
         return "";
     }
 
@@ -48,6 +52,8 @@ public class ScannableCode implements Serializable {
             return new EAN13(code, project);
         } else if (EAN14.isEan14(code)) {
             return new EAN14(code);
+        } else if (EdekaProductCode.isEdekaProductCode(project, code)) {
+            return new EdekaProductCode(code);
         } else {
             return new ScannableCode(code);
         }

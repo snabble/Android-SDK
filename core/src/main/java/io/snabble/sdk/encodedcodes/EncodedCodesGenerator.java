@@ -111,12 +111,8 @@ public class EncodedCodesGenerator {
         codeCount = 0;
     }
 
-    private boolean needsToAddNextCodeWithCheck() {
-        return hasAgeRestrictedCode && encodedCodes.size() == 0 && options.nextCodeWithCheck.length() > 0;
-    }
-
     private void addScannableCode(String scannableCode, boolean isAgeRestricted) {
-        String nextCode = needsToAddNextCodeWithCheck() ? options.nextCodeWithCheck : options.nextCode;
+        String nextCode = hasAgeRestrictedCode ? options.nextCodeWithCheck : options.nextCode;
 
         if (isAgeRestricted
                 && hasAgeRestrictedCode

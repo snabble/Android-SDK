@@ -74,7 +74,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     @Override
-    public String getLookupCode() {
+    public String getMaskedCode() {
         return lookupCode;
     }
 

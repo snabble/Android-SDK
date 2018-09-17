@@ -217,7 +217,10 @@ class ProductConfirmationDialog {
             }
         });
 
-        if (cartQuantity > 0 && product.getType() == Product.Type.Article && !scannedCode.hasUnitData()) {
+        if (cartQuantity > 0
+                && product.getType() == Product.Type.Article
+                && !scannedCode.hasUnitData()
+                && !scannedCode.hasPriceData()) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
@@ -280,6 +283,12 @@ class ProductConfirmationDialog {
             }
         } else {
             price.setText(singlePrice);
+        }
+
+        // TODO TEST
+        if(scannedCode.hasPriceData()){
+            int embeddedPrice = scannedCode.getEmbeddedData();
+            price.setText(priceFormatter.format(embeddedPrice));
         }
 
         Product depositProduct = product.getDepositProduct();

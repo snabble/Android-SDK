@@ -189,8 +189,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog.showAfterDelay(300);
 
-        if(scannedCode.hasEmbeddedData()){
-            productDatabase.findByWeighItemIdOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
+        if(scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0){
+            productDatabase.findByWeighItemIdOnline(scannedCode.getMaskedCode(), new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
@@ -207,7 +207,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 }
             });
         } else {
-            productDatabase.findByCodeOnline(scannedCode.getCode(), new OnProductAvailableListener() {
+            productDatabase.findByCodeOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
