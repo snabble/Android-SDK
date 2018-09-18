@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="true">
+
     <EditText
         style="@style/SnabbleSearchEditText"
         android:id="@+id/search_bar"

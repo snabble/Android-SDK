@@ -77,12 +77,12 @@ public class ProductDatabase {
         }
     }
 
-    private ProductDatabase(Project project, String name){
+    private ProductDatabase(Project project, String name) {
         this(project, name, false);
     }
 
     private boolean open() {
-        if(dbName == null){
+        if (dbName == null) {
             return true;
         }
 
@@ -90,7 +90,7 @@ public class ProductDatabase {
             File file = application.getDatabasePath(dbName);
 
             try {
-                if(!file.exists()) {
+                if (!file.exists()) {
                     return false;
                 }
 
@@ -129,9 +129,9 @@ public class ProductDatabase {
 
     /**
      * Loads the a database from a file located int the assets folder.
-     *
+     * <p>
      * If the loaded database is older then the one currently used, nothing will happen.
-     *
+     * <p>
      * Make sure to provide the correct revision, major or minor, or else the database may be copied
      * even if its older then the one currently used.
      */
@@ -145,9 +145,9 @@ public class ProductDatabase {
 
     /**
      * Loads the a database from an InputStream.
-     *
+     * <p>
      * If the loaded database is older then the one currently used, nothing will happen.
-     *
+     * <p>
      * Make sure to provide the correct revision, major or minor, or else the database may be copied
      * even if its older then the one currently used.
      */
@@ -275,7 +275,7 @@ public class ProductDatabase {
      * Returns true if successful, false otherwise
      */
     synchronized void applyDeltaUpdate(InputStream inputStream) throws IOException {
-        if(dbName == null){
+        if (dbName == null) {
             return;
         }
 
@@ -305,7 +305,7 @@ public class ProductDatabase {
 
         try {
             tempDb.beginTransaction();
-        } catch (SQLiteException e){
+        } catch (SQLiteException e) {
             Logger.e("Could not apply delta update: Could not access temp database");
             return;
         }
@@ -341,7 +341,7 @@ public class ProductDatabase {
         try {
             tempDb.setTransactionSuccessful();
             tempDb.endTransaction();
-        } catch (SQLiteException e){
+        } catch (SQLiteException e) {
             Logger.e("Could not apply delta update: Could not finish transaction on temp database");
             return;
         }
@@ -375,7 +375,7 @@ public class ProductDatabase {
      * If a read error occurs, an IOException will be thrown.
      */
     synchronized void applyFullUpdate(InputStream inputStream) throws IOException {
-        if(dbName == null){
+        if (dbName == null) {
             return;
         }
 
@@ -401,18 +401,18 @@ public class ProductDatabase {
     }
 
     private void createFTSIndexIfNecessary() {
-        if(generateSearchIndex) {
+        if (generateSearchIndex) {
             long time = SystemClock.elapsedRealtime();
 
             synchronized (dbLock) {
                 Cursor cursor;
                 cursor = rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='searchByName'", null, null);
                 boolean hasFTS = cursor != null && cursor.getCount() == 1;
-                if(cursor != null){
+                if (cursor != null) {
                     cursor.close();
                 }
 
-                if(!hasFTS) {
+                if (!hasFTS) {
                     db.beginTransaction();
 
                     exec("DROP TABLE IF EXISTS searchByName");
@@ -511,12 +511,12 @@ public class ProductDatabase {
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
      *
-     * @param callback A {@link UpdateCallback} that returns success when the operation is successfully completed.
-     *                 Or error() in case a network error occurred. Can be null.
+     * @param callback        A {@link UpdateCallback} that returns success when the operation is successfully completed.
+     *                        Or error() in case a network error occurred. Can be null.
      * @param deltaUpdateOnly set to true if you want to only update when the update would be an delta update
      */
     public void update(final UpdateCallback callback, boolean deltaUpdateOnly) {
-        if(dbName == null){
+        if (dbName == null) {
             return;
         }
 
@@ -576,7 +576,7 @@ public class ProductDatabase {
      * Closes and deletes the locally stored database and falls back to online only mode.
      */
     public void delete() {
-        if(db != null){
+        if (db != null) {
             close();
             application.deleteDatabase(dbName);
             db = null;
@@ -592,7 +592,7 @@ public class ProductDatabase {
      * @return Size of the database in bytes.
      */
     public long size() {
-        if(db == null){
+        if (db == null) {
             return 0;
         }
 
@@ -709,7 +709,7 @@ public class ProductDatabase {
         String depositSku = anyToString(cursor, 4);
 
         builder.setIsDeposit(cursor.getInt(5) != 0)
-               .setType(productTypes[cursor.getInt(6)]);
+                .setType(productTypes[cursor.getInt(6)]);
 
         builder.setDepositProduct(findBySku(depositSku));
 
@@ -733,22 +733,22 @@ public class ProductDatabase {
                 .setSubtitle(cursor.getString(12))
                 .setBasePrice(cursor.getString(13));
 
-        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
             builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(14)));
             builder.setSaleStop(cursor.getInt(15) != 0);
         }
 
-        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
             builder.setBundleProducts(findBundlesOfProduct(builder.build()));
         }
 
-        if(scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+        if (scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
             String transmissionCodesStr = cursor.getString(16);
             if (transmissionCodesStr != null) {
                 String[] transmissionCodes = transmissionCodesStr.split(",");
-                for(int i=0; i<transmissionCodes.length; i++) {
+                for (int i = 0; i < transmissionCodes.length; i++) {
                     String tc = transmissionCodes[i];
-                    if(!tc.equals("")){
+                    if (!tc.equals("")) {
                         builder.addTransmissionCode(scannableCodes[i], tc);
                     }
                 }
@@ -757,7 +757,7 @@ public class ProductDatabase {
         return builder.build();
     }
 
-    private Product.SaleRestriction decodeSaleRestriction(long encodedValue){
+    private Product.SaleRestriction decodeSaleRestriction(long encodedValue) {
         long type = encodedValue & 0xFF;
         long value = encodedValue >> 8;
 
@@ -802,12 +802,12 @@ public class ProductDatabase {
                 "p.subtitle," +
                 "pr.basePrice";
 
-        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
             sql += ",p.saleRestriction";
             sql += ",p.saleStop";
         }
 
-        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
             sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
         }
 
@@ -826,7 +826,7 @@ public class ProductDatabase {
     }
 
     public boolean isUpToDate() {
-        if(lastUpdateDate != null){
+        if (lastUpdateDate != null) {
             long time = lastUpdateDate.getTime();
             long currentTime = new Date().getTime();
             long t = time + TimeUnit.HOURS.toMillis(1);
@@ -861,9 +861,9 @@ public class ProductDatabase {
         return getFirstProductAndClose(cursor);
     }
 
-    private void exec(String sql){
+    private void exec(String sql) {
         Cursor cursor = rawQuery(sql, null, null);
-        if(cursor != null){
+        if (cursor != null) {
             cursor.close();
         }
     }
@@ -908,7 +908,7 @@ public class ProductDatabase {
     }
 
     private Product[] allProductsAtCursor(Cursor cursor) {
-        if(cursor == null){
+        if (cursor == null) {
             return new Product[0];
         }
 
@@ -1071,7 +1071,7 @@ public class ProductDatabase {
         if (p != null) {
             return p;
         } else if (recursive) {
-            if (code.startsWith("0")){
+            if (code.startsWith("0")) {
                 return findByCodeInternal(code.substring(1, code.length()), true);
             } else if (code.length() >= 8 && code.length() < 13) {
                 String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
@@ -1160,7 +1160,7 @@ public class ProductDatabase {
 
     /**
      * This function needs config value generateSearchIndex set to true
-     *
+     * <p>
      * Returns a {@link Cursor} which can be iterated for items containing the given search
      * string at the start of a word.
      * <p>

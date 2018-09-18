@@ -14,34 +14,36 @@
         android:layout_height="wrap_content"
         android:scrollbars="none"
         android:id="@+id/scroller">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/close"
+                android:padding="12dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_close" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:textSize="15sp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/Snabble.Scanner.BundleDialog.headline" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:id="@+id/close"
-                    android:padding="12dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:src="@drawable/ic_close" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:textSize="15sp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/Snabble.Scanner.BundleDialog.headline"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:id="@+id/container" />
-            </LinearLayout>
+                android:orientation="vertical"
+                android:id="@+id/container" />
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
     <!-- invisible view as a margin, marginBottom does not work on API 16-18 -->

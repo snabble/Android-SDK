@@ -145,8 +145,8 @@ public class ProductSearchView extends FrameLayout {
     }
 
     private void onSearchUpdated() {
-        if(searchableProductAdapter.getItemCount() == 0
-                && lastSearchQuery != null && lastSearchQuery.length() > 0){
+        if (searchableProductAdapter.getItemCount() == 0
+                && lastSearchQuery != null && lastSearchQuery.length() > 0) {
             addCodeAsIs.setText(getResources().getString(R.string.Snabble_Scanner_addCodeAsIs, lastSearchQuery));
             addCodeAsIs.setVisibility(View.VISIBLE);
         } else {

@@ -74,7 +74,7 @@ public class TokenRegistry {
                     tokens.put(project.getId(), token);
                     return token;
                 } else {
-                    if(!isRetry) {
+                    if (!isRetry) {
                         Logger.d("Could not generate token, trying again with server time");
 
                         adjustTimeOffset(response);
@@ -93,7 +93,7 @@ public class TokenRegistry {
 
     private void adjustTimeOffset(Response response) {
         Date serverDate = response.headers().getDate("Date");
-        if(serverDate != null) {
+        if (serverDate != null) {
             timeOffset = serverDate.getTime() - System.currentTimeMillis();
             Logger.d("timeOffset = %d", timeOffset);
         }
@@ -105,10 +105,10 @@ public class TokenRegistry {
 
     /**
      * Synchronously retrieves a token for the project.
-     *
+     * <p>
      * May do synchronous http requests, if the token is invalid.
      * If a valid token is available, it will be returned without doing http requests.
-     *
+     * <p>
      * Returns null if not valid token could be generated. (invalid secret, timeouts, no connection)
      */
     public synchronized Token getToken(Project project) {
@@ -118,12 +118,12 @@ public class TokenRegistry {
 
         Token token = tokens.get(project.getId());
 
-        if(token != null) {
+        if (token != null) {
             long tokenInterval = (token.expiresAt - token.issuedAt);
             long invalidAt = token.issuedAt + tokenInterval / 2;
 
             long seconds = getOffsetTime();
-            if(seconds >= invalidAt) {
+            if (seconds >= invalidAt) {
                 Logger.d("Token timed out, requesting new token");
                 Token newToken = refreshToken(project, false);
                 if (newToken != null) {

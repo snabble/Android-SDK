@@ -110,9 +110,9 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByCode("5", null);
         Set<Product> set = new HashSet<>();
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             Product p = productDatabase.productAtCursor(cursor);
-            if(set.contains(p)){
+            if (set.contains(p)) {
                 assertFalse(true);
             }
             set.add(p);
@@ -400,4 +400,4 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), "00000" + product.getScannableCodes()[0]);
     }
- }
+}

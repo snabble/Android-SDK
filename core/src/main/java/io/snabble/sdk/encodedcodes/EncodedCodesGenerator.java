@@ -34,7 +34,7 @@ public class EncodedCodesGenerator {
     }
 
     public ArrayList<String> generate() {
-        if(options.finalCode.length() != 0) {
+        if (options.finalCode.length() != 0) {
             append(options.finalCode);
         }
 
@@ -71,7 +71,7 @@ public class EncodedCodesGenerator {
 
         for (int i = 0; i < shoppingCart.size(); i++) {
             Product product = shoppingCart.getProduct(i);
-            if(ageRestricted != isAgeRestricted(product)) {
+            if (ageRestricted != isAgeRestricted(product)) {
                 continue;
             }
 
@@ -140,7 +140,7 @@ public class EncodedCodesGenerator {
     }
 
     private void append(String code) {
-        if(code.length() == 0) {
+        if (code.length() == 0) {
             return;
         }
 

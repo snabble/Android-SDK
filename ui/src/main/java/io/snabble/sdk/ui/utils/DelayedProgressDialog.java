@@ -10,7 +10,7 @@ public class DelayedProgressDialog extends ProgressDialog {
 
     private Runnable showRunnable = new Runnable() {
         public void run() {
-            if(!isDismissed) {
+            if (!isDismissed) {
                 show();
             }
         }

@@ -8,7 +8,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -382,9 +381,9 @@ class ProductApi {
                 .setSaleRestriction(apiProduct.saleRestriction)
                 .setSaleStop(apiProduct.saleStop);
 
-        if(apiProduct.codes != null) {
+        if (apiProduct.codes != null) {
             for (ApiScannableCode apiScannableCode : apiProduct.codes) {
-                if(apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
+                if (apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
                     builder.addTransmissionCode(apiScannableCode.code, apiScannableCode.transmissionCode);
                 }
             }

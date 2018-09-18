@@ -128,7 +128,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                     resumeBarcodeScanner();
                     progressDialog.dismiss();
 
@@ -153,7 +153,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         productDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if(!isShowingHint) {
+                if (!isShowingHint) {
                     resumeBarcodeScanner();
                 }
 
@@ -178,7 +178,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         ignoreNextDialog = false;
         pauseBarcodeScanner();
 
-        if(scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()){
+        if (scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()) {
             resumeBarcodeScanner();
             delayNextScan();
 
@@ -189,7 +189,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog.showAfterDelay(300);
 
-        if(scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0){
+        if (scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0) {
             productDatabase.findByWeighItemIdOnline(scannedCode.getMaskedCode(), new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
@@ -250,7 +250,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog.dismiss();
 
-        if(product.getBundleProducts().length > 0){
+        if (product.getBundleProducts().length > 0) {
             showBundleDialog(product);
         } else {
             if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
@@ -306,7 +306,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private void onClickEnterBarcode() {
         SnabbleUICallback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
-            if(productDatabase.isAvailableOffline() && productDatabase.isUpToDate()){
+            if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
                 callback.showBarcodeSearch();
             } else {
                 pauseBarcodeScanner();
@@ -347,7 +347,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void showHints() {
-        if(allowShowingHints) {
+        if (allowShowingHints) {
             Project project = SnabbleUI.getProject();
             Shop currentShop = project.getCheckout().getShop();
 
@@ -409,7 +409,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
 
                 String[] codes = product.getScannableCodes();
-                if(codes.length > 0) {
+                if (codes.length > 0) {
                     showProduct(product, ScannableCode.parse(SnabbleUI.getProject(), codes[0]));
                 }
             }
@@ -503,7 +503,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, Product product) {
-            if(list.getAddCount() == 1) {
+            if (list.getAddCount() == 1) {
                 showHints();
             }
         }

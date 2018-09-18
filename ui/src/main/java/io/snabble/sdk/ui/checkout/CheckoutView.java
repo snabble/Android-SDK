@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
@@ -63,7 +62,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                     checkout.cancel();
                     return true;
                 }
@@ -99,7 +98,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                         }
                     }, 3000);
                 } else {
-                    if(checkout.getSelectedPaymentMethod() != PaymentMethod.ENCODED_CODES) {
+                    if (checkout.getSelectedPaymentMethod() != PaymentMethod.ENCODED_CODES) {
                         displayView(new CheckoutDoneView(getContext()));
                     }
                 }
@@ -122,7 +121,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     }
 
     private void displayPaymentView() {
-        switch(checkout.getSelectedPaymentMethod()){
+        switch (checkout.getSelectedPaymentMethod()) {
             case CASH:
                 displayView(new CheckoutStatusView(getContext()));
                 break;
@@ -164,7 +163,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
         if (checkout.getState() == Checkout.State.NONE) {
             Activity activity = UIUtils.getHostActivity(getContext());
-            if(activity != null) {
+            if (activity != null) {
                 activity.onBackPressed();
             }
         }

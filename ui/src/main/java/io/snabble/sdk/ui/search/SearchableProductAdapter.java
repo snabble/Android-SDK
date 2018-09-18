@@ -47,7 +47,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     public SearchableProductAdapter(ProductDatabase productDatabase) {
         this.productDatabase = productDatabase;
 
-        if(backgroundHandler == null) {
+        if (backgroundHandler == null) {
             HandlerThread thread = new HandlerThread("SearchableProductAdapter");
             thread.start();
             backgroundHandler = new Handler(thread.getLooper());
@@ -154,7 +154,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
                                     cancellationSignal);
                         }
 
-                        if(newCursor != null) {
+                        if (newCursor != null) {
                             final int count = newCursor.getCount();
 
                             uiHandler.post(new Runnable() {

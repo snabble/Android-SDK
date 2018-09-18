@@ -48,7 +48,7 @@ public class UIUtils {
         return null;
     }
 
-    public static void setColoredText(TextView tv, String text, String subText, int color){
+    public static void setColoredText(TextView tv, String text, String subText, int color) {
         SpannableString spannableString = new SpannableString(text);
         ForegroundColorSpan foregroundSpan = new ForegroundColorSpan(color);
         int start = text.lastIndexOf(subText);

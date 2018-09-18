@@ -17,8 +17,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -166,7 +166,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             int h = scrollContainer.getHeight();
             barcodeHeight = codes.size() == 1 ? h : h - h / 5;
 
-            for(String code : codes) {
+            for (String code : codes) {
                 BarcodeView barcodeView = new BarcodeView(getContext());
                 barcodeView.setFormat(BarcodeFormat.QR_CODE);
 

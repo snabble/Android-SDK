@@ -67,7 +67,7 @@ class ProductDatabaseDownloader extends Downloader {
                         productDatabase.applyDeltaUpdate(body.byteStream());
                         break;
                     case MIMETYPE_FULL:
-                        if(deltaUpdateOnly){
+                        if (deltaUpdateOnly) {
                             body.close();
                             throw new IOException();
                         }

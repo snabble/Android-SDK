@@ -11,7 +11,7 @@ public class EncodedCodesOptions {
     public final String nextCodeWithCheck;
 
     private EncodedCodesOptions(String prefix, String separator, String suffix, int maxChars,
-                               int maxCodes, String finalCode, String nextCode, String nextCodeWithCheck) {
+                                int maxCodes, String finalCode, String nextCode, String nextCodeWithCheck) {
         this.prefix = prefix;
         this.separator = separator;
         this.suffix = suffix;
@@ -74,7 +74,7 @@ public class EncodedCodesOptions {
 
         public EncodedCodesOptions build() {
             return new EncodedCodesOptions(prefix, separator, suffix, maxChars, maxCodes,
-                                           finalCode, nextCode, nextCodeWithCheck);
+                    finalCode, nextCode, nextCodeWithCheck);
         }
     }
 }

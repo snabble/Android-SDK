@@ -10,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 class OkHttpClientFactory {
     static OkHttpClient createOkHttpClient(Application application,
-                                                  Project project) {
+                                           Project project) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
@@ -36,7 +36,7 @@ class OkHttpClientFactory {
 
         builder.addInterceptor(new UserAgentInterceptor(application));
 
-        if(config.sslSocketFactory != null && config.x509TrustManager != null) {
+        if (config.sslSocketFactory != null && config.x509TrustManager != null) {
             builder.sslSocketFactory(config.sslSocketFactory, config.x509TrustManager);
         }
 

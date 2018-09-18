@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#ffffff">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
 
 
     <TextView
@@ -18,7 +18,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:textSize="17sp"/>
+        android:textSize="17sp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -27,6 +27,7 @@
         android:layout_below="@+id/explanation1"
         android:minHeight="200dp"
         android:id="@+id/scroll_container">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -61,7 +62,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
-        android:textSize="13sp"/>
+        android:textSize="13sp" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/paid"

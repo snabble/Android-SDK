@@ -106,11 +106,11 @@ public class Project {
 
         try {
             currencyLocale = LocaleUtils.toLocale(locale);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             currencyLocale = Locale.getDefault();
         }
 
-        if(currencyLocale == null){
+        if (currencyLocale == null) {
             currencyLocale = Locale.getDefault();
         }
 
@@ -122,9 +122,9 @@ public class Project {
 
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
-        if(jsonObject.has("encodedCodes")) {
+        if (jsonObject.has("encodedCodes")) {
             JsonElement encodedCodes = jsonObject.get("encodedCodes");
-            if(!encodedCodes.isJsonNull()) {
+            if (!encodedCodes.isJsonNull()) {
                 JsonObject object = encodedCodes.getAsJsonObject();
 
                 encodedCodesOptions = new EncodedCodesOptions.Builder()
@@ -156,11 +156,11 @@ public class Project {
         return internalStorageDirectory;
     }
 
-    private RoundingMode parseRoundingMode(JsonElement jsonElement){
-        if(jsonElement != null){
+    private RoundingMode parseRoundingMode(JsonElement jsonElement) {
+        if (jsonElement != null) {
             String roundingMode = jsonElement.getAsString();
-            if(roundingMode != null){
-                switch(roundingMode){
+            if (roundingMode != null) {
+                switch (roundingMode) {
                     case "up":
                         return RoundingMode.UP;
                     case "down":
@@ -233,6 +233,7 @@ public class Project {
     public boolean isCheckoutAvailable() {
         return isCheckoutAvailable;
     }
+
     /**
      * Returns the {@link ProductDatabase}.
      */
@@ -314,7 +315,7 @@ public class Project {
     };
 
     private void notifyUpdate() {
-        for(OnProjectUpdatedListener l : updateListeners) {
+        for (OnProjectUpdatedListener l : updateListeners) {
             l.onProjectUpdated(this);
         }
     }

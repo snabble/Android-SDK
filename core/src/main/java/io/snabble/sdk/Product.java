@@ -34,11 +34,11 @@ public class Product {
 
         private int databaseValue;
 
-        Type(int databaseValue){
+        Type(int databaseValue) {
             this.databaseValue = databaseValue;
         }
 
-        public int getDatabaseValue(){
+        public int getDatabaseValue() {
             return databaseValue;
         }
     }
@@ -64,12 +64,12 @@ public class Product {
 
         private static SaleRestriction[] values = SaleRestriction.values();
 
-        SaleRestriction(long dbType, long value){
+        SaleRestriction(long dbType, long value) {
             this.databaseType = dbType;
             this.value = value;
         }
 
-        public long getValue(){
+        public long getValue() {
             return value;
         }
 
@@ -77,9 +77,9 @@ public class Product {
             return databaseType == 1;
         }
 
-        public static SaleRestriction fromDatabaseField(long dbType, long value){
-            for(SaleRestriction sr : values){
-                if(sr.databaseType == dbType && sr.value == value){
+        public static SaleRestriction fromDatabaseField(long dbType, long value) {
+            for (SaleRestriction sr : values) {
+                if (sr.databaseType == dbType && sr.value == value) {
                     return sr;
                 }
             }
@@ -128,9 +128,9 @@ public class Product {
     }
 
     public String getTransmissionCode(String code) {
-        if(transmissionCodes != null) {
+        if (transmissionCodes != null) {
             String newCode = transmissionCodes.get(code);
-            if(newCode != null) {
+            if (newCode != null) {
                 return newCode;
             }
         }
@@ -223,11 +223,11 @@ public class Product {
     /**
      * @return returns true if this product should not be available for sale anymore.
      */
-    public boolean getSaleStop(){
+    public boolean getSaleStop() {
         return saleStop;
     }
 
-    public int getPriceForQuantity(int quantity, RoundingMode roundingMode){
+    public int getPriceForQuantity(int quantity, RoundingMode roundingMode) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             BigDecimal pricePerUnit = new BigDecimal(getDiscountedPrice())
                     .divide(new BigDecimal(1000));
@@ -340,18 +340,18 @@ public class Product {
             return this;
         }
 
-        public Builder setSaleRestriction(SaleRestriction saleRestriction){
+        public Builder setSaleRestriction(SaleRestriction saleRestriction) {
             product.saleRestriction = saleRestriction;
             return this;
         }
 
-        public Builder setSaleStop(boolean saleStop){
+        public Builder setSaleStop(boolean saleStop) {
             product.saleStop = saleStop;
             return this;
         }
 
-        public Builder addTransmissionCode(String fromCode, String transmissionCode){
-            if(product.transmissionCodes == null) {
+        public Builder addTransmissionCode(String fromCode, String transmissionCode) {
+            if (product.transmissionCodes == null) {
                 product.transmissionCodes = new HashMap<>();
             }
 

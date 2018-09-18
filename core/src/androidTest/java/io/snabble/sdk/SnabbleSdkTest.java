@@ -86,7 +86,7 @@ public class SnabbleSdkTest {
                             .addHeader("Cache-Control", "no-cache")
                             .setBody("{\"token\":\"\"," +
                                     "\"issuedAt\":" + (System.currentTimeMillis() / 1000) + "," +
-                                    "\"expiresAt\":"+ (System.currentTimeMillis() / 1000 + TimeUnit.HOURS.toSeconds(1))
+                                    "\"expiresAt\":" + (System.currentTimeMillis() / 1000 + TimeUnit.HOURS.toSeconds(1))
                                     + "}")
                             .setResponseCode(200);
                 }

@@ -115,13 +115,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void init() {
-        if(cameraHandler == null) {
+        if (cameraHandler == null) {
             HandlerThread cameraHandlerThread = new HandlerThread("CameraHandler");
             cameraHandlerThread.start();
             cameraHandler = new Handler(cameraHandlerThread.getLooper());
         }
 
-        if(barcodeProcessingHandler == null) {
+        if (barcodeProcessingHandler == null) {
             HandlerThread frameProcessingThread = new HandlerThread("BarcodeFrameProcessor");
             frameProcessingThread.start();
             barcodeProcessingHandler = new Handler(frameProcessingThread.getLooper());
@@ -181,7 +181,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraHandler.post(new Runnable() {
             @Override
             public void run() {
-                if(!running) {
+                if (!running) {
                     startRequested = true;
                     startIfRequested();
                 }
@@ -189,7 +189,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         });
     }
 
-    private void startIfRequestedAsync(){
+    private void startIfRequestedAsync() {
         splashView.setVisibility(View.VISIBLE);
         cameraHandler.post(new Runnable() {
             @Override
@@ -226,7 +226,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             public void run() {
                 isPaused = false;
 
-                if(!running){
+                if (!running) {
                     start();
                 } else {
                     isPaused = false;
@@ -298,7 +298,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         try {
             camera.setDisplayOrientation(displayOrientation);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             // happens in very rare cases on the HUAWEI Mate 9.
             // sendCommand: attempt to use a locked camera from a different process
             // show a user error in that case
@@ -342,7 +342,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         try {
             camera.startPreview();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             showError(true);
             return;
         }
@@ -470,7 +470,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 try {
                     camera.setParameters(parameters);
                     torchEnabled = enabled;
-                } catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     // this is terrible, but happens on some devices in rare circumstances
                 }
             }
@@ -655,11 +655,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                     }
 
                     Result result = detect(false);
-                    if(result == null) {
+                    if (result == null) {
                         result = detect(true);
                     }
 
-                    if(result != null) {
+                    if (result != null) {
                         final Result finalResult = result;
 
                         mainThreadHandler.post(new Runnable() {
@@ -668,8 +668,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                                 if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
                                     Barcode barcode = new Barcode(
                                             BarcodeFormat.valueOf(finalResult.getBarcodeFormat()),
-                                                                  finalResult.getText(),
-                                                                  finalResult.getTimestamp());
+                                            finalResult.getText(),
+                                            finalResult.getTimestamp());
 
                                     Logger.d("Detected barcode: " + barcode.toString());
                                     callback.onBarcodeDetected(barcode);
@@ -749,7 +749,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void setScanIndicatorVisible(boolean visible) {
-        if (indicatorEnabled && visible){
+        if (indicatorEnabled && visible) {
             scanIndicatorView.setVisibility(View.VISIBLE);
         } else {
             scanIndicatorView.setVisibility(View.GONE);
@@ -770,7 +770,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void updateTransform() {
-        if(camera == null || previewSize == null){
+        if (camera == null || previewSize == null) {
             return;
         }
 
@@ -853,7 +853,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         float rightNormalized = right / destWidthScaled;
         float bottomNormalized = bottom / destHeightScaled;
 
-        if(isInPortraitMode()){
+        if (isInPortraitMode()) {
             detectionRect.left = Math.round(previewSize.width * topNormalized);
             detectionRect.top = Math.round(previewSize.height * leftNormalized);
             detectionRect.right = Math.round(previewSize.width * bottomNormalized);
@@ -867,7 +867,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         int size = detectionRect.width() * detectionRect.height() * bitsPerPixel / 8;
 
-        if(cropBuffer == null || cropBuffer.length != size) {
+        if (cropBuffer == null || cropBuffer.length != size) {
             cropBuffer = new byte[detectionRect.width() * detectionRect.height() * bitsPerPixel / 8];
         }
 
@@ -901,7 +901,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
 
         if (rotate90deg) {
-            int i=0;
+            int i = 0;
             for (int x = left; x < right; x++) {
                 for (int y = bottom - 1; y >= top; y--) {
                     buf[i] = data[y * width + x];
@@ -911,7 +911,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         } else {
             for (int y = top; y < bottom; y++) {
                 for (int x = left; x < right; x++) {
-                    buf[(x-left) + (y-top) * tWidth] = data[x + y * width];
+                    buf[(x - left) + (y - top) * tWidth] = data[x + y * width];
                 }
             }
         }

@@ -34,7 +34,7 @@ public class PriceFormatter {
         //
         // including the whole ICU library as a dependency increased APK size by 10MB
         // so we are overriding the result here instead for consistency
-        if(currency.getCurrencyCode().equals("HUF")){
+        if (currency.getCurrencyCode().equals("HUF")) {
             return formattedPrice.replace("HUF", "Ft");
         }
 
