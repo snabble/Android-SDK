@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/snabble_primaryColor">
+    android:background="#ffffff">
 
     <TextView
         android:id="@+id/pay_amount"
@@ -14,7 +14,7 @@
         android:textStyle="bold"
         android:gravity="center"
         android:textSize="17sp"
-        android:textColor="@color/snabble_textColorLight"
+        android:textColor="@color/snabble_textColorDark"
         tools:text="@string/Snabble.PaymentSelection.title" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/pay_amount"
         android:text="@string/Snabble.QRCode.showThisCode"
-        android:textColor="@color/snabble_textColorLight"
+        android:textColor="@color/snabble_textColorDark"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
@@ -50,7 +50,7 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/abort"
         android:text="@string/Snabble.QRCode.priceMayDiffer"
-        android:textColor="@color/snabble_textColorLight"
+        android:textColor="@color/snabble_textColorDark"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
@@ -58,7 +58,7 @@
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/abort"
-        style="@style/SnabbleButtonWhite"
+        style="@style/SnabbleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
