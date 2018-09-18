@@ -6,11 +6,19 @@ public class EdekaProductCode extends ScannableCode {
     private String lookupCode;
     private int price;
 
-    EdekaProductCode(String code) {
+    private String overriddenCode;
+
+    EdekaProductCode(Project project, String code) {
         super(code);
 
         lookupCode = code.substring(2, 15);
         price = Integer.parseInt(code.substring(15, 21));
+        overriddenCode = EAN13.generateNewCodeWithEmbeddedData(project, "2417000000000", price).getCode();
+    }
+
+    @Override
+    public String getCode() {
+        return overriddenCode;
     }
 
     @Override

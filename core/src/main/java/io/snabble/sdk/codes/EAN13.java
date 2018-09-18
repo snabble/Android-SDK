@@ -22,7 +22,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     private boolean verifyInternalEanChecksum;
     private boolean useGermanPrintPrefix;
 
-    EAN13(String code, Project project) {
+    EAN13(Project project, String code) {
         super(code);
 
         if (!isEan13(code)) {
