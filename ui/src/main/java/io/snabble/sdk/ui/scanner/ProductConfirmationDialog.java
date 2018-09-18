@@ -10,6 +10,7 @@ import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -257,8 +258,14 @@ class ProductConfirmationDialog {
             });
         }
 
-        float density = context.getResources().getDisplayMetrics().density;
-        window.setLayout(Math.round(320 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        int availableWidth = Math.round(dm.widthPixels / dm.density);
+        int width = Math.round(320 * dm.density);
+        if(availableWidth >= 336) {
+            width = Math.round(336 * dm.density);
+        }
+
+        window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void updatePrice() {
