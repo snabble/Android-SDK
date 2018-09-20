@@ -176,7 +176,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     public void lookupAndShowProduct(final ScannableCode scannedCode) {
         productDialog.dismiss();
         ignoreNextDialog = false;
-        pauseBarcodeScanner();
 
         if (scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()) {
             resumeBarcodeScanner();
@@ -422,7 +421,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void showProduct(Product product, ScannableCode scannedCode) {
-        pauseBarcodeScanner();
+        delayNextScan();
         allowScan = false;
         showProductDialog(product, scannedCode);
     }
