@@ -1073,7 +1073,7 @@ public class ProductDatabase {
         } else if (recursive) {
             if (code.startsWith("0")) {
                 return findByCodeInternal(code.substring(1, code.length()), true);
-            } else if (code.length() >= 8 && code.length() < 13) {
+            } else if (code.length() < 13) {
                 String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
                 return findByCodeInternal(newCode, false);
             }
