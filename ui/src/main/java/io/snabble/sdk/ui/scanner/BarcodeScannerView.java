@@ -148,6 +148,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 ViewGroup.LayoutParams.MATCH_PARENT));
         cameraUnavailableView.setText(R.string.Snabble_Scanner_Camera_accessDenied);
         cameraUnavailableView.setGravity(Gravity.CENTER);
+        cameraUnavailableView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.snabble_textColorLight, null));
+        cameraUnavailableView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.snabble_backgroundColorDark, null));
         cameraUnavailableView.setVisibility(View.GONE);
         addView(cameraUnavailableView);
 
@@ -236,7 +238,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                     Camera.Parameters parameters = camera.getParameters();
                     chooseFocusMode(parameters);
                     camera.setParameters(parameters);
-                    camera.startPreview();
+
+                    try {
+                        camera.startPreview();
+                    } catch (RuntimeException e) {
+                        showError(true);
+                        return;
+                    }
 
                     clearBuffers();
                     decodeEnabled = true;
