@@ -5,11 +5,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +19,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.payment.SEPAPaymentCredentials;
