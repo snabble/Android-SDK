@@ -9,7 +9,7 @@
     android:orientation="vertical"
     tools:ignore="SmallSp,HardcodedText">
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
@@ -44,7 +44,7 @@
                 android:orientation="vertical"
                 android:id="@+id/container" />
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- invisible view as a margin, marginBottom does not work on API 16-18 -->
     <View

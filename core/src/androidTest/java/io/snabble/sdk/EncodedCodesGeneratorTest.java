@@ -1,8 +1,8 @@
 package io.snabble.sdk;
 
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;

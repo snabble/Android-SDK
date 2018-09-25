@@ -3,7 +3,7 @@ package io.snabble.sdk.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class Utils {
     public static Activity getActivity(Context context) {

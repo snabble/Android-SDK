@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.design.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;

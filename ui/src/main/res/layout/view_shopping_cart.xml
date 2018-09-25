@@ -7,19 +7,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/coordinator_layout">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="120dp"
             android:clipToPadding="false"
             android:id="@+id/recycler_view" />
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/pay"
             style="@style/SnabbleButton"
             android:layout_width="272dp"
@@ -34,7 +34,7 @@
             android:maxLines="1"
             app:layout_behavior="io.snabble.sdk.ui.utils.SnackbarPushUpBehavior"
             tools:text="Pay 47€ for 11 articles" />
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

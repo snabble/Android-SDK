@@ -2,9 +2,11 @@ package io.snabble.sdk;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
+import android.os.StrictMode;
+
+import androidx.test.InstrumentationRegistry;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -115,6 +117,9 @@ public class SnabbleSdkTest {
     }
 
     public void withDb(String testDbName, boolean generateSearchIndex) throws IOException, Snabble.SnabbleException {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         productDbBuffer = new Buffer();

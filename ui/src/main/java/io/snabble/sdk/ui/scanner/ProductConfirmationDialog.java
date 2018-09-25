@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;

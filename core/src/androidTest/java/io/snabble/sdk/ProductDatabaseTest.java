@@ -3,8 +3,8 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;

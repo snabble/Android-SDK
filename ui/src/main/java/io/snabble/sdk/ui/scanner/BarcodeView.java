@@ -14,7 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.v7.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatImageView;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.WindowManager;

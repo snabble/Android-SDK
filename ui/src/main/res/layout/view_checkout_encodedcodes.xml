@@ -64,7 +64,7 @@
         android:layout_marginBottom="16dp"
         android:textSize="13sp" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/paid"
         style="@style/SnabbleButton"
         android:layout_width="wrap_content"
