@@ -8,7 +8,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -122,28 +121,7 @@ class ProductApi {
 
         url = url.replace("{code}", code);
 
-        // TODO remove when backend has implemented ean8->ean13 lookups
-        get(url, new OnProductAvailableListener() {
-            @Override
-            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                success(productAvailableListener, product);
-            }
-
-            @Override
-            public void onProductNotFound() {
-                if (code.length() >= 8 && code.length() < 13) {
-                    String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
-                    findByCode(newCode, productAvailableListener);
-                } else {
-                    notFound(productAvailableListener);
-                }
-            }
-
-            @Override
-            public void onError() {
-                error(productAvailableListener);
-            }
-        });
+        get(url, productAvailableListener);
     }
 
     public void findByWeighItemId(String weighItemId, final OnProductAvailableListener productAvailableListener) {
@@ -403,9 +381,9 @@ class ProductApi {
                 .setSaleRestriction(apiProduct.saleRestriction)
                 .setSaleStop(apiProduct.saleStop);
 
-        if(apiProduct.codes != null) {
+        if (apiProduct.codes != null) {
             for (ApiScannableCode apiScannableCode : apiProduct.codes) {
-                if(apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
+                if (apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
                     builder.addTransmissionCode(apiScannableCode.code, apiScannableCode.transmissionCode);
                 }
             }

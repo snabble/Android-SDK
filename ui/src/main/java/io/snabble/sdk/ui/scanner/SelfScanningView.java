@@ -9,16 +9,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.StringRes;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -37,7 +38,6 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
-import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
@@ -57,6 +57,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private boolean ignoreNextDialog;
     private ShoppingCart shoppingCart;
     private boolean allowShowingHints;
+    private TextView info;
+    private Handler infoHandler = new Handler(Looper.getMainLooper());
+    private boolean isShowingHint;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -82,6 +85,16 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
+        info = findViewById(R.id.info);
+        info.setVisibility(View.INVISIBLE);
+        info.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                info.setTranslationY(-info.getHeight());
+                info.setVisibility(View.VISIBLE);
+            }
+        });
 
         enterBarcode = findViewById(R.id.enter_barcode);
         TextView light = findViewById(R.id.light);
@@ -115,7 +128,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                     resumeBarcodeScanner();
                     progressDialog.dismiss();
 
@@ -140,7 +153,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         productDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                resumeBarcodeScanner();
+                if (!isShowingHint) {
+                    resumeBarcodeScanner();
+                }
+
                 allowScan = true;
             }
         });
@@ -161,22 +177,19 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         productDialog.dismiss();
         ignoreNextDialog = false;
 
-        if(scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()){
+        if (scannedCode.hasEmbeddedData() && !scannedCode.isEmbeddedDataOk()) {
+            resumeBarcodeScanner();
             delayNextScan();
 
             Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
-            UIUtils.snackbar(SelfScanningView.this,
-                    R.string.Snabble_Scanner_unknownBarcode,
-                    UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                    .show();
+            showInfo(R.string.Snabble_Scanner_unknownBarcode);
             return;
         }
 
         progressDialog.showAfterDelay(300);
-        pauseBarcodeScanner();
 
-        if(scannedCode.hasEmbeddedData()){
-            productDatabase.findByWeighItemIdOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
+        if (scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0) {
+            productDatabase.findByWeighItemIdOnline(scannedCode.getMaskedCode(), new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
@@ -193,7 +206,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 }
             });
         } else {
-            productDatabase.findByCodeOnline(scannedCode.getCode(), new OnProductAvailableListener() {
+            productDatabase.findByCodeOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
@@ -236,14 +249,11 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         progressDialog.dismiss();
 
-        if(product.getBundleProducts().length > 0){
+        if (product.getBundleProducts().length > 0) {
             showBundleDialog(product);
         } else {
             if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
-                UIUtils.snackbar(SelfScanningView.this,
-                        R.string.Snabble_Scanner_scannedShelfCode,
-                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .show();
+                showInfo(R.string.Snabble_Scanner_scannedShelfCode);
 
                 progressDialog.dismiss();
                 resumeBarcodeScanner();
@@ -266,10 +276,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         delayNextScan();
 
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
-        UIUtils.snackbar(SelfScanningView.this,
-                R.string.Snabble_Scanner_unknownBarcode,
-                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                .show();
+
+        showInfo(R.string.Snabble_Scanner_unknownBarcode);
     }
 
     private void handleProductError() {
@@ -277,18 +285,31 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         resumeBarcodeScanner();
         delayNextScan();
 
-        UIUtils.snackbar(SelfScanningView.this,
-                R.string.Snabble_Scanner_networkError,
-                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                .show();
+        showInfo(R.string.Snabble_Scanner_networkError);
+    }
+
+    private void showInfo(@StringRes int resId) {
+        info.setVisibility(View.VISIBLE);
+        info.setText(resId);
+        info.animate().translationY(0).start();
+
+        infoHandler.removeCallbacksAndMessages(null);
+        infoHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                info.animate().translationY(-info.getHeight()).start();
+            }
+        }, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
     }
 
     private void onClickEnterBarcode() {
         SnabbleUICallback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
-            if(productDatabase.isAvailableOffline() && productDatabase.isUpToDate()){
+            if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
                 callback.showBarcodeSearch();
             } else {
+                pauseBarcodeScanner();
+
                 final EditText input = new EditText(getContext());
                 MarginLayoutParams lp = new MarginLayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -307,8 +328,15 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                             }
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                resumeBarcodeScanner();
+                            }
+                        })
                         .create()
                         .show();
+
             }
         }
     }
@@ -318,11 +346,13 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void showHints() {
-        if(allowShowingHints) {
+        if (allowShowingHints) {
             Project project = SnabbleUI.getProject();
             Shop currentShop = project.getCheckout().getShop();
 
             if (currentShop != null) {
+                pauseBarcodeScanner();
+
                 Context context = getContext();
 
                 final AlertDialog alertDialog = new AlertDialog.Builder(context)
@@ -330,11 +360,18 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .setCancelable(true)
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                resumeBarcodeScanner();
+                                isShowingHint = false;
+                            }
+                        })
                         .create();
 
                 alertDialog.setCanceledOnTouchOutside(true);
-
                 alertDialog.show();
+                isShowingHint = true;
             }
         }
     }
@@ -371,7 +408,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
 
                 String[] codes = product.getScannableCodes();
-                if(codes.length > 0) {
+                if (codes.length > 0) {
                     showProduct(product, ScannableCode.parse(SnabbleUI.getProject(), codes[0]));
                 }
             }
@@ -384,7 +421,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void showProduct(Product product, ScannableCode scannedCode) {
-        pauseBarcodeScanner();
+        delayNextScan();
         allowScan = false;
         showProductDialog(product, scannedCode);
     }
@@ -465,7 +502,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, Product product) {
-            if(list.getAddCount() == 1) {
+            if (list.getAddCount() == 1) {
                 showHints();
             }
         }

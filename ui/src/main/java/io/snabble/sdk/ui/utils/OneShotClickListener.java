@@ -10,7 +10,7 @@ public abstract class OneShotClickListener implements View.OnClickListener {
     public void onClick(View v) {
         long time = SystemClock.elapsedRealtime();
 
-        if(time - lastClickTime > 300) {
+        if (time - lastClickTime > 300) {
             lastClickTime = SystemClock.elapsedRealtime();
             click();
         }

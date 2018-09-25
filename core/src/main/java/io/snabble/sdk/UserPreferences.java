@@ -18,7 +18,7 @@ public class UserPreferences {
     UserPreferences(Context context) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
 
-        if(getClientId() == null){
+        if (getClientId() == null) {
             generateClientId();
         }
 
@@ -37,7 +37,7 @@ public class UserPreferences {
         return paymentCredentialsStore;
     }
 
-    public String getClientId(){
+    public String getClientId() {
         return sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null);
     }
 }

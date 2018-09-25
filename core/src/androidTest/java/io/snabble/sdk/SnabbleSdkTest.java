@@ -2,9 +2,11 @@ package io.snabble.sdk;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
+import android.os.StrictMode;
+
+import androidx.test.InstrumentationRegistry;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -86,7 +88,7 @@ public class SnabbleSdkTest {
                             .addHeader("Cache-Control", "no-cache")
                             .setBody("{\"token\":\"\"," +
                                     "\"issuedAt\":" + (System.currentTimeMillis() / 1000) + "," +
-                                    "\"expiresAt\":"+ (System.currentTimeMillis() / 1000 + TimeUnit.HOURS.toSeconds(1))
+                                    "\"expiresAt\":" + (System.currentTimeMillis() / 1000 + TimeUnit.HOURS.toSeconds(1))
                                     + "}")
                             .setResponseCode(200);
                 }
@@ -107,10 +109,17 @@ public class SnabbleSdkTest {
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        setupSdkWithDb("testDb.sqlite3");
+        withDb("testDb.sqlite3");
     }
 
-    public void setupSdkWithDb(String testDbName) throws IOException, Snabble.SnabbleException {
+    public void withDb(String testDbName) throws IOException, Snabble.SnabbleException {
+        withDb(testDbName, false);
+    }
+
+    public void withDb(String testDbName, boolean generateSearchIndex) throws IOException, Snabble.SnabbleException {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         productDbBuffer = new Buffer();
@@ -123,12 +132,13 @@ public class SnabbleSdkTest {
         config.appId = "test";
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
         config.secret = "asdf";
-        config.generateSearchIndex = true;
+        config.generateSearchIndex = generateSearchIndex;
 
         Snabble snabble = Snabble.getInstance();
         snabble.setupBlocking((Application) context.getApplicationContext(), config);
 
         project = snabble.getProjects().get(0);
+        project.getShoppingCart().clear();
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {

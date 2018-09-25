@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
@@ -45,10 +46,7 @@ public class Project {
     private String[] unitPrefixes;
     private boolean isCheckoutAvailable;
 
-    private String encodedCodesPrefix;
-    private String encodedCodesSeparator;
-    private String encodedCodesSuffix;
-    private int encodedCodesMaxCodes;
+    private EncodedCodesOptions encodedCodesOptions;
 
     private boolean useGermanPrintPrefix;
 
@@ -108,11 +106,11 @@ public class Project {
 
         try {
             currencyLocale = LocaleUtils.toLocale(locale);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             currencyLocale = Locale.getDefault();
         }
 
-        if(currencyLocale == null){
+        if (currencyLocale == null) {
             currencyLocale = Locale.getDefault();
         }
 
@@ -124,21 +122,21 @@ public class Project {
 
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
-        if(jsonObject.has("encodedCodes")) {
+        if (jsonObject.has("encodedCodes")) {
             JsonElement encodedCodes = jsonObject.get("encodedCodes");
-            if(!encodedCodes.isJsonNull()) {
+            if (!encodedCodes.isJsonNull()) {
                 JsonObject object = encodedCodes.getAsJsonObject();
 
-                encodedCodesPrefix = JsonUtils.getStringOpt(object, "prefix", "");
-                encodedCodesSeparator = JsonUtils.getStringOpt(object, "separator", "\n");
-                encodedCodesSuffix = JsonUtils.getStringOpt(object, "suffix", "");
-                encodedCodesMaxCodes = JsonUtils.getIntOpt(object, "maxCodes", 100);
+                encodedCodesOptions = new EncodedCodesOptions.Builder()
+                        .prefix(JsonUtils.getStringOpt(object, "prefix", ""))
+                        .separator(JsonUtils.getStringOpt(object, "separator", "\n"))
+                        .suffix(JsonUtils.getStringOpt(object, "suffix", ""))
+                        .maxCodes(JsonUtils.getIntOpt(object, "maxCodes", 100))
+                        .finalCode(JsonUtils.getStringOpt(object, "finalCode", ""))
+                        .nextCode(JsonUtils.getStringOpt(object, "nextCode", ""))
+                        .nextCodeWithCheck(JsonUtils.getStringOpt(object, "nextCodeWithCheck", ""))
+                        .build();
             }
-        } else {
-            encodedCodesPrefix = "";
-            encodedCodesSeparator = "\n";
-            encodedCodesSuffix = "";
-            encodedCodesMaxCodes = 100;
         }
 
         useGermanPrintPrefix = JsonUtils.getBooleanOpt(jsonObject, "useGermanPrintPrefix", false);
@@ -158,11 +156,11 @@ public class Project {
         return internalStorageDirectory;
     }
 
-    private RoundingMode parseRoundingMode(JsonElement jsonElement){
-        if(jsonElement != null){
+    private RoundingMode parseRoundingMode(JsonElement jsonElement) {
+        if (jsonElement != null) {
             String roundingMode = jsonElement.getAsString();
-            if(roundingMode != null){
-                switch(roundingMode){
+            if (roundingMode != null) {
+                switch (roundingMode) {
                     case "up":
                         return RoundingMode.UP;
                     case "down":
@@ -228,25 +226,14 @@ public class Project {
         return unitPrefixes;
     }
 
-    public String getEncodedCodesPrefix() {
-        return encodedCodesPrefix;
-    }
-
-    public String getEncodedCodesSeparator() {
-        return encodedCodesSeparator;
-    }
-
-    public String getEncodedCodesSuffix() {
-        return encodedCodesSuffix;
-    }
-
-    public int getEncodedCodesMaxCodes() {
-        return encodedCodesMaxCodes;
+    public EncodedCodesOptions getEncodedCodesOptions() {
+        return encodedCodesOptions;
     }
 
     public boolean isCheckoutAvailable() {
         return isCheckoutAvailable;
     }
+
     /**
      * Returns the {@link ProductDatabase}.
      */
@@ -328,7 +315,7 @@ public class Project {
     };
 
     private void notifyUpdate() {
-        for(OnProjectUpdatedListener l : updateListeners) {
+        for (OnProjectUpdatedListener l : updateListeners) {
             l.onProjectUpdated(this);
         }
     }

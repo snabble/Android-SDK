@@ -9,11 +9,11 @@ import java.io.Serializable;
 import io.snabble.sdk.Project;
 
 public class EAN13 extends ScannableCode implements Serializable {
-    private final static String[] germanPrintPrefixes = new String[] {
+    private final static String[] germanPrintPrefixes = new String[]{
             "414", "419", "434", "449"
     };
 
-    private String lookupCode;
+    private String maskedCode;
     private int embeddedData;
     private boolean hasUnitData;
     private boolean hasPriceData;
@@ -22,10 +22,10 @@ public class EAN13 extends ScannableCode implements Serializable {
     private boolean verifyInternalEanChecksum;
     private boolean useGermanPrintPrefix;
 
-    EAN13(String code, Project project) {
+    EAN13(Project project, String code) {
         super(code);
 
-        if(!isEan13(code)){
+        if (!isEan13(code)) {
             throw new IllegalArgumentException("Not a valid EAN13 code");
         }
 
@@ -50,15 +50,15 @@ public class EAN13 extends ScannableCode implements Serializable {
             }
         }
 
-        if(containsGermanPrintPrefix()) {
-            lookupCode = code.substring(0, 3) + "0000000000";
+        if (containsGermanPrintPrefix()) {
+            maskedCode = code.substring(0, 3) + "0000000000";
             embeddedData = Integer.parseInt(code.substring(8, 12));
             hasPriceData = true;
-        } else if(isEmbeddedDataOk()) {
-            lookupCode = code.substring(0, 6) + "0000000";
+        } else if (isEmbeddedDataOk()) {
+            maskedCode = code.substring(0, 6) + "0000000";
             embeddedData = Integer.parseInt(code.substring(7, 12));
         } else {
-            lookupCode = code;
+            maskedCode = code;
             hasWeighData = false;
             hasUnitData = false;
             hasPriceData = false;
@@ -66,7 +66,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     private boolean containsGermanPrintPrefix() {
-        if(!useGermanPrintPrefix){
+        if (!useGermanPrintPrefix) {
             return false;
         }
 
@@ -74,8 +74,8 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     @Override
-    public String getLookupCode() {
-        return lookupCode;
+    public String getMaskedCode() {
+        return maskedCode;
     }
 
     @Override
@@ -99,21 +99,21 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     @Override
-    public boolean hasEmbeddedData(){
+    public boolean hasEmbeddedData() {
         return hasUnitData || hasPriceData || hasWeighData;
     }
 
     @Override
     public boolean isEmbeddedDataOk() {
-        if(containsGermanPrintPrefix()){
+        if (containsGermanPrintPrefix()) {
             return true;
         }
 
-        if(!hasEmbeddedData()){
+        if (!hasEmbeddedData()) {
             return false;
         }
 
-        if(!verifyInternalEanChecksum){
+        if (!verifyInternalEanChecksum) {
             return true;
         }
 
@@ -124,14 +124,14 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     public static EAN13 generateNewCodeWithEmbeddedData(Project project,
-                                                  String code,
-                                                  int newEmbeddedData) {
+                                                        String code,
+                                                        int newEmbeddedData) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(code.substring(0, code.length() - 6));
         String dataStr = String.valueOf(newEmbeddedData);
 
         int remaining = 5 - dataStr.length();
-        for(int i=0; i<remaining; i++) {
+        for (int i = 0; i < remaining; i++) {
             stringBuilder.append("0");
         }
 
@@ -139,7 +139,7 @@ public class EAN13 extends ScannableCode implements Serializable {
         stringBuilder.replace(6, 7, String.valueOf(EAN13.internalChecksum(stringBuilder.toString())));
         stringBuilder.append(String.valueOf(EAN13.checksum(stringBuilder.toString())));
 
-        return (EAN13)ScannableCode.parse(project, stringBuilder.toString());
+        return (EAN13) ScannableCode.parse(project, stringBuilder.toString());
     }
 
     /**
@@ -180,8 +180,8 @@ public class EAN13 extends ScannableCode implements Serializable {
         return check5minusReverse.get(mod10, -1);
     }
 
-    private static int weightedProduct(int index, int digit){
-        switch(index){
+    private static int weightedProduct(int index, int digit) {
+        switch (index) {
             case 0:
             case 3:
                 return check5plus.get(digit, -1);
@@ -254,7 +254,7 @@ public class EAN13 extends ScannableCode implements Serializable {
         check5minus.put(8, 6);
         check5minus.put(9, 1);
 
-        for(int i=0; i<check5minus.size(); i++){
+        for (int i = 0; i < check5minus.size(); i++) {
             check5minusReverse.put(check5minus.valueAt(i), check5minus.keyAt(i));
         }
     }

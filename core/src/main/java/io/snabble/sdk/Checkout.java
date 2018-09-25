@@ -231,7 +231,7 @@ public class Checkout {
 
     /**
      * Cancels outstanding http calls and sets the checkout to its initial state.
-     *
+     * <p>
      * Does NOT notify the backend that the checkout was cancelled.
      */
     public void reset() {
@@ -239,7 +239,7 @@ public class Checkout {
         notifyStateChanged(State.NONE);
     }
 
-    private void cancelOutstandingCalls(){
+    private void cancelOutstandingCalls() {
         if (call != null) {
             call.cancel();
             call = null;
@@ -305,7 +305,7 @@ public class Checkout {
                     String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
                     signedCheckoutInfo = gson.fromJson(json, SignedCheckoutInfo.class);
 
-                    if(signedCheckoutInfo.checkoutInfo.has("price")
+                    if (signedCheckoutInfo.checkoutInfo.has("price")
                             && signedCheckoutInfo.checkoutInfo.get("price").getAsJsonObject().has("price")) {
                         priceToPay = signedCheckoutInfo.checkoutInfo
                                 .get("price")
@@ -316,7 +316,7 @@ public class Checkout {
                         priceToPay = shoppingCart.getTotalPrice();
                     }
 
-                    if(priceToPay != shoppingCart.getTotalPrice()){
+                    if (priceToPay != shoppingCart.getTotalPrice()) {
                         Logger.w("Warning local price is different from remotely calculated price! (Local: "
                                 + shoppingCart.getTotalPrice() + ", Remote: " + priceToPay + ")");
                     }
@@ -532,7 +532,7 @@ public class Checkout {
         return false;
     }
 
-    private void approve(){
+    private void approve() {
         Logger.d("Payment approved");
         shoppingCart.invalidate();
         clearCodes();
@@ -540,20 +540,20 @@ public class Checkout {
     }
 
     public void approveOfflineMethod() {
-        if(paymentMethod.isOfflineMethod()) {
+        if (paymentMethod.isOfflineMethod()) {
             approve();
         }
     }
 
-    public void setClientAcceptedPaymentMethods(PaymentMethod[] acceptedPaymentMethods){
+    public void setClientAcceptedPaymentMethods(PaymentMethod[] acceptedPaymentMethods) {
         clientAcceptedPaymentMethods = acceptedPaymentMethods;
     }
 
-    public void addCode(String code){
+    public void addCode(String code) {
         codes.add(code);
     }
 
-    public void removeCode(String code){
+    public void removeCode(String code) {
         codes.remove(code);
     }
 
@@ -561,7 +561,7 @@ public class Checkout {
         return Collections.unmodifiableCollection(codes);
     }
 
-    public void clearCodes(){
+    public void clearCodes() {
         codes.clear();
     }
 
@@ -598,13 +598,14 @@ public class Checkout {
             JsonArray jsonArray = signedCheckoutInfo.checkoutInfo.getAsJsonArray("availableMethods");
             if (jsonArray != null) {
                 List<PaymentMethod> paymentMethods = gson.fromJson(jsonArray,
-                        new TypeToken<List<PaymentMethod>>(){}.getType());
+                        new TypeToken<List<PaymentMethod>>() {
+                        }.getType());
 
-                if(clientAcceptedPaymentMethods != null) {
+                if (clientAcceptedPaymentMethods != null) {
                     List<PaymentMethod> result = new ArrayList<>();
 
                     for (PaymentMethod clientPaymentMethod : clientAcceptedPaymentMethods) {
-                        if(paymentMethods.contains(clientPaymentMethod)){
+                        if (paymentMethods.contains(clientPaymentMethod)) {
                             result.add(clientPaymentMethod);
                         }
                     }

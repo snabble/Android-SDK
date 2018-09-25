@@ -12,9 +12,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Class to generate RFC 6238 one time passwords.
- *
+ * <p>
  * Based on the Google Authenticator implementation.
- *
+ * <p>
  * See https://tools.ietf.org/html/rfc6238
  * See https://github.com/google/google-authenticator-android
  */

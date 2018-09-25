@@ -3,8 +3,8 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -58,7 +58,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTextSearch() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_6.sqlite3");
+        withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
@@ -75,7 +75,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTextSearchNoFTS() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_6_no_fts.sqlite3");
+        withDb("demoDb_1_6_no_fts.sqlite3", true);
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
@@ -110,9 +110,9 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByCode("5", null);
         Set<Product> set = new HashSet<>();
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             Product p = productDatabase.productAtCursor(cursor);
-            if(set.contains(p)){
+            if (set.contains(p)) {
                 assertFalse(true);
             }
             set.add(p);
@@ -149,7 +149,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testSaleRestriction() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_6.sqlite3");
+        withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("1");
@@ -161,7 +161,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testSaleStop() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_6.sqlite3");
+        withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("1");
@@ -350,7 +350,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindProductWithByEan8WhenScanningEan13() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_6.sqlite3");
+        withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findByCode("42276630");
@@ -368,7 +368,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindProductWithEan13ByEan8() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_6.sqlite3");
+        withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findByCode("40084015");
@@ -380,7 +380,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTransmissionCodeIsSameOnOldDbVersion() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_6.sqlite3");
+        withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("48");
@@ -392,7 +392,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTransmissionCode() throws IOException, Snabble.SnabbleException {
-        setupSdkWithDb("demoDb_1_11.sqlite3");
+        withDb("demoDb_1_11.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("48");
@@ -400,4 +400,4 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), "00000" + product.getScannableCodes()[0]);
     }
- }
+}

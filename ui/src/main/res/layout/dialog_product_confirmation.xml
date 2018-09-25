@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="304dp"
+    android:layout_width="288dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:focusable="true"
@@ -10,7 +10,7 @@
     android:orientation="vertical"
     tools:ignore="SmallSp,HardcodedText">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:background="?android:attr/selectableItemBackground"
         app:srcCompat="@drawable/ic_close" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:textSize="13sp"
         tools:text="Wiha" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         android:textStyle="bold"
         tools:text="Schraubendreher Top G 8,0x1,2" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
         android:textSize="17sp"
         tools:text="2 * 1,00€ = 2,00€" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/depositPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
         android:textSize="13sp"
         tools:text="+ 0,45 € deposit" />
 
-    <android.support.v7.widget.AppCompatImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/minus"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -74,7 +74,7 @@
         android:layout_toLeftOf="@+id/quantity"
         app:srcCompat="@drawable/ic_button_minus" />
 
-    <android.support.v7.widget.AppCompatEditText
+    <androidx.appcompat.widget.AppCompatEditText
         style="@style/SnabbleEditText"
         android:id="@+id/quantity"
         android:layout_width="96dp"
@@ -93,7 +93,7 @@
         android:inputType="number"
         android:text="1" />
 
-    <android.support.v7.widget.AppCompatImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/plus"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -102,7 +102,7 @@
         android:layout_toRightOf="@+id/quantity"
         app:srcCompat="@drawable/ic_button_plus" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/quantity_annotation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -115,19 +115,22 @@
         android:visibility="gone"
         tools:text="g" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/addToCart"
         style="@style/SnabbleButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_below="@+id/quantity"
         android:layout_centerHorizontal="true"
         android:text="@string/Snabble.Scanner.addToCart" />
 
+
     <!-- invisible view as a margin, marginBottom does not work on API 16-18 -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="16dp"
         android:layout_below="@id/addToCart"
         android:visibility="invisible" />
 </RelativeLayout>

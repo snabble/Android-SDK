@@ -27,7 +27,7 @@ android {
             resValue "string", "secret", ""
         }
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -43,13 +43,13 @@ dependencies {
     implementation project(':ui')
     implementation project(':ui-integration')
 
-    implementation "com.android.support:appcompat-v7:${project.supportLibraryVersion}"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'commons-io:commons-io:2.5'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
 }

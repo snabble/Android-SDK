@@ -56,7 +56,7 @@ public class EAN13Test extends SnabbleSdkTest {
         checkInternalChecksum(3, "2810063024800");
     }
 
-    private void checkInternalChecksum(int checksum, String code){
+    private void checkInternalChecksum(int checksum, String code) {
         Assert.assertEquals(checksum, EAN13.internalChecksum(code));
     }
 }

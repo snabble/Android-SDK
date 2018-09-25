@@ -54,6 +54,22 @@ public class Snabble {
             return;
         }
 
+        String version = config.versionName;
+        if (version == null) {
+            try {
+                PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
+                if (pInfo != null && pInfo.versionName != null) {
+                    version = pInfo.versionName.toLowerCase(Locale.ROOT).replace(" ", "");
+                } else {
+                    version = "1.0";
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                version = "1.0";
+            }
+        }
+
+        versionName = version;
+
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
         tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
 
@@ -71,21 +87,6 @@ public class Snabble {
             config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
         }
 
-        String version = config.versionName;
-        if (version == null) {
-            try {
-                PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
-                if (pInfo != null && pInfo.versionName != null) {
-                    version = pInfo.versionName.toLowerCase(Locale.ROOT).replace(" ", "");
-                } else {
-                    version = "1.0";
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                version = "1.0";
-            }
-        }
-
-        versionName = version;
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);

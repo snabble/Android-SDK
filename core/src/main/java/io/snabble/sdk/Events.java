@@ -49,7 +49,7 @@ class Events {
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
             public void onChanged(ShoppingCart list) {
-                if(cartId != null && !list.getId().equals(cartId)){
+                if (cartId != null && !list.getId().equals(cartId)) {
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
                     post(payloadSessionEnd);
@@ -64,7 +64,7 @@ class Events {
             public void onActivityResumed(Activity activity) {
                 isResumed = true;
 
-                if(!hasSentSessionStart) {
+                if (!hasSentSessionStart) {
                     updateShop(shop);
                 }
             }
@@ -77,7 +77,7 @@ class Events {
     }
 
     public void updateShop(Shop newShop) {
-        if(newShop != null){
+        if (newShop != null) {
             cartId = project.getShoppingCart().getId();
             shop = newShop;
 
@@ -95,18 +95,18 @@ class Events {
     }
 
     private <T extends Payload> void post(final T payload) {
-        if(!isResumed) {
+        if (!isResumed) {
             Logger.d("Could not send event, app is not active: " + payload.getEventType());
             return;
         }
 
         String url = project.getEventsUrl();
-        if(url == null){
+        if (url == null) {
             Logger.e("Could not post event: no events url");
             return;
         }
 
-        if(shop == null) {
+        if (shop == null) {
             return;
         }
 
@@ -132,7 +132,7 @@ class Events {
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             Logger.d("Successfully posted event: " + payload.getEventType());
                         } else {
                             Logger.e("Failed to post event: " + payload.getEventType() + ", code " + response.code());
@@ -148,7 +148,7 @@ class Events {
             }
         }, event.type, SystemClock.uptimeMillis() + 2000);
 
-        if(event.type == EventType.SESSION_START) {
+        if (event.type == EventType.SESSION_START) {
             hasSentSessionStart = true;
         }
     }
@@ -182,13 +182,13 @@ class Events {
 
             payloadCart.items[i] = new PayloadCartItem();
             payloadCart.items[i].sku = String.valueOf(product.getSku());
-            payloadCart.items[i].scannedCode =  shoppingCart.getScannedCode(i);
+            payloadCart.items[i].scannedCode = shoppingCart.getScannedCode(i);
             payloadCart.items[i].amount = quantity;
             payloadCart.items[i].units = shoppingCart.getEmbeddedUnits(i);
             payloadCart.items[i].weight = shoppingCart.getEmbeddedWeight(i);
             payloadCart.items[i].price = shoppingCart.getEmbeddedPrice(i);
 
-            if(product.getType() == Product.Type.UserWeighed){
+            if (product.getType() == Product.Type.UserWeighed) {
                 payloadCart.items[i].amount = 1;
                 payloadCart.items[i].weight = quantity;
             }

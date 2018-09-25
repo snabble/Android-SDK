@@ -12,7 +12,7 @@ public enum PaymentMethod {
 
     private boolean isOfflineMethod;
 
-    PaymentMethod(boolean isOfflineMethod){
+    PaymentMethod(boolean isOfflineMethod) {
         this.isOfflineMethod = isOfflineMethod;
     }
 
