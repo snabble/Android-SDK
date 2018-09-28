@@ -65,7 +65,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:gravity="center"
-                    android:text="Lokalisierung im Kassenbereich"
+                    android:text="@string/Snabble.PaymentStatus.step1"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -116,7 +116,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:gravity="center"
-                    android:text="Freigabe deines Einkaufs"
+                    android:text="@string/Snabble.PaymentStatus.step2"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -166,7 +166,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:gravity="center"
-                    android:text="Freigabe deiner Zahlung"
+                    android:text="@string/Snabble.PaymentStatus.step3"
                     android:textSize="15sp" />
             </LinearLayout>
         </LinearLayout>
