@@ -4,17 +4,13 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.recyclerview.widget.DividerItemDecoration;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -45,8 +41,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
-        icons.put(PaymentMethod.CASH, R.drawable.ic_sepa);
-        //icons.put(PaymentMethod.SEPA, R.drawable.ic_sepa);
+        icons.put(PaymentMethod.CASH, R.drawable.ic_pm_sepa);
+        //icons.put(PaymentMethod.SEPA, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
     }
@@ -77,8 +73,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         Resources res = getResources();
         descriptions.clear();
-        descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.Snabble_PaymentMethod_encodedCodes));
-        descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
+        //descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.Snabble_PaymentMethod_encodedCodes));
+        //descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
 
         project = SnabbleUI.getProject();
         checkout = project.getCheckout();
@@ -88,35 +84,10 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         recyclerView = findViewById(R.id.payment_methods);
         recyclerView.setAdapter(new Adapter());
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext()) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
-
-        final NestedScrollView scrollView = findViewById(R.id.scroller);
-
-        recyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(null);
-
-        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                scrollView.post(new Runnable() {
-                    public void run() {
-                        scrollView.fullScroll(View.FOCUS_DOWN);
-                    }
-                });
-            }
-        });
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        int dividerColor = ResourcesCompat.getColor(getResources(), R.color.snabble_dividerColor, null);
-        dividerItemDecoration.setDrawable(new ColorDrawable(dividerColor));
-        recyclerView.addItemDecoration(dividerItemDecoration);
 
         TextView title = findViewById(R.id.choose_payment_title);
 

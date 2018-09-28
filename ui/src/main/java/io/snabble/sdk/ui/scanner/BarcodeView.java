@@ -17,6 +17,7 @@ import android.os.Looper;
 import androidx.appcompat.widget.AppCompatImageView;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.FloatMath;
 import android.view.WindowManager;
 
 import com.google.zxing.MultiFormatWriter;
@@ -25,6 +26,7 @@ import com.google.zxing.common.BitMatrix;
 
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 
 public class BarcodeView extends AppCompatImageView {
     private String text;
@@ -164,14 +166,30 @@ public class BarcodeView extends AppCompatImageView {
                             int th = h - paddingHeight;
 
                             BitMatrix bm = writer.encode(text, format.getZxingBarcodeFormat(), tw, th);
-
                             int[] pixels = new int[w * h];
 
-                            for (int y = 0; y < th; y++) {
-                                final int stride = y * tw;
+                            // DATA-MATRIX codes are not scaled
+                            // See https://github.com/zxing/zxing/issues/836
+                            if (format == BarcodeFormat.DATA_MATRIX) {
+                                float dw = (float)tw / (float)bm.getWidth();
+                                float dh = (float)th / (float)bm.getHeight();
 
-                                for (int x = 0; x < tw; x++) {
-                                    pixels[x + stride] = bm.get(x, y) ? Color.BLACK : backgroundColor;
+                                for (int y = 0; y < th; y++) {
+                                    final int stride = y * tw;
+                                    int ay = (int)((float)y/dh);
+
+                                    for (int x = 0; x < tw; x++) {
+                                        int ax = (int)((float)x/dw);
+                                        pixels[x + stride] = bm.get(ax, ay) ? Color.BLACK : backgroundColor;
+                                    }
+                                }
+                            } else {
+                                for (int y = 0; y < th; y++) {
+                                    final int stride = y * tw;
+
+                                    for (int x = 0; x < tw; x++) {
+                                        pixels[x + stride] = bm.get(x, y) ? Color.BLACK : backgroundColor;
+                                    }
                                 }
                             }
 

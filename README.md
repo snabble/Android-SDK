@@ -9,6 +9,8 @@ Android SDK for Snabble
 ```
 minSdkVersion = 16
 compileSdkVersion = 28
+
+androidx for ui components
 ```
 
 ## Installation
