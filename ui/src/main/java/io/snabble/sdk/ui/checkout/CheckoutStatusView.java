@@ -1,10 +1,14 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -12,9 +16,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import androidx.core.widget.ImageViewCompat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.scanner.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
@@ -51,6 +57,13 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
         steps[2] = findViewById(R.id.step3);
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
+
+        // zxing uses StandardCharsets class for DATA_MATRIX codes, which is not available
+        // before Android 4.4
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            checkoutIdCode.setFormat(BarcodeFormat.QR_CODE);
+        }
+
         View cancel = findViewById(R.id.cancel);
         cancel.setOnClickListener(new OnClickListener() {
             @Override
@@ -60,6 +73,7 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
         });
 
         for(View v : steps) {
+            ImageView imageView = v.findViewWithTag("image");
             ProgressBar progressBar = v.findViewWithTag("progress");
 
             int color = 0x1d1f2440;
@@ -67,6 +81,15 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
             progressBar.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
             progressBar.setIndeterminate(false);
             progressBar.setProgress(0);
+
+            // tinting the white backgrounded images with the background color
+            // so they appear seamless
+            ImageViewCompat.setImageTintMode(imageView, PorterDuff.Mode.MULTIPLY);
+            TypedValue a = new TypedValue();
+            getContext().getTheme().resolveAttribute(android.R.attr.windowBackground, a, true);
+            if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(a.data));
+            }
         }
 
         checkout = SnabbleUI.getProject().getCheckout();

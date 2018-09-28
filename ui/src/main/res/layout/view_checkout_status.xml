@@ -15,8 +15,8 @@
             android:id="@+id/layout_checkout_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="48dp"
-            android:layout_marginRight="48dp"
+            android:paddingLeft="48dp"
+            android:paddingRight="48dp"
             android:gravity="center"
             android:orientation="vertical">
 
