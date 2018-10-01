@@ -297,7 +297,7 @@ public class Checkout {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
-                        scheduleNextPoll();
+                        notifyStateChanged(State.CONNECTION_ERROR);
                         return;
                     }
 
@@ -384,6 +384,7 @@ public class Checkout {
 
                 String url = signedCheckoutInfo.getCheckoutProcessLink();
                 if (url == null) {
+                    notifyStateChanged(State.CONNECTION_ERROR);
                     return;
                 }
 
