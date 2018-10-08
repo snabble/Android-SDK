@@ -23,7 +23,7 @@ import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
-import io.snabble.sdk.ui.scanner.BarcodeFormat;
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 

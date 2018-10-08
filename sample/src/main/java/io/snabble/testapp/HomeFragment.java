@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.IOException;
+
 public class HomeFragment extends Fragment {
     @Nullable
     @Override
@@ -43,6 +47,19 @@ public class HomeFragment extends Fragment {
                 App.get().getProject().getProductDatabase().delete();
             }
         });
+
+        v.findViewById(R.id.clear_cache).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    FileUtils.deleteDirectory(App.get().getCacheDir());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
         return v;
     }
 }

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public class Project {
 
     private RoundingMode roundingMode;
     private boolean verifyInternalEanChecksum;
+    private BarcodeFormat[] supportedBarcodeFormats;
 
     private Map<String, String> urls;
 
@@ -141,6 +143,14 @@ public class Project {
 
         useGermanPrintPrefix = JsonUtils.getBooleanOpt(jsonObject, "useGermanPrintPrefix", false);
 
+        List<BarcodeFormat> formats = new ArrayList<>();
+        formats.add(BarcodeFormat.EAN_8);
+        formats.add(BarcodeFormat.EAN_13);
+        formats.add(BarcodeFormat.CODE_128);
+        //formats.add(BarcodeFormat.ITF);
+
+        supportedBarcodeFormats = formats.toArray(new BarcodeFormat[formats.size()]);
+
         if (jsonObject.has("shops")) {
             shops = Shop.fromJson(jsonObject.get("shops"));
         }
@@ -224,6 +234,10 @@ public class Project {
 
     public String[] getUnitPrefixes() {
         return unitPrefixes;
+    }
+
+    public BarcodeFormat[] getSupportedBarcodeFormats() {
+        return supportedBarcodeFormats;
     }
 
     public EncodedCodesOptions getEncodedCodesOptions() {

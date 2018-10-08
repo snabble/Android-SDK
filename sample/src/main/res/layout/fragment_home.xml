@@ -31,4 +31,11 @@
         android:padding="8dp"
         android:id="@+id/delete_db"
         android:text="Delete DB" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:id="@+id/clear_cache"
+        android:text="Clear Cache" />
 </LinearLayout>

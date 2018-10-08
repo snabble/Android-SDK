@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
@@ -116,9 +117,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
 
-        barcodeScanner.addBarcodeFormat(BarcodeFormat.EAN_8);
-        barcodeScanner.addBarcodeFormat(BarcodeFormat.EAN_13);
-        barcodeScanner.addBarcodeFormat(BarcodeFormat.CODE_128);
+        for (BarcodeFormat format : project.getSupportedBarcodeFormats()) {
+            barcodeScanner.addBarcodeFormat(format);
+        }
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -186,6 +187,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             return;
         }
 
+        delayNextScan();
         progressDialog.showAfterDelay(300);
 
         if (scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0) {
