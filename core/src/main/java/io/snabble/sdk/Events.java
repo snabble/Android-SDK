@@ -166,7 +166,7 @@ class Events {
             payloadCart.customer.loyaltyCard = loyaltyCardId;
         }
 
-        Shop shop = project.getCheckout().getShop();
+        Shop shop = project.getCheckedInShop();
         if (shop != null) {
             String id = shop.getId();
             if (id != null) {

@@ -54,6 +54,7 @@ public class Project {
     private RoundingMode roundingMode;
     private boolean verifyInternalEanChecksum;
     private BarcodeFormat[] supportedBarcodeFormats;
+    private Shop checkedInShop;
 
     private Map<String, String> urls;
 
@@ -261,6 +262,19 @@ public class Project {
      */
     public Map<String, String> getUrls() {
         return urls;
+    }
+
+    /**
+     * Sets the shop used for receiving store specific prices and identification in the
+     * payment process.
+     */
+    public void setCheckedInShop(Shop checkedInShop) {
+        this.checkedInShop = checkedInShop;
+        events.updateShop(checkedInShop);
+    }
+
+    public Shop getCheckedInShop() {
+        return checkedInShop;
     }
 
     /**

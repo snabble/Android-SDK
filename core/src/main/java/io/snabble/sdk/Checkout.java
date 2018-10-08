@@ -167,7 +167,6 @@ public class Checkout {
     private State state = State.NONE;
 
     private Call call;
-    private Shop shop;
 
     private List<String> codes = new ArrayList<>();
     private PaymentMethod[] clientAcceptedPaymentMethods;
@@ -256,7 +255,7 @@ public class Checkout {
     /**
      * Starts the checkout process.
      * <p>
-     * Requires a shop to be set with {@link Checkout#setShop(Shop)}.
+     * Requires a shop to be set with {@link Project#setCheckedInShop(Shop)}.
      * <p>
      * If successful and there is more then 1 payment method
      * the checkout state will be {@link Checkout.State#REQUEST_PAYMENT_METHOD}.
@@ -271,7 +270,7 @@ public class Checkout {
             return;
         }
 
-        if (shop == null) {
+        if (project.getCheckedInShop() == null) {
             Logger.e("Could not checkout, no shop selected");
             notifyStateChanged(State.NO_SHOP);
             return;
@@ -566,16 +565,20 @@ public class Checkout {
         codes.clear();
     }
 
+    /**
+     * Deprecated. Use {@link Project#getCheckedInShop()} instead.
+     */
+    @Deprecated
     public Shop getShop() {
-        return shop;
+        return project.getCheckedInShop();
     }
 
     /**
-     * Sets the shop used for identification in the payment process.
+     * Deprecated. Use {@link Project#setCheckedInShop(Shop shop)} instead.
      */
+    @Deprecated
     public void setShop(Shop shop) {
-        this.shop = shop;
-        project.getEvents().updateShop(shop);
+        project.setCheckedInShop(shop);
     }
 
     /**

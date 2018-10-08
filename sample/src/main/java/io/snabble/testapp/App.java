@@ -66,7 +66,7 @@ public class App extends Application {
 
                 // select the first shop for demo purposes
                 if (project.getShops().length > 0) {
-                    project.getCheckout().setShop(project.getShops()[0]);
+                    project.setCheckedInShop(project.getShops()[0]);
                 }
 
                 //project.getProductDatabase().update();

@@ -350,7 +350,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private void showHints() {
         if (allowShowingHints) {
             Project project = SnabbleUI.getProject();
-            Shop currentShop = project.getCheckout().getShop();
+            Shop currentShop = project.getCheckedInShop();
 
             if (currentShop != null) {
                 pauseBarcodeScanner();
