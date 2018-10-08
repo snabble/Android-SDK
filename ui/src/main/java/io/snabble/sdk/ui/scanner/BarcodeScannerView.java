@@ -214,6 +214,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 if (running) {
                     isProcessing = false;
                     camera.stopPreview();
+                    camera.setPreviewCallbackWithBuffer(null);
                     decodeEnabled = false;
                 }
             }
@@ -232,8 +233,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 if (!running) {
                     start();
                 } else {
-                    isPaused = false;
-
                     // as stated in the documentation:
                     // focus parameters may not be preserved across preview restarts
                     Camera.Parameters parameters = camera.getParameters();
@@ -251,8 +250,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                     decodeEnabled = true;
 
                     synchronized (frameBufferLock) {
-                        // some Samsung devices are sometimes unregistering the preview callback
-                        // when calling stopPreview, so we are registering it here again
                         camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
                         camera.addCallbackBuffer(backBuffer);
                     }
@@ -396,6 +393,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         if (isPaused) {
             camera.stopPreview();
+            camera.setPreviewCallbackWithBuffer(null);
         }
     }
 
@@ -586,6 +584,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             public void run() {
                 if (running) {
                     camera.stopPreview();
+                    camera.setPreviewCallbackWithBuffer(null);
                     camera.release();
                     camera = null;
                     running = false;
