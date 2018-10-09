@@ -901,8 +901,11 @@ public class ProductDatabase {
     }
 
     /**
+     * Deprecated. Will be removed in a future version of the SDK.
+     *
      * Returns products that have and a valid image url and have set the boost flag.
      */
+    @Deprecated
     public Product[] getBoostedProducts(int limit) {
         return queryDiscountedProducts("WHERE p.imageUrl IS NOT NULL" +
                         " AND p.boost > 0 ORDER BY boost DESC LIMIT ?",
@@ -910,8 +913,11 @@ public class ProductDatabase {
     }
 
     /**
+     * Deprecated. Will be removed in a future version of the SDK.
+     *
      * Returns products that have a discounted price and a valid image url.
      */
+    @Deprecated
     public Product[] getDiscountedProducts() {
         Shop shop = project.getCheckedInShop();
 
