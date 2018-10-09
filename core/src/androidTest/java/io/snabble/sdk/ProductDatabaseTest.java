@@ -36,7 +36,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     public void testAllPromotionsQuery() throws Throwable {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getDiscountedProducts();
-        assertTrue(products.length == 2);
+        assertEquals(2, products.length);
         assertEquals(products[0].getSku(), "1");
         assertEquals(products[0].getName(), "Müllermilch Banane 0,4l");
         assertEquals(products[1].getSku(), "2");
@@ -47,7 +47,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     public void testBoostedPromotionsQuery() throws Throwable {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getBoostedProducts(2);
-        assertTrue(products.length == 2);
+        assertEquals(2, products.length);
         assertEquals(products[0].getSku(), "2");
         assertEquals(products[1].getSku(), "1");
 

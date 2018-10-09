@@ -701,7 +701,9 @@ public class ProductDatabase {
     public Product productAtCursor(Cursor cursor) {
         Product.Builder builder = new Product.Builder();
 
-        builder.setSku(anyToString(cursor, 0))
+        String sku = anyToString(cursor, 0);
+
+        builder.setSku(sku)
                 .setName(cursor.getString(1))
                 .setDescription(cursor.getString(2))
                 .setImageUrl(ensureNotNull(cursor.getString(3)));
@@ -721,21 +723,17 @@ public class ProductDatabase {
             builder.setScannableCodes(scannableCodes);
         }
 
-        builder.setPrice(cursor.getInt(8))
-                .setDiscountedPrice(cursor.getInt(9));
-
-        String weighedItemIds = cursor.getString(10);
+        String weighedItemIds = cursor.getString(8);
         if (weighedItemIds != null) {
             builder.setWeighedItemIds(weighedItemIds.split(","));
         }
 
-        builder.setBoost(cursor.getInt(11))
-                .setSubtitle(cursor.getString(12))
-                .setBasePrice(cursor.getString(13));
+        builder.setBoost(cursor.getInt(9))
+                .setSubtitle(cursor.getString(10));
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(14)));
-            builder.setSaleStop(cursor.getInt(15) != 0);
+            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(11)));
+            builder.setSaleStop(cursor.getInt(12) != 0);
         }
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
@@ -743,7 +741,7 @@ public class ProductDatabase {
         }
 
         if (scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-            String transmissionCodesStr = cursor.getString(16);
+            String transmissionCodesStr = cursor.getString(13);
             if (transmissionCodesStr != null) {
                 String[] transmissionCodes = transmissionCodesStr.split(",");
                 for (int i = 0; i < transmissionCodes.length; i++) {
@@ -754,6 +752,31 @@ public class ProductDatabase {
                 }
             }
         }
+
+        Shop shop = project.getCheckedInShop();
+
+        String id = shop != null ? shop.getId() : "";
+        String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices ";
+        String[] args;
+
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 13) {
+            priceQuery += "WHERE pricingCategory IS (SELECT pricingCategory FROM shops WHERE shops.id IS ?) AND sku = ?";
+            args = new String[]{id, sku};
+        } else {
+            priceQuery += "WHERE sku = ?";
+            args = new String[]{sku};
+        }
+
+        Cursor priceCursor = rawQuery(priceQuery, args, null);
+
+        if (priceCursor != null && priceCursor.getCount() > 0) {
+            priceCursor.moveToFirst();
+            builder.setPrice(priceCursor.getInt(0));
+            builder.setDiscountedPrice(priceCursor.getInt(1));
+            builder.setBasePrice(priceCursor.getString(2));
+            priceCursor.close();
+        }
+
         return builder.build();
     }
 
@@ -795,12 +818,9 @@ public class ProductDatabase {
                 "p.isDeposit," +
                 "p.weighing," +
                 "(SELECT group_concat(s.code) FROM scannableCodes s WHERE s.sku = p.sku)," +
-                "pr.listPrice," +
-                "pr.discountedPrice," +
                 "(SELECT group_concat(w.weighItemId) FROM weighItemIds w WHERE w.sku = p.sku)," +
                 "p.boost," +
-                "p.subtitle," +
-                "pr.basePrice";
+                "p.subtitle";
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
             sql += ",p.saleRestriction";
@@ -811,7 +831,7 @@ public class ProductDatabase {
             sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
         }
 
-        sql += " FROM products p JOIN prices pr ON pr.sku = p.sku ";
+        sql += " FROM products p ";
         sql += appendSql;
 
         return sql;
@@ -893,8 +913,19 @@ public class ProductDatabase {
      * Returns products that have a discounted price and a valid image url.
      */
     public Product[] getDiscountedProducts() {
-        return queryDiscountedProducts("WHERE pr.discountedPrice IS NOT NULL" +
-                " AND p.imageUrl IS NOT NULL", null);
+        Shop shop = project.getCheckedInShop();
+
+        String id = shop != null ? shop.getId() : "";
+        String query = "WHERE p.sku IN " +
+                "(SELECT DISTINCT sku FROM prices WHERE discountedPrice IS NOT NULL ";
+
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 13) {
+            query += "AND pricingCategory IS (SELECT pricingCategory FROM shops WHERE shops.id IS '"+id+"')";
+        }
+
+        query += ") AND p.imageUrl IS NOT NULL";
+
+        return queryDiscountedProducts(query, null);
     }
 
     private Product[] queryDiscountedProducts(String whereClause, String[] args) {
