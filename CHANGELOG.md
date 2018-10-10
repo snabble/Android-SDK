@@ -20,13 +20,13 @@ All notable changes to this project will be documented in this file.
 To use this release ui components you need to also migrate to androidx. See [https://developer.android.com/topic/libraries/support-library/refactor](https://developer.android.com/topic/libraries/support-library/refactor)
 
 ### Changed
--   Support for build-tools 3.2.0
--   Migrated to androidx
+- Support for build-tools 3.2.0
+- Migrated to androidx
 
 ## [0.9.1]
 
 ### Fixed
--   Improved camera error handling
+- Improved camera error handling
 
 ## [0.9.0]  
   
