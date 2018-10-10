@@ -759,8 +759,8 @@ public class ProductDatabase {
         String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices ";
         String[] args;
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 13) {
-            priceQuery += "WHERE pricingCategory IS (SELECT pricingCategory FROM shops WHERE shops.id IS ?) AND sku = ?";
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
+            priceQuery += "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
             args = new String[]{id, sku};
         } else {
             priceQuery += "WHERE sku = ?";
@@ -925,8 +925,8 @@ public class ProductDatabase {
         String query = "WHERE p.sku IN " +
                 "(SELECT DISTINCT sku FROM prices WHERE discountedPrice IS NOT NULL ";
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 13) {
-            query += "AND pricingCategory IS (SELECT pricingCategory FROM shops WHERE shops.id IS '"+id+"')";
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
+            query += "AND pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = '" + id + "'), '0')";
         }
 
         query += ") AND p.imageUrl IS NOT NULL";
