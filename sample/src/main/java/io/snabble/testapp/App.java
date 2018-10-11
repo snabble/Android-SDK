@@ -2,6 +2,7 @@ package io.snabble.testapp;
 
 import android.app.Application;
 import androidx.annotation.Nullable;
+
 import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -10,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
@@ -39,6 +41,27 @@ public class App extends Application {
         LeakCanary.install(this);
 
         instance = this;
+    }
+
+    public void initBlocking() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        init(new InitCallback() {
+            @Override
+            public void done() {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void error(String text) {
+                countDownLatch.countDown();
+            }
+        });
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void init(final InitCallback callback) {
