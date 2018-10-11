@@ -12,7 +12,9 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -117,7 +119,7 @@ class ProductApi {
         }
 
         if (skus == null || skus.length == 0) {
-            productsAvailableListener.onProductsNotFound();
+            productsAvailableListener.onProductsAvailable(new Product[0], true);
             return;
         }
 
@@ -204,17 +206,15 @@ class ProductApi {
                         if (error[0]) {
                             error(productsAvailableListener);
                         } else {
-                            Product[] arr = new Product[products.size()];
-                            int i=0;
+                            List<Product> productList = new ArrayList<>();
                             for(String sku : skus) {
                                 Product p = products.get(sku);
                                 if (p != null) {
-                                    arr[i] = p;
-                                    i++;
+                                    productList.add(p);
                                 }
                             }
 
-                            success(productsAvailableListener, arr);
+                            success(productsAvailableListener, productList.toArray(new Product[productList.size()]));
                         }
                     } catch (JsonParseException e) {
                         error(productsAvailableListener);
@@ -513,7 +513,7 @@ class ProductApi {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                onProductAvailableListener.onProductsNotFound();
+                onProductAvailableListener.onProductsAvailable(new Product[0], true);
             }
         });
     }

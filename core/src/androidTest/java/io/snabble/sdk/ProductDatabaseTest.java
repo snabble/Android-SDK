@@ -251,6 +251,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         assertEquals(products[0].getSku(), "online2");
         assertEquals(products[1].getSku(), "online1");
+
+        products = findBySkusBlocking(productDatabase, new String[] {"not_there1", "not_there2"});
+
+        assertEquals(0, products.length);
     }
 
     private Product[] findBySkusBlocking(ProductDatabase productDatabase, String[] skus) {
@@ -261,12 +265,6 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
             @Override
             public void onProductsAvailable(Product[] products, boolean wasOnline) {
                 productArr[0] = products;
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void onProductsNotFound() {
-                productArr[0] = null;
                 countDownLatch.countDown();
             }
 
