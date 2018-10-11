@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
-    public void testAllPromotionsQuery() throws Throwable {
+    public void testAllPromotionsQuery() {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getDiscountedProducts();
         assertEquals(2, products.length);
@@ -44,7 +44,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testBoostedPromotionsQuery() throws Throwable {
+    public void testBoostedPromotionsQuery() {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getBoostedProducts(2);
         assertEquals(2, products.length);
@@ -209,7 +209,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
                 productArr[0] = null;
                 countDownLatch.countDown();
             }
-        });
+        }, true);
 
         try {
             countDownLatch.await();
@@ -223,16 +223,59 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFindByMultipleSkus() {
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product[] products = productDatabase.findBySkus("1", "2", "asdf1234");
+        Product[] products = productDatabase.findBySkus(new String[] {"1", "2", "asdf1234"});
 
         assertEquals(products.length, 2);
         assertEquals(products[0].getSku(), "1");
         assertEquals(products[1].getSku(), "2");
 
-        products = productDatabase.findBySkus("1");
+        products = productDatabase.findBySkus(new String[] {"1"});
 
         assertEquals(products.length, 1);
         assertEquals(products[0].getSku(), "1");
+    }
+
+    @Test
+    public void testFindByMultipleSkusOnline() {
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product[] products = findBySkusBlocking(productDatabase, new String[] {"online1", "online2"});
+
+        assertEquals(2, products.length);
+        assertEquals(products[0].getSku(), "online1");
+        assertEquals(products[1].getSku(), "online2");
+    }
+
+    private Product[] findBySkusBlocking(ProductDatabase productDatabase, String[] skus) {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final Product[][] productArr = new Product[1][];
+
+        productDatabase.findBySkusOnline(skus, new OnProductsAvailableListener() {
+            @Override
+            public void onProductsAvailable(Product[] products, boolean wasOnline) {
+                productArr[0] = products;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onProductsNotFound() {
+                productArr[0] = null;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError() {
+                productArr[0] = null;
+                countDownLatch.countDown();
+            }
+        }, true);
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return productArr[0];
     }
 
     @Test

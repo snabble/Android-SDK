@@ -12,6 +12,8 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.utils.Logger;
@@ -100,6 +102,126 @@ class ProductApi {
         url = url.replace("{sku}", sku);
 
         get(url, productAvailableListener);
+    }
+
+    public void findBySkus(String[] skus, final OnProductsAvailableListener productsAvailableListener) {
+        if (productsAvailableListener == null) {
+            return;
+        }
+
+        String url = project.getProductsBySkus();
+        if (url == null) {
+            Logger.e("Could not check for products online, no productsBySku url provided in metadata");
+            productsAvailableListener.onError();
+            return;
+        }
+
+        if (skus == null || skus.length == 0) {
+            productsAvailableListener.onProductsNotFound();
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(url);
+
+        boolean first = true;
+
+        for(String sku : skus) {
+            if(first){
+                sb.append('?');
+                first = false;
+            } else {
+                sb.append('&');
+            }
+
+            sb.append("skus=");
+            sb.append(sku);
+        }
+
+        url = sb.toString();
+
+        final Request request = new Request.Builder()
+                .url(Snabble.getInstance().absoluteUrl(url))
+                .get()
+                .build();
+
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(final Call call, final Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    if (body == null) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                productsAvailableListener.onError();
+                            }
+                        });
+                        return;
+                    }
+
+                    InputStream inputStream = body.byteStream();
+                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
+                    inputStream.close();
+
+                    try {
+                        final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
+
+                        final CountDownLatch countDownLatch = new CountDownLatch(apiProductGroup.products.length);
+                        final List<Product> products = new ArrayList<>();
+                        final boolean[] error = new boolean[1];
+
+                        for(ApiProduct apiProduct : apiProductGroup.products) {
+                            flattenProduct(apiProduct, new OnProductAvailableListener() {
+                                @Override
+                                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                                    products.add(product);
+                                    countDownLatch.countDown();
+                                    error[0] = false;
+                                }
+
+                                @Override
+                                public void onProductNotFound() {
+                                    countDownLatch.countDown();
+                                    error[0] = false;
+                                }
+
+                                @Override
+                                public void onError() {
+                                    countDownLatch.countDown();
+                                    error[0] = true;
+                                }
+                            });
+                        }
+
+                        try {
+                            countDownLatch.await();
+                        } catch (InterruptedException e) {
+                            error(productsAvailableListener);
+                        }
+
+                        if (error[0]) {
+                            error(productsAvailableListener);
+                        } else {
+                            success(productsAvailableListener, products.toArray(new Product[products.size()]));
+                        }
+                    } catch (JsonParseException e) {
+                        error(productsAvailableListener);
+                    }
+                } else {
+                    if (response.code() == 404) {
+                        notFound(productsAvailableListener);
+                    } else {
+                        error(productsAvailableListener);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                error(productsAvailableListener);
+            }
+        });
     }
 
     public void findByCode(final String code, final OnProductAvailableListener productAvailableListener) {
@@ -284,39 +406,7 @@ class ProductApi {
 
                     try {
                         final ApiProduct apiProduct = gson.fromJson(json, ApiProduct.class);
-                        getDepositProduct(apiProduct, new OnProductAvailableListener() {
-                            @Override
-                            public void onProductAvailable(final Product product, boolean wasOnlineProduct) {
-                                getBundlesOfProduct(apiProduct.sku, new ApiProductGroupCallback() {
-                                    @Override
-                                    public void onProductsAvailable(final Product[] products) {
-                                        Product p = toProduct(apiProduct, product, products);
-                                        success(productAvailableListener, p);
-                                    }
-
-                                    @Override
-                                    public void onProductsNotFound() {
-                                        Product p = toProduct(apiProduct, product, null);
-                                        success(productAvailableListener, p);
-                                    }
-
-                                    @Override
-                                    public void onError() {
-                                        error(productAvailableListener);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onProductNotFound() {
-                                notFound(productAvailableListener);
-                            }
-
-                            @Override
-                            public void onError() {
-                                error(productAvailableListener);
-                            }
-                        });
+                        flattenProduct(apiProduct, productAvailableListener);
                     } catch (JsonParseException e) {
                         error(productAvailableListener);
                     }
@@ -331,6 +421,42 @@ class ProductApi {
 
             @Override
             public void onFailure(Call call, IOException e) {
+                error(productAvailableListener);
+            }
+        });
+    }
+
+    private void flattenProduct(final ApiProduct apiProduct, final OnProductAvailableListener productAvailableListener) {
+        getDepositProduct(apiProduct, new OnProductAvailableListener() {
+            @Override
+            public void onProductAvailable(final Product product, boolean wasOnlineProduct) {
+                getBundlesOfProduct(apiProduct.sku, new ApiProductGroupCallback() {
+                    @Override
+                    public void onProductsAvailable(final Product[] products) {
+                        Product p = toProduct(apiProduct, product, products);
+                        success(productAvailableListener, p);
+                    }
+
+                    @Override
+                    public void onProductsNotFound() {
+                        Product p = toProduct(apiProduct, product, null);
+                        success(productAvailableListener, p);
+                    }
+
+                    @Override
+                    public void onError() {
+                        error(productAvailableListener);
+                    }
+                });
+            }
+
+            @Override
+            public void onProductNotFound() {
+                notFound(productAvailableListener);
+            }
+
+            @Override
+            public void onError() {
                 error(productAvailableListener);
             }
         });
@@ -363,6 +489,32 @@ class ProductApi {
         });
     }
 
+    private void success(final OnProductsAvailableListener onProductAvailableListener, final Product[] products) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                onProductAvailableListener.onProductsAvailable(products, true);
+            }
+        });
+    }
+
+    private void notFound(final OnProductsAvailableListener onProductAvailableListener) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                onProductAvailableListener.onProductsNotFound();
+            }
+        });
+    }
+
+    private void error(final OnProductsAvailableListener onProductAvailableListener) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                onProductAvailableListener.onError();
+            }
+        });
+    }
     private Product toProduct(ApiProduct apiProduct, Product depositProduct, Product[] bundleProducts) {
         Product.Builder builder = new Product.Builder()
                 .setSku(apiProduct.sku)

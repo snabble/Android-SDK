@@ -54,6 +54,9 @@ public class SnabbleSdkTest {
         final Buffer product2Buffer = new Buffer();
         product2Buffer.readFrom(context.getAssets().open("product2.json"));
 
+        final Buffer productListBuffer = new Buffer();
+        productListBuffer.readFrom(context.getAssets().open("product_list.json"));
+
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
@@ -77,6 +80,11 @@ public class SnabbleSdkTest {
                             .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product2Buffer);
+                } else if (request.getPath().contains("/products/search/bySkus?skus=online1&skus=online2")) {
+                    return new MockResponse()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Cache-Control", "no-cache")
+                            .setBody(productListBuffer);
                 } else if (request.getPath().contains("/products/")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")

@@ -1063,7 +1063,7 @@ public class ProductDatabase {
      *
      * @return The first product containing the given SKU, otherwise null if no product was found.
      */
-    public Product[] findBySkus(String... skus) {
+    public Product[] findBySkus(String[] skus) {
         if (skus == null) {
             return null;
         }
@@ -1081,6 +1081,37 @@ public class ProductDatabase {
         return allProductsAtCursor(cursor);
     }
 
+    /**
+     * Finds multiple products via its sku identifiers over the network, if the service is available.
+     * <p>
+     * Searches the local database first before making any network calls.
+     */
+    public void findBySkusOnline(String[] skus, OnProductsAvailableListener productsAvailableListener) {
+        findBySkusOnline(skus, productsAvailableListener, false);
+    }
+    /**
+     * Finds multiple products via its sku identifiers over the network, if the service is available.
+     * <p>
+     * If onlineOnly is true, it does not search the local database first and only searches online.
+     */
+    public void findBySkusOnline(String[] skus,
+                                 OnProductsAvailableListener productsAvailableListener,
+                                 boolean onlineOnly) {
+        if (productsAvailableListener == null) {
+            return;
+        }
+
+        if (onlineOnly || !isUpToDate()) {
+            productApi.findBySkus(skus, productsAvailableListener);
+        } else {
+            Product[] local = findBySkus(skus);
+            if (local != null) {
+                productsAvailableListener.onProductsAvailable(local, false);
+            } else {
+                productApi.findBySkus(skus, productsAvailableListener);
+            }
+        }
+    }
     /**
      * Find a product via its scannable code.
      *

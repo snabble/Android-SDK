@@ -213,6 +213,10 @@ public class Project {
         return urls.get("productBySku");
     }
 
+    public String getProductsBySkus() {
+        return urls.get("productsBySku");
+    }
+
     public String getProductByCodeUrl() {
         return urls.get("productByCode");
     }
