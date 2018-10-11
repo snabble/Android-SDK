@@ -241,8 +241,16 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Product[] products = findBySkusBlocking(productDatabase, new String[] {"online1", "online2"});
 
         assertEquals(2, products.length);
+
         assertEquals(products[0].getSku(), "online1");
         assertEquals(products[1].getSku(), "online2");
+
+        products = findBySkusBlocking(productDatabase, new String[] {"online2", "not_there", "online1"});
+
+        assertEquals(2, products.length);
+
+        assertEquals(products[0].getSku(), "online2");
+        assertEquals(products[1].getSku(), "online1");
     }
 
     private Product[] findBySkusBlocking(ProductDatabase productDatabase, String[] skus) {
@@ -432,7 +440,6 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), product.getScannableCodes()[0]);
     }
 
-
     @Test
     public void testTransmissionCode() throws IOException, Snabble.SnabbleException {
         withDb("demoDb_1_11.sqlite3");
@@ -442,5 +449,32 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Assert.assertNotNull(product);
 
         Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), "00000" + product.getScannableCodes()[0]);
+    }
+
+    @Test
+    public void testRecoverFromFileCorruptions() throws IOException, Snabble.SnabbleException, InterruptedException {
+        withDb("testDb_corrupt.sqlite3");
+        Assert.assertNull(project.getProductDatabase().findBySku("1"));
+
+        prepareUpdateDb("testDb.sqlite3");
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
+            @Override
+            public void success() {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void error() {
+                Assert.fail();
+            }
+        });
+
+        countDownLatch.await();
+
+        Product product = project.getProductDatabase().findBySku("1");
+
+        Assert.assertNotNull(product);
+        Assert.assertEquals("1", product.getSku());
     }
 }

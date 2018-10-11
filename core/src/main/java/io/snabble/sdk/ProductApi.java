@@ -12,8 +12,8 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.utils.Logger;
@@ -104,7 +104,7 @@ class ProductApi {
         get(url, productAvailableListener);
     }
 
-    public void findBySkus(String[] skus, final OnProductsAvailableListener productsAvailableListener) {
+    public void findBySkus(final String[] skus, final OnProductsAvailableListener productsAvailableListener) {
         if (productsAvailableListener == null) {
             return;
         }
@@ -168,14 +168,15 @@ class ProductApi {
                         final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
 
                         final CountDownLatch countDownLatch = new CountDownLatch(apiProductGroup.products.length);
-                        final List<Product> products = new ArrayList<>();
+                        final Map<String, Product> products = new HashMap<>();
                         final boolean[] error = new boolean[1];
 
                         for(ApiProduct apiProduct : apiProductGroup.products) {
                             flattenProduct(apiProduct, new OnProductAvailableListener() {
                                 @Override
                                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                                    products.add(product);
+                                    products.put(product.getSku(), product);
+
                                     countDownLatch.countDown();
                                     error[0] = false;
                                 }
@@ -203,7 +204,17 @@ class ProductApi {
                         if (error[0]) {
                             error(productsAvailableListener);
                         } else {
-                            success(productsAvailableListener, products.toArray(new Product[products.size()]));
+                            Product[] arr = new Product[products.size()];
+                            int i=0;
+                            for(String sku : skus) {
+                                Product p = products.get(sku);
+                                if (p != null) {
+                                    arr[i] = p;
+                                    i++;
+                                }
+                            }
+
+                            success(productsAvailableListener, arr);
                         }
                     } catch (JsonParseException e) {
                         error(productsAvailableListener);

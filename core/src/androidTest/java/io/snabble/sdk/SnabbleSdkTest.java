@@ -80,7 +80,7 @@ public class SnabbleSdkTest {
                             .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product2Buffer);
-                } else if (request.getPath().contains("/products/search/bySkus?skus=online1&skus=online2")) {
+                } else if (request.getPath().contains("/products/search/bySkus")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
@@ -130,8 +130,7 @@ public class SnabbleSdkTest {
 
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        productDbBuffer = new Buffer();
-        productDbBuffer.readFrom(context.getAssets().open(testDbName));
+        prepareUpdateDb(testDbName);
 
         FileUtils.deleteQuietly(context.getFilesDir());
         FileUtils.deleteQuietly(new File(context.getFilesDir().getParentFile(), "/databases/"));
@@ -166,6 +165,11 @@ public class SnabbleSdkTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void prepareUpdateDb(String assetPath) throws IOException {
+        productDbBuffer = new Buffer();
+        productDbBuffer.readFrom(context.getAssets().open(assetPath));
     }
 
     @After

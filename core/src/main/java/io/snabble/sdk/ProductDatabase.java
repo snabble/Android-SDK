@@ -454,20 +454,20 @@ public class ProductDatabase {
         synchronized (dbLock) {
             try {
                 cursor = db.rawQuery(sql, args, cancellationSignal);
+
+                // query executes when we call the first function that needs data, not on db.rawQuery
+                int count = cursor.getCount();
+
+                long time2 = SystemClock.elapsedRealtime() - time;
+                if (time2 > 16) {
+                    Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
+                            time2, count, bindArgs(sql, args));
+                }
             } catch (Exception e) {
                 // query could not be executed
                 Logger.e(e.toString());
                 return null;
             }
-        }
-
-        // query executes when we call the first function that needs data, not on db.rawQuery
-        int count = cursor.getCount();
-
-        long time2 = SystemClock.elapsedRealtime() - time;
-        if (time2 > 16) {
-            Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
-                    time2, count, bindArgs(sql, args));
         }
 
         return cursor;
