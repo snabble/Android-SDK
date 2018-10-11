@@ -902,7 +902,7 @@ public class ProductDatabase {
 
     /**
      * Deprecated. Will be removed in a future version of the SDK.
-     *
+     * <p>
      * Returns products that have and a valid image url and have set the boost flag.
      */
     public Product[] getBoostedProducts(int limit) {
@@ -913,7 +913,7 @@ public class ProductDatabase {
 
     /**
      * Deprecated. Will be removed in a future version of the SDK.
-     *
+     * <p>
      * Returns products that have a discounted price and a valid image url.
      */
     public Product[] getDiscountedProducts() {
@@ -1089,6 +1089,7 @@ public class ProductDatabase {
     public void findBySkusOnline(String[] skus, OnProductsAvailableListener productsAvailableListener) {
         findBySkusOnline(skus, productsAvailableListener, false);
     }
+
     /**
      * Finds multiple products via its sku identifiers over the network, if the service is available.
      * <p>
@@ -1112,6 +1113,7 @@ public class ProductDatabase {
             }
         }
     }
+
     /**
      * Find a product via its scannable code.
      *
