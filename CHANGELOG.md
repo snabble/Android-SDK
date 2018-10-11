@@ -11,9 +11,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added support for pricing categories 
 - Added support for ITF barcodes
+- Added support for multiple sku requests 
 
 ### Fixed
 - Clearing reference to Camera PreviewCallback when leaving BarcodeScannerView
+- Improved recovery from corrupted database files
 
 ## [0.9.2]
 
