@@ -102,6 +102,7 @@ class ProductApi {
         }
 
         url = url.replace("{sku}", sku);
+        url = appendShopId(url);
 
         get(url, productAvailableListener);
     }
@@ -141,6 +142,7 @@ class ProductApi {
         }
 
         url = sb.toString();
+        url = appendShopId(url);
 
         final Request request = new Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(url))
@@ -253,6 +255,7 @@ class ProductApi {
         }
 
         url = url.replace("{code}", code);
+        url = appendShopId(url);
 
         get(url, productAvailableListener);
     }
@@ -275,6 +278,7 @@ class ProductApi {
         }
 
         url = url.replace("{id}", weighItemId);
+        url = appendShopId(url);
 
         get(url, productAvailableListener);
     }
@@ -295,6 +299,7 @@ class ProductApi {
         }
 
         url = url.replace("{bundledSku}", sku);
+        url = appendShopId(url);
 
         final Request request = new Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(url))
@@ -569,5 +574,13 @@ class ProductApi {
         }
 
         return builder.build();
+    }
+
+    private String appendShopId(String url) {
+        Shop shop = project.getCheckedInShop();
+        if(shop != null) {
+            url = url + "?shopID=" + shop.getId();
+        }
+        return url;
     }
 }
