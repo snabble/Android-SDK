@@ -187,6 +187,34 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
     }
 
+    @Test
+    public void testFindBySkuOnlineWithShopSpecificPrice() {
+        ProductDatabase productDatabase = project.getProductDatabase();
+        final Product product = findBySkuBlocking(productDatabase, "online1");
+        assertEquals(product.getSku(), "online1");
+        assertEquals(product.getPrice(), 399);
+
+        project.setCheckedInShop(project.getShops()[1]);
+        final Product product2 = findBySkuBlocking(productDatabase, "online1");
+        assertEquals(product2.getSku(), "online1");
+        assertEquals(product2.getPrice(), 299);
+    }
+
+    @Test
+    public void testFindBySkuWithShopSpecificPrice() throws IOException, Snabble.SnabbleException {
+        withDb("testDb_1_15.sqlite3");
+
+        ProductDatabase productDatabase = project.getProductDatabase();
+        final Product product = productDatabase.findBySku("salfter-classic");
+        assertEquals(product.getSku(), "salfter-classic");
+        assertEquals(product.getPrice(), 100);
+
+        project.setCheckedInShop(project.getShops()[1]);
+        final Product product2 = productDatabase.findBySku("salfter-classic");
+        assertEquals(product2.getSku(), "salfter-classic");
+        assertEquals(product2.getPrice(), 200);
+    }
+
     private Product findBySkuBlocking(ProductDatabase productDatabase, String sku) {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final Product[] productArr = new Product[1];
@@ -475,4 +503,6 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Assert.assertNotNull(product);
         Assert.assertEquals("1", product.getSku());
     }
+
+
 }

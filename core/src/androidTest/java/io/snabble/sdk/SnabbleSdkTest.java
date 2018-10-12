@@ -51,6 +51,9 @@ public class SnabbleSdkTest {
         final Buffer product1Buffer = new Buffer();
         product1Buffer.readFrom(context.getAssets().open("product.json"));
 
+        final Buffer product1OtherPriceBuffer = new Buffer();
+        product1OtherPriceBuffer.readFrom(context.getAssets().open("product_otherprice.json"));
+
         final Buffer product2Buffer = new Buffer();
         product2Buffer.readFrom(context.getAssets().open("product2.json"));
 
@@ -70,6 +73,11 @@ public class SnabbleSdkTest {
                             .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(productDbBuffer);
+                } else if (request.getPath().contains("/products/sku/online1?shopID=42")) {
+                    return new MockResponse()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Cache-Control", "no-cache")
+                            .setBody(product1OtherPriceBuffer);
                 } else if (request.getPath().contains("/products/sku/online1")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
@@ -146,6 +154,7 @@ public class SnabbleSdkTest {
 
         project = snabble.getProjects().get(0);
         project.getShoppingCart().clear();
+        project.setCheckedInShop(null);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
