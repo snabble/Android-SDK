@@ -51,8 +51,14 @@ public class SnabbleSdkTest {
         final Buffer product1Buffer = new Buffer();
         product1Buffer.readFrom(context.getAssets().open("product.json"));
 
+        final Buffer product1OtherPriceBuffer = new Buffer();
+        product1OtherPriceBuffer.readFrom(context.getAssets().open("product_otherprice.json"));
+
         final Buffer product2Buffer = new Buffer();
         product2Buffer.readFrom(context.getAssets().open("product2.json"));
+
+        final Buffer productListBuffer = new Buffer();
+        productListBuffer.readFrom(context.getAssets().open("product_list.json"));
 
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
@@ -67,6 +73,11 @@ public class SnabbleSdkTest {
                             .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(productDbBuffer);
+                } else if (request.getPath().contains("/products/sku/online1?shopID=42")) {
+                    return new MockResponse()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Cache-Control", "no-cache")
+                            .setBody(product1OtherPriceBuffer);
                 } else if (request.getPath().contains("/products/sku/online1")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
@@ -77,6 +88,11 @@ public class SnabbleSdkTest {
                             .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product2Buffer);
+                } else if (request.getPath().contains("/products/search/bySkus")) {
+                    return new MockResponse()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Cache-Control", "no-cache")
+                            .setBody(productListBuffer);
                 } else if (request.getPath().contains("/products/")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
@@ -122,8 +138,7 @@ public class SnabbleSdkTest {
 
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        productDbBuffer = new Buffer();
-        productDbBuffer.readFrom(context.getAssets().open(testDbName));
+        prepareUpdateDb(testDbName);
 
         FileUtils.deleteQuietly(context.getFilesDir());
         FileUtils.deleteQuietly(new File(context.getFilesDir().getParentFile(), "/databases/"));
@@ -139,6 +154,7 @@ public class SnabbleSdkTest {
 
         project = snabble.getProjects().get(0);
         project.getShoppingCart().clear();
+        project.setCheckedInShop(null);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
@@ -158,6 +174,11 @@ public class SnabbleSdkTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void prepareUpdateDb(String assetPath) throws IOException {
+        productDbBuffer = new Buffer();
+        productDbBuffer.readFrom(context.getAssets().open(assetPath));
     }
 
     @After

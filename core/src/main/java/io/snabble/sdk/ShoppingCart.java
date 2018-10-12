@@ -150,6 +150,9 @@ public class ShoppingCart {
             Entry e = getEntryBySku(product.getSku());
 
             if (e != null) {
+                // update product for changing prices
+                e.product = product;
+
                 if (scannedCode != null) {
                     setScannedCodeForEntry(e, scannedCode);
                 }

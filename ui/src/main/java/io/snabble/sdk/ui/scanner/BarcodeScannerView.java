@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.utils.Logger;
 
@@ -213,6 +214,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 if (running) {
                     isProcessing = false;
                     camera.stopPreview();
+                    camera.setPreviewCallbackWithBuffer(null);
                     decodeEnabled = false;
                 }
             }
@@ -231,8 +233,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 if (!running) {
                     start();
                 } else {
-                    isPaused = false;
-
                     // as stated in the documentation:
                     // focus parameters may not be preserved across preview restarts
                     Camera.Parameters parameters = camera.getParameters();
@@ -250,8 +250,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                     decodeEnabled = true;
 
                     synchronized (frameBufferLock) {
-                        // some Samsung devices are sometimes unregistering the preview callback
-                        // when calling stopPreview, so we are registering it here again
                         camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
                         camera.addCallbackBuffer(backBuffer);
                     }
@@ -267,7 +265,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             return;
         }
 
-        setupZxing();
+        setupZXing();
 
         showError(false);
 
@@ -395,6 +393,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         if (isPaused) {
             camera.stopPreview();
+            camera.setPreviewCallbackWithBuffer(null);
         }
     }
 
@@ -522,13 +521,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }, 2000);
     }
 
-    private void setupZxing() {
+    private void setupZXing() {
         Map<DecodeHintType, Object> hints = new HashMap<>();
         multiFormatReader = new MultiFormatReader();
 
         List<com.google.zxing.BarcodeFormat> formats = new ArrayList<>();
         for (BarcodeFormat barcodeFormat : supportedBarcodeFormats) {
-            formats.add(barcodeFormat.getZxingBarcodeFormat());
+            formats.add(ZXingHelper.toZXingFormat(barcodeFormat));
         }
 
         hints.put(DecodeHintType.POSSIBLE_FORMATS, formats);
@@ -585,6 +584,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             public void run() {
                 if (running) {
                     camera.stopPreview();
+                    camera.setPreviewCallbackWithBuffer(null);
                     camera.release();
                     camera = null;
                     running = false;
@@ -675,7 +675,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                             public void run() {
                                 if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
                                     Barcode barcode = new Barcode(
-                                            BarcodeFormat.valueOf(finalResult.getBarcodeFormat()),
+                                            ZXingHelper.fromZXingFormat(finalResult.getBarcodeFormat()),
                                             finalResult.getText(),
                                             finalResult.getTimestamp());
 

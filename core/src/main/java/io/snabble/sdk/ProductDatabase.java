@@ -454,20 +454,20 @@ public class ProductDatabase {
         synchronized (dbLock) {
             try {
                 cursor = db.rawQuery(sql, args, cancellationSignal);
+
+                // query executes when we call the first function that needs data, not on db.rawQuery
+                int count = cursor.getCount();
+
+                long time2 = SystemClock.elapsedRealtime() - time;
+                if (time2 > 16) {
+                    Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
+                            time2, count, bindArgs(sql, args));
+                }
             } catch (Exception e) {
                 // query could not be executed
                 Logger.e(e.toString());
                 return null;
             }
-        }
-
-        // query executes when we call the first function that needs data, not on db.rawQuery
-        int count = cursor.getCount();
-
-        long time2 = SystemClock.elapsedRealtime() - time;
-        if (time2 > 16) {
-            Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
-                    time2, count, bindArgs(sql, args));
         }
 
         return cursor;
@@ -701,7 +701,9 @@ public class ProductDatabase {
     public Product productAtCursor(Cursor cursor) {
         Product.Builder builder = new Product.Builder();
 
-        builder.setSku(anyToString(cursor, 0))
+        String sku = anyToString(cursor, 0);
+
+        builder.setSku(sku)
                 .setName(cursor.getString(1))
                 .setDescription(cursor.getString(2))
                 .setImageUrl(ensureNotNull(cursor.getString(3)));
@@ -721,21 +723,17 @@ public class ProductDatabase {
             builder.setScannableCodes(scannableCodes);
         }
 
-        builder.setPrice(cursor.getInt(8))
-                .setDiscountedPrice(cursor.getInt(9));
-
-        String weighedItemIds = cursor.getString(10);
+        String weighedItemIds = cursor.getString(8);
         if (weighedItemIds != null) {
             builder.setWeighedItemIds(weighedItemIds.split(","));
         }
 
-        builder.setBoost(cursor.getInt(11))
-                .setSubtitle(cursor.getString(12))
-                .setBasePrice(cursor.getString(13));
+        builder.setBoost(cursor.getInt(9))
+                .setSubtitle(cursor.getString(10));
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(14)));
-            builder.setSaleStop(cursor.getInt(15) != 0);
+            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(11)));
+            builder.setSaleStop(cursor.getInt(12) != 0);
         }
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
@@ -743,7 +741,7 @@ public class ProductDatabase {
         }
 
         if (scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-            String transmissionCodesStr = cursor.getString(16);
+            String transmissionCodesStr = cursor.getString(13);
             if (transmissionCodesStr != null) {
                 String[] transmissionCodes = transmissionCodesStr.split(",");
                 for (int i = 0; i < transmissionCodes.length; i++) {
@@ -754,6 +752,31 @@ public class ProductDatabase {
                 }
             }
         }
+
+        Shop shop = project.getCheckedInShop();
+
+        String id = shop != null ? shop.getId() : "";
+        String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices ";
+        String[] args;
+
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
+            priceQuery += "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
+            args = new String[]{id, sku};
+        } else {
+            priceQuery += "WHERE sku = ?";
+            args = new String[]{sku};
+        }
+
+        Cursor priceCursor = rawQuery(priceQuery, args, null);
+
+        if (priceCursor != null && priceCursor.getCount() > 0) {
+            priceCursor.moveToFirst();
+            builder.setPrice(priceCursor.getInt(0));
+            builder.setDiscountedPrice(priceCursor.getInt(1));
+            builder.setBasePrice(priceCursor.getString(2));
+            priceCursor.close();
+        }
+
         return builder.build();
     }
 
@@ -795,12 +818,9 @@ public class ProductDatabase {
                 "p.isDeposit," +
                 "p.weighing," +
                 "(SELECT group_concat(s.code) FROM scannableCodes s WHERE s.sku = p.sku)," +
-                "pr.listPrice," +
-                "pr.discountedPrice," +
                 "(SELECT group_concat(w.weighItemId) FROM weighItemIds w WHERE w.sku = p.sku)," +
                 "p.boost," +
-                "p.subtitle," +
-                "pr.basePrice";
+                "p.subtitle";
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
             sql += ",p.saleRestriction";
@@ -811,7 +831,7 @@ public class ProductDatabase {
             sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
         }
 
-        sql += " FROM products p JOIN prices pr ON pr.sku = p.sku ";
+        sql += " FROM products p ";
         sql += appendSql;
 
         return sql;
@@ -881,6 +901,8 @@ public class ProductDatabase {
     }
 
     /**
+     * Deprecated. Will be removed in a future version of the SDK.
+     * <p>
      * Returns products that have and a valid image url and have set the boost flag.
      */
     public Product[] getBoostedProducts(int limit) {
@@ -890,11 +912,24 @@ public class ProductDatabase {
     }
 
     /**
+     * Deprecated. Will be removed in a future version of the SDK.
+     * <p>
      * Returns products that have a discounted price and a valid image url.
      */
     public Product[] getDiscountedProducts() {
-        return queryDiscountedProducts("WHERE pr.discountedPrice IS NOT NULL" +
-                " AND p.imageUrl IS NOT NULL", null);
+        Shop shop = project.getCheckedInShop();
+
+        String id = shop != null ? shop.getId() : "";
+        String query = "WHERE p.sku IN " +
+                "(SELECT DISTINCT sku FROM prices WHERE discountedPrice IS NOT NULL ";
+
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
+            query += "AND pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = '" + id + "'), '0')";
+        }
+
+        query += ") AND p.imageUrl IS NOT NULL";
+
+        return queryDiscountedProducts(query, null);
     }
 
     private Product[] queryDiscountedProducts(String whereClause, String[] args) {
@@ -1028,7 +1063,7 @@ public class ProductDatabase {
      *
      * @return The first product containing the given SKU, otherwise null if no product was found.
      */
-    public Product[] findBySkus(String... skus) {
+    public Product[] findBySkus(String[] skus) {
         if (skus == null) {
             return null;
         }
@@ -1044,6 +1079,39 @@ public class ProductDatabase {
 
         Cursor cursor = productQuery("WHERE p.sku IN " + sb.toString(), null, false);
         return allProductsAtCursor(cursor);
+    }
+
+    /**
+     * Finds multiple products via its sku identifiers over the network, if the service is available.
+     * <p>
+     * Searches the local database first before making any network calls.
+     */
+    public void findBySkusOnline(String[] skus, OnProductsAvailableListener productsAvailableListener) {
+        findBySkusOnline(skus, productsAvailableListener, false);
+    }
+
+    /**
+     * Finds multiple products via its sku identifiers over the network, if the service is available.
+     * <p>
+     * If onlineOnly is true, it does not search the local database first and only searches online.
+     */
+    public void findBySkusOnline(String[] skus,
+                                 OnProductsAvailableListener productsAvailableListener,
+                                 boolean onlineOnly) {
+        if (productsAvailableListener == null) {
+            return;
+        }
+
+        if (onlineOnly || !isUpToDate()) {
+            productApi.findBySkus(skus, productsAvailableListener);
+        } else {
+            Product[] local = findBySkus(skus);
+            if (local != null) {
+                productsAvailableListener.onProductsAvailable(local, false);
+            } else {
+                productApi.findBySkus(skus, productsAvailableListener);
+            }
+        }
     }
 
     /**

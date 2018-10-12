@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.checkout;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,7 +19,7 @@ import androidx.core.widget.ImageViewCompat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.scanner.BarcodeFormat;
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 

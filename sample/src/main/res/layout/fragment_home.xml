@@ -36,6 +36,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
+        android:id="@+id/clear_cache"
+        android:text="Clear Cache" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
         android:id="@+id/show_pm"
         android:text="Show Payment Methods" />
 </LinearLayout>

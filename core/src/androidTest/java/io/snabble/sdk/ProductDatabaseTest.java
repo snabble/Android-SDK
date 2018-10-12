@@ -33,10 +33,10 @@ import static org.junit.Assert.assertTrue;
 public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
-    public void testAllPromotionsQuery() throws Throwable {
+    public void testAllPromotionsQuery() {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getDiscountedProducts();
-        assertTrue(products.length == 2);
+        assertEquals(2, products.length);
         assertEquals(products[0].getSku(), "1");
         assertEquals(products[0].getName(), "Müllermilch Banane 0,4l");
         assertEquals(products[1].getSku(), "2");
@@ -44,10 +44,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testBoostedPromotionsQuery() throws Throwable {
+    public void testBoostedPromotionsQuery() {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getBoostedProducts(2);
-        assertTrue(products.length == 2);
+        assertEquals(2, products.length);
         assertEquals(products[0].getSku(), "2");
         assertEquals(products[1].getSku(), "1");
 
@@ -187,6 +187,34 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
     }
 
+    @Test
+    public void testFindBySkuOnlineWithShopSpecificPrice() {
+        ProductDatabase productDatabase = project.getProductDatabase();
+        final Product product = findBySkuBlocking(productDatabase, "online1");
+        assertEquals(product.getSku(), "online1");
+        assertEquals(product.getPrice(), 399);
+
+        project.setCheckedInShop(project.getShops()[1]);
+        final Product product2 = findBySkuBlocking(productDatabase, "online1");
+        assertEquals(product2.getSku(), "online1");
+        assertEquals(product2.getPrice(), 299);
+    }
+
+    @Test
+    public void testFindBySkuWithShopSpecificPrice() throws IOException, Snabble.SnabbleException {
+        withDb("testDb_1_15.sqlite3");
+
+        ProductDatabase productDatabase = project.getProductDatabase();
+        final Product product = productDatabase.findBySku("salfter-classic");
+        assertEquals(product.getSku(), "salfter-classic");
+        assertEquals(product.getPrice(), 100);
+
+        project.setCheckedInShop(project.getShops()[1]);
+        final Product product2 = productDatabase.findBySku("salfter-classic");
+        assertEquals(product2.getSku(), "salfter-classic");
+        assertEquals(product2.getPrice(), 200);
+    }
+
     private Product findBySkuBlocking(ProductDatabase productDatabase, String sku) {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final Product[] productArr = new Product[1];
@@ -209,7 +237,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
                 productArr[0] = null;
                 countDownLatch.countDown();
             }
-        });
+        }, true);
 
         try {
             countDownLatch.await();
@@ -223,16 +251,65 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFindByMultipleSkus() {
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product[] products = productDatabase.findBySkus("1", "2", "asdf1234");
+        Product[] products = productDatabase.findBySkus(new String[] {"1", "2", "asdf1234"});
 
         assertEquals(products.length, 2);
         assertEquals(products[0].getSku(), "1");
         assertEquals(products[1].getSku(), "2");
 
-        products = productDatabase.findBySkus("1");
+        products = productDatabase.findBySkus(new String[] {"1"});
 
         assertEquals(products.length, 1);
         assertEquals(products[0].getSku(), "1");
+    }
+
+    @Test
+    public void testFindByMultipleSkusOnline() {
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product[] products = findBySkusBlocking(productDatabase, new String[] {"online1", "online2"});
+
+        assertEquals(2, products.length);
+
+        assertEquals(products[0].getSku(), "online1");
+        assertEquals(products[1].getSku(), "online2");
+
+        products = findBySkusBlocking(productDatabase, new String[] {"online2", "not_there", "online1"});
+
+        assertEquals(2, products.length);
+
+        assertEquals(products[0].getSku(), "online2");
+        assertEquals(products[1].getSku(), "online1");
+
+        products = findBySkusBlocking(productDatabase, new String[] {"not_there1", "not_there2"});
+
+        assertEquals(0, products.length);
+    }
+
+    private Product[] findBySkusBlocking(ProductDatabase productDatabase, String[] skus) {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final Product[][] productArr = new Product[1][];
+
+        productDatabase.findBySkusOnline(skus, new OnProductsAvailableListener() {
+            @Override
+            public void onProductsAvailable(Product[] products, boolean wasOnline) {
+                productArr[0] = products;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError() {
+                productArr[0] = null;
+                countDownLatch.countDown();
+            }
+        }, true);
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return productArr[0];
     }
 
     @Test
@@ -389,7 +466,6 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), product.getScannableCodes()[0]);
     }
 
-
     @Test
     public void testTransmissionCode() throws IOException, Snabble.SnabbleException {
         withDb("demoDb_1_11.sqlite3");
@@ -400,4 +476,33 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), "00000" + product.getScannableCodes()[0]);
     }
+
+    @Test
+    public void testRecoverFromFileCorruptions() throws IOException, Snabble.SnabbleException, InterruptedException {
+        withDb("testDb_corrupt.sqlite3");
+        Assert.assertNull(project.getProductDatabase().findBySku("1"));
+
+        prepareUpdateDb("testDb.sqlite3");
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
+            @Override
+            public void success() {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void error() {
+                Assert.fail();
+            }
+        });
+
+        countDownLatch.await();
+
+        Product product = project.getProductDatabase().findBySku("1");
+
+        Assert.assertNotNull(product);
+        Assert.assertEquals("1", product.getSku());
+    }
+
+
 }

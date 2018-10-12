@@ -10,7 +10,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.scanner.BarcodeFormat;
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 
 class CheckoutQRCodePOSView extends FrameLayout {

@@ -17,16 +17,15 @@ import android.os.Looper;
 import androidx.appcompat.widget.AppCompatImageView;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.FloatMath;
 import android.view.WindowManager;
 
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.Logger;
 
 public class BarcodeView extends AppCompatImageView {
     private String text;
@@ -165,7 +164,7 @@ public class BarcodeView extends AppCompatImageView {
                             int tw = w - paddingWidth;
                             int th = h - paddingHeight;
 
-                            BitMatrix bm = writer.encode(text, format.getZxingBarcodeFormat(), tw, th);
+                            BitMatrix bm = writer.encode(text, ZXingHelper.toZXingFormat(format), tw, th);
                             int[] pixels = new int[w * h];
 
                             // DATA-MATRIX codes are not scaled
