@@ -80,7 +80,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private boolean startRequested;
 
     private List<BarcodeFormat> supportedBarcodeFormats = new ArrayList<>();
-    private boolean manualAutoFocus;
     private int surfaceWidth;
     private int surfaceHeight;
     private TextureView textureView;
@@ -367,10 +366,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         camera.setPreviewCallbackWithBuffer(this);
         camera.addCallbackBuffer(backBuffer);
 
-        if (manualAutoFocus) {
-            scheduleAutoFocus();
-        }
-
         detectionRect.left = 0;
         detectionRect.top = 0;
         detectionRect.right = previewSize.width;
@@ -389,6 +384,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             }
         });
 
+        scheduleAutoFocus();
         showError(false);
 
         if (isPaused) {
@@ -430,10 +426,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private void chooseFocusMode(Camera.Parameters parameters) {
         List<String> supportedFocusModes = parameters.getSupportedFocusModes();
         if (supportedFocusModes != null) {
-            if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-            } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
-                manualAutoFocus = true;
+            if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
         }
@@ -507,18 +500,15 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             public void run() {
                 if (running) {
                     try {
-                        camera.autoFocus(new Camera.AutoFocusCallback() {
-                            @Override
-                            public void onAutoFocus(boolean success, Camera camera) {
-                                scheduleAutoFocus();
-                            }
-                        });
+                        camera.autoFocus(null);
                     } catch (RuntimeException e) {
-                        // ignore, happens mostly when calling autoFocus while its still focussing
+                        //ignore, happens mostly when calling autoFocus while its still focussing
                     }
+
+                    scheduleAutoFocus();
                 }
             }
-        }, 2000);
+        }, 1000);
     }
 
     private void setupZXing() {
@@ -654,7 +644,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             nextDetectionTimeMs = SystemClock.elapsedRealtime() + detectionDelayMs;
 
             barcodeProcessingHandler.post(new Runnable() {
-                @SuppressWarnings("SuspiciousNameCombination")
                 @Override
                 public void run() {
                     if (!isAttachedToWindow || !decodeEnabled) {
@@ -976,10 +965,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         Camera.Size optimalSizeForWidth = null;
         Camera.Size optimalSizeForHeight = null;
 
-        // we are using 1280x720 as our base resolution, as its available on most devices and provides
+        // we are using 1920x1080 as our base resolution, as its available on most devices and provides
         // a good balance between quality and performance
-        int targetWidth = 1280;
-        int targetHeight = 720;
+        int targetWidth = 1920;
+        int targetHeight = 1080;
 
         float minDiffX = Float.MAX_VALUE;
         float minDiffY = Float.MIN_VALUE;
