@@ -1,6 +1,9 @@
 package io.snabble.sdk.encodedcodes;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
@@ -66,23 +69,59 @@ public class EncodedCodesGenerator {
         return false;
     }
 
+    private class ProductInfo {
+        Product product;
+        int quantity;
+        String scannedCode;
+
+        public ProductInfo(Product product, int quantity, String scannedCode) {
+            this.product = product;
+            this.quantity = quantity;
+            this.scannedCode = scannedCode;
+        }
+    }
+
     private void addProducts(ShoppingCart shoppingCart, boolean ageRestricted) {
         hasAgeRestrictedCode = hasAgeRestrictedCode(shoppingCart);
 
+        List<ProductInfo> productInfos = new ArrayList<>();
         for (int i = 0; i < shoppingCart.size(); i++) {
             Product product = shoppingCart.getProduct(i);
             if (ageRestricted != isAgeRestricted(product)) {
                 continue;
             }
 
-            if (product.getType() == Product.Type.UserWeighed) {
+            productInfos.add(new ProductInfo(product,
+                    shoppingCart.getQuantity(i),
+                    shoppingCart.getScannedCode(i)));
+        }
+
+        Collections.sort(productInfos, new Comparator<ProductInfo>() {
+            @Override
+            public int compare(ProductInfo p1, ProductInfo p2) {
+                if(p1.product.getDiscountedPrice() < p2.product.getDiscountedPrice()) {
+                    return -1;
+                } else if(p1.product.getDiscountedPrice() > p2.product.getDiscountedPrice()) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        });
+
+        for (ProductInfo productInfo : productInfos) {
+            if (ageRestricted != isAgeRestricted(productInfo.product)) {
+                continue;
+            }
+
+            if (productInfo.product.getType() == Product.Type.UserWeighed) {
                 //encoding weight in ean
-                String[] weighItemIds = product.getWeighedItemIds();
+                String[] weighItemIds = productInfo.product.getWeighedItemIds();
                 if (weighItemIds != null && weighItemIds.length > 0) {
                     StringBuilder code = new StringBuilder(weighItemIds[0]);
                     if (code.length() == 13) {
                         StringBuilder embeddedWeight = new StringBuilder();
-                        String quantity = String.valueOf(shoppingCart.getQuantity(i));
+                        String quantity = String.valueOf(productInfo.quantity);
                         int leadingZeros = 5 - quantity.length();
                         for (int j = 0; j < leadingZeros; j++) {
                             embeddedWeight.append('0');
@@ -95,9 +134,9 @@ public class EncodedCodesGenerator {
                     }
                 }
             } else {
-                int q = shoppingCart.getQuantity(i);
+                int q = productInfo.quantity;
                 for (int j = 0; j < q; j++) {
-                    addScannableCode(product.getTransmissionCode(shoppingCart.getScannedCode(i)), ageRestricted);
+                    addScannableCode(productInfo.product.getTransmissionCode(productInfo.scannedCode), ageRestricted);
                 }
             }
         }

@@ -1,6 +1,17 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
+## [0.9.5]
+
+### Changed
+- Now sorting products in qr codes by price
+
+## [0.9.4]
+
+### Changed
+- Improved auto focus speed (especially on budget devices with slow continuous video auto focus)
+- Increased camera resolution, if the device supports it
+
 ## [0.9.3]
 
 ### Changed
