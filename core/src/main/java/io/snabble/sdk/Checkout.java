@@ -363,6 +363,7 @@ public class Checkout {
         PaymentMethod fallback = getFallbackPaymentMethod();
         if(fallback != null) {
             paymentMethod = fallback;
+            priceToPay = shoppingCart.getTotalPrice();
             notifyStateChanged(State.WAIT_FOR_APPROVAL);
         } else {
             notifyStateChanged(State.CONNECTION_ERROR);
