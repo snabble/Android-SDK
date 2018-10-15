@@ -252,6 +252,14 @@ public class Checkout {
         return project.getCheckoutUrl() != null && project.isCheckoutAvailable();
     }
 
+    private PaymentMethod getFallbackPaymentMethod() {
+        if(project.getEncodedCodesOptions() != null) {
+            return PaymentMethod.ENCODED_CODES;
+        }
+
+        return null;
+    }
+
     /**
      * Starts the checkout process.
      * <p>
@@ -266,7 +274,7 @@ public class Checkout {
         String checkoutUrl = project.getCheckoutUrl();
         if (checkoutUrl == null) {
             Logger.e("Could not checkout, no checkout url provided in metadata");
-            notifyStateChanged(State.CONNECTION_ERROR);
+            handleConnectionError();
             return;
         }
 
@@ -296,7 +304,7 @@ public class Checkout {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
-                        notifyStateChanged(State.CONNECTION_ERROR);
+                        handleConnectionError();
                         return;
                     }
 
@@ -329,14 +337,14 @@ public class Checkout {
                             Logger.d("Payment method requested");
                         }
                     } else {
-                        notifyStateChanged(State.CONNECTION_ERROR);
+                        handleConnectionError();
                     }
 
                     inputStream.close();
                 } else {
                     if (!call.isCanceled()) {
                         Logger.e("Error while trying to check out");
-                        notifyStateChanged(State.CONNECTION_ERROR);
+                        handleConnectionError();
                     }
                 }
             }
@@ -345,10 +353,20 @@ public class Checkout {
             public void onFailure(Call call, IOException e) {
                 if (!call.isCanceled()) {
                     Logger.e("Error while trying to check out");
-                    notifyStateChanged(State.CONNECTION_ERROR);
+                    handleConnectionError();
                 }
             }
         });
+    }
+
+    private void handleConnectionError() {
+        PaymentMethod fallback = getFallbackPaymentMethod();
+        if(fallback != null) {
+            paymentMethod = fallback;
+            notifyStateChanged(State.WAIT_FOR_APPROVAL);
+        } else {
+            notifyStateChanged(State.CONNECTION_ERROR);
+        }
     }
 
     /**
