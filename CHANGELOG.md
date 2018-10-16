@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Now sorting products in qr codes by price
 - Now falling back to showing qr code when no connection could be made
+- Now showing undo snackbar instead of dialog for removal of products using the quantity controls
 
 ## [0.9.4]
 
