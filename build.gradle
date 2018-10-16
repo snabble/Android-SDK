@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'de.undercouch:gradle-download-task:3.4.2'
         classpath 'gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
@@ -24,7 +24,7 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.9.4'
+        sdkVersion='0.9.5'
         versionCode=1
 
         compileSdkVersion=28

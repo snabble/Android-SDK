@@ -237,7 +237,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
         ArrayList<String> codes = generator.generate();
         Assert.assertEquals(1, codes.size());
-        Assert.assertEquals("voucher1\nvoucher2\n4008400301020\n4008400301020\n4008400301020\n8715700421698\n8715700421698\n2030801009061", codes.get(0));
+        Assert.assertEquals("voucher1\nvoucher2\n8715700421698\n8715700421698\n4008400301020\n4008400301020\n4008400301020\n2030801009061", codes.get(0));
     }
 
     @Test
@@ -324,6 +324,32 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals(2, codes.size());
         Assert.assertEquals(StringUtils.repeat("XE0000042276630", 3) + "XE0000000012345XZ", codes.get(0));
         Assert.assertEquals("XE4008287051124XE0000000013444XZ", codes.get(1));
+    }
+
+    @Test
+    @UiThreadTest
+    public void testExpensiveItemsSortedToBottom() throws IOException, Snabble.SnabbleException {
+        withDb("demoDb_1_11.sqlite3");
+
+        EncodedCodesOptions options = new EncodedCodesOptions.Builder()
+                .prefix("")
+                .separator(";")
+                .suffix("")
+                .maxCodes(1000)
+                .build();
+
+        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
+
+        Product duplo = project.getProductDatabase().findBySku("49");
+        project.getShoppingCart().add(duplo, 1, ScannableCode.parse(project, "4008400301020"));
+
+        Product heinz = project.getProductDatabase().findBySku("42");
+        project.getShoppingCart().add(heinz, 1, ScannableCode.parse(project, "8715700421698"));
+        generator.add(project.getShoppingCart());
+
+        ArrayList<String> codes = generator.generate();
+        Assert.assertEquals(1, codes.size());
+        Assert.assertEquals("8715700421698;4008400301020", codes.get(0));
     }
 }
 
