@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## [0.9.5]
 
 ### Changed
+- Add support for CODE_39
+- Parse scanFormats from metadata
 - Now sorting products in qr codes by price
 - Now falling back to showing qr code when no connection could be made
 
