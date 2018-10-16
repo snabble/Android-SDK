@@ -11,11 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -308,8 +304,8 @@ public class Checkout {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
+                    String json = body.string();
+                    body.close();
                     signedCheckoutInfo = gson.fromJson(json, SignedCheckoutInfo.class);
 
                     if (signedCheckoutInfo.checkoutInfo.has("price")
@@ -339,8 +335,6 @@ public class Checkout {
                     } else {
                         handleConnectionError();
                     }
-
-                    inputStream.close();
                 } else {
                     if (!call.isCanceled()) {
                         Logger.e("Error while trying to check out");
@@ -364,6 +358,7 @@ public class Checkout {
         if(fallback != null) {
             paymentMethod = fallback;
             priceToPay = shoppingCart.getTotalPrice();
+            retryPostSilent();
             notifyStateChanged(State.WAIT_FOR_APPROVAL);
         } else {
             notifyStateChanged(State.CONNECTION_ERROR);
@@ -423,9 +418,10 @@ public class Checkout {
                                 return;
                             }
 
-                            InputStream inputStream = body.byteStream();
-                            String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
+                            String json = body.string();
+                            body.close();
                             checkoutProcess = gson.fromJson(json, CheckoutProcessResponse.class);
+
                             if (!handleProcessResponse(checkoutProcess)) {
                                 notifyStateChanged(State.WAIT_FOR_APPROVAL);
 
@@ -434,8 +430,6 @@ public class Checkout {
                                     Logger.d("Waiting for approval...");
                                 }
                             }
-
-                            inputStream.close();
                         } else {
                             if (!call.isCanceled()) {
                                 Logger.e("Connection error while creating checkout process");
@@ -497,8 +491,8 @@ public class Checkout {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
+                    String json = body.string();
+                    body.close();
                     CheckoutProcessResponse checkoutProcessResponse = gson.fromJson(json,
                             CheckoutProcessResponse.class);
 
@@ -507,7 +501,6 @@ public class Checkout {
                     }
 
                     Checkout.this.call = null;
-                    inputStream.close();
                 }
             }
 
@@ -549,6 +542,79 @@ public class Checkout {
         }
 
         return false;
+    }
+
+    private void retryPostSilent() {
+        final String cartJson = project.getEvents().getPayloadCartJson();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String checkoutUrl = project.getCheckoutUrl();
+                if (checkoutUrl == null) {
+                    return;
+                }
+
+                if (project.getCheckedInShop() == null) {
+                    return;
+                }
+
+                final Request request = new Request.Builder()
+                        .url(Snabble.getInstance().absoluteUrl(checkoutUrl))
+                        .post(RequestBody.create(JSON, cartJson))
+                        .build();
+
+                call = okHttpClient.newCall(request);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            ResponseBody body = response.body();
+                            if (body == null) {
+                                return;
+                            }
+
+                            String infoJson = body.string();
+                            body.close();
+                            SignedCheckoutInfo signedCheckoutInfo = gson.fromJson(infoJson, SignedCheckoutInfo.class);
+
+                            CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
+                            checkoutProcessRequest.paymentMethod = paymentMethod;
+                            checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
+
+                            String url = signedCheckoutInfo.getCheckoutProcessLink();
+                            if (url == null) {
+                                return;
+                            }
+
+                            String processJson = gson.toJson(checkoutProcessRequest);
+                            final Request request = new Request.Builder()
+                                    .url(Snabble.getInstance().absoluteUrl(url))
+                                    .post(RequestBody.create(JSON, processJson))
+                                    .build();
+
+                            call = okHttpClient.newCall(request);
+                            call.enqueue(new Callback() {
+                                @Override
+                                public void onResponse(Call call, Response response) {
+                                    // ignore
+                                }
+
+                                @Override
+                                public void onFailure(Call call, IOException e) {
+                                    // ignore
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        // ignore
+                    }
+                });
+            }
+        }, 2000);
     }
 
     private void approve() {

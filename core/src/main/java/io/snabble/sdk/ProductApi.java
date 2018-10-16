@@ -6,12 +6,7 @@ import android.os.Looper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -164,9 +159,8 @@ class ProductApi {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
-                    inputStream.close();
+                    String json = body.string();
+                    body.close();
 
                     try {
                         final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
@@ -316,9 +310,8 @@ class ProductApi {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
-                    inputStream.close();
+                    String json = body.string();
+                    body.close();
 
                     try {
                         final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
@@ -416,9 +409,8 @@ class ProductApi {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
-                    inputStream.close();
+                    String json = body.string();
+                    body.close();
 
                     try {
                         final ApiProduct apiProduct = gson.fromJson(json, ApiProduct.class);
