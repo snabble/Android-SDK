@@ -144,11 +144,21 @@ public class Project {
 
         useGermanPrintPrefix = JsonUtils.getBooleanOpt(jsonObject, "useGermanPrintPrefix", false);
 
+        String[] scanFormats = JsonUtils.getStringArrayOpt(jsonObject, "scanFormats", null);
         List<BarcodeFormat> formats = new ArrayList<>();
-        formats.add(BarcodeFormat.EAN_8);
-        formats.add(BarcodeFormat.EAN_13);
-        formats.add(BarcodeFormat.CODE_128);
-        //formats.add(BarcodeFormat.ITF);
+
+        if(scanFormats != null) {
+            for (String scanFormat : scanFormats) {
+                BarcodeFormat format = BarcodeFormat.parse(scanFormat);
+                if(format != null) {
+                    formats.add(format);
+                }
+            }
+        } else {
+            formats.add(BarcodeFormat.EAN_8);
+            formats.add(BarcodeFormat.EAN_13);
+            formats.add(BarcodeFormat.CODE_128);
+        }
 
         supportedBarcodeFormats = formats.toArray(new BarcodeFormat[formats.size()]);
 
