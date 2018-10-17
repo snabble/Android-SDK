@@ -175,7 +175,7 @@ public class Snabble {
         }
     }
 
-    String absoluteUrl(String url) {
+    public String absoluteUrl(String url) {
         if (url.startsWith("http")) {
             return url;
         } else {
@@ -187,15 +187,15 @@ public class Snabble {
         return config.endpointBaseUrl;
     }
 
-    String getMetadataUrl() {
+    public String getMetadataUrl() {
         return metadataUrl;
     }
 
-    File getInternalStorageDirectory() {
+    public File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
 
-    Application getApplication() {
+    public Application getApplication() {
         return application;
     }
 

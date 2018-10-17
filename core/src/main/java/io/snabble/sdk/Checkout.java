@@ -79,12 +79,19 @@ public class Checkout {
         private JsonObject checkoutInfo;
         private PaymentMethod paymentMethod;
         private boolean modified;
-        @SerializedName(value = "paymentInformation", alternate = "paymentInformations")
         private PaymentInformation paymentInformation;
         private PaymentState paymentState;
 
         private String getSelfLink() {
             Href link = links.get("self");
+            if (link != null && link.href != null) {
+                return link.href;
+            }
+            return null;
+        }
+
+        private String getReceiptLink() {
+            Href link = links.get("receipt");
             if (link != null && link.href != null) {
                 return link.href;
             }
@@ -382,6 +389,67 @@ public class Checkout {
         pay(paymentMethod, false);
     }
 
+    private interface PaymentRequestResult {
+        void waitingForApproval();
+        void paymentAborted();
+        void connectionError();
+    }
+
+    private void paymentRequest(final PaymentMethod paymentMethod,
+                                final SignedCheckoutInfo signedCheckoutInfo,
+                                final PaymentRequestResult paymentRequestResult) {
+        CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
+        checkoutProcessRequest.paymentMethod = paymentMethod;
+        checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
+
+        String url = signedCheckoutInfo.getCheckoutProcessLink();
+        if (url == null) {
+            paymentRequestResult.connectionError();
+            return;
+        }
+
+        String json = gson.toJson(checkoutProcessRequest);
+        final Request request = new Request.Builder()
+                .url(Snabble.getInstance().absoluteUrl(url))
+                .post(RequestBody.create(JSON, json))
+                .build();
+
+        call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    if (body == null) {
+                        paymentRequestResult.connectionError();
+                        return;
+                    }
+
+                    String json = body.string();
+                    body.close();
+                    checkoutProcess = gson.fromJson(json, CheckoutProcessResponse.class);
+
+                    if (!handleProcessResponse(checkoutProcess)) {
+                        paymentRequestResult.waitingForApproval();
+                    }
+                } else {
+                    if (!call.isCanceled()) {
+                        paymentRequestResult.connectionError();
+                    } else {
+                        paymentRequestResult.paymentAborted();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (!call.isCanceled()) {
+                    paymentRequestResult.connectionError();
+                }
+            }
+        });
+    }
+
     private void pay(final PaymentMethod paymentMethod, boolean force) {
         if (signedCheckoutInfo != null) {
             boolean isRequestingPaymentMethod = (state == State.REQUEST_PAYMENT_METHOD);
@@ -391,62 +459,24 @@ public class Checkout {
             if (force || isRequestingPaymentMethod || ((state == State.CONNECTION_ERROR || state == State.NONE) && wasRequestingPaymentMethod)) {
                 this.paymentMethod = paymentMethod;
 
-                CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
-                checkoutProcessRequest.paymentMethod = paymentMethod;
-                checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
-
-                String url = signedCheckoutInfo.getCheckoutProcessLink();
-                if (url == null) {
-                    notifyStateChanged(State.CONNECTION_ERROR);
-                    return;
-                }
-
-                String json = gson.toJson(checkoutProcessRequest);
-                final Request request = new Request.Builder()
-                        .url(Snabble.getInstance().absoluteUrl(url))
-                        .post(RequestBody.create(JSON, json))
-                        .build();
-
-                call = okHttpClient.newCall(request);
-                call.enqueue(new Callback() {
+                paymentRequest(paymentMethod, signedCheckoutInfo, new PaymentRequestResult() {
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            ResponseBody body = response.body();
-                            if (body == null) {
-                                scheduleNextPoll();
-                                return;
-                            }
-
-                            String json = body.string();
-                            body.close();
-                            checkoutProcess = gson.fromJson(json, CheckoutProcessResponse.class);
-
-                            if (!handleProcessResponse(checkoutProcess)) {
-                                notifyStateChanged(State.WAIT_FOR_APPROVAL);
-
-                                if (!checkoutProcess.paymentMethod.isOfflineMethod()) {
-                                    scheduleNextPoll();
-                                    Logger.d("Waiting for approval...");
-                                }
-                            }
-                        } else {
-                            if (!call.isCanceled()) {
-                                Logger.e("Connection error while creating checkout process");
-                                notifyStateChanged(State.CONNECTION_ERROR);
-                            } else {
-                                Logger.e("Bad request - aborting");
-                                notifyStateChanged(State.PAYMENT_ABORTED);
-                            }
-                        }
+                    public void waitingForApproval() {
+                        Logger.d("Waiting for approval...");
+                        notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                        scheduleNextPoll();
                     }
 
                     @Override
-                    public void onFailure(Call call, IOException e) {
-                        if (!call.isCanceled()) {
-                            Logger.e("Connection error while creating checkout process");
-                            notifyStateChanged(State.CONNECTION_ERROR);
-                        }
+                    public void paymentAborted() {
+                        Logger.e("Bad request - aborting");
+                        notifyStateChanged(State.PAYMENT_ABORTED);
+                    }
+
+                    @Override
+                    public void connectionError() {
+                        Logger.e("Connection error while creating checkout process");
+                        notifyStateChanged(State.CONNECTION_ERROR);
                     }
                 });
 
@@ -522,7 +552,16 @@ public class Checkout {
             return true;
         }
 
-        if (checkoutProcessResponse.paymentState == PaymentState.SUCCESSFUL) {
+        String receiptLink = checkoutProcessResponse.getReceiptLink();
+        if (receiptLink != null) {
+            project.getReceipts().download(receiptLink, null);
+
+            if (paymentMethod.isOfflineMethod()) {
+                return true;
+            }
+        }
+
+        if (checkoutProcessResponse.paymentState == PaymentState.SUCCESSFUL && receiptLink != null) {
             approve();
             return true;
         } else if (checkoutProcessResponse.paymentState == PaymentState.PENDING) {
@@ -546,6 +585,7 @@ public class Checkout {
 
     private void retryPostSilent() {
         final String cartJson = project.getEvents().getPayloadCartJson();
+        final PaymentMethod pm = paymentMethod;
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -579,7 +619,7 @@ public class Checkout {
                             SignedCheckoutInfo signedCheckoutInfo = gson.fromJson(infoJson, SignedCheckoutInfo.class);
 
                             CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
-                            checkoutProcessRequest.paymentMethod = paymentMethod;
+                            checkoutProcessRequest.paymentMethod = pm;
                             checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
 
                             String url = signedCheckoutInfo.getCheckoutProcessLink();
