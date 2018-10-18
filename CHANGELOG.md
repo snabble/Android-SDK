@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
+## [0.10.0]
+
+## Added
+- Added support for receipts
+
+## Fixed
+- Socket timeouts now call the error callbacks in every case
+
 ## [0.9.5]
 
 ### Changed
