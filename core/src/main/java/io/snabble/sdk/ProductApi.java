@@ -3,9 +3,8 @@ package io.snabble.sdk;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

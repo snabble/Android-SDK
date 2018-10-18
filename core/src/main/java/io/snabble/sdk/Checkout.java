@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,11 +11,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.utils.Logger;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class Checkout {
     public enum State {
@@ -73,10 +67,10 @@ public class Checkout {
     private Project project;
     private CheckoutApi checkoutApi;
     private ShoppingCart shoppingCart;
+    private Receipts receipts;
 
     private CheckoutApi.SignedCheckoutInfo signedCheckoutInfo;
     private CheckoutApi.CheckoutProcessResponse checkoutProcess;
-    private CheckoutApi.CheckoutProcessResponse receiptCheckoutProcess;
     private PaymentMethod paymentMethod;
     private int priceToPay;
 
@@ -109,6 +103,7 @@ public class Checkout {
         this.project = project;
         this.shoppingCart = project.getShoppingCart();
         this.checkoutApi = new CheckoutApi(project);
+        this.receipts = Snabble.getInstance().getReceipts();
 
         HandlerThread handlerThread = new HandlerThread("Checkout");
         handlerThread.start();
@@ -138,7 +133,7 @@ public class Checkout {
         checkoutApi.cancel();
         handler.removeCallbacks(pollRunnable);
         handler.removeCallbacks(pollForReceiptRunnable);
-        receiptCheckoutProcess = null;
+        checkoutProcess = null;
         paymentMethod = null;
     }
 
@@ -176,7 +171,6 @@ public class Checkout {
      */
     public void checkout() {
         checkoutProcess = null;
-        receiptCheckoutProcess = null;
         signedCheckoutInfo = null;
         paymentMethod = null;
         priceToPay = 0;
@@ -325,7 +319,7 @@ public class Checkout {
 
         String receiptLink = checkoutProcess.getReceiptLink();
         if (receiptLink != null) {
-            project.getReceipts().download(receiptLink, null);
+            receipts.download(project, receiptLink, project.getCheckedInShop().getName(), priceToPay, null);
 
             if (paymentMethod.isOfflineMethod()) {
                 return true;
@@ -361,12 +355,13 @@ public class Checkout {
     private void pollForReceipt() {
         Logger.d("Polling for receipt...");
 
-        checkoutApi.updatePaymentProcess(receiptCheckoutProcess, new CheckoutApi.PaymentProcessResult() {
+        checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
             @Override
             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
                 String receiptLink = checkoutProcessResponse.getReceiptLink();
                 if (receiptLink != null) {
-                    project.getReceipts().download(receiptLink, null);
+                    receipts.download(project, receiptLink, project.getCheckedInShop().getName(),
+                            priceToPay, null);
                 } else {
                     scheduleNextPollForReceipt();
                 }
@@ -384,7 +379,6 @@ public class Checkout {
         });
     }
 
-
     private void retryPostSilent() {
         final Shop shop = project.getCheckedInShop();
         final String cartJson = project.getEvents().getPayloadCartJson();
@@ -399,11 +393,13 @@ public class Checkout {
                     public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo,
                                         int onlinePrice,
                                         PaymentMethod[] availablePaymentMethods) {
+                        priceToPay = onlinePrice;
+
                         checkoutApi.createPaymentProcess(pm, signedCheckoutInfo,
                                 new CheckoutApi.PaymentProcessResult() {
                             @Override
                             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                                receiptCheckoutProcess = checkoutProcessResponse;
+                                checkoutProcess = checkoutProcessResponse;
                                 scheduleNextPollForReceipt();
                             }
 
@@ -507,7 +503,7 @@ public class Checkout {
     /**
      * Gets the unique identifier of the checkout.
      * <p>
-     * The last 4 digits are used for identification in the supervisor app.
+     * This id can be used for identification in the supervisor app.
      */
     public String getId() {
         if (checkoutProcess != null) {

@@ -33,7 +33,6 @@ public class Project {
     private Checkout checkout;
     private ShoppingCartManager shoppingCartManager;
     private Events events;
-    private Receipts receipts;
 
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
@@ -77,7 +76,6 @@ public class Project {
         shoppingCartManager = new ShoppingCartManager(this);
         checkout = new Checkout(this);
         events = new Events(this);
-        receipts = new Receipts(this);
 
         Application app = Snabble.getInstance().getApplication();
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
@@ -338,10 +336,6 @@ public class Project {
 
     Events getEvents() {
         return events;
-    }
-
-    public Receipts getReceipts() {
-        return receipts;
     }
 
     /**

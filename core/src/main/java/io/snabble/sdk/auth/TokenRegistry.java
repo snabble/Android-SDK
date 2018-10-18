@@ -2,8 +2,6 @@ package io.snabble.sdk.auth;
 
 import android.util.Base64;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;

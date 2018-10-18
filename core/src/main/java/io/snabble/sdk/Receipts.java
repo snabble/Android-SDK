@@ -3,9 +3,7 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -19,7 +17,6 @@ import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Utils;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -33,15 +30,10 @@ public class Receipts {
     }
 
     private Map<String, ReceiptInfo> receiptInfoList = new HashMap<>();
-    private Project project;
-    private OkHttpClient okHttpClient;
     private File storageDirectory;
     private SharedPreferences sharedPreferences;
 
-    public Receipts(Project project) {
-        this.project = project;
-        this.okHttpClient = project.getOkHttpClient();
-
+    public Receipts() {
         storageDirectory = new File(Snabble.getInstance().getInternalStorageDirectory(), "receipts/");
         storageDirectory.mkdirs();
 
@@ -56,16 +48,40 @@ public class Receipts {
         return receiptInfos.toArray(new ReceiptInfo[receiptInfos.size()]);
     }
 
-    public void download(final ReceiptInfo receiptInfo, final ReceiptDownloadCallback callback) {
+    public void removeAll() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        for (ReceiptInfo receiptInfo : receiptInfoList.values()) {
+            editor.remove(receiptInfo.getId());
+            FileUtils.deleteQuietly(new File(receiptInfo.getFilePath()));
+        }
+
+        editor.apply();
+        receiptInfoList.clear();
+    }
+
+    public void remove(final ReceiptInfo receiptInfo) {
+        sharedPreferences.edit().remove(receiptInfo.getId()).apply();
+        receiptInfoList.remove(receiptInfo.getId());
+        FileUtils.deleteQuietly(new File(receiptInfo.getFilePath()));
+    }
+
+    public void download(final Project project,
+                         final ReceiptInfo receiptInfo,
+                         final ReceiptDownloadCallback callback) {
         if (receiptInfo.isDownloaded()) {
             callback.success(receiptInfo);
             return;
         }
 
-        download(receiptInfo.getUrl(), callback);
+        download(project, receiptInfo.getUrl(), receiptInfo.getShopName(), receiptInfo.getPrice(), callback);
     }
 
-    public void download(final String url, final ReceiptDownloadCallback callback) {
+    public void download(final Project project,
+                         final String url,
+                         final String shopName,
+                         final int price,
+                         final ReceiptDownloadCallback callback) {
         if (url == null) {
             callback.failure();
             return;
@@ -74,7 +90,7 @@ public class Receipts {
         final String absoluteUrl = Snabble.getInstance().absoluteUrl(url);
         final String id = Utils.sha1Hex(absoluteUrl);
         if (!receiptInfoList.containsKey(id)) {
-            final ReceiptInfo receiptInfo = new ReceiptInfo(id, absoluteUrl);
+            final ReceiptInfo receiptInfo = new ReceiptInfo(id, absoluteUrl, shopName, price);
             receiptInfoList.put(id, receiptInfo);
 
             final Request request = new Request.Builder()
@@ -82,7 +98,7 @@ public class Receipts {
                     .get()
                     .build();
 
-            okHttpClient.newCall(request).enqueue(new Callback() {
+            project.getOkHttpClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {

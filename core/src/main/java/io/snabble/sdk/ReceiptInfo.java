@@ -4,10 +4,14 @@ public class ReceiptInfo {
     private long timestamp;
     private String url;
     private String filePath;
+    private String shopName;
+    private int price;
 
-    public ReceiptInfo(String id, String url) {
+    public ReceiptInfo(String id, String url, String shopName, int price) {
         this.id = id;
         this.url = url;
+        this.shopName = shopName;
+        this.price = price;
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -45,6 +49,22 @@ public class ReceiptInfo {
 
     public boolean isDownloaded() {
         return getFilePath() != null;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 }
 

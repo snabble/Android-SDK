@@ -32,6 +32,7 @@ public class Snabble {
     private List<Project> projects;
     private OkHttpClient okHttpClient;
     private TokenRegistry tokenRegistry;
+    private Receipts receipts;
     private Application application;
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
@@ -72,6 +73,7 @@ public class Snabble {
 
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
         tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
+        receipts = new Receipts();
 
         userPreferences = new UserPreferences(app);
 
@@ -201,6 +203,10 @@ public class Snabble {
 
     public TokenRegistry getTokenRegistry() {
         return tokenRegistry;
+    }
+
+    public Receipts getReceipts() {
+        return receipts;
     }
 
     public List<Project> getProjects() {

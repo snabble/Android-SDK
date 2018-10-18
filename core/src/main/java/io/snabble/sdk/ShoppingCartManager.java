@@ -4,9 +4,6 @@ package io.snabble.sdk;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
