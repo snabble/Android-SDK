@@ -80,7 +80,7 @@ public class Receipts {
     public void download(final Project project,
                          final String url,
                          final String shopName,
-                         final int price,
+                         final String price,
                          final ReceiptDownloadCallback callback) {
         if (url == null) {
             callback.failure();
@@ -91,7 +91,6 @@ public class Receipts {
         final String id = Utils.sha1Hex(absoluteUrl);
         if (!receiptInfoList.containsKey(id)) {
             final ReceiptInfo receiptInfo = new ReceiptInfo(id, absoluteUrl, shopName, price);
-            receiptInfoList.put(id, receiptInfo);
 
             final Request request = new Request.Builder()
                     .url(absoluteUrl)
@@ -104,7 +103,9 @@ public class Receipts {
                     if (response.isSuccessful()) {
                         ResponseBody body = response.body();
                         if (body == null) {
-                            callback.failure();
+                            if (callback != null) {
+                                callback.failure();
+                            }
                             return;
                         }
 
@@ -118,13 +119,17 @@ public class Receipts {
                             callback.success(receiptInfo);
                         }
                     } else {
-                        callback.failure();
+                        if (callback != null) {
+                            callback.failure();
+                        }
                     }
                 }
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    callback.failure();
+                    if (callback != null) {
+                        callback.failure();
+                    }
                 }
             });
         }
@@ -139,6 +144,7 @@ public class Receipts {
     }
 
     private void saveReceiptInfo(ReceiptInfo receiptInfo) {
+        receiptInfoList.put(receiptInfo.getId(), receiptInfo);
         sharedPreferences.edit().putString(receiptInfo.getId(), GsonHolder.get().toJson(receiptInfo)).apply();
     }
 }

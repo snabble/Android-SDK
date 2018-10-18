@@ -319,7 +319,10 @@ public class Checkout {
 
         String receiptLink = checkoutProcess.getReceiptLink();
         if (receiptLink != null) {
-            receipts.download(project, receiptLink, project.getCheckedInShop().getName(), priceToPay, null);
+            PriceFormatter priceFormatter = new PriceFormatter(project);
+            receipts.download(project, receiptLink,
+                    project.getCheckedInShop().getName(),
+                    priceFormatter.format(priceToPay), null);
 
             if (paymentMethod.isOfflineMethod()) {
                 return true;
@@ -360,8 +363,9 @@ public class Checkout {
             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
                 String receiptLink = checkoutProcessResponse.getReceiptLink();
                 if (receiptLink != null) {
+                    PriceFormatter priceFormatter = new PriceFormatter(project);
                     receipts.download(project, receiptLink, project.getCheckedInShop().getName(),
-                            priceToPay, null);
+                            priceFormatter.format(priceToPay), null);
                 } else {
                     scheduleNextPollForReceipt();
                 }

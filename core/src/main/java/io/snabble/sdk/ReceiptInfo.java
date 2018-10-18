@@ -5,9 +5,9 @@ public class ReceiptInfo {
     private String url;
     private String filePath;
     private String shopName;
-    private int price;
+    private String price;
 
-    public ReceiptInfo(String id, String url, String shopName, int price) {
+    public ReceiptInfo(String id, String url, String shopName, String price) {
         this.id = id;
         this.url = url;
         this.shopName = shopName;
@@ -59,11 +59,11 @@ public class ReceiptInfo {
         this.shopName = shopName;
     }
 
-    public int getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 }

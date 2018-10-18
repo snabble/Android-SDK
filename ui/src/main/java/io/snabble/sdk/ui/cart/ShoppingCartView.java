@@ -38,7 +38,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
-import io.snabble.sdk.ui.PriceFormatter;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;

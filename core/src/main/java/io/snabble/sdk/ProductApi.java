@@ -144,7 +144,7 @@ class ProductApi {
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(final Call call, final Response response) throws IOException {
+            public void onResponse(final Call call, final Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -157,7 +157,14 @@ class ProductApi {
                         return;
                     }
 
-                    String json = body.string();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        productsAvailableListener.onError();
+                        return;
+                    }
+
                     body.close();
 
                     try {
@@ -300,7 +307,7 @@ class ProductApi {
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -308,7 +315,13 @@ class ProductApi {
                         return;
                     }
 
-                    String json = body.string();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        callback.onError();
+                        return;
+                    }
                     body.close();
 
                     try {
@@ -394,7 +407,7 @@ class ProductApi {
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(final Call call, final Response response) throws IOException {
+            public void onResponse(final Call call, final Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -407,7 +420,13 @@ class ProductApi {
                         return;
                     }
 
-                    String json = body.string();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        productAvailableListener.onError();
+                        return;
+                    }
                     body.close();
 
                     try {

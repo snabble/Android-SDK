@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
-import io.snabble.sdk.ui.PriceFormatter;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;

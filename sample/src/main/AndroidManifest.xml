@@ -26,6 +26,6 @@
         <activity android:name=".ProductSearchActivity" />
         <activity android:name=".CheckoutActivity" />
         <activity android:name=".ShoppingCartActivity" />
+        <activity android:name=".ReceiptListActivity" />
     </application>
-
 </manifest>

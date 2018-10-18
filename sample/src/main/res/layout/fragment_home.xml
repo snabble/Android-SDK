@@ -17,7 +17,12 @@
         android:padding="8dp"
         android:id="@+id/scanner"
         android:text="Scanner" />
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:id="@+id/receipt_list"
+        android:text="Receipts" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

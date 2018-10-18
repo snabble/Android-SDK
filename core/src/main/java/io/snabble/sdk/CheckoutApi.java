@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -199,7 +200,7 @@ class CheckoutApi {
         call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -207,8 +208,15 @@ class CheckoutApi {
                         return;
                     }
 
-                    String json = body.string();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        checkoutInfoResult.error();
+                        return;
+                    }
                     body.close();
+
                     SignedCheckoutInfo signedCheckoutInfo = GsonHolder.get().fromJson(json, SignedCheckoutInfo.class);
 
                     int price;
@@ -274,7 +282,7 @@ class CheckoutApi {
         call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -282,8 +290,15 @@ class CheckoutApi {
                         return;
                     }
 
-                    String json = body.string();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        paymentProcessResult.error();
+                        return;
+                    }
                     body.close();
+
                     CheckoutProcessResponse checkoutProcessResponse = GsonHolder.get().fromJson(json,
                             CheckoutProcessResponse.class);
 
@@ -324,7 +339,7 @@ class CheckoutApi {
         call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -332,8 +347,15 @@ class CheckoutApi {
                         return;
                     }
 
-                    String json = body.string();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        paymentProcessResult.error();
+                        return;
+                    }
                     body.close();
+
                     CheckoutProcessResponse checkoutProcess = GsonHolder.get().fromJson(json, CheckoutProcessResponse.class);
 
                     paymentProcessResult.success(checkoutProcess);

@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui;
+package io.snabble.sdk;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;

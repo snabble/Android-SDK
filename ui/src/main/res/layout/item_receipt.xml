@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/shop_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignLeft="@+id/chevron"
+        android:layout_alignStart="@+id/chevron"
+        android:textSize="17sp"
+        tools:text="Snabble GmbH, Bonn"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shop_name"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignLeft="@+id/chevron"
+        android:layout_alignStart="@+id/chevron"
+        android:textSize="13sp"
+        tools:text="10,00 €"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/price"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignLeft="@+id/chevron"
+        android:layout_alignStart="@+id/chevron"
+        android:textSize="13sp"
+        tools:text="01.01.1970, 10:00 Uhr"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/chevron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_chevron_right"
+        android:tint="#C6C7C8"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>

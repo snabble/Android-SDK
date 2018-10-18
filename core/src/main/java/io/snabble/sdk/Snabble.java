@@ -71,15 +71,14 @@ public class Snabble {
 
         versionName = version;
 
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
-        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
-        receipts = new Receipts();
-
-        userPreferences = new UserPreferences(app);
-
         internalStorageDirectory = new File(application.getFilesDir(), "snabble/" + config.appId + "/");
         //noinspection ResultOfMethodCallIgnored
         internalStorageDirectory.mkdirs();
+
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
+        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
+        receipts = new Receipts();
+        userPreferences = new UserPreferences(app);
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
