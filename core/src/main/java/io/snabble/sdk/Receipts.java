@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Utils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -114,17 +115,14 @@ public class Receipts {
     }
 
     private void loadFromSharedPreferences() {
-        Gson gson = new GsonBuilder().create();
-
         Map<String, ?> map = sharedPreferences.getAll();
         for(Map.Entry<String, ?> entry : map.entrySet()) {
             String json = (String)entry.getValue();
-            receiptInfoList.put(entry.getKey(), gson.fromJson(json, ReceiptInfo.class));
+            receiptInfoList.put(entry.getKey(), GsonHolder.get().fromJson(json, ReceiptInfo.class));
         }
     }
 
     private void saveReceiptInfo(ReceiptInfo receiptInfo) {
-        Gson gson = new GsonBuilder().create();
-        sharedPreferences.edit().putString(receiptInfo.getId(), gson.toJson(receiptInfo)).apply();
+        sharedPreferences.edit().putString(receiptInfo.getId(), GsonHolder.get().toJson(receiptInfo)).apply();
     }
 }

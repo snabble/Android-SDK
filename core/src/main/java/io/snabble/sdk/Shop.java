@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Map;
 
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
 public class Shop implements Serializable {
@@ -131,10 +132,7 @@ public class Shop implements Serializable {
 
     static Shop[] fromJson(JsonElement json) {
         try {
-            Gson gson = new GsonBuilder()
-                    .create();
-
-            return gson.fromJson(json, Shop[].class);
+            return GsonHolder.get().fromJson(json, Shop[].class);
         } catch (Exception e) {
             Logger.e("Could not read shops json");
             return null;

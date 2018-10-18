@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -67,7 +68,6 @@ class ProductApi {
         void onError();
     }
 
-    private Gson gson;
     private Project project;
     private OkHttpClient okHttpClient;
     private Handler handler;
@@ -75,7 +75,6 @@ class ProductApi {
     ProductApi(Project project) {
         this.project = project;
         this.okHttpClient = project.getOkHttpClient();
-        this.gson = new GsonBuilder().create();
         this.handler = new Handler(Looper.getMainLooper());
     }
 
@@ -163,7 +162,7 @@ class ProductApi {
                     body.close();
 
                     try {
-                        final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
+                        final ApiProductGroup apiProductGroup = GsonHolder.get().fromJson(json, ApiProductGroup.class);
 
                         final CountDownLatch countDownLatch = new CountDownLatch(apiProductGroup.products.length);
                         final Map<String, Product> products = new HashMap<>();
@@ -314,7 +313,7 @@ class ProductApi {
                     body.close();
 
                     try {
-                        final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
+                        final ApiProductGroup apiProductGroup = GsonHolder.get().fromJson(json, ApiProductGroup.class);
                         if (apiProductGroup != null && apiProductGroup.products != null) {
                             final Product[] products = new Product[apiProductGroup.products.length];
                             final CountDownLatch countDownLatch = new CountDownLatch(apiProductGroup.products.length);
@@ -413,7 +412,7 @@ class ProductApi {
                     body.close();
 
                     try {
-                        final ApiProduct apiProduct = gson.fromJson(json, ApiProduct.class);
+                        final ApiProduct apiProduct = GsonHolder.get().fromJson(json, ApiProduct.class);
                         flattenProduct(apiProduct, productAvailableListener);
                     } catch (JsonParseException e) {
                         error(productAvailableListener);

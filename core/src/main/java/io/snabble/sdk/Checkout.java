@@ -4,101 +4,21 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class Checkout {
-    /*
-     * Data structures as defined here:
-     *
-     * https://github.com/snabble/docs/blob/master/api_checkout.md
-     */
-    private static class Href {
-        private String href;
-    }
-
-    private static class SignedCheckoutInfo {
-        private JsonObject checkoutInfo;
-        private String signature;
-        private Map<String, Href> links;
-
-        private String getCheckoutProcessLink() {
-            Href checkoutProcess = links.get("checkoutProcess");
-            if (checkoutProcess != null && checkoutProcess.href != null) {
-                return checkoutProcess.href;
-            }
-            return null;
-        }
-    }
-
-    private static class PaymentInformation {
-        private String qrCodeContent;
-    }
-
-    private static class CheckoutProcessRequest {
-        private SignedCheckoutInfo signedCheckoutInfo;
-        private PaymentMethod paymentMethod;
-    }
-
-    private enum PaymentState {
-        @SerializedName("pending")
-        PENDING,
-        @SerializedName("successful")
-        SUCCESSFUL,
-        @SerializedName("failed")
-        FAILED,
-    }
-
-    private static class CheckoutProcessResponse {
-        private Map<String, Href> links;
-        private Boolean supervisorApproval;
-        private Boolean paymentApproval;
-        private boolean aborted;
-        private JsonObject checkoutInfo;
-        private PaymentMethod paymentMethod;
-        private boolean modified;
-        private PaymentInformation paymentInformation;
-        private PaymentState paymentState;
-
-        private String getSelfLink() {
-            Href link = links.get("self");
-            if (link != null && link.href != null) {
-                return link.href;
-            }
-            return null;
-        }
-
-        private String getReceiptLink() {
-            Href link = links.get("receipt");
-            if (link != null && link.href != null) {
-                return link.href;
-            }
-            return null;
-        }
-    }
-
     public enum State {
         /**
          * The initial default state.
@@ -150,14 +70,13 @@ public class Checkout {
         NO_SHOP,
     }
 
-    private static MediaType JSON = MediaType.parse("application/json");
-
     private Project project;
-    private OkHttpClient okHttpClient;
+    private CheckoutApi checkoutApi;
     private ShoppingCart shoppingCart;
-    private Gson gson;
-    private SignedCheckoutInfo signedCheckoutInfo;
-    private CheckoutProcessResponse checkoutProcess;
+
+    private CheckoutApi.SignedCheckoutInfo signedCheckoutInfo;
+    private CheckoutApi.CheckoutProcessResponse checkoutProcess;
+    private CheckoutApi.CheckoutProcessResponse receiptCheckoutProcess;
     private PaymentMethod paymentMethod;
     private int priceToPay;
 
@@ -169,8 +88,6 @@ public class Checkout {
     private State lastState = State.NONE;
     private State state = State.NONE;
 
-    private Call call;
-
     private List<String> codes = new ArrayList<>();
     private PaymentMethod[] clientAcceptedPaymentMethods;
 
@@ -181,11 +98,17 @@ public class Checkout {
         }
     };
 
+    private Runnable pollForReceiptRunnable = new Runnable() {
+        @Override
+        public void run() {
+            pollForReceipt();
+        }
+    };
+
     Checkout(Project project) {
         this.project = project;
-        this.okHttpClient = project.getOkHttpClient();
         this.shoppingCart = project.getShoppingCart();
-        this.gson = new GsonBuilder().create();
+        this.checkoutApi = new CheckoutApi(project);
 
         HandlerThread handlerThread = new HandlerThread("Checkout");
         handlerThread.start();
@@ -204,31 +127,19 @@ public class Checkout {
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
-            final Request request = new Request.Builder()
-                    .url(Snabble.getInstance().absoluteUrl(checkoutProcess.getSelfLink()))
-                    .patch(RequestBody.create(JSON, "{\"aborted\":true}"))
-                    .build();
-
-            okHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onResponse(Call call, Response response) {
-                    if (response.isSuccessful()) {
-                        Logger.d("Payment aborted");
-                    } else {
-                        Logger.e("Could not abort payment");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Logger.e("Could not abort payment");
-                }
-            });
-
+            checkoutApi.abort(checkoutProcess);
             notifyStateChanged(State.PAYMENT_ABORTED);
         } else {
             notifyStateChanged(State.NONE);
         }
+    }
+
+    public void cancelOutstandingCalls() {
+        checkoutApi.cancel();
+        handler.removeCallbacks(pollRunnable);
+        handler.removeCallbacks(pollForReceiptRunnable);
+        receiptCheckoutProcess = null;
+        paymentMethod = null;
     }
 
     /**
@@ -239,16 +150,6 @@ public class Checkout {
     public void reset() {
         cancelOutstandingCalls();
         notifyStateChanged(State.NONE);
-    }
-
-    private void cancelOutstandingCalls() {
-        if (call != null) {
-            call.cancel();
-            call = null;
-        }
-
-        handler.removeCallbacks(pollRunnable);
-        paymentMethod = null;
     }
 
     public boolean isAvailable() {
@@ -274,102 +175,51 @@ public class Checkout {
      * to pay with that payment method.
      */
     public void checkout() {
-        String checkoutUrl = project.getCheckoutUrl();
-        if (checkoutUrl == null) {
-            Logger.e("Could not checkout, no checkout url provided in metadata");
-            handleConnectionError();
-            return;
-        }
-
-        if (project.getCheckedInShop() == null) {
-            Logger.e("Could not checkout, no shop selected");
-            notifyStateChanged(State.NO_SHOP);
-            return;
-        }
-
         checkoutProcess = null;
+        receiptCheckoutProcess = null;
         signedCheckoutInfo = null;
         paymentMethod = null;
         priceToPay = 0;
 
         notifyStateChanged(State.HANDSHAKING);
 
-        String json = project.getEvents().getPayloadCartJson();
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(checkoutUrl))
-                .post(RequestBody.create(JSON, json))
-                .build();
-
-        call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        checkoutApi.createCheckoutInfo(project.getCheckedInShop(),
+                project.getEvents().getPayloadCartJson(),
+                clientAcceptedPaymentMethods,
+                new CheckoutApi.CheckoutInfoResult() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        handleConnectionError();
-                        return;
-                    }
+            public void success(CheckoutApi.SignedCheckoutInfo checkoutInfo,
+                                int onlinePrice,
+                                PaymentMethod[] availablePaymentMethods) {
+                signedCheckoutInfo = checkoutInfo;
+                priceToPay = onlinePrice;
 
-                    String json = body.string();
-                    body.close();
-                    signedCheckoutInfo = gson.fromJson(json, SignedCheckoutInfo.class);
-
-                    if (signedCheckoutInfo.checkoutInfo.has("price")
-                            && signedCheckoutInfo.checkoutInfo.get("price").getAsJsonObject().has("price")) {
-                        priceToPay = signedCheckoutInfo.checkoutInfo
-                                .get("price")
-                                .getAsJsonObject()
-                                .get("price")
-                                .getAsInt();
-                    } else {
-                        priceToPay = shoppingCart.getTotalPrice();
-                    }
-
-                    if (priceToPay != shoppingCart.getTotalPrice()) {
-                        Logger.w("Warning local price is different from remotely calculated price! (Local: "
-                                + shoppingCart.getTotalPrice() + ", Remote: " + priceToPay + ")");
-                    }
-
-                    PaymentMethod[] availablePaymentMethods = getAvailablePaymentMethods();
-                    if (availablePaymentMethods != null && availablePaymentMethods.length > 0) {
-                        if (availablePaymentMethods.length == 1) {
-                            pay(availablePaymentMethods[0], true);
-                        } else {
-                            notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
-                            Logger.d("Payment method requested");
-                        }
-                    } else {
-                        handleConnectionError();
-                    }
+                if (availablePaymentMethods.length == 1) {
+                    pay(availablePaymentMethods[0], true);
                 } else {
-                    if (!call.isCanceled()) {
-                        Logger.e("Error while trying to check out");
-                        handleConnectionError();
-                    }
+                    notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
+                    Logger.d("Payment method requested");
                 }
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
-                if (!call.isCanceled()) {
-                    Logger.e("Error while trying to check out");
-                    handleConnectionError();
+            public void noShop() {
+                notifyStateChanged(State.NO_SHOP);
+            }
+
+            @Override
+            public void error() {
+                PaymentMethod fallback = getFallbackPaymentMethod();
+                if(fallback != null) {
+                    paymentMethod = fallback;
+                    priceToPay = shoppingCart.getTotalPrice();
+                    retryPostSilent();
+                    notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                } else {
+                    notifyStateChanged(State.CONNECTION_ERROR);
                 }
             }
         });
-    }
-
-    private void handleConnectionError() {
-        PaymentMethod fallback = getFallbackPaymentMethod();
-        if(fallback != null) {
-            paymentMethod = fallback;
-            priceToPay = shoppingCart.getTotalPrice();
-            retryPostSilent();
-            notifyStateChanged(State.WAIT_FOR_APPROVAL);
-        } else {
-            notifyStateChanged(State.CONNECTION_ERROR);
-        }
     }
 
     /**
@@ -389,67 +239,6 @@ public class Checkout {
         pay(paymentMethod, false);
     }
 
-    private interface PaymentRequestResult {
-        void waitingForApproval();
-        void paymentAborted();
-        void connectionError();
-    }
-
-    private void paymentRequest(final PaymentMethod paymentMethod,
-                                final SignedCheckoutInfo signedCheckoutInfo,
-                                final PaymentRequestResult paymentRequestResult) {
-        CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
-        checkoutProcessRequest.paymentMethod = paymentMethod;
-        checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
-
-        String url = signedCheckoutInfo.getCheckoutProcessLink();
-        if (url == null) {
-            paymentRequestResult.connectionError();
-            return;
-        }
-
-        String json = gson.toJson(checkoutProcessRequest);
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
-                .post(RequestBody.create(JSON, json))
-                .build();
-
-        call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        paymentRequestResult.connectionError();
-                        return;
-                    }
-
-                    String json = body.string();
-                    body.close();
-                    checkoutProcess = gson.fromJson(json, CheckoutProcessResponse.class);
-
-                    if (!handleProcessResponse(checkoutProcess)) {
-                        paymentRequestResult.waitingForApproval();
-                    }
-                } else {
-                    if (!call.isCanceled()) {
-                        paymentRequestResult.connectionError();
-                    } else {
-                        paymentRequestResult.paymentAborted();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (!call.isCanceled()) {
-                    paymentRequestResult.connectionError();
-                }
-            }
-        });
-    }
-
     private void pay(final PaymentMethod paymentMethod, boolean force) {
         if (signedCheckoutInfo != null) {
             boolean isRequestingPaymentMethod = (state == State.REQUEST_PAYMENT_METHOD);
@@ -459,22 +248,26 @@ public class Checkout {
             if (force || isRequestingPaymentMethod || ((state == State.CONNECTION_ERROR || state == State.NONE) && wasRequestingPaymentMethod)) {
                 this.paymentMethod = paymentMethod;
 
-                paymentRequest(paymentMethod, signedCheckoutInfo, new PaymentRequestResult() {
+                checkoutApi.createPaymentProcess(paymentMethod, signedCheckoutInfo, new CheckoutApi.PaymentProcessResult() {
                     @Override
-                    public void waitingForApproval() {
-                        Logger.d("Waiting for approval...");
-                        notifyStateChanged(State.WAIT_FOR_APPROVAL);
-                        scheduleNextPoll();
+                    public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                        checkoutProcess = checkoutProcessResponse;
+
+                        if (!handleProcessResponse()) {
+                            Logger.d("Waiting for approval...");
+                            notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                            scheduleNextPoll();
+                        }
                     }
 
                     @Override
-                    public void paymentAborted() {
+                    public void aborted() {
                         Logger.e("Bad request - aborting");
                         notifyStateChanged(State.PAYMENT_ABORTED);
                     }
 
                     @Override
-                    public void connectionError() {
+                    public void error() {
                         Logger.e("Connection error while creating checkout process");
                         notifyStateChanged(State.CONNECTION_ERROR);
                     }
@@ -497,45 +290,23 @@ public class Checkout {
 
         Logger.d("Polling for approval state...");
 
-        String url = checkoutProcess.getSelfLink();
-        if (url == null) {
-            return;
-        }
-
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
-                .get()
-                .build();
-
-        if (call != null) {
-            call.cancel();
-        }
-
-        call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        return;
-                    }
+            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                checkoutProcess = checkoutProcessResponse;
 
-                    String json = body.string();
-                    body.close();
-                    CheckoutProcessResponse checkoutProcessResponse = gson.fromJson(json,
-                            CheckoutProcessResponse.class);
-
-                    if (handleProcessResponse(checkoutProcessResponse)) {
-                        handler.removeCallbacks(pollRunnable);
-                    }
-
-                    Checkout.this.call = null;
+                if (handleProcessResponse()) {
+                    handler.removeCallbacks(pollRunnable);
                 }
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void aborted() {
+
+            }
+
+            @Override
+            public void error() {
 
             }
         });
@@ -545,14 +316,14 @@ public class Checkout {
         }
     }
 
-    private boolean handleProcessResponse(CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse.aborted) {
+    private boolean handleProcessResponse() {
+        if (checkoutProcess.aborted) {
             Logger.d("Payment aborted");
             notifyStateChanged(State.PAYMENT_ABORTED);
             return true;
         }
 
-        String receiptLink = checkoutProcessResponse.getReceiptLink();
+        String receiptLink = checkoutProcess.getReceiptLink();
         if (receiptLink != null) {
             project.getReceipts().download(receiptLink, null);
 
@@ -561,20 +332,20 @@ public class Checkout {
             }
         }
 
-        if (checkoutProcessResponse.paymentState == PaymentState.SUCCESSFUL && receiptLink != null) {
+        if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL && receiptLink != null) {
             approve();
             return true;
-        } else if (checkoutProcessResponse.paymentState == PaymentState.PENDING) {
-            if (checkoutProcessResponse.supervisorApproval != null && !checkoutProcessResponse.supervisorApproval) {
+        } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.PENDING) {
+            if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
                 notifyStateChanged(State.DENIED_BY_SUPERVISOR);
                 return true;
-            } else if (checkoutProcessResponse.paymentApproval != null && !checkoutProcessResponse.paymentApproval) {
+            } else if (checkoutProcess.paymentApproval != null && !checkoutProcess.paymentApproval) {
                 Logger.d("Payment denied by payment provider");
                 notifyStateChanged(State.DENIED_BY_PAYMENT_PROVIDER);
                 return true;
             }
-        } else if (checkoutProcessResponse.paymentState == PaymentState.FAILED) {
+        } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.FAILED) {
             Logger.d("Payment denied by payment provider");
             notifyStateChanged(State.DENIED_BY_PAYMENT_PROVIDER);
             return true;
@@ -583,74 +354,79 @@ public class Checkout {
         return false;
     }
 
+    private void scheduleNextPollForReceipt() {
+        handler.postDelayed(pollForReceiptRunnable, 2000);
+    }
+
+    private void pollForReceipt() {
+        Logger.d("Polling for receipt...");
+
+        checkoutApi.updatePaymentProcess(receiptCheckoutProcess, new CheckoutApi.PaymentProcessResult() {
+            @Override
+            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                String receiptLink = checkoutProcessResponse.getReceiptLink();
+                if (receiptLink != null) {
+                    project.getReceipts().download(receiptLink, null);
+                } else {
+                    scheduleNextPollForReceipt();
+                }
+            }
+
+            @Override
+            public void aborted() {
+
+            }
+
+            @Override
+            public void error() {
+
+            }
+        });
+    }
+
+
     private void retryPostSilent() {
+        final Shop shop = project.getCheckedInShop();
         final String cartJson = project.getEvents().getPayloadCartJson();
         final PaymentMethod pm = paymentMethod;
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String checkoutUrl = project.getCheckoutUrl();
-                if (checkoutUrl == null) {
-                    return;
-                }
-
-                if (project.getCheckedInShop() == null) {
-                    return;
-                }
-
-                final Request request = new Request.Builder()
-                        .url(Snabble.getInstance().absoluteUrl(checkoutUrl))
-                        .post(RequestBody.create(JSON, cartJson))
-                        .build();
-
-                call = okHttpClient.newCall(request);
-                call.enqueue(new Callback() {
+                checkoutApi.createCheckoutInfo(shop, cartJson, clientAcceptedPaymentMethods,
+                        new CheckoutApi.CheckoutInfoResult() {
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            ResponseBody body = response.body();
-                            if (body == null) {
-                                return;
+                    public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo,
+                                        int onlinePrice,
+                                        PaymentMethod[] availablePaymentMethods) {
+                        checkoutApi.createPaymentProcess(pm, signedCheckoutInfo,
+                                new CheckoutApi.PaymentProcessResult() {
+                            @Override
+                            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                                receiptCheckoutProcess = checkoutProcessResponse;
+                                scheduleNextPollForReceipt();
                             }
 
-                            String infoJson = body.string();
-                            body.close();
-                            SignedCheckoutInfo signedCheckoutInfo = gson.fromJson(infoJson, SignedCheckoutInfo.class);
+                            @Override
+                            public void aborted() {
 
-                            CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
-                            checkoutProcessRequest.paymentMethod = pm;
-                            checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
-
-                            String url = signedCheckoutInfo.getCheckoutProcessLink();
-                            if (url == null) {
-                                return;
                             }
 
-                            String processJson = gson.toJson(checkoutProcessRequest);
-                            final Request request = new Request.Builder()
-                                    .url(Snabble.getInstance().absoluteUrl(url))
-                                    .post(RequestBody.create(JSON, processJson))
-                                    .build();
+                            @Override
+                            public void error() {
 
-                            call = okHttpClient.newCall(request);
-                            call.enqueue(new Callback() {
-                                @Override
-                                public void onResponse(Call call, Response response) {
-                                    // ignore
-                                }
-
-                                @Override
-                                public void onFailure(Call call, IOException e) {
-                                    // ignore
-                                }
-                            });
-                        }
+                            }
+                        });
                     }
 
                     @Override
-                    public void onFailure(Call call, IOException e) {
-                        // ignore
+                    public void noShop() {
+
+                    }
+
+                    @Override
+                    public void error() {
+
                     }
                 });
             }
@@ -721,29 +497,8 @@ public class Checkout {
      * Gets all available payment methods, callable after {@link Checkout.State#REQUEST_PAYMENT_METHOD}.
      */
     public PaymentMethod[] getAvailablePaymentMethods() {
-        if (signedCheckoutInfo != null
-                && signedCheckoutInfo.checkoutInfo != null
-                && signedCheckoutInfo.checkoutInfo.has("availableMethods")) {
-            JsonArray jsonArray = signedCheckoutInfo.checkoutInfo.getAsJsonArray("availableMethods");
-            if (jsonArray != null) {
-                List<PaymentMethod> paymentMethods = gson.fromJson(jsonArray,
-                        new TypeToken<List<PaymentMethod>>() {
-                        }.getType());
-
-                if (clientAcceptedPaymentMethods != null) {
-                    List<PaymentMethod> result = new ArrayList<>();
-
-                    for (PaymentMethod clientPaymentMethod : clientAcceptedPaymentMethods) {
-                        if (paymentMethods.contains(clientPaymentMethod)) {
-                            result.add(clientPaymentMethod);
-                        }
-                    }
-
-                    return result.toArray(new PaymentMethod[result.size()]);
-                } else {
-                    return paymentMethods.toArray(new PaymentMethod[paymentMethods.size()]);
-                }
-            }
+        if (signedCheckoutInfo != null) {
+            return signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
         }
 
         return new PaymentMethod[0];
