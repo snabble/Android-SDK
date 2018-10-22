@@ -1,13 +1,14 @@
 package io.snabble.sdk.ui.receipts;
 
 import android.app.Activity;
-import android.content.ComponentName;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.snabble.sdk.ReceiptInfo;
+import io.snabble.sdk.Receipts;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.UIUtils;
@@ -88,17 +90,61 @@ public class ReceiptListView extends FrameLayout {
             shopName.setText(receiptInfo.getShopName());
             price.setText(receiptInfo.getPrice());
 
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
             date.setText(dateFormat.format(new Date(receiptInfo.getTimestamp())));
 
             rootView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (receiptInfo.isDownloaded()) {
+                        openPdf();
+                    } else {
+                        final Receipts receipts = Snabble.getInstance().getReceipts();
+
+                        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
+                        progressDialog.setCanceledOnTouchOutside(false);
+                        progressDialog.setCancelable(false);
+                        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                            @Override
+                            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                                    receipts.cancelDownload(receiptInfo);
+                                    return true;
+                                }
+                                return false;
+                            }
+                        });
+
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
+
+                        receipts.download(receiptInfo, new Receipts.ReceiptDownloadCallback() {
+                            @Override
+                            public void success(ReceiptInfo receiptInfo) {
+                                openPdf();
+                                progressDialog.cancel();
+                            }
+
+                            @Override
+                            public void failure() {
+                                progressDialog.cancel();
+
+                                UIUtils.snackbar(ReceiptListView.this,
+                                        R.string.Snabble_Receipt_errorDownload,
+                                        UIUtils.SNACKBAR_LENGTH_VERY_LONG).show();
+                            }
+                        });
+                    }
+                }
+
+                private void openPdf() {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                     Uri uri = FileProvider.getUriForFile(getContext(),
-                            getContext().getPackageName(),
+                            getContext().getPackageName() + ".ReceiptFileProvider",
                             new File(receiptInfo.getFilePath()));
 
                     intent.setDataAndType(uri, "application/pdf");
@@ -107,6 +153,10 @@ public class ReceiptListView extends FrameLayout {
                     PackageManager pm = activity.getPackageManager();
                     if (intent.resolveActivity(pm) != null) {
                         activity.startActivity(intent);
+                    } else {
+                        UIUtils.snackbar(ReceiptListView.this,
+                                R.string.Snabble_Receipt_pdfReaderUnavailable,
+                                UIUtils.SNACKBAR_LENGTH_VERY_LONG).show();
                     }
                 }
             });

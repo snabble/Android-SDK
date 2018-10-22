@@ -77,8 +77,8 @@ public class Snabble {
 
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
         tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
-        receipts = new Receipts();
         userPreferences = new UserPreferences(app);
+        receipts = new Receipts();
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
@@ -173,6 +173,7 @@ public class Snabble {
             }
 
             projects = Collections.unmodifiableList(newProjects);
+            receipts.loadFromSharedPreferences();
         }
     }
 
