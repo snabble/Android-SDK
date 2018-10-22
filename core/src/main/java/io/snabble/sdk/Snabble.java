@@ -411,6 +411,12 @@ public class Snabble {
          * Note that this increases setup time of the ProductDatabase, and it may not be
          * immediately available offline.
          */
-        public boolean generateSearchIndex = false;
+        public boolean generateSearchIndex;
+
+        /**
+         * If set to true, downloads receipts automatically and stores them in the projects
+         * internal storage folder.
+         */
+        public boolean enableReceiptAutoDownload;
     }
 }

@@ -319,10 +319,7 @@ public class Checkout {
 
         String receiptLink = checkoutProcess.getReceiptLink();
         if (receiptLink != null) {
-            PriceFormatter priceFormatter = new PriceFormatter(project);
-            receipts.download(project, receiptLink,
-                    project.getCheckedInShop().getName(),
-                    priceFormatter.format(priceToPay), null);
+            downloadReceipt(receiptLink);
 
             if (paymentMethod.isOfflineMethod()) {
                 return true;
@@ -351,6 +348,17 @@ public class Checkout {
         return false;
     }
 
+    private void downloadReceipt(String receiptLink) {
+        PriceFormatter priceFormatter = new PriceFormatter(project);
+        ReceiptInfo receiptInfo = receipts.add(project, receiptLink,
+                project.getCheckedInShop().getName(),
+                priceFormatter.format(priceToPay));
+
+        if(Snabble.getInstance().getConfig().enableReceiptAutoDownload) {
+            receipts.download(receiptInfo, null);
+        }
+    }
+
     private void scheduleNextPollForReceipt() {
         handler.postDelayed(pollForReceiptRunnable, 2000);
     }
@@ -363,9 +371,7 @@ public class Checkout {
             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
                 String receiptLink = checkoutProcessResponse.getReceiptLink();
                 if (receiptLink != null) {
-                    PriceFormatter priceFormatter = new PriceFormatter(project);
-                    receipts.download(project, receiptLink, project.getCheckedInShop().getName(),
-                            priceFormatter.format(priceToPay), null);
+                    downloadReceipt(receiptLink);
                 } else {
                     scheduleNextPollForReceipt();
                 }

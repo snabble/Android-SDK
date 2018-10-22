@@ -91,6 +91,23 @@ public class Receipts {
         receiptInfo.call = null;
     }
 
+    ReceiptInfo add(final Project project,
+                    final String url,
+                    final String shopName,
+                    final String price) {
+        final String absoluteUrl = Snabble.getInstance().absoluteUrl(url);
+        final String id = Utils.sha1Hex(absoluteUrl);
+
+        ReceiptInfo receiptInfo = new ReceiptInfo(id, project.getId(), absoluteUrl, shopName, price);
+        receiptInfo.setProject(project);
+        saveReceiptInfo(receiptInfo);
+
+        return receiptInfo;
+    }
+
+    /**
+     * Downloads a receipts pdf and stores it in the projects internal storage directory.
+     */
     public void download(final ReceiptInfo receiptInfo,
                          final ReceiptDownloadCallback callback) {
         if (receiptInfo.isDownloaded()) {
@@ -98,45 +115,22 @@ public class Receipts {
             return;
         }
 
-        download(receiptInfo.getProject(),
-                receiptInfo.getUrl(),
-                receiptInfo.getShopName(),
-                receiptInfo.getPrice(), callback);
-    }
-
-    public void download(final Project project,
-                         final String url,
-                         final String shopName,
-                         final String price,
-                         final ReceiptDownloadCallback callback) {
-        if (url == null || project == null) {
+        if (receiptInfo.getUrl() == null || receiptInfo.getProject() == null) {
             callback.failure();
             return;
         }
 
-        final String absoluteUrl = Snabble.getInstance().absoluteUrl(url);
-        final String id = Utils.sha1Hex(absoluteUrl);
-
-        ReceiptInfo receiptInfo = receiptInfoList.get(id);
-
-        if (receiptInfo == null) {
-            receiptInfo = new ReceiptInfo(id, project.getId(), absoluteUrl, shopName, price);
-            receiptInfo.setProject(project);
-        }
-
-        final ReceiptInfo finalReceiptInfo = receiptInfo;
-
         final Request request = new Request.Builder()
-                .url(absoluteUrl)
+                .url(receiptInfo.getUrl())
                 .get()
                 .build();
 
-        Call call = project.getOkHttpClient().newCall(request);
+        Call call = receiptInfo.getProject().getOkHttpClient().newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    finalReceiptInfo.call = null;
+                    receiptInfo.call = null;
 
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -147,14 +141,14 @@ public class Receipts {
                     }
 
                     // .pdf extension is needed for adobe reader to work
-                    File file = new File(storageDirectory, finalReceiptInfo.getId() + ".pdf");
+                    File file = new File(storageDirectory, receiptInfo.getId() + ".pdf");
                     FileOutputStream fos = new FileOutputStream(file);
                     IOUtils.copy(body.byteStream(), fos);
-                    finalReceiptInfo.setFilePath(file.getAbsolutePath());
-                    saveReceiptInfo(finalReceiptInfo);
+                    receiptInfo.setFilePath(file.getAbsolutePath());
+                    saveReceiptInfo(receiptInfo);
 
                     if (callback != null) {
-                        callback.success(finalReceiptInfo);
+                        callback.success(receiptInfo);
                     }
                 } else {
                     if (callback != null) {
