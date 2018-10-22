@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [0.10.0]
 
-## Added
+### Added
 - Added experimental support for receipts
 
 ### Changed
@@ -13,8 +13,13 @@ All notable changes to this project will be documented in this file.
 - Now falling back to showing qr code when no connection could be made
 - Now showing undo snackbar instead of dialog for removal of products using the quantity controls
 
-## Fixed
+### Fixed
 - Socket timeouts now call the error callbacks in every case
+
+### New String Keys
+  
+- Snabble.Receipt.errorDownload 
+- Snabble.Receipt.pdfReaderUnavailable
 
 ## [0.9.4]
 
