@@ -275,9 +275,7 @@ class CheckoutApi {
                 .get()
                 .build();
 
-        if (call != null) {
-            call.cancel();
-        }
+        cancel();
 
         call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {

@@ -164,7 +164,6 @@ class ProductApi {
                         productsAvailableListener.onError();
                         return;
                     }
-
                     body.close();
 
                     try {
