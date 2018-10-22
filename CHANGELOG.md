@@ -26,7 +26,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - BarcodeFormat is now part of core
-- Deprecated Checkout.setShop, use Project.setShop instead 
+- Deprecated Checkout.setShop, use Project.setCheckedInShop instead 
 - Improved payment selection layout
 
 ### Added
