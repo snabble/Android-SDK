@@ -109,7 +109,7 @@ public class Receipts {
                          final String shopName,
                          final String price,
                          final ReceiptDownloadCallback callback) {
-        if (url == null) {
+        if (url == null || project == null) {
             callback.failure();
             return;
         }
@@ -174,7 +174,7 @@ public class Receipts {
         receiptInfo.call = call;
     }
 
-    public void loadFromSharedPreferences() {
+    void loadFromSharedPreferences() {
         Map<String, ?> map = sharedPreferences.getAll();
         for(Map.Entry<String, ?> entry : map.entrySet()) {
             String json = (String)entry.getValue();

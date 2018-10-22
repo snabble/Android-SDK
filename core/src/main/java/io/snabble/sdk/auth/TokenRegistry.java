@@ -64,6 +64,8 @@ public class TokenRegistry {
             ResponseBody responseBody = response.body();
             if (responseBody != null) {
                 String body = responseBody.string();
+                responseBody.close();
+
                 if (response.isSuccessful()) {
                     Logger.d("Successfully generated token for %s", project.getId());
 
