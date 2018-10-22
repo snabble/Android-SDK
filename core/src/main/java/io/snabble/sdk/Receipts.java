@@ -2,6 +2,8 @@ package io.snabble.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -87,8 +90,19 @@ public class Receipts {
     }
 
     public void cancelDownload(final ReceiptInfo receiptInfo) {
-        receiptInfo.call.cancel();
-        receiptInfo.call = null;
+        if(receiptInfo.call != null) {
+            receiptInfo.call.cancel();
+            receiptInfo.call = null;
+        }
+    }
+
+    void retrieve(final Project project,
+                          final CheckoutApi.CheckoutProcessResponse checkoutProcessResponse,
+                          final String shopName,
+                          final String price) {
+        ReceiptPoller receiptPoller = new ReceiptPoller(project,
+                checkoutProcessResponse, shopName, price, 10);
+        receiptPoller.poll();
     }
 
     ReceiptInfo add(final Project project,
@@ -189,5 +203,69 @@ public class Receipts {
     private void saveReceiptInfo(ReceiptInfo receiptInfo) {
         receiptInfoList.put(receiptInfo.getId(), receiptInfo);
         sharedPreferences.edit().putString(receiptInfo.getId(), GsonHolder.get().toJson(receiptInfo)).apply();
+    }
+
+    private class ReceiptPoller {
+        private String shopName;
+        private String price;
+        private Project project;
+        private CheckoutApi.CheckoutProcessResponse checkoutProcessResponse;
+        private CheckoutApi checkoutApi;
+        private Handler handler;
+        private int currentTry;
+        private int maxTries;
+
+        public ReceiptPoller(Project project,
+                             CheckoutApi.CheckoutProcessResponse checkoutProcessResponse,
+                             String shopName,
+                             String price,
+                             int maxTries) {
+            this.project = project;
+            this.checkoutApi = new CheckoutApi(project);
+            this.checkoutProcessResponse = checkoutProcessResponse;
+            this.shopName = shopName;
+            this.price = price;
+            this.handler = new Handler(Looper.getMainLooper());
+            this.maxTries = maxTries;
+        }
+
+        public void poll() {
+            if(currentTry < maxTries) {
+                currentTry++;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        update();
+                    }
+                }, 1000 * currentTry);
+            }
+        }
+
+        private void update() {
+            checkoutApi.updatePaymentProcess(checkoutProcessResponse, new CheckoutApi.PaymentProcessResult() {
+                @Override
+                public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                    String receiptLink = checkoutProcessResponse.getReceiptLink();
+                    if (receiptLink != null) {
+                        ReceiptInfo receiptInfo = add(project, receiptLink, shopName, price);
+                        if (Snabble.getInstance().getConfig().enableReceiptAutoDownload) {
+                            download(receiptInfo, null);
+                        }
+                    } else {
+                        poll();
+                    }
+                }
+
+                @Override
+                public void aborted() {
+                    poll();
+                }
+
+                @Override
+                public void error() {
+                    poll();
+                }
+            });
+        }
     }
 }

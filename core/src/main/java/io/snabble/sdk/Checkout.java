@@ -84,18 +84,12 @@ public class Checkout {
 
     private List<String> codes = new ArrayList<>();
     private PaymentMethod[] clientAcceptedPaymentMethods;
+    private Shop shop;
 
     private Runnable pollRunnable = new Runnable() {
         @Override
         public void run() {
             pollForResult();
-        }
-    };
-
-    private Runnable pollForReceiptRunnable = new Runnable() {
-        @Override
-        public void run() {
-            pollForReceipt();
         }
     };
 
@@ -132,9 +126,9 @@ public class Checkout {
     public void cancelOutstandingCalls() {
         checkoutApi.cancel();
         handler.removeCallbacks(pollRunnable);
-        handler.removeCallbacks(pollForReceiptRunnable);
         checkoutProcess = null;
         paymentMethod = null;
+        shop = null;
     }
 
     /**
@@ -174,6 +168,7 @@ public class Checkout {
         signedCheckoutInfo = null;
         paymentMethod = null;
         priceToPay = 0;
+        shop = project.getCheckedInShop();
 
         notifyStateChanged(State.HANDSHAKING);
 
@@ -250,7 +245,14 @@ public class Checkout {
                         if (!handleProcessResponse()) {
                             Logger.d("Waiting for approval...");
                             notifyStateChanged(State.WAIT_FOR_APPROVAL);
-                            scheduleNextPoll();
+
+                            if (!paymentMethod.isOfflineMethod()) {
+                                scheduleNextPoll();
+                            } else {
+                                PriceFormatter priceFormatter = new PriceFormatter(project);
+                                receipts.retrieve(project, checkoutProcessResponse, shop.getName(),
+                                        priceFormatter.format(priceToPay));
+                            }
                         }
                     }
 
@@ -320,10 +322,6 @@ public class Checkout {
         String receiptLink = checkoutProcess.getReceiptLink();
         if (receiptLink != null) {
             downloadReceipt(receiptLink);
-
-            if (paymentMethod.isOfflineMethod()) {
-                return true;
-            }
         }
 
         if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL && receiptLink != null) {
@@ -351,46 +349,14 @@ public class Checkout {
     private void downloadReceipt(String receiptLink) {
         PriceFormatter priceFormatter = new PriceFormatter(project);
         ReceiptInfo receiptInfo = receipts.add(project, receiptLink,
-                project.getCheckedInShop().getName(),
-                priceFormatter.format(priceToPay));
+                shop.getName(), priceFormatter.format(priceToPay));
 
         if(Snabble.getInstance().getConfig().enableReceiptAutoDownload) {
             receipts.download(receiptInfo, null);
         }
     }
 
-    private void scheduleNextPollForReceipt() {
-        handler.postDelayed(pollForReceiptRunnable, 2000);
-    }
-
-    private void pollForReceipt() {
-        Logger.d("Polling for receipt...");
-
-        checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
-            @Override
-            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                String receiptLink = checkoutProcessResponse.getReceiptLink();
-                if (receiptLink != null) {
-                    downloadReceipt(receiptLink);
-                } else {
-                    scheduleNextPollForReceipt();
-                }
-            }
-
-            @Override
-            public void aborted() {
-
-            }
-
-            @Override
-            public void error() {
-
-            }
-        });
-    }
-
     private void retryPostSilent() {
-        final Shop shop = project.getCheckedInShop();
         final String cartJson = project.getEvents().getPayloadCartJson();
         final PaymentMethod pm = paymentMethod;
 
@@ -409,8 +375,9 @@ public class Checkout {
                                 new CheckoutApi.PaymentProcessResult() {
                             @Override
                             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                                checkoutProcess = checkoutProcessResponse;
-                                scheduleNextPollForReceipt();
+                                PriceFormatter priceFormatter = new PriceFormatter(project);
+                                receipts.retrieve(project, checkoutProcessResponse, shop.getName(),
+                                        priceFormatter.format(priceToPay));
                             }
 
                             @Override
