@@ -6,17 +6,15 @@ All notable changes to this project will be documented in this file.
 ## Added
 - Added experimental support for receipts
 
-## Fixed
-- Socket timeouts now call the error callbacks in every case
-
-## [0.9.5]
-
 ### Changed
 - Add support for CODE_39
 - Parse scanFormats from metadata
 - Now sorting products in qr codes by price
 - Now falling back to showing qr code when no connection could be made
 - Now showing undo snackbar instead of dialog for removal of products using the quantity controls
+
+## Fixed
+- Socket timeouts now call the error callbacks in every case
 
 ## [0.9.4]
 
