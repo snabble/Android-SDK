@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
+## [0.10.2]
+
+## Fixed
+- Fixed checkout cancelling
+- Product search item cells should now scale with multiline text 
+
 ## [0.10.1] 
 
 ## Added
