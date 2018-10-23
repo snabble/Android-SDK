@@ -1,10 +1,33 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
-## [0.9.5]
+## [0.10.1] 
+
+## Added
+- Experimental support for IKEA vendor specific codes
+
+## Changed
+- ITF code detection is now restricted to ITF14
+
+## [0.10.0]
+
+### Added
+- Added experimental support for receipts
 
 ### Changed
+- Add support for CODE_39
+- Parse scanFormats from metadata
 - Now sorting products in qr codes by price
+- Now falling back to showing qr code when no connection could be made
+- Now showing undo snackbar instead of dialog for removal of products using the quantity controls
+
+### Fixed
+- Socket timeouts now call the error callbacks in every case
+
+### New String Keys
+  
+- Snabble.Receipt.errorDownload 
+- Snabble.Receipt.pdfReaderUnavailable
 
 ## [0.9.4]
 
@@ -16,7 +39,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - BarcodeFormat is now part of core
-- Deprecated Checkout.setShop, use Project.setShop instead 
+- Deprecated Checkout.setShop, use Project.setCheckedInShop instead 
 - Improved payment selection layout
 
 ### Added

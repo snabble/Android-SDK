@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
@@ -16,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.Call;
@@ -28,8 +27,6 @@ import okhttp3.Response;
 
 class Events {
     private Project project;
-    private Gson gson;
-
     private String cartId;
     private Shop shop;
 
@@ -41,7 +38,6 @@ class Events {
     @SuppressLint("SimpleDateFormat")
     public Events(Project project) {
         this.project = project;
-        this.gson = new GsonBuilder().create();
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -116,9 +112,11 @@ class Events {
         event.project = project.getId();
         event.shopId = shop.getId();
         event.timestamp = simpleDateFormat.format(new Date());
-        event.payload = gson.toJsonTree(payload);
+        event.payload = GsonHolder.get().toJsonTree(payload);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), gson.toJson(event));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"),
+                GsonHolder.get().toJson(event));
+
         final Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
@@ -198,7 +196,7 @@ class Events {
     }
 
     public String getPayloadCartJson() {
-        return gson.toJson(getPayloadCart());
+        return GsonHolder.get().toJson(getPayloadCart());
     }
 
     private enum EventType {

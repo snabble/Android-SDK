@@ -19,47 +19,46 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState == null) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-
-            progressIndicator = findViewById(R.id.progress_indicator);
-            content = findViewById(R.id.content);
-            sdkError = findViewById(R.id.sdk_error);
-
-            App.get().init(new App.InitCallback() {
-                @Override
-                public void done() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressIndicator.setVisibility(View.GONE);
-                            content.setVisibility(View.VISIBLE);
-
-                            getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.content, onCreateFragment())
-                                    .commitAllowingStateLoss();
-                        }
-                    });
-                }
-
-                @Override
-                public void error(final String text) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressIndicator.setVisibility(View.GONE);
-                            sdkError.setVisibility(View.VISIBLE);
-                            sdkError.setText(text);
-                        }
-                    });
-                }
-            });
-        } else {
+        if(savedInstanceState != null) {
             App.get().initBlocking();
-            super.onCreate(savedInstanceState);
         }
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        progressIndicator = findViewById(R.id.progress_indicator);
+        content = findViewById(R.id.content);
+        sdkError = findViewById(R.id.sdk_error);
+
+        App.get().init(new App.InitCallback() {
+            @Override
+            public void done() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressIndicator.setVisibility(View.GONE);
+                        content.setVisibility(View.VISIBLE);
+
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.content, onCreateFragment())
+                                .commitAllowingStateLoss();
+                    }
+                });
+            }
+
+            @Override
+            public void error(final String text) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressIndicator.setVisibility(View.GONE);
+                        sdkError.setVisibility(View.VISIBLE);
+                        sdkError.setText(text);
+                    }
+                });
+            }
+        });
     }
 
     @Override

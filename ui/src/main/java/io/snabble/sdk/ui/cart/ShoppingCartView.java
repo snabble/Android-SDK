@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,7 +38,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
-import io.snabble.sdk.ui.PriceFormatter;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -212,26 +211,30 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 final int quantity = cart.getQuantity(pos);
                 final boolean isZeroAmountProduct = cart.isZeroAmountProduct(pos);
 
-                cart.removeAll(pos);
-                Telemetry.event(Telemetry.Event.DeletedFromCart, product);
-                recyclerView.getAdapter().notifyItemRemoved(pos);
-                update();
-
-                snackbar = UIUtils.snackbar(coordinatorLayout,
-                        R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
-                snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getProject(), scannedCode);
-                        cart.insert(product, pos, quantity, parsedCode, isZeroAmountProduct);
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                        Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
-                    }
-                });
+                removeAndShowUndoSnackbar(pos, product, scannedCode, quantity, isZeroAmountProduct);
             }
         });
 
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void removeAndShowUndoSnackbar(final int pos, final Product product, final String scannedCode, final int quantity, final boolean isZeroAmountProduct) {
+        cart.removeAll(pos);
+        Telemetry.event(Telemetry.Event.DeletedFromCart, product);
+        recyclerView.getAdapter().notifyItemRemoved(pos);
+        update();
+
+        snackbar = UIUtils.snackbar(coordinatorLayout,
+                R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+        snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getProject(), scannedCode);
+                cart.insert(product, pos, quantity, parsedCode, isZeroAmountProduct);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
+            }
+        });
     }
 
     @Override
@@ -494,27 +497,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     public void onClick(View v) {
                         int p = getAdapterPosition();
 
-                        String str = getResources().getString(
-                                R.string.Snabble_Shoppingcart_removeItem,
-                                product.getName());
                         boolean isZeroAmountProduct = cart.isZeroAmountProduct(p);
                         int q = isZeroAmountProduct ? embeddedAmount - 1 : quantity - 1;
                         if (q <= 0) {
-                            new AlertDialog.Builder(getContext())
-                                    .setMessage(str)
-                                    .setPositiveButton(R.string.Snabble_Yes,
-                                            new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    cart.removeAll(getAdapterPosition());
-                                                    recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
-                                                    update();
-                                                    Telemetry.event(Telemetry.Event.DeletedFromCart, product);
-                                                }
-                                            })
-                                    .setNegativeButton(R.string.Snabble_No, null)
-                                    .create()
-                                    .show();
+                            removeAndShowUndoSnackbar(p, product, cart.getScannedCode(p), q+1, isZeroAmountProduct);
                         } else {
                             if (isZeroAmountProduct) {
                                 cart.setScannedCode(p,

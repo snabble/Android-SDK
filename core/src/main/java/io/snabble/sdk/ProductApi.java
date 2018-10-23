@@ -3,21 +3,16 @@ package io.snabble.sdk;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -72,7 +67,6 @@ class ProductApi {
         void onError();
     }
 
-    private Gson gson;
     private Project project;
     private OkHttpClient okHttpClient;
     private Handler handler;
@@ -80,7 +74,6 @@ class ProductApi {
     ProductApi(Project project) {
         this.project = project;
         this.okHttpClient = project.getOkHttpClient();
-        this.gson = new GsonBuilder().create();
         this.handler = new Handler(Looper.getMainLooper());
     }
 
@@ -151,7 +144,7 @@ class ProductApi {
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(final Call call, final Response response) throws IOException {
+            public void onResponse(final Call call, final Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -164,12 +157,17 @@ class ProductApi {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
-                    inputStream.close();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        productsAvailableListener.onError();
+                        return;
+                    }
+                    body.close();
 
                     try {
-                        final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
+                        final ApiProductGroup apiProductGroup = GsonHolder.get().fromJson(json, ApiProductGroup.class);
 
                         final CountDownLatch countDownLatch = new CountDownLatch(apiProductGroup.products.length);
                         final Map<String, Product> products = new HashMap<>();
@@ -308,7 +306,7 @@ class ProductApi {
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -316,12 +314,17 @@ class ProductApi {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
-                    inputStream.close();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        callback.onError();
+                        return;
+                    }
+                    body.close();
 
                     try {
-                        final ApiProductGroup apiProductGroup = gson.fromJson(json, ApiProductGroup.class);
+                        final ApiProductGroup apiProductGroup = GsonHolder.get().fromJson(json, ApiProductGroup.class);
                         if (apiProductGroup != null && apiProductGroup.products != null) {
                             final Product[] products = new Product[apiProductGroup.products.length];
                             final CountDownLatch countDownLatch = new CountDownLatch(apiProductGroup.products.length);
@@ -403,7 +406,7 @@ class ProductApi {
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(final Call call, final Response response) throws IOException {
+            public void onResponse(final Call call, final Response response) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body == null) {
@@ -416,12 +419,17 @@ class ProductApi {
                         return;
                     }
 
-                    InputStream inputStream = body.byteStream();
-                    String json = IOUtils.toString(inputStream, Charset.forName("UTF-8"));
-                    inputStream.close();
+                    String json;
+                    try {
+                        json = body.string();
+                    } catch (IOException e) {
+                        productAvailableListener.onError();
+                        return;
+                    }
+                    body.close();
 
                     try {
-                        final ApiProduct apiProduct = gson.fromJson(json, ApiProduct.class);
+                        final ApiProduct apiProduct = GsonHolder.get().fromJson(json, ApiProduct.class);
                         flattenProduct(apiProduct, productAvailableListener);
                     } catch (JsonParseException e) {
                         error(productAvailableListener);

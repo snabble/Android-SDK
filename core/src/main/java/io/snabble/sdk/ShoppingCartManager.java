@@ -4,9 +4,6 @@ package io.snabble.sdk;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -16,19 +13,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
 class ShoppingCartManager {
     private Project project;
     private ShoppingCart shoppingCart;
     private File file;
-    private Gson gson;
     private Handler backgroundHandler;
 
     public ShoppingCartManager(final Project project) {
         this.project = project;
         file = new File(project.getInternalStorageDirectory(), "shoppingCart.json");
-        gson = new GsonBuilder().create();
 
         HandlerThread handlerThread = new HandlerThread("ShoppingCartManager");
         handlerThread.start();
@@ -48,7 +44,7 @@ class ShoppingCartManager {
         try {
             if (file.exists()) {
                 String contents = IOUtils.toString(new FileInputStream(file), Charset.forName("UTF-8"));
-                shoppingCart = gson.fromJson(contents, ShoppingCart.class);
+                shoppingCart = GsonHolder.get().fromJson(contents, ShoppingCart.class);
                 shoppingCart.initWithProject(project);
             } else {
                 shoppingCart = new ShoppingCart(project);
@@ -64,7 +60,7 @@ class ShoppingCartManager {
         backgroundHandler.post(new Runnable() {
             @Override
             public void run() {
-                String json = gson.toJson(shoppingCart);
+                String json = GsonHolder.get().toJson(shoppingCart);
                 try {
                     FileUtils.forceMkdirParent(file);
                     IOUtils.write(json, new FileOutputStream(file), Charset.forName("UTF-8"));

@@ -5,9 +5,11 @@ import java.io.Serializable;
 import io.snabble.sdk.Project;
 
 public class ScannableCode implements Serializable {
+    protected final Project project;
     protected String code;
 
-    ScannableCode(String code) {
+    ScannableCode(Project project, String code) {
+        this.project = project;
         this.code = code;
     }
 
@@ -51,11 +53,13 @@ public class ScannableCode implements Serializable {
         if (EAN13.isEan13(code)) {
             return new EAN13(project, code);
         } else if (EAN14.isEan14(code)) {
-            return new EAN14(code);
+            return new EAN14(project, code);
         } else if (EdekaProductCode.isEdekaProductCode(project, code)) {
             return new EdekaProductCode(project, code);
-        } else {
-            return new ScannableCode(code);
+        } else if (IKEADataMatrixCode.isIKEADataMatrixCode(project, code)) {
+            return new IKEADataMatrixCode(project, code);
+        } else  {
+            return new ScannableCode(project, code);
         }
     }
 }

@@ -2,8 +2,6 @@ package io.snabble.sdk.auth;
 
 import android.util.Base64;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -11,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.snabble.sdk.Project;
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,7 +18,6 @@ import okhttp3.ResponseBody;
 
 public class TokenRegistry {
     private Totp totp;
-    private Gson gson = new Gson();
     private Map<String, Token> tokens = new HashMap<>();
     private String appId;
     private OkHttpClient okHttpClient;
@@ -66,11 +64,13 @@ public class TokenRegistry {
             ResponseBody responseBody = response.body();
             if (responseBody != null) {
                 String body = responseBody.string();
+                responseBody.close();
+
                 if (response.isSuccessful()) {
                     Logger.d("Successfully generated token for %s", project.getId());
 
                     adjustTimeOffset(response);
-                    Token token = gson.fromJson(body, Token.class);
+                    Token token = GsonHolder.get().fromJson(body, Token.class);
                     tokens.put(project.getId(), token);
                     return token;
                 } else {

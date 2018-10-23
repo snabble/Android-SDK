@@ -23,7 +23,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     private boolean useGermanPrintPrefix;
 
     EAN13(Project project, String code) {
-        super(code);
+        super(project, code);
 
         if (!isEan13(code)) {
             throw new IllegalArgumentException("Not a valid EAN13 code");

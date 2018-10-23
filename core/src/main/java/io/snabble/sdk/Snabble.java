@@ -32,6 +32,7 @@ public class Snabble {
     private List<Project> projects;
     private OkHttpClient okHttpClient;
     private TokenRegistry tokenRegistry;
+    private Receipts receipts;
     private Application application;
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
@@ -70,14 +71,14 @@ public class Snabble {
 
         versionName = version;
 
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
-        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
-
-        userPreferences = new UserPreferences(app);
-
         internalStorageDirectory = new File(application.getFilesDir(), "snabble/" + config.appId + "/");
         //noinspection ResultOfMethodCallIgnored
         internalStorageDirectory.mkdirs();
+
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
+        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
+        userPreferences = new UserPreferences(app);
+        receipts = new Receipts();
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
@@ -172,10 +173,11 @@ public class Snabble {
             }
 
             projects = Collections.unmodifiableList(newProjects);
+            receipts.loadFromSharedPreferences();
         }
     }
 
-    String absoluteUrl(String url) {
+    public String absoluteUrl(String url) {
         if (url.startsWith("http")) {
             return url;
         } else {
@@ -187,20 +189,24 @@ public class Snabble {
         return config.endpointBaseUrl;
     }
 
-    String getMetadataUrl() {
+    public String getMetadataUrl() {
         return metadataUrl;
     }
 
-    File getInternalStorageDirectory() {
+    public File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
 
-    Application getApplication() {
+    public Application getApplication() {
         return application;
     }
 
     public TokenRegistry getTokenRegistry() {
         return tokenRegistry;
+    }
+
+    public Receipts getReceipts() {
+        return receipts;
     }
 
     public List<Project> getProjects() {
@@ -409,6 +415,12 @@ public class Snabble {
          * Note that this increases setup time of the ProductDatabase, and it may not be
          * immediately available offline.
          */
-        public boolean generateSearchIndex = false;
+        public boolean generateSearchIndex;
+
+        /**
+         * If set to true, downloads receipts automatically and stores them in the projects
+         * internal storage folder.
+         */
+        public boolean enableReceiptAutoDownload;
     }
 }

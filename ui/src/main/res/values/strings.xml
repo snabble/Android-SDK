@@ -62,6 +62,7 @@
 	<string name="Snabble.PaymentStatus.step1">Localization in the cash register area</string>
 	<string name="Snabble.PaymentStatus.step2">Processing purchase</string>
 	<string name="Snabble.PaymentStatus.step3">Processing payment</string>
+	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
 
     <string name="Snabble.Payment.SEPA.Name">Name</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
@@ -83,4 +84,5 @@
     <string name="Snabble.Payment.success">Thank you for your purchase</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Article removed</string>
     <string name="Snabble.loadingProductInformation">Loading product information...</string>
+    <string name="Snabble.Receipt.pdfReaderUnavailable">No suitable PDF reader application found</string>
 </resources>

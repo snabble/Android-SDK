@@ -663,6 +663,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                             @Override
                             public void run() {
                                 if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
+                                    // ZXing decodes all ITF_14 lengths, but we only care about ITF14.
+                                    if (finalResult.getBarcodeFormat() == com.google.zxing.BarcodeFormat.ITF) {
+                                        if (finalResult.getText().length() != 14) {
+                                            return;
+                                        }
+                                    }
+
                                     Barcode barcode = new Barcode(
                                             ZXingHelper.fromZXingFormat(finalResult.getBarcodeFormat()),
                                             finalResult.getText(),
