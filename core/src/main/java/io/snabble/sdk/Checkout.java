@@ -121,14 +121,15 @@ public class Checkout {
         } else {
             notifyStateChanged(State.NONE);
         }
+
+        checkoutProcess = null;
+        paymentMethod = null;
+        shop = null;
     }
 
     public void cancelOutstandingCalls() {
         checkoutApi.cancel();
         handler.removeCallbacks(pollRunnable);
-        checkoutProcess = null;
-        paymentMethod = null;
-        shop = null;
     }
 
     /**
@@ -139,6 +140,10 @@ public class Checkout {
     public void reset() {
         cancelOutstandingCalls();
         notifyStateChanged(State.NONE);
+
+        checkoutProcess = null;
+        paymentMethod = null;
+        shop = null;
     }
 
     public boolean isAvailable() {
