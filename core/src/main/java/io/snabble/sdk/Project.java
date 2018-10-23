@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
@@ -55,6 +56,7 @@ public class Project {
     private boolean verifyInternalEanChecksum;
     private BarcodeFormat[] supportedBarcodeFormats;
     private Shop checkedInShop;
+    private Map<BarcodeFormat, IntRange> barcodeFormatRanges;
 
     private Map<String, String> urls;
 
@@ -158,6 +160,12 @@ public class Project {
             formats.add(BarcodeFormat.EAN_8);
             formats.add(BarcodeFormat.EAN_13);
             formats.add(BarcodeFormat.CODE_128);
+        }
+
+        barcodeFormatRanges = new HashMap<>();
+        // TODO parse from metadata
+        if (id.contains("ikea")) {
+            barcodeFormatRanges.put(BarcodeFormat.ITF_14, new IntRange(0, 8));
         }
 
         supportedBarcodeFormats = formats.toArray(new BarcodeFormat[formats.size()]);
@@ -332,6 +340,14 @@ public class Project {
 
     public Checkout getCheckout() {
         return checkout;
+    }
+
+    public IntRange getRangeForBarcodeFormat(BarcodeFormat barcodeFormat) {
+        if (barcodeFormatRanges != null) {
+            return barcodeFormatRanges.get(barcodeFormat);
+        }
+
+        return null;
     }
 
     Events getEvents() {

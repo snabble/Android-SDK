@@ -40,6 +40,7 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
@@ -174,7 +175,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         startBarcodeScanner();
     }
 
-    public void lookupAndShowProduct(final ScannableCode scannedCode) {
+    public void lookupAndShowProduct(final ScannableCode scannedCode, BarcodeFormat barcodeFormat) {
         productDialog.dismiss();
         ignoreNextDialog = false;
 
@@ -208,7 +209,15 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 }
             });
         } else {
-            productDatabase.findByCodeOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
+            String lookupCode = scannedCode.getLookupCode();
+            if (barcodeFormat != null) {
+                IntRange range = SnabbleUI.getProject().getRangeForBarcodeFormat(barcodeFormat);
+                if (range != null) {
+                    lookupCode = lookupCode.substring(range.min, range.max);
+                }
+            }
+
+            productDatabase.findByCodeOnline(lookupCode, new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
@@ -227,6 +236,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
+    public void lookupAndShowProduct(final ScannableCode scannedCode) {
+        lookupAndShowProduct(scannedCode, null);
+    }
+
     private void delayNextScan() {
         detectAfterTimeMs = SystemClock.elapsedRealtime() + 2000;
     }
@@ -240,7 +253,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()));
+            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
         }
     }
 

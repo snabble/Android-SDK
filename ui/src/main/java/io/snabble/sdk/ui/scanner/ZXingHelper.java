@@ -13,7 +13,7 @@ class ZXingHelper {
                 return com.google.zxing.BarcodeFormat.CODE_128;
             case CODE_39:
                 return com.google.zxing.BarcodeFormat.CODE_39;
-            case ITF:
+            case ITF_14:
                 return com.google.zxing.BarcodeFormat.ITF;
             case DATA_MATRIX:
                 return com.google.zxing.BarcodeFormat.DATA_MATRIX;
@@ -35,7 +35,7 @@ class ZXingHelper {
             case CODE_39:
                 return BarcodeFormat.CODE_39;
             case ITF:
-                return BarcodeFormat.ITF;
+                return BarcodeFormat.ITF_14;
             case DATA_MATRIX:
                 return BarcodeFormat.DATA_MATRIX;
             case QR_CODE:

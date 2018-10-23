@@ -5,7 +5,7 @@ public enum BarcodeFormat {
     CODE_128,
     EAN_8,
     EAN_13,
-    ITF,
+    ITF_14,
     QR_CODE,
     DATA_MATRIX;
 
@@ -20,7 +20,7 @@ public enum BarcodeFormat {
             case "ean13":
                 return EAN_13;
             case "itf14":
-                return ITF;
+                return ITF_14;
             case "datamatrix":
                 return DATA_MATRIX;
             case "qr":

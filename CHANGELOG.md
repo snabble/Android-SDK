@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
+## [0.10.1] 
+
+## Added
+- Experimental support for IKEA vendor specific codes
+
+## Changed
+- ITF code detection is now restricted to ITF14
+
 ## [0.10.0]
 
 ### Added
