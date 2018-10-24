@@ -98,6 +98,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private int bitsPerPixel;
     private boolean indicatorEnabled = true;
     private FrameLayout splashView;
+    private FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter();
 
     public BarcodeScannerView(Context context) {
         super(context);
@@ -227,6 +228,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraHandler.post(new Runnable() {
             @Override
             public void run() {
+                resetFalsePositiveFilter();
                 isPaused = false;
 
                 if (!running) {
@@ -264,6 +266,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             return;
         }
 
+        resetFalsePositiveFilter();
         setupZXing();
 
         showError(false);
@@ -391,6 +394,15 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             camera.stopPreview();
             camera.setPreviewCallbackWithBuffer(null);
         }
+    }
+
+    private void resetFalsePositiveFilter() {
+        barcodeProcessingHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                falsePositiveFilter.reset();
+            }
+        });
     }
 
     private void chooseOptimalPreviewSize(Camera.Parameters parameters) {
@@ -675,8 +687,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                                             finalResult.getText(),
                                             finalResult.getTimestamp());
 
-                                    Logger.d("Detected barcode: " + barcode.toString());
-                                    callback.onBarcodeDetected(barcode);
+                                    Barcode filtered = falsePositiveFilter.filter(barcode);
+                                    if (filtered != null) {
+                                        Logger.d("Detected barcode: " + barcode.toString());
+                                        callback.onBarcodeDetected(barcode);
+                                    }
                                 }
                             }
                         });

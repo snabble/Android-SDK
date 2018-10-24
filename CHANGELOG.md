@@ -1,18 +1,23 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
+## [0.10.3]
+
+### Added
+- Barcode false positive detection
+
 ## [0.10.2]
 
-## Fixed
+### Fixed
 - Fixed checkout cancelling
 - Product search item cells should now scale with multiline text 
 
 ## [0.10.1] 
 
-## Added
+### Added
 - Experimental support for IKEA vendor specific codes
 
-## Changed
+### Changed
 - ITF code detection is now restricted to ITF14
 
 ## [0.10.0]
