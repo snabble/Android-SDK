@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
+## [0.10.4]
+
+### Fixed
+- Endless recursion when scanning non EAN13 codes starting with 0 that will not result in a 
+match on the database
+
 ## [0.10.3]
 
 ### Added

@@ -352,9 +352,14 @@ public class ShoppingCart {
         notifyQuantityChanged(this, entry.product);
     }
 
+    private String findCodeByScannedCode(Product product, ScannableCode scannableCode) {
+        String code = findCodeByScannedCodeInternal(product, scannableCode, true);
+        return code != null ? code : scannableCode.getCode();
+    }
+
     // finds the code matching the code in the product if it was scanned with leading zeros
     // and the leading zeros are missing in the scannableCodes of the product
-    private String findCodeByScannedCode(Product product, ScannableCode scannableCode) {
+    private String findCodeByScannedCodeInternal(Product product, ScannableCode scannableCode, boolean recursive) {
         String scannedCode = scannableCode.getCode();
 
         for (String code : product.getScannableCodes()) {
@@ -363,15 +368,17 @@ public class ShoppingCart {
             }
         }
 
-        if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
-            scannedCode = scannedCode.substring(1, scannedCode.length());
-            return findCodeByScannedCode(product, ScannableCode.parse(project, scannedCode));
-        } else if (scannedCode.length() < 13) {
-            scannedCode = StringUtils.repeat('0', 13 - scannedCode.length()) + scannedCode;
-            return findCodeByScannedCode(product, ScannableCode.parse(project, scannedCode));
+        if (recursive) {
+            if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
+                scannedCode = scannedCode.substring(1, scannedCode.length());
+                return findCodeByScannedCodeInternal(product, ScannableCode.parse(project, scannedCode), true);
+            } else if (scannedCode.length() < 13) {
+                scannedCode = StringUtils.repeat('0', 13 - scannedCode.length()) + scannedCode;
+                return findCodeByScannedCodeInternal(product, ScannableCode.parse(project, scannedCode), false);
+            }
         }
 
-        return scannedCode;
+        return null;
     }
 
     private int indexOf(Entry e) {
