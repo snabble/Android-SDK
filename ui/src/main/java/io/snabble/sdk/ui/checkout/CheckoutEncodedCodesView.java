@@ -68,7 +68,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
                 SnabbleUICallback uiCallback = SnabbleUI.getUiCallback();
                 if (uiCallback != null) {
-                    uiCallback.showMainscreen();
+                    uiCallback.goBack();
                 }
 
                 Telemetry.event(Telemetry.Event.CheckoutFinishByUser);

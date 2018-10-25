@@ -315,6 +315,10 @@ public class Snabble {
         return userPreferences.getClientId();
     }
 
+    public UserPreferences getUserPreferences() {
+        return userPreferences;
+    }
+
     public static Snabble getInstance() {
         return instance;
     }

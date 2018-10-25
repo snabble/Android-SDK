@@ -10,11 +10,5 @@ public class CheckoutActivity extends BaseActivity implements SnabbleUICallback 
     public Fragment onCreateFragment() {
         return new CheckoutFragment();
     }
-
-    @Override
-    public void showMainscreen() {
-        super.showMainscreen();
-        finish();
-    }
 }
 

@@ -26,14 +26,14 @@ public class HomeFragment extends Fragment {
         v.findViewById(R.id.scanner).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).showScanner();
+                ((BaseActivity)getActivity()).showScanner();
             }
         });
 
         v.findViewById(R.id.cart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).showShoppingCart();
+                ((BaseActivity)getActivity()).showShoppingCart();
             }
         });
 
@@ -56,6 +56,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 App.get().getProject().getProductDatabase().delete();
+            }
+        });
+
+        v.findViewById(R.id.show_pm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((BaseActivity)getActivity()).showPaymentCredentialsList();
             }
         });
 

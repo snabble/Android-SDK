@@ -64,12 +64,25 @@
 	<string name="Snabble.PaymentStatus.step3">Processing payment</string>
 	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
 
-	<!-- SECTION: Android -->
-	<string name="Snabble.askForPermission">Ask for permission</string>
-	<string name="Snabble.Payment.aborted">Payment process was aborted</string>
-	<string name="Snabble.Payment.backToHome">Back to the homepage</string>
-	<string name="Snabble.Payment.success">Thank you for your purchase</string>
-	<string name="Snabble.Shoppingcart.articleRemoved">Article removed</string>
-	<string name="Snabble.loadingProductInformation">Loading product information...</string>
-	<string name="Snabble.Receipt.pdfReaderUnavailable">No suitable PDF reader application found</string>
+    <string name="Snabble.Payment.SEPA.Name">Name</string>
+    <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
+    <string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
+    <string name="Snabble.Payment.SEPA.InvalidName">Please enter a name.</string>
+
+    <string name="Snabble.Save">Save</string>
+
+    <string name="Snabble.Payment.emptyState.message">You don\'t have any payment methods added yet. Add one now to conveniently check out.</string>
+    <string name="Snabble.Payment.emptyState.add">Add SEPA credentials</string>
+    <string name="Snabble.Payment.delete.message">Are you sure you want to remove this payment method?</string>
+
+    <string name="Snabble.Payment.add">Add SEPA credentials</string>
+
+    <!-- SECTION: Android -->
+    <string name="Snabble.askForPermission">Ask for permission</string>
+    <string name="Snabble.Payment.aborted">Payment process was aborted</string>
+    <string name="Snabble.Payment.backToHome">Back to the homepage</string>
+    <string name="Snabble.Payment.success">Thank you for your purchase</string>
+    <string name="Snabble.Shoppingcart.articleRemoved">Article removed</string>
+    <string name="Snabble.loadingProductInformation">Loading product information...</string>
+    <string name="Snabble.Receipt.pdfReaderUnavailable">No suitable PDF reader application found</string>
 </resources>
