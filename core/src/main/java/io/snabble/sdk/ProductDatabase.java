@@ -230,8 +230,19 @@ public class ProductDatabase {
 
     void updateLastUpdateTimestamp(long timestamp) {
         putMetaData(METADATA_KEY_LAST_UPDATE_TIMESTAMP, String.valueOf(timestamp));
-        lastUpdateDate = new Date(timestamp);
-        Logger.d("Updating last update timestamp: %s", lastUpdateDate.toString());
+
+        try {
+            lastUpdateDate = new Date(timestamp);
+            Logger.d("Updating last update timestamp: %s", lastUpdateDate.toString());
+        } catch (AssertionError e) {
+            // Some Android 8 and 8.1 builds are faulty and throw an AssertionError when
+            // accessing time zone information
+            //
+            // Since this is only used for logging and we are fine with catching the error
+            // and not providing an alternative implementation
+            //
+            // see https://issuetracker.google.com/issues/110848122
+        }
     }
 
     /**
