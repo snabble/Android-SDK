@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file. 
 
+## [0.10.5]
+
+### Fixed
+- Show shop unspecific price, if no price is available for selected shop and database 
+has pricingCategories set for shop
+
 ## [0.10.4]
 
 ### Fixed
