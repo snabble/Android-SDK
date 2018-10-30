@@ -1,5 +1,16 @@
 # Changelog  
-All notable changes to this project will be documented in this file. 
+All notable changes to this project will be documented in this file.
+ 
+## [0.10.6]
+
+### Fixed
+- Fixed a crash on some Android 8 and 8.1 devices when updating the ProductDatabase
+
+## [0.10.5]
+
+### Fixed
+- Show shop unspecific price, if no price is available for selected shop and database 
+has pricingCategories set for shop
 
 ## [0.10.4]
 

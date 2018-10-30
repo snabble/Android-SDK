@@ -230,8 +230,19 @@ public class ProductDatabase {
 
     void updateLastUpdateTimestamp(long timestamp) {
         putMetaData(METADATA_KEY_LAST_UPDATE_TIMESTAMP, String.valueOf(timestamp));
-        lastUpdateDate = new Date(timestamp);
-        Logger.d("Updating last update timestamp: %s", lastUpdateDate.toString());
+
+        try {
+            lastUpdateDate = new Date(timestamp);
+            Logger.d("Updating last update timestamp: %s", lastUpdateDate.toString());
+        } catch (AssertionError e) {
+            // Some Android 8 and 8.1 builds are faulty and throw an AssertionError when
+            // accessing time zone information
+            //
+            // Since this is only used for logging and we are fine with catching the error
+            // and not providing an alternative implementation
+            //
+            // see https://issuetracker.google.com/issues/110848122
+        }
     }
 
     /**
@@ -755,6 +766,14 @@ public class ProductDatabase {
 
         Shop shop = project.getCheckedInShop();
 
+        if(!queryPrice(builder, sku, shop)) {
+            queryPrice(builder, sku, null);
+        }
+
+        return builder.build();
+    }
+
+    private boolean queryPrice(Product.Builder builder, String sku, Shop shop) {
         String id = shop != null ? shop.getId() : "";
         String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices ";
         String[] args;
@@ -775,9 +794,10 @@ public class ProductDatabase {
             builder.setDiscountedPrice(priceCursor.getInt(1));
             builder.setBasePrice(priceCursor.getString(2));
             priceCursor.close();
+            return true;
         }
 
-        return builder.build();
+        return false;
     }
 
     private Product.SaleRestriction decodeSaleRestriction(long encodedValue) {
