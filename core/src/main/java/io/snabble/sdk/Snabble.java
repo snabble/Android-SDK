@@ -20,6 +20,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
 import io.snabble.sdk.auth.TokenRegistry;
+import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
@@ -36,6 +37,7 @@ public class Snabble {
     private Application application;
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
+    private PaymentCredentialsStore paymentCredentialsStore;
     private File internalStorageDirectory;
     private String metadataUrl;
     private Config config;
@@ -78,6 +80,7 @@ public class Snabble {
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
         tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
         userPreferences = new UserPreferences(app);
+        paymentCredentialsStore = new PaymentCredentialsStore(app);
         receipts = new Receipts();
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
@@ -213,6 +216,26 @@ public class Snabble {
         return projects;
     }
 
+    public List<PublicKey> getValidPublicKeys() {
+        // TODO parse public keys from metadata
+        // this key is only for testing purposes
+        List<PublicKey> publicKeys = new ArrayList<>();
+        publicKeys.add(new PublicKey(
+                "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAulYrSZSHgppJbgjnXgu6" +
+                "2r9WXCBYAXmkN6tLiR1NCTdcSTmG/yAXmVaB374r9XDcTPCbyYjipy+AkeW51HLh" +
+                "Ewlxy4NyqxPL3f6WEQjcmg0UOJU/0rClVjAF4ybiMubZIhsDq+0joA+QbK8fCW3W" +
+                "VJ4ivZojAhkFRLIyYk/yD4WdwGkg7+aLu67QWlPH+4SglhDGMmdmyBPHRgw4mu4v" +
+                "o9cHCZukxtDdkCOLhXX1/LhXpwOPnrCJg6cn5sqNnr3MVGcGbK3xk5tqxthIXULl" +
+                "gbd5EJjiyKT6AmVDHdyX8Aop2damVE9OsstORZk8TnStwpenjU1mtMQsRJC1bMUJ" +
+                "B8r+JTR6/ZA45MspCrPTH/SWUWRICkTgWcp38c9CBEVt720Vy5owI6X92LAVNK0/" +
+                "fH1Zfy8MpRA/cPDjV8jJlYwXwn6WI8SXRsWlWMaMDg6oJN/t005H5g77EDXlH8+F" +
+                "77n1stdGZ20FGfzGrxZbhk+D8+9JWrxNsSU86YdgEuN2GLTkBwTusSB/aOjXyat2" +
+                "RjhIGWvryTHtnN+JgEookVkBeUzQi/eicQoBxRXzOUBtvjSc56VlEawuF+9r40la" +
+                "N7HVM5MTt+kZfqITAeLXVxSSJgGttx4HSf3Ac0Q91ezMt8i4l9EVR4zO63buQcQQ" +
+                "H6EUKQIyi+xHts1QoaHlaMkCAwEAAQ=="));
+        return Collections.unmodifiableList(publicKeys);
+    }
+
     /**
      * The blocking version of {@link #setup(Application, Config, SetupCompletionListener)}
      * <p>
@@ -317,6 +340,10 @@ public class Snabble {
 
     public UserPreferences getUserPreferences() {
         return userPreferences;
+    }
+
+    public PaymentCredentialsStore getPaymentCredentialsStore() {
+        return paymentCredentialsStore;
     }
 
     public static Snabble getInstance() {

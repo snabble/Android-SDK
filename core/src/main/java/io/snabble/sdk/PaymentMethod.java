@@ -8,7 +8,11 @@ public enum PaymentMethod {
     @SerializedName("qrCodePOS")
     QRCODE_POS(false),
     @SerializedName("encodedCodes")
-    ENCODED_CODES(true);
+    ENCODED_CODES(true),
+    @SerializedName("sepaTelecash")
+    SEPA_TELECASH(false),
+    @SerializedName("sepaTelecashTest")
+    SEPA_TELECASH_TEST(false);
 
     private boolean isOfflineMethod;
 

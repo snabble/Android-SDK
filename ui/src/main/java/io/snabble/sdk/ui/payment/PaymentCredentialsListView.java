@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
-import io.snabble.sdk.payment.SEPAPaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -70,7 +69,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         entries.clear();
 
-        paymentCredentialsStore = Snabble.getInstance().getUserPreferences().getPaymentCredentialsStore();
+        paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
         onChanged();
     }
 
@@ -122,12 +121,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     public void onChanged() {
         entries.clear();
 
-        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getUserPaymentMethods();
+        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getUserPaymentCredentials();
 
         for(PaymentCredentials pm : paymentCredentials) {
-            if(pm instanceof SEPAPaymentCredentials) {
-                SEPAPaymentCredentials sepaPaymentCredentials = (SEPAPaymentCredentials) pm;
-                entries.add(new Entry(pm, R.drawable.ic_sepa_small, sepaPaymentCredentials.getObfuscatedId()));
+            if(pm.getType() == PaymentCredentials.Type.SEPA) {
+                entries.add(new Entry(pm, R.drawable.ic_sepa_small, pm.getObfuscatedId()));
             }
         }
 

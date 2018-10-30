@@ -27,7 +27,6 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
-import io.snabble.sdk.payment.SEPAPaymentCredentials;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -42,7 +41,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
     static {
         icons.put(PaymentMethod.CASH, R.drawable.ic_pm_sepa);
-        //icons.put(PaymentMethod.SEPA, R.drawable.ic_pm_sepa);
+        icons.put(PaymentMethod.SEPA_TELECASH, R.drawable.ic_pm_sepa);
+        icons.put(PaymentMethod.SEPA_TELECASH_TEST, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
     }
@@ -78,7 +78,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         project = SnabbleUI.getProject();
         checkout = project.getCheckout();
-        paymentCredentialsStore = Snabble.getInstance().getUserPreferences().getPaymentCredentialsStore();
+        paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
 
 
         recyclerView = findViewById(R.id.payment_methods);
@@ -123,9 +123,9 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         }
 
-        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getUserPaymentMethods();
+        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getUserPaymentCredentials();
         for(PaymentCredentials p : paymentCredentials) {
-            if (p instanceof SEPAPaymentCredentials) {
+            if (p.getType() == PaymentCredentials.Type.SEPA) {
                 for(Entry e : entries) {
                     if (e.paymentMethod == PaymentMethod.CASH) {
                         entries.remove(e);
@@ -136,7 +136,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
 
         for(PaymentCredentials p : paymentCredentials) {
-            if (p instanceof SEPAPaymentCredentials && availablePaymentMethods.contains(PaymentMethod.CASH)) {
+            if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.CASH)) {
                 Entry e = new Entry();
                 e.paymentMethod = PaymentMethod.CASH;
                 e.text = p.getObfuscatedId();

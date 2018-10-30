@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PaymentCredentialsStore {
-    private static final String SHARED_PREFERENCES_TAG = "snabble_prefs";
-    private static final String SHARED_PREFERENCES_SEPA = "sepa";
+    private static final String SHARED_PREFERENCES_TAG = "snabble_payment";
+    private static final String SHARED_PREFERENCES_CREDENTIALS = "credentials";
 
     private SharedPreferences sharedPreferences;
-    private List<SEPAPaymentCredentials> sepaPaymentCredentials = new ArrayList<>();
+    private List<PaymentCredentials> credentialsList = new ArrayList<>();
     private List<Callback> callbacks = new CopyOnWriteArrayList<>();
 
     public PaymentCredentialsStore(Context context) {
@@ -24,25 +24,19 @@ public class PaymentCredentialsStore {
         loadFromLocalStore();
     }
 
-    public List<PaymentCredentials> getUserPaymentMethods() {
-        List<PaymentCredentials> paymentCredentials = new ArrayList<>();
-        paymentCredentials.addAll(sepaPaymentCredentials);
-        return paymentCredentials;
+    public List<PaymentCredentials> getUserPaymentCredentials() {
+        return credentialsList;
     }
 
-    public void add(PaymentCredentials sepaCard) {
-        if (sepaCard instanceof SEPAPaymentCredentials) {
-            sepaPaymentCredentials.add((SEPAPaymentCredentials)sepaCard);
-        }
+    public void add(PaymentCredentials credentials) {
+        credentialsList.add(credentials);
 
         saveToLocalStore();
         notifyChanged();
     }
 
-    public void remove(PaymentCredentials sepaCard) {
-        if (sepaCard instanceof SEPAPaymentCredentials) {
-            sepaPaymentCredentials.remove(sepaCard);
-        }
+    public void remove(PaymentCredentials credentials) {
+        credentialsList.remove(credentials);
 
         saveToLocalStore();
         notifyChanged();
@@ -50,20 +44,16 @@ public class PaymentCredentialsStore {
 
     private void saveToLocalStore() {
         Gson gson = new Gson();
-        String json = gson.toJson(sepaPaymentCredentials);
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_SEPA, json).apply();
+        String json = gson.toJson(credentialsList);
+        sharedPreferences.edit().putString(SHARED_PREFERENCES_CREDENTIALS, json).apply();
     }
 
     private void loadFromLocalStore() {
         Gson gson = new Gson();
 
-        String json = sharedPreferences.getString(SHARED_PREFERENCES_SEPA, null);
+        String json = sharedPreferences.getString(SHARED_PREFERENCES_CREDENTIALS, null);
         if(json != null){
-            sepaPaymentCredentials = gson.fromJson(json, new TypeToken<List<SEPAPaymentCredentials>>(){}.getType());
-
-            if(sepaPaymentCredentials == null) {
-                sepaPaymentCredentials = new ArrayList<>();
-            }
+            credentialsList = gson.fromJson(json, new TypeToken<List<PaymentCredentials>>(){}.getType());
         }
     }
 

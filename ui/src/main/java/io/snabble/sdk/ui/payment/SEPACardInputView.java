@@ -14,7 +14,8 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.payment.SEPAPaymentCredentials;
+import io.snabble.sdk.payment.IBAN;
+import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -119,7 +120,7 @@ public class SEPACardInputView extends FrameLayout {
             ok = false;
         }
 
-        if(SEPAPaymentCredentials.validateIBAN(iban)) {
+        if(IBAN.validate(iban)) {
             ibanError.setVisibility(View.INVISIBLE);
         } else {
             ibanError.setVisibility(View.VISIBLE);
@@ -128,7 +129,7 @@ public class SEPACardInputView extends FrameLayout {
         }
 
         if (ok) {
-            Snabble.getInstance().getUserPreferences().getPaymentCredentialsStore().add(new SEPAPaymentCredentials(name, iban));
+            Snabble.getInstance().getPaymentCredentialsStore().add(PaymentCredentials.fromSEPA(name, iban));
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){
