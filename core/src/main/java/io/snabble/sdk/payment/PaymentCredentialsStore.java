@@ -53,7 +53,14 @@ public class PaymentCredentialsStore {
 
         String json = sharedPreferences.getString(SHARED_PREFERENCES_CREDENTIALS, null);
         if(json != null){
-            credentialsList = gson.fromJson(json, new TypeToken<List<PaymentCredentials>>(){}.getType());
+            credentialsList = new ArrayList<>();
+
+            List<PaymentCredentials> list = gson.fromJson(json, new TypeToken<List<PaymentCredentials>>(){}.getType());
+            for (PaymentCredentials credentials : list) {
+                if(credentials.validate()) {
+                    credentialsList.add(credentials);
+                }
+            }
         }
     }
 

@@ -1,15 +1,12 @@
 package io.snabble.sdk.payment;
 
 import android.util.Base64;
-
-import org.iban4j.IbanUtil;
-
-import java.nio.charset.Charset;
 import java.security.KeyFactory;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.List;
 
 import javax.crypto.Cipher;
+
 import io.snabble.sdk.PublicKey;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
@@ -26,6 +23,8 @@ public class PaymentCredentials {
 
     private String obfuscatedIBAN;
     private String encryptedData;
+    private String signature;
+
     private Type type;
 
     private PaymentCredentials() {
@@ -56,7 +55,10 @@ public class PaymentCredentials {
         data.iban = iban;
         String json = GsonHolder.get().toJson(data, SepaData.class);
 
-        pc.encryptedData = pc.encrypt(publicKeys.get(0), json.getBytes());
+        PublicKey key = publicKeys.get(0);
+        pc.encryptedData = pc.encrypt(key, json.getBytes());
+        pc.signature = key.getSignature();
+
         return pc;
     }
 
@@ -89,6 +91,17 @@ public class PaymentCredentials {
         } catch (Exception e) {
             throw new AssertionError(e.getMessage());
         }
+    }
+
+    public boolean validate() {
+        List<PublicKey> publicKeys = Snabble.getInstance().getValidPublicKeys();
+        for (PublicKey key : publicKeys) {
+            if (key.getSignature().equals(signature)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public String getObfuscatedId() {

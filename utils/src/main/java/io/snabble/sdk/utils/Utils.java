@@ -42,7 +42,8 @@ public class Utils {
         return (float) px / context.getResources().getDisplayMetrics().density;
     }
 
-    public static String sha1Hex(String input) {
+
+    public static byte[] sha1(String input) {
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-1");
@@ -50,9 +51,31 @@ public class Utils {
             throw new AssertionError(e);
         }
 
-        byte[] result = messageDigest.digest(input.getBytes(Charset.forName("UTF-8")));
+        return messageDigest.digest(input.getBytes(Charset.forName("UTF-8")));
+    }
+
+    public static byte[] sha256(String input) {
+        MessageDigest messageDigest;
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new AssertionError(e);
+        }
+
+        return messageDigest.digest(input.getBytes(Charset.forName("UTF-8")));
+    }
+
+    public static String sha1Hex(String input) {
+        return hexString(sha1(input));
+    }
+
+    public static String sha256Hex(String input) {
+        return hexString(sha256(input));
+    }
+
+    public static String hexString(byte[] input) {
         StringBuilder sb = new StringBuilder();
-        for (byte b : result) {
+        for (byte b : input) {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
