@@ -61,6 +61,8 @@ public class PaymentCredentialsStore {
                     credentialsList.add(credentials);
                 }
             }
+
+            saveToLocalStore();
         }
     }
 

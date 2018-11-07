@@ -9,6 +9,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.File;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -216,24 +220,26 @@ public class Snabble {
         return projects;
     }
 
-    public List<PublicKey> getValidPublicKeys() {
-        // TODO parse public keys from metadata
-        // this key is only for testing purposes
-        List<PublicKey> publicKeys = new ArrayList<>();
-        publicKeys.add(new PublicKey(
-                "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAulYrSZSHgppJbgjnXgu6" +
-                "2r9WXCBYAXmkN6tLiR1NCTdcSTmG/yAXmVaB374r9XDcTPCbyYjipy+AkeW51HLh" +
-                "Ewlxy4NyqxPL3f6WEQjcmg0UOJU/0rClVjAF4ybiMubZIhsDq+0joA+QbK8fCW3W" +
-                "VJ4ivZojAhkFRLIyYk/yD4WdwGkg7+aLu67QWlPH+4SglhDGMmdmyBPHRgw4mu4v" +
-                "o9cHCZukxtDdkCOLhXX1/LhXpwOPnrCJg6cn5sqNnr3MVGcGbK3xk5tqxthIXULl" +
-                "gbd5EJjiyKT6AmVDHdyX8Aop2damVE9OsstORZk8TnStwpenjU1mtMQsRJC1bMUJ" +
-                "B8r+JTR6/ZA45MspCrPTH/SWUWRICkTgWcp38c9CBEVt720Vy5owI6X92LAVNK0/" +
-                "fH1Zfy8MpRA/cPDjV8jJlYwXwn6WI8SXRsWlWMaMDg6oJN/t005H5g77EDXlH8+F" +
-                "77n1stdGZ20FGfzGrxZbhk+D8+9JWrxNsSU86YdgEuN2GLTkBwTusSB/aOjXyat2" +
-                "RjhIGWvryTHtnN+JgEookVkBeUzQi/eicQoBxRXzOUBtvjSc56VlEawuF+9r40la" +
-                "N7HVM5MTt+kZfqITAeLXVxSSJgGttx4HSf3Ac0Q91ezMt8i4l9EVR4zO63buQcQQ" +
-                "H6EUKQIyi+xHts1QoaHlaMkCAwEAAQ=="));
-        return Collections.unmodifiableList(publicKeys);
+    public List<X509Certificate> getPaymentSigningCertificates() {
+        // TODO parse certificates from metadata
+        // this certificate is only for testing purposes
+        List<X509Certificate> certificates = new ArrayList<>();
+
+        InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(R.raw.sepa);
+        CertificateFactory certificateFactory = null;
+        try {
+            certificateFactory = CertificateFactory.getInstance("X.509");
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        }
+        X509Certificate certificate = null;
+        try {
+            certificate = (X509Certificate) certificateFactory.generateCertificate(is);
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        }
+        certificates.add(certificate);
+        return Collections.unmodifiableList(certificates);
     }
 
     /**

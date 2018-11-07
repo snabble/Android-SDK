@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
@@ -129,7 +130,13 @@ public class SEPACardInputView extends FrameLayout {
         }
 
         if (ok) {
-            Snabble.getInstance().getPaymentCredentialsStore().add(PaymentCredentials.fromSEPA(name, iban));
+            PaymentCredentials pc = PaymentCredentials.fromSEPA(name, iban);
+            if (pc == null) {
+                Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                Snabble.getInstance().getPaymentCredentialsStore().add(pc);
+            }
 
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null){
