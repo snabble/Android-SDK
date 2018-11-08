@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -37,6 +38,7 @@ public class Receipts {
     }
 
     private Map<String, ReceiptInfo> receiptInfoList = new HashMap<>();
+    private List<OnReceiptsUpdateListener> updateListeners = new CopyOnWriteArrayList<>();
     private File storageDirectory;
     private SharedPreferences sharedPreferences;
 
@@ -203,6 +205,32 @@ public class Receipts {
     private void saveReceiptInfo(ReceiptInfo receiptInfo) {
         receiptInfoList.put(receiptInfo.getId(), receiptInfo);
         sharedPreferences.edit().putString(receiptInfo.getId(), GsonHolder.get().toJson(receiptInfo)).apply();
+
+        notifyUpdate();
+    }
+
+    private void notifyUpdate() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (OnReceiptsUpdateListener l : updateListeners) {
+                    l.onReceiptsUpdated();
+                }
+            }
+        });
+    }
+
+    public void addOnUpdateListener(OnReceiptsUpdateListener l) {
+        updateListeners.add(l);
+    }
+
+    public void removeOnUpdateListener(OnReceiptsUpdateListener l) {
+        updateListeners.remove(l);
+    }
+
+    public interface OnReceiptsUpdateListener {
+        void onReceiptsUpdated();
     }
 
     private class ReceiptPoller {

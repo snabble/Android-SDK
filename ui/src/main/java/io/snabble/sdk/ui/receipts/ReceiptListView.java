@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.receipts;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,9 +30,12 @@ import io.snabble.sdk.ReceiptInfo;
 import io.snabble.sdk.Receipts;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.ShoppingCartView;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
-public class ReceiptListView extends FrameLayout {
+public class ReceiptListView extends FrameLayout implements Receipts.OnReceiptsUpdateListener {
     private ReceiptInfo[] receiptList;
     private RecyclerView recyclerView;
 
@@ -68,6 +72,11 @@ public class ReceiptListView extends FrameLayout {
     private void update() {
         receiptList = Snabble.getInstance().getReceipts().getReceiptInfos();
         recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void onReceiptsUpdated() {
+        update();
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {
@@ -162,6 +171,51 @@ public class ReceiptListView extends FrameLayout {
             });
         }
     }
+
+    public void registerListeners() {
+        Snabble.getInstance().getReceipts().addOnUpdateListener(this);
+    }
+
+    public void unregisterListeners() {
+        Snabble.getInstance().getReceipts().removeOnUpdateListener(this);
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        registerListeners();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        unregisterListeners();
+    }
+
+    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+            new SimpleActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityStarted(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        registerListeners();
+                    }
+                }
+
+                @Override
+                public void onActivityStopped(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        unregisterListeners();
+                    }
+                }
+            };
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         @NonNull

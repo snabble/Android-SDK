@@ -1,6 +1,9 @@
 package io.snabble.sdk.ui.payment;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -14,6 +17,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.core.view.ViewCompat;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -77,7 +81,7 @@ public class SEPACardInputView extends FrameLayout {
                 StringBuilder sb = new StringBuilder();
 
                 for (int i = 0; i < str.length(); i++) {
-                    if (((i+2) != 0 && (i+2) % 4 == 0)) {
+                    if ((i + 2) % 4 == 0) {
                         sb.append(' ');
                     }
 
@@ -102,7 +106,23 @@ public class SEPACardInputView extends FrameLayout {
             }
 
             public void afterTextChanged(Editable s) {
+                ibanError.setVisibility(View.INVISIBLE);
+                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
+            }
+        });
 
+        nameInput.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            public void afterTextChanged(Editable s) {
+                nameError.setVisibility(View.INVISIBLE);
+                nameInput.setBackgroundResource(R.drawable.ic_round_edittext);
             }
         });
     }
@@ -118,6 +138,7 @@ public class SEPACardInputView extends FrameLayout {
         } else {
             nameError.setVisibility(View.VISIBLE);
             shake(nameInput);
+            nameInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
             ok = false;
         }
 
@@ -126,6 +147,7 @@ public class SEPACardInputView extends FrameLayout {
         } else {
             ibanError.setVisibility(View.VISIBLE);
             shake(ibanInput);
+            ibanInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
             ok = false;
         }
 
