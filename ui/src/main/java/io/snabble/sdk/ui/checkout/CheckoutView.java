@@ -17,8 +17,11 @@ import android.widget.ViewAnimator;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -123,7 +126,25 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     private void displayPaymentView() {
         switch (checkout.getSelectedPaymentMethod()) {
             case CASH:
-                displayView(new CheckoutStatusView(getContext()));
+                if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                    if (callback != null) {
+                        callback.requestKeyguard(new KeyguardHandler() {
+                            @Override
+                            public void onKeyguardResult(int resultCode) {
+                                if (resultCode == Activity.RESULT_OK) {
+                                    displayView(new CheckoutStatusView(getContext()));
+                                } else {
+                                    UIUtils.snackbar(findViewById(R.id.content),
+                                            "Could not verify user identity",
+                                            UIUtils.SNACKBAR_LENGTH_VERY_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    displayView(new CheckoutStatusView(getContext()));
+                }
                 break;
             case QRCODE_POS:
                 CheckoutQRCodePOSView checkoutQRCodePOSView = new CheckoutQRCodePOSView(getContext());

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.gmazzo.sqlite'
-//apply from: '../scripts/seed.gradle'
 
 android {
     compileSdkVersion project.compileSdkVersion

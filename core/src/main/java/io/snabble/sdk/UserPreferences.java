@@ -2,8 +2,6 @@ package io.snabble.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.google.gson.Gson;
-import io.snabble.sdk.payment.PaymentCredentialsStore;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -11,6 +9,7 @@ import java.util.UUID;
 public class UserPreferences {
     private static final String SHARED_PREFERENCES_TAG = "snabble_prefs";
     private static final String SHARED_PREFERENCES_CLIENT_ID = "Client-ID";
+    private static final String SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard";
 
     private SharedPreferences sharedPreferences;
 
@@ -32,5 +31,13 @@ public class UserPreferences {
 
     public String getClientId() {
         return sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null);
+    }
+
+    public void setRequireKeyguardAuthenticationForPayment(boolean enabled) {
+        sharedPreferences.edit().putBoolean(SHARED_PREFERENCES_USE_KEYGUARD, enabled).apply();
+    }
+
+    public boolean isRequiringKeyguardAuthenticationForPayment() {
+        return sharedPreferences.getBoolean(SHARED_PREFERENCES_USE_KEYGUARD, false);
     }
 }
