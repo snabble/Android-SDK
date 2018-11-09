@@ -90,6 +90,14 @@ class Events {
         }
     }
 
+    public void logError(String format, String... args) {
+        PayloadError error = new PayloadError();
+        error.message = String.format(format, args);
+        error.session = cartId;
+
+        post(error);
+    }
+
     private <T extends Payload> void post(final T payload) {
         if (!isResumed) {
             Logger.d("Could not send event, app is not active: " + payload.getEventType());
