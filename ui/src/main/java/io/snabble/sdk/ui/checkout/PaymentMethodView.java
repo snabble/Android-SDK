@@ -40,9 +40,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
-        icons.put(PaymentMethod.CASH, R.drawable.ic_pm_sepa);
-        icons.put(PaymentMethod.SEPA_TELECASH, R.drawable.ic_pm_sepa);
-        icons.put(PaymentMethod.SEPA_TELECASH_TEST, R.drawable.ic_pm_sepa);
+        //icons.put(PaymentMethod.CASH, R.drawable.ic_pm_sepa);
+        icons.put(PaymentMethod.TELECASH_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
     }
@@ -73,7 +72,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         Resources res = getResources();
         descriptions.clear();
-        //descriptions.put(PaymentMethod.ENCODED_CODES, res.getString(R.string.Snabble_PaymentMethod_encodedCodes));
+        descriptions.put(PaymentMethod.CASH, "CASH"); // icon instead?
         //descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
 
         project = SnabbleUI.getProject();
@@ -108,7 +107,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 e.text = descriptions.get(paymentMethod);
                 e.paymentMethod = paymentMethod;
 
-                if(paymentMethod == PaymentMethod.CASH) {
+                if(paymentMethod == PaymentMethod.TELECASH_DIRECT_DEBIT) {
                     e.onClickListener = new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -127,7 +126,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         for(PaymentCredentials p : paymentCredentials) {
             if (p.getType() == PaymentCredentials.Type.SEPA) {
                 for(Entry e : entries) {
-                    if (e.paymentMethod == PaymentMethod.CASH) {
+                    if (e.paymentMethod == PaymentMethod.TELECASH_DIRECT_DEBIT) {
                         entries.remove(e);
                         break;
                     }
@@ -136,9 +135,9 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
 
         for(PaymentCredentials p : paymentCredentials) {
-            if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.CASH)) {
+            if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.TELECASH_DIRECT_DEBIT)) {
                 Entry e = new Entry();
-                e.paymentMethod = PaymentMethod.CASH;
+                e.paymentMethod = PaymentMethod.TELECASH_DIRECT_DEBIT;
                 e.text = p.getObfuscatedId();
                 entries.add(e);
             }

@@ -90,7 +90,7 @@ class Events {
         }
     }
 
-    public void logError(String format, String... args) {
+    public void logError(String format, Object... args) {
         PayloadError error = new PayloadError();
         error.message = String.format(format, args);
         error.session = cartId;
