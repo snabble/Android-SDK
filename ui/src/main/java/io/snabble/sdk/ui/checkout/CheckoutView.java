@@ -127,7 +127,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         switch (checkout.getSelectedPaymentMethod()) {
             case CASH:
                 if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                    final SnabbleUICallback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
                         callback.requestKeyguard(new KeyguardHandler() {
                             @Override
@@ -135,9 +135,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                                 if (resultCode == Activity.RESULT_OK) {
                                     displayView(new CheckoutStatusView(getContext()));
                                 } else {
-                                    UIUtils.snackbar(findViewById(R.id.content),
-                                            "Could not verify user identity",
-                                            UIUtils.SNACKBAR_LENGTH_VERY_LONG).show();
+                                    callback.goBack();
                                 }
                             }
                         });
