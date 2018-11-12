@@ -161,14 +161,13 @@ public class Project {
             formats.add(BarcodeFormat.EAN_13);
             formats.add(BarcodeFormat.CODE_128);
         }
+        supportedBarcodeFormats = formats.toArray(new BarcodeFormat[formats.size()]);
 
         barcodeFormatRanges = new HashMap<>();
         // TODO parse from metadata
         if (id.contains("ikea")) {
             barcodeFormatRanges.put(BarcodeFormat.ITF_14, new IntRange(0, 8));
         }
-
-        supportedBarcodeFormats = formats.toArray(new BarcodeFormat[formats.size()]);
 
         if (jsonObject.has("shops")) {
             shops = Shop.fromJson(jsonObject.get("shops"));
