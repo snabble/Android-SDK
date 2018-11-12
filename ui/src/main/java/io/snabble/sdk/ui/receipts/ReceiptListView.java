@@ -38,6 +38,7 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 public class ReceiptListView extends FrameLayout implements Receipts.OnReceiptsUpdateListener {
     private ReceiptInfo[] receiptList;
     private RecyclerView recyclerView;
+    private View emptyState;
 
     public ReceiptListView(@NonNull Context context) {
         super(context);
@@ -66,12 +67,20 @@ public class ReceiptListView extends FrameLayout implements Receipts.OnReceiptsU
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
+        emptyState = v.findViewById(R.id.empty_state);
+
         update();
     }
 
     private void update() {
         receiptList = Snabble.getInstance().getReceipts().getReceiptInfos();
         recyclerView.getAdapter().notifyDataSetChanged();
+
+        if (receiptList.length == 0) {
+            emptyState.setVisibility(View.VISIBLE);
+        } else {
+            emptyState.setVisibility(View.GONE);
+        }
     }
 
     @Override

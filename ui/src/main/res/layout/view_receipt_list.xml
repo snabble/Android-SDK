@@ -6,4 +6,13 @@
         android:layout_height="match_parent">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="48dp"
+            android:textSize="17sp"
+            android:id="@+id/empty_state"
+            android:visibility="gone"
+            android:text="@string/Snabble.Receipt.noReceipt"/>
 </merge>
