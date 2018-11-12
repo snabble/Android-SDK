@@ -160,6 +160,7 @@ public class Receipts {
                     File file = new File(storageDirectory, receiptInfo.getId() + ".pdf");
                     FileOutputStream fos = new FileOutputStream(file);
                     IOUtils.copy(body.byteStream(), fos);
+                    body.close();
                     receiptInfo.setFilePath(file.getAbsolutePath());
                     saveReceiptInfo(receiptInfo);
 
