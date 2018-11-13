@@ -1,12 +1,11 @@
 package io.snabble.sdk.ui.payment;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
@@ -17,7 +16,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import androidx.core.view.ViewCompat;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -28,6 +26,7 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 public class SEPACardInputView extends FrameLayout {
     private Button save;
     private EditText nameInput;
+    private EditText ibanCountryCode;
     private EditText ibanInput;
     private View nameError;
     private View ibanError;
@@ -53,6 +52,7 @@ public class SEPACardInputView extends FrameLayout {
         nameInput = findViewById(R.id.input_name);
         nameError = findViewById(R.id.input_invalid_name);
 
+        ibanCountryCode = findViewById(R.id.prefix);
         ibanInput = findViewById(R.id.input_iban);
         ibanError = findViewById(R.id.input_invalid_iban);
 
@@ -68,37 +68,66 @@ public class SEPACardInputView extends FrameLayout {
                 new InputFilter.AllCaps()
         });
 
+        ibanCountryCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // update text of iban to adjust spacing
+                formatIBANInput();
+
+                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
+                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
+            }
+        });
+
         ibanInput.addTextChangedListener(new TextWatcher() {
             boolean isUpdating;
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (isUpdating) {
-                    return;
-                }
 
-                String originalInput = s.toString();
-                String str = originalInput.replace(" ", "");
-                StringBuilder sb = new StringBuilder();
-
-                for (int i = 0; i < str.length(); i++) {
-                    if ((i + 2) % 4 == 0) {
-                        sb.append(' ');
+                    if (isUpdating) {
+                        return;
                     }
 
-                    sb.append(str.charAt(i));
-                }
+                    String originalInput = s.toString();
+                    String str = originalInput.replace(" ", "");
+                    StringBuilder sb = new StringBuilder();
 
-                isUpdating = true;
+                    for (int i = 0; i < str.length(); i++) {
+                        if (isGermanIBAN()) {
+                            if ((i + 2) % 4 == 0) {
+                                sb.append(' ');
+                            }
+                        } else {
+                            if (i == 2) {
+                                sb.append(' ');
+                            }
+                        }
 
-                String text = sb.toString();
-                int selection = ibanInput.getSelectionEnd();
-                selection += Math.max(0, text.length() - originalInput.length());
+                        sb.append(str.charAt(i));
+                    }
 
-                // not using setText because that causes the keyboard state to be reset
-                ibanInput.getText().replace(0, ibanInput.getText().length(), text, 0, text.length());
-                ibanInput.setSelection(Math.min(ibanInput.length(), selection));
+                    isUpdating = true;
 
-                isUpdating = false;
+                    String text = sb.toString();
+                    int selection = ibanInput.getSelectionEnd();
+                    selection += Math.max(0, text.length() - originalInput.length());
+
+                    // not using setText because that causes the keyboard state to be reset
+                    ibanInput.getText().replace(0, ibanInput.getText().length(), text, 0, text.length());
+                    ibanInput.setSelection(Math.min(ibanInput.length(), selection));
+
+                    isUpdating = false;
+
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -108,6 +137,7 @@ public class SEPACardInputView extends FrameLayout {
             public void afterTextChanged(Editable s) {
                 ibanError.setVisibility(View.INVISIBLE);
                 ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
+                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
             }
         });
 
@@ -125,13 +155,32 @@ public class SEPACardInputView extends FrameLayout {
                 nameInput.setBackgroundResource(R.drawable.ic_round_edittext);
             }
         });
+
+        formatIBANInput();
+    }
+
+    private void formatIBANInput() {
+        String str = ibanInput.getText().toString();
+        if(isGermanIBAN()) {
+            ibanInput.setText(str.replace("", " "));
+            ibanInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+            ibanInput.setKeyListener(DigitsKeyListener.getInstance("0123456789 "));
+        } else {
+            ibanInput.setText(str.replace(" ", ""));
+            ibanInput.setKeyListener(null);
+            ibanInput.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        }
+    }
+
+    private boolean isGermanIBAN() {
+        return ibanCountryCode.getText().toString().equals("DE");
     }
 
     private void saveCard() {
         boolean ok = true;
 
         String name = nameInput.getText().toString();
-        String iban = "DE" + ibanInput.getText().toString().replace(" ", "");
+        String iban = ibanCountryCode.getText().toString() + ibanInput.getText().toString().replace(" ", "");
 
         if(name.length() > 0) {
             nameError.setVisibility(View.INVISIBLE);
@@ -147,7 +196,9 @@ public class SEPACardInputView extends FrameLayout {
         } else {
             ibanError.setVisibility(View.VISIBLE);
             shake(ibanInput);
+            shake(ibanCountryCode);
             ibanInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
+            ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext_error);
             ok = false;
         }
 

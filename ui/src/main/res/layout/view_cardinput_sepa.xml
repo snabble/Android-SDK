@@ -9,7 +9,7 @@
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="240dp"> <!-- helps when adjustPan is set -->
+            android:paddingBottom="276dp"> <!-- helps when adjustPan is set -->
 
         <ImageView
                 android:layout_width="wrap_content"
@@ -84,14 +84,17 @@
             tools:visibility="visible"
             android:id="@+id/input_invalid_iban"/>
 
-        <TextView style="@style/SnabbleEditText"
+        <EditText style="@style/SnabbleEditText"
             android:layout_width="53dp"
             android:layout_height="48dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_alignBaseline="@+id/input_iban"
             android:gravity="center"
+            android:textAllCaps="true"
+            android:inputType="textCapCharacters|textNoSuggestions"
             android:text="DE"
+            android:maxLength="2"
             android:textColor="@color/snabble_textColorDark"
             android:textSize="17sp"
             android:id="@+id/prefix"/>
@@ -105,14 +108,13 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="16dp"
-                android:inputType="number"
-                android:digits="0123456789 "
+                android:inputType="textCapCharacters|textVisiblePassword"
+                android:textAllCaps="true"
                 android:textSize="17sp"
                 android:maxLines="1"
                 android:textColor="@color/snabble_textColorDark"
                 android:hint="@string/Snabble.Payment.SEPA.IBAN"
                 android:id="@+id/input_iban" />
-
 
         <Button
                 style="@style/SnabbleButton"
