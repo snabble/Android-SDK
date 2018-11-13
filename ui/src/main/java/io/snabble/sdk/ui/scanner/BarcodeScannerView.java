@@ -887,7 +887,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         int size = detectionRect.width() * detectionRect.height() * bitsPerPixel / 8;
 
         if (cropBuffer == null || cropBuffer.length != size) {
-            cropBuffer = new byte[detectionRect.width() * detectionRect.height() * bitsPerPixel / 8];
+            cropBuffer = new byte[size];
         }
 
         textureView.setTransform(transform);
