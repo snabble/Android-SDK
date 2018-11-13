@@ -57,7 +57,7 @@ public class SelfScanningFragment extends Fragment {
             rootView.removeView(selfScanningView);
             selfScanningView = null;
 
-            if(isVisible() && isStart) {
+            if(isAdded() && isStart) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, 0);
             } else {
                 showPermissionRationale();
