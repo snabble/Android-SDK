@@ -42,7 +42,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':ui-integration')
 
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'commons-io:commons-io:2.5'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
