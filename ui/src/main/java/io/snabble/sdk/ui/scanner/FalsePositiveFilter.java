@@ -3,13 +3,15 @@ package io.snabble.sdk.ui.scanner;
 import io.snabble.sdk.utils.Logger;
 
 public class FalsePositiveFilter {
-    private final static int REPEATS_NEEDED = 2;
-
+    private  int repeatsNeeded;
     private Barcode lastBarcode;
     private int repeats = 0;
 
     public FalsePositiveFilter() {
-
+        this.repeatsNeeded = 2;
+    }
+    public FalsePositiveFilter(int repeatsNeeded) {
+        this.repeatsNeeded = repeatsNeeded;
     }
 
     public synchronized void reset() {
@@ -28,7 +30,7 @@ public class FalsePositiveFilter {
             reset();
         }
 
-        if (repeats >= REPEATS_NEEDED) {
+        if (repeats >= repeatsNeeded) {
             return barcode;
         }
 

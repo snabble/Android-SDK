@@ -7,7 +7,7 @@ public class Barcode {
     private String text;
     private long timestamp;
 
-    Barcode(BarcodeFormat format, String text, long timestamp) {
+    public Barcode(BarcodeFormat format, String text, long timestamp) {
         this.format = format;
         this.text = text;
         this.timestamp = timestamp;

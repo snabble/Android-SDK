@@ -25,22 +25,10 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.google.zxing.Binarizer;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.PlanarYUVLuminanceSource;
-import com.google.zxing.ReaderException;
-import com.google.zxing.Result;
-import com.google.zxing.common.HybridBinarizer;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.R;
@@ -69,13 +57,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private final Object frameBufferLock = new Object();
     private byte[] frontBuffer;
     private byte[] backBuffer;
-    private byte[] cropBuffer;
 
     private boolean isProcessing;
 
     private Camera.Size previewSize;
     private Camera.CameraInfo cameraInfo;
-    private MultiFormatReader multiFormatReader;
     private boolean running;
     private boolean startRequested;
 
@@ -98,7 +84,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private int bitsPerPixel;
     private boolean indicatorEnabled = true;
     private FrameLayout splashView;
-    private FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter();
+
+    private BarcodeDetector barcodeDetector;
 
     public BarcodeScannerView(Context context) {
         super(context);
@@ -266,8 +253,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             return;
         }
 
+        setupBarcodeDetector();
         resetFalsePositiveFilter();
-        setupZXing();
 
         showError(false);
 
@@ -400,7 +387,9 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         barcodeProcessingHandler.post(new Runnable() {
             @Override
             public void run() {
-                falsePositiveFilter.reset();
+                if (barcodeDetector != null) {
+                    barcodeDetector.reset();
+                }
             }
         });
     }
@@ -523,18 +512,12 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }, 1000);
     }
 
-    private void setupZXing() {
-        Map<DecodeHintType, Object> hints = new HashMap<>();
-        multiFormatReader = new MultiFormatReader();
-
-        List<com.google.zxing.BarcodeFormat> formats = new ArrayList<>();
-        for (BarcodeFormat barcodeFormat : supportedBarcodeFormats) {
-            formats.add(ZXingHelper.toZXingFormat(barcodeFormat));
+    private void setupBarcodeDetector() {
+        if (barcodeDetector == null) {
+            barcodeDetector = BarcodeDetectorFactory.getDefaultBarcodeDetectorFactory().create();
         }
 
-        hints.put(DecodeHintType.POSSIBLE_FORMATS, formats);
-        //hints.put(DecodeHintType.TRY_HARDER, true);
-        multiFormatReader.setHints(hints);
+        barcodeDetector.setup(supportedBarcodeFormats);
     }
 
     /**
@@ -663,35 +646,15 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                         return;
                     }
 
-                    Result result = detect(false);
-                    if (result == null) {
-                        result = detect(true);
-                    }
+                    final Barcode barcode = barcodeDetector.detect(frontBuffer, previewSize.width,
+                            previewSize.height, bitsPerPixel, detectionRect, displayOrientation);
 
-                    if (result != null) {
-                        final Result finalResult = result;
-
+                    if (barcode != null) {
                         mainThreadHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
-                                    // ZXing decodes all ITF_14 lengths, but we only care about ITF14.
-                                    if (finalResult.getBarcodeFormat() == com.google.zxing.BarcodeFormat.ITF) {
-                                        if (finalResult.getText().length() != 14) {
-                                            return;
-                                        }
-                                    }
-
-                                    Barcode barcode = new Barcode(
-                                            ZXingHelper.fromZXingFormat(finalResult.getBarcodeFormat()),
-                                            finalResult.getText(),
-                                            finalResult.getTimestamp());
-
-                                    Barcode filtered = falsePositiveFilter.filter(barcode);
-                                    if (filtered != null) {
-                                        Logger.d("Detected barcode: " + barcode.toString());
-                                        callback.onBarcodeDetected(barcode);
-                                    }
+                                    callback.onBarcodeDetected(barcode);
                                 }
                             }
                         });
@@ -701,39 +664,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 }
             });
         }
-    }
-
-    private Result detect(boolean rotate) {
-        int width = detectionRect.width();
-        int height = detectionRect.height();
-        byte[] buf;
-
-        if (rotate) {
-            int tmp = width;
-            width = height;
-            height = tmp;
-        }
-
-        buf = getRotatedData(rotate);
-
-        LuminanceSource luminanceSource = new PlanarYUVLuminanceSource(buf, width, height,
-                0, 0, width, height, false);
-
-        Binarizer binarizer = new HybridBinarizer(luminanceSource);
-        BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
-
-        try {
-            return multiFormatReader.decodeWithState(binaryBitmap);
-        } catch (ReaderException e) {
-            // could not detect a barcode, ignore
-        } catch (Exception e) {
-            // catch any other exceptions that may be thrown by zxing
-            Logger.e("Zxing Internal Error: %s", e.toString());
-        } finally {
-            multiFormatReader.reset();
-        }
-
-        return null;
     }
 
     private void clearBuffers() {
@@ -884,58 +814,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             detectionRect.bottom = Math.round(rotatedPreviewHeight * bottomNormalized);
         }
 
-        int size = detectionRect.width() * detectionRect.height() * bitsPerPixel / 8;
-
-        if (cropBuffer == null || cropBuffer.length != size) {
-            cropBuffer = new byte[size];
-        }
-
         textureView.setTransform(transform);
-    }
-
-    private byte[] getRotatedData(boolean rotate90deg) {
-        int width = previewSize.width;
-        int height = previewSize.height;
-
-        byte[] buf = cropBuffer;
-        byte[] data = frontBuffer;
-
-        int left = detectionRect.left;
-        int top = detectionRect.top;
-        int right = detectionRect.right;
-        int bottom = detectionRect.bottom;
-
-        int tWidth = detectionRect.width();
-        int tHeight = detectionRect.height();
-
-        // special cases for reversed orientations, we don't flip the image
-        // because zxing is able to detect flipped images
-        // but we need to adjust the camera region
-        if (getDisplayOrientation() == 180) { // reverse-landscape
-            top = height - top - tHeight;
-            bottom = top + tHeight;
-        } else if (getDisplayOrientation() == 270) { // reverse-portrait
-            left = width - left - tWidth;
-            right = left + tWidth;
-        }
-
-        if (rotate90deg) {
-            int i = 0;
-            for (int x = left; x < right; x++) {
-                for (int y = bottom - 1; y >= top; y--) {
-                    buf[i] = data[y * width + x];
-                    i++;
-                }
-            }
-        } else {
-            for (int y = top; y < bottom; y++) {
-                for (int x = left; x < right; x++) {
-                    buf[(x - left) + (y - top) * tWidth] = data[x + y * width];
-                }
-            }
-        }
-
-        return buf;
     }
 
     private void updateDisplayOrientation() {
