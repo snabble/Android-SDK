@@ -143,6 +143,8 @@ class Events {
                         } else {
                             Logger.e("Failed to post event: " + payload.getEventType() + ", code " + response.code());
                         }
+
+                        response.close();
                     }
 
                     @Override

@@ -59,32 +59,33 @@ public class TokenRegistry {
                 .addHeader("Authorization", "Basic " + base64)
                 .build();
 
+        Response response = null;
         try {
-            Response response = okHttpClient.newCall(request).execute();
-            ResponseBody responseBody = response.body();
-            if (responseBody != null) {
-                String body = responseBody.string();
-                responseBody.close();
+            response = okHttpClient.newCall(request).execute();
+            String body = response.body().string();
+            response.close();
 
-                if (response.isSuccessful()) {
-                    Logger.d("Successfully generated token for %s", project.getId());
+            if (response.isSuccessful()) {
+                Logger.d("Successfully generated token for %s", project.getId());
+
+                adjustTimeOffset(response);
+                Token token = GsonHolder.get().fromJson(body, Token.class);
+                tokens.put(project.getId(), token);
+                return token;
+            } else {
+                if (!isRetry) {
+                    Logger.d("Could not generate token, trying again with server time");
 
                     adjustTimeOffset(response);
-                    Token token = GsonHolder.get().fromJson(body, Token.class);
-                    tokens.put(project.getId(), token);
-                    return token;
+                    return refreshToken(project, true);
                 } else {
-                    if (!isRetry) {
-                        Logger.d("Could not generate token, trying again with server time");
-
-                        adjustTimeOffset(response);
-                        return refreshToken(project, true);
-                    } else {
-                        Logger.e("Could not generate token: %s", body);
-                    }
+                    Logger.e("Could not generate token: %s", body);
                 }
             }
         } catch (IOException e) {
+            if (response != null) {
+                response.close();
+            }
             Logger.e("Could not generate token: %s", e.toString());
         }
 

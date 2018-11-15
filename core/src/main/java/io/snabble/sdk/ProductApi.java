@@ -146,25 +146,14 @@ class ProductApi {
             @Override
             public void onResponse(final Call call, final Response response) {
                 if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                productsAvailableListener.onError();
-                            }
-                        });
-                        return;
-                    }
-
                     String json;
                     try {
-                        json = body.string();
+                        json = response.body().string();
                     } catch (IOException e) {
                         productsAvailableListener.onError();
+                        response.close();
                         return;
                     }
-                    body.close();
 
                     try {
                         final ApiProductGroup apiProductGroup = GsonHolder.get().fromJson(json, ApiProductGroup.class);
@@ -226,6 +215,8 @@ class ProductApi {
                         error(productsAvailableListener);
                     }
                 }
+
+                response.close();
             }
 
             @Override
@@ -308,20 +299,14 @@ class ProductApi {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        callback.onError();
-                        return;
-                    }
-
                     String json;
                     try {
-                        json = body.string();
+                        json = response.body().string();
                     } catch (IOException e) {
                         callback.onError();
+                        response.close();
                         return;
                     }
-                    body.close();
 
                     try {
                         final ApiProductGroup apiProductGroup = GsonHolder.get().fromJson(json, ApiProductGroup.class);
@@ -381,6 +366,8 @@ class ProductApi {
                         callback.onError();
                     }
                 }
+
+                response.close();
             }
 
             @Override
@@ -408,25 +395,13 @@ class ProductApi {
             @Override
             public void onResponse(final Call call, final Response response) {
                 if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                productAvailableListener.onError();
-                            }
-                        });
-                        return;
-                    }
-
                     String json;
                     try {
-                        json = body.string();
+                        json = response.body().string();
                     } catch (IOException e) {
                         productAvailableListener.onError();
                         return;
                     }
-                    body.close();
 
                     try {
                         final ApiProduct apiProduct = GsonHolder.get().fromJson(json, ApiProduct.class);
@@ -441,6 +416,8 @@ class ProductApi {
                         error(productAvailableListener);
                     }
                 }
+
+                response.close();
             }
 
             @Override

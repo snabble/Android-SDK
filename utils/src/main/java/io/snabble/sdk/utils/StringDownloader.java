@@ -124,11 +124,9 @@ public abstract class StringDownloader extends Downloader {
     @Override
     protected void onResponse(Response response) throws IOException {
         Logger.d("Receiving data for %s...", getUrl());
-        ResponseBody body = response.body();
-        if (body != null) {
-            onDownloadFinished(body.string());
-            Logger.d("Received data for %s", getUrl());
-        }
+
+        onDownloadFinished(response.body().string());
+        Logger.d("Received data for %s", getUrl());
     }
 
     protected abstract void onDownloadFinished(String string);

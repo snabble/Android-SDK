@@ -205,20 +205,14 @@ class CheckoutApi {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        checkoutInfoResult.error();
-                        return;
-                    }
-
                     String json;
                     try {
-                        json = body.string();
+                        json = response.body().string();
                     } catch (IOException e) {
                         checkoutInfoResult.error();
+                        response.close();
                         return;
                     }
-                    body.close();
 
                     SignedCheckoutInfo signedCheckoutInfo = GsonHolder.get().fromJson(json, SignedCheckoutInfo.class);
 
@@ -252,6 +246,8 @@ class CheckoutApi {
                         checkoutInfoResult.error();
                     }
                 }
+
+                response.close();
             }
 
             @Override
@@ -285,20 +281,14 @@ class CheckoutApi {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        paymentProcessResult.error();
-                        return;
-                    }
-
                     String json;
                     try {
-                        json = body.string();
+                        json = response.body().string();
                     } catch (IOException e) {
                         paymentProcessResult.error();
+                        response.close();
                         return;
                     }
-                    body.close();
 
                     CheckoutProcessResponse checkoutProcessResponse = GsonHolder.get().fromJson(json,
                             CheckoutProcessResponse.class);
@@ -307,6 +297,8 @@ class CheckoutApi {
 
                     CheckoutApi.this.call = null;
                 }
+
+                response.close();
             }
 
             @Override
@@ -348,20 +340,14 @@ class CheckoutApi {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        paymentProcessResult.error();
-                        return;
-                    }
-
                     String json;
                     try {
-                        json = body.string();
+                        json = response.body().string();
                     } catch (IOException e) {
                         paymentProcessResult.error();
+                        response.close();
                         return;
                     }
-                    body.close();
 
                     CheckoutProcessResponse checkoutProcess = GsonHolder.get().fromJson(json, CheckoutProcessResponse.class);
 
@@ -373,6 +359,8 @@ class CheckoutApi {
                         paymentProcessResult.aborted();
                     }
                 }
+
+                response.close();
             }
 
             @Override

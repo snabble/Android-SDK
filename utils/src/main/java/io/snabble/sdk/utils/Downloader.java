@@ -124,6 +124,7 @@ public abstract class Downloader {
                         if (!response.isSuccessful()) {
                             fail(callback, response);
                             Logger.e("Failed to download (%d) %s", response.code(), url);
+                            response.close();
                             return;
                         }
 
@@ -148,11 +149,6 @@ public abstract class Downloader {
 
                             requestUrl = url;
 
-                            ResponseBody body = response.body();
-                            if (body != null) {
-                                body.close();
-                            }
-
                             synchronized (lock) {
                                 Downloader.this.call = null;
                             }
@@ -163,7 +159,6 @@ public abstract class Downloader {
 
                             Logger.i("Successfully downloaded %s", url);
                         } else {
-
                             if (callback != null) {
                                 callback.success(false);
                             }
@@ -174,6 +169,8 @@ public abstract class Downloader {
                         Logger.d(e.getMessage());
                         retry(callback);
                     }
+
+                    response.close();
                 }
             });
         }

@@ -148,19 +148,10 @@ public class Receipts {
                 if (response.isSuccessful()) {
                     receiptInfo.call = null;
 
-                    ResponseBody body = response.body();
-                    if (body == null) {
-                        if (callback != null) {
-                            callback.failure();
-                        }
-                        return;
-                    }
-
                     // .pdf extension is needed for adobe reader to work
                     File file = new File(storageDirectory, receiptInfo.getId() + ".pdf");
                     FileOutputStream fos = new FileOutputStream(file);
-                    IOUtils.copy(body.byteStream(), fos);
-                    body.close();
+                    IOUtils.copy(response.body().byteStream(), fos);
                     receiptInfo.setFilePath(file.getAbsolutePath());
                     saveReceiptInfo(receiptInfo);
 
@@ -172,6 +163,8 @@ public class Receipts {
                         callback.failure();
                     }
                 }
+
+                response.close();
             }
 
             @Override
