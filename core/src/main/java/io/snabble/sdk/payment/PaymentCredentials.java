@@ -100,7 +100,24 @@ public class PaymentCredentials {
 
     private boolean validateCertificate(X509Certificate certificate) {
         try {
-            InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(R.raw.ca);
+            Snabble snabble = Snabble.getInstance();
+            int caResId;
+
+            switch(snabble.getEnvironment()) {
+                case PRODUCTION:
+                    caResId = R.raw.ca_prod;
+                    break;
+                case STAGING:
+                    caResId = R.raw.ca_staging;
+                    break;
+                case TESTING:
+                    caResId = R.raw.ca_testing;
+                    break;
+                default:
+                    return false;
+            }
+
+            InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(caResId);
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             X509Certificate trustedCA = (X509Certificate) certificateFactory.generateCertificate(is);
 

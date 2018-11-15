@@ -47,6 +47,7 @@ public class Snabble {
     private Config config;
     private List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
     private String versionName;
+    private Environment environment;
 
     private Snabble() {
 
@@ -84,7 +85,6 @@ public class Snabble {
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
         tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
         userPreferences = new UserPreferences(app);
-        paymentCredentialsStore = new PaymentCredentialsStore(app);
         receipts = new Receipts();
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
@@ -94,6 +94,18 @@ public class Snabble {
         } else if (!config.endpointBaseUrl.startsWith("http://") && !config.endpointBaseUrl.startsWith("https://")) {
             config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
         }
+
+        if (config.endpointBaseUrl.startsWith("https://api.snabble.io")) {
+            environment = Environment.PRODUCTION;
+        } else if (config.endpointBaseUrl.startsWith("https://api.snabble-staging.io")){
+            environment = Environment.STAGING;
+        } else if (config.endpointBaseUrl.startsWith("https://api.snabble-testing.io")) {
+            environment = Environment.TESTING;
+        } else {
+            environment = Environment.UNKNOWN;
+        }
+
+        paymentCredentialsStore = new PaymentCredentialsStore(app, environment);
 
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
 
@@ -225,7 +237,24 @@ public class Snabble {
         // this certificate is only for testing purposes
         List<X509Certificate> certificates = new ArrayList<>();
 
-        InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(R.raw.sepa);
+        int crtResId;
+
+        switch(environment) {
+            case PRODUCTION:
+                crtResId = R.raw.gateway_cert_prod;
+                break;
+            case STAGING:
+                crtResId = R.raw.gateway_cert_staging;
+                break;
+            case TESTING:
+                crtResId = R.raw.gateway_cert_testing;
+                break;
+            default:
+                crtResId = R.raw.gateway_cert_prod;
+                break;
+        }
+
+        InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(crtResId);
         CertificateFactory certificateFactory = null;
         try {
             certificateFactory = CertificateFactory.getInstance("X.509");
@@ -342,6 +371,10 @@ public class Snabble {
      */
     public String getClientId() {
         return userPreferences.getClientId();
+    }
+
+    public Environment getEnvironment() {
+        return environment;
     }
 
     public UserPreferences getUserPreferences() {

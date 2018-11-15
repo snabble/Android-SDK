@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Call;
@@ -78,11 +79,13 @@ class CheckoutApi {
 
     public static class PaymentInformation {
         public String qrCodeContent;
+        public String encryptedOrigin;
     }
 
     public static class CheckoutProcessRequest {
         public SignedCheckoutInfo signedCheckoutInfo;
         public PaymentMethod paymentMethod;
+        public PaymentInformation paymentInformation;
     }
 
     public enum PaymentState {
@@ -313,12 +316,18 @@ class CheckoutApi {
         });
     }
 
-    public void createPaymentProcess(final PaymentMethod paymentMethod,
-                                     final SignedCheckoutInfo signedCheckoutInfo,
+    public void createPaymentProcess(final SignedCheckoutInfo signedCheckoutInfo,
+                                     final PaymentMethod paymentMethod,
+                                     final PaymentCredentials paymentCredentials,
                                      final PaymentProcessResult paymentProcessResult) {
         CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
         checkoutProcessRequest.paymentMethod = paymentMethod;
         checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
+
+        if (paymentCredentials != null) {
+            checkoutProcessRequest.paymentInformation = new PaymentInformation();
+            checkoutProcessRequest.paymentInformation.encryptedOrigin = paymentCredentials.getEncryptedData();
+        }
 
         String url = signedCheckoutInfo.getCheckoutProcessLink();
         if (url == null) {

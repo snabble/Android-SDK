@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.Environment;
+import io.snabble.sdk.Snabble;
+
 public class PaymentCredentialsStore {
     private static final String SHARED_PREFERENCES_TAG = "snabble_payment";
     private static final String SHARED_PREFERENCES_CREDENTIALS = "credentials";
@@ -17,9 +20,11 @@ public class PaymentCredentialsStore {
     private SharedPreferences sharedPreferences;
     private List<PaymentCredentials> credentialsList = new ArrayList<>();
     private List<Callback> callbacks = new CopyOnWriteArrayList<>();
+    private String credentialsKey;
 
-    public PaymentCredentialsStore(Context context) {
+    public PaymentCredentialsStore(Context context, Environment environment) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
+        credentialsKey = SHARED_PREFERENCES_CREDENTIALS + "_" + environment.name();
 
         loadFromLocalStore();
     }
@@ -45,13 +50,13 @@ public class PaymentCredentialsStore {
     private void saveToLocalStore() {
         Gson gson = new Gson();
         String json = gson.toJson(credentialsList);
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_CREDENTIALS, json).apply();
+        sharedPreferences.edit().putString(credentialsKey, json).apply();
     }
 
     private void loadFromLocalStore() {
         Gson gson = new Gson();
 
-        String json = sharedPreferences.getString(SHARED_PREFERENCES_CREDENTIALS, null);
+        String json = sharedPreferences.getString(credentialsKey, null);
         if(json != null){
             credentialsList = new ArrayList<>();
 

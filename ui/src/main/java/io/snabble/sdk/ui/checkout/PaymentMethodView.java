@@ -40,7 +40,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
-        //icons.put(PaymentMethod.CASH, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.TELECASH_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
@@ -72,8 +71,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         Resources res = getResources();
         descriptions.clear();
-        descriptions.put(PaymentMethod.CASH, "CASH"); // icon instead?
-        //descriptions.put(PaymentMethod.QRCODE_POS, res.getString(R.string.Snabble_PaymentMethod_qrCodePOS));
+        descriptions.put(PaymentMethod.CASH, "CASH");
 
         project = SnabbleUI.getProject();
         checkout = project.getCheckout();
@@ -138,6 +136,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.TELECASH_DIRECT_DEBIT)) {
                 Entry e = new Entry();
                 e.paymentMethod = PaymentMethod.TELECASH_DIRECT_DEBIT;
+                e.paymentCredentials = p;
                 e.text = p.getObfuscatedId();
                 entries.add(e);
             }
@@ -153,6 +152,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
     private static class Entry {
         String text;
+        PaymentCredentials paymentCredentials;
         PaymentMethod paymentMethod;
         OnClickListener onClickListener;
     }
@@ -180,10 +180,12 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             final Entry e = entries.get(position);
 
             Integer drawableResId = icons.get(e.paymentMethod);
+            ImageView imageView = holder.image;
             if (drawableResId != null) {
-                ImageView imageView = holder.image;
                 imageView.setImageResource(drawableResId);
                 imageView.setVisibility(View.VISIBLE);
+            } else {
+                imageView.setVisibility(View.GONE);
             }
 
             TextView textView = holder.text;
@@ -200,7 +202,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 holder.itemView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        checkout.pay(e.paymentMethod);
+                        checkout.pay(e.paymentMethod, e.paymentCredentials);
                         Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
                     }
                 });

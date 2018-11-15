@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.Logger;
 
 public class Checkout {
@@ -127,6 +128,21 @@ public class Checkout {
         shop = null;
     }
 
+    /**
+     * Cancels outstanding http calls and notifies the backend that the checkout process
+     * was cancelled, but does not notify listeners
+     */
+    public void cancelSilently() {
+        if (state != State.PAYMENT_APPROVED
+                && state != State.DENIED_BY_PAYMENT_PROVIDER
+                && state != State.DENIED_BY_SUPERVISOR
+                && checkoutProcess != null) {
+            checkoutApi.abort(checkoutProcess);
+        }
+
+        reset();
+    }
+
     public void cancelOutstandingCalls() {
         checkoutApi.cancel();
         handler.removeCallbacks(pollRunnable);
@@ -188,8 +204,8 @@ public class Checkout {
                 signedCheckoutInfo = checkoutInfo;
                 priceToPay = onlinePrice;
 
-                if (availablePaymentMethods.length == 1) {
-                    pay(availablePaymentMethods[0], true);
+                if (availablePaymentMethods.length == 1 && !availablePaymentMethods[0].isRequiringCredentials()) {
+                    pay(availablePaymentMethods[0], null, true);
                 } else {
                     notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
                     Logger.d("Payment method requested");
@@ -228,12 +244,15 @@ public class Checkout {
      * {@link Checkout.State#PAYMENT_ABORTED}
      * {@link Checkout.State#DENIED_BY_PAYMENT_PROVIDER}
      * {@link Checkout.State#DENIED_BY_SUPERVISOR}
+     *
+     * @param paymentMethod the payment method to pay with
+     * @param paymentCredentials may be null if the payment method requires no payment credentials
      */
-    public void pay(PaymentMethod paymentMethod) {
-        pay(paymentMethod, false);
+    public void pay(PaymentMethod paymentMethod, PaymentCredentials paymentCredentials) {
+        pay(paymentMethod, paymentCredentials, false);
     }
 
-    private void pay(final PaymentMethod paymentMethod, boolean force) {
+    private void pay(final PaymentMethod paymentMethod, final PaymentCredentials paymentCredentials, boolean force) {
         if (signedCheckoutInfo != null) {
             boolean isRequestingPaymentMethod = (state == State.REQUEST_PAYMENT_METHOD);
             boolean wasRequestingPaymentMethod = (lastState == State.REQUEST_PAYMENT_METHOD
@@ -242,7 +261,8 @@ public class Checkout {
             if (force || isRequestingPaymentMethod || ((state == State.CONNECTION_ERROR || state == State.NONE) && wasRequestingPaymentMethod)) {
                 this.paymentMethod = paymentMethod;
 
-                checkoutApi.createPaymentProcess(paymentMethod, signedCheckoutInfo, new CheckoutApi.PaymentProcessResult() {
+                checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
+                        new CheckoutApi.PaymentProcessResult() {
                     @Override
                     public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
                         checkoutProcess = checkoutProcessResponse;
@@ -376,7 +396,7 @@ public class Checkout {
                                         PaymentMethod[] availablePaymentMethods) {
                         priceToPay = onlinePrice;
 
-                        checkoutApi.createPaymentProcess(pm, signedCheckoutInfo,
+                        checkoutApi.createPaymentProcess(signedCheckoutInfo, pm, null,
                                 new CheckoutApi.PaymentProcessResult() {
                             @Override
                             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
