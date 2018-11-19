@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
@@ -15,6 +16,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.utils.IntRange;
 
 public class ProductResolver {
     private View snackbarHost;
@@ -24,6 +26,7 @@ public class ProductResolver {
     private Context context;
     private OnShowListener onShowListener;
     private OnDismissListener onDismissListener;
+    private BarcodeFormat barcodeFormat;
 
     public ProductResolver(Context context) {
         this.context = context;
@@ -59,6 +62,10 @@ public class ProductResolver {
         this.scannableCode = scannableCode;
     }
 
+    public void setBarcodeFormat(BarcodeFormat barcodeFormat) {
+        this.barcodeFormat = barcodeFormat;
+    }
+
     private void lookupAndShowProduct(final ScannableCode scannedCode) {
         productConfirmationDialog.dismiss();
         progressDialog.showAfterDelay(300);
@@ -69,8 +76,8 @@ public class ProductResolver {
 
         ProductDatabase productDatabase = SnabbleUI.getProject().getProductDatabase();
 
-        if(scannedCode.hasEmbeddedData()){
-            productDatabase.findByWeighItemIdOnline(scannedCode.getLookupCode(), new OnProductAvailableListener() {
+        if(scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0) {
+            productDatabase.findByWeighItemIdOnline(scannedCode.getMaskedCode(), new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
@@ -87,7 +94,15 @@ public class ProductResolver {
                 }
             });
         } else {
-            productDatabase.findByCodeOnline(scannedCode.getCode(), new OnProductAvailableListener() {
+            String lookupCode = scannedCode.getLookupCode();
+            if (barcodeFormat != null) {
+                IntRange range = SnabbleUI.getProject().getRangeForBarcodeFormat(barcodeFormat);
+                if (range != null) {
+                    lookupCode = lookupCode.substring(range.min, range.max);
+                }
+            }
+
+            productDatabase.findByCodeOnline(lookupCode, new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
@@ -221,6 +236,11 @@ public class ProductResolver {
 
         public Builder setCode(String code) {
             productResolver.setScannableCode(code);
+            return this;
+        }
+
+        public Builder setBarcodeFormat(BarcodeFormat barcodeFormat) {
+            productResolver.barcodeFormat = barcodeFormat;
             return this;
         }
 

@@ -150,9 +150,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         startBarcodeScanner();
     }
 
-    public void lookupAndShowProduct(final ScannableCode scannedCode) {
+    public void lookupAndShowProduct(ScannableCode scannedCode, BarcodeFormat barcodeFormat) {
         new ProductResolver.Builder(getContext())
                 .setCode(scannedCode.getCode())
+                .setBarcodeFormat(barcodeFormat)
                 .setOnShowListener(new ProductResolver.OnShowListener() {
                     @Override
                     public void onShow() {
@@ -170,7 +171,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .show();
     }
 
-    public void lookupAndShowProduct(final ScannableCode scannedCode) {
+    public void lookupAndShowProduct(ScannableCode scannedCode) {
         lookupAndShowProduct(scannedCode, null);
     }
 
