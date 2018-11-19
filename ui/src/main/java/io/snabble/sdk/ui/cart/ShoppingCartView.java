@@ -65,7 +65,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
-    private int emptyStateLayoutResId;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
@@ -90,11 +89,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public void onItemRemoved(ShoppingCart list, Product product) {
-            onCartUpdated();
 
-            if (snackbar != null) {
-                snackbar.show();
-            }
         }
     };
 
@@ -132,14 +127,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         emptyState = findViewById(R.id.empty_state);
-
-        if (attrs != null) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ShoppingCartView);
-            setEmptyStateLayoutResId(typedArray.getResourceId(R.styleable.ShoppingCartView_emptyState, 0));
-            typedArray.recycle();
-        } else {
-            setEmptyStateLayoutResId(0);
-        }
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -235,7 +222,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void removeAndShowUndoSnackbar(final int pos, final Product product, final String scannedCode, final int quantity, final boolean isZeroAmountProduct) {
         cart.removeAll(pos);
         Telemetry.event(Telemetry.Event.DeletedFromCart, product);
-        recyclerView.getAdapter().notifyItemRemoved(pos);
+        recyclerView.getAdapter().notifyDataSetChanged();
         update();
 
         snackbar = UIUtils.snackbar(coordinatorLayout,
@@ -249,6 +236,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
             }
         });
+
+        snackbar.show();
     }
 
     @Override
@@ -267,18 +256,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             progressDialog.dismiss();
         } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {
             progressDialog.dismiss();
-        }
-    }
-
-    public void setEmptyStateLayoutResId(@LayoutRes int resId) {
-        if (resId == 0) {
-            resId = R.layout.view_shopping_cart_empty_state;
-        }
-
-        if (emptyStateLayoutResId != resId) {
-            emptyStateLayoutResId = resId;
-            emptyState.removeAllViews();
-            inflate(getContext(), resId, emptyState);
         }
     }
 

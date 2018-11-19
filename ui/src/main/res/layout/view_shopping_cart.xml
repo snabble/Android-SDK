@@ -36,12 +36,37 @@
             tools:text="Pay 47€ for 11 articles" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <LinearLayout
         android:id="@+id/empty_state"
-        android:visibility="gone"
-        android:clipChildren="false">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clipChildren="false"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    </FrameLayout>
+        <io.snabble.sdk.ui.scanner.BarcodeView
+            android:layout_width="200dp"
+            android:layout_height="72dp"
+            android:layout_marginBottom="24dp"
+            android:background="?android:attr/windowBackground"
+            app:adjustBrightness="false"
+            app:format="EAN_13"
+            app:text="0000000000000" />
+
+        <TextView
+            android:layout_width="288dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="@string/Snabble.Shoppingcart.emptyState.description" />
+
+        <Button
+            android:id="@+id/scan_products"
+            style="@style/SnabbleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/Snabble.Shoppingcart.emptyState.buttonTitle" />
+    </LinearLayout>
 </FrameLayout>

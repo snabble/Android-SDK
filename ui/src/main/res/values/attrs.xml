@@ -5,8 +5,4 @@
         <attr name="format" format="string" />
         <attr name="adjustBrightness" format="boolean" />
     </declare-styleable>
-
-    <declare-styleable name="ShoppingCartView">
-        <attr name="emptyState" format="reference" />
-    </declare-styleable>
 </resources>

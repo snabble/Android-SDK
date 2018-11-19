@@ -129,6 +129,10 @@ public class SelfScanningFragment extends Fragment {
         }
     }
 
+    public SelfScanningView getSelfScanningView() {
+        return selfScanningView;
+    }
+
     public void setAllowShowingHints(boolean allowShowingHints) {
         this.allowShowingHints = allowShowingHints;
     }
