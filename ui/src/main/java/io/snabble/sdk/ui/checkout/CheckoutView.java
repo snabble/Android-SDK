@@ -93,7 +93,8 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayPaymentView();
                 break;
             case PAYMENT_APPROVED:
-                if (previousState != null && checkout.getSelectedPaymentMethod() == PaymentMethod.CASH) {
+                if (previousState != null && (checkout.getSelectedPaymentMethod() == PaymentMethod.CASH
+                        || checkout.getSelectedPaymentMethod() == PaymentMethod.TELECASH_DIRECT_DEBIT)) {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {

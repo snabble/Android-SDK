@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Base64;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -48,6 +52,7 @@ public class Snabble {
     private List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
     private String versionName;
     private Environment environment;
+    private List<X509Certificate> paymentCertificates;
 
     private Snabble() {
 
@@ -105,8 +110,6 @@ public class Snabble {
             environment = Environment.UNKNOWN;
         }
 
-        paymentCredentialsStore = new PaymentCredentialsStore(app, environment);
-
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
@@ -154,46 +157,91 @@ public class Snabble {
 
     private synchronized void readMetadata() {
         JsonObject jsonObject = metadataDownloader.getJsonObject();
-        if (jsonObject != null && jsonObject.has("projects")) {
-            JsonArray jsonArray = jsonObject.get("projects").getAsJsonArray();
-            List<Project> newProjects = new ArrayList<>();
+        if (jsonObject != null) {
+            if (jsonObject.has("projects")) {
+                parseProjects(jsonObject);
+            }
 
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JsonObject jsonProject = jsonArray.get(i).getAsJsonObject();
+            if (jsonObject.has("gatewayCertificates")) {
+                parsePaymentCertificates(jsonObject);
+            }
+        }
+    }
 
-                // first try to find an already existing project and update it, so that
-                // the object reference can be stored somewhere and still be up to date
-                boolean updated = false;
-                if (jsonProject.has("id")) {
-                    for (Project p : projects) {
-                        if (p.getId().equals(jsonProject.get("id").getAsString())) {
-                            try {
-                                p.parse(jsonProject);
-                                newProjects.add(p);
-                            } catch (IllegalArgumentException e) {
-                                // malformed project, do nothing
-                            }
+    private void parseProjects(JsonObject jsonObject) {
+        JsonArray jsonArray = jsonObject.get("projects").getAsJsonArray();
+        List<Project> newProjects = new ArrayList<>();
 
-                            updated = true;
-                            break;
-                        }
-                    }
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonProject = jsonArray.get(i).getAsJsonObject();
 
-                    // if it does not exist, add it
-                    if (!updated) {
+            // first try to find an already existing project and update it, so that
+            // the object reference can be stored somewhere and still be up to date
+            boolean updated = false;
+            if (jsonProject.has("id")) {
+                for (Project p : projects) {
+                    if (p.getId().equals(jsonProject.get("id").getAsString())) {
                         try {
-                            Project project = new Project(jsonProject);
-                            newProjects.add(project);
+                            p.parse(jsonProject);
+                            newProjects.add(p);
                         } catch (IllegalArgumentException e) {
                             // malformed project, do nothing
                         }
+
+                        updated = true;
+                        break;
+                    }
+                }
+
+                // if it does not exist, add it
+                if (!updated) {
+                    try {
+                        Project project = new Project(jsonProject);
+                        newProjects.add(project);
+                    } catch (IllegalArgumentException e) {
+                        // malformed project, do nothing
                     }
                 }
             }
-
-            projects = Collections.unmodifiableList(newProjects);
-            receipts.loadFromSharedPreferences();
         }
+
+        projects = Collections.unmodifiableList(newProjects);
+        receipts.loadFromSharedPreferences();
+    }
+
+    private void parsePaymentCertificates(JsonObject jsonObject) {
+        List<X509Certificate> certificates = new ArrayList<>();
+
+        JsonArray certs = jsonObject.get("gatewayCertificates").getAsJsonArray();
+        for (int i=0; i<certs.size(); i++) {
+            JsonElement jsonElement = certs.get(i);
+            if (jsonElement.isJsonObject()) {
+                JsonObject cert = jsonElement.getAsJsonObject();
+                JsonElement value = cert.get("value");
+                if (value != null) {
+                    byte[] bytes = Base64.decode(value.getAsString(), Base64.DEFAULT);
+                    InputStream is = new ByteArrayInputStream(bytes);
+                    CertificateFactory certificateFactory = null;
+                    try {
+                        certificateFactory = CertificateFactory.getInstance("X.509");
+                    } catch (CertificateException e) {
+                        e.printStackTrace();
+                    }
+
+                    X509Certificate certificate = null;
+                    try {
+                        certificate = (X509Certificate) certificateFactory.generateCertificate(is);
+                    } catch (CertificateException e) {
+                        e.printStackTrace();
+                    }
+                    certificates.add(certificate);
+
+                }
+            }
+        }
+
+        paymentCertificates = Collections.unmodifiableList(certificates);
+        paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
     }
 
     public String absoluteUrl(String url) {
@@ -233,42 +281,7 @@ public class Snabble {
     }
 
     public List<X509Certificate> getPaymentSigningCertificates() {
-        // TODO parse certificates from metadata
-        // this certificate is only for testing purposes
-        List<X509Certificate> certificates = new ArrayList<>();
-
-        int crtResId;
-
-        switch(environment) {
-            case PRODUCTION:
-                crtResId = R.raw.gateway_cert_prod;
-                break;
-            case STAGING:
-                crtResId = R.raw.gateway_cert_staging;
-                break;
-            case TESTING:
-                crtResId = R.raw.gateway_cert_testing;
-                break;
-            default:
-                crtResId = R.raw.gateway_cert_prod;
-                break;
-        }
-
-        InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(crtResId);
-        CertificateFactory certificateFactory = null;
-        try {
-            certificateFactory = CertificateFactory.getInstance("X.509");
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        }
-        X509Certificate certificate = null;
-        try {
-            certificate = (X509Certificate) certificateFactory.generateCertificate(is);
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        }
-        certificates.add(certificate);
-        return Collections.unmodifiableList(certificates);
+        return Collections.unmodifiableList(paymentCertificates);
     }
 
     /**
