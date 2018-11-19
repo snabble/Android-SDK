@@ -166,6 +166,8 @@ public class Snabble {
                 parsePaymentCertificates(jsonObject);
             }
         }
+        
+        paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
     }
 
     private void parseProjects(JsonObject jsonObject) {
@@ -234,7 +236,6 @@ public class Snabble {
         }
 
         paymentCertificates = Collections.unmodifiableList(certificates);
-        paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
     }
 
     public String absoluteUrl(String url) {
