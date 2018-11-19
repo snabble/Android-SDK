@@ -16,7 +16,7 @@ import io.snabble.sdk.utils.Logger;
 
 class SelectBundleDialog {
     public static void show(Context context, Product product, final Callback callback) {
-        if(callback == null) {
+        if (callback == null) {
             Logger.e("No callback provided");
             return;
         }
@@ -48,13 +48,13 @@ class SelectBundleDialog {
         Product[] bundles = product.getBundleProducts();
         final Product[] products = new Product[bundles.length + 1];
         products[0] = product;
-        int i=1;
-        for(Product p : bundles) {
+        int i = 1;
+        for (Product p : bundles) {
             products[i] = p;
             i++;
         }
 
-        for(final Product p : products) {
+        for (final Product p : products) {
             View itemView = View.inflate(context, R.layout.item_bundle_select, null);
             TextView name = itemView.findViewById(R.id.name);
             name.setText(p.getName());
@@ -84,6 +84,7 @@ class SelectBundleDialog {
 
     public interface Callback {
         void onProductSelected(Product product);
+
         void onDismissed();
     }
 }

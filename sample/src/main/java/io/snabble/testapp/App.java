@@ -1,7 +1,8 @@
 package io.snabble.testapp;
 
 import android.app.Application;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+
 import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -10,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
@@ -41,6 +43,27 @@ public class App extends Application {
         instance = this;
     }
 
+    public void initBlocking() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        init(new InitCallback() {
+            @Override
+            public void done() {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void error(String text) {
+                countDownLatch.countDown();
+            }
+        });
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void init(final InitCallback callback) {
         if(project != null){
             callback.done();
@@ -66,14 +89,17 @@ public class App extends Application {
 
                 // select the first shop for demo purposes
                 if (project.getShops().length > 0) {
-                    project.getCheckout().setShop(project.getShops()[0]);
+                    project.setCheckedInShop(project.getShops()[0]);
                 }
 
-                project.getProductDatabase().update();
+                //project.getProductDatabase().update();
 
                 // optionally set a loyalty card id for identification, for demo purposes
                 // we invent one here
                 project.setLoyaltyCardId("testAppUserLoyaltyCardId");
+
+                // if you want to force keyguard authentication before online payment
+                snabble.getUserPreferences().setRequireKeyguardAuthenticationForPayment(true);
 
                 callback.done();
             }

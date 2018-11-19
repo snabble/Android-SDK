@@ -2,7 +2,8 @@ package io.snabble.sdk;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,9 +107,10 @@ public class ShoppingCart {
         Entry e = getEntryBySku(product.getSku());
 
         if (e == null || scannedCode.hasUnitData()
+                || scannedCode.hasPriceData()
                 || product.getType() == Product.Type.UserWeighed
                 || product.getType() == Product.Type.PreWeighed) {
-            if(quantity > 0) {
+            if (quantity > 0) {
                 Entry entry = new Entry(product, quantity);
                 setScannedCodeForEntry(entry, scannedCode);
                 entry.isZeroAmountProduct = isZeroAmountProduct;
@@ -135,7 +137,7 @@ public class ShoppingCart {
                 setScannedCodeForEntry(e, scannedCode);
             }
 
-             setEntryQuantity(e, quantity);
+            setEntryQuantity(e, quantity);
         }
     }
 
@@ -148,6 +150,9 @@ public class ShoppingCart {
             Entry e = getEntryBySku(product.getSku());
 
             if (e != null) {
+                // update product for changing prices
+                e.product = product;
+
                 if (scannedCode != null) {
                     setScannedCodeForEntry(e, scannedCode);
                 }
@@ -273,9 +278,9 @@ public class ShoppingCart {
     }
 
     public void checkForTimeout() {
-        long currentTime = SystemClock.elapsedRealtime();
+        long currentTime = System.currentTimeMillis();
 
-        if(lastModificationTime + TIMEOUT < currentTime){
+        if (lastModificationTime + TIMEOUT < currentTime) {
             invalidate();
         }
     }
@@ -327,19 +332,19 @@ public class ShoppingCart {
 
     public void setScannedCode(int index, ScannableCode scannableCode) {
         Entry e = getEntry(index);
-        if(e != null) {
+        if (e != null) {
             setScannedCodeForEntry(e, scannableCode);
         }
     }
 
-    private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode){
+    private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode) {
         entry.scannedCode = findCodeByScannedCode(entry.product, scannedCode);
 
-        if(scannedCode.hasWeighData()){
+        if (scannedCode.hasWeighData()) {
             entry.weight = scannedCode.getEmbeddedData();
-        } else if(scannedCode.hasPriceData()){
+        } else if (scannedCode.hasPriceData()) {
             entry.price = scannedCode.getEmbeddedData();
-        } else if(scannedCode.hasUnitData()){
+        } else if (scannedCode.hasUnitData()) {
             entry.amount = scannedCode.getEmbeddedData();
         }
 
@@ -347,23 +352,33 @@ public class ShoppingCart {
         notifyQuantityChanged(this, entry.product);
     }
 
+    private String findCodeByScannedCode(Product product, ScannableCode scannableCode) {
+        String code = findCodeByScannedCodeInternal(product, scannableCode, true);
+        return code != null ? code : scannableCode.getCode();
+    }
+
     // finds the code matching the code in the product if it was scanned with leading zeros
     // and the leading zeros are missing in the scannableCodes of the product
-    private String findCodeByScannedCode(Product product, ScannableCode scannableCode) {
+    private String findCodeByScannedCodeInternal(Product product, ScannableCode scannableCode, boolean recursive) {
         String scannedCode = scannableCode.getCode();
 
-        for(String code : product.getScannableCodes()){
-            if(code.equals(scannedCode)){
+        for (String code : product.getScannableCodes()) {
+            if (code.equals(scannedCode)) {
                 return code;
             }
         }
 
-        if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
-            scannedCode = scannedCode.substring(1, scannedCode.length());
-            return findCodeByScannedCode(product, ScannableCode.parse(project, scannedCode));
+        if (recursive) {
+            if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
+                scannedCode = scannedCode.substring(1, scannedCode.length());
+                return findCodeByScannedCodeInternal(product, ScannableCode.parse(project, scannedCode), true);
+            } else if (scannedCode.length() < 13) {
+                scannedCode = StringUtils.repeat('0', 13 - scannedCode.length()) + scannedCode;
+                return findCodeByScannedCodeInternal(product, ScannableCode.parse(project, scannedCode), false);
+            }
         }
 
-        return scannedCode;
+        return null;
     }
 
     private int indexOf(Entry e) {
@@ -402,11 +417,11 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product product = e.product;
 
-                if(e.weight != null){
+                if (e.weight != null) {
                     sum += product.getPriceForQuantity(e.weight, project.getRoundingMode());
-                } else if(e.price != null){
+                } else if (e.price != null) {
                     sum += e.price;
-                } else if(e.amount != null){
+                } else if (e.amount != null) {
                     sum += product.getPrice() * e.amount;
                 } else {
                     sum += product.getPriceForQuantity(e.quantity, project.getRoundingMode());
@@ -425,7 +440,7 @@ public class ShoppingCart {
 
             for (Entry e : items) {
                 Product depositProduct = e.product.getDepositProduct();
-                if(depositProduct != null){
+                if (depositProduct != null) {
                     sum += depositProduct.getPriceForQuantity(e.quantity, project.getRoundingMode());
                 }
             }
@@ -453,7 +468,7 @@ public class ShoppingCart {
     }
 
     private void updateTimestamp() {
-        lastModificationTime = SystemClock.elapsedRealtime();
+        lastModificationTime = System.currentTimeMillis();
     }
 
     /**

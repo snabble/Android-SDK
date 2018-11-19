@@ -58,6 +58,26 @@
 	<string name="Snabble.PaymentMethod.qrCodePOS">Checkstand</string>
 	<string name="Snabble.Hints.title">Hint from %s</string>
 	<string name="Snabble.Hints.closedBags">Please make it easy for the cashier and do not put your items directly in closed pockets. Thank you!</string>
+	<string name="Snabble.Hints.continueScanning">Continue scanning</string>
+	<string name="Snabble.PaymentStatus.step1">Localization in the cash register area</string>
+	<string name="Snabble.PaymentStatus.step2">Processing purchase</string>
+	<string name="Snabble.PaymentStatus.step3">Processing payment</string>
+	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
+	<string name="Snabble.Receipt.title">Receipts</string>
+	<string name="Snabble.Receipt.noReceipt">No receipts found</string>
+
+	<string name="Snabble.Payment.SEPA.Name">Name</string>
+	<string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
+	<string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
+	<string name="Snabble.Payment.SEPA.InvalidName">Please enter a name.</string>
+
+	<string name="Snabble.Save">Save</string>
+
+	<string name="Snabble.Payment.emptyState.message">You don\'t have any payment methods added yet. Add one now to conveniently check out.</string>
+	<string name="Snabble.Payment.emptyState.add">Add SEPA credentials</string>
+	<string name="Snabble.Payment.delete.message">Are you sure you want to remove this payment method?</string>
+
+	<string name="Snabble.Payment.add">Add SEPA credentials</string>
 
 	<!-- SECTION: Android -->
 	<string name="Snabble.askForPermission">Ask for permission</string>
@@ -66,4 +86,5 @@
 	<string name="Snabble.Payment.success">Thank you for your purchase</string>
 	<string name="Snabble.Shoppingcart.articleRemoved">Article removed</string>
 	<string name="Snabble.loadingProductInformation">Loading product information...</string>
+	<string name="Snabble.Receipt.pdfReaderUnavailable">No suitable PDF reader application found</string>
 </resources>

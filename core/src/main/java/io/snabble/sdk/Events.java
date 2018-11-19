@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
@@ -16,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.Call;
@@ -28,8 +27,6 @@ import okhttp3.Response;
 
 class Events {
     private Project project;
-    private Gson gson;
-
     private String cartId;
     private Shop shop;
 
@@ -41,7 +38,6 @@ class Events {
     @SuppressLint("SimpleDateFormat")
     public Events(Project project) {
         this.project = project;
-        this.gson = new GsonBuilder().create();
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -49,7 +45,7 @@ class Events {
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
             public void onChanged(ShoppingCart list) {
-                if(cartId != null && !list.getId().equals(cartId)){
+                if (cartId != null && !list.getId().equals(cartId)) {
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
                     post(payloadSessionEnd);
@@ -64,7 +60,7 @@ class Events {
             public void onActivityResumed(Activity activity) {
                 isResumed = true;
 
-                if(!hasSentSessionStart) {
+                if (!hasSentSessionStart) {
                     updateShop(shop);
                 }
             }
@@ -77,7 +73,7 @@ class Events {
     }
 
     public void updateShop(Shop newShop) {
-        if(newShop != null){
+        if (newShop != null) {
             cartId = project.getShoppingCart().getId();
             shop = newShop;
 
@@ -94,19 +90,27 @@ class Events {
         }
     }
 
+    public void logError(String format, Object... args) {
+        PayloadError error = new PayloadError();
+        error.message = String.format(format, args);
+        error.session = cartId;
+
+        post(error);
+    }
+
     private <T extends Payload> void post(final T payload) {
-        if(!isResumed) {
+        if (!isResumed) {
             Logger.d("Could not send event, app is not active: " + payload.getEventType());
             return;
         }
 
         String url = project.getEventsUrl();
-        if(url == null){
+        if (url == null) {
             Logger.e("Could not post event: no events url");
             return;
         }
 
-        if(shop == null) {
+        if (shop == null) {
             return;
         }
 
@@ -116,9 +120,11 @@ class Events {
         event.project = project.getId();
         event.shopId = shop.getId();
         event.timestamp = simpleDateFormat.format(new Date());
-        event.payload = gson.toJsonTree(payload);
+        event.payload = GsonHolder.get().toJsonTree(payload);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), gson.toJson(event));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"),
+                GsonHolder.get().toJson(event));
+
         final Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
@@ -132,11 +138,13 @@ class Events {
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) {
-                        if(response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                             Logger.d("Successfully posted event: " + payload.getEventType());
                         } else {
                             Logger.e("Failed to post event: " + payload.getEventType() + ", code " + response.code());
                         }
+
+                        response.close();
                     }
 
                     @Override
@@ -148,7 +156,7 @@ class Events {
             }
         }, event.type, SystemClock.uptimeMillis() + 2000);
 
-        if(event.type == EventType.SESSION_START) {
+        if (event.type == EventType.SESSION_START) {
             hasSentSessionStart = true;
         }
     }
@@ -166,7 +174,7 @@ class Events {
             payloadCart.customer.loyaltyCard = loyaltyCardId;
         }
 
-        Shop shop = project.getCheckout().getShop();
+        Shop shop = project.getCheckedInShop();
         if (shop != null) {
             String id = shop.getId();
             if (id != null) {
@@ -182,13 +190,13 @@ class Events {
 
             payloadCart.items[i] = new PayloadCartItem();
             payloadCart.items[i].sku = String.valueOf(product.getSku());
-            payloadCart.items[i].scannedCode =  shoppingCart.getScannedCode(i);
+            payloadCart.items[i].scannedCode = shoppingCart.getScannedCode(i);
             payloadCart.items[i].amount = quantity;
             payloadCart.items[i].units = shoppingCart.getEmbeddedUnits(i);
             payloadCart.items[i].weight = shoppingCart.getEmbeddedWeight(i);
             payloadCart.items[i].price = shoppingCart.getEmbeddedPrice(i);
 
-            if(product.getType() == Product.Type.UserWeighed){
+            if (product.getType() == Product.Type.UserWeighed) {
                 payloadCart.items[i].amount = 1;
                 payloadCart.items[i].weight = quantity;
             }
@@ -198,7 +206,7 @@ class Events {
     }
 
     public String getPayloadCartJson() {
-        return gson.toJson(getPayloadCart());
+        return GsonHolder.get().toJson(getPayloadCart());
     }
 
     private enum EventType {

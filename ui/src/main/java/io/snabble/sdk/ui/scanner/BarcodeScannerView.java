@@ -13,8 +13,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.utils.Logger;
 
@@ -79,7 +80,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private boolean startRequested;
 
     private List<BarcodeFormat> supportedBarcodeFormats = new ArrayList<>();
-    private boolean manualAutoFocus;
     private int surfaceWidth;
     private int surfaceHeight;
     private TextureView textureView;
@@ -98,6 +98,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private int bitsPerPixel;
     private boolean indicatorEnabled = true;
     private FrameLayout splashView;
+    private FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter();
 
     public BarcodeScannerView(Context context) {
         super(context);
@@ -115,13 +116,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void init() {
-        if(cameraHandler == null) {
+        if (cameraHandler == null) {
             HandlerThread cameraHandlerThread = new HandlerThread("CameraHandler");
             cameraHandlerThread.start();
             cameraHandler = new Handler(cameraHandlerThread.getLooper());
         }
 
-        if(barcodeProcessingHandler == null) {
+        if (barcodeProcessingHandler == null) {
             HandlerThread frameProcessingThread = new HandlerThread("BarcodeFrameProcessor");
             frameProcessingThread.start();
             barcodeProcessingHandler = new Handler(frameProcessingThread.getLooper());
@@ -148,6 +149,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 ViewGroup.LayoutParams.MATCH_PARENT));
         cameraUnavailableView.setText(R.string.Snabble_Scanner_Camera_accessDenied);
         cameraUnavailableView.setGravity(Gravity.CENTER);
+        cameraUnavailableView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.snabble_textColorLight, null));
+        cameraUnavailableView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.snabble_backgroundColorDark, null));
         cameraUnavailableView.setVisibility(View.GONE);
         addView(cameraUnavailableView);
 
@@ -181,7 +184,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraHandler.post(new Runnable() {
             @Override
             public void run() {
-                if(!running) {
+                if (!running) {
                     startRequested = true;
                     startIfRequested();
                 }
@@ -189,7 +192,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         });
     }
 
-    private void startIfRequestedAsync(){
+    private void startIfRequestedAsync() {
         splashView.setVisibility(View.VISIBLE);
         cameraHandler.post(new Runnable() {
             @Override
@@ -211,6 +214,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 if (running) {
                     isProcessing = false;
                     camera.stopPreview();
+                    camera.setPreviewCallbackWithBuffer(null);
                     decodeEnabled = false;
                 }
             }
@@ -224,26 +228,29 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraHandler.post(new Runnable() {
             @Override
             public void run() {
+                resetFalsePositiveFilter();
                 isPaused = false;
 
-                if(!running){
+                if (!running) {
                     start();
                 } else {
-                    isPaused = false;
-
                     // as stated in the documentation:
                     // focus parameters may not be preserved across preview restarts
                     Camera.Parameters parameters = camera.getParameters();
                     chooseFocusMode(parameters);
                     camera.setParameters(parameters);
-                    camera.startPreview();
+
+                    try {
+                        camera.startPreview();
+                    } catch (RuntimeException e) {
+                        showError(true);
+                        return;
+                    }
 
                     clearBuffers();
                     decodeEnabled = true;
 
                     synchronized (frameBufferLock) {
-                        // some Samsung devices are sometimes unregistering the preview callback
-                        // when calling stopPreview, so we are registering it here again
                         camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
                         camera.addCallbackBuffer(backBuffer);
                     }
@@ -259,7 +266,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             return;
         }
 
-        setupZxing();
+        resetFalsePositiveFilter();
+        setupZXing();
 
         showError(false);
 
@@ -298,7 +306,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         try {
             camera.setDisplayOrientation(displayOrientation);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             // happens in very rare cases on the HUAWEI Mate 9.
             // sendCommand: attempt to use a locked camera from a different process
             // show a user error in that case
@@ -342,7 +350,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         try {
             camera.startPreview();
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             showError(true);
             return;
         }
@@ -360,10 +368,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         camera.setPreviewCallbackWithBuffer(this);
         camera.addCallbackBuffer(backBuffer);
-
-        if (manualAutoFocus) {
-            scheduleAutoFocus();
-        }
 
         detectionRect.left = 0;
         detectionRect.top = 0;
@@ -383,11 +387,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             }
         });
 
+        scheduleAutoFocus();
         showError(false);
 
         if (isPaused) {
             camera.stopPreview();
+            camera.setPreviewCallbackWithBuffer(null);
         }
+    }
+
+    private void resetFalsePositiveFilter() {
+        barcodeProcessingHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                falsePositiveFilter.reset();
+            }
+        });
     }
 
     private void chooseOptimalPreviewSize(Camera.Parameters parameters) {
@@ -423,10 +438,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private void chooseFocusMode(Camera.Parameters parameters) {
         List<String> supportedFocusModes = parameters.getSupportedFocusModes();
         if (supportedFocusModes != null) {
-            if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-            } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
-                manualAutoFocus = true;
+            if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
         }
@@ -470,7 +482,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 try {
                     camera.setParameters(parameters);
                     torchEnabled = enabled;
-                } catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     // this is terrible, but happens on some devices in rare circumstances
                 }
             }
@@ -500,27 +512,24 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             public void run() {
                 if (running) {
                     try {
-                        camera.autoFocus(new Camera.AutoFocusCallback() {
-                            @Override
-                            public void onAutoFocus(boolean success, Camera camera) {
-                                scheduleAutoFocus();
-                            }
-                        });
+                        camera.autoFocus(null);
                     } catch (RuntimeException e) {
-                        // ignore, happens mostly when calling autoFocus while its still focussing
+                        //ignore, happens mostly when calling autoFocus while its still focussing
                     }
+
+                    scheduleAutoFocus();
                 }
             }
-        }, 2000);
+        }, 1000);
     }
 
-    private void setupZxing() {
+    private void setupZXing() {
         Map<DecodeHintType, Object> hints = new HashMap<>();
         multiFormatReader = new MultiFormatReader();
 
         List<com.google.zxing.BarcodeFormat> formats = new ArrayList<>();
         for (BarcodeFormat barcodeFormat : supportedBarcodeFormats) {
-            formats.add(barcodeFormat.getZxingBarcodeFormat());
+            formats.add(ZXingHelper.toZXingFormat(barcodeFormat));
         }
 
         hints.put(DecodeHintType.POSSIBLE_FORMATS, formats);
@@ -577,6 +586,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             public void run() {
                 if (running) {
                     camera.stopPreview();
+                    camera.setPreviewCallbackWithBuffer(null);
                     camera.release();
                     camera = null;
                     running = false;
@@ -646,7 +656,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             nextDetectionTimeMs = SystemClock.elapsedRealtime() + detectionDelayMs;
 
             barcodeProcessingHandler.post(new Runnable() {
-                @SuppressWarnings("SuspiciousNameCombination")
                 @Override
                 public void run() {
                     if (!isAttachedToWindow || !decodeEnabled) {
@@ -655,24 +664,34 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                     }
 
                     Result result = detect(false);
-                    if(result == null) {
+                    if (result == null) {
                         result = detect(true);
                     }
 
-                    if(result != null) {
+                    if (result != null) {
                         final Result finalResult = result;
 
                         mainThreadHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
-                                    Barcode barcode = new Barcode(
-                                            BarcodeFormat.valueOf(finalResult.getBarcodeFormat()),
-                                                                  finalResult.getText(),
-                                                                  finalResult.getTimestamp());
+                                    // ZXing decodes all ITF_14 lengths, but we only care about ITF14.
+                                    if (finalResult.getBarcodeFormat() == com.google.zxing.BarcodeFormat.ITF) {
+                                        if (finalResult.getText().length() != 14) {
+                                            return;
+                                        }
+                                    }
 
-                                    Logger.d("Detected barcode: " + barcode.toString());
-                                    callback.onBarcodeDetected(barcode);
+                                    Barcode barcode = new Barcode(
+                                            ZXingHelper.fromZXingFormat(finalResult.getBarcodeFormat()),
+                                            finalResult.getText(),
+                                            finalResult.getTimestamp());
+
+                                    Barcode filtered = falsePositiveFilter.filter(barcode);
+                                    if (filtered != null) {
+                                        Logger.d("Detected barcode: " + barcode.toString());
+                                        callback.onBarcodeDetected(barcode);
+                                    }
                                 }
                             }
                         });
@@ -749,7 +768,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void setScanIndicatorVisible(boolean visible) {
-        if (indicatorEnabled && visible){
+        if (indicatorEnabled && visible) {
             scanIndicatorView.setVisibility(View.VISIBLE);
         } else {
             scanIndicatorView.setVisibility(View.GONE);
@@ -770,7 +789,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void updateTransform() {
-        if(camera == null || previewSize == null){
+        if (camera == null || previewSize == null) {
             return;
         }
 
@@ -853,7 +872,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         float rightNormalized = right / destWidthScaled;
         float bottomNormalized = bottom / destHeightScaled;
 
-        if(isInPortraitMode()){
+        if (isInPortraitMode()) {
             detectionRect.left = Math.round(previewSize.width * topNormalized);
             detectionRect.top = Math.round(previewSize.height * leftNormalized);
             detectionRect.right = Math.round(previewSize.width * bottomNormalized);
@@ -867,8 +886,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         int size = detectionRect.width() * detectionRect.height() * bitsPerPixel / 8;
 
-        if(cropBuffer == null || cropBuffer.length != size) {
-            cropBuffer = new byte[detectionRect.width() * detectionRect.height() * bitsPerPixel / 8];
+        if (cropBuffer == null || cropBuffer.length != size) {
+            cropBuffer = new byte[size];
         }
 
         textureView.setTransform(transform);
@@ -901,7 +920,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
 
         if (rotate90deg) {
-            int i=0;
+            int i = 0;
             for (int x = left; x < right; x++) {
                 for (int y = bottom - 1; y >= top; y--) {
                     buf[i] = data[y * width + x];
@@ -911,7 +930,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         } else {
             for (int y = top; y < bottom; y++) {
                 for (int x = left; x < right; x++) {
-                    buf[(x-left) + (y-top) * tWidth] = data[x + y * width];
+                    buf[(x - left) + (y - top) * tWidth] = data[x + y * width];
                 }
             }
         }
@@ -968,10 +987,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         Camera.Size optimalSizeForWidth = null;
         Camera.Size optimalSizeForHeight = null;
 
-        // we are using 1280x720 as our base resolution, as its available on most devices and provides
+        // we are using 1920x1080 as our base resolution, as its available on most devices and provides
         // a good balance between quality and performance
-        int targetWidth = 1280;
-        int targetHeight = 720;
+        int targetWidth = 1920;
+        int targetHeight = 1080;
 
         float minDiffX = Float.MAX_VALUE;
         float minDiffY = Float.MIN_VALUE;

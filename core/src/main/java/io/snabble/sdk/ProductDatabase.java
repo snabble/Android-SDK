@@ -77,12 +77,12 @@ public class ProductDatabase {
         }
     }
 
-    private ProductDatabase(Project project, String name){
+    private ProductDatabase(Project project, String name) {
         this(project, name, false);
     }
 
     private boolean open() {
-        if(dbName == null){
+        if (dbName == null) {
             return true;
         }
 
@@ -90,7 +90,7 @@ public class ProductDatabase {
             File file = application.getDatabasePath(dbName);
 
             try {
-                if(!file.exists()) {
+                if (!file.exists()) {
                     return false;
                 }
 
@@ -129,9 +129,9 @@ public class ProductDatabase {
 
     /**
      * Loads the a database from a file located int the assets folder.
-     *
+     * <p>
      * If the loaded database is older then the one currently used, nothing will happen.
-     *
+     * <p>
      * Make sure to provide the correct revision, major or minor, or else the database may be copied
      * even if its older then the one currently used.
      */
@@ -145,9 +145,9 @@ public class ProductDatabase {
 
     /**
      * Loads the a database from an InputStream.
-     *
+     * <p>
      * If the loaded database is older then the one currently used, nothing will happen.
-     *
+     * <p>
      * Make sure to provide the correct revision, major or minor, or else the database may be copied
      * even if its older then the one currently used.
      */
@@ -230,8 +230,19 @@ public class ProductDatabase {
 
     void updateLastUpdateTimestamp(long timestamp) {
         putMetaData(METADATA_KEY_LAST_UPDATE_TIMESTAMP, String.valueOf(timestamp));
-        lastUpdateDate = new Date(timestamp);
-        Logger.d("Updating last update timestamp: %s", lastUpdateDate.toString());
+
+        try {
+            lastUpdateDate = new Date(timestamp);
+            Logger.d("Updating last update timestamp: %s", lastUpdateDate.toString());
+        } catch (AssertionError e) {
+            // Some Android 8 and 8.1 builds are faulty and throw an AssertionError when
+            // accessing time zone information
+            //
+            // Since this is only used for logging and we are fine with catching the error
+            // and not providing an alternative implementation
+            //
+            // see https://issuetracker.google.com/issues/110848122
+        }
     }
 
     /**
@@ -275,7 +286,7 @@ public class ProductDatabase {
      * Returns true if successful, false otherwise
      */
     synchronized void applyDeltaUpdate(InputStream inputStream) throws IOException {
-        if(dbName == null){
+        if (dbName == null) {
             return;
         }
 
@@ -305,7 +316,7 @@ public class ProductDatabase {
 
         try {
             tempDb.beginTransaction();
-        } catch (SQLiteException e){
+        } catch (SQLiteException e) {
             Logger.e("Could not apply delta update: Could not access temp database");
             return;
         }
@@ -341,7 +352,7 @@ public class ProductDatabase {
         try {
             tempDb.setTransactionSuccessful();
             tempDb.endTransaction();
-        } catch (SQLiteException e){
+        } catch (SQLiteException e) {
             Logger.e("Could not apply delta update: Could not finish transaction on temp database");
             return;
         }
@@ -375,7 +386,7 @@ public class ProductDatabase {
      * If a read error occurs, an IOException will be thrown.
      */
     synchronized void applyFullUpdate(InputStream inputStream) throws IOException {
-        if(dbName == null){
+        if (dbName == null) {
             return;
         }
 
@@ -401,18 +412,18 @@ public class ProductDatabase {
     }
 
     private void createFTSIndexIfNecessary() {
-        if(generateSearchIndex) {
+        if (generateSearchIndex) {
             long time = SystemClock.elapsedRealtime();
 
             synchronized (dbLock) {
                 Cursor cursor;
                 cursor = rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='searchByName'", null, null);
                 boolean hasFTS = cursor != null && cursor.getCount() == 1;
-                if(cursor != null){
+                if (cursor != null) {
                     cursor.close();
                 }
 
-                if(!hasFTS) {
+                if (!hasFTS) {
                     db.beginTransaction();
 
                     exec("DROP TABLE IF EXISTS searchByName");
@@ -454,20 +465,20 @@ public class ProductDatabase {
         synchronized (dbLock) {
             try {
                 cursor = db.rawQuery(sql, args, cancellationSignal);
+
+                // query executes when we call the first function that needs data, not on db.rawQuery
+                int count = cursor.getCount();
+
+                long time2 = SystemClock.elapsedRealtime() - time;
+                if (time2 > 16) {
+                    Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
+                            time2, count, bindArgs(sql, args));
+                }
             } catch (Exception e) {
                 // query could not be executed
                 Logger.e(e.toString());
                 return null;
             }
-        }
-
-        // query executes when we call the first function that needs data, not on db.rawQuery
-        int count = cursor.getCount();
-
-        long time2 = SystemClock.elapsedRealtime() - time;
-        if (time2 > 16) {
-            Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
-                    time2, count, bindArgs(sql, args));
         }
 
         return cursor;
@@ -511,12 +522,12 @@ public class ProductDatabase {
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
      *
-     * @param callback A {@link UpdateCallback} that returns success when the operation is successfully completed.
-     *                 Or error() in case a network error occurred. Can be null.
+     * @param callback        A {@link UpdateCallback} that returns success when the operation is successfully completed.
+     *                        Or error() in case a network error occurred. Can be null.
      * @param deltaUpdateOnly set to true if you want to only update when the update would be an delta update
      */
     public void update(final UpdateCallback callback, boolean deltaUpdateOnly) {
-        if(dbName == null){
+        if (dbName == null) {
             return;
         }
 
@@ -576,7 +587,7 @@ public class ProductDatabase {
      * Closes and deletes the locally stored database and falls back to online only mode.
      */
     public void delete() {
-        if(db != null){
+        if (db != null) {
             close();
             application.deleteDatabase(dbName);
             db = null;
@@ -592,7 +603,7 @@ public class ProductDatabase {
      * @return Size of the database in bytes.
      */
     public long size() {
-        if(db == null){
+        if (db == null) {
             return 0;
         }
 
@@ -701,7 +712,9 @@ public class ProductDatabase {
     public Product productAtCursor(Cursor cursor) {
         Product.Builder builder = new Product.Builder();
 
-        builder.setSku(anyToString(cursor, 0))
+        String sku = anyToString(cursor, 0);
+
+        builder.setSku(sku)
                 .setName(cursor.getString(1))
                 .setDescription(cursor.getString(2))
                 .setImageUrl(ensureNotNull(cursor.getString(3)));
@@ -709,7 +722,7 @@ public class ProductDatabase {
         String depositSku = anyToString(cursor, 4);
 
         builder.setIsDeposit(cursor.getInt(5) != 0)
-               .setType(productTypes[cursor.getInt(6)]);
+                .setType(productTypes[cursor.getInt(6)]);
 
         builder.setDepositProduct(findBySku(depositSku));
 
@@ -721,43 +734,73 @@ public class ProductDatabase {
             builder.setScannableCodes(scannableCodes);
         }
 
-        builder.setPrice(cursor.getInt(8))
-                .setDiscountedPrice(cursor.getInt(9));
-
-        String weighedItemIds = cursor.getString(10);
+        String weighedItemIds = cursor.getString(8);
         if (weighedItemIds != null) {
             builder.setWeighedItemIds(weighedItemIds.split(","));
         }
 
-        builder.setBoost(cursor.getInt(11))
-                .setSubtitle(cursor.getString(12))
-                .setBasePrice(cursor.getString(13));
+        builder.setBoost(cursor.getInt(9))
+                .setSubtitle(cursor.getString(10));
 
-        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(14)));
-            builder.setSaleStop(cursor.getInt(15) != 0);
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(11)));
+            builder.setSaleStop(cursor.getInt(12) != 0);
         }
 
-        if(schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
             builder.setBundleProducts(findBundlesOfProduct(builder.build()));
         }
 
-        if(scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-            String transmissionCodesStr = cursor.getString(16);
+        if (scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+            String transmissionCodesStr = cursor.getString(13);
             if (transmissionCodesStr != null) {
                 String[] transmissionCodes = transmissionCodesStr.split(",");
-                for(int i=0; i<transmissionCodes.length; i++) {
+                for (int i = 0; i < transmissionCodes.length; i++) {
                     String tc = transmissionCodes[i];
-                    if(!tc.equals("")){
+                    if (!tc.equals("")) {
                         builder.addTransmissionCode(scannableCodes[i], tc);
                     }
                 }
             }
         }
+
+        Shop shop = project.getCheckedInShop();
+
+        if(!queryPrice(builder, sku, shop)) {
+            queryPrice(builder, sku, null);
+        }
+
         return builder.build();
     }
 
-    private Product.SaleRestriction decodeSaleRestriction(long encodedValue){
+    private boolean queryPrice(Product.Builder builder, String sku, Shop shop) {
+        String id = shop != null ? shop.getId() : "";
+        String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices ";
+        String[] args;
+
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
+            priceQuery += "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
+            args = new String[]{id, sku};
+        } else {
+            priceQuery += "WHERE sku = ?";
+            args = new String[]{sku};
+        }
+
+        Cursor priceCursor = rawQuery(priceQuery, args, null);
+
+        if (priceCursor != null && priceCursor.getCount() > 0) {
+            priceCursor.moveToFirst();
+            builder.setPrice(priceCursor.getInt(0));
+            builder.setDiscountedPrice(priceCursor.getInt(1));
+            builder.setBasePrice(priceCursor.getString(2));
+            priceCursor.close();
+            return true;
+        }
+
+        return false;
+    }
+
+    private Product.SaleRestriction decodeSaleRestriction(long encodedValue) {
         long type = encodedValue & 0xFF;
         long value = encodedValue >> 8;
 
@@ -785,7 +828,7 @@ public class ProductDatabase {
         return in;
     }
 
-    private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
+    private String productSqlString(String appendSql, boolean distinct) {
         String sql = "SELECT " + (distinct ? "DISTINCT " : "") +
                 "p.sku," +
                 "p.name," +
@@ -795,26 +838,27 @@ public class ProductDatabase {
                 "p.isDeposit," +
                 "p.weighing," +
                 "(SELECT group_concat(s.code) FROM scannableCodes s WHERE s.sku = p.sku)," +
-                "pr.listPrice," +
-                "pr.discountedPrice," +
                 "(SELECT group_concat(w.weighItemId) FROM weighItemIds w WHERE w.sku = p.sku)," +
                 "p.boost," +
-                "p.subtitle," +
-                "pr.basePrice";
+                "p.subtitle";
 
-                if(schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-                    sql += ",p.saleRestriction";
-                    sql += ",p.saleStop";
-                }
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
+            sql += ",p.saleRestriction";
+            sql += ",p.saleStop";
+        }
 
-                if(schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-                    sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
-                }
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+            sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
+        }
 
-                sql += " FROM products p JOIN prices pr ON pr.sku = p.sku ";
-                sql += appendSql;
+        sql += " FROM products p ";
+        sql += appendSql;
 
-        return rawQuery(sql, args, cancellationSignal);
+        return sql;
+    }
+
+    private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
+        return rawQuery(productSqlString(appendSql, distinct), args, cancellationSignal);
     }
 
     public boolean isAvailableOffline() {
@@ -822,7 +866,7 @@ public class ProductDatabase {
     }
 
     public boolean isUpToDate() {
-        if(lastUpdateDate != null){
+        if (lastUpdateDate != null) {
             long time = lastUpdateDate.getTime();
             long currentTime = new Date().getTime();
             long t = time + TimeUnit.HOURS.toMillis(1);
@@ -857,9 +901,9 @@ public class ProductDatabase {
         return getFirstProductAndClose(cursor);
     }
 
-    private void exec(String sql){
+    private void exec(String sql) {
         Cursor cursor = rawQuery(sql, null, null);
-        if(cursor != null){
+        if (cursor != null) {
             cursor.close();
         }
     }
@@ -877,6 +921,8 @@ public class ProductDatabase {
     }
 
     /**
+     * Deprecated. Will be removed in a future version of the SDK.
+     * <p>
      * Returns products that have and a valid image url and have set the boost flag.
      */
     public Product[] getBoostedProducts(int limit) {
@@ -886,11 +932,24 @@ public class ProductDatabase {
     }
 
     /**
+     * Deprecated. Will be removed in a future version of the SDK.
+     * <p>
      * Returns products that have a discounted price and a valid image url.
      */
     public Product[] getDiscountedProducts() {
-        return queryDiscountedProducts("WHERE pr.discountedPrice IS NOT NULL" +
-                " AND p.imageUrl IS NOT NULL", null);
+        Shop shop = project.getCheckedInShop();
+
+        String id = shop != null ? shop.getId() : "";
+        String query = "WHERE p.sku IN " +
+                "(SELECT DISTINCT sku FROM prices WHERE discountedPrice IS NOT NULL ";
+
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
+            query += "AND pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = '" + id + "'), '0')";
+        }
+
+        query += ") AND p.imageUrl IS NOT NULL";
+
+        return queryDiscountedProducts(query, null);
     }
 
     private Product[] queryDiscountedProducts(String whereClause, String[] args) {
@@ -904,7 +963,7 @@ public class ProductDatabase {
     }
 
     private Product[] allProductsAtCursor(Cursor cursor) {
-        if(cursor == null){
+        if (cursor == null) {
             return new Product[0];
         }
 
@@ -1024,7 +1083,7 @@ public class ProductDatabase {
      *
      * @return The first product containing the given SKU, otherwise null if no product was found.
      */
-    public Product[] findBySkus(String... skus) {
+    public Product[] findBySkus(String[] skus) {
         if (skus == null) {
             return null;
         }
@@ -1040,6 +1099,39 @@ public class ProductDatabase {
 
         Cursor cursor = productQuery("WHERE p.sku IN " + sb.toString(), null, false);
         return allProductsAtCursor(cursor);
+    }
+
+    /**
+     * Finds multiple products via its sku identifiers over the network, if the service is available.
+     * <p>
+     * Searches the local database first before making any network calls.
+     */
+    public void findBySkusOnline(String[] skus, OnProductsAvailableListener productsAvailableListener) {
+        findBySkusOnline(skus, productsAvailableListener, false);
+    }
+
+    /**
+     * Finds multiple products via its sku identifiers over the network, if the service is available.
+     * <p>
+     * If onlineOnly is true, it does not search the local database first and only searches online.
+     */
+    public void findBySkusOnline(String[] skus,
+                                 OnProductsAvailableListener productsAvailableListener,
+                                 boolean onlineOnly) {
+        if (productsAvailableListener == null) {
+            return;
+        }
+
+        if (onlineOnly || !isUpToDate()) {
+            productApi.findBySkus(skus, productsAvailableListener);
+        } else {
+            Product[] local = findBySkus(skus);
+            if (local != null) {
+                productsAvailableListener.onProductsAvailable(local, false);
+            } else {
+                productApi.findBySkus(skus, productsAvailableListener);
+            }
+        }
     }
 
     /**
@@ -1067,9 +1159,9 @@ public class ProductDatabase {
         if (p != null) {
             return p;
         } else if (recursive) {
-            if (code.startsWith("0")){
+            if (code.startsWith("0")) {
                 return findByCodeInternal(code.substring(1, code.length()), true);
-            } else if (code.length() >= 8 && code.length() < 13) {
+            } else if (code.length() < 13) {
                 String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
                 return findByCodeInternal(newCode, false);
             }
@@ -1155,9 +1247,8 @@ public class ProductDatabase {
     }
 
     /**
-     * This function is deprecated and will be removed from the SDK in the future. There will be no
-     * alternative function to search for products.
-     *
+     * This function needs config value generateSearchIndex set to true
+     * <p>
      * Returns a {@link Cursor} which can be iterated for items containing the given search
      * string at the start of a word.
      * <p>
@@ -1184,13 +1275,28 @@ public class ProductDatabase {
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
     public Cursor searchByCode(String searchString, CancellationSignal cancellationSignal) {
-        return productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
+        // constructing a common query that gets repeated two times, one for the search
+        // using the "00000" prefix to match ean 8 in ean 13 codes
+        // and one for all other matches
+
+        // UNION ALL is used for two reasons:
+        // 1) sorting the ean 8 matches on top without using ORDER BY for performance reasons
+        // 2) avoiding the usage of OR between two GLOB's because in sqlite versions < 3.8
+        // the query optimizer chooses to do a full table search instead of a scan
+        String commonSql = "JOIN scannableCodes s ON s.sku = p.sku " +
                 "WHERE s.code GLOB ? " +
-                "AND p.weighing != 1 " +
-                "AND p.isDeposit = 0 " +
-                "LIMIT 100", new String[]{
+                "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
+                "AND p.isDeposit = 0 ";
+
+        String query = productSqlString(commonSql, true);
+        query += " UNION ALL ";
+        query += productSqlString(commonSql, true);
+        query += " LIMIT 100";
+
+        return rawQuery(query, new String[]{
+                "00000" + searchString + "*",
                 searchString + "*"
-        }, true, cancellationSignal);
+        }, cancellationSignal);
     }
 
     private void notifyOnDatabaseUpdated() {

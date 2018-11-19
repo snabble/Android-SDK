@@ -61,23 +61,23 @@ class ProductDatabaseDownloader extends Downloader {
 
         if (contentType != null) {
             ResponseBody body = response.body();
-            if (body != null) {
-                switch (contentType) {
-                    case MIMETYPE_DELTA:
-                        productDatabase.applyDeltaUpdate(body.byteStream());
-                        break;
-                    case MIMETYPE_FULL:
-                        if(deltaUpdateOnly){
-                            body.close();
-                            throw new IOException();
-                        }
+            switch (contentType) {
+                case MIMETYPE_DELTA:
+                    productDatabase.applyDeltaUpdate(body.byteStream());
+                    break;
+                case MIMETYPE_FULL:
+                    if (deltaUpdateOnly) {
+                        response.close();
+                        throw new IOException();
+                    }
 
-                        productDatabase.applyFullUpdate(body.byteStream());
-                        break;
-                    default:
-                        break;
-                }
+                    productDatabase.applyFullUpdate(body.byteStream());
+                    break;
+                default:
+                    break;
             }
         }
+
+        response.close();
     }
 }

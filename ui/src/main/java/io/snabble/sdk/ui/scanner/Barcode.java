@@ -1,5 +1,7 @@
 package io.snabble.sdk.ui.scanner;
 
+import io.snabble.sdk.BarcodeFormat;
+
 public class Barcode {
     private BarcodeFormat format;
     private String text;

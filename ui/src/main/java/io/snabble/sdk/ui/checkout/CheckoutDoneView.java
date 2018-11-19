@@ -33,7 +33,7 @@ class CheckoutDoneView extends FrameLayout {
             public void onClick(View v) {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
-                    callback.showMainscreen();
+                    callback.goBack();
                 }
             }
         });

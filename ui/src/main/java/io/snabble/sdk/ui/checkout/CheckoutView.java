@@ -7,8 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,8 +17,11 @@ import android.widget.ViewAnimator;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -63,7 +65,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                     checkout.cancel();
                     return true;
                 }
@@ -99,7 +101,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                         }
                     }, 3000);
                 } else {
-                    if(checkout.getSelectedPaymentMethod() != PaymentMethod.ENCODED_CODES) {
+                    if (checkout.getSelectedPaymentMethod() != PaymentMethod.ENCODED_CODES) {
                         displayView(new CheckoutDoneView(getContext()));
                     }
                 }
@@ -122,9 +124,28 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     }
 
     private void displayPaymentView() {
-        switch(checkout.getSelectedPaymentMethod()){
+        switch (checkout.getSelectedPaymentMethod()) {
             case CASH:
                 displayView(new CheckoutStatusView(getContext()));
+                break;
+            case TELECASH_DIRECT_DEBIT:
+                if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+                    final SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                    if (callback != null) {
+                        callback.requestKeyguard(new KeyguardHandler() {
+                            @Override
+                            public void onKeyguardResult(int resultCode) {
+                                if (resultCode == Activity.RESULT_OK) {
+                                    displayView(new CheckoutStatusView(getContext()));
+                                } else {
+                                    callback.goBack();
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    displayView(new CheckoutStatusView(getContext()));
+                }
                 break;
             case QRCODE_POS:
                 CheckoutQRCodePOSView checkoutQRCodePOSView = new CheckoutQRCodePOSView(getContext());
@@ -164,7 +185,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
         if (checkout.getState() == Checkout.State.NONE) {
             Activity activity = UIUtils.getHostActivity(getContext());
-            if(activity != null) {
+            if (activity != null) {
                 activity.onBackPressed();
             }
         }

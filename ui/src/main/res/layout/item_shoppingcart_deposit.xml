@@ -8,7 +8,7 @@
     android:padding="16dp"
     tools:ignore="RtlHardcoded">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:src="@drawable/ic_deposit"
@@ -25,7 +25,7 @@
         android:id="@+id/title"
         android:text="@string/Snabble.Shoppingcart.deposit"
         android:textSize="17dp"
-        android:textColor="@color/snabble_textColorDark"/>
+        android:textColor="@color/snabble_textColorDark" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -37,6 +37,6 @@
         android:id="@+id/deposit"
         tools:text="0,25 €"
         android:textSize="12dp"
-        android:textColor="@color/snabble_textColorDark"/>
+        android:textColor="@color/snabble_textColorDark" />
 
 </RelativeLayout>

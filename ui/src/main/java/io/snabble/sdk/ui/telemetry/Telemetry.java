@@ -1,6 +1,6 @@
 package io.snabble.sdk.ui.telemetry;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class Telemetry {
     public enum Event {

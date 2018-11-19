@@ -1,12 +1,19 @@
 package io.snabble.testapp;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import io.snabble.sdk.ui.receipts.ReceiptListView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.IOException;
 
 public class HomeFragment extends Fragment {
     @Nullable
@@ -19,14 +26,22 @@ public class HomeFragment extends Fragment {
         v.findViewById(R.id.scanner).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).showScanner();
+                ((BaseActivity)getActivity()).showScanner();
             }
         });
 
         v.findViewById(R.id.cart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).showShoppingCart();
+                ((BaseActivity)getActivity()).showShoppingCart();
+            }
+        });
+
+        v.findViewById(R.id.receipt_list).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireActivity(), ReceiptListActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -43,6 +58,26 @@ public class HomeFragment extends Fragment {
                 App.get().getProject().getProductDatabase().delete();
             }
         });
+
+        v.findViewById(R.id.show_pm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((BaseActivity)getActivity()).showPaymentCredentialsList();
+            }
+        });
+
+        v.findViewById(R.id.clear_cache).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    FileUtils.deleteDirectory(App.get().getCacheDir());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
         return v;
     }
 }

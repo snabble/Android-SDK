@@ -50,7 +50,7 @@ public class JsonUtils {
     }
 
     public static boolean getBooleanOpt(JsonObject jsonObject, String key, boolean defaultValue){
-        if(jsonObject.has(key)){
+        if(jsonObject != null && jsonObject.has(key)){
             return jsonObject.get(key).getAsBoolean();
         } else {
             return defaultValue;

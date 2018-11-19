@@ -9,6 +9,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.File;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +24,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
 import io.snabble.sdk.auth.TokenRegistry;
+import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
@@ -32,14 +37,17 @@ public class Snabble {
     private List<Project> projects;
     private OkHttpClient okHttpClient;
     private TokenRegistry tokenRegistry;
+    private Receipts receipts;
     private Application application;
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
+    private PaymentCredentialsStore paymentCredentialsStore;
     private File internalStorageDirectory;
     private String metadataUrl;
     private Config config;
     private List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
     private String versionName;
+    private Environment environment;
 
     private Snabble() {
 
@@ -52,23 +60,6 @@ public class Snabble {
         if (config.appId == null || config.secret == null) {
             setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
             return;
-        }
-
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
-        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
-
-        userPreferences = new UserPreferences(app);
-
-        internalStorageDirectory = new File(application.getFilesDir(), "snabble/" + config.appId + "/");
-        //noinspection ResultOfMethodCallIgnored
-        internalStorageDirectory.mkdirs();
-
-        projects = Collections.unmodifiableList(new ArrayList<Project>());
-
-        if (config.endpointBaseUrl == null) {
-            config.endpointBaseUrl = "https://api.snabble.io";
-        } else if (!config.endpointBaseUrl.startsWith("http://") && !config.endpointBaseUrl.startsWith("https://")) {
-            config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
         }
 
         String version = config.versionName;
@@ -86,6 +77,36 @@ public class Snabble {
         }
 
         versionName = version;
+
+        internalStorageDirectory = new File(application.getFilesDir(), "snabble/" + config.appId + "/");
+        //noinspection ResultOfMethodCallIgnored
+        internalStorageDirectory.mkdirs();
+
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
+        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
+        userPreferences = new UserPreferences(app);
+        receipts = new Receipts();
+
+        projects = Collections.unmodifiableList(new ArrayList<Project>());
+
+        if (config.endpointBaseUrl == null) {
+            config.endpointBaseUrl = "https://api.snabble.io";
+        } else if (!config.endpointBaseUrl.startsWith("http://") && !config.endpointBaseUrl.startsWith("https://")) {
+            config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
+        }
+
+        if (config.endpointBaseUrl.startsWith("https://api.snabble.io")) {
+            environment = Environment.PRODUCTION;
+        } else if (config.endpointBaseUrl.startsWith("https://api.snabble-staging.io")){
+            environment = Environment.STAGING;
+        } else if (config.endpointBaseUrl.startsWith("https://api.snabble-testing.io")) {
+            environment = Environment.TESTING;
+        } else {
+            environment = Environment.UNKNOWN;
+        }
+
+        paymentCredentialsStore = new PaymentCredentialsStore(app, environment);
+
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
@@ -171,10 +192,11 @@ public class Snabble {
             }
 
             projects = Collections.unmodifiableList(newProjects);
+            receipts.loadFromSharedPreferences();
         }
     }
 
-    String absoluteUrl(String url) {
+    public String absoluteUrl(String url) {
         if (url.startsWith("http")) {
             return url;
         } else {
@@ -186,15 +208,15 @@ public class Snabble {
         return config.endpointBaseUrl;
     }
 
-    String getMetadataUrl() {
+    public String getMetadataUrl() {
         return metadataUrl;
     }
 
-    File getInternalStorageDirectory() {
+    public File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
 
-    Application getApplication() {
+    public Application getApplication() {
         return application;
     }
 
@@ -202,8 +224,51 @@ public class Snabble {
         return tokenRegistry;
     }
 
+    public Receipts getReceipts() {
+        return receipts;
+    }
+
     public List<Project> getProjects() {
         return projects;
+    }
+
+    public List<X509Certificate> getPaymentSigningCertificates() {
+        // TODO parse certificates from metadata
+        // this certificate is only for testing purposes
+        List<X509Certificate> certificates = new ArrayList<>();
+
+        int crtResId;
+
+        switch(environment) {
+            case PRODUCTION:
+                crtResId = R.raw.gateway_cert_prod;
+                break;
+            case STAGING:
+                crtResId = R.raw.gateway_cert_staging;
+                break;
+            case TESTING:
+                crtResId = R.raw.gateway_cert_testing;
+                break;
+            default:
+                crtResId = R.raw.gateway_cert_prod;
+                break;
+        }
+
+        InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(crtResId);
+        CertificateFactory certificateFactory = null;
+        try {
+            certificateFactory = CertificateFactory.getInstance("X.509");
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        }
+        X509Certificate certificate = null;
+        try {
+            certificate = (X509Certificate) certificateFactory.generateCertificate(is);
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        }
+        certificates.add(certificate);
+        return Collections.unmodifiableList(certificates);
     }
 
     /**
@@ -308,6 +373,18 @@ public class Snabble {
         return userPreferences.getClientId();
     }
 
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public UserPreferences getUserPreferences() {
+        return userPreferences;
+    }
+
+    public PaymentCredentialsStore getPaymentCredentialsStore() {
+        return paymentCredentialsStore;
+    }
+
     public static Snabble getInstance() {
         return instance;
     }
@@ -404,6 +481,12 @@ public class Snabble {
          * Note that this increases setup time of the ProductDatabase, and it may not be
          * immediately available offline.
          */
-        public boolean generateSearchIndex = false;
+        public boolean generateSearchIndex;
+
+        /**
+         * If set to true, downloads receipts automatically and stores them in the projects
+         * internal storage folder.
+         */
+        public boolean enableReceiptAutoDownload;
     }
 }

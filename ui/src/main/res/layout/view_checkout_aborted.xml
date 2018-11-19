@@ -4,24 +4,31 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/snabble_primaryColor"
     tools:parentTag="android.widget.FrameLayout">
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Snabble.Payment.aborted"
-        android:textColor="@color/snabble_textColorLight"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:textSize="17sp"
-        android:textStyle="bold" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/back">
+        <TextView
+            android:drawableTop="@drawable/ic_fail"
+            android:drawablePadding="24dp"
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Snabble.Payment.aborted"
+            android:textColor="@color/snabble_textColorDark"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:gravity="center"
+            android:textSize="17sp"/>
 
-    <android.support.v7.widget.AppCompatButton
+    </FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/back"
-        style="@style/SnabbleButtonWhite"
+        style="@style/SnabbleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

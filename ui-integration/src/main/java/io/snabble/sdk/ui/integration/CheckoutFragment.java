@@ -1,7 +1,7 @@
 package io.snabble.sdk.ui.integration;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +21,6 @@ public class CheckoutFragment extends Fragment {
         super.onDestroyView();
 
         Checkout checkout = SnabbleUI.getProject().getCheckout();
-        checkout.cancel();
-
         if(checkout.getState() != Checkout.State.PAYMENT_APPROVED
                 && checkout.getState() != Checkout.State.NONE) {
             Telemetry.event(Telemetry.Event.CheckoutAbortByUser);

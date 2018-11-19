@@ -26,6 +26,9 @@
         <activity android:name=".ProductSearchActivity" />
         <activity android:name=".CheckoutActivity" />
         <activity android:name=".ShoppingCartActivity" />
+        <activity android:name=".ReceiptListActivity" />
+        <activity android:name=".SEPACardInputActivity" />
+        <activity android:name=".PaymentCredentialsListActivity" />
+        <activity android:name=".PaymentCredentialsSelectActivity" />
     </application>
-
 </manifest>

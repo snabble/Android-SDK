@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -30,7 +30,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
-import io.snabble.sdk.ui.PriceFormatter;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -113,13 +113,13 @@ class ProductConfirmationDialog {
         int cartQuantity = shoppingCart.getQuantity(product);
 
         if (scannedCode.hasEmbeddedData()) {
-            if(scannedCode.hasWeighData()) {
+            if (scannedCode.hasWeighData()) {
                 quantityAnnotation.setText("g");
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
                 quantityAnnotation.setVisibility(View.VISIBLE);
                 quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
-            } else if(scannedCode.hasPriceData()){
+            } else if (scannedCode.hasPriceData()) {
                 quantityAnnotation.setText(SnabbleUI.getProject().getCurrency().getSymbol());
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
@@ -128,8 +128,8 @@ class ProductConfirmationDialog {
 
                 PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
                 quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
-            } else if(scannedCode.hasUnitData()){
-                if(scannedCode.getEmbeddedData() == 0) {
+            } else if (scannedCode.hasUnitData()) {
+                if (scannedCode.getEmbeddedData() == 0) {
                     quantityAnnotation.setVisibility(View.GONE);
                     plus.setVisibility(View.VISIBLE);
                     minus.setVisibility(View.VISIBLE);
@@ -187,7 +187,7 @@ class ProductConfirmationDialog {
                     return;
                 }
 
-                 updatePrice();
+                updatePrice();
             }
         });
 
@@ -218,7 +218,10 @@ class ProductConfirmationDialog {
             }
         });
 
-        if (cartQuantity > 0 && product.getType() == Product.Type.Article && !scannedCode.hasUnitData()) {
+        if (cartQuantity > 0
+                && product.getType() == Product.Type.Article
+                && !scannedCode.hasUnitData()
+                && !scannedCode.hasPriceData()) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
@@ -241,22 +244,28 @@ class ProductConfirmationDialog {
         window.setGravity(Gravity.BOTTOM);
         alertDialog.show();
 
-        if(product.getType() == Product.Type.UserWeighed){
+        if (product.getType() == Product.Type.UserWeighed) {
             quantity.requestFocus();
 
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    InputMethodManager inputMethodManager = (InputMethodManager)context
+                    InputMethodManager inputMethodManager = (InputMethodManager) context
                             .getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.showSoftInput(quantity, 0);
                 }
             });
         }
 
-        float density = context.getResources().getDisplayMetrics().density;
-        window.setLayout(Math.round(320 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        int availableWidth = Math.round(dm.widthPixels / dm.density);
+        int width = Math.round(320 * dm.density);
+        if(availableWidth >= 336) {
+            width = Math.round(336 * dm.density);
+        }
+
+        window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void updatePrice() {
@@ -268,10 +277,10 @@ class ProductConfirmationDialog {
 
         int q = getQuantity();
 
-        if(q > 0 && (scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed)){
+        if (q > 0 && (scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed)) {
             price.setText(String.format("%sg * %s = %s", String.valueOf(q), singlePrice, priceText));
-        } else if(q > 1){
-            if(scannedCode.hasUnitData()){
+        } else if (q > 1) {
+            if (scannedCode.hasUnitData()) {
                 price.setText(String.format("%s * %s = %s",
                         String.valueOf(q),
                         priceFormatter.format(product.getPrice()),
@@ -283,8 +292,13 @@ class ProductConfirmationDialog {
             price.setText(singlePrice);
         }
 
+        if (scannedCode.hasPriceData()) {
+            int embeddedPrice = scannedCode.getEmbeddedData();
+            price.setText(priceFormatter.format(embeddedPrice));
+        }
+
         Product depositProduct = product.getDepositProduct();
-        if(depositProduct != null){
+        if (depositProduct != null) {
             String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(),
                     roundingMode));
 
@@ -300,7 +314,7 @@ class ProductConfirmationDialog {
     private void addToCart() {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
-        if(product == null){
+        if (product == null) {
             dismiss();
             return;
         }
@@ -309,7 +323,7 @@ class ProductConfirmationDialog {
 
         int q = getQuantity();
 
-        if(scannedCode.hasEmbeddedData()){
+        if (scannedCode.hasEmbeddedData()) {
             boolean isZeroAmountProduct = false;
 
             // generate new code when the embedded data contains 0
@@ -320,7 +334,7 @@ class ProductConfirmationDialog {
             }
 
             // if the user entered 0, shake
-            if(scannedCode.getEmbeddedData() == 0) {
+            if (scannedCode.getEmbeddedData() == 0) {
                 shake();
                 return;
             } else {
@@ -328,8 +342,8 @@ class ProductConfirmationDialog {
             }
         } else if (product.getType() == Product.Type.Article) {
             shoppingCart.setQuantity(product, q, scannedCode);
-        } else if(product.getType() == Product.Type.UserWeighed){
-            if(q > 0) {
+        } else if (product.getType() == Product.Type.UserWeighed) {
+            if (q > 0) {
                 shoppingCart.insert(product, 0, q, scannedCode);
             } else {
                 shake();
@@ -341,7 +355,7 @@ class ProductConfirmationDialog {
     }
 
     private void shake() {
-        float density =  context.getResources().getDisplayMetrics().density;
+        float density = context.getResources().getDisplayMetrics().density;
         TranslateAnimation shake = new TranslateAnimation(0, 3 * density, 0, 0);
         shake.setDuration(500);
         shake.setInterpolator(new CycleInterpolator(7));
@@ -359,7 +373,7 @@ class ProductConfirmationDialog {
     private void setQuantity(int number) {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
-        if(product == null){
+        if (product == null) {
             dismiss();
             return;
         }
@@ -382,7 +396,7 @@ class ProductConfirmationDialog {
         this.onDismissListener = onDismissListener;
     }
 
-    public void setOnShowListener(DialogInterface.OnShowListener onShowListener){
+    public void setOnShowListener(DialogInterface.OnShowListener onShowListener) {
         this.onShowListener = onShowListener;
     }
 }

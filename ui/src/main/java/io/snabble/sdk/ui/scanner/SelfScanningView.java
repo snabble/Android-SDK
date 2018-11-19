@@ -9,11 +9,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.StringRes;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -22,6 +25,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
@@ -36,6 +40,7 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
@@ -51,6 +56,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private long detectAfterTimeMs;
     private ShoppingCart shoppingCart;
     private boolean allowShowingHints;
+    private TextView info;
+    private Handler infoHandler = new Handler(Looper.getMainLooper());
+    private boolean isShowingHint;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -76,6 +84,16 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
+        info = findViewById(R.id.info);
+        info.setVisibility(View.INVISIBLE);
+        info.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                info.setTranslationY(-info.getHeight());
+                info.setVisibility(View.VISIBLE);
+            }
+        });
 
         enterBarcode = findViewById(R.id.enter_barcode);
         TextView light = findViewById(R.id.light);
@@ -97,9 +115,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
 
-        barcodeScanner.addBarcodeFormat(BarcodeFormat.EAN_8);
-        barcodeScanner.addBarcodeFormat(BarcodeFormat.EAN_13);
-        barcodeScanner.addBarcodeFormat(BarcodeFormat.CODE_128);
+        for (BarcodeFormat format : project.getSupportedBarcodeFormats()) {
+            barcodeScanner.addBarcodeFormat(format);
+        }
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -152,6 +170,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .show();
     }
 
+    public void lookupAndShowProduct(final ScannableCode scannedCode) {
+        lookupAndShowProduct(scannedCode, null);
+    }
+
     private void delayNextScan() {
         detectAfterTimeMs = SystemClock.elapsedRealtime() + 2000;
     }
@@ -165,7 +187,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()));
+            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
         }
     }
 
@@ -175,6 +197,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
                 callback.showBarcodeSearch();
             } else {
+                pauseBarcodeScanner();
+
                 final EditText input = new EditText(getContext());
                 MarginLayoutParams lp = new MarginLayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -193,8 +217,15 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                             }
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                resumeBarcodeScanner();
+                            }
+                        })
                         .create()
                         .show();
+
             }
         }
     }
@@ -206,9 +237,11 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private void showHints() {
         if (allowShowingHints) {
             Project project = SnabbleUI.getProject();
-            Shop currentShop = project.getCheckout().getShop();
+            Shop currentShop = project.getCheckedInShop();
 
             if (currentShop != null) {
+                pauseBarcodeScanner();
+
                 Context context = getContext();
 
                 final AlertDialog alertDialog = new AlertDialog.Builder(context)
@@ -216,11 +249,18 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .setCancelable(true)
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                resumeBarcodeScanner();
+                                isShowingHint = false;
+                            }
+                        })
                         .create();
 
                 alertDialog.setCanceledOnTouchOutside(true);
-
                 alertDialog.show();
+                isShowingHint = true;
             }
         }
     }

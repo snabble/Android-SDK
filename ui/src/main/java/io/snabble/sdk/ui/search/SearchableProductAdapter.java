@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.OperationCanceledException;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
@@ -47,7 +47,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     public SearchableProductAdapter(ProductDatabase productDatabase) {
         this.productDatabase = productDatabase;
 
-        if(backgroundHandler == null) {
+        if (backgroundHandler == null) {
             HandlerThread thread = new HandlerThread("SearchableProductAdapter");
             thread.start();
             backgroundHandler = new Handler(thread.getLooper());
@@ -93,6 +93,10 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         if (showBarcode) {
             for (String code : product.getScannableCodes()) {
                 if (code.contains(lastQuery)) {
+                    if (code.startsWith("00000")) {
+                        code = code.replace("00000", "");
+                    }
+
                     Spannable spannable = highlight(lastQuery, code);
                     holder.code.setText(spannable);
                     selectedCode = code;
@@ -150,7 +154,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
                                     cancellationSignal);
                         }
 
-                        if(newCursor != null) {
+                        if (newCursor != null) {
                             final int count = newCursor.getCount();
 
                             uiHandler.post(new Runnable() {

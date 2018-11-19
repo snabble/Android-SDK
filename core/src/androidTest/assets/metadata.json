@@ -14,9 +14,6 @@
       "enableCheckout": true,
       "id": "test",
       "links": {
-        "appEvents": {
-          "href": "/test/events"
-        },
         "appdb": {
           "href": "/test/appdb"
         },
@@ -64,6 +61,24 @@
           "lat": 50.7352963,
           "lon": 7.1001417,
           "name": "snabble GmbH",
+          "openingHoursSpecification": [],
+          "phone": "+491717673249",
+          "project": "test",
+          "services": [],
+          "state": "NRW",
+          "street": "Acherstraße 26",
+          "zip": "53111"
+        },
+        {
+          "city": "Bonn",
+          "country": "Deutschland",
+          "email": "info@snabble.io",
+          "external": null,
+          "externalId": null,
+          "id": "42",
+          "lat": 50.7352963,
+          "lon": 7.1001417,
+          "name": "snabble GmbH 2",
           "openingHoursSpecification": [],
           "phone": "+491717673249",
           "project": "test",

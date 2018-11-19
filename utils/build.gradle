@@ -11,7 +11,7 @@ android {
         versionCode project.versionCode
         versionName project.sdkVersion
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -35,12 +35,12 @@ android {
 dependencies {
     implementation 'commons-io:commons-io:2.5'
     implementation "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
-    implementation "com.android.support:appcompat-v7:${project.supportLibraryVersion}"
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0-beta01'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-beta01'
 }
 
 apply from: '../scripts/maven.gradle'

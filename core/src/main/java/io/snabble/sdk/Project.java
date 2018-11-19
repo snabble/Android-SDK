@@ -10,6 +10,7 @@ import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
@@ -45,15 +48,15 @@ public class Project {
     private String[] unitPrefixes;
     private boolean isCheckoutAvailable;
 
-    private String encodedCodesPrefix;
-    private String encodedCodesSeparator;
-    private String encodedCodesSuffix;
-    private int encodedCodesMaxCodes;
+    private EncodedCodesOptions encodedCodesOptions;
 
     private boolean useGermanPrintPrefix;
 
     private RoundingMode roundingMode;
     private boolean verifyInternalEanChecksum;
+    private BarcodeFormat[] supportedBarcodeFormats;
+    private Shop checkedInShop;
+    private Map<BarcodeFormat, IntRange> barcodeFormatRanges;
 
     private Map<String, String> urls;
 
@@ -108,11 +111,11 @@ public class Project {
 
         try {
             currencyLocale = LocaleUtils.toLocale(locale);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             currencyLocale = Locale.getDefault();
         }
 
-        if(currencyLocale == null){
+        if (currencyLocale == null) {
             currencyLocale = Locale.getDefault();
         }
 
@@ -124,24 +127,47 @@ public class Project {
 
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
-        if(jsonObject.has("encodedCodes")) {
+        if (jsonObject.has("encodedCodes")) {
             JsonElement encodedCodes = jsonObject.get("encodedCodes");
-            if(!encodedCodes.isJsonNull()) {
+            if (!encodedCodes.isJsonNull()) {
                 JsonObject object = encodedCodes.getAsJsonObject();
 
-                encodedCodesPrefix = JsonUtils.getStringOpt(object, "prefix", "");
-                encodedCodesSeparator = JsonUtils.getStringOpt(object, "separator", "\n");
-                encodedCodesSuffix = JsonUtils.getStringOpt(object, "suffix", "");
-                encodedCodesMaxCodes = JsonUtils.getIntOpt(object, "maxCodes", 100);
+                encodedCodesOptions = new EncodedCodesOptions.Builder()
+                        .prefix(JsonUtils.getStringOpt(object, "prefix", ""))
+                        .separator(JsonUtils.getStringOpt(object, "separator", "\n"))
+                        .suffix(JsonUtils.getStringOpt(object, "suffix", ""))
+                        .maxCodes(JsonUtils.getIntOpt(object, "maxCodes", 100))
+                        .finalCode(JsonUtils.getStringOpt(object, "finalCode", ""))
+                        .nextCode(JsonUtils.getStringOpt(object, "nextCode", ""))
+                        .nextCodeWithCheck(JsonUtils.getStringOpt(object, "nextCodeWithCheck", ""))
+                        .build();
             }
-        } else {
-            encodedCodesPrefix = "";
-            encodedCodesSeparator = "\n";
-            encodedCodesSuffix = "";
-            encodedCodesMaxCodes = 100;
         }
 
         useGermanPrintPrefix = JsonUtils.getBooleanOpt(jsonObject, "useGermanPrintPrefix", false);
+
+        String[] scanFormats = JsonUtils.getStringArrayOpt(jsonObject, "scanFormats", null);
+        List<BarcodeFormat> formats = new ArrayList<>();
+
+        if(scanFormats != null) {
+            for (String scanFormat : scanFormats) {
+                BarcodeFormat format = BarcodeFormat.parse(scanFormat);
+                if(format != null) {
+                    formats.add(format);
+                }
+            }
+        } else {
+            formats.add(BarcodeFormat.EAN_8);
+            formats.add(BarcodeFormat.EAN_13);
+            formats.add(BarcodeFormat.CODE_128);
+        }
+        supportedBarcodeFormats = formats.toArray(new BarcodeFormat[formats.size()]);
+
+        barcodeFormatRanges = new HashMap<>();
+        // TODO parse from metadata
+        if (id.contains("ikea")) {
+            barcodeFormatRanges.put(BarcodeFormat.ITF_14, new IntRange(0, 8));
+        }
 
         if (jsonObject.has("shops")) {
             shops = Shop.fromJson(jsonObject.get("shops"));
@@ -158,11 +184,11 @@ public class Project {
         return internalStorageDirectory;
     }
 
-    private RoundingMode parseRoundingMode(JsonElement jsonElement){
-        if(jsonElement != null){
+    private RoundingMode parseRoundingMode(JsonElement jsonElement) {
+        if (jsonElement != null) {
             String roundingMode = jsonElement.getAsString();
-            if(roundingMode != null){
-                switch(roundingMode){
+            if (roundingMode != null) {
+                switch (roundingMode) {
                     case "up":
                         return RoundingMode.UP;
                     case "down":
@@ -204,6 +230,10 @@ public class Project {
         return urls.get("productBySku");
     }
 
+    public String getProductsBySkus() {
+        return urls.get("productsBySku");
+    }
+
     public String getProductByCodeUrl() {
         return urls.get("productByCode");
     }
@@ -228,25 +258,18 @@ public class Project {
         return unitPrefixes;
     }
 
-    public String getEncodedCodesPrefix() {
-        return encodedCodesPrefix;
+    public BarcodeFormat[] getSupportedBarcodeFormats() {
+        return supportedBarcodeFormats;
     }
 
-    public String getEncodedCodesSeparator() {
-        return encodedCodesSeparator;
-    }
-
-    public String getEncodedCodesSuffix() {
-        return encodedCodesSuffix;
-    }
-
-    public int getEncodedCodesMaxCodes() {
-        return encodedCodesMaxCodes;
+    public EncodedCodesOptions getEncodedCodesOptions() {
+        return encodedCodesOptions;
     }
 
     public boolean isCheckoutAvailable() {
         return isCheckoutAvailable;
     }
+
     /**
      * Returns the {@link ProductDatabase}.
      */
@@ -260,6 +283,19 @@ public class Project {
      */
     public Map<String, String> getUrls() {
         return urls;
+    }
+
+    /**
+     * Sets the shop used for receiving store specific prices and identification in the
+     * payment process.
+     */
+    public void setCheckedInShop(Shop checkedInShop) {
+        this.checkedInShop = checkedInShop;
+        events.updateShop(checkedInShop);
+    }
+
+    public Shop getCheckedInShop() {
+        return checkedInShop;
     }
 
     /**
@@ -305,6 +341,14 @@ public class Project {
         return checkout;
     }
 
+    public IntRange getRangeForBarcodeFormat(BarcodeFormat barcodeFormat) {
+        if (barcodeFormatRanges != null) {
+            return barcodeFormatRanges.get(barcodeFormat);
+        }
+
+        return null;
+    }
+
     Events getEvents() {
         return events;
     }
@@ -328,7 +372,7 @@ public class Project {
     };
 
     private void notifyUpdate() {
-        for(OnProjectUpdatedListener l : updateListeners) {
+        for (OnProjectUpdatedListener l : updateListeners) {
             l.onProjectUpdated(this);
         }
     }

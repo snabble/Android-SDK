@@ -1,8 +1,8 @@
 package io.snabble.sdk.ui.search;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -145,8 +145,8 @@ public class ProductSearchView extends FrameLayout {
     }
 
     private void onSearchUpdated() {
-        if(searchableProductAdapter.getItemCount() == 0
-                && lastSearchQuery != null && lastSearchQuery.length() > 0){
+        if (searchableProductAdapter.getItemCount() == 0
+                && lastSearchQuery != null && lastSearchQuery.length() > 0) {
             addCodeAsIs.setText(getResources().getString(R.string.Snabble_Scanner_addCodeAsIs, lastSearchQuery));
             addCodeAsIs.setVisibility(View.VISIBLE);
         } else {
