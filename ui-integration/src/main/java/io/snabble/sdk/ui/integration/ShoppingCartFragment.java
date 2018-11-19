@@ -54,20 +54,6 @@ public class ShoppingCartFragment extends Fragment {
         a.recycle();
     }
 
-    public void setEmptyStateLayoutResId(int resId) {
-        if (emptyStateLayoutResId == 0) {
-            emptyStateLayoutResId = R.layout.view_shopping_cart_empty_state;
-        }
-
-        if (emptyStateLayoutResId != 0) {
-            emptyStateLayoutResId = resId;
-
-            if (shoppingCartView != null) {
-                shoppingCartView.setEmptyStateLayoutResId(resId);
-            }
-        }
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete) {
