@@ -221,21 +221,14 @@ public class Snabble {
                 if (value != null) {
                     byte[] bytes = Base64.decode(value.getAsString(), Base64.DEFAULT);
                     InputStream is = new ByteArrayInputStream(bytes);
-                    CertificateFactory certificateFactory = null;
+
                     try {
-                        certificateFactory = CertificateFactory.getInstance("X.509");
+                        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                        X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(is);
+                        certificates.add(certificate);
                     } catch (CertificateException e) {
                         e.printStackTrace();
                     }
-
-                    X509Certificate certificate = null;
-                    try {
-                        certificate = (X509Certificate) certificateFactory.generateCertificate(is);
-                    } catch (CertificateException e) {
-                        e.printStackTrace();
-                    }
-                    certificates.add(certificate);
-
                 }
             }
         }
