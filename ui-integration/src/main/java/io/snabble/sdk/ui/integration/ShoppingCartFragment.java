@@ -1,10 +1,14 @@
 package io.snabble.sdk.ui.integration;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
+
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,8 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.ShoppingCartView;
 
 public class ShoppingCartFragment extends Fragment {
+    private ShoppingCartView shoppingCartView;
+    private int emptyStateLayoutResId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,12 +31,41 @@ public class ShoppingCartFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_shoppingcart, container, false);
+        View v = inflater.inflate(R.layout.fragment_shoppingcart, container, false);
+
+        shoppingCartView = v.findViewById(R.id.shopping_cart_view);
+        shoppingCartView.setEmptyStateLayoutResId(emptyStateLayoutResId);
+
+        return v;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_shopping_cart, menu);
+    }
+
+    @Override
+    public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(context, attrs, savedInstanceState);
+        TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.ShoppingCartFragment);
+
+        int emptyStateResId = a.getResourceId(R.styleable.ShoppingCartFragment_emptyState, R.layout.view_shopping_cart_empty_state);
+        shoppingCartView.setEmptyStateLayoutResId(emptyStateResId);
+        a.recycle();
+    }
+
+    public void setEmptyStateLayoutResId(int resId) {
+        if (emptyStateLayoutResId == 0) {
+            emptyStateLayoutResId = R.layout.view_shopping_cart_empty_state;
+        }
+
+        if (emptyStateLayoutResId != 0) {
+            emptyStateLayoutResId = resId;
+
+            if (shoppingCartView != null) {
+                shoppingCartView.setEmptyStateLayoutResId(resId);
+            }
+        }
     }
 
     @Override
@@ -49,5 +86,9 @@ public class ShoppingCartFragment extends Fragment {
         }
 
         return false;
+    }
+
+    public ShoppingCartView getShoppingCartView() {
+        return shoppingCartView;
     }
 }

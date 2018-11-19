@@ -6,8 +6,11 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.LayoutRes;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -29,6 +32,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Attr;
 
 import java.math.RoundingMode;
 
@@ -56,10 +61,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private PriceFormatter priceFormatter;
     private Button pay;
     private View coordinatorLayout;
-    private View emptyState;
+    private ViewGroup emptyState;
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
+    private int emptyStateLayoutResId;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
@@ -94,20 +100,20 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
     public ShoppingCartView(Context context) {
         super(context);
-        inflateView(context);
+        inflateView(context, null);
     }
 
     public ShoppingCartView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        inflateView(context);
+        inflateView(context, attrs);
     }
 
     public ShoppingCartView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        inflateView(context);
+        inflateView(context, attrs);
     }
 
-    private void inflateView(Context context) {
+    private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.view_shopping_cart, this);
 
         recyclerView = findViewById(R.id.recycler_view);
@@ -126,6 +132,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         emptyState = findViewById(R.id.empty_state);
+
+        if (attrs != null) {
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ShoppingCartView);
+            setEmptyStateLayoutResId(typedArray.getResourceId(R.styleable.ShoppingCartView_emptyState, 0));
+            typedArray.recycle();
+        } else {
+            setEmptyStateLayoutResId(0);
+        }
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -253,6 +267,18 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             progressDialog.dismiss();
         } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {
             progressDialog.dismiss();
+        }
+    }
+
+    public void setEmptyStateLayoutResId(@LayoutRes int resId) {
+        if (resId == 0) {
+            resId = R.layout.view_shopping_cart_empty_state;
+        }
+
+        if (emptyStateLayoutResId != resId) {
+            emptyStateLayoutResId = resId;
+            emptyState.removeAllViews();
+            inflate(getContext(), resId, emptyState);
         }
     }
 

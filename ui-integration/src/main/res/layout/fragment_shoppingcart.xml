@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <io.snabble.sdk.ui.cart.ShoppingCartView
-        android:id="@+id/self_scanning_view"
+        android:id="@+id/shopping_cart_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
