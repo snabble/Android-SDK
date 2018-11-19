@@ -166,7 +166,7 @@ public class Snabble {
                 parsePaymentCertificates(jsonObject);
             }
         }
-        
+
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
     }
 

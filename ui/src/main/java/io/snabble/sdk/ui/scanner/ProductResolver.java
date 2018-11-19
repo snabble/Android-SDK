@@ -194,11 +194,6 @@ public class ProductResolver {
     }
 
     private void showProduct(Product product, ScannableCode scannedCode) {
-        // TODO do i need this?
-//        if (onShowListener != null) {
-//            onShowListener.onShow();
-//        }
-//
         productConfirmationDialog.show(product, scannedCode);
     }
 
@@ -251,10 +246,6 @@ public class ProductResolver {
         public Builder setOnDismissListener(OnDismissListener listener) {
             productResolver.setOnDismissListener(listener);
             return this;
-        }
-
-        public void setSnackbarHost(View view) {
-            // TODO howto snackbar
         }
 
         public ProductResolver create() {

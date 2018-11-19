@@ -345,6 +345,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         unregisterListeners();
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+
+        onCartUpdated();
+    }
+
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
