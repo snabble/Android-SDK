@@ -15,6 +15,7 @@ import java.util.Map;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -201,61 +202,39 @@ class CheckoutApi {
         cancel();
 
         call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        call.enqueue(new SimpleJsonCallback<SignedCheckoutInfo>() {
             @Override
-            public void onResponse(Call call, Response response) {
-                if (response.isSuccessful()) {
-                    String json;
-                    try {
-                        json = response.body().string();
-                    } catch (IOException e) {
-                        checkoutInfoResult.error();
-                        response.close();
-                        return;
-                    }
+            public void success(SignedCheckoutInfo signedCheckoutInfo) {
+                int price;
 
-                    SignedCheckoutInfo signedCheckoutInfo = GsonHolder.get().fromJson(json, SignedCheckoutInfo.class);
-
-                    int price;
-
-                    if (signedCheckoutInfo.checkoutInfo.has("price")
-                            && signedCheckoutInfo.checkoutInfo.get("price").getAsJsonObject().has("price")) {
-                        price = signedCheckoutInfo.checkoutInfo
-                                .get("price")
-                                .getAsJsonObject()
-                                .get("price")
-                                .getAsInt();
-                    } else {
-                        price = project.getShoppingCart().getTotalPrice();
-                    }
-
-                    if (price != project.getShoppingCart().getTotalPrice()) {
-                        Logger.w("Warning local price is different from remotely calculated price! (Local: "
-                                + project.getShoppingCart().getTotalPrice() + ", Remote: " + price + ")");
-                    }
-
-                    PaymentMethod[] availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
-                    if (availablePaymentMethods != null && availablePaymentMethods.length > 0) {
-                        checkoutInfoResult.success(signedCheckoutInfo, price, availablePaymentMethods);
-                    } else {
-                        checkoutInfoResult.error();
-                    }
+                if (signedCheckoutInfo.checkoutInfo.has("price")
+                        && signedCheckoutInfo.checkoutInfo.get("price").getAsJsonObject().has("price")) {
+                    price = signedCheckoutInfo.checkoutInfo
+                            .get("price")
+                            .getAsJsonObject()
+                            .get("price")
+                            .getAsInt();
                 } else {
-                    if (!call.isCanceled()) {
-                        Logger.e("Error while trying to check out");
-                        checkoutInfoResult.error();
-                    }
+                    price = project.getShoppingCart().getTotalPrice();
                 }
 
-                response.close();
+                if (price != project.getShoppingCart().getTotalPrice()) {
+                    Logger.w("Warning local price is different from remotely calculated price! (Local: "
+                            + project.getShoppingCart().getTotalPrice() + ", Remote: " + price + ")");
+                }
+
+                PaymentMethod[] availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
+                if (availablePaymentMethods != null && availablePaymentMethods.length > 0) {
+                    checkoutInfoResult.success(signedCheckoutInfo, price, availablePaymentMethods);
+                } else {
+                    checkoutInfoResult.error();
+                }
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
-                if (!call.isCanceled()) {
-                    Logger.e("Error while trying to check out");
-                    checkoutInfoResult.error();
-                }
+            public void error(Throwable t) {
+                Logger.e("Error while trying to check out");
+                checkoutInfoResult.error();
             }
         });
     }
@@ -277,32 +256,15 @@ class CheckoutApi {
         cancel();
 
         call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        call.enqueue(new SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse.class) {
             @Override
-            public void onResponse(Call call, Response response) {
-                if (response.isSuccessful()) {
-                    String json;
-                    try {
-                        json = response.body().string();
-                    } catch (IOException e) {
-                        paymentProcessResult.error();
-                        response.close();
-                        return;
-                    }
-
-                    CheckoutProcessResponse checkoutProcessResponse = GsonHolder.get().fromJson(json,
-                            CheckoutProcessResponse.class);
-
-                    paymentProcessResult.success(checkoutProcessResponse);
-
-                    CheckoutApi.this.call = null;
-                }
-
-                response.close();
+            public void success(CheckoutProcessResponse checkoutProcessResponse) {
+                paymentProcessResult.success(checkoutProcessResponse);
+                CheckoutApi.this.call = null;
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void error(Throwable t) {
                 paymentProcessResult.error();
             }
         });
@@ -336,38 +298,15 @@ class CheckoutApi {
         cancel();
 
         call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        call.enqueue(new SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse.class) {
             @Override
-            public void onResponse(Call call, Response response) {
-                if (response.isSuccessful()) {
-                    String json;
-                    try {
-                        json = response.body().string();
-                    } catch (IOException e) {
-                        paymentProcessResult.error();
-                        response.close();
-                        return;
-                    }
-
-                    CheckoutProcessResponse checkoutProcess = GsonHolder.get().fromJson(json, CheckoutProcessResponse.class);
-
-                    paymentProcessResult.success(checkoutProcess);
-                } else {
-                    if (!call.isCanceled()) {
-                        paymentProcessResult.error();
-                    } else {
-                        paymentProcessResult.aborted();
-                    }
-                }
-
-                response.close();
+            public void success(CheckoutProcessResponse checkoutProcess) {
+                paymentProcessResult.success(checkoutProcess);
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
-                if (!call.isCanceled()) {
-                    paymentProcessResult.error();
-                }
+            public void error(Throwable t) {
+                paymentProcessResult.error();
             }
         });
     }
