@@ -19,7 +19,6 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.utils.IntRange;
 
 public class ProductResolver {
-    private View snackbarHost;
     private String scannableCode;
     private ProductConfirmationDialog productConfirmationDialog;
     private DelayedProgressDialog progressDialog;
