@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.Toast;
 
 import io.snabble.sdk.BarcodeFormat;
@@ -57,12 +56,12 @@ public class ProductResolver {
         });
     }
 
-    public void setScannableCode(String scannableCode) {
-        this.scannableCode = scannableCode;
+    public String getScannableCode() {
+        return scannableCode;
     }
 
-    public void setBarcodeFormat(BarcodeFormat barcodeFormat) {
-        this.barcodeFormat = barcodeFormat;
+    public BarcodeFormat getBarcodeFormat() {
+        return barcodeFormat;
     }
 
     private void lookupAndShowProduct(final ScannableCode scannedCode) {
@@ -229,7 +228,7 @@ public class ProductResolver {
         }
 
         public Builder setCode(String code) {
-            productResolver.setScannableCode(code);
+            productResolver.scannableCode = code;
             return this;
         }
 
@@ -239,12 +238,12 @@ public class ProductResolver {
         }
 
         public Builder setOnShowListener(OnShowListener listener) {
-            productResolver.setOnShowListener(listener);
+            productResolver.onShowListener = listener;
             return this;
         }
 
         public Builder setOnDismissListener(OnDismissListener listener) {
-            productResolver.setOnDismissListener(listener);
+            productResolver.onDismissListener = listener;
             return this;
         }
 

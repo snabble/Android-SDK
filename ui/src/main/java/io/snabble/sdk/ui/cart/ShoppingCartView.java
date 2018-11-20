@@ -6,17 +6,16 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.annotation.LayoutRes;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -32,8 +31,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Attr;
 
 import java.math.RoundingMode;
 
@@ -222,7 +219,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void removeAndShowUndoSnackbar(final int pos, final Product product, final String scannedCode, final int quantity, final boolean isZeroAmountProduct) {
         cart.removeAll(pos);
         Telemetry.event(Telemetry.Event.DeletedFromCart, product);
-        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerViewAdapter.notifyItemRemoved(pos);
         update();
 
         snackbar = UIUtils.snackbar(coordinatorLayout,
@@ -290,8 +287,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         updateEmptyState();
         scanForImages();
 
-        Adapter adapter = (Adapter) recyclerView.getAdapter();
-        adapter.updateDeposit();
+        recyclerViewAdapter.updateDeposit();
 
         if (snackbar != null) {
             snackbar.dismiss();

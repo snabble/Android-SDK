@@ -20,6 +20,7 @@ import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
+import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUICallback {
@@ -74,12 +75,15 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         });
     }
 
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_MULTIPLE) {
-            String barcode = event.getCharacters();
-            new ProductResolver.Builder(this).setCode(barcode).create().show();
+        String code = ZebraSupport.dispatchKeyEvent(this, event);
+        if (code != null) {
+            new ProductResolver.Builder(this).setCode(code).create().show();
+            return true;
         }
+
         return super.dispatchKeyEvent(event);
     }
 
