@@ -1,1 +1,1 @@
-include ':core', ':sample', ':ui', 'ui-integration', ':utils', ':firebase-extensions'
+include ':core', ':sample', ':ui', 'ui-integration', ':utils', ':firebase-detector'

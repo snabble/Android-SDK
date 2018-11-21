@@ -15,6 +15,7 @@ the new class ProductResolver
 ### Added
 - Add support for online payment using SEPA
 - Add support for zebra hardware scanner devices
+- Add firebase barcode detector module
 
 ### New String keys
 - Snabble.Payment.SEPA.Name
