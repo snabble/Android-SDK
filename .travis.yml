@@ -34,6 +34,7 @@ deploy:
   - ui/build/outputs/aar/ui-release.aar
   - ui-integration/build/outputs/aar/ui-integration-release.aar
   - utils/build/outputs/aar/utils-release.aar
+  - firebase-detetor/build/outputs/aar/firebase-detector-release.aar
   on:
     repo: snabble/Android-SDK
     tags: true
