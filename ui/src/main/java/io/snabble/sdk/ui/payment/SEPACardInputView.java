@@ -89,6 +89,8 @@ public class SEPACardInputView extends FrameLayout {
             }
         });
 
+        ibanCountryCode.setEnabled(false);
+
         ibanInput.addTextChangedListener(new TextWatcher() {
             boolean isUpdating;
 
@@ -196,9 +198,9 @@ public class SEPACardInputView extends FrameLayout {
         } else {
             ibanError.setVisibility(View.VISIBLE);
             shake(ibanInput);
-            shake(ibanCountryCode);
+            //shake(ibanCountryCode);
             ibanInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
-            ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext_error);
+            //ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext_error);
             ok = false;
         }
 
