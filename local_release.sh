@@ -1,4 +1,5 @@
 #!/bin/bash
 
-./gradlew install -PversionSuffix=-SNAPSHOT
-
+d=`date +"%s"`
+./gradlew install -PversionSuffix=-${d}
+./gradlew printVersion -PversionSuffix=-${d}

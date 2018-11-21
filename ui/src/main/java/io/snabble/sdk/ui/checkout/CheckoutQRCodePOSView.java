@@ -49,7 +49,14 @@ class CheckoutQRCodePOSView extends FrameLayout {
         String formattedAmount = priceFormatter.format(project.getCheckout().getPriceToPay());
 
         TextView textView = findViewById(R.id.pay_amount);
-        textView.setText(getContext().getString(R.string.Snabble_PaymentSelection_title) + " " + formattedAmount);
+        String text = getContext().getString(R.string.Snabble_QRCode_total) + " " + formattedAmount;
+
+        if (SnabbleUI.getActionBar() != null) {
+            textView.setVisibility(View.GONE);
+            SnabbleUI.getActionBar().setTitle(text);
+        } else {
+            textView.setText(text);
+        }
     }
 
     public void setQRCodeText(String text) {

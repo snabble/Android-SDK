@@ -91,6 +91,10 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
             }
         }
 
+        if (SnabbleUI.getActionBar() != null) {
+            SnabbleUI.getActionBar().setTitle(R.string.Snabble_Checkout_verifying);
+        }
+
         checkout = SnabbleUI.getProject().getCheckout();
         onStateChanged(checkout.getState());
     }

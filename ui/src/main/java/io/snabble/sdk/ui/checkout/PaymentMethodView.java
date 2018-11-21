@@ -50,7 +50,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private Project project;
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
-    private boolean showPriceToPay = true;
 
     public PaymentMethodView(Context context) {
         super(context);
@@ -87,13 +86,15 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         TextView title = findViewById(R.id.choose_payment_title);
 
-        if (showPriceToPay) {
-            PriceFormatter priceFormatter = new PriceFormatter(project);
-            String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
-            title.setText(getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText));
+        PriceFormatter priceFormatter = new PriceFormatter(project);
+        String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
+        String titleText = getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText);
+        if (SnabbleUI.getActionBar() != null) {
+            title.setVisibility(View.GONE);
+            SnabbleUI.getActionBar().setTitle(titleText);
+        } else {
+            title.setText(titleText);
         }
-
-        title.setVisibility(View.GONE);
 
         update();
     }
@@ -151,10 +152,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     @Override
     public void onChanged() {
         update();
-    }
-
-    public void setShowPriceToPay(boolean showPriceToPay) {
-        this.showPriceToPay = showPriceToPay;
     }
 
     private static class Entry {

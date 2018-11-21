@@ -79,17 +79,26 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         String formattedAmount = priceFormatter.format(project.getCheckout().getPriceToPay());
 
         TextView textView = findViewById(R.id.pay_amount);
-        textView.setText(getContext().getString(R.string.Snabble_PaymentSelection_title) + " " + formattedAmount);
+        String text = getContext().getString(R.string.Snabble_QRCode_total) + " " + formattedAmount;
+        textView.setText(text);
 
         explanationText = findViewById(R.id.explanation1);
         explanationText2 = findViewById(R.id.explanation2);
     }
 
     private void updateExplanationText(int codeCount) {
+        int resId;
         if (codeCount > 1) {
-            explanationText.setText(R.string.Snabble_QRCode_showTheseCodes);
+            resId = R.string.Snabble_QRCode_showTheseCodes;
         } else {
-            explanationText.setText(R.string.Snabble_QRCode_showThisCode);
+            resId = R.string.Snabble_QRCode_showThisCode;
+        }
+
+        if (SnabbleUI.getActionBar() != null) {
+            explanationText.setVisibility(View.GONE);
+            SnabbleUI.getActionBar().setTitle(resId);
+        } else {
+            explanationText.setText(resId);
         }
     }
 

@@ -28,6 +28,10 @@ class CheckoutDoneView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.view_checkout_done, this);
 
+        if (SnabbleUI.getActionBar() != null) {
+            SnabbleUI.getActionBar().setTitle(R.string.Snabble_Checkout_done);
+        }
+
         findViewById(R.id.back).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

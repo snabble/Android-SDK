@@ -1,7 +1,7 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.11.0-alpha1]
+## [0.11.0]
 
 ### Changes
 - SnabbleUICallback has now additional interface methods that needs to be implemented, 
@@ -26,6 +26,11 @@ the new class ProductResolver
 - Snabble.Payment.emptyState.add
 - Snabble.Payment.delete.message
 - Snabble.Payment.add
+- Snabble.Checkout.verifying
+- Snabble.Checkout.done
+- Snabble.Checkout.payAtCashRegister
+- Snabble.Checkout.error
+
 
 ## Fixed
 - Properly cleanup okhttp connections on error responses
