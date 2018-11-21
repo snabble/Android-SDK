@@ -65,18 +65,14 @@
 	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
 	<string name="Snabble.Receipt.title">Receipts</string>
 	<string name="Snabble.Receipt.noReceipt">No receipts found</string>
-
 	<string name="Snabble.Payment.SEPA.Name">Name</string>
 	<string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
 	<string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
-	<string name="Snabble.Payment.SEPA.InvalidName">Please enter a name.</string>
-
+	<string name="Snabble.Payment.SEPA.InvalidName">Please enter a valid name.</string>
 	<string name="Snabble.Save">Save</string>
-
 	<string name="Snabble.Payment.emptyState.message">You don\'t have any payment methods added yet. Add one now to conveniently check out.</string>
 	<string name="Snabble.Payment.emptyState.add">Add SEPA credentials</string>
 	<string name="Snabble.Payment.delete.message">Are you sure you want to remove this payment method?</string>
-
 	<string name="Snabble.Payment.add">Add SEPA credentials</string>
 
 	<!-- SECTION: Android -->
