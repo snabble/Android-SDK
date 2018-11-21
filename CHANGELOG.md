@@ -1,6 +1,35 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
- 
+
+## [0.11.0-alpha1]
+
+### Changes
+- SnabbleUICallback has now additional interface methods that needs to be implemented, 
+all payment related callbacks are optional if no online payment method is used.
+
+For more information see the sample application
+
+- Product dialog can now be shown anywhere, not only while having the scanner opened using
+the new class ProductResolver
+
+### Added
+- Add support for online payment using SEPA
+- Add support for zebra hardware scanner devices
+
+### New String keys
+- Snabble.Payment.SEPA.Name
+- Snabble.Payment.SEPA.IBAN
+- Snabble.Payment.SEPA.InvalidIBAN
+- Snabble.Payment.SEPA.InvalidName
+- Snabble.Save
+- Snabble.Payment.emptyState.message
+- Snabble.Payment.emptyState.add
+- Snabble.Payment.delete.message
+- Snabble.Payment.add
+
+## Fixed
+- Properly cleanup okhttp connections on error responses
+
 ## [0.10.6]
 
 ### Fixed
