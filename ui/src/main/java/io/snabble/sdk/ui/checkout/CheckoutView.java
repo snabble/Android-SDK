@@ -35,6 +35,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     private Checkout.State previousState;
     private DelayedProgressDialog progressDialog;
+    private boolean showPricetoPayInPaymentSelection = true;
 
     public CheckoutView(Context context) {
         super(context);
@@ -87,7 +88,9 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
         switch (state) {
             case REQUEST_PAYMENT_METHOD:
-                displayView(new PaymentMethodView(getContext()));
+                PaymentMethodView paymentMethodView = new PaymentMethodView(getContext());
+                paymentMethodView.setShowPriceToPay(showPricetoPayInPaymentSelection);
+                displayView(paymentMethodView);
                 break;
             case WAIT_FOR_APPROVAL:
                 displayPaymentView();
@@ -200,6 +203,10 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
         unregisterListeners();
+    }
+
+    public void setShowPriceToPayInPaymentSelection(boolean show) {
+        showPricetoPayInPaymentSelection = show;
     }
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =

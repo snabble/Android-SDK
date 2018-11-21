@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.checkout;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +50,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private Project project;
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
+    private boolean showPriceToPay = true;
 
     public PaymentMethodView(Context context) {
         super(context);
@@ -87,9 +87,13 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         TextView title = findViewById(R.id.choose_payment_title);
 
-        PriceFormatter priceFormatter = new PriceFormatter(project);
-        String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
-        title.setText(getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText));
+        if (showPriceToPay) {
+            PriceFormatter priceFormatter = new PriceFormatter(project);
+            String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
+            title.setText(getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText));
+        }
+
+        title.setVisibility(View.GONE);
 
         update();
     }
@@ -147,6 +151,10 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     @Override
     public void onChanged() {
         update();
+    }
+
+    public void setShowPriceToPay(boolean showPriceToPay) {
+        this.showPriceToPay = showPriceToPay;
     }
 
     private static class Entry {
