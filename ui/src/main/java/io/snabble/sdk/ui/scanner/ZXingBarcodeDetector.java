@@ -1,6 +1,10 @@
 package io.snabble.sdk.ui.scanner;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.graphics.Rect;
+import android.graphics.YuvImage;
 
 import com.google.zxing.Binarizer;
 import com.google.zxing.BinaryBitmap;
@@ -12,12 +16,17 @@ import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.snabble.sdk.BarcodeFormat;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.utils.Logger;
 
 public class ZXingBarcodeDetector implements BarcodeDetector {
@@ -76,18 +85,16 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
     }
 
     private Result detectInternal(byte[] data, int width, int height, int bitsPerPixel, Rect detectionRect, int displayOrientation, boolean rotate) {
-        byte[] buf;
-
-        if (rotate) {
-            int tmp = width;
-            width = height;
-            height = tmp;
-        }
-
-        buf = getRotatedData(data, width, height, bitsPerPixel, detectionRect, displayOrientation, rotate);
+        byte[] buf = getRotatedData(data, width, height, bitsPerPixel, detectionRect, displayOrientation, rotate);
 
         int tWidth = detectionRect.width();
         int tHeight = detectionRect.height();
+
+        if (rotate) {
+            int tmp = tWidth;
+            tWidth = tHeight;
+            tHeight = tmp;
+        }
 
         LuminanceSource luminanceSource = new PlanarYUVLuminanceSource(buf, tWidth, tHeight,
                 0, 0, tWidth, tHeight, false);
