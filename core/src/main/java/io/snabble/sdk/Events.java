@@ -39,7 +39,7 @@ class Events {
     public Events(Project project) {
         this.project = project;
 
-        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
@@ -48,10 +48,10 @@ class Events {
                 if (cartId != null && !list.getId().equals(cartId)) {
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
-                    post(payloadSessionEnd);
+                    post(payloadSessionEnd, false);
                 }
 
-                post(getPayloadCart());
+                post(getPayloadCart(), true);
             }
         });
 
@@ -79,12 +79,12 @@ class Events {
 
             PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
             payloadSessionStart.session = cartId;
-            post(payloadSessionStart);
-            post(getPayloadCart());
+            post(payloadSessionStart, false);
+            post(getPayloadCart(), true);
         } else {
             PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
             payloadSessionEnd.session = cartId;
-            post(payloadSessionEnd);
+            post(payloadSessionEnd, false);
 
             shop = null;
         }
@@ -95,10 +95,10 @@ class Events {
         error.message = String.format(format, args);
         error.session = cartId;
 
-        post(error);
+        post(error, false);
     }
 
-    private <T extends Payload> void post(final T payload) {
+    private <T extends Payload> void post(final T payload, boolean debounce) {
         if (!isResumed) {
             Logger.d("Could not send event, app is not active: " + payload.getEventType());
             return;
@@ -130,35 +130,42 @@ class Events {
                 .post(requestBody)
                 .build();
 
-        handler.removeCallbacksAndMessages(event.type);
-        handler.postAtTime(new Runnable() {
-            @Override
-            public void run() {
-                OkHttpClient okHttpClient = project.getOkHttpClient();
-                okHttpClient.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onResponse(Call call, Response response) {
-                        if (response.isSuccessful()) {
-                            Logger.d("Successfully posted event: " + payload.getEventType());
-                        } else {
-                            Logger.e("Failed to post event: " + payload.getEventType() + ", code " + response.code());
-                        }
-
-                        response.close();
-                    }
-
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Logger.e("Could not post event: " + e.toString());
-                    }
-                });
-
-            }
-        }, event.type, SystemClock.uptimeMillis() + 2000);
+        if (debounce) {
+            handler.removeCallbacksAndMessages(event.type);
+            handler.postAtTime(new Runnable() {
+                @Override
+                public void run() {
+                    send(request, payload);
+                }
+            }, event.type, SystemClock.uptimeMillis() + 2000);
+        } else {
+            send(request, payload);
+        }
 
         if (event.type == EventType.SESSION_START) {
             hasSentSessionStart = true;
         }
+    }
+
+    private <T extends Payload> void send(Request request, final T payload) {
+        OkHttpClient okHttpClient = project.getOkHttpClient();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.isSuccessful()) {
+                    Logger.d("Successfully posted event: " + payload.getEventType());
+                } else {
+                    Logger.e("Failed to post event: " + payload.getEventType() + ", code " + response.code());
+                }
+
+                response.close();
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Logger.e("Could not post event: " + e.toString());
+            }
+        });
     }
 
     private PayloadCart getPayloadCart() {
