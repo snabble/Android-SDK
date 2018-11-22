@@ -24,6 +24,8 @@ public class ProductResolver {
     private Context context;
     private OnShowListener onShowListener;
     private OnDismissListener onDismissListener;
+    private OnProductNotFoundListener onProductNotFoundListener;
+    private OnNetworkErrorListener onNetworkErrorListener;
     private BarcodeFormat barcodeFormat;
 
     public ProductResolver(Context context) {
@@ -167,16 +169,15 @@ public class ProductResolver {
 
     private void handleProductNotFound(ScannableCode scannedCode) {
         progressDialog.dismiss();
+        Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
 
         if(onDismissListener != null) {
             onDismissListener.onDismiss();
         }
 
-        Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
-        Toast.makeText(context,
-                R.string.Snabble_Scanner_unknownBarcode,
-                Toast.LENGTH_LONG)
-                .show();
+        if (onProductNotFoundListener != null) {
+            onProductNotFoundListener.onProductNotFound();
+        }
     }
 
     private void handleProductError() {
@@ -186,10 +187,9 @@ public class ProductResolver {
             onDismissListener.onDismiss();
         }
 
-        Toast.makeText(context,
-                R.string.Snabble_Scanner_networkError,
-                Toast.LENGTH_LONG)
-                .show();
+        if (onNetworkErrorListener != null) {
+            onNetworkErrorListener.onNetworkError();
+        }
     }
 
     private void showProduct(Product product, ScannableCode scannedCode) {
@@ -220,6 +220,14 @@ public class ProductResolver {
         void onDismiss();
     }
 
+    public interface OnProductNotFoundListener {
+        void onProductNotFound();
+    }
+
+    public interface OnNetworkErrorListener {
+        void onNetworkError();
+    }
+
     public static class Builder {
         private ProductResolver productResolver;
 
@@ -244,6 +252,16 @@ public class ProductResolver {
 
         public Builder setOnDismissListener(OnDismissListener listener) {
             productResolver.onDismissListener = listener;
+            return this;
+        }
+
+        public Builder setOnProductNotFoundListener(OnProductNotFoundListener listener) {
+            productResolver.onProductNotFoundListener = listener;
+            return this;
+        }
+
+        public Builder setOnNetworkErrorListener(OnNetworkErrorListener listener) {
+            productResolver.onNetworkErrorListener  = listener;
             return this;
         }
 

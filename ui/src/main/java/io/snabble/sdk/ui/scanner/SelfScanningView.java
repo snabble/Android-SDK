@@ -163,8 +163,22 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .setOnDismissListener(new ProductResolver.OnDismissListener() {
                     @Override
                     public void onDismiss() {
-                        resumeBarcodeScanner();
-                        delayNextScan();
+                        if (!isShowingHint) {
+                            resumeBarcodeScanner();
+                            delayNextScan();
+                        }
+                    }
+                })
+                .setOnProductNotFoundListener(new ProductResolver.OnProductNotFoundListener() {
+                    @Override
+                    public void onProductNotFound() {
+                        showInfo(R.string.Snabble_Scanner_unknownBarcode);
+                    }
+                })
+                .setOnNetworkErrorListener(new ProductResolver.OnNetworkErrorListener() {
+                    @Override
+                    public void onNetworkError() {
+                        showInfo(R.string.Snabble_Scanner_networkError);
                     }
                 })
                 .create()
@@ -190,6 +204,20 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
             lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
         }
+    }
+
+    private void showInfo(@StringRes int resId) {
+        info.setVisibility(View.VISIBLE);
+        info.setText(resId);
+        info.animate().translationY(0).start();
+
+        infoHandler.removeCallbacksAndMessages(null);
+        infoHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                info.animate().translationY(-info.getHeight()).start();
+            }
+        }, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
     }
 
     private void onClickEnterBarcode() {
