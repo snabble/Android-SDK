@@ -17,6 +17,9 @@ the new class ProductResolver
 - Add support for zebra hardware scanner devices
 - Add firebase barcode detector module
 
+### Fixed
+- Log events in millisecond precision
+
 ### New String keys
 - Snabble.Payment.SEPA.Name
 - Snabble.Payment.SEPA.IBAN
