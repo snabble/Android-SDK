@@ -99,7 +99,7 @@ class Events {
     }
 
     private <T extends Payload> void post(final T payload, boolean debounce) {
-        if (!isResumed) {
+        if (!isResumed && payload.getEventType() != EventType.ERROR) {
             Logger.d("Could not send event, app is not active: " + payload.getEventType());
             return;
         }
