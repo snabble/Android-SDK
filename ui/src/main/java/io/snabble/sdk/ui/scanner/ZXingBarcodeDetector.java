@@ -1,10 +1,6 @@
 package io.snabble.sdk.ui.scanner;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
 import android.graphics.Rect;
-import android.graphics.YuvImage;
 
 import com.google.zxing.Binarizer;
 import com.google.zxing.BinaryBitmap;
@@ -16,17 +12,12 @@ import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.utils.Logger;
 
 public class ZXingBarcodeDetector implements BarcodeDetector {
