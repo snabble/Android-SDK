@@ -18,6 +18,7 @@ the new class ProductResolver
 - Add firebase barcode detector module
 
 ### Fixed
+- Properly cleanup okhttp connections on error responses
 - Log events in millisecond precision
 
 ### New String keys
@@ -34,10 +35,6 @@ the new class ProductResolver
 - Snabble.Checkout.done
 - Snabble.Checkout.payAtCashRegister
 - Snabble.Checkout.error
-
-
-## Fixed
-- Properly cleanup okhttp connections on error responses
 
 ## [0.10.6]
 
