@@ -18,7 +18,7 @@ variants.all { variant ->
         effort = "default"
         reportLevel = "medium"
 
-        classes = files("$project.buildDir/intermediates/classes/${variant.dirName}")
+        classes = files("$project.buildDir/intermediates/javac/${variant.dirName}/compile${variant.dirName}JavaWithJavac/classes")
         excludeFilter = file("$rootProject.rootDir/findbugs-filter.xml")
         source = variant.javaCompile.source
         classpath = variant.javaCompile.classpath
