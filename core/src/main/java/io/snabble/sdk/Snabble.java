@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
@@ -489,6 +490,14 @@ public class Snabble {
          * immediately available offline.
          */
         public boolean generateSearchIndex;
+
+        /**
+         * The time that the database is allowed to be out of date. After the specified time in
+         * milliseconds the database only uses online requests for asynchronous requests.
+         *
+         * Successfully calling {@link ProductDatabase#update()} resets the timer.
+         */
+        public long productDbValidityTimeMs = TimeUnit.HOURS.toMillis(1);
 
         /**
          * If set to true, downloads receipts automatically and stores them in the projects

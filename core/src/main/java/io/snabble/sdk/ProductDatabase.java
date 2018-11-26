@@ -492,6 +492,11 @@ public class ProductDatabase {
      * <p>
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
+     *
+     * Note that database updates are usually very cheap and do not transmit data that is already on your device.
+     *
+     * If the database is not present or schematic changes are done that can not be resolved via a delta update
+     * a full update is needed.
      */
     public void update() {
         update(null);
@@ -505,6 +510,11 @@ public class ProductDatabase {
      * <p>
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
+     *
+     * Note that database updates are usually very cheap and do not transmit data that is already on your device.
+     *
+     * If the database is not present or schematic changes are done that can not be resolved via a delta update
+     * a full update is needed.
      *
      * @param callback A {@link UpdateCallback} that returns success when the operation is successfully completed.
      *                 Or error() in case a network error occurred.
@@ -521,6 +531,11 @@ public class ProductDatabase {
      * <p>
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
+     *
+     * Note that database updates are usually very cheap and do not transmit data that is already on your device.
+     *
+     * If the database is not present or schematic changes are done that can not be resolved via a delta update
+     * a full update is needed.
      *
      * @param callback        A {@link UpdateCallback} that returns success when the operation is successfully completed.
      *                        Or error() in case a network error occurred. Can be null.
@@ -869,7 +884,7 @@ public class ProductDatabase {
         if (lastUpdateDate != null) {
             long time = lastUpdateDate.getTime();
             long currentTime = new Date().getTime();
-            long t = time + TimeUnit.HOURS.toMillis(1);
+            long t = time + Snabble.getInstance().getConfig().productDbValidityTimeMs;
             return t > currentTime;
         }
 
