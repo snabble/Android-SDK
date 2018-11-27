@@ -4,8 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.FileUtils;
