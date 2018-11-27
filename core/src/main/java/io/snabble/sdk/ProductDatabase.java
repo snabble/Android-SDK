@@ -884,7 +884,7 @@ public class ProductDatabase {
         if (lastUpdateDate != null) {
             long time = lastUpdateDate.getTime();
             long currentTime = new Date().getTime();
-            long t = time + Snabble.getInstance().getConfig().productDbValidityTimeMs;
+            long t = time + Snabble.getInstance().getConfig().maxProductDatabaseAge;
             return t > currentTime;
         }
 

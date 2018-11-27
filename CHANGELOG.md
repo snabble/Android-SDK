@@ -18,6 +18,8 @@ the new class ProductResolver
 - Add firebase barcode detector module
 - Product and Shop are now Parcelable
 - Added toShortString in Product and Shop
+- Added config parameter maxProductDatabaseAge. Product database lookups are forced to
+ make online requests when the time since the last update exceeds this value. The default is 1 hour.
 
 ### Fixed
 - Properly cleanup okhttp connections on error responses

@@ -496,8 +496,12 @@ public class Snabble {
          * milliseconds the database only uses online requests for asynchronous requests.
          *
          * Successfully calling {@link ProductDatabase#update()} resets the timer.
+         *
+         * The time is specified in milliseconds.
+         *
+         * The default value is 1 hour.
          */
-        public long productDbValidityTimeMs = TimeUnit.HOURS.toMillis(1);
+        public long maxProductDatabaseAge = TimeUnit.HOURS.toMillis(1);
 
         /**
          * If set to true, downloads receipts automatically and stores them in the projects
