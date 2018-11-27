@@ -84,7 +84,7 @@ public class App extends Application {
             public void onReady() {
                 project = snabble.getProjects().get(0);
 
-                // registers this sdk instance globally for use with ui components
+                // registers this project globally for use with ui components
                 SnabbleUI.useProject(project);
 
                 // select the first shop for demo purposes
@@ -92,7 +92,9 @@ public class App extends Application {
                     project.setCheckedInShop(project.getShops()[0]);
                 }
 
-                //project.getProductDatabase().update();
+                // you can update the local database asynchronously, you can still query
+                // the database while this is running
+                // project.getProductDatabase().update();
 
                 // optionally set a loyalty card id for identification, for demo purposes
                 // we invent one here

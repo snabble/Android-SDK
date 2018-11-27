@@ -1,16 +1,26 @@
 package io.snabble.sdk;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.snabble.sdk.utils.GsonHolder;
 
 /**
  * Class that holds all of the product information.
  */
-public class Product {
+public class Product implements Serializable, Parcelable {
     public enum Type {
         /**
          * A basic product with price information.
@@ -106,6 +116,10 @@ public class Product {
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
     private Map<String, String> transmissionCodes;
     private boolean saleStop;
+
+    public Product() {
+
+    }
 
     /**
      * @return The unique identifier of the product. Usually the same identifier
@@ -254,13 +268,67 @@ public class Product {
         return sku.hashCode();
     }
 
-    @Override
-    public String toString() {
+    public String toShortString() {
         return "Product{" +
                 "sku='" + sku + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "sku='" + sku + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", scannableCodes=" + Arrays.toString(scannableCodes) +
+                ", weighedItemIds=" + Arrays.toString(weighedItemIds) +
+                ", price=" + price +
+                ", discountedPrice=" + discountedPrice +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", depositProduct=" + depositProduct +
+                ", bundleProducts=" + Arrays.toString(bundleProducts) +
+                ", type=" + type +
+                ", isDeposit=" + isDeposit +
+                ", boost=" + boost +
+                ", subtitle='" + subtitle + '\'' +
+                ", basePrice='" + basePrice + '\'' +
+                ", saleRestriction=" + saleRestriction +
+                ", transmissionCodes=" + transmissionCodes +
+                ", saleStop=" + saleStop +
+                '}';
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(GsonHolder.get().toJson(this));
+    }
+
+    protected Product(Parcel in) {
+        InstanceCreator<Product> creator = new InstanceCreator<Product>() {
+            public Product createInstance(java.lang.reflect.Type type) { return Product.this; }
+        };
+
+        Gson gson = new GsonBuilder().registerTypeAdapter(Product.class, creator).create();
+        gson.fromJson(in.readString(), Product.class);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
 
     public static class Builder {
         private Product product = new Product();

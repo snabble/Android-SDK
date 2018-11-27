@@ -16,6 +16,8 @@ the new class ProductResolver
 - Add support for online payment using SEPA
 - Add support for zebra hardware scanner devices
 - Add firebase barcode detector module
+- Product and Shop are now Parcelable
+- Added toShortString in Product and Shop
 
 ### Fixed
 - Properly cleanup okhttp connections on error responses

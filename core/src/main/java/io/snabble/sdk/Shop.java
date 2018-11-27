@@ -1,15 +1,23 @@
 package io.snabble.sdk;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Map;
 
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
-public class Shop implements Serializable {
+public class Shop implements Serializable, Parcelable {
     public enum Service {
         @SerializedName("euro")
         EURO_PAYMENT,
@@ -29,6 +37,13 @@ public class Shop implements Serializable {
 
     public class Href {
         public String href;
+
+        @Override
+        public String toString() {
+            return "Href{" +
+                    "href='" + href + '\'' +
+                    '}';
+        }
     }
 
     public class OpeningHourSpecification {
@@ -46,6 +61,15 @@ public class Shop implements Serializable {
 
         public String getDayOfWeek() {
             return dayOfWeek;
+        }
+
+        @Override
+        public String toString() {
+            return "OpeningHourSpecification{" +
+                    "closes='" + closes + '\'' +
+                    ", opens='" + opens + '\'' +
+                    ", dayOfWeek='" + dayOfWeek + '\'' +
+                    '}';
         }
     }
 
@@ -67,6 +91,10 @@ public class Shop implements Serializable {
     private double longitude;
     private OpeningHourSpecification[] openingHoursSpecification;
     private JsonElement external;
+
+    public Shop() {
+
+    }
 
     public String getId() {
         return id;
@@ -137,107 +165,78 @@ public class Shop implements Serializable {
         }
     }
 
-    public static class Builder {
-        private String id;
-        private String externalId;
-        private String name;
-        private Shop.Service[] services;
-        private String street;
-        private String zipCode;
-        private String city;
-        private String country;
-        private String state;
-        private String phone;
-        private double latitude;
-        private double longitude;
-        private OpeningHourSpecification[] openingHoursSpecification;
-        private JsonElement external;
-
-        public Builder id(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder services(Shop.Service[] services) {
-            this.services = services;
-            return this;
-        }
-
-        public Builder street(String street) {
-            this.street = street;
-            return this;
-        }
-
-        public Builder zipCode(String zipCode) {
-            this.zipCode = zipCode;
-            return this;
-        }
-
-        public Builder city(String city) {
-            this.city = city;
-            return this;
-        }
-
-        public Builder country(String country) {
-            this.country = country;
-            return this;
-        }
-
-        public Builder state(String state) {
-            this.state = state;
-            return this;
-        }
-
-        public Builder phone(String phone) {
-            this.phone = phone;
-            return this;
-        }
-
-        public Builder latLng(double latitude, double longitude) {
-            this.latitude = latitude;
-            this.longitude = longitude;
-            return this;
-        }
-
-        public Builder openingHours(OpeningHourSpecification[] openingHours) {
-            this.openingHoursSpecification = openingHours;
-            return this;
-        }
-
-        public Builder externalId(String externalId) {
-            this.externalId = externalId;
-            return this;
-        }
-
-        public Builder external(JsonElement external) {
-            this.external = external;
-            return this;
-        }
-
-        public Shop create() {
-            Shop shop = new Shop();
-
-            shop.id = id;
-            shop.externalId = externalId;
-            shop.name = name;
-            shop.services = services;
-            shop.street = street;
-            shop.zipCode = zipCode;
-            shop.city = city;
-            shop.country = country;
-            shop.state = state;
-            shop.phone = phone;
-            shop.latitude = latitude;
-            shop.longitude = longitude;
-            shop.openingHoursSpecification = openingHoursSpecification;
-            shop.external = external;
-
-            return shop;
-        }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Shop shop = (Shop) o;
+
+        return id.equals(shop.id);
+    }
+
+    public String toShortString() {
+        return "Shop{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    @Override
+    public String toString() {
+        return "Shop{" +
+                "id='" + id + '\'' +
+                ", externalId='" + externalId + '\'' +
+                ", name='" + name + '\'' +
+                ", services=" + Arrays.toString(services) +
+                ", street='" + street + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", city='" + city + '\'' +
+                ", country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", phone='" + phone + '\'' +
+                ", links=" + links +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", openingHoursSpecification=" + Arrays.toString(openingHoursSpecification) +
+                ", external=" + external +
+                '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        String str = GsonHolder.get().toJson(this);
+        dest.writeString(str);
+    }
+
+    protected Shop(Parcel in) {
+        InstanceCreator<Shop> creator = new InstanceCreator<Shop>() {
+            public Shop createInstance(Type type) { return Shop.this; }
+        };
+
+        Gson gson = new GsonBuilder().registerTypeAdapter(Shop.class, creator).create();
+        gson.fromJson(in.readString(), Shop.class);
+    }
+
+    public static final Parcelable.Creator<Shop> CREATOR = new Parcelable.Creator<Shop>() {
+        @Override
+        public Shop createFromParcel(Parcel source) {
+            return new Shop(source);
+        }
+
+        @Override
+        public Shop[] newArray(int size) {
+            return new Shop[size];
+        }
+    };
 }
