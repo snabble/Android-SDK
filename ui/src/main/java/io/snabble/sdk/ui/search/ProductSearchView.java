@@ -47,6 +47,8 @@ public class ProductSearchView extends FrameLayout {
         Project project = SnabbleUI.getProject();
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
+
+        searchBarEnabled = true;
         searchBar = findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -61,7 +63,9 @@ public class ProductSearchView extends FrameLayout {
 
             @Override
             public void afterTextChanged(Editable s) {
-                search(s.toString());
+                if (searchBarEnabled) {
+                    search(s.toString());
+                }
             }
         });
 
@@ -71,12 +75,9 @@ public class ProductSearchView extends FrameLayout {
                 if (actionId == EditorInfo.IME_ACTION_DONE
                         || (event.getAction() == KeyEvent.ACTION_DOWN
                         && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                    if (callback != null) {
-                        CharSequence text = searchBar.getText();
-                        if (text != null) {
-                            callback.showScannerWithCode(text.toString());
-                        }
+                    CharSequence text = searchBar.getText();
+                    if (text != null) {
+                        showScannerWithCode(text.toString());
                     }
 
                     return true;
@@ -137,11 +138,15 @@ public class ProductSearchView extends FrameLayout {
 
     public void search(String searchQuery) {
         if (searchBarEnabled) {
-            searchBar.setText(searchQuery);
+            if(!searchBar.getText().toString().equals(searchQuery)) {
+                searchBar.setText(searchQuery);
+            }
         }
 
-        lastSearchQuery = searchQuery;
-        searchableProductAdapter.search(searchQuery);
+        if (lastSearchQuery == null || !lastSearchQuery.equals(searchQuery)) {
+            lastSearchQuery = searchQuery;
+            searchableProductAdapter.search(searchQuery);
+        }
     }
 
     private void onSearchUpdated() {
