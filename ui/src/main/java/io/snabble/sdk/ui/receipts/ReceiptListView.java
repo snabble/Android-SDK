@@ -18,7 +18,9 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,13 +32,11 @@ import io.snabble.sdk.ReceiptInfo;
 import io.snabble.sdk.Receipts;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.cart.ShoppingCartView;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ReceiptListView extends FrameLayout implements Receipts.OnReceiptsUpdateListener {
-    private ReceiptInfo[] receiptList;
+    private List<ReceiptInfo> receiptList;
     private RecyclerView recyclerView;
     private View emptyState;
 
@@ -73,10 +73,19 @@ public class ReceiptListView extends FrameLayout implements Receipts.OnReceiptsU
     }
 
     private void update() {
-        receiptList = Snabble.getInstance().getReceipts().getReceiptInfos();
+        List<ReceiptInfo> newReceiptList = new ArrayList<>();
+        ReceiptInfo[] receipts = Snabble.getInstance().getReceipts().getReceiptInfos();
+
+        for (ReceiptInfo receiptInfo : receipts) {
+            if (receiptInfo.isDownloaded() || receiptInfo.getProject() != null) {
+                newReceiptList.add(receiptInfo);
+            }
+        }
+
+        receiptList = newReceiptList;
         recyclerView.getAdapter().notifyDataSetChanged();
 
-        if (receiptList.length == 0) {
+        if (receiptList.size() == 0) {
             emptyState.setVisibility(View.VISIBLE);
         } else {
             emptyState.setVisibility(View.GONE);
@@ -236,12 +245,12 @@ public class ReceiptListView extends FrameLayout implements Receipts.OnReceiptsU
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.bindTo(receiptList[position]);
+            holder.bindTo(receiptList.get(position));
         }
 
         @Override
         public int getItemCount() {
-            return receiptList != null ? receiptList.length : 0;
+            return receiptList != null ? receiptList.size() : 0;
         }
     }
 }
