@@ -313,7 +313,7 @@ public class Project {
         return currency;
     }
 
-    OkHttpClient getOkHttpClient() {
+    public OkHttpClient getOkHttpClient() {
         return okHttpClient;
     }
 

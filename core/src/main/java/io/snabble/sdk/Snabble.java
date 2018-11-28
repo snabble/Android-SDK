@@ -13,7 +13,6 @@ import com.google.gson.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -469,14 +468,14 @@ public class Snabble {
         public String versionName;
 
         /**
-         * Optional SSLSocketFactory that gets used for HTTP requests.
+         * Optional SSLSocketFactory that gets used for HTTPS requests.
          * <p>
          * Requires also x509TrustManager to be set.
          */
         public SSLSocketFactory sslSocketFactory = null;
 
         /**
-         * Optional X509TrustManager that gets used for HTTP requests.
+         * Optional X509TrustManager that gets used for HTTPS requests.
          * <p>
          * Requires also sslSocketFactory to be set.
          */

@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [0.11.0]
 
+### Important Changes
+- All requests to our domains are now using CertificatePinning against Let's Encrypt X3 and X4 
+certificates.
+
 ### Changes
 - SnabbleUICallback has now additional interface methods that needs to be implemented, 
 all payment related callbacks are optional if no online payment method is used.
@@ -11,6 +15,9 @@ For more information see the sample application
 
 - Product dialog can now be shown anywhere, not only while having the scanner opened using
 the new class ProductResolver
+
+- Exposed OkHttpClient in Project, to allow for making Requests that use certificate pinning
+and a valid token without extra effort, this also means OkHttp is now part of our public API
 
 ### Added
 - Add support for online payment using SEPA
