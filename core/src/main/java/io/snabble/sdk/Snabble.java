@@ -96,21 +96,12 @@ public class Snabble {
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
         if (config.endpointBaseUrl == null) {
-            config.endpointBaseUrl = "https://api.snabble.io";
+            config.endpointBaseUrl = Environment.PRODUCTION.getBaseUrl();
         } else if (!config.endpointBaseUrl.startsWith("http://") && !config.endpointBaseUrl.startsWith("https://")) {
             config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
         }
 
-        if (config.endpointBaseUrl.startsWith("https://api.snabble.io")) {
-            environment = Environment.PRODUCTION;
-        } else if (config.endpointBaseUrl.startsWith("https://api.snabble-staging.io")){
-            environment = Environment.STAGING;
-        } else if (config.endpointBaseUrl.startsWith("https://api.snabble-testing.io")) {
-            environment = Environment.TESTING;
-        } else {
-            environment = Environment.UNKNOWN;
-        }
-
+        environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl);
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
@@ -146,7 +137,7 @@ public class Snabble {
     }
 
     /**
-     * Return true when the SDK is not compatible with the backend anymore and the app should
+     * Returns true when the SDK is not compatible with the backend anymore and the app should
      * notify the user that it will not function anymore.
      */
     public boolean isOutdatedSDK() {
