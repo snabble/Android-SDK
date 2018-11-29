@@ -25,6 +25,7 @@ the new class ProductResolver
 - Properly cleanup okhttp connections on error responses
 - Log events in millisecond precision
 - BarcodeScannerView: Immediately auto focus on startup 
+- BarcodeScannerView: Unrecoverable errors should now show the error text instead of a black screen
 
 ### Removed
 - ProductDatabase.getBoostedProducts and Product.getBoost
