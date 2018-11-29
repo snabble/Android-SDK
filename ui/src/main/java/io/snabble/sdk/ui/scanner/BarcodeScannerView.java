@@ -130,6 +130,14 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 ViewGroup.LayoutParams.MATCH_PARENT));
         addView(scanIndicatorView);
 
+        splashView = new FrameLayout(getContext());
+        splashView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        splashView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
+                R.color.snabble_backgroundColorDark, null));
+        addView(splashView);
+
         cameraUnavailableView = new TextView(getContext());
         cameraUnavailableView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -140,14 +148,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraUnavailableView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.snabble_backgroundColorDark, null));
         cameraUnavailableView.setVisibility(View.GONE);
         addView(cameraUnavailableView);
-
-        splashView = new FrameLayout(getContext());
-        splashView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        splashView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
-                R.color.snabble_backgroundColorDark, null));
-        addView(splashView);
 
         textureView.setSurfaceTextureListener(this);
     }
