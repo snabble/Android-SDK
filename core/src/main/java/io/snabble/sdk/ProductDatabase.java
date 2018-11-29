@@ -139,7 +139,7 @@ public class ProductDatabase {
         try {
             loadDatabaseBundle(application.getResources().getAssets().open(assetPath), revision, major, minor);
         } catch (IOException e) {
-            Logger.e("Could load database from bundle: " + e.toString());
+            Logger.e("Could not load database from bundle: " + e.toString());
         }
     }
 
