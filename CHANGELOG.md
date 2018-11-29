@@ -26,6 +26,9 @@ the new class ProductResolver
 - Log events in millisecond precision
 - BarcodeScannerView: Immediately auto focus on startup 
 
+### Removed
+- ProductDatabase.getBoostedProducts and Product.getBoost
+
 ### New String keys
 - Snabble.Payment.SEPA.Name
 - Snabble.Payment.SEPA.IBAN

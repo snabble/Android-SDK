@@ -110,7 +110,6 @@ public class Product implements Serializable, Parcelable {
     private Product[] bundleProducts;
     private Type type;
     private boolean isDeposit;
-    private int boost;
     private String subtitle;
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
@@ -154,16 +153,6 @@ public class Product implements Serializable, Parcelable {
 
     public String[] getWeighedItemIds() {
         return weighedItemIds;
-    }
-
-    /**
-     * @return The importance index of the product. The higher the number, the more important
-     * the product is.
-     * <p>
-     * Can be used to display promotions of products.
-     */
-    public int getBoost() {
-        return boost;
     }
 
     public int getPrice() {
@@ -290,7 +279,6 @@ public class Product implements Serializable, Parcelable {
                 ", bundleProducts=" + Arrays.toString(bundleProducts) +
                 ", type=" + type +
                 ", isDeposit=" + isDeposit +
-                ", boost=" + boost +
                 ", subtitle='" + subtitle + '\'' +
                 ", basePrice='" + basePrice + '\'' +
                 ", saleRestriction=" + saleRestriction +
@@ -390,11 +378,6 @@ public class Product implements Serializable, Parcelable {
 
         public Builder setType(Type type) {
             product.type = type;
-            return this;
-        }
-
-        public Builder setBoost(int boost) {
-            product.boost = boost;
             return this;
         }
 

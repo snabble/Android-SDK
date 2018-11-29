@@ -44,19 +44,6 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testBoostedPromotionsQuery() {
-        ProductDatabase productDatabase = project.getProductDatabase();
-        Product[] products = productDatabase.getBoostedProducts(2);
-        assertEquals(2, products.length);
-        assertEquals(products[0].getSku(), "2");
-        assertEquals(products[1].getSku(), "1");
-
-        products = productDatabase.getBoostedProducts(1);
-        assertTrue(products.length == 1);
-        assertEquals(products[0].getSku(), "2");
-    }
-
-    @Test
     public void testTextSearch() throws IOException, Snabble.SnabbleException {
         withDb("demoDb_1_6.sqlite3");
 

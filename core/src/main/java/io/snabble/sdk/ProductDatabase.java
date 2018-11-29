@@ -470,7 +470,7 @@ public class ProductDatabase {
                 int count = cursor.getCount();
 
                 long time2 = SystemClock.elapsedRealtime() - time;
-                if (time2 > 16) {
+                if (time2 >= 16) {
                     Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
                             time2, count, bindArgs(sql, args));
                 }
@@ -754,12 +754,11 @@ public class ProductDatabase {
             builder.setWeighedItemIds(weighedItemIds.split(","));
         }
 
-        builder.setBoost(cursor.getInt(9))
-                .setSubtitle(cursor.getString(10));
+        builder.setSubtitle(cursor.getString(9));
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(11)));
-            builder.setSaleStop(cursor.getInt(12) != 0);
+            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(10)));
+            builder.setSaleStop(cursor.getInt(11) != 0);
         }
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
@@ -767,7 +766,7 @@ public class ProductDatabase {
         }
 
         if (scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-            String transmissionCodesStr = cursor.getString(13);
+            String transmissionCodesStr = cursor.getString(12);
             if (transmissionCodesStr != null) {
                 String[] transmissionCodes = transmissionCodesStr.split(",");
                 for (int i = 0; i < transmissionCodes.length; i++) {
@@ -854,7 +853,6 @@ public class ProductDatabase {
                 "p.weighing," +
                 "(SELECT group_concat(s.code) FROM scannableCodes s WHERE s.sku = p.sku)," +
                 "(SELECT group_concat(w.weighItemId) FROM weighItemIds w WHERE w.sku = p.sku)," +
-                "p.boost," +
                 "p.subtitle";
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
@@ -933,17 +931,6 @@ public class ProductDatabase {
             printSql = printSql.replaceFirst("\\?", "'" + arg + "'");
         }
         return printSql;
-    }
-
-    /**
-     * Deprecated. Will be removed in a future version of the SDK.
-     * <p>
-     * Returns products that have and a valid image url and have set the boost flag.
-     */
-    public Product[] getBoostedProducts(int limit) {
-        return queryDiscountedProducts("WHERE p.imageUrl IS NOT NULL" +
-                        " AND p.boost > 0 ORDER BY boost DESC LIMIT ?",
-                new String[]{String.valueOf(limit)});
     }
 
     /**

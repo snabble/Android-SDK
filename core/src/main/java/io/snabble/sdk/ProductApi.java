@@ -27,7 +27,6 @@ class ProductApi {
         private String name;
         private String description;
         private String subtitle;
-        private int boost;
         private String taxCategory;
         private String depositProduct;
         private boolean outOfStock;
@@ -522,7 +521,6 @@ class ProductApi {
                 .setName(apiProduct.name)
                 .setDescription(apiProduct.description)
                 .setSubtitle(apiProduct.subtitle)
-                .setBoost(apiProduct.boost)
                 .setDepositProduct(depositProduct)
                 .setBundleProducts(bundleProducts)
                 .setIsDeposit("deposit".equals(apiProduct.productType))

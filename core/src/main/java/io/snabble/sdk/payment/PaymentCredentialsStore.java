@@ -24,7 +24,7 @@ public class PaymentCredentialsStore {
 
     public PaymentCredentialsStore(Context context, Environment environment) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
-        credentialsKey = SHARED_PREFERENCES_CREDENTIALS + "_" + environment.name();
+        credentialsKey = SHARED_PREFERENCES_CREDENTIALS + "_" + (environment != null ? environment.name() : "_UNKNOWN");
 
         loadFromLocalStore();
     }
