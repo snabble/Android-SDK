@@ -369,6 +369,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
+                autoFocus();
                 updateTransform();
                 decodeEnabled = true;
             }
@@ -500,16 +501,20 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             @Override
             public void run() {
                 if (running) {
-                    try {
-                        camera.autoFocus(null);
-                    } catch (RuntimeException e) {
-                        //ignore, happens mostly when calling autoFocus while its still focussing
-                    }
+                    autoFocus();
 
                     scheduleAutoFocus();
                 }
             }
         }, 1000);
+    }
+
+    private void autoFocus() {
+        try {
+            camera.autoFocus(null);
+        } catch (RuntimeException e) {
+            //ignore, happens mostly when calling autoFocus while its still focussing
+        }
     }
 
     private void setupBarcodeDetector() {
