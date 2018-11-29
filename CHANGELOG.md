@@ -24,6 +24,7 @@ the new class ProductResolver
 ### Fixed
 - Properly cleanup okhttp connections on error responses
 - Log events in millisecond precision
+- BarcodeScannerView: Immediately auto focus on startup 
 
 ### New String keys
 - Snabble.Payment.SEPA.Name
