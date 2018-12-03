@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 - SnabbleUICallback has now additional interface methods that needs to be implemented, 
 all payment related callbacks are optional if no online payment method is used.
 
+showMainscreen() has been replaced with goBack() for more intuitive behaviour
+
 For more information see the sample application
 
 - Product dialog can now be shown anywhere, not only while having the scanner opened using
@@ -22,10 +24,12 @@ the new class ProductResolver
  make online requests when the time since the last update exceeds this value. The default is 1 hour.
 
 ### Fixed
+- Fixed products with embeddedCode == 0 not showing "scanned shelf code" info
 - Properly cleanup okhttp connections on error responses
 - Log events in millisecond precision
 - BarcodeScannerView: Immediately auto focus on startup 
-- BarcodeScannerView: Unrecoverable errors should now show the error text instead of a black screen
+- BarcodeScannerView: Unrecoverable errors (such as the camera driver not responding) 
+should now show the error text instead of a black screen
 
 ### Removed
 - ProductDatabase.getBoostedProducts and Product.getBoost
