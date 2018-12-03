@@ -507,5 +507,8 @@ public class Snabble {
          * internal storage folder.
          */
         public boolean enableReceiptAutoDownload;
+
+        /** If set to true, disables certificate pinning **/
+        public boolean disableCertificatePinning;
     }
 }
