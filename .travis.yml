@@ -12,8 +12,7 @@ before_install:
 - yes | sdkmanager "platforms;android-28"
 - gem install twine
 script:
-- "./gradlew :core:assembleRelease :ui:assembleRelease :ui-integration:assembleRelease
-  :utils:assembleRelease"
+- "./gradlew :core:assembleRelease :ui:assembleRelease :ui-integration:assembleRelease :utils:assembleRelease :firebase-detector:assembleRelease"
 after_success:
 - "./travis_release.sh"
 cache:
@@ -34,7 +33,7 @@ deploy:
   - ui/build/outputs/aar/ui-release.aar
   - ui-integration/build/outputs/aar/ui-integration-release.aar
   - utils/build/outputs/aar/utils-release.aar
-  - firebase-detetor/build/outputs/aar/firebase-detector-release.aar
+  - firebase-detector/build/outputs/aar/firebase-detector-release.aar
   on:
     repo: snabble/Android-SDK
     tags: true
@@ -42,3 +41,4 @@ deploy:
 notifications:
   slack:
     secure: hnuQJOWBCZ3pNSc2oP9u0c8Pygq8zcOIZ1bRMU1DW2AWB/9HE6ieqcV3gMatrniSnXoR5yEjn1Eq3PEBpbLfWkOwQfXbg0sKMD23P1lXklTSNvmNo067nyH+32vEtzKUyPm2zQJy096XpRvc632VjUZsrMDrLlSd4o1dTXwrDwoAjMLaqF+NeDqFx1EhooRWTRw1+Z2tiHgPbIAeSm+P1Fzvkw8XKsPctMO7lUGuCkeekn/9AKiUVDgBorIA0PDjoyYZaAMu2Zr5YVqhpXibkNhiId36DwRcbgPPHPM889ED23i9iCfmwe5vartOwE/8d4a4RgnEpV3wFQtoDaruO+YL69o6qzwGAWARPnk2lQhA8g1YbeBl3E3CJbb8PURjo8svFM+Wc4NC/OkSvXL/KT2DkbTcyui+u7e6sFIbnmNpaTz27PO01ZuIB0W1OdFksxaNCrhLn6KwWj6NiRmlgTlUT+VdXqOoJUhKI//8qxUa8/ShvKBy5TK14ve0AB9XwHyWMzkp+4JzBrBHQP4LBzSoGZVJ+f6aIFzffNHttRGbbMkTOnavidvojP5DEAv87LUjc2yIV+93+4PMtT0wcgkiWXPRdppGpkZX/wntamLaSs2iLSzM+R+ltpCo4v+OybI1CSHYj2AM7+XL03ZOfXFEl5o2UJZRShcsEpw6NHM=
+
