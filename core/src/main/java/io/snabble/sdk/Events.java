@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import io.snabble.sdk.utils.GsonHolder;
@@ -39,7 +40,7 @@ class Events {
     public Events(Project project) {
         this.project = project;
 
-        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
