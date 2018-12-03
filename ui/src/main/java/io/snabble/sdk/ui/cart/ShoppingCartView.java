@@ -88,6 +88,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         public void onItemRemoved(ShoppingCart list, Product product) {
 
         }
+
+        @Override
+        public void onUpdate(ShoppingCart list) {
+            onCartUpdated();
+        }
     };
 
     public ShoppingCartView(Context context) {

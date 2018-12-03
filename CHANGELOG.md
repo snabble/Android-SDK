@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.11.2]
+
+### Fixed
+- Prices are now updated when updating the ProductDatabase
+- Always show the locally calculated price for consistency
+
 ## [0.11.1]
 
 ### Fixed

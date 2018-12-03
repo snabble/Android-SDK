@@ -277,6 +277,22 @@ public class ShoppingCart {
         clear();
     }
 
+    public void update() {
+        ProductDatabase productDatabase = project.getProductDatabase();
+
+        if (productDatabase.isUpToDate()) {
+            for (Entry e : items) {
+                Product product = productDatabase.findByCode(e.scannedCode);
+
+                if (product != null) {
+                    e.product = product;
+                }
+            }
+
+            notifyUpdate(this);
+        }
+    }
+
     public void checkForTimeout() {
         long currentTime = System.currentTimeMillis();
 
@@ -504,10 +520,17 @@ public class ShoppingCart {
         void onItemMoved(ShoppingCart list, int fromIndex, int toIndex);
 
         void onItemRemoved(ShoppingCart list, Product product);
+
+        void onUpdate(ShoppingCart list);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
         public abstract void onChanged(ShoppingCart list);
+
+        @Override
+        public void onUpdate(ShoppingCart list) {
+            onChanged(list);
+        }
 
         @Override
         public void onItemAdded(ShoppingCart list, Product product) {
@@ -587,6 +610,16 @@ public class ShoppingCart {
         });
     }
 
+    private void notifyUpdate(final ShoppingCart list) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (ShoppingCartListener listener : listeners) {
+                    listener.onUpdate(list);
+                }
+            }
+        });
+    }
     /**
      * Notifies all {@link #listeners} that the shopping list was cleared of all entries.
      *

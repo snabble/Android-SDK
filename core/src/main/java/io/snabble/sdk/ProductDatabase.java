@@ -550,28 +550,29 @@ public class ProductDatabase {
         productDatabaseDownloader.update(new Downloader.Callback() {
             @Override
             protected void onDataLoaded(boolean wasStillValid) {
+                update();
+            }
+
+            @Override
+            protected void onError() {
+                if (productDatabaseDownloader.wasSameRevision()) {
+                    update();
+                } else {
+                    if (callback != null) {
+                        callback.error();
+                    }
+                }
+            }
+
+            private void update() {
                 updateLastUpdateTimestamp(System.currentTimeMillis());
                 notifyOnDatabaseUpdated();
 
                 if (callback != null) {
                     callback.success();
                 }
-            }
 
-            @Override
-            protected void onError() {
-                if (productDatabaseDownloader.wasSameRevision()) {
-                    updateLastUpdateTimestamp(System.currentTimeMillis());
-                    notifyOnDatabaseUpdated();
-
-                    if (callback != null) {
-                        callback.success();
-                    }
-                } else {
-                    if (callback != null) {
-                        callback.error();
-                    }
-                }
+                project.getShoppingCart().update();
             }
         }, deltaUpdateOnly);
     }

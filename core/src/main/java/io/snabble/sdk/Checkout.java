@@ -202,7 +202,7 @@ public class Checkout {
                                 int onlinePrice,
                                 PaymentMethod[] availablePaymentMethods) {
                 signedCheckoutInfo = checkoutInfo;
-                priceToPay = onlinePrice;
+                priceToPay = shoppingCart.getTotalPrice();
 
                 if (availablePaymentMethods.length == 1 && !availablePaymentMethods[0].isRequiringCredentials()) {
                     pay(availablePaymentMethods[0], null, true);
@@ -394,7 +394,7 @@ public class Checkout {
                     public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo,
                                         int onlinePrice,
                                         PaymentMethod[] availablePaymentMethods) {
-                        priceToPay = onlinePrice;
+                        priceToPay = shoppingCart.getTotalPrice();
 
                         checkoutApi.createPaymentProcess(signedCheckoutInfo, pm, null,
                                 new CheckoutApi.PaymentProcessResult() {
