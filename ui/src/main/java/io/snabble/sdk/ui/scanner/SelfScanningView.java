@@ -27,7 +27,6 @@ import android.widget.TextView;
 
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
@@ -40,7 +39,6 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
@@ -179,6 +177,12 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                     @Override
                     public void onNetworkError() {
                         showInfo(R.string.Snabble_Scanner_networkError);
+                    }
+                })
+                .setOnShelfCodeScannedListener(new ProductResolver.OnShelfCodeScannedListener() {
+                    @Override
+                    public void onShelfCodeScanned() {
+                        showInfo(R.string.Snabble_Scanner_scannedShelfCode);
                     }
                 })
                 .create()

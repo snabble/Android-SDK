@@ -24,6 +24,7 @@ public class ProductResolver {
     private Context context;
     private OnShowListener onShowListener;
     private OnDismissListener onDismissListener;
+    private OnShelfCodeScannedListener onShelfCodeScannedListener;
     private OnProductNotFoundListener onProductNotFoundListener;
     private OnNetworkErrorListener onNetworkErrorListener;
     private BarcodeFormat barcodeFormat;
@@ -127,13 +128,16 @@ public class ProductResolver {
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product);
         } else {
-            if (product.getType() == Product.Type.PreWeighed && !scannedCode.hasEmbeddedData()) {
-                Toast.makeText(context,
-                        R.string.Snabble_Scanner_scannedShelfCode,
-                        Toast.LENGTH_LONG)
-                        .show();
+            if (product.getType() == Product.Type.PreWeighed && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
+                if (onShelfCodeScannedListener != null) {
+                    onShelfCodeScannedListener.onShelfCodeScanned();
+                }
 
                 progressDialog.dismiss();
+
+                if (onDismissListener != null) {
+                    onDismissListener.onDismiss();
+                }
             } else {
                 showProduct(product, scannedCode);
 
@@ -220,6 +224,10 @@ public class ProductResolver {
         void onDismiss();
     }
 
+    public interface OnShelfCodeScannedListener {
+        void onShelfCodeScanned();
+    }
+
     public interface OnProductNotFoundListener {
         void onProductNotFound();
     }
@@ -262,6 +270,11 @@ public class ProductResolver {
 
         public Builder setOnNetworkErrorListener(OnNetworkErrorListener listener) {
             productResolver.onNetworkErrorListener  = listener;
+            return this;
+        }
+
+        public Builder setOnShelfCodeScannedListener(OnShelfCodeScannedListener listener) {
+            productResolver.onShelfCodeScannedListener  = listener;
             return this;
         }
 
