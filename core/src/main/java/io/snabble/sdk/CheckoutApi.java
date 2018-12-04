@@ -202,7 +202,7 @@ class CheckoutApi {
         cancel();
 
         call = okHttpClient.newCall(request);
-        call.enqueue(new SimpleJsonCallback<SignedCheckoutInfo>() {
+        call.enqueue(new SimpleJsonCallback<SignedCheckoutInfo>(SignedCheckoutInfo.class) {
             @Override
             public void success(SignedCheckoutInfo signedCheckoutInfo) {
                 int price;
