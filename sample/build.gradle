@@ -17,13 +17,17 @@ android {
         if (localFile.exists()) {
             properties.load(localFile.newDataInputStream())
 
-            resValue "string", "app_id", properties.getProperty('snabble.appId')
-            resValue "string", "endpoint", properties.getProperty('snabble.endpoint')
-            resValue "string", "secret", properties.getProperty('snabble.secret')
+            def id = properties.getProperty('snabble.appId')
+            def endpoint = properties.getProperty('snabble.endpoint')
+            def secret = properties.getProperty('snabble.secret')
+            
+            resValue "string", "app_id", id != null ? id : "<missing app id>"
+            resValue "string", "endpoint", endpoint != null ? endpoint : ""
+            resValue "string", "secret", secret != null ? secret : "<missing secret>"
         } else {
-            resValue "string", "app_id", ""
+            resValue "string", "app_id", "<missing app id>"
             resValue "string", "endpoint", ""
-            resValue "string", "secret", ""
+            resValue "string", "secret", "<missing secret>"
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
