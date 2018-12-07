@@ -2,10 +2,12 @@ package io.snabble.sdk.ui.cart;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -256,27 +258,29 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         } else if (state == Checkout.State.INVALID_PRODUCTS) {
             List<Product> invalidProducts = checkout.getInvalidProducts();
             if (invalidProducts != null && invalidProducts.size() > 0) {
+                Resources res = getResources();
                 StringBuilder sb = new StringBuilder();
-                sb.append("Products excluded from sale: "); // TODO i18n
-                boolean first = true;
+                if (invalidProducts.size() == 1) {
+                    sb.append(res.getString(R.string.Snabble_saleStop_errorMsg_one));
+                } else {
+                    sb.append(res.getString(R.string.Snabble_saleStop_errorMsg));
+                }
+
+                sb.append("\n\n");
+
                 for(Product product : invalidProducts) {
-                    if (!first) {
-                        sb.append(", ");
-                    }
                     sb.append(product.getSubtitle());
                     sb.append(" ");
                     sb.append(product.getName());
-                    first = false;
+                    sb.append("\n");
                 }
 
-                final Snackbar snackbar = UIUtils.snackbar(coordinatorLayout, sb.toString(), UIUtils.SNACKBAR_LENGTH_INDEFINITE);
-                snackbar.setAction(R.string.Snabble_OK, new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                snackbar.dismiss();
-                            }
-                        });
-                snackbar.show();
+                new AlertDialog.Builder(getContext())
+                        .setCancelable(false)
+                        .setTitle(R.string.Snabble_saleStop_errorMsg_title)
+                        .setMessage(sb.toString())
+                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .show();
             } else {
                 UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show();

@@ -65,6 +65,9 @@
 	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
 	<string name="Snabble.Receipt.title">Receipts</string>
 	<string name="Snabble.Receipt.noReceipt">No receipts found</string>
+	<string name="Snabble.saleStop.errorMsg.title">Sorry</string>
+	<string name="Snabble.saleStop.errorMsg.one">This product cannot be paid for using the app, please pay for it at the cashier.</string>
+	<string name="Snabble.saleStop.errorMsg">These products cannot be paid for using the app, please pay for them at the cashier.</string>
 	<string name="Snabble.Payment.SEPA.Name">Name</string>
 	<string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
 	<string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
