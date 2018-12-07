@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.11.3]
+
+### Important Changes
+- All requests to our domains are now using certificate pinning
+
 ## [0.11.2]
 
 ### Fixed
@@ -24,6 +29,9 @@ For more information see the sample application
 
 - Product dialog can now be shown anywhere, not only while having the scanner opened using
 the new class ProductResolver
+
+- Exposed OkHttpClient in Project, to allow for making Requests that use certificate pinning
+and a valid token without extra effort, this also means OkHttp is now part of our public API
 
 ### Added
 - Add support for online payment using SEPA

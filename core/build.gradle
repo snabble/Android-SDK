@@ -38,8 +38,9 @@ dependencies {
     implementation 'commons-io:commons-io:2.5'
     implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'org.iban4j:iban4j:3.2.1'
-    implementation "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
     implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttpVersion}"
+
+    api "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
     api 'com.google.code.gson:gson:2.8.5'
 
     testImplementation 'junit:junit:4.12'
