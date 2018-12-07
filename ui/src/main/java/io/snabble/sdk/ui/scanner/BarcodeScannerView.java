@@ -877,7 +877,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         int targetHeight = 1080;
 
         float minDiffX = Float.MAX_VALUE;
-        float minDiffY = Float.MIN_VALUE;
+        float minDiffY = Float.MAX_VALUE;
 
         for (Camera.Size size : sizes) {
             if (Math.abs(size.height - targetHeight) < minDiffY) {
@@ -891,18 +891,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             }
         }
 
-        if (optimalSizeForWidth == null) {
-            if (optimalSizeForHeight == null) {
-                return null;
-            } else {
-                return optimalSizeForHeight;
-            }
-        } else if (optimalSizeForHeight == null) {
-            return optimalSizeForWidth;
-        }
-
-        if ((optimalSizeForWidth.width + optimalSizeForWidth.height)
-                < (optimalSizeForHeight.width + optimalSizeForHeight.height)) {
+        if (minDiffX < minDiffY) {
             return optimalSizeForWidth;
         } else {
             return optimalSizeForHeight;
