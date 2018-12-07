@@ -45,8 +45,12 @@ public abstract class JsonCallback<T, T2> implements Callback {
     }
 
     protected void handleFailure(String body) {
-        T2 obj = GsonHolder.get().fromJson(body, failureClass);
-        failure(obj);
+        try {
+            T2 obj = GsonHolder.get().fromJson(body, failureClass);
+            failure(obj);
+        } catch (Exception e) {
+            error(e);
+        }
     }
 
     public abstract void success(T obj);

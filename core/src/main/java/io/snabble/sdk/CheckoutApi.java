@@ -7,13 +7,13 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.JsonCallback;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
@@ -23,7 +23,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 class CheckoutApi {
     private static MediaType JSON = MediaType.parse("application/json");
@@ -129,6 +128,7 @@ class CheckoutApi {
     public interface CheckoutInfoResult {
         void success(SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods);
         void noShop();
+        void invalidProducts(List<Product> products);
         void error();
     }
 
@@ -202,7 +202,7 @@ class CheckoutApi {
         cancel();
 
         call = okHttpClient.newCall(request);
-        call.enqueue(new SimpleJsonCallback<SignedCheckoutInfo>(SignedCheckoutInfo.class) {
+        call.enqueue(new JsonCallback<SignedCheckoutInfo, JsonObject>(SignedCheckoutInfo.class, JsonObject.class) {
             @Override
             public void success(SignedCheckoutInfo signedCheckoutInfo) {
                 int price;
@@ -232,8 +232,37 @@ class CheckoutApi {
             }
 
             @Override
+            public void failure(JsonObject obj) {
+                try {
+                    List<String> invalidSkus = new ArrayList<>();
+                    JsonArray arr = obj
+                            .get("error").getAsJsonObject()
+                            .get("details").getAsJsonArray();
+
+                    for (int i=0; i<arr.size(); i++) {
+                        String sku = arr.get(0).getAsJsonObject().get("sku").getAsString();
+                        invalidSkus.add(sku);
+                    }
+
+                    List<Product> invalidProducts = new ArrayList<>();
+                    ShoppingCart cart = project.getShoppingCart();
+                    for (int i=0; i<cart.size(); i++) {
+                        Product product = project.getShoppingCart().getProduct(i);
+                        if (invalidSkus.contains(product.getSku())) {
+                            invalidProducts.add(product);
+                        }
+                    }
+
+                    Logger.e("Invalid products");
+                    checkoutInfoResult.invalidProducts(invalidProducts);
+                } catch (Exception e) {
+                    error(e);
+                }
+            }
+
+            @Override
             public void error(Throwable t) {
-                Logger.e("Error while trying to check out");
+                Logger.e("Error while trying to check out: " + t.getMessage());
                 checkoutInfoResult.error();
             }
         });

@@ -33,6 +33,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.math.RoundingMode;
+import java.util.List;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
@@ -251,6 +252,36 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             if (callback != null) {
                 callback.showCheckout();
             }
+            progressDialog.dismiss();
+        } else if (state == Checkout.State.INVALID_PRODUCTS) {
+            List<Product> invalidProducts = checkout.getInvalidProducts();
+            if (invalidProducts != null && invalidProducts.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Products excluded from sale: "); // TODO i18n
+                boolean first = true;
+                for(Product product : invalidProducts) {
+                    if (!first) {
+                        sb.append(", ");
+                    }
+                    sb.append(product.getSubtitle());
+                    sb.append(" ");
+                    sb.append(product.getName());
+                    first = false;
+                }
+
+                final Snackbar snackbar = UIUtils.snackbar(coordinatorLayout, sb.toString(), UIUtils.SNACKBAR_LENGTH_INDEFINITE);
+                snackbar.setAction(R.string.Snabble_OK, new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                snackbar.dismiss();
+                            }
+                        });
+                snackbar.show();
+            } else {
+                UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .show();
+            }
+
             progressDialog.dismiss();
         } else if (state == Checkout.State.CONNECTION_ERROR) {
             UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)

@@ -60,6 +60,10 @@ public class Checkout {
          */
         CONNECTION_ERROR,
         /**
+         * Invalid products detected. For example if a sale ∂stop was issued.
+         */
+        INVALID_PRODUCTS,
+        /**
          * No shop was selected.
          */
         NO_SHOP,
@@ -86,6 +90,7 @@ public class Checkout {
     private List<String> codes = new ArrayList<>();
     private PaymentMethod[] clientAcceptedPaymentMethods;
     private Shop shop;
+    private List<Product> invalidProducts;
 
     private Runnable pollRunnable = new Runnable() {
         @Override
@@ -124,6 +129,7 @@ public class Checkout {
         }
 
         checkoutProcess = null;
+        invalidProducts = null;
         paymentMethod = null;
         shop = null;
     }
@@ -158,6 +164,7 @@ public class Checkout {
         notifyStateChanged(State.NONE);
 
         checkoutProcess = null;
+        invalidProducts = null;
         paymentMethod = null;
         shop = null;
     }
@@ -189,6 +196,7 @@ public class Checkout {
         signedCheckoutInfo = null;
         paymentMethod = null;
         priceToPay = 0;
+        invalidProducts = null;
         shop = project.getCheckedInShop();
 
         notifyStateChanged(State.HANDSHAKING);
@@ -218,6 +226,12 @@ public class Checkout {
             }
 
             @Override
+            public void invalidProducts(List<Product> products) {
+                invalidProducts = products;
+                notifyStateChanged(State.INVALID_PRODUCTS);
+            }
+
+                    @Override
             public void error() {
                 PaymentMethod fallback = getFallbackPaymentMethod();
                 if(fallback != null) {
@@ -423,6 +437,11 @@ public class Checkout {
                     }
 
                     @Override
+                    public void invalidProducts(List<Product> products) {
+
+                    }
+
+                            @Override
                     public void error() {
 
                     }
@@ -489,6 +508,10 @@ public class Checkout {
 
     public int getPriceToPay() {
         return priceToPay;
+    }
+
+    public List<Product> getInvalidProducts() {
+        return invalidProducts;
     }
 
     /**
