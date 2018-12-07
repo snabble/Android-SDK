@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.11.3]
+
+### Important Changes
+- All requests to our domains are now using certificate pinning
+
 ## [0.11.2]
 
 ### Fixed
@@ -13,10 +18,6 @@ All notable changes to this project will be documented in this file.
 - Force US locale for time formatting
 
 ## [0.11.0]
-
-### Important Changes
-- All requests to our domains are now using CertificatePinning against Let's Encrypt X3 and X4 
-certificates.
 
 ### Changes
 - SnabbleUICallback has now additional interface methods that needs to be implemented, 
