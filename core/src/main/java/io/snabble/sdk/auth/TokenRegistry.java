@@ -19,15 +19,17 @@ import okhttp3.ResponseBody;
 public class TokenRegistry {
     private Totp totp;
     private Map<String, Token> tokens = new HashMap<>();
+    private String clientId;
     private String appId;
     private OkHttpClient okHttpClient;
     private long timeOffset;
 
-    public TokenRegistry(OkHttpClient okHttpClient, String appId, String secret) {
+    public TokenRegistry(OkHttpClient okHttpClient, String clientId, String appId, String secret) {
         try {
             byte[] secretData = Base32String.decode(secret);
 
             this.totp = new Totp("HmacSHA256", secretData, 8, 30);
+            this.clientId = clientId;
             this.appId = appId;
             this.okHttpClient = okHttpClient;
         } catch (Base32String.DecodingException e) {
@@ -57,6 +59,7 @@ public class TokenRegistry {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Basic " + base64)
+                .addHeader("Client-ID", clientId)
                 .build();
 
         Response response = null;

@@ -23,8 +23,7 @@ class OkHttpClientFactory {
             "sha256/SQVGZiOrQXi+kqxcvWWE96HhfydlLVqFr4lQTqI5qqo="  // GeoTrust PCA
     };
 
-    static OkHttpClient createOkHttpClient(Application application,
-                                           Project project) {
+    static OkHttpClient createOkHttpClient(Application application) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
@@ -43,11 +42,6 @@ class OkHttpClientFactory {
         builder.addInterceptor(logging);
 
         Snabble.Config config = Snabble.getInstance().getConfig();
-
-        if (project != null) {
-            builder.addInterceptor(new SnabbleAuthorizationInterceptor(project));
-        }
-
         builder.addInterceptor(new UserAgentInterceptor(application));
 
         if (!Snabble.getInstance().getConfig().disableCertificatePinning) {

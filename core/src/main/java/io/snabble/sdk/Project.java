@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.JsonUtils;
@@ -70,7 +71,10 @@ public class Project {
         parse(jsonObject);
 
         internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(Snabble.getInstance().getApplication(), this);
+        okHttpClient = Snabble.getInstance().getOkHttpClient()
+                .newBuilder()
+                .addInterceptor(new SnabbleAuthorizationInterceptor(this))
+                .build();
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
 

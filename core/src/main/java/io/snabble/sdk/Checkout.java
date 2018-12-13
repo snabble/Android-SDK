@@ -287,10 +287,6 @@ public class Checkout {
 
                             if (!paymentMethod.isOfflineMethod()) {
                                 scheduleNextPoll();
-                            } else {
-                                PriceFormatter priceFormatter = new PriceFormatter(project);
-                                receipts.retrieve(project, checkoutProcessResponse, shop.getName(),
-                                        priceFormatter.format(priceToPay));
                             }
                         }
                     }
@@ -358,12 +354,7 @@ public class Checkout {
             return true;
         }
 
-        String receiptLink = checkoutProcess.getReceiptLink();
-        if (receiptLink != null) {
-            downloadReceipt(receiptLink);
-        }
-
-        if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL && receiptLink != null) {
+        if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL) {
             approve();
             return true;
         } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.PENDING) {
@@ -385,15 +376,6 @@ public class Checkout {
         return false;
     }
 
-    private void downloadReceipt(String receiptLink) {
-        PriceFormatter priceFormatter = new PriceFormatter(project);
-        ReceiptInfo receiptInfo = receipts.add(project, receiptLink,
-                shop.getName(), priceFormatter.format(priceToPay));
-
-        if(Snabble.getInstance().getConfig().enableReceiptAutoDownload) {
-            receipts.download(receiptInfo, null);
-        }
-    }
 
     private void retryPostSilent() {
         final String cartJson = project.getEvents().getPayloadCartJson();
@@ -414,9 +396,7 @@ public class Checkout {
                                 new CheckoutApi.PaymentProcessResult() {
                             @Override
                             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                                PriceFormatter priceFormatter = new PriceFormatter(project);
-                                receipts.retrieve(project, checkoutProcessResponse, shop.getName(),
-                                        priceFormatter.format(priceToPay));
+
                             }
 
                             @Override

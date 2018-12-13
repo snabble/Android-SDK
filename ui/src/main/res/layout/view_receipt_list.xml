@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
 
-    <TextView android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="48dp"
-            android:textSize="17sp"
-            android:id="@+id/empty_state"
-            android:visibility="gone"
-            android:text="@string/Snabble.Receipt.noReceipt"/>
+        <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="17sp"
+                android:id="@+id/empty_state"
+                android:visibility="gone"
+                android:text="@string/Snabble.Receipt.noReceipt"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </merge>

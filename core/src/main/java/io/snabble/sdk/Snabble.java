@@ -9,6 +9,7 @@ import android.util.Base64;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.auth.TokenRegistry;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
@@ -39,7 +41,6 @@ public class Snabble {
     private static Snabble instance = new Snabble();
 
     private List<Project> projects;
-    private OkHttpClient okHttpClient;
     private TokenRegistry tokenRegistry;
     private Receipts receipts;
     private Application application;
@@ -53,6 +54,8 @@ public class Snabble {
     private String versionName;
     private Environment environment;
     private List<X509Certificate> paymentCertificates;
+    private String receiptsUrl;
+    private OkHttpClient okHttpClient;
 
     private Snabble() {
 
@@ -87,9 +90,9 @@ public class Snabble {
         //noinspection ResultOfMethodCallIgnored
         internalStorageDirectory.mkdirs();
 
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(app, null);
-        tokenRegistry = new TokenRegistry(okHttpClient, config.appId, config.secret);
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(app);
         userPreferences = new UserPreferences(app);
+        tokenRegistry = new TokenRegistry(okHttpClient, userPreferences.getClientId(), config.appId, config.secret);
         receipts = new Receipts();
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
@@ -156,9 +159,25 @@ public class Snabble {
             if (jsonObject.has("gatewayCertificates")) {
                 parsePaymentCertificates(jsonObject);
             }
+
+            receiptsUrl = getUrl(jsonObject, "clientOrders");
+
+            if (receiptsUrl != null) {
+                receiptsUrl = receiptsUrl.replace("{clientID}", getClientId());
+            }
         }
 
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
+    }
+
+    private String getUrl(JsonObject jsonObject, String urlName) {
+        try {
+            return absoluteUrl(jsonObject.get("links").getAsJsonObject()
+                    .get(urlName).getAsJsonObject()
+                    .get("href").getAsString());
+        } catch (JsonParseException e) {
+            return null;
+        }
     }
 
     private void parseProjects(JsonObject jsonObject) {
@@ -199,7 +218,6 @@ public class Snabble {
         }
 
         projects = Collections.unmodifiableList(newProjects);
-        receipts.loadFromSharedPreferences();
     }
 
     private void parsePaymentCertificates(JsonObject jsonObject) {
@@ -245,12 +263,20 @@ public class Snabble {
         return metadataUrl;
     }
 
+    public String getReceiptsUrl() {
+        return receiptsUrl;
+    }
+
     public File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
 
     public Application getApplication() {
         return application;
+    }
+
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
     }
 
     public TokenRegistry getTokenRegistry() {

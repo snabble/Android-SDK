@@ -1,49 +1,38 @@
 package io.snabble.sdk;
 
-import okhttp3.Call;
+import java.util.Date;
 
 public class ReceiptInfo {
     private String id;
-    private long timestamp;
-    private String url;
-    private String filePath;
+    private Project project;
+    private Date date;
+    private String pdfUrl;
     private String shopName;
     private String price;
-    private String projectId;
-    private transient Project project;
-    transient Call call;
 
-    public ReceiptInfo(String id, String projectId, String url, String shopName, String price) {
+    public ReceiptInfo(String id, Project project, Date date, String pdfUrl, String shopName, String price) {
         this.id = id;
-        this.projectId = projectId;
-        this.url = url;
+        this.project = project;
+        this.date = date;
+        this.pdfUrl = pdfUrl;
         this.shopName = shopName;
         this.price = price;
-        this.timestamp = System.currentTimeMillis();
     }
 
     public String getId() {
         return id;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public Project getProject() {
+        return project;
     }
 
-    public String getUrl() {
-        return url;
+    public Date getDate() {
+        return date;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
-    void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public boolean isDownloaded() {
-        return filePath != null;
+    public String getPdfUrl() {
+        return pdfUrl;
     }
 
     public String getShopName() {
@@ -52,18 +41,6 @@ public class ReceiptInfo {
 
     public String getPrice() {
         return price;
-    }
-
-    void setProject(Project project) {
-        this.project = project;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public String getProjectId() {
-        return projectId;
     }
 }
 
