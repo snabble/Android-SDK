@@ -23,7 +23,7 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.11.3'
+        sdkVersion='0.11.4'
         versionCode=1
 
         compileSdkVersion=28

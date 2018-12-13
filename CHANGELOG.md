@@ -1,7 +1,7 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.11.3]
+## [0.11.4]
 
 ### Changes
 - Now listing the offending products if a checkout is failing because of a sale stop or other 
