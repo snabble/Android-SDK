@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [0.11.3]
 
+### Changes
+- Now listing the offending products if a checkout is failing because of a sale stop or other 
+various reasons
+
+## [0.11.3]
+
 ### Important Changes
 - All requests to our domains are now using certificate pinning
 
