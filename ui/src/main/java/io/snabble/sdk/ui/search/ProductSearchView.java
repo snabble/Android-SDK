@@ -25,6 +25,8 @@ public class ProductSearchView extends FrameLayout {
     private boolean searchBarEnabled;
     private TextView addCodeAsIs;
     private String lastSearchQuery;
+    private boolean allowAnyCode;
+    private OnProductSelectedListener onProductSelectedListener;
 
     public ProductSearchView(Context context) {
         super(context);
@@ -49,6 +51,7 @@ public class ProductSearchView extends FrameLayout {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         searchBarEnabled = true;
+        allowAnyCode = true;
         searchBar = findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -118,21 +121,15 @@ public class ProductSearchView extends FrameLayout {
     }
 
     private void showScannerWithCode(String scannableCode) {
-        Telemetry.event(Telemetry.Event.ManuallyEnteredProduct, scannableCode);
-
-        SnabbleUICallback callback = SnabbleUI.getUiCallback();
-        if (callback != null) {
-            callback.showScannerWithCode(scannableCode);
-        }
-    }
-
-    public void setSearchBarEnabled(boolean searchBarEnabled) {
-        this.searchBarEnabled = searchBarEnabled;
-
-        if (searchBarEnabled) {
-            searchBar.setVisibility(View.VISIBLE);
+        if (onProductSelectedListener != null) {
+            onProductSelectedListener.onProductSelected(scannableCode);
         } else {
-            searchBar.setVisibility(View.GONE);
+            Telemetry.event(Telemetry.Event.ManuallyEnteredProduct, scannableCode);
+
+            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            if (callback != null) {
+                callback.showScannerWithCode(scannableCode);
+            }
         }
     }
 
@@ -151,11 +148,32 @@ public class ProductSearchView extends FrameLayout {
 
     private void onSearchUpdated() {
         if (searchableProductAdapter.getItemCount() == 0
-                && lastSearchQuery != null && lastSearchQuery.length() > 0) {
+                && lastSearchQuery != null && lastSearchQuery.length() > 0
+                && allowAnyCode) {
             addCodeAsIs.setText(getResources().getString(R.string.Snabble_Scanner_addCodeAsIs, lastSearchQuery));
             addCodeAsIs.setVisibility(View.VISIBLE);
         } else {
             addCodeAsIs.setVisibility(View.GONE);
         }
+    }
+
+    public void setSearchBarEnabled(boolean searchBarEnabled) {
+        this.searchBarEnabled = searchBarEnabled;
+
+        if (searchBarEnabled) {
+            searchBar.setVisibility(View.VISIBLE);
+        } else {
+            searchBar.setVisibility(View.GONE);
+        }
+    }
+
+    /** if set to true allows adding any code, regardless if an product is found **/
+    public void setAllowAnyCode(boolean allowAnyCode) {
+        this.allowAnyCode = allowAnyCode;
+    }
+
+    /** allows for overriding the default action (calling SnabbleUICallback) **/
+    public void setOnProductSelectedListener(OnProductSelectedListener onProductSelectedListener) {
+        this.onProductSelectedListener = onProductSelectedListener;
     }
 }
