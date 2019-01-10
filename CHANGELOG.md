@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [0.11.5]
 
+### Changed
+- Renamed get/set LoyaltyCardId to CustomerCardId 
+
 ### Added
+- Added support for customer card metadata
 - Added customizing options for ProductSearchView
 - Added top-down info box in UIUtils
 - Database error event logging (to the servers of snabble) 

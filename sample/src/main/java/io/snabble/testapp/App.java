@@ -98,7 +98,7 @@ public class App extends Application {
 
                 // optionally set a loyalty card id for identification, for demo purposes
                 // we invent one here
-                project.setLoyaltyCardId("testAppUserLoyaltyCardId");
+                project.setCustomerCardId("testAppUserLoyaltyCardId");
 
                 // if you want to force keyguard authentication before online payment
                 snabble.getUserPreferences().setRequireKeyguardAuthenticationForPayment(true);

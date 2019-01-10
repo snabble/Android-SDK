@@ -188,7 +188,7 @@ class Events {
         payloadCart.session = shoppingCart.getId();
         payloadCart.shopId = "unknown";
 
-        String loyaltyCardId = project.getLoyaltyCardId();
+        String loyaltyCardId = project.getCustomerCardId();
         if (loyaltyCardId != null) {
             payloadCart.customer = new PayloadCartCustomer();
             payloadCart.customer.loyaltyCard = loyaltyCardId;

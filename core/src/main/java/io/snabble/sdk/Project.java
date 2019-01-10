@@ -58,6 +58,8 @@ public class Project {
     private BarcodeFormat[] supportedBarcodeFormats;
     private Shop checkedInShop;
     private Map<BarcodeFormat, IntRange> barcodeFormatRanges;
+    private CustomerCardInfo[] acceptedCustomerCardInfos;
+    private CustomerCardInfo requiredCustomerCardInfo;
 
     private Map<String, String> urls;
 
@@ -168,6 +170,27 @@ public class Project {
         // TODO parse from metadata
         if (id.contains("ikea")) {
             barcodeFormatRanges.put(BarcodeFormat.ITF_14, new IntRange(0, 8));
+        }
+
+        JsonObject customerCards = jsonObject.getAsJsonObject("customerCards");
+        String[] acceptedCustomerCards = JsonUtils.getStringArrayOpt(customerCards, "accepted", new String[0]);
+        String requiredCustomerCard = JsonUtils.getStringOpt(customerCards, "required", null);
+        acceptedCustomerCardInfos = new CustomerCardInfo[acceptedCustomerCards.length];
+
+        for (int i=0; i<acceptedCustomerCards.length; i++) {
+            String id = acceptedCustomerCards[i];
+
+            boolean required = false;
+            if (id.equals(requiredCustomerCard)) {
+                required = true;
+            }
+
+            CustomerCardInfo customerCardInfo = new CustomerCardInfo(id, required);
+            acceptedCustomerCardInfos[i] = customerCardInfo;
+
+            if (required) {
+                requiredCustomerCardInfo = customerCardInfo;
+            }
         }
 
         if (jsonObject.has("shops")) {
@@ -362,14 +385,25 @@ public class Project {
     }
 
     /**
-     * Sets the customer loyalty card number for user identification with the backend.
+     * Sets the customer card number for user identification with the backend.
      */
-    public void setLoyaltyCardId(String loyaltyCardId) {
+    public void setCustomerCardId(String loyaltyCardId) {
         this.loyaltyCardId = loyaltyCardId;
     }
 
-    public String getLoyaltyCardId() {
+    public String getCustomerCardId() {
         return loyaltyCardId;
+    }
+
+    /**
+     * Returns the possible accepted cards and if a customer card is required.
+     */
+    public CustomerCardInfo[] getCustomerCardInfos() {
+        return acceptedCustomerCardInfos;
+    }
+
+    public CustomerCardInfo getRequiredCustomerCardInfo() {
+        return requiredCustomerCardInfo;
     }
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
