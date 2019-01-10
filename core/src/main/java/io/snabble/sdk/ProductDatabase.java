@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.Logger;
@@ -300,10 +299,15 @@ public class ProductDatabase {
 
         if (!deleteDatabase(tempDbFile)) {
             Logger.e("Could not apply delta update: Could not delete temp database");
-            return;
+            throw new IOException();
         }
 
-        FileUtils.copyFile(dbFile, tempDbFile);
+        try {
+            FileUtils.copyFile(dbFile, tempDbFile);
+        } catch (IOException e) {
+            project.logErrorEvent("Could not copy db to temp file: %s", e.getMessage());
+            throw e;
+        }
 
         SQLiteDatabase tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
 
@@ -317,8 +321,8 @@ public class ProductDatabase {
         try {
             tempDb.beginTransaction();
         } catch (SQLiteException e) {
-            Logger.e("Could not apply delta update: Could not access temp database");
-            return;
+            project.logErrorEvent("Could not apply delta update: Could not access temp database");
+            throw new IOException();
         }
 
         while (scanner.hasNext()) {
@@ -330,7 +334,7 @@ public class ProductDatabase {
                 //occurred
                 IOException lastException = scanner.ioException();
                 if (lastException != null) {
-                    Logger.e("Could not apply delta update: %s", lastException.getMessage());
+                    project.logErrorEvent("Could not apply delta update: %s", lastException.getMessage());
                     tempDb.close();
                     deleteDatabase(tempDbFile);
                     throw lastException;
@@ -341,10 +345,10 @@ public class ProductDatabase {
                 //code 0 = "not an error" - statements like empty strings are causing that exception
                 //which we want to allow
                 if (!e.getMessage().contains("code 0")) {
-                    Logger.e("Could not apply delta update: %s", e.getMessage());
+                    project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
                     tempDb.close();
                     deleteDatabase(tempDbFile);
-                    return;
+                    throw new IOException();
                 }
             }
         }
@@ -353,8 +357,8 @@ public class ProductDatabase {
             tempDb.setTransactionSuccessful();
             tempDb.endTransaction();
         } catch (SQLiteException e) {
-            Logger.e("Could not apply delta update: Could not finish transaction on temp database");
-            return;
+            project.logErrorEvent("Could not apply delta update: Could not finish transaction on temp database");
+            throw new IOException();
         }
 
         //delta updates are making the database grow larger and larger, so we vacuum here
@@ -363,9 +367,9 @@ public class ProductDatabase {
         try {
             tempDb.execSQL("VACUUM");
         } catch (SQLiteException e) {
-            Logger.e("Could not apply delta update: %s", e.getMessage());
+            project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
             deleteDatabase(tempDbFile);
-            return;
+            throw new IOException();
         }
 
         long vacuumTime2 = SystemClock.elapsedRealtime() - vacuumTime;
@@ -373,7 +377,12 @@ public class ProductDatabase {
 
         tempDb.close();
 
-        swap(tempDbFile);
+        try {
+            swap(tempDbFile);
+        } catch (IOException e) {
+            project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
+            throw new IOException();
+        }
 
         long time2 = SystemClock.elapsedRealtime() - time;
         Logger.d("Delta update (%d -> %d) took %d ms", fromRevisionId, getRevisionId(), time2);
@@ -397,15 +406,19 @@ public class ProductDatabase {
         File tempDbFile = application.getDatabasePath("_" + dbName);
 
         if (!deleteDatabase(tempDbFile)) {
-            Logger.e("Could not apply full update: Could not delete old database download");
-            return;
+            project.logErrorEvent("Could not apply full update: Could not delete old database download");
+            throw new IOException();
         }
 
         tempDbFile.getParentFile().mkdirs();
 
-        IOUtils.copy(inputStream, new FileOutputStream(tempDbFile));
-
-        swap(tempDbFile);
+        try {
+            IOUtils.copy(inputStream, new FileOutputStream(tempDbFile));
+            swap(tempDbFile);
+        } catch (IOException e) {
+            project.logErrorEvent("Could not apply full update: %s", e.getMessage());
+            throw e;
+        }
 
         long time2 = SystemClock.elapsedRealtime() - time;
         Logger.d("Full update took %d ms", time2);

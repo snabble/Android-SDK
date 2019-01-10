@@ -1,6 +1,16 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.11.5]
+
+### Added
+- Added customizing options for ProductSearchView
+- Added top-down info box in UIUtils
+- Database error event logging (to the servers of snabble) 
+
+### Fixed
+- Directly showing keyboard when entering barcode when no database is available and the 
+
 ## [0.11.4]
 
 ### Changes

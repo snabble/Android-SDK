@@ -21,6 +21,7 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,8 +55,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private long detectAfterTimeMs;
     private ShoppingCart shoppingCart;
     private boolean allowShowingHints;
-    private TextView info;
-    private Handler infoHandler = new Handler(Looper.getMainLooper());
     private boolean isShowingHint;
 
     public SelfScanningView(Context context) {
@@ -82,16 +81,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
-        info = findViewById(R.id.info);
-        info.setVisibility(View.INVISIBLE);
-        info.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                info.setTranslationY(-info.getHeight());
-                info.setVisibility(View.VISIBLE);
-            }
-        });
 
         enterBarcode = findViewById(R.id.enter_barcode);
         TextView light = findViewById(R.id.light);
@@ -211,17 +200,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void showInfo(@StringRes int resId) {
-        info.setVisibility(View.VISIBLE);
-        info.setText(resId);
-        info.animate().translationY(0).start();
-
-        infoHandler.removeCallbacksAndMessages(null);
-        infoHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                info.animate().translationY(-info.getHeight()).start();
-            }
-        }, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+        UIUtils.showTopDownInfoBox(this, getResources().getString(resId), UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_WARNING);
     }
 
     private void onClickEnterBarcode() {
@@ -259,6 +238,15 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .create()
                         .show();
 
+                input.requestFocus();
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                });
             }
         }
     }

@@ -12,12 +12,14 @@ import com.google.gson.annotations.SerializedName;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.IllegalFormatException;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import io.snabble.sdk.utils.Utils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -92,8 +94,18 @@ class Events {
     }
 
     public void logError(String format, Object... args) {
+        if (Utils.isDebugBuild(Snabble.getInstance().getApplication())) {
+            return; // do not log in errors in debug builds
+        }
+
         PayloadError error = new PayloadError();
-        error.message = String.format(format, args);
+
+        try {
+            error.message = String.format(format, args);
+        } catch (IllegalFormatException e) {
+            Logger.e("Could not post event error: invalid format");
+        }
+
         error.session = cartId;
 
         post(error, false);

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/info"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/snabble_infoColor"
+    android:textColor="@color/snabble_infoTextColor"
+    android:gravity="center"
+    tools:text="Unfortunately we could not query the product, please check your internet connection."
+    android:padding="16dp" />

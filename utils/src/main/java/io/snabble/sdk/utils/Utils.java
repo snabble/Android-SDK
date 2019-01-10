@@ -3,6 +3,7 @@ package io.snabble.sdk.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.ApplicationInfo;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -79,5 +80,9 @@ public class Utils {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
+    }
+
+    public static boolean isDebugBuild(Context context) {
+        return (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 }

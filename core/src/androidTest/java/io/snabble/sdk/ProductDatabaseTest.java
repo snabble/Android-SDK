@@ -354,7 +354,14 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Product product = productDatabase.findBySku("1");
         int p = product.getDiscountedPrice();
 
-        productDatabase.applyDeltaUpdate(new ByteArrayInputStream(changeSet.getBytes()));
+        boolean exceptionThrown = false;
+        try {
+            productDatabase.applyDeltaUpdate(new ByteArrayInputStream(changeSet.getBytes()));
+        } catch (IOException e) {
+            exceptionThrown = true;
+        }
+
+        assertTrue(exceptionThrown);
 
         product = productDatabase.findBySku("1");
         assertEquals(p, product.getDiscountedPrice());

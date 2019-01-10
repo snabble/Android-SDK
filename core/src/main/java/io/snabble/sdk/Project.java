@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.JsonUtils;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
 
@@ -351,6 +352,13 @@ public class Project {
 
     Events getEvents() {
         return events;
+    }
+
+    void logErrorEvent(String format, Object... args) {
+        if (events != null) {
+            Logger.e(format, args);
+            events.logError(format, args);
+        }
     }
 
     /**
