@@ -114,6 +114,7 @@ public class Product implements Serializable, Parcelable {
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
     private Unit referenceUnit;
+    private Unit encodingUnit;
     private Map<String, String> transmissionCodes;
     private boolean saleStop;
 
@@ -228,6 +229,10 @@ public class Product implements Serializable, Parcelable {
         return referenceUnit;
     }
 
+    public Unit getEncodingUnit() {
+        return encodingUnit;
+    }
+
     /**
      * @return returns true if this product should not be available for sale anymore.
      */
@@ -237,8 +242,20 @@ public class Product implements Serializable, Parcelable {
 
     public int getPriceForQuantity(int quantity, RoundingMode roundingMode) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
-            BigDecimal pricePerUnit = new BigDecimal(getDiscountedPrice())
-                    .divide(new BigDecimal(1000));
+            Unit referenceUnit = this.referenceUnit;
+            Unit encodingUnit = this.encodingUnit;
+
+            if (referenceUnit == null) {
+                referenceUnit = Unit.KILOGRAM;
+            }
+
+            if (encodingUnit == null) {
+                encodingUnit = Unit.GRAM;
+            }
+
+            BigDecimal pricePerReferenceUnit = new BigDecimal(getDiscountedPrice());
+            BigDecimal pricePerUnit = Unit.convert(pricePerReferenceUnit,
+                    referenceUnit, encodingUnit, 16, roundingMode);
 
             return pricePerUnit.multiply(new BigDecimal(quantity))
                     .setScale(0, roundingMode)
@@ -408,6 +425,11 @@ public class Product implements Serializable, Parcelable {
 
         public Builder setReferenceUnit(Unit referenceUnit) {
             product.referenceUnit = referenceUnit;
+            return this;
+        }
+
+        public Builder setEncodingUnit(Unit encodingUnit) {
+            product.encodingUnit = encodingUnit;
             return this;
         }
 

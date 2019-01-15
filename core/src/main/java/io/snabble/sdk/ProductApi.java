@@ -479,6 +479,9 @@ class ProductApi {
             Unit referenceUnit = Unit.fromString(apiProduct.weighing.referenceUnit);
             builder.setReferenceUnit(referenceUnit);
 
+            Unit encodingUnit = Unit.fromString(apiProduct.weighing.encodingUnit);
+            builder.setEncodingUnit(encodingUnit);
+
             if (apiProduct.weighing.weighByCustomer) {
                 builder.setType(Product.Type.UserWeighed);
             } else {

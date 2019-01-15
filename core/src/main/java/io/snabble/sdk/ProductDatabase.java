@@ -804,6 +804,12 @@ public class ProductDatabase {
                     builder.setType(Product.Type.PreWeighed);
                 }
             }
+
+            String encodingUnit = cursor.getString(14);
+            if (encodingUnit != null) {
+                Unit unit = Unit.fromString(encodingUnit);
+                builder.setEncodingUnit(unit);
+            }
         }
 
         Shop shop = project.getCheckedInShop();
@@ -894,6 +900,7 @@ public class ProductDatabase {
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 16) {
             sql += ",p.referenceUnit";
+            sql += ",p.encodingUnit";
         }
 
         sql += " FROM products p ";

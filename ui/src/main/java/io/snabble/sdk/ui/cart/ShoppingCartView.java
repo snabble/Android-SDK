@@ -41,6 +41,7 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.PriceFormatter;
@@ -421,6 +422,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         View controlsUserWeighed;
         View controlsDefault;
         View quantityEditApply;
+        TextView quantityAnnotation;
 
         TextWatcher textWatcher;
 
@@ -438,6 +440,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             controlsDefault = itemView.findViewById(R.id.controls_default);
             quantityEdit = itemView.findViewById(R.id.quantity_edit);
             quantityEditApply = itemView.findViewById(R.id.quantity_edit_apply);
+            quantityAnnotation = itemView.findViewById(R.id.quantity_annotation);
         }
 
         @SuppressLint("SetTextI18n")
@@ -452,7 +455,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             if (product != null) {
                 Product.Type type = product.getType();
 
+                Unit encodingUnit = product.getEncodingUnit();
+                String encodingDisplayValue = "g";
+                if (encodingUnit != null) {
+                    encodingDisplayValue = encodingUnit.getDisplayValue();
+                }
+
                 name.setText(product.getName());
+                quantityAnnotation.setText(encodingDisplayValue);
 
                 String price = priceFormatter.format(product);
 
@@ -473,11 +483,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 }
 
                 if (embeddedWeight != null) {
-                    quantityTextView.setText(String.format("%s g", String.valueOf(embeddedWeight)));
+                    quantityTextView.setText(String.format("%s %s", String.valueOf(embeddedWeight), encodingDisplayValue));
                 } else if (embeddedAmount != null) {
                     quantityTextView.setText(String.valueOf(embeddedAmount));
                 } else if (type == Product.Type.UserWeighed) {
-                    quantityTextView.setText(String.format("%s g", String.valueOf(quantity)));
+                    quantityTextView.setText(String.format("%s %s", String.valueOf(quantity), encodingDisplayValue));
                 } else {
                     quantityTextView.setText(String.valueOf(quantity));
                 }

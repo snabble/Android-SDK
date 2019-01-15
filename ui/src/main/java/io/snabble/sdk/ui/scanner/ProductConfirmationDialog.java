@@ -114,7 +114,7 @@ class ProductConfirmationDialog {
 
         if (scannedCode.hasEmbeddedData()) {
             if (scannedCode.hasWeighData()) {
-                quantityAnnotation.setText("g");
+                quantityAnnotation.setText(product.getEncodingUnit().getDisplayValue());
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
                 quantityAnnotation.setVisibility(View.VISIBLE);
@@ -151,7 +151,7 @@ class ProductConfirmationDialog {
             }
         } else if (type == Product.Type.UserWeighed) {
             quantityAnnotation.setVisibility(View.VISIBLE);
-            quantityAnnotation.setText("g");
+            quantityAnnotation.setText(product.getEncodingUnit().getDisplayValue());
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
             quantity.setText("");
@@ -281,9 +281,15 @@ class ProductConfirmationDialog {
         String singlePrice = priceFormatter.format(product);
 
         int q = getQuantity();
+        Unit encodingUnit = product.getEncodingUnit();
+
+        String encodingDisplayValue = "g";
+        if (encodingUnit != null) {
+            encodingDisplayValue = encodingUnit.getDisplayValue();
+        }
 
         if (q > 0 && (scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed)) {
-            price.setText(String.format("%sg * %s = %s", String.valueOf(q), singlePrice, priceText));
+            price.setText(String.format("%s%s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
         } else if (q > 1) {
             if (scannedCode.hasUnitData()) {
                 price.setText(String.format("%s * %s = %s",
