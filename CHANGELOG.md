@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Directly showing keyboard when entering barcode when no database is available and the 
+- Fixed dialog showing "null " + Product name when no subtitle is set
 
 ## [0.11.4]
 

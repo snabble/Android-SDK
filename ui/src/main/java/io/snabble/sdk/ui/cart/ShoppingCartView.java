@@ -269,8 +269,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 sb.append("\n\n");
 
                 for(Product product : invalidProducts) {
-                    sb.append(product.getSubtitle());
-                    sb.append(" ");
+                    if (product.getSubtitle() != null) {
+                        sb.append(product.getSubtitle());
+                        sb.append(" ");
+                    }
+
                     sb.append(product.getName());
                     sb.append("\n");
                 }
