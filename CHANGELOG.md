@@ -1,7 +1,7 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.11.5]
+## [0.12.0]
 
 ### Changed
 - Renamed get/set LoyaltyCardId to CustomerCardId 
@@ -10,11 +10,13 @@ All notable changes to this project will be documented in this file.
 - Added support for customer card metadata
 - Added customizing options for ProductSearchView
 - Added top-down info box in UIUtils
-- Database error event logging (to the servers of snabble) 
+- Database error event logging (to the servers of snabble)
+- Parsing of reference units 
 
 ### Fixed
 - Directly showing keyboard when entering barcode when no database is available and the 
 - Fixed dialog showing "null " + Product name when no subtitle is set
+- Use reference units for weight/amount transmission when checking out
 
 ## [0.11.4]
 
