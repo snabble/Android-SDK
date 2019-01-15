@@ -792,6 +792,20 @@ public class ProductDatabase {
             }
         }
 
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 16) {
+            String referenceUnit = cursor.getString(13);
+            if (referenceUnit != null) {
+                Unit unit = Unit.fromString(referenceUnit);
+                builder.setReferenceUnit(unit);
+
+                if (unit == Unit.PIECE) {
+                    builder.setType(Product.Type.Article);
+                } else {
+                    builder.setType(Product.Type.PreWeighed);
+                }
+            }
+        }
+
         Shop shop = project.getCheckedInShop();
 
         if(!queryPrice(builder, sku, shop)) {
@@ -876,6 +890,10 @@ public class ProductDatabase {
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
             sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
+        }
+
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 16) {
+            sql += ",p.referenceUnit";
         }
 
         sql += " FROM products p ";

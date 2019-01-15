@@ -106,18 +106,25 @@ public class ShoppingCart {
     public void insert(Product product, int index, int quantity, ScannableCode scannedCode, boolean isZeroAmountProduct) {
         Entry e = getEntryBySku(product.getSku());
 
-        if (e == null || scannedCode.hasUnitData()
-                || scannedCode.hasPriceData()
-                || product.getType() == Product.Type.UserWeighed
-                || product.getType() == Product.Type.PreWeighed) {
-            if (quantity > 0) {
-                Entry entry = new Entry(product, quantity);
-                setScannedCodeForEntry(entry, scannedCode);
-                entry.isZeroAmountProduct = isZeroAmountProduct;
-                addEntry(entry, index);
-            }
-        } else {
-            setEntryQuantity(e, e.quantity + quantity);
+//        if (e == null || scannedCode.hasUnitData()
+//                || scannedCode.hasPriceData()
+//                || product.getType() == Product.Type.UserWeighed
+//                || product.getType() == Product.Type.PreWeighed) {
+//            if (quantity > 0) {
+//                Entry entry = new Entry(product, quantity);
+//                setScannedCodeForEntry(entry, scannedCode);
+//                entry.isZeroAmountProduct = isZeroAmountProduct;
+//                addEntry(entry, index);
+//            }
+//        } else {
+//            setEntryQuantity(e, e.quantity + quantity);
+//        }
+
+        if (quantity > 0) {
+            Entry entry = new Entry(product, quantity);
+            setScannedCodeForEntry(entry, scannedCode);
+            entry.isZeroAmountProduct = isZeroAmountProduct;
+            addEntry(entry, index);
         }
     }
 
@@ -149,7 +156,7 @@ public class ShoppingCart {
         if (product.getType() == Product.Type.Article) {
             Entry e = getEntryBySku(product.getSku());
 
-            if (e != null) {
+            if (e != null && product.getReferenceUnit() != Unit.PIECE) {
                 // update product for changing prices
                 e.product = product;
 
@@ -472,7 +479,8 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product product = e.product;
                 if (product.getType() == Product.Type.UserWeighed
-                        || product.getType() == Product.Type.PreWeighed) {
+                        || product.getType() == Product.Type.PreWeighed
+                        || product.getReferenceUnit() == Unit.PIECE) {
                     sum += 1;
                 } else {
                     sum += e.quantity;

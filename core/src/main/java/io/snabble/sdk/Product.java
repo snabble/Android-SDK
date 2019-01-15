@@ -113,6 +113,7 @@ public class Product implements Serializable, Parcelable {
     private String subtitle;
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
+    private Unit referenceUnit;
     private Map<String, String> transmissionCodes;
     private boolean saleStop;
 
@@ -221,6 +222,10 @@ public class Product implements Serializable, Parcelable {
      */
     public SaleRestriction getSaleRestriction() {
         return saleRestriction;
+    }
+
+    public Unit getReferenceUnit() {
+        return referenceUnit;
     }
 
     /**
@@ -398,6 +403,11 @@ public class Product implements Serializable, Parcelable {
 
         public Builder setSaleStop(boolean saleStop) {
             product.saleStop = saleStop;
+            return this;
+        }
+
+        public Builder setReferenceUnit(Unit referenceUnit) {
+            product.referenceUnit = referenceUnit;
             return this;
         }
 

@@ -28,6 +28,7 @@ import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.PriceFormatter;
@@ -109,7 +110,6 @@ class ProductConfirmationDialog {
         quantity.clearFocus();
 
         Product.Type type = product.getType();
-
         int cartQuantity = shoppingCart.getQuantity(product);
 
         if (scannedCode.hasEmbeddedData()) {
@@ -143,7 +143,12 @@ class ProductConfirmationDialog {
             }
         } else if (type == Product.Type.Article) {
             quantityAnnotation.setVisibility(View.GONE);
-            quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
+
+            if (product.getReferenceUnit() == Unit.PIECE) {
+                quantity.setText("1");
+            } else {
+                quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
+            }
         } else if (type == Product.Type.UserWeighed) {
             quantityAnnotation.setVisibility(View.VISIBLE);
             quantityAnnotation.setText("g");

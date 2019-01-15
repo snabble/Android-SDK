@@ -208,18 +208,26 @@ class Events {
             Product product = shoppingCart.getProduct(i);
             int quantity = shoppingCart.getQuantity(i);
 
-            payloadCart.items[i] = new PayloadCartItem();
-            payloadCart.items[i].sku = String.valueOf(product.getSku());
-            payloadCart.items[i].scannedCode = shoppingCart.getScannedCode(i);
-            payloadCart.items[i].amount = quantity;
-            payloadCart.items[i].units = shoppingCart.getEmbeddedUnits(i);
-            payloadCart.items[i].weight = shoppingCart.getEmbeddedWeight(i);
-            payloadCart.items[i].price = shoppingCart.getEmbeddedPrice(i);
+            PayloadCartItem item = new PayloadCartItem();
+
+            item.sku = String.valueOf(product.getSku());
+            item.scannedCode = shoppingCart.getScannedCode(i);
+            item.amount = quantity;
+            item.units = shoppingCart.getEmbeddedUnits(i);
+            item.weight = shoppingCart.getEmbeddedWeight(i);
+            item.price = shoppingCart.getEmbeddedPrice(i);
 
             if (product.getType() == Product.Type.UserWeighed) {
-                payloadCart.items[i].amount = 1;
-                payloadCart.items[i].weight = quantity;
+                item.amount = 1;
+                item.weight = quantity;
             }
+
+            if (item.units == null && product.getReferenceUnit() == Unit.PIECE) {
+                item.amount = 1;
+                item.units = quantity;
+            }
+
+            payloadCart.items[i] = item;
         }
 
         return payloadCart;

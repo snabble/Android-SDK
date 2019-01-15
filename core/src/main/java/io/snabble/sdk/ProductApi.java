@@ -45,6 +45,7 @@ class ProductApi {
         private String[] weighedItemIds;
         private boolean weighByCustomer;
         private String encodingUnit;
+        private String referenceUnit;
     }
 
     private static class ApiProductGroup {
@@ -210,7 +211,7 @@ class ProductApi {
             return;
         }
 
-        url = url.replace("{responseCode}", code);
+        url = url.replace("{code}", code);
         url = appendShopId(url);
 
         get(url, productAvailableListener);
@@ -475,10 +476,13 @@ class ProductApi {
         if (apiProduct.weighing != null) {
             builder.setWeighedItemIds(apiProduct.weighing.weighedItemIds);
 
+            Unit referenceUnit = Unit.fromString(apiProduct.weighing.referenceUnit);
+            builder.setReferenceUnit(referenceUnit);
+
             if (apiProduct.weighing.weighByCustomer) {
                 builder.setType(Product.Type.UserWeighed);
             } else {
-                if ("piece".equals(apiProduct.weighing.encodingUnit)) {
+                if (referenceUnit == Unit.PIECE) {
                     builder.setType(Product.Type.Article);
                 } else {
                     builder.setType(Product.Type.PreWeighed);
