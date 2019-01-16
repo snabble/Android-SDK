@@ -28,6 +28,7 @@ public class UnitTest extends SnabbleSdkTest {
         Assert.assertEquals(199, test_cm_1.getPrice());
         Assert.assertEquals(1990, test_cm_1.getPriceForQuantity(1000, RoundingMode.HALF_UP));
         Assert.assertEquals(498, test_cm_1.getPriceForQuantity(250, RoundingMode.HALF_UP));
+        Assert.assertEquals(497, test_cm_1.getPriceForQuantity(250, RoundingMode.FLOOR));
     }
 
     public void testUnits() {

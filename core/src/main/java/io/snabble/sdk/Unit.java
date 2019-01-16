@@ -51,6 +51,8 @@ public enum Unit {
     }
 
     public static BigDecimal convert(BigDecimal value, Unit from, Unit to, int scale, RoundingMode rm) {
+        if (from == to) return value;
+
         value = value.setScale(scale, rm);
 
         if (from == LITER && to == DECILITER) return value.divide(new BigDecimal(10), rm);
