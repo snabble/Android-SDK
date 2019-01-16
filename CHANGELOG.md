@@ -1,10 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.12.0]
+## [0.12.0-beta1]
+
+### Important Changes
+- All requests to our domains are now using certificate pinning
 
 ### Changed
 - Renamed get/set LoyaltyCardId to CustomerCardId 
+- Now listing the offending products if a checkout is failing because of a sale stop or other 
+various reasons
 
 ### Added
 - Added support for Units (ml, kg, cm...)
@@ -19,16 +24,10 @@ All notable changes to this project will be documented in this file.
 - Fixed dialog showing "null " + Product name when no subtitle is set
 - Use reference units for weight/amount transmission when checking out
 
-## [0.11.4]
-
-### Changes
-- Now listing the offending products if a checkout is failing because of a sale stop or other 
-various reasons
-
-## [0.11.3]
-
-### Important Changes
-- All requests to our domains are now using certificate pinning
+### New string keys
+- Snabble.saleStop.errorMsg.title
+- Snabble.saleStop.errorMsg.one
+- Snabble.saleStop.errorMsg
 
 ## [0.11.2]
 
