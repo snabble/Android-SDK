@@ -487,8 +487,6 @@ class ProductApi {
             } else {
                 if (referenceUnit == Unit.PIECE) {
                     builder.setType(Product.Type.Article);
-                } else {
-                    builder.setType(Product.Type.PreWeighed);
                 }
             }
         } else {

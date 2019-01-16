@@ -55,8 +55,13 @@ public class PriceFormatter {
         String formattedString = format(price);
         Product.Type type = product.getType();
 
+        Unit referenceUnit = product.getReferenceUnit();
+        if (referenceUnit == null) {
+            referenceUnit = Unit.KILOGRAM;
+        }
+
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
-            formattedString += " / kg";
+            formattedString += " / " + referenceUnit.getDisplayValue();
         }
 
         return formattedString;

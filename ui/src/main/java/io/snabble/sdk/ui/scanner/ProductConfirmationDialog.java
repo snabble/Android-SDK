@@ -289,7 +289,7 @@ class ProductConfirmationDialog {
         }
 
         if (q > 0 && (scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed)) {
-            price.setText(String.format("%s%s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
+            price.setText(String.format("%s %s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
         } else if (q > 1) {
             if (scannedCode.hasUnitData()) {
                 price.setText(String.format("%s * %s = %s",
