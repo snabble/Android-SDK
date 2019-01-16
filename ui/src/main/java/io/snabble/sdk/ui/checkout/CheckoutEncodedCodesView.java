@@ -20,6 +20,7 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -37,27 +38,25 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
     public CheckoutEncodedCodesView(Context context) {
         super(context);
-        inflateView();
+
+        project = SnabbleUI.getProject();
+        inflateView(project.getEncodedCodesOptions());
     }
 
-    public CheckoutEncodedCodesView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        inflateView();
+    public CheckoutEncodedCodesView(Context context, EncodedCodesOptions options) {
+        super(context);
+
+        project = SnabbleUI.getProject();
+        inflateView(options);
     }
 
-    public CheckoutEncodedCodesView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        inflateView();
-    }
-
-    private void inflateView() {
+    private void inflateView(EncodedCodesOptions options) {
         inflate(getContext(), R.layout.view_checkout_encodedcodes, this);
 
         scrollContainer = findViewById(R.id.scroll_container);
         scrollView = findViewById(R.id.scroll_view);
 
-        project = SnabbleUI.getProject();
-        encodedCodesGenerator = new EncodedCodesGenerator(project.getEncodedCodesOptions());
+        encodedCodesGenerator = new EncodedCodesGenerator(options);
 
         Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OnClickListener() {

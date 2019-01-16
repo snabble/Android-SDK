@@ -130,13 +130,23 @@ public class EncodedCodesGenerator {
                         code.replace(7, 12, embeddedWeight.toString());
                         code.setCharAt(6, Character.forDigit(EAN13.internalChecksum(code.toString()), 10));
                         code.setCharAt(12, Character.forDigit(EAN13.checksum(code.substring(0, 12)), 10));
-                        addScannableCode(code.toString(), ageRestricted);
+
+                        if (options.repeatCodes) {
+                            addScannableCode(code.toString(), ageRestricted);
+                        } else {
+                            addScannableCode("1" + options.countSeparator + code.toString(), ageRestricted);
+                        }
                     }
                 }
             } else {
                 int q = productInfo.quantity;
-                for (int j = 0; j < q; j++) {
-                    addScannableCode(productInfo.product.getTransmissionCode(productInfo.scannedCode), ageRestricted);
+                String transmissionCode = productInfo.product.getTransmissionCode(productInfo.scannedCode);
+                if (options.repeatCodes) {
+                    for (int j = 0; j < q; j++) {
+                        addScannableCode(transmissionCode, ageRestricted);
+                    }
+                } else {
+                    addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
                 }
             }
         }

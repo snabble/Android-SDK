@@ -351,5 +351,34 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals(1, codes.size());
         Assert.assertEquals("8715700421698;4008400301020", codes.get(0));
     }
+
+    @Test
+    @UiThreadTest
+    public void testCSVFormat() throws IOException, Snabble.SnabbleException {
+        withDb("demoDb_1_11.sqlite3");
+
+        EncodedCodesOptions options = new EncodedCodesOptions.Builder()
+                .prefix("snabble;\n")
+                .separator("\n")
+                .suffix("")
+                .repeatCodes(false)
+                .countSeparator(";")
+                .maxCodes(100)
+                .build();
+
+        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
+
+        Product duplo = project.getProductDatabase().findBySku("49");
+        project.getShoppingCart().add(duplo, 7, ScannableCode.parse(project, "4008400301020"));
+
+        Product heinz = project.getProductDatabase().findBySku("42");
+        project.getShoppingCart().add(heinz, 1000, ScannableCode.parse(project, "8715700421698"));
+        generator.add(project.getShoppingCart());
+
+        ArrayList<String> codes = generator.generate();
+        Assert.assertEquals(1, codes.size());
+        Assert.assertEquals("snabble;\n1000;8715700421698\n7;4008400301020", codes.get(0));
+    }
+
 }
 

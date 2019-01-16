@@ -43,6 +43,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         icons.put(PaymentMethod.TELECASH_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
+        icons.put(PaymentMethod.ENCODED_CODES_CSV, R.drawable.ic_pm_checkstand);
     }
 
     private Checkout checkout;
