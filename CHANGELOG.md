@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.0-beta2]
+
+### Added
+- Added support for encoded codes csv 
+
 ## [0.12.0-beta1]
 
 ### Important Changes
