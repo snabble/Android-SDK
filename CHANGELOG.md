@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Renamed get/set LoyaltyCardId to CustomerCardId 
 
 ### Added
+- Added support for Units (ml, kg, cm...)
 - Added support for customer card metadata
 - Added customizing options for ProductSearchView
 - Added top-down info box in UIUtils
