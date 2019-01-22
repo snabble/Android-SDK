@@ -23,7 +23,7 @@ public class EAN13 extends ScannableCode implements Serializable {
     private boolean useGermanPrintPrefix;
 
     EAN13(Project project, String code) {
-        super(project, code);
+        super(code);
 
         if (!isEan13(code)) {
             throw new IllegalArgumentException("Not a valid EAN13 code");
@@ -171,9 +171,13 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     public static int internalChecksum(String code) {
+        return internalChecksum(code, 7);
+    }
+
+    public static int internalChecksum(String code, int offset) {
         int sum = 0;
         for (int i = 0; i < 5; i++) {
-            int d = Character.digit(code.charAt(i + 7), 10);
+            int d = Character.digit(code.charAt(i + offset), 10);
             sum += i + weightedProduct(i, d);
         }
         int mod10 = (10 - (sum % 10)) % 10;

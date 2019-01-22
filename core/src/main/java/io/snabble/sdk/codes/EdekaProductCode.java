@@ -9,7 +9,7 @@ public class EdekaProductCode extends ScannableCode {
     private String overriddenCode;
 
     EdekaProductCode(Project project, String code) {
-        super(project, code);
+        super(code);
 
         lookupCode = code.substring(2, 15);
         price = Integer.parseInt(code.substring(15, 21));

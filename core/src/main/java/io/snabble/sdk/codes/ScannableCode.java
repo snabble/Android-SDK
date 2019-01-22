@@ -5,11 +5,9 @@ import java.io.Serializable;
 import io.snabble.sdk.Project;
 
 public class ScannableCode implements Serializable {
-    protected final Project project;
     protected String code;
 
-    ScannableCode(Project project, String code) {
-        this.project = project;
+    public ScannableCode(String code) {
         this.code = code;
     }
 
@@ -57,9 +55,9 @@ public class ScannableCode implements Serializable {
         } else if (EdekaProductCode.isEdekaProductCode(project, code)) {
             return new EdekaProductCode(project, code);
         } else if (IKEADataMatrixCode.isIKEADataMatrixCode(project, code)) {
-            return new IKEADataMatrixCode(project, code);
+            return new IKEADataMatrixCode(code);
         } else  {
-            return new ScannableCode(project, code);
+            return new ScannableCode(code);
         }
     }
 }

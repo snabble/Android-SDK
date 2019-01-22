@@ -4,10 +4,10 @@ import io.snabble.sdk.Project;
 
 public class EAN14 extends ScannableCode {
     EAN14(Project project, String code) {
-        super(project, code);
+        super( code);
 
         if (code.length() == 16) {
-            this.code = code.substring(2, code.length());
+            this.code = code.substring(2);
         }
     }
 

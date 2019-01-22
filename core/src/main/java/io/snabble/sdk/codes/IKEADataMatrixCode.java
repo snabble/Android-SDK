@@ -7,14 +7,14 @@ public class IKEADataMatrixCode extends ScannableCode {
     private String lookupCode;
     private int price;
 
-    IKEADataMatrixCode(Project project, String code) {
-        super(project, code);
+    IKEADataMatrixCode(String code) {
+        super(code);
 
         String[] split = code.split("\u001D");
         String codePart = split[3];
         String pricePart = split[4];
 
-        lookupCode = codePart.substring(3, codePart.length());
+        lookupCode = codePart.substring(3);
         price = Integer.parseInt(pricePart.substring(pricePart.length() - 6, pricePart.length() - 1));
         price *= 100; // price is in EUR
     }
