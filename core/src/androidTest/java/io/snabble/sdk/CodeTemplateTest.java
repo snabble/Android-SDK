@@ -35,6 +35,9 @@ public class CodeTemplateTest {
         Assert.assertNull(CodeTemplate.parse("96{i}{price:5}"));
         Assert.assertNull(CodeTemplate.parse("96{i}{weight:6}"));
         Assert.assertNull(CodeTemplate.parse("96price:5}"));
+        Assert.assertNull(CodeTemplate.parse(""));
+        Assert.assertNull(CodeTemplate.parse("{weight:-1}"));
+        Assert.assertNull(CodeTemplate.parse("{code:-1}"));
     }
 
     @Test

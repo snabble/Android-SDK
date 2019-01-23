@@ -102,6 +102,10 @@ public class CodeTemplate {
             throw new IllegalArgumentException("Unclosed group");
         }
 
+        if (groups.isEmpty()) {
+            throw new IllegalArgumentException("Empty template");
+        }
+
         // check if required groups are present
         for (Group group : groups) {
             if (!group.checkDependencies()) {
