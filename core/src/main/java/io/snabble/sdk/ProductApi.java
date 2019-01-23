@@ -480,7 +480,14 @@ class ProductApi {
             builder.setReferenceUnit(referenceUnit);
 
             Unit encodingUnit = Unit.fromString(apiProduct.weighing.encodingUnit);
-            builder.setEncodingUnit(encodingUnit);
+
+            if (apiProduct.codes != null) {
+                for (ApiScannableCode apiScannableCode : apiProduct.codes) {
+                    if (apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
+                        builder.addEncodingUnit(apiScannableCode.code, encodingUnit);
+                    }
+                }
+            }
 
             if (apiProduct.weighing.weighByCustomer) {
                 builder.setType(Product.Type.UserWeighed);

@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.0]
+
+### Important Changes
+- Support for Units is now migrated to new database schema, the older schema used in previous 
+versions will fall back to g/kg only
+
 ## [0.12.0-beta2]
 
 ### Added

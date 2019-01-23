@@ -114,10 +114,10 @@ class ProductConfirmationDialog {
 
         if (scannedCode.hasEmbeddedData()) {
             if (scannedCode.hasWeighData()) {
-                quantityAnnotation.setText(product.getEncodingUnit().getDisplayValue());
+                quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode.getCode()).getDisplayValue());
+                quantityAnnotation.setVisibility(View.VISIBLE);
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
-                quantityAnnotation.setVisibility(View.VISIBLE);
                 quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
             } else if (scannedCode.hasPriceData()) {
                 quantityAnnotation.setText(SnabbleUI.getProject().getCurrency().getSymbol());
@@ -151,7 +151,7 @@ class ProductConfirmationDialog {
             }
         } else if (type == Product.Type.UserWeighed) {
             quantityAnnotation.setVisibility(View.VISIBLE);
-            quantityAnnotation.setText(product.getEncodingUnit().getDisplayValue());
+            quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode.getCode()).getDisplayValue());
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
             quantity.setText("");
@@ -273,15 +273,23 @@ class ProductConfirmationDialog {
         window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
+    private Unit getNonNullEncodingUnit(Product product, String code) {
+        Unit unit = product.getEncodingUnit(code);
+        if (unit == null) {
+            unit = Unit.GRAM;
+        }
+
+        return unit;
+    }
+
     private void updatePrice() {
         RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
 
-        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
-                roundingMode));
+        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(), scannedCode.getCode(), roundingMode));
         String singlePrice = priceFormatter.format(product);
 
         int q = getQuantity();
-        Unit encodingUnit = product.getEncodingUnit();
+        Unit encodingUnit = product.getEncodingUnit(scannedCode.getCode());
 
         String encodingDisplayValue = "g";
         if (encodingUnit != null) {
@@ -310,9 +318,7 @@ class ProductConfirmationDialog {
 
         Product depositProduct = product.getDepositProduct();
         if (depositProduct != null) {
-            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(),
-                    roundingMode));
-
+            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(), scannedCode.getCode(), roundingMode));
             Resources res = context.getResources();
             String text = res.getString(R.string.Snabble_Scanner_plusDeposit, depositPriceText);
             depositPrice.setText(text);

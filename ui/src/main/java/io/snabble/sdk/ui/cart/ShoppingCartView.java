@@ -455,7 +455,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             if (product != null) {
                 Product.Type type = product.getType();
 
-                Unit encodingUnit = product.getEncodingUnit();
+                String scannedCode = cart.getScannedCode(position);
+
+                Unit encodingUnit = product.getEncodingUnit(scannedCode);
                 String encodingDisplayValue = "g";
                 if (encodingUnit != null) {
                     encodingDisplayValue = encodingUnit.getDisplayValue();
@@ -473,12 +475,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             priceFormatter.format(product.getPrice()),
                             priceFormatter.format(product.getPrice() * embeddedAmount)));
                 } else if (embeddedWeight != null) {
-                    String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, roundingMode));
+                    String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, scannedCode, roundingMode));
                     priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 } else if (quantity == 1) {
                     priceTextView.setText(" " + price);
                 } else {
-                    String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, roundingMode));
+                    String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, scannedCode, roundingMode));
                     priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 }
 

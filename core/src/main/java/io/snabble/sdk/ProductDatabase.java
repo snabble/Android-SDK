@@ -483,10 +483,10 @@ public class ProductDatabase {
                 int count = cursor.getCount();
 
                 long time2 = SystemClock.elapsedRealtime() - time;
-                if (time2 >= 16) {
+                //if (time2 >= 16) {
                     Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
                             time2, count, bindArgs(sql, args));
-                }
+                //}
             } catch (Exception e) {
                 // query could not be executed
                 Logger.e(e.toString());
@@ -792,7 +792,7 @@ public class ProductDatabase {
             }
         }
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 16) {
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 17) {
             String referenceUnit = cursor.getString(13);
             if (referenceUnit != null) {
                 Unit unit = Unit.fromString(referenceUnit);
@@ -803,10 +803,15 @@ public class ProductDatabase {
                 }
             }
 
-            String encodingUnit = cursor.getString(14);
-            if (encodingUnit != null) {
-                Unit unit = Unit.fromString(encodingUnit);
-                builder.setEncodingUnit(unit);
+            String encodingUnitsStr = cursor.getString(14);
+            if (encodingUnitsStr != null) {
+                String[] encodingUnits = encodingUnitsStr.split(",");
+                for (int i = 0; i < encodingUnits.length; i++) {
+                    Unit unit = Unit.fromString(encodingUnits[i]);
+                    if (unit != null) {
+                        builder.addEncodingUnit(scannableCodes[i], unit);
+                    }
+                }
             }
         }
 
@@ -896,9 +901,9 @@ public class ProductDatabase {
             sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
         }
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 16) {
+        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 17) {
             sql += ",p.referenceUnit";
-            sql += ",p.encodingUnit";
+            sql += ",(SELECT group_concat(s.encodingUnit) FROM scannableCodes s WHERE s.sku = p.sku)";
         }
 
         sql += " FROM products p ";
@@ -1199,7 +1204,7 @@ public class ProductDatabase {
             return p;
         } else if (recursive) {
             if (code.startsWith("0")) {
-                return findByCodeInternal(code.substring(1, code.length()), true);
+                return findByCodeInternal(code.substring(1), true);
             } else if (code.length() < 13) {
                 String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
                 return findByCodeInternal(newCode, false);

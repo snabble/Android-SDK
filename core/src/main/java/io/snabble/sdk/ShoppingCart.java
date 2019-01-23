@@ -441,13 +441,13 @@ public class ShoppingCart {
                 Product product = e.product;
 
                 if (e.weight != null) {
-                    sum += product.getPriceForQuantity(e.weight, project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.weight, e.scannedCode, project.getRoundingMode());
                 } else if (e.price != null) {
                     sum += e.price;
                 } else if (e.amount != null) {
                     sum += product.getPrice() * e.amount;
                 } else {
-                    sum += product.getPriceForQuantity(e.quantity, project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
                 }
             }
 
@@ -464,7 +464,7 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product depositProduct = e.product.getDepositProduct();
                 if (depositProduct != null) {
-                    sum += depositProduct.getPriceForQuantity(e.quantity, project.getRoundingMode());
+                    sum += depositProduct.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
                 }
             }
 

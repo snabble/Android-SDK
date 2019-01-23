@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.utils.GsonHolder;
 
 /**
@@ -114,7 +115,7 @@ public class Product implements Serializable, Parcelable {
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
     private Unit referenceUnit;
-    private Unit encodingUnit;
+    private Map<String, Unit> encodingUnits;
     private Map<String, String> transmissionCodes;
     private boolean saleStop;
 
@@ -229,8 +230,15 @@ public class Product implements Serializable, Parcelable {
         return referenceUnit;
     }
 
-    public Unit getEncodingUnit() {
-        return encodingUnit;
+    public Unit getEncodingUnit(String scannedCode) {
+        if (encodingUnits != null) {
+            Unit unit = encodingUnits.get(scannedCode);
+            if (unit != null) {
+                return unit;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -240,10 +248,10 @@ public class Product implements Serializable, Parcelable {
         return saleStop;
     }
 
-    public int getPriceForQuantity(int quantity, RoundingMode roundingMode) {
+    public int getPriceForQuantity(int quantity, String scannedCode, RoundingMode roundingMode) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             Unit referenceUnit = this.referenceUnit;
-            Unit encodingUnit = this.encodingUnit;
+            Unit encodingUnit = getEncodingUnit(scannedCode);
 
             if (referenceUnit == null) {
                 referenceUnit = Unit.KILOGRAM;
@@ -428,8 +436,12 @@ public class Product implements Serializable, Parcelable {
             return this;
         }
 
-        public Builder setEncodingUnit(Unit encodingUnit) {
-            product.encodingUnit = encodingUnit;
+        public Builder addEncodingUnit(String fromCode, Unit unit) {
+            if (product.encodingUnits == null) {
+                product.encodingUnits = new HashMap<>();
+            }
+
+            product.encodingUnits.put(fromCode, unit);
             return this;
         }
 
