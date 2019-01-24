@@ -199,8 +199,15 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
-    private void showInfo(@StringRes int resId) {
-        UIUtils.showTopDownInfoBox(this, getResources().getString(resId), UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_WARNING);
+    private void showInfo(@StringRes final int resId) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIUtils.showTopDownInfoBox(SelfScanningView.this, getResources().getString(resId),
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_WARNING);
+            }
+        });
     }
 
     private void onClickEnterBarcode() {
