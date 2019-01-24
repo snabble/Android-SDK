@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.GsonHolder;
 
 /**
@@ -99,11 +100,34 @@ public class Product implements Serializable, Parcelable {
         }
     }
 
+    public static class Code {
+        public final String lookupCode;
+        public final String transmissionCode;
+        public final CodeTemplate template;
+        public final Unit encodingUnit;
+
+        public Code(String lookupCode, String transmissionCode, CodeTemplate template, Unit encodingUnit) {
+            this.lookupCode = lookupCode;
+            this.transmissionCode = transmissionCode;
+            this.template = template;
+            this.encodingUnit = encodingUnit;
+        }
+
+        @Override
+        public String toString() {
+            return "Code{" +
+                    "template=" + template +
+                    ", lookupCode='" + lookupCode + '\'' +
+                    ", transmissionCode='" + transmissionCode + '\'' +
+                    ", encodingUnit=" + encodingUnit +
+                    '}';
+        }
+    }
+
     private String sku;
     private String name;
     private String description;
-    private String[] scannableCodes;
-    private String[] weighedItemIds;
+    private Code[] scannableCodes;
     private int price;
     private int discountedPrice;
     private String imageUrl;
@@ -115,8 +139,6 @@ public class Product implements Serializable, Parcelable {
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
     private Unit referenceUnit;
-    private Map<String, Unit> encodingUnits;
-    private Map<String, String> transmissionCodes;
     private boolean saleStop;
 
     public Product() {
@@ -139,23 +161,8 @@ public class Product implements Serializable, Parcelable {
         return description;
     }
 
-    public String[] getScannableCodes() {
+    public Code[] getScannableCodes() {
         return scannableCodes;
-    }
-
-    public String getTransmissionCode(String code) {
-        if (transmissionCodes != null) {
-            String newCode = transmissionCodes.get(code);
-            if (newCode != null) {
-                return newCode;
-            }
-        }
-
-        return code;
-    }
-
-    public String[] getWeighedItemIds() {
-        return weighedItemIds;
     }
 
     public int getPrice() {
@@ -230,11 +237,36 @@ public class Product implements Serializable, Parcelable {
         return referenceUnit;
     }
 
-    public Unit getEncodingUnit(String scannedCode) {
-        if (encodingUnits != null) {
-            Unit unit = encodingUnits.get(scannedCode);
-            if (unit != null) {
-                return unit;
+    public Unit getEncodingUnit(String lookupCode) {
+        return getEncodingUnit(null, lookupCode);
+    }
+
+    public Unit getEncodingUnit(CodeTemplate codeTemplate, String lookupCode) {
+        for (Code code : scannableCodes) {
+            if (code.lookupCode.equals(lookupCode)) {
+                if (code.template == codeTemplate || (code.template != null && "default".equals(code.template.getName()))) {
+                    return code.encodingUnit;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public String getTransmissionCode(String lookupCode) {
+        return getTransmissionCode(null, lookupCode);
+    }
+
+    public String getTransmissionCode(CodeTemplate codeTemplate, String lookupCode) {
+        for (Code code : scannableCodes) {
+            if (code.lookupCode.equals(lookupCode)) {
+                if (code.template == codeTemplate || (code.template != null && "default".equals(code.template.getName()))) {
+                    if (code.transmissionCode == null) {
+                        return code.lookupCode;
+                    }
+
+                    return code.transmissionCode;
+                }
             }
         }
 
@@ -242,16 +274,17 @@ public class Product implements Serializable, Parcelable {
     }
 
     /**
+     *
      * @return returns true if this product should not be available for sale anymore.
      */
     public boolean getSaleStop() {
         return saleStop;
     }
 
-    public int getPriceForQuantity(int quantity, String scannedCode, RoundingMode roundingMode) {
+    public int getPriceForQuantity(int quantity, String lookupCode, RoundingMode roundingMode) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             Unit referenceUnit = this.referenceUnit;
-            Unit encodingUnit = getEncodingUnit(scannedCode);
+            Unit encodingUnit = getEncodingUnit(lookupCode);
 
             if (referenceUnit == null) {
                 referenceUnit = Unit.KILOGRAM;
@@ -301,7 +334,6 @@ public class Product implements Serializable, Parcelable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", scannableCodes=" + Arrays.toString(scannableCodes) +
-                ", weighedItemIds=" + Arrays.toString(weighedItemIds) +
                 ", price=" + price +
                 ", discountedPrice=" + discountedPrice +
                 ", imageUrl='" + imageUrl + '\'' +
@@ -312,7 +344,7 @@ public class Product implements Serializable, Parcelable {
                 ", subtitle='" + subtitle + '\'' +
                 ", basePrice='" + basePrice + '\'' +
                 ", saleRestriction=" + saleRestriction +
-                ", transmissionCodes=" + transmissionCodes +
+                ", referenceUnit=" + referenceUnit +
                 ", saleStop=" + saleStop +
                 '}';
     }
@@ -361,13 +393,8 @@ public class Product implements Serializable, Parcelable {
             return this;
         }
 
-        public Builder setScannableCodes(String[] scannableCodes) {
+        public Builder setScannableCodes(Code[] scannableCodes) {
             product.scannableCodes = scannableCodes;
-            return this;
-        }
-
-        public Builder setWeighedItemIds(String[] weighedItemIds) {
-            product.weighedItemIds = weighedItemIds;
             return this;
         }
 
@@ -436,31 +463,9 @@ public class Product implements Serializable, Parcelable {
             return this;
         }
 
-        public Builder addEncodingUnit(String fromCode, Unit unit) {
-            if (product.encodingUnits == null) {
-                product.encodingUnits = new HashMap<>();
-            }
-
-            product.encodingUnits.put(fromCode, unit);
-            return this;
-        }
-
-        public Builder addTransmissionCode(String fromCode, String transmissionCode) {
-            if (product.transmissionCodes == null) {
-                product.transmissionCodes = new HashMap<>();
-            }
-
-            product.transmissionCodes.put(fromCode, transmissionCode);
-            return this;
-        }
-
         public Product build() {
             if (product.scannableCodes == null) {
-                product.scannableCodes = new String[0];
-            }
-
-            if (product.weighedItemIds == null) {
-                product.weighedItemIds = new String[0];
+                product.scannableCodes = new Code[0];
             }
 
             if (product.bundleProducts == null) {

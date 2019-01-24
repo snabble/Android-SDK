@@ -95,15 +95,17 @@ public class ProductResolver {
                 }
             });
         } else {
-            String lookupCode = scannedCode.getLookupCode();
-            if (barcodeFormat != null) {
-                IntRange range = SnabbleUI.getProject().getRangeForBarcodeFormat(barcodeFormat);
-                if (range != null) {
-                    lookupCode = lookupCode.substring(range.min, range.max);
-                }
-            }
 
-            productDatabase.findByCodeOnline(lookupCode, new OnProductAvailableListener() {
+            // TODO check if that is still needed, may be covered by new code templates
+//            String lookupCode = scannedCode.getLookupCode();
+//            if (barcodeFormat != null) {
+//                IntRange range = SnabbleUI.getProject().getRangeForBarcodeFormat(barcodeFormat);
+//                if (range != null) {
+//                    lookupCode = lookupCode.substring(range.min, range.max);
+//                }
+//            }
+
+            productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
                 @Override
                 public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                     handleProductAvailable(product, wasOnlineProduct, scannedCode);
@@ -156,9 +158,9 @@ public class ProductResolver {
             public void onProductSelected(Product product) {
                 Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
 
-                String[] codes = product.getScannableCodes();
+                Product.Code[] codes = product.getScannableCodes();
                 if(codes.length > 0) {
-                    showProduct(product, ScannableCode.parse(SnabbleUI.getProject(), codes[0]));
+                    showProduct(product, ScannableCode.parse(SnabbleUI.getProject(), codes[0].lookupCode));
                 }
             }
 

@@ -8,6 +8,7 @@ import java.util.List;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.EAN13;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class EncodedCodesGenerator {
     private StringBuilder stringBuilder;
@@ -116,37 +117,45 @@ public class EncodedCodesGenerator {
 
             if (productInfo.product.getType() == Product.Type.UserWeighed) {
                 //encoding weight in ean
-                String[] weighItemIds = productInfo.product.getWeighedItemIds();
-                if (weighItemIds != null && weighItemIds.length > 0) {
-                    StringBuilder code = new StringBuilder(weighItemIds[0]);
-                    if (code.length() == 13) {
-                        StringBuilder embeddedWeight = new StringBuilder();
-                        String quantity = String.valueOf(productInfo.quantity);
-                        int leadingZeros = 5 - quantity.length();
-                        for (int j = 0; j < leadingZeros; j++) {
-                            embeddedWeight.append('0');
-                        }
-                        embeddedWeight.append(quantity);
-                        code.replace(7, 12, embeddedWeight.toString());
-                        code.setCharAt(6, Character.forDigit(EAN13.internalChecksum(code.toString()), 10));
-                        code.setCharAt(12, Character.forDigit(EAN13.checksum(code.substring(0, 12)), 10));
+                // TODO CHANGED: TEST THIS
+                for (Product.Code productCode : productInfo.product.getScannableCodes()) {
+                    if (productCode.template != null && "ean13_instore".equals(productCode.template.getName())) {
+                        if (productCode.lookupCode.length() == 5) {
+                            StringBuilder code = new StringBuilder("2");
+                            code.append(productCode.lookupCode);
 
-                        if (options.repeatCodes) {
-                            addScannableCode(code.toString(), ageRestricted);
-                        } else {
-                            addScannableCode("1" + options.countSeparator + code.toString(), ageRestricted);
+                            StringBuilder embeddedWeight = new StringBuilder();
+                            String quantity = String.valueOf(productInfo.quantity);
+                            int leadingZeros = 5 - quantity.length();
+                            for (int j = 0; j < leadingZeros; j++) {
+                                embeddedWeight.append('0');
+                            }
+                            embeddedWeight.append(quantity);
+
+                            code.append(Character.forDigit(EAN13.internalChecksum(embeddedWeight.toString(), 0), 10));
+                            code.append(embeddedWeight);
+                            code.append(Character.forDigit(EAN13.checksum(code.toString()), 10));
+
+                            if (options.repeatCodes) {
+                                addScannableCode(code.toString(), ageRestricted);
+                            } else {
+                                addScannableCode("1" + options.countSeparator + code.toString(), ageRestricted);
+                            }
                         }
+                        break;
                     }
                 }
             } else {
                 int q = productInfo.quantity;
                 String transmissionCode = productInfo.product.getTransmissionCode(productInfo.scannedCode);
-                if (options.repeatCodes) {
-                    for (int j = 0; j < q; j++) {
-                        addScannableCode(transmissionCode, ageRestricted);
+                if (transmissionCode != null) {
+                    if (options.repeatCodes) {
+                        for (int j = 0; j < q; j++) {
+                            addScannableCode(transmissionCode, ageRestricted);
+                        }
+                    } else {
+                        addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
                     }
-                } else {
-                    addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
                 }
             }
         }

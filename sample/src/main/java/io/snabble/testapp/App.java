@@ -82,7 +82,7 @@ public class App extends Application {
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
             @Override
             public void onReady() {
-                project = snabble.getProjects().get(0);
+                project = snabble.getProjects().get(1);
 
                 // registers this project globally for use with ui components
                 SnabbleUI.useProject(project);

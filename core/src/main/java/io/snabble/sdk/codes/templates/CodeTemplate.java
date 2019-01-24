@@ -43,34 +43,39 @@ public class CodeTemplate {
                 sb.setLength(0);
 
                 String type = "_";
-                Integer length = null;
-                String subType = "";
-                String[] split = templateGroup.split(":");
-                if (split.length > 0) {
-                    type = split[0];
+                int length = 0;
+                String subType = null;
+                String[] parts = templateGroup.split(":");
+                if (parts.length > 0) {
+                    type = parts[0];
                 }
 
-                if (split.length == 2) {
+                if (parts.length == 2) {
                     try {
-                        subType = split[1];
-                        length = Integer.parseInt(subType);
+                        length = Integer.parseInt(parts[1]);
                     } catch (NumberFormatException ignored) {
+                        subType = parts[1];
+                    }
+
+                    if (subType == null && length < 1) {
+                        throw new IllegalArgumentException("Invalid group length: " + length);
                     }
                 }
 
-                if (length != null && length < 1) {
-                    throw new IllegalArgumentException("Invalid group length: " + length);
+                if (templateGroup.endsWith(":")) {
+                    throw new IllegalArgumentException("Missing group length in " + templateGroup);
                 }
 
                 Group group;
 
                 switch (type) {
                     case "code":
-                        if (length == null) {
+                        if (subType != null) {
                             switch (subType) {
                                 case "ean8": group = new EAN8Group(this); break;
                                 case "ean13": group = new EAN13Group(this); break;
                                 case "ean14": group = new EAN14Group(this); break;
+                                case "*": group = new WildcardGroup(this, 0); break;
                                 default: throw new IllegalArgumentException("Unknown code type: " + subType);
                             }
                         } else {
@@ -91,7 +96,10 @@ public class CodeTemplate {
                         break;
                     default:
                         if (type.startsWith("_")) {
-                            group = new IgnoreGroup(this, type.length());
+                            if (length == 0) {
+                                length = type.length();
+                            }
+                            group = new IgnoreGroup(this, length);
                         } else {
                             throw new IllegalArgumentException("Invalid group: " + templateGroup);
                         }
@@ -146,7 +154,7 @@ public class CodeTemplate {
         int start = 0;
         for (Group group : groups) {
             if (group instanceof WildcardGroup) {
-                ((WildcardGroup) group).setLength(match.length());
+                ((WildcardGroup) group).setLength(match.length() - start);
             }
 
             int end = start + group.length();
@@ -185,24 +193,8 @@ public class CodeTemplate {
         return builder.create();
     }
 
-    private int length() {
-        int len = 0;
-        for (Group group : groups) {
-            len += group.length();
-        }
-        return len;
-    }
-
     public String getPattern() {
         return pattern;
-    }
-
-    public static CodeTemplate parse(String name, String pattern) {
-        try {
-            return new CodeTemplate(name, pattern);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
     }
 }
 

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringNormalizer;
@@ -108,6 +110,11 @@ public class ProductDatabase {
 
                 schemaVersionMajor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MAJOR));
                 schemaVersionMinor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MINOR));
+
+                if (schemaVersionMajor == 1 && schemaVersionMinor < 17) {
+                    Logger.d("Database is too old, deleting local database");
+                    delete();
+                }
 
                 createFTSIndexIfNecessary();
                 parseLastUpdateTimestamp();
@@ -741,6 +748,11 @@ public class ProductDatabase {
     public Product productAtCursor(Cursor cursor) {
         Product.Builder builder = new Product.Builder();
 
+        String[] lookupCodes = null;
+        String[] transmissionCodes = null;
+        String[] encodingUnits = null;
+        String[] templates = null;
+
         String sku = anyToString(cursor, 0);
 
         builder.setSku(sku)
@@ -756,44 +768,30 @@ public class ProductDatabase {
         builder.setDepositProduct(findBySku(depositSku));
 
         String codes = cursor.getString(7);
-        String[] scannableCodes = null;
-
         if (codes != null) {
-            scannableCodes = codes.split(",");
-            builder.setScannableCodes(scannableCodes);
+            lookupCodes = codes.split(",");
         }
 
-        String weighedItemIds = cursor.getString(8);
-        if (weighedItemIds != null) {
-            builder.setWeighedItemIds(weighedItemIds.split(","));
-        }
-
-        builder.setSubtitle(cursor.getString(9));
+        builder.setSubtitle(cursor.getString(8));
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(10)));
-            builder.setSaleStop(cursor.getInt(11) != 0);
+            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(9)));
+            builder.setSaleStop(cursor.getInt(10) != 0);
         }
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
             builder.setBundleProducts(findBundlesOfProduct(builder.build()));
         }
 
-        if (scannableCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-            String transmissionCodesStr = cursor.getString(12);
+        if (lookupCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+            String transmissionCodesStr = cursor.getString(11);
             if (transmissionCodesStr != null) {
-                String[] transmissionCodes = transmissionCodesStr.split(",");
-                for (int i = 0; i < transmissionCodes.length; i++) {
-                    String tc = transmissionCodes[i];
-                    if (!tc.equals("")) {
-                        builder.addTransmissionCode(scannableCodes[i], tc);
-                    }
-                }
+                transmissionCodes = transmissionCodesStr.split(",", -1);
             }
         }
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 17) {
-            String referenceUnit = cursor.getString(13);
+            String referenceUnit = cursor.getString(12);
             if (referenceUnit != null) {
                 Unit unit = Unit.fromString(referenceUnit);
                 builder.setReferenceUnit(unit);
@@ -803,16 +801,51 @@ public class ProductDatabase {
                 }
             }
 
-            String encodingUnitsStr = cursor.getString(14);
-            if (encodingUnitsStr != null) {
-                String[] encodingUnits = encodingUnitsStr.split(",");
-                for (int i = 0; i < encodingUnits.length; i++) {
-                    Unit unit = Unit.fromString(encodingUnits[i]);
-                    if (unit != null) {
-                        builder.addEncodingUnit(scannableCodes[i], unit);
-                    }
+            if (lookupCodes != null) {
+                String encodingUnitsStr = cursor.getString(13);
+                if (encodingUnitsStr != null) {
+                    encodingUnits = encodingUnitsStr.split(",", -1);
+                }
+
+                String templatesStr = cursor.getString(14);
+                if (templatesStr != null) {
+                    templates = templatesStr.split(",", -1);
                 }
             }
+        }
+
+        if (lookupCodes != null) {
+            Product.Code[] productCodes = new Product.Code[lookupCodes.length];
+            for (int i = 0; i < productCodes.length; i++) {
+                String lookupCode = lookupCodes[i];
+                String transmissionCode = null;
+                Unit encodingUnit = null;
+                CodeTemplate template = null;
+
+                if (transmissionCodes != null) {
+                    String tc = transmissionCodes[i];
+                    if (!tc.equals("")) {
+                        transmissionCode = tc;
+                    }
+                }
+
+                if (encodingUnits != null) {
+                    encodingUnit = Unit.fromString(encodingUnits[i]);
+                }
+
+                if (templates != null) {
+                    String templateStr = templates[i];
+                    for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
+                        if (codeTemplate.getName().equals(templateStr)) {
+                            template = codeTemplate;
+                        }
+                    }
+                }
+
+                productCodes[i] = new Product.Code(lookupCode, transmissionCode, template, encodingUnit);
+            }
+
+            builder.setScannableCodes(productCodes);
         }
 
         Shop shop = project.getCheckedInShop();
@@ -889,25 +922,15 @@ public class ProductDatabase {
                 "p.isDeposit," +
                 "p.weighing," +
                 "(SELECT group_concat(s.code) FROM scannableCodes s WHERE s.sku = p.sku)," +
-                "(SELECT group_concat(w.weighItemId) FROM weighItemIds w WHERE w.sku = p.sku)," +
-                "p.subtitle";
-
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-            sql += ",p.saleRestriction";
-            sql += ",p.saleStop";
-        }
-
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
-            sql += ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
-        }
-
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 17) {
-            sql += ",p.referenceUnit";
-            sql += ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
-        }
-
-        sql += " FROM products p ";
-        sql += appendSql;
+                "p.subtitle" +
+                ",p.saleRestriction"+
+                ",p.saleStop" +
+                ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
+                ",p.referenceUnit" +
+                ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
+                " FROM products p "
+                + appendSql;
 
         return sql;
     }
@@ -1094,8 +1117,8 @@ public class ProductDatabase {
      * <p>
      * Searches the local database first before making any network calls.
      */
-    public void findByCodeOnline(String code, OnProductAvailableListener productAvailableListener) {
-        findByCodeOnline(code, productAvailableListener, false);
+    public void findByCodeOnline(ScannableCode scannableCode, OnProductAvailableListener productAvailableListener) {
+        findByCodeOnline(scannableCode, productAvailableListener, false);
     }
 
     /**
@@ -1103,7 +1126,7 @@ public class ProductDatabase {
      * <p>
      * If onlineOnly is true, it does not search the local database first and only searches online.
      */
-    public void findByCodeOnline(String code,
+    public void findByCodeOnline(ScannableCode scannableCode,
                                  OnProductAvailableListener productAvailableListener,
                                  boolean onlineOnly) {
         if (productAvailableListener == null) {
@@ -1111,13 +1134,13 @@ public class ProductDatabase {
         }
 
         if (onlineOnly || !isUpToDate()) {
-            productApi.findByCode(code, productAvailableListener);
+            productApi.findByCode(scannableCode, productAvailableListener);
         } else {
-            Product local = findByCode(code);
+            Product local = findByCode(scannableCode);
             if (local != null) {
                 productAvailableListener.onProductAvailable(local, false);
             } else {
-                productApi.findByCode(code, productAvailableListener);
+                productApi.findByCode(scannableCode, productAvailableListener);
             }
         }
     }
@@ -1181,21 +1204,23 @@ public class ProductDatabase {
     /**
      * Find a product via its scannable code.
      *
-     * @param code A valid scannable code. For example "978020137962".
+     * @param scannableCode A valid scannable code. For example "978020137962".
      * @return The first product containing the given EAN, otherwise null if no product was found.
      */
-    public Product findByCode(String code) {
-        return findByCodeInternal(code, true);
+    public Product findByCode(ScannableCode scannableCode) {
+        return findByCodeInternal(scannableCode, true);
     }
 
-    private Product findByCodeInternal(String code, boolean recursive) {
-        if (code == null || code.length() == 0) {
+    private Product findByCodeInternal(ScannableCode scannableCode, boolean recursive) {
+        if (scannableCode == null
+                || scannableCode.getLookupCode() == null
+                || scannableCode.getLookupCode().length() == 0) {
             return null;
         }
 
         Cursor cursor = productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
                 "WHERE s.code GLOB ? LIMIT 1", new String[]{
-                code
+                scannableCode.getLookupCode()
         }, false);
 
         Product p = getFirstProductAndClose(cursor);
@@ -1203,11 +1228,12 @@ public class ProductDatabase {
         if (p != null) {
             return p;
         } else if (recursive) {
-            if (code.startsWith("0")) {
-                return findByCodeInternal(code.substring(1), true);
-            } else if (code.length() < 13) {
-                String newCode = StringUtils.repeat('0', 13 - code.length()) + code;
-                return findByCodeInternal(newCode, false);
+            String lookup = scannableCode.getLookupCode();
+            if (lookup.startsWith("0")) {
+                return findByCodeInternal(ScannableCode.parse(project, lookup.substring(1)), true);
+            } else if (lookup.length() < 13) {
+                String newCode = StringUtils.repeat('0', 13 - lookup.length()) + lookup;
+                return findByCodeInternal(ScannableCode.parse(project, newCode), false);
             }
         }
 

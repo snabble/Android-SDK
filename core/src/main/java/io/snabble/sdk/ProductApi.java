@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.OkHttpClient;
@@ -194,7 +195,7 @@ class ProductApi {
         });
     }
 
-    public void findByCode(final String code, final OnProductAvailableListener productAvailableListener) {
+    public void findByCode(final ScannableCode code, final OnProductAvailableListener productAvailableListener) {
         if (productAvailableListener == null) {
             return;
         }
@@ -211,7 +212,7 @@ class ProductApi {
             return;
         }
 
-        url = url.replace("{code}", code);
+        url = url.replace("{code}", code.getLookupCode());
         url = appendShopId(url);
 
         get(url, productAvailableListener);
@@ -458,7 +459,7 @@ class ProductApi {
                 .setBundleProducts(bundleProducts)
                 .setIsDeposit("deposit".equals(apiProduct.productType))
                 .setImageUrl(apiProduct.imageUrl)
-                .setScannableCodes(apiProduct.eans)
+                //.setScannableCodes(apiProduct.eans)
                 .setPrice(apiProduct.price)
                 .setDiscountedPrice(apiProduct.discountedPrice)
                 .setBasePrice(apiProduct.basePrice)
@@ -468,14 +469,12 @@ class ProductApi {
         if (apiProduct.codes != null) {
             for (ApiScannableCode apiScannableCode : apiProduct.codes) {
                 if (apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
-                    builder.addTransmissionCode(apiScannableCode.code, apiScannableCode.transmissionCode);
+                    //builder.addTransmissionCode(apiScannableCode.code, apiScannableCode.transmissionCode);
                 }
             }
         }
 
         if (apiProduct.weighing != null) {
-            builder.setWeighedItemIds(apiProduct.weighing.weighedItemIds);
-
             Unit referenceUnit = Unit.fromString(apiProduct.weighing.referenceUnit);
             builder.setReferenceUnit(referenceUnit);
 
@@ -484,7 +483,7 @@ class ProductApi {
             if (apiProduct.codes != null) {
                 for (ApiScannableCode apiScannableCode : apiProduct.codes) {
                     if (apiScannableCode.code != null && apiScannableCode.transmissionCode != null) {
-                        builder.addEncodingUnit(apiScannableCode.code, encodingUnit);
+                        //builder.addEncodingUnit(apiScannableCode.code, encodingUnit);
                     }
                 }
             }

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.AndroidJUnit4;
+import io.snabble.sdk.codes.ScannableCode;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -110,9 +111,9 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFindByCode() {
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product product = productDatabase.findByCode("4025500133627");
-        Product product2 = productDatabase.findByCode("2");
-        Product product3 = productDatabase.findByCode("000000000000004025500133627");
+        Product product = productDatabase.findByCode(ScannableCode.parse(project, "4025500133627"));
+        Product product2 = productDatabase.findByCode(ScannableCode.parse(project, "2"));
+        Product product3 = productDatabase.findByCode(ScannableCode.parse(project, "000000000000004025500133627"));
 
         assertEquals(product.getSku(), "1");
         assertEquals(product.getName(), "Müllermilch Banane 0,4l");
@@ -120,7 +121,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         assertEquals(product.getScannableCodes().length, 2);
         assertEquals(product, product3);
 
-        assertNull(productDatabase.findByCode("unknownCode"));
+        assertNull(productDatabase.findByCode(ScannableCode.parse(project, "unknownCode")));
     }
 
     @Test
@@ -424,16 +425,16 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product product = productDatabase.findByCode("42276630");
+        Product product = productDatabase.findByCode(ScannableCode.parse(project, "42276630"));
         Assert.assertNotNull(product);
 
-        String[] codes = product.getScannableCodes();
+        Product.Code[] codes = product.getScannableCodes();
         Assert.assertTrue(ArrayUtils.contains(codes, "42276630"));
 
-        Product product2 = productDatabase.findByCode("0000042276630");
+        Product product2 = productDatabase.findByCode(ScannableCode.parse(project, "0000042276630"));
         Assert.assertNotNull(product2);
 
-        String[] codes2 = product2.getScannableCodes();
+        Product.Code[] codes2 = product2.getScannableCodes();
         Assert.assertTrue(ArrayUtils.contains(codes2, "42276630"));
     }
 
@@ -442,10 +443,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         withDb("demoDb_1_6.sqlite3");
 
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product product = productDatabase.findByCode("40084015");
+        Product product = productDatabase.findByCode(ScannableCode.parse(project, "40084015"));
         Assert.assertNotNull(product);
 
-        String[] codes = product.getScannableCodes();
+        Product.Code[] codes = product.getScannableCodes();
         Assert.assertTrue(ArrayUtils.contains(codes, "0000040084015"));
     }
 
@@ -457,7 +458,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Product product = productDatabase.findBySku("48");
         Assert.assertNotNull(product);
 
-        Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), product.getScannableCodes()[0]);
+        Assert.assertEquals(product.getScannableCodes()[0].transmissionCode, product.getScannableCodes()[0]);
     }
 
     @Test
@@ -468,7 +469,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Product product = productDatabase.findBySku("48");
         Assert.assertNotNull(product);
 
-        Assert.assertEquals(product.getTransmissionCode(product.getScannableCodes()[0]), "00000" + product.getScannableCodes()[0]);
+        Assert.assertEquals(product.getScannableCodes()[0].transmissionCode, "00000" + product.getScannableCodes()[0]);
     }
 
     @Test

@@ -112,7 +112,7 @@ class ProductConfirmationDialog {
         Product.Type type = product.getType();
         int cartQuantity = shoppingCart.getQuantity(product);
 
-        Unit unit = product.getEncodingUnit(scannedCode.getLookupCode());
+        Unit unit = product.getEncodingUnit(scannedCode.getCodeTemplate(), scannedCode.getLookupCode());
 
         if (scannedCode.hasEmbeddedData()) {
             if (Unit.isMass(unit)) {

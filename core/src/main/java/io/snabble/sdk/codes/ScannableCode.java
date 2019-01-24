@@ -35,8 +35,8 @@ public class ScannableCode implements Serializable {
         return embeddedData != null;
     }
 
-    public String getTemplateName() {
-        return codeTemplate.getName();
+    public CodeTemplate getCodeTemplate() {
+        return codeTemplate;
     }
 
     public static class Builder {

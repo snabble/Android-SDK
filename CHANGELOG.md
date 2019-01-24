@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 ### Important Changes
 - Support for Units is now migrated to new database schema, the older schema used in previous 
 versions will fall back to g/kg only
+- Product.getScannableCodes() is now returning a Product.Code object
+
+### Added
+- Support for code templates
+- Support for product api v2
+
+### Fixed
+- Crash when a network error occurred when scanning a product
 
 ## [0.12.0-beta2]
 

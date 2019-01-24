@@ -289,7 +289,7 @@ public class ShoppingCart {
 
         if (productDatabase.isUpToDate()) {
             for (Entry e : items) {
-                Product product = productDatabase.findByCode(e.scannedCode);
+                Product product = productDatabase.findByCode(ScannableCode.parse(project, e.scannedCode));
 
                 if (product != null) {
                     e.product = product;
@@ -363,7 +363,7 @@ public class ShoppingCart {
     private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode) {
         entry.scannedCode = findCodeByScannedCode(entry.product, scannedCode);
 
-        Unit unit = entry.product.getEncodingUnit(scannedCode.getLookupCode());
+        Unit unit = entry.product.getEncodingUnit(scannedCode.getCodeTemplate(), scannedCode.getLookupCode());
 
         if (scannedCode.hasEmbeddedData()) {
             if (Unit.isMass(unit)) {
@@ -389,9 +389,9 @@ public class ShoppingCart {
     private String findCodeByScannedCodeInternal(Product product, ScannableCode scannableCode, boolean recursive) {
         String scannedCode = scannableCode.getCode();
 
-        for (String code : product.getScannableCodes()) {
-            if (code.equals(scannedCode)) {
-                return code;
+        for (Product.Code code : product.getScannableCodes()) {
+            if (code.lookupCode.equals(scannedCode)) {
+                return code.lookupCode;
             }
         }
 
@@ -444,14 +444,17 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product product = e.product;
 
+                // TODO make sure that this works every time or handle null case properly
+                ScannableCode scannableCode = ScannableCode.parse(project, e.scannedCode);
+
                 if (e.weight != null) {
-                    sum += product.getPriceForQuantity(e.weight, e.scannedCode, project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.weight, scannableCode.getLookupCode(), project.getRoundingMode());
                 } else if (e.price != null) {
                     sum += e.price;
                 } else if (e.amount != null) {
                     sum += product.getPrice() * e.amount;
                 } else {
-                    sum += product.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.quantity, scannableCode.getLookupCode(), project.getRoundingMode());
                 }
             }
 

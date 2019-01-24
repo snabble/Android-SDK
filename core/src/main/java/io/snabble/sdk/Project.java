@@ -211,15 +211,10 @@ public class Project {
         codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
         codeTemplates.add(new CodeTemplate("ean13_instore", "2{code:5}{_}{embed:5}{_}"));
 
-        //if (isUsingGermanPrintPrefix()) {
-            codeTemplates.add(new CodeTemplate("german_print_7", "419{code:5}{embed:4}{_}"));
-            codeTemplates.add(new CodeTemplate("german_print_19", "414{code:5}{embed:4}{_}"));
-            codeTemplates.add(new CodeTemplate("german_print_7_fsk", "439{code:5}{embed:4}{_}"));
-            codeTemplates.add(new CodeTemplate("german_print_19_fsk", "434{code:5}{embed:4}{_}"));
-        //}
+        //codeTemplates.add(new CodeTemplate("german_print_19_fsk", "4{code:2}{_:5}{embed:4}{_}"));
 
         codeTemplates.add(new CodeTemplate("ean14_code128", "01{code:ean14}"));
-        codeTemplates.add(new CodeTemplate("edeka_discount", "97{code:ean13}{price:6}{_}"));
+        codeTemplates.add(new CodeTemplate("edeka_discount", "97{code:ean13}{embed:6}{_}"));
         codeTemplates.add(new CodeTemplate("default", "{*}"));
 
         this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
