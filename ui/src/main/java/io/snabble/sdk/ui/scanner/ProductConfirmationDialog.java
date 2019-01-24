@@ -112,14 +112,16 @@ class ProductConfirmationDialog {
         Product.Type type = product.getType();
         int cartQuantity = shoppingCart.getQuantity(product);
 
+        Unit unit = product.getEncodingUnit(scannedCode.getLookupCode());
+
         if (scannedCode.hasEmbeddedData()) {
-            if (scannedCode.hasWeighData()) {
+            if (Unit.isMass(unit)) {
                 quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode.getCode()).getDisplayValue());
                 quantityAnnotation.setVisibility(View.VISIBLE);
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
                 quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
-            } else if (scannedCode.hasPriceData()) {
+            } else if (unit == Unit.PRICE) {
                 quantityAnnotation.setText(SnabbleUI.getProject().getCurrency().getSymbol());
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
@@ -128,7 +130,7 @@ class ProductConfirmationDialog {
 
                 PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
                 quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
-            } else if (scannedCode.hasUnitData()) {
+            } else if (unit == Unit.PIECE) {
                 if (scannedCode.getEmbeddedData() == 0) {
                     quantityAnnotation.setVisibility(View.GONE);
                     plus.setVisibility(View.VISIBLE);
@@ -225,8 +227,8 @@ class ProductConfirmationDialog {
 
         if (cartQuantity > 0
                 && product.getType() == Product.Type.Article
-                && !scannedCode.hasUnitData()
-                && !scannedCode.hasPriceData()) {
+                && unit != Unit.PRICE
+                && unit != Unit.PIECE) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
@@ -296,10 +298,10 @@ class ProductConfirmationDialog {
             encodingDisplayValue = encodingUnit.getDisplayValue();
         }
 
-        if (q > 0 && (scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed)) {
+        if (q > 0 && (Unit.isMass(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
             price.setText(String.format("%s %s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
         } else if (q > 1) {
-            if (scannedCode.hasUnitData()) {
+            if (encodingUnit == Unit.PIECE) {
                 price.setText(String.format("%s * %s = %s",
                         String.valueOf(q),
                         priceFormatter.format(product.getPrice()),
@@ -311,7 +313,7 @@ class ProductConfirmationDialog {
             price.setText(singlePrice);
         }
 
-        if (scannedCode.hasPriceData()) {
+        if (encodingUnit == Unit.PRICE) {
             int embeddedPrice = scannedCode.getEmbeddedData();
             price.setText(priceFormatter.format(embeddedPrice));
         }

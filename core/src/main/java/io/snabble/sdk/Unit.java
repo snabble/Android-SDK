@@ -97,19 +97,19 @@ public enum Unit {
         return displayValue;
     }
 
-    public boolean isMass() {
-        return this == KILOGRAM || this == GRAM || this == TONNE;
+    public static boolean isMass(Unit unit) {
+        return unit == KILOGRAM || unit == GRAM || unit == TONNE;
     }
 
-    public boolean isVolume() {
-        return this == MILLILITER || this == DECILITER || this == LITER;
+    public static boolean isVolume(Unit unit) {
+        return unit == MILLILITER || unit == DECILITER || unit == LITER;
     }
 
-    public boolean isArea() {
-        return this == SQUARE_CENTIMETER || this == SQUARE_METER;
+    public static boolean isArea(Unit unit) {
+        return unit == SQUARE_CENTIMETER || unit == SQUARE_METER;
     }
 
-    public boolean isCapacity() {
-        return this == CUBIC_METER || this == CUBIC_CENTIMETER;
+    public static boolean isCapacity(Unit unit) {
+        return unit == CUBIC_METER || unit == CUBIC_CENTIMETER;
     }
 }

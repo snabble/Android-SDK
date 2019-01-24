@@ -3,9 +3,9 @@ package io.snabble.sdk.codes.templates.groups;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public abstract class Group {
-    private CodeTemplate template;
-    private int length;
-    private String data;
+    protected CodeTemplate template;
+    protected int length;
+    protected String data;
 
     public Group(CodeTemplate template, int length) {
         this.template = template;

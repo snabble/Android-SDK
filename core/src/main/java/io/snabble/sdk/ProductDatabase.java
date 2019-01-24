@@ -903,7 +903,7 @@ public class ProductDatabase {
 
         if (schemaVersionMajor >= 1 && schemaVersionMinor >= 17) {
             sql += ",p.referenceUnit";
-            sql += ",(SELECT group_concat(s.encodingUnit) FROM scannableCodes s WHERE s.sku = p.sku)";
+            sql += ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)";
         }
 
         sql += " FROM products p ";

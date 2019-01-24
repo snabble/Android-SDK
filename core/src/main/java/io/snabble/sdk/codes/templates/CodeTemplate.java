@@ -1,17 +1,24 @@
 package io.snabble.sdk.codes.templates;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.snabble.sdk.Project;
+import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.codes.templates.groups.*;
 
 public class CodeTemplate {
+    private String pattern;
     private List<Group> groups;
+    private String name;
 
-    public CodeTemplate(String pattern) {
+    public CodeTemplate(String name, String pattern) {
+        this.name = name;
+        this.pattern = pattern;
         groups = new ArrayList<>();
 
         StringBuilder sb = new StringBuilder();
@@ -36,7 +43,7 @@ public class CodeTemplate {
                 sb.setLength(0);
 
                 String type = "_";
-                int length = -1;
+                Integer length = null;
                 String subType = "";
                 String[] split = templateGroup.split(":");
                 if (split.length > 0) {
@@ -51,29 +58,36 @@ public class CodeTemplate {
                     }
                 }
 
+                if (length != null && length < 1) {
+                    throw new IllegalArgumentException("Invalid group length: " + length);
+                }
+
                 Group group;
 
                 switch (type) {
                     case "code":
-                        if (length == -1) {
+                        if (length == null) {
                             switch (subType) {
                                 case "ean8": group = new EAN8Group(this); break;
                                 case "ean13": group = new EAN13Group(this); break;
-                                case "ean14": group = new EAN14Group(this);break;
+                                case "ean14": group = new EAN14Group(this); break;
                                 default: throw new IllegalArgumentException("Unknown code type: " + subType);
                             }
                         } else {
                             group = new CodeGroup(this, length);
                         }
                         break;
-                    case "weight":
-                        group = new WeightGroup(this, length);
+                    case "embed":
+                        group = new EmbedGroup(this, length);
                         break;
                     case "price":
                         group = new PriceGroup(this, length);
                         break;
                     case "i":
                         group = new InternalChecksumGroup(this);
+                        break;
+                    case "*":
+                        group = new WildcardGroup(this, 0);
                         break;
                     default:
                         if (type.startsWith("_")) {
@@ -114,7 +128,11 @@ public class CodeTemplate {
         }
     }
 
-    public <T extends Group> T getComponent(Class<? extends Group> clazz) {
+    public String getName() {
+        return name;
+    }
+
+    public <T extends Group> T getGroup(Class<? extends Group> clazz) {
         for (Group group : groups) {
             if (group.getClass() == clazz) {
                 return (T) group;
@@ -127,6 +145,10 @@ public class CodeTemplate {
     public ScannableCode match(String match) {
         int start = 0;
         for (Group group : groups) {
+            if (group instanceof WildcardGroup) {
+                ((WildcardGroup) group).setLength(match.length());
+            }
+
             int end = start + group.length();
             if (match.length() < end) {
                 return null;
@@ -147,12 +169,37 @@ public class CodeTemplate {
             }
         }
 
-        return new ScannableCode(match);
+        ScannableCode.Builder builder = new ScannableCode.Builder(this);
+        builder.setScannedCode(match);
+
+        for (Group group : groups) {
+            if (group instanceof EmbedGroup) {
+                builder.setEmbeddedData(((EmbedGroup) group).number());
+            }
+
+            if (group instanceof CodeGroup) {
+                builder.setLookupCode(group.data());
+            }
+        }
+
+        return builder.create();
     }
 
-    public static CodeTemplate parse(String pattern) {
+    private int length() {
+        int len = 0;
+        for (Group group : groups) {
+            len += group.length();
+        }
+        return len;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public static CodeTemplate parse(String name, String pattern) {
         try {
-            return new CodeTemplate(pattern);
+            return new CodeTemplate(name, pattern);
         } catch (IllegalArgumentException e) {
             return null;
         }

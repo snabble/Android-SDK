@@ -3,12 +3,16 @@ package io.snabble.sdk.codes;
 import java.io.Serializable;
 
 import io.snabble.sdk.Project;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class ScannableCode implements Serializable {
-    protected String code;
+    private Integer embeddedData;
+    private String lookupCode;
+    private String code;
+    private CodeTemplate codeTemplate;
 
-    public ScannableCode(String code) {
-        this.code = code;
+    private ScannableCode() {
+
     }
 
     public String getCode() {
@@ -16,7 +20,7 @@ public class ScannableCode implements Serializable {
     }
 
     public String getLookupCode() {
-        return code;
+        return lookupCode;
     }
 
     public String getMaskedCode() {
@@ -24,40 +28,53 @@ public class ScannableCode implements Serializable {
     }
 
     public int getEmbeddedData() {
-        return 0;
-    }
-
-    public boolean hasUnitData() {
-        return false;
-    }
-
-    public boolean hasPriceData() {
-        return false;
-    }
-
-    public boolean hasWeighData() {
-        return false;
+        return embeddedData != null ? embeddedData : 0;
     }
 
     public boolean hasEmbeddedData() {
-        return false;
+        return embeddedData != null;
     }
 
-    public boolean isEmbeddedDataOk() {
-        return true;
+    public String getTemplateName() {
+        return codeTemplate.getName();
+    }
+
+    public static class Builder {
+        ScannableCode scannableCode;
+
+        public Builder(CodeTemplate codeTemplate) {
+            scannableCode = new ScannableCode();
+            scannableCode.codeTemplate = codeTemplate;
+        }
+
+        public Builder setScannedCode(String scannedCode) {
+            scannableCode.code = scannedCode;
+            return this;
+        }
+
+        public Builder setLookupCode(String lookupCode) {
+            scannableCode.lookupCode = lookupCode;
+            return this;
+        }
+
+        public Builder setEmbeddedData(int embeddedData) {
+            scannableCode.embeddedData = embeddedData;
+            return this;
+        }
+
+        public ScannableCode create() {
+            return scannableCode;
+        }
     }
 
     public static ScannableCode parse(Project project, String code) {
-        if (EAN13.isEan13(code)) {
-            return new EAN13(project, code);
-        } else if (EAN14.isEan14(code)) {
-            return new EAN14(project, code);
-        } else if (EdekaProductCode.isEdekaProductCode(project, code)) {
-            return new EdekaProductCode(project, code);
-        } else if (IKEADataMatrixCode.isIKEADataMatrixCode(project, code)) {
-            return new IKEADataMatrixCode(code);
-        } else  {
-            return new ScannableCode(code);
+        for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
+            ScannableCode scannableCode = codeTemplate.match(code);
+            if (scannableCode != null) {
+                return scannableCode;
+            }
         }
+
+        return null;
     }
 }

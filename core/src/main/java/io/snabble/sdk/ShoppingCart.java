@@ -363,12 +363,16 @@ public class ShoppingCart {
     private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode) {
         entry.scannedCode = findCodeByScannedCode(entry.product, scannedCode);
 
-        if (scannedCode.hasWeighData()) {
-            entry.weight = scannedCode.getEmbeddedData();
-        } else if (scannedCode.hasPriceData()) {
-            entry.price = scannedCode.getEmbeddedData();
-        } else if (scannedCode.hasUnitData()) {
-            entry.amount = scannedCode.getEmbeddedData();
+        Unit unit = entry.product.getEncodingUnit(scannedCode.getLookupCode());
+
+        if (scannedCode.hasEmbeddedData()) {
+            if (Unit.isMass(unit)) {
+                entry.weight = scannedCode.getEmbeddedData();
+            } else if (unit == Unit.PRICE) {
+                entry.price = scannedCode.getEmbeddedData();
+            } else if (unit == Unit.PIECE) {
+                entry.amount = scannedCode.getEmbeddedData();
+            }
         }
 
         modCount++;

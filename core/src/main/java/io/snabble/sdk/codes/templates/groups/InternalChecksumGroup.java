@@ -10,20 +10,29 @@ public class InternalChecksumGroup extends NumberGroup {
 
     @Override
     public boolean checkDependencies() {
-        WeightGroup weightComponent = getTemplate().getComponent(WeightGroup.class);
-        if (weightComponent == null || weightComponent.length() != 5) {
+        EmbedGroup embedGroup = getTemplate().getGroup(EmbedGroup.class);
+        if (embedGroup == null || embedGroup.length() != 5) {
             return false;
         }
 
         return true;
     }
 
+    public void recalculate() {
+        EmbedGroup embedGroup = getTemplate().getGroup(EmbedGroup.class);
+        if (embedGroup != null) {
+            String weight = embedGroup.data();
+            int newChecksum = EAN13.internalChecksum(weight, 0);
+            embedGroup.apply(Integer.toString(newChecksum));
+        }
+    }
+
     @Override
     public boolean validate() {
-        WeightGroup weightComponent = getTemplate().getComponent(WeightGroup.class);
-        if (weightComponent != null) {
-            String weight = weightComponent.data();
-            return EAN13.internalChecksum(weight, 0) == number(data());
+        EmbedGroup embedGroup = getTemplate().getGroup(EmbedGroup.class);
+        if (embedGroup != null) {
+            String weight = embedGroup.data();
+            return EAN13.internalChecksum(weight, 0) == number();
         }
 
         return false;

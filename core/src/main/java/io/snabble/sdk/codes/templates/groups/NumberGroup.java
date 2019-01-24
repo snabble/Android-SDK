@@ -7,9 +7,9 @@ public class NumberGroup extends Group {
         super(template, length);
     }
 
-    public int number(String input) {
+    public int number() {
         try {
-            return Integer.parseInt(input);
+            return Integer.parseInt(data());
         } catch (NumberFormatException e) {
             return 0;
         }

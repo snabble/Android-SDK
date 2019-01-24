@@ -5,6 +5,7 @@ import android.app.Application;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
 
 import org.apache.commons.lang3.LocaleUtils;
 
@@ -18,8 +19,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.JsonUtils;
@@ -58,6 +61,7 @@ public class Project {
     private BarcodeFormat[] supportedBarcodeFormats;
     private Shop checkedInShop;
     private Map<BarcodeFormat, IntRange> barcodeFormatRanges;
+    private CodeTemplate[] codeTemplates;
     private CustomerCardInfo[] acceptedCustomerCardInfos;
     private CustomerCardInfo requiredCustomerCardInfo;
 
@@ -200,6 +204,25 @@ public class Project {
         if (shops == null) {
             shops = new Shop[0];
         }
+
+        // TODO parse from metadata
+        ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
+
+        codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
+        codeTemplates.add(new CodeTemplate("ean13_instore", "2{code:5}{_}{embed:5}{_}"));
+
+        //if (isUsingGermanPrintPrefix()) {
+            codeTemplates.add(new CodeTemplate("german_print_7", "419{code:5}{embed:4}{_}"));
+            codeTemplates.add(new CodeTemplate("german_print_19", "414{code:5}{embed:4}{_}"));
+            codeTemplates.add(new CodeTemplate("german_print_7_fsk", "439{code:5}{embed:4}{_}"));
+            codeTemplates.add(new CodeTemplate("german_print_19_fsk", "434{code:5}{embed:4}{_}"));
+        //}
+
+        codeTemplates.add(new CodeTemplate("ean14_code128", "01{code:ean14}"));
+        codeTemplates.add(new CodeTemplate("edeka_discount", "97{code:ean13}{price:6}{_}"));
+        codeTemplates.add(new CodeTemplate("default", "{*}"));
+
+        this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
 
         notifyUpdate();
     }
@@ -393,6 +416,10 @@ public class Project {
 
     public String getCustomerCardId() {
         return loyaltyCardId;
+    }
+
+    public CodeTemplate[] getCodeTemplates() {
+        return codeTemplates;
     }
 
     /**
