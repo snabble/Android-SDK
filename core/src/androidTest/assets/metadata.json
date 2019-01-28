@@ -14,6 +14,9 @@
       "enableCheckout": true,
       "id": "test",
       "links": {
+        "appEvents": {
+          "href": "/test/events"
+        },
         "appdb": {
           "href": "/test/appdb"
         },
@@ -34,6 +37,12 @@
         },
         "productsBySku": {
           "href": "/test/products/search/bySkus"
+        },
+        "resolvedProductBySku": {
+          "href": "/test/resolvedProducts/sku/{sku}"
+        },
+        "resolvedProductLookUp": {
+          "href": "/test/resolvedProducts/lookUp"
         },
         "self": {
           "href": "/metadata/project/test"
@@ -57,7 +66,7 @@
           "email": "info@snabble.io",
           "external": null,
           "externalId": null,
-          "id": "8",
+          "id": "1775",
           "lat": 50.7352963,
           "lon": 7.1001417,
           "name": "snabble GmbH",
@@ -75,7 +84,7 @@
           "email": "info@snabble.io",
           "external": null,
           "externalId": null,
-          "id": "42",
+          "id": "1774",
           "lat": 50.7352963,
           "lon": 7.1001417,
           "name": "snabble GmbH 2",

@@ -273,7 +273,7 @@ public class Product implements Serializable, Parcelable {
             }
         }
 
-        return null;
+        return lookupCode;
     }
 
     /**

@@ -87,9 +87,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testSplitAgeRestrictedProducts() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testSplitAgeRestrictedProducts() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("+")
                 .separator(";")
@@ -117,9 +115,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testSplitAgeRestrictedProductsInMultipleCodes() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testSplitAgeRestrictedProductsInMultipleCodes() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("+")
                 .separator(";")
@@ -148,9 +144,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testSplitAgeRestrictedProductsInMultipleCodes2() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testSplitAgeRestrictedProductsInMultipleCodes2() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("+")
                 .separator(";")
@@ -182,9 +176,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testSplitWithOnlyOneRestrictedProduct() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testSplitWithOnlyOneRestrictedProduct() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("+")
                 .separator(";")
@@ -210,9 +202,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testKnauber() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testKnauber() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("")
                 .separator("\n")
@@ -242,9 +232,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testEdeka() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testEdeka() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("XE")
                 .separator("XE")
@@ -269,9 +257,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testEdekaWithOverflow() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testEdekaWithOverflow() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("XE")
                 .separator("XE")
@@ -297,9 +283,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testEdekaWithRestrictedProduct() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testEdekaWithRestrictedProduct() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("XE")
                 .separator("XE")
@@ -328,9 +312,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testExpensiveItemsSortedToBottom() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testExpensiveItemsSortedToBottom() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("")
                 .separator(";")
@@ -354,9 +336,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
-    public void testCSVFormat() throws IOException, Snabble.SnabbleException {
-        withDb("demoDb_1_11.sqlite3");
-
+    public void testCSVFormat() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder()
                 .prefix("snabble;\n")
                 .separator("\n")

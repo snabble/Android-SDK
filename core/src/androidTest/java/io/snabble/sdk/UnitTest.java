@@ -10,8 +10,6 @@ import java.math.RoundingMode;
 public class UnitTest extends SnabbleSdkTest {
     @Test
     public void testUnitPrices() throws IOException, Snabble.SnabbleException {
-        withDb("testDb_1_16_encodingUnits.sqlite3");
-
         ProductDatabase productDatabase = project.getProductDatabase();
         final Product test_ml_1 = productDatabase.findBySku("test-ml-1");
         final Product test_g_1 = productDatabase.findBySku("test-g-1");
