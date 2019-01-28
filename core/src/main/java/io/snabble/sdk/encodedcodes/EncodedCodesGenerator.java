@@ -119,7 +119,7 @@ public class EncodedCodesGenerator {
                 //encoding weight in ean
                 // TODO CHANGED: TEST THIS
                 for (Product.Code productCode : productInfo.product.getScannableCodes()) {
-                    if (productCode.template != null && "ean13_instore".equals(productCode.template.getName())) {
+                    if ("ean13_instore".equals(productCode.template)) {
                         if (productCode.lookupCode.length() == 5) {
                             StringBuilder code = new StringBuilder("2");
                             code.append(productCode.lookupCode);

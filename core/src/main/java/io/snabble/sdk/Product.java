@@ -103,10 +103,10 @@ public class Product implements Serializable, Parcelable {
     public static class Code {
         public final String lookupCode;
         public final String transmissionCode;
-        public final CodeTemplate template;
+        public final String template;
         public final Unit encodingUnit;
 
-        public Code(String lookupCode, String transmissionCode, CodeTemplate template, Unit encodingUnit) {
+        public Code(String lookupCode, String transmissionCode, String template, Unit encodingUnit) {
             this.lookupCode = lookupCode;
             this.transmissionCode = transmissionCode;
             this.template = template;
@@ -244,7 +244,7 @@ public class Product implements Serializable, Parcelable {
     public Unit getEncodingUnit(CodeTemplate codeTemplate, String lookupCode) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
-                if (code.template == codeTemplate || (code.template != null && "default".equals(code.template.getName()))) {
+                if ((codeTemplate != null && codeTemplate.getName().equals(code.template))  || "default".equals(code.template)) {
                     return code.encodingUnit;
                 }
             }
@@ -260,7 +260,7 @@ public class Product implements Serializable, Parcelable {
     public String getTransmissionCode(CodeTemplate codeTemplate, String lookupCode) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
-                if (code.template == codeTemplate || (code.template != null && "default".equals(code.template.getName()))) {
+                if ((codeTemplate != null && codeTemplate.getName().equals(code.template)) || "default".equals(code.template)) {
                     if (code.transmissionCode == null) {
                         return code.lookupCode;
                     }

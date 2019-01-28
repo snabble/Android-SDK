@@ -46,10 +46,6 @@ public class Project {
     private Locale currencyLocale;
 
     private String loyaltyCardId;
-
-    private String[] pricePrefixes;
-    private String[] weighPrefixes;
-    private String[] unitPrefixes;
     private boolean isCheckoutAvailable;
 
     private EncodedCodesOptions encodedCodesOptions;
@@ -127,11 +123,6 @@ public class Project {
         }
 
         currencyFractionDigits = JsonUtils.getIntOpt(jsonObject, "decimalDigits", 2);
-
-        weighPrefixes = JsonUtils.getStringArrayOpt(jsonObject, "weighPrefixes", new String[0]);
-        pricePrefixes = JsonUtils.getStringArrayOpt(jsonObject, "pricePrefixes", new String[0]);
-        unitPrefixes = JsonUtils.getStringArrayOpt(jsonObject, "unitPrefixes", new String[0]);
-
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
         if (jsonObject.has("encodedCodes")) {
@@ -286,18 +277,6 @@ public class Project {
 
     public String getProductByWeighItemIdUrl() {
         return urls.get("productByWeighItemId");
-    }
-
-    public String[] getPricePrefixes() {
-        return pricePrefixes;
-    }
-
-    public String[] getWeighPrefixes() {
-        return weighPrefixes;
-    }
-
-    public String[] getUnitPrefixes() {
-        return unitPrefixes;
     }
 
     public BarcodeFormat[] getSupportedBarcodeFormats() {

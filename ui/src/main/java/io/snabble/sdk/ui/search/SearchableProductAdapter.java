@@ -87,7 +87,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
 
         String selectedCode = null;
         if (scannableCodes.length > 0) {
-            selectedCode = product.getScannableCodes()[0].lookupCode;
+            selectedCode = scannableCodes[0].lookupCode;
         }
 
         if (showBarcode) {

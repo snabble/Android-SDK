@@ -842,7 +842,7 @@ public class ProductDatabase {
                     }
                 }
 
-                productCodes[i] = new Product.Code(lookupCode, transmissionCode, template, encodingUnit);
+                productCodes[i] = new Product.Code(lookupCode, transmissionCode, template.getName(), encodingUnit);
             }
 
             builder.setScannableCodes(productCodes);
