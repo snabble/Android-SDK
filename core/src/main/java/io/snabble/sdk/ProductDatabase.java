@@ -111,9 +111,10 @@ public class ProductDatabase {
                 schemaVersionMajor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MAJOR));
                 schemaVersionMinor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MINOR));
 
-                if (schemaVersionMajor == 1 && schemaVersionMinor < 17) {
+                if (schemaVersionMajor == 1 && schemaVersionMinor < 18) {
                     Logger.d("Database is too old, deleting local database");
                     delete();
+                    return false;
                 }
 
                 createFTSIndexIfNecessary();
@@ -750,7 +751,7 @@ public class ProductDatabase {
 
         String[] lookupCodes = null;
         String[] transmissionCodes = null;
-        String[] encodingUnits = null;
+        String[] codeEncodingUnits = null;
         String[] templates = null;
 
         String sku = anyToString(cursor, 0);
@@ -774,43 +775,44 @@ public class ProductDatabase {
 
         builder.setSubtitle(cursor.getString(8));
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 6) {
-            builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(9)));
-            builder.setSaleStop(cursor.getInt(10) != 0);
-        }
+        builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(9)));
+        builder.setSaleStop(cursor.getInt(10) != 0);
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
-            builder.setBundleProducts(findBundlesOfProduct(builder.build()));
-        }
+        builder.setBundleProducts(findBundlesOfProduct(builder.build()));
 
-        if (lookupCodes != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 11) {
+        if (lookupCodes != null) {
             String transmissionCodesStr = cursor.getString(11);
             if (transmissionCodesStr != null) {
                 transmissionCodes = transmissionCodesStr.split(",", -1);
             }
         }
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 17) {
-            String referenceUnit = cursor.getString(12);
-            if (referenceUnit != null) {
-                Unit unit = Unit.fromString(referenceUnit);
-                builder.setReferenceUnit(unit);
 
-                if (unit == Unit.PIECE) {
-                    builder.setType(Product.Type.Article);
-                }
+        String referenceUnit = cursor.getString(12);
+        if (referenceUnit != null) {
+            Unit unit = Unit.fromString(referenceUnit);
+            builder.setReferenceUnit(unit);
+
+            if (unit == Unit.PIECE) {
+                builder.setType(Product.Type.Article);
+            }
+        }
+
+        String encodingUnit = cursor.getString(13);
+        if (encodingUnit != null) {
+            Unit unit = Unit.fromString(encodingUnit);
+            builder.setEncodingUnit(unit);
+        }
+
+        if (lookupCodes != null) {
+            String encodingUnitsStr = cursor.getString(14);
+            if (encodingUnitsStr != null) {
+                codeEncodingUnits = encodingUnitsStr.split(",", -1);
             }
 
-            if (lookupCodes != null) {
-                String encodingUnitsStr = cursor.getString(13);
-                if (encodingUnitsStr != null) {
-                    encodingUnits = encodingUnitsStr.split(",", -1);
-                }
-
-                String templatesStr = cursor.getString(14);
-                if (templatesStr != null) {
-                    templates = templatesStr.split(",", -1);
-                }
+            String templatesStr = cursor.getString(15);
+            if (templatesStr != null) {
+                templates = templatesStr.split(",", -1);
             }
         }
 
@@ -819,7 +821,7 @@ public class ProductDatabase {
             for (int i = 0; i < productCodes.length; i++) {
                 String lookupCode = lookupCodes[i];
                 String transmissionCode = null;
-                Unit encodingUnit = null;
+                Unit codeEncodingUnit = null;
                 CodeTemplate template = null;
 
                 if (transmissionCodes != null) {
@@ -829,8 +831,8 @@ public class ProductDatabase {
                     }
                 }
 
-                if (encodingUnits != null) {
-                    encodingUnit = Unit.fromString(encodingUnits[i]);
+                if (codeEncodingUnits != null) {
+                    codeEncodingUnit = Unit.fromString(codeEncodingUnits[i]);
                 }
 
                 if (templates != null) {
@@ -842,7 +844,8 @@ public class ProductDatabase {
                     }
                 }
 
-                productCodes[i] = new Product.Code(lookupCode, transmissionCode, template.getName(), encodingUnit);
+                String templateName = template != null ? template.getName() : null;
+                productCodes[i] = new Product.Code(lookupCode, transmissionCode, templateName, codeEncodingUnit);
             }
 
             builder.setScannableCodes(productCodes);
@@ -859,18 +862,10 @@ public class ProductDatabase {
 
     private boolean queryPrice(Product.Builder builder, String sku, Shop shop) {
         String id = shop != null ? shop.getId() : "";
-        String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices ";
-        String[] args;
+        String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices " +
+                "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
 
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
-            priceQuery += "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
-            args = new String[]{id, sku};
-        } else {
-            priceQuery += "WHERE sku = ?";
-            args = new String[]{sku};
-        }
-
-        Cursor priceCursor = rawQuery(priceQuery, args, null);
+        Cursor priceCursor = rawQuery(priceQuery, new String[]{id, sku}, null);
 
         if (priceCursor != null && priceCursor.getCount() > 0) {
             priceCursor.moveToFirst();
@@ -927,6 +922,7 @@ public class ProductDatabase {
                 ",p.saleStop" +
                 ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",p.referenceUnit" +
+                ",p.encodingUnit" +
                 ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 " FROM products p "
@@ -1007,14 +1003,9 @@ public class ProductDatabase {
         Shop shop = project.getCheckedInShop();
 
         String id = shop != null ? shop.getId() : "";
-        String query = "WHERE p.sku IN " +
-                "(SELECT DISTINCT sku FROM prices WHERE discountedPrice IS NOT NULL ";
-
-        if (schemaVersionMajor >= 1 && schemaVersionMinor >= 14) {
-            query += "AND pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = '" + id + "'), '0')";
-        }
-
-        query += ") AND p.imageUrl IS NOT NULL";
+        String query = "WHERE p.sku IN (SELECT DISTINCT sku FROM prices " +
+                "WHERE discountedPrice IS NOT NULL AND pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = '" + id + "'), '0')) " +
+                "AND p.imageUrl IS NOT NULL";
 
         return queryDiscountedProducts(query, null);
     }
@@ -1169,39 +1160,6 @@ public class ProductDatabase {
     }
 
     /**
-     * Finds multiple products via its sku identifiers over the network, if the service is available.
-     * <p>
-     * Searches the local database first before making any network calls.
-     */
-    public void findBySkusOnline(String[] skus, OnProductsAvailableListener productsAvailableListener) {
-        findBySkusOnline(skus, productsAvailableListener, false);
-    }
-
-    /**
-     * Finds multiple products via its sku identifiers over the network, if the service is available.
-     * <p>
-     * If onlineOnly is true, it does not search the local database first and only searches online.
-     */
-    public void findBySkusOnline(String[] skus,
-                                 OnProductsAvailableListener productsAvailableListener,
-                                 boolean onlineOnly) {
-        if (productsAvailableListener == null) {
-            return;
-        }
-
-        if (onlineOnly || !isUpToDate()) {
-            productApi.findBySkus(skus, productsAvailableListener);
-        } else {
-            Product[] local = findBySkus(skus);
-            if (local != null) {
-                productsAvailableListener.onProductsAvailable(local, false);
-            } else {
-                productApi.findBySkus(skus, productsAvailableListener);
-            }
-        }
-    }
-
-    /**
      * Find a product via its scannable code.
      *
      * @param scannableCode A valid scannable code. For example "978020137962".
@@ -1240,77 +1198,23 @@ public class ProductDatabase {
         return null;
     }
 
-    /**
-     * Find a product via its weighed item id.
-     *
-     * @param weighedItemId A valid weighed item id.
-     * @return The first product containing the given weighed item id, otherwise null if no product was found.
-     */
-    public Product findByWeighItemId(String weighedItemId) {
-        if (weighedItemId == null || weighedItemId.length() == 0) {
-            return null;
-        }
-
-        Cursor cursor = productQuery("JOIN weighItemIds w ON w.sku = p.sku " +
-                "WHERE w.weighItemId = ? LIMIT 1", new String[]{
-                weighedItemId
+    private Product[] findBundlesOfProduct(Product product) {
+        Cursor cursor = productQuery("WHERE p.bundledSku = ?", new String[]{
+                product.getSku()
         }, false);
 
-        return getFirstProductAndClose(cursor);
-    }
+        if (cursor != null) {
+            Product[] products = new Product[cursor.getCount()];
 
-    /**
-     * Finds a product via its EAN over the network, if the service is available.
-     * <p>
-     * Searches the local database first before making any network calls.
-     */
-    public void findByWeighItemIdOnline(String weighItemId, OnProductAvailableListener productAvailableListener) {
-        findByWeighItemIdOnline(weighItemId, productAvailableListener, false);
-    }
-
-    /**
-     * Finds a product via its EAN over the network, if the service is available.
-     * <p>
-     * If onlineOnly is true, it does not search the local database first and only searches online.
-     */
-    public void findByWeighItemIdOnline(String weighItemId,
-                                        OnProductAvailableListener productAvailableListener,
-                                        boolean onlineOnly) {
-        if (productAvailableListener == null) {
-            return;
-        }
-
-        if (onlineOnly || !isUpToDate()) {
-            productApi.findByWeighItemId(weighItemId, productAvailableListener);
-        } else {
-            Product local = findByWeighItemId(weighItemId);
-            if (local != null) {
-                productAvailableListener.onProductAvailable(local, false);
-            } else {
-                productApi.findByWeighItemId(weighItemId, productAvailableListener);
+            int i = 0;
+            while (cursor.moveToNext()) {
+                products[i] = productAtCursor(cursor);
+                i++;
             }
-        }
-    }
 
-    private Product[] findBundlesOfProduct(Product product) {
-        if (product != null && schemaVersionMajor >= 1 && schemaVersionMinor >= 9) {
-            Cursor cursor = productQuery("WHERE p.bundledSku = ?", new String[]{
-                    product.getSku()
-            }, false);
+            cursor.close();
 
-            if (cursor != null) {
-                Product[] products = new Product[cursor.getCount()];
-
-                int i = 0;
-                while (cursor.moveToNext()) {
-                    products[i] = productAtCursor(cursor);
-                    i++;
-                }
-
-                cursor.close();
-
-                return products;
-            }
+            return products;
         }
 
         return new Product[0];

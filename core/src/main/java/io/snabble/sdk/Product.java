@@ -139,6 +139,7 @@ public class Product implements Serializable, Parcelable {
     private String basePrice;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
     private Unit referenceUnit;
+    private Unit encodingUnit;
     private boolean saleStop;
 
     public Product() {
@@ -244,13 +245,15 @@ public class Product implements Serializable, Parcelable {
     public Unit getEncodingUnit(CodeTemplate codeTemplate, String lookupCode) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
-                if ((codeTemplate != null && codeTemplate.getName().equals(code.template))  || "default".equals(code.template)) {
-                    return code.encodingUnit;
+                if ((codeTemplate != null && codeTemplate.getName().equals(code.template)) || "default".equals(code.template)) {
+                    if (code.encodingUnit != null) {
+                        return code.encodingUnit;
+                    }
                 }
             }
         }
 
-        return null;
+        return encodingUnit;
     }
 
     public String getTransmissionCode(String lookupCode) {
@@ -460,6 +463,11 @@ public class Product implements Serializable, Parcelable {
 
         public Builder setReferenceUnit(Unit referenceUnit) {
             product.referenceUnit = referenceUnit;
+            return this;
+        }
+
+        public Builder setEncodingUnit(Unit encodingUnit) {
+            product.encodingUnit = encodingUnit;
             return this;
         }
 

@@ -29,7 +29,7 @@ public abstract class JsonCallback<T, T2> implements Callback {
             } else {
                 handleFailure(body);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             response.close();
             error(e);
         }

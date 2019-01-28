@@ -199,7 +199,7 @@ public class Project {
         // TODO parse from metadata
         ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
 
-        codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
+         //codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
         codeTemplates.add(new CodeTemplate("ean13_instore", "2{code:5}{_}{embed:5}{_}"));
 
         //codeTemplates.add(new CodeTemplate("german_print_19_fsk", "4{code:2}{_:5}{embed:4}{_}"));
@@ -260,23 +260,11 @@ public class Project {
     }
 
     public String getProductBySkuUrl() {
-        return urls.get("productBySku");
-    }
-
-    public String getProductsBySkus() {
-        return urls.get("productsBySku");
+        return urls.get("resolvedProductBySku");
     }
 
     public String getProductByCodeUrl() {
-        return urls.get("productByCode");
-    }
-
-    public String getBundlesOfProductUrl() {
-        return urls.get("bundlesForSku");
-    }
-
-    public String getProductByWeighItemIdUrl() {
-        return urls.get("productByWeighItemId");
+        return urls.get("resolvedProductLookUp");
     }
 
     public BarcodeFormat[] getSupportedBarcodeFormats() {

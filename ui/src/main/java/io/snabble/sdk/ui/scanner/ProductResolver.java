@@ -77,26 +77,7 @@ public class ProductResolver {
 
         ProductDatabase productDatabase = SnabbleUI.getProject().getProductDatabase();
 
-        if(scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0) {
-            productDatabase.findByWeighItemIdOnline(scannedCode.getMaskedCode(), new OnProductAvailableListener() {
-                @Override
-                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
-                }
-
-                @Override
-                public void onProductNotFound() {
-                    handleProductNotFound(scannedCode);
-                }
-
-                @Override
-                public void onError() {
-                    handleProductError();
-                }
-            });
-        } else {
-
-            // TODO check if that is still needed, may be covered by new code templates
+        // TODO check if that is still needed, may be covered by new code templates
 //            String lookupCode = scannedCode.getLookupCode();
 //            if (barcodeFormat != null) {
 //                IntRange range = SnabbleUI.getProject().getRangeForBarcodeFormat(barcodeFormat);
@@ -105,23 +86,22 @@ public class ProductResolver {
 //                }
 //            }
 
-            productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
-                @Override
-                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
-                }
+        productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
+            @Override
+            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                handleProductAvailable(product, wasOnlineProduct, scannedCode);
+            }
 
-                @Override
-                public void onProductNotFound() {
-                    handleProductNotFound(scannedCode);
-                }
+            @Override
+            public void onProductNotFound() {
+                handleProductNotFound(scannedCode);
+            }
 
-                @Override
-                public void onError() {
-                    handleProductError();
-                }
-            });
-        }
+            @Override
+            public void onError() {
+                handleProductError();
+            }
+        });
     }
 
     private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannableCode scannedCode) {

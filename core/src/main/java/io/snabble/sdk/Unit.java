@@ -29,22 +29,24 @@ public enum Unit {
     }
 
     public static Unit fromString(String value) {
-        switch (value) {
-            case "ml": return MILLILITER;
-            case "dl": return DECILITER;
-            case "l": return LITER;
-            case "m3": return CUBIC_METER;
-            case "cm3": return CUBIC_CENTIMETER;
-            case "m2": return SQUARE_METER;
-            case "cm2": return SQUARE_CENTIMETER;
-            case "mm": return MILLIMETER;
-            case "cm": return CENTIMETER;
-            case "m": return METER;
-            case "kg": return KILOGRAM;
-            case "g": return GRAM;
-            case "t": return TONNE;
-            case "piece": return PIECE;
-            case "price": return PRICE;
+        if (value != null) {
+            switch (value) {
+                case "ml": return MILLILITER;
+                case "dl": return DECILITER;
+                case "l": return LITER;
+                case "m3": return CUBIC_METER;
+                case "cm3": return CUBIC_CENTIMETER;
+                case "m2": return SQUARE_METER;
+                case "cm2": return SQUARE_CENTIMETER;
+                case "mm": return MILLIMETER;
+                case "cm": return CENTIMETER;
+                case "m": return METER;
+                case "kg": return KILOGRAM;
+                case "g": return GRAM;
+                case "t": return TONNE;
+                case "piece": return PIECE;
+                case "price": return PRICE;
+            }
         }
 
         return null;
