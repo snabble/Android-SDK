@@ -1258,7 +1258,7 @@ public class ProductDatabase {
         // 2) avoiding the usage of OR between two GLOB's because in sqlite versions < 3.8
         // the query optimizer chooses to do a full table search instead of a scan
         String commonSql = "JOIN scannableCodes s ON s.sku = p.sku " +
-                "WHERE s.code GLOB ? " +
+                "WHERE s.code GLOB ? AND s.template = 'default' " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 ";
 
