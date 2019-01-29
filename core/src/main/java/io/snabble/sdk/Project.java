@@ -50,13 +50,9 @@ public class Project {
 
     private EncodedCodesOptions encodedCodesOptions;
 
-    private boolean useGermanPrintPrefix;
-
     private RoundingMode roundingMode;
-    private boolean verifyInternalEanChecksum;
     private BarcodeFormat[] supportedBarcodeFormats;
     private Shop checkedInShop;
-    private Map<BarcodeFormat, IntRange> barcodeFormatRanges;
     private CodeTemplate[] codeTemplates;
     private CustomerCardInfo[] acceptedCustomerCardInfos;
     private CustomerCardInfo requiredCustomerCardInfo;
@@ -106,7 +102,6 @@ public class Project {
         this.urls = Collections.unmodifiableMap(urls);
 
         this.roundingMode = parseRoundingMode(jsonObject.get("roundingMode"));
-        this.verifyInternalEanChecksum = JsonUtils.getBooleanOpt(jsonObject, "verifyInternalEanChecksum", true);
 
         currency = Currency.getInstance(JsonUtils.getStringOpt(jsonObject, "currency", "EUR"));
 
@@ -142,8 +137,6 @@ public class Project {
             }
         }
 
-        useGermanPrintPrefix = JsonUtils.getBooleanOpt(jsonObject, "useGermanPrintPrefix", false);
-
         String[] scanFormats = JsonUtils.getStringArrayOpt(jsonObject, "scanFormats", null);
         List<BarcodeFormat> formats = new ArrayList<>();
 
@@ -160,12 +153,6 @@ public class Project {
             formats.add(BarcodeFormat.CODE_128);
         }
         supportedBarcodeFormats = formats.toArray(new BarcodeFormat[formats.size()]);
-
-        barcodeFormatRanges = new HashMap<>();
-        // TODO parse from metadata
-        if (id.contains("ikea")) {
-            barcodeFormatRanges.put(BarcodeFormat.ITF_14, new IntRange(0, 8));
-        }
 
         JsonObject customerCards = jsonObject.getAsJsonObject("customerCards");
         String[] acceptedCustomerCards = JsonUtils.getStringArrayOpt(customerCards, "accepted", new String[0]);
@@ -200,12 +187,16 @@ public class Project {
         ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
 
         codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
-        codeTemplates.add(new CodeTemplate("ean13_instore", "2{code:5}{_}{embed:5}{_}"));
-
-        //codeTemplates.add(new CodeTemplate("german_print_19_fsk", "4{code:2}{_:5}{embed:4}{_}"));
-
+        codeTemplates.add(new CodeTemplate("ean13_instore",  "2{code:5}{_}{embed:5}{_}"));
+        codeTemplates.add(new CodeTemplate("german_print", "4{code:2}{_:5}{embed:4}{_}"));
         codeTemplates.add(new CodeTemplate("ean14_code128", "01{code:ean14}"));
         codeTemplates.add(new CodeTemplate("edeka_discount", "97{code:ean13}{embed:6}{_}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade_ww", "94{code:5}{_:19}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade", "94{code:3}{_:10}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_1", "96{code:2}{_:36}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_2", "96{_:13}{code:3}{_:30}"));
+        codeTemplates.add(new CodeTemplate("globus_weighing", "96{code:ean13}{embed:7}{price:5}{_}"));
+        codeTemplates.add(new CodeTemplate("globus_discount", "98{code:ean13}{_:8}{embed:7}{_:2}"));
         codeTemplates.add(new CodeTemplate("default", "{*}"));
 
         this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
@@ -233,10 +224,6 @@ public class Project {
         }
 
         return RoundingMode.HALF_UP;
-    }
-
-    public boolean isUsingGermanPrintPrefix() {
-        return useGermanPrintPrefix;
     }
 
     public String getId() {
@@ -342,27 +329,15 @@ public class Project {
         return roundingMode;
     }
 
-    public boolean isVerifyingInternalEanChecksum() {
-        return verifyInternalEanChecksum;
-    }
-
     public Checkout getCheckout() {
         return checkout;
     }
 
-    public IntRange getRangeForBarcodeFormat(BarcodeFormat barcodeFormat) {
-        if (barcodeFormatRanges != null) {
-            return barcodeFormatRanges.get(barcodeFormat);
-        }
-
-        return null;
-    }
-
-    Events getEvents() {
+    public Events getEvents() {
         return events;
     }
 
-    void logErrorEvent(String format, Object... args) {
+    public void logErrorEvent(String format, Object... args) {
         if (events != null) {
             Logger.e(format, args);
             events.logError(format, args);

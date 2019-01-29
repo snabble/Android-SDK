@@ -211,7 +211,7 @@ class Events {
             PayloadCartItem item = new PayloadCartItem();
 
             item.sku = String.valueOf(product.getSku());
-            item.scannedCode = shoppingCart.getScannedCode(i);
+            item.scannedCode = shoppingCart.getScannedCode(i).getCode();
             item.amount = quantity;
             item.units = shoppingCart.getEmbeddedUnits(i);
             item.weight = shoppingCart.getEmbeddedWeight(i);

@@ -177,7 +177,7 @@ public class CodeTemplate {
             }
         }
 
-        ScannableCode.Builder builder = new ScannableCode.Builder(this);
+        ScannableCode.Builder builder = new ScannableCode.Builder(name);
         builder.setScannedCode(match);
 
         for (Group group : groups) {

@@ -26,6 +26,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.List;
+
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
@@ -137,9 +139,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         startBarcodeScanner();
     }
 
-    public void lookupAndShowProduct(ScannableCode scannedCode, BarcodeFormat barcodeFormat) {
+    public void lookupAndShowProduct(List<ScannableCode> scannedCodes, BarcodeFormat barcodeFormat) {
         new ProductResolver.Builder(getContext())
-                .setCode(scannedCode.getCode())
+                .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
                 .setOnShowListener(new ProductResolver.OnShowListener() {
                     @Override
@@ -178,8 +180,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .show();
     }
 
-    public void lookupAndShowProduct(ScannableCode scannedCode) {
-        lookupAndShowProduct(scannedCode, null);
+    public void lookupAndShowProduct(List<ScannableCode> scannedCodes) {
+        lookupAndShowProduct(scannedCodes, null);
     }
 
     private void delayNextScan() {

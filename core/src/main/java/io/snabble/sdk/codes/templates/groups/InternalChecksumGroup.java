@@ -18,15 +18,6 @@ public class InternalChecksumGroup extends NumberGroup {
         return true;
     }
 
-    public void recalculate() {
-        EmbedGroup embedGroup = getTemplate().getGroup(EmbedGroup.class);
-        if (embedGroup != null) {
-            String weight = embedGroup.data();
-            int newChecksum = EAN13.internalChecksum(weight, 0);
-            embedGroup.apply(Integer.toString(newChecksum));
-        }
-    }
-
     @Override
     public boolean validate() {
         EmbedGroup embedGroup = getTemplate().getGroup(EmbedGroup.class);

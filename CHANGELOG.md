@@ -1,9 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.12.0]
+## [0.12.0-beta3]
 
 ### Important Changes
+- The minimum required database schema version is now 1.18. Backwards support is dropped and 
+opening a old database will result in deletion of the database and fallback to online 
+only mode. Calling update() will download a up to date version of the database.
+
+If you are using a bundled database make sure to update it to a database with schema 1.18 or higher.
+
 - Support for Units is now migrated to new database schema, the older schema used in previous 
 versions will fall back to g/kg only
 - Product.getScannableCodes() is now returning a Product.Code object

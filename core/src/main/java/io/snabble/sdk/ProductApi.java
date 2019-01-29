@@ -118,7 +118,7 @@ class ProductApi {
         }
 
         url += "?code=" + code.getLookupCode();
-        url += "&template=" + code.getCodeTemplate().getName();
+        url += "&template=" + code.getTemplateName();
 
         Shop shop = project.getCheckedInShop();
         if(shop != null) {

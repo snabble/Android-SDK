@@ -94,10 +94,6 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
             for (Product.Code code : product.getScannableCodes()) {
                 String lookupCode = code.lookupCode;
                 if (lookupCode.contains(lastQuery)) {
-                    if (lookupCode.startsWith("00000")) {
-                        lookupCode = lookupCode.replace("00000", "");
-                    }
-
                     Spannable spannable = highlight(lastQuery, lookupCode);
                     holder.code.setText(spannable);
                     selectedCode = lookupCode;

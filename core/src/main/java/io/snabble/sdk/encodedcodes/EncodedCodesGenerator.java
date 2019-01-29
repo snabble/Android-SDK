@@ -94,7 +94,7 @@ public class EncodedCodesGenerator {
 
             productInfos.add(new ProductInfo(product,
                     shoppingCart.getQuantity(i),
-                    shoppingCart.getScannedCode(i)));
+                    shoppingCart.getScannedCode(i).getCode()));
         }
 
         Collections.sort(productInfos, new Comparator<ProductInfo>() {
@@ -119,7 +119,10 @@ public class EncodedCodesGenerator {
                 //encoding weight in ean
                 // TODO CHANGED: TEST THIS
                 for (Product.Code productCode : productInfo.product.getScannableCodes()) {
-                    if ("ean13_instore".equals(productCode.template)) {
+                    boolean isEan13InStore = "ean13_instore".equals(productCode.template);
+                    boolean isEan13InStoreWithCheck = "ean13_instore_chk".equals(productCode.template);
+
+                    if (isEan13InStore || isEan13InStoreWithCheck) {
                         if (productCode.lookupCode.length() == 5) {
                             StringBuilder code = new StringBuilder("2");
                             code.append(productCode.lookupCode);
@@ -132,7 +135,12 @@ public class EncodedCodesGenerator {
                             }
                             embeddedWeight.append(quantity);
 
-                            code.append(Character.forDigit(EAN13.internalChecksum(embeddedWeight.toString(), 0), 10));
+                            if (isEan13InStoreWithCheck) {
+                                code.append(Character.forDigit(EAN13.internalChecksum(embeddedWeight.toString(), 0), 10));
+                            } else {
+                                code.append('0');
+                            }
+
                             code.append(embeddedWeight);
                             code.append(Character.forDigit(EAN13.checksum(code.toString()), 10));
 

@@ -1,15 +1,20 @@
 package io.snabble.sdk.codes;
 
+import android.os.SystemClock;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.utils.Logger;
 
 public class ScannableCode implements Serializable {
     private Integer embeddedData;
     private String lookupCode;
     private String code;
-    private CodeTemplate codeTemplate;
+    private String templateName;
 
     private ScannableCode() {
 
@@ -23,10 +28,6 @@ public class ScannableCode implements Serializable {
         return lookupCode;
     }
 
-    public String getMaskedCode() {
-        return "";
-    }
-
     public int getEmbeddedData() {
         return embeddedData != null ? embeddedData : 0;
     }
@@ -35,16 +36,16 @@ public class ScannableCode implements Serializable {
         return embeddedData != null;
     }
 
-    public CodeTemplate getCodeTemplate() {
-        return codeTemplate;
+    public String getTemplateName() {
+        return templateName;
     }
 
     public static class Builder {
         ScannableCode scannableCode;
 
-        public Builder(CodeTemplate codeTemplate) {
+        public Builder(String templateName) {
             scannableCode = new ScannableCode();
-            scannableCode.codeTemplate = codeTemplate;
+            scannableCode.templateName = templateName;
         }
 
         public Builder setScannedCode(String scannedCode) {
@@ -67,14 +68,20 @@ public class ScannableCode implements Serializable {
         }
     }
 
-    public static ScannableCode parse(Project project, String code) {
+    public static List<ScannableCode> parse(Project project, String code) {
+        List<ScannableCode> matches = new ArrayList<>();
+
+        long time = SystemClock.elapsedRealtime();
+
         for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
             ScannableCode scannableCode = codeTemplate.match(code);
             if (scannableCode != null) {
-                return scannableCode;
+                matches.add(scannableCode);
             }
         }
 
-        return null;
+        Logger.d("parse took: %dms", SystemClock.elapsedRealtime() - time);
+
+        return matches;
     }
 }

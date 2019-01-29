@@ -242,10 +242,10 @@ public class Product implements Serializable, Parcelable {
         return getEncodingUnit(null, lookupCode);
     }
 
-    public Unit getEncodingUnit(CodeTemplate codeTemplate, String lookupCode) {
+    public Unit getEncodingUnit(String templateName, String lookupCode) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
-                if ((codeTemplate != null && codeTemplate.getName().equals(code.template)) || "default".equals(code.template)) {
+                if ((templateName != null && templateName.equals(code.template)) || "default".equals(code.template)) {
                     if (code.encodingUnit != null) {
                         return code.encodingUnit;
                     }
@@ -260,10 +260,10 @@ public class Product implements Serializable, Parcelable {
         return getTransmissionCode(null, lookupCode);
     }
 
-    public String getTransmissionCode(CodeTemplate codeTemplate, String lookupCode) {
+    public String getTransmissionCode(String templateName, String lookupCode) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
-                if ((codeTemplate != null && codeTemplate.getName().equals(code.template)) || "default".equals(code.template)) {
+                if ((templateName != null && templateName.equals(code.template)) || "default".equals(code.template)) {
                     if (code.transmissionCode == null) {
                         return code.lookupCode;
                     }

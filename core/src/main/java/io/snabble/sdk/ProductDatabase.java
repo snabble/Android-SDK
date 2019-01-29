@@ -1162,40 +1162,24 @@ public class ProductDatabase {
     /**
      * Find a product via its scannable code.
      *
-     * @param scannableCode A valid scannable code. For example "978020137962".
+     * @param scannableCode A valid scannableCode code.
      * @return The first product containing the given EAN, otherwise null if no product was found.
      */
     public Product findByCode(ScannableCode scannableCode) {
-        return findByCodeInternal(scannableCode, true);
-    }
-
-    private Product findByCodeInternal(ScannableCode scannableCode, boolean recursive) {
         if (scannableCode == null
                 || scannableCode.getLookupCode() == null
-                || scannableCode.getLookupCode().length() == 0) {
+                || scannableCode.getLookupCode().length() == 0
+                || scannableCode.getTemplateName() == null) {
             return null;
         }
 
         Cursor cursor = productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
-                "WHERE s.code GLOB ? LIMIT 1", new String[]{
-                scannableCode.getLookupCode()
+                "WHERE s.code = ? AND s.template = ? LIMIT 1", new String[]{
+                scannableCode.getLookupCode(),
+                scannableCode.getTemplateName()
         }, false);
 
-        Product p = getFirstProductAndClose(cursor);
-
-        if (p != null) {
-            return p;
-        } else if (recursive) {
-            String lookup = scannableCode.getLookupCode();
-            if (lookup.startsWith("0")) {
-                return findByCodeInternal(ScannableCode.parse(project, lookup.substring(1)), true);
-            } else if (lookup.length() < 13) {
-                String newCode = StringUtils.repeat('0', 13 - lookup.length()) + lookup;
-                return findByCodeInternal(ScannableCode.parse(project, newCode), false);
-            }
-        }
-
-        return null;
+        return getFirstProductAndClose(cursor);
     }
 
     private Product[] findBundlesOfProduct(Product product) {
