@@ -152,12 +152,14 @@ public class Snabble {
         codeTemplates.add(new CodeTemplate("globus_unitrade_rep_2", "96{_:13}{code:3}{_:30}"));
         codeTemplates.add(new CodeTemplate("globus_weighing", "96{code:ean13}{embed:7}{price:5}{_}"));
         codeTemplates.add(new CodeTemplate("globus_discount", "98{code:ean13}{_:8}{embed:7}{_:2}"));
+        codeTemplates.add(new CodeTemplate("ikea_fundgrube", "{_}{_:7}{_}{_:17}{_}{_:3}{code:8}{_}{_:9}{embed100:5}{_}"));
         codeTemplates.add(new CodeTemplate("default", "{*}"));
 
         this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
 
         transmissionOverrideTemplates = new HashMap<>();
         transmissionOverrideTemplates.put("edeka_discount", new CodeTemplate("edeka_discount_override", "241700{i}{embed:5}{ec}"));
+        transmissionOverrideTemplates.put("ikea_fundgrube", new CodeTemplate("ikea_fundgrube_override", "{*}"));
     }
 
     public String getVersionName() {

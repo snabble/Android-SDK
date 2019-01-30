@@ -55,6 +55,10 @@ public class CodeTemplateTest {
         ScannableCode code = newCodeTemplate("97{code:ean13}{embed:6}{_}").match("9743115013222840001009").buildCode();
         Assert.assertEquals("4311501322284", code.getLookupCode());
         Assert.assertEquals(100, code.getEmbeddedData());
+
+        code = newCodeTemplate("97{code:ean13}{embed100:6}{_}").match("9743115013222840001009").buildCode();
+        Assert.assertEquals("4311501322284", code.getLookupCode());
+        Assert.assertEquals(10000, code.getEmbeddedData());
     }
 
     @Test
@@ -140,6 +144,15 @@ public class CodeTemplateTest {
                 .buildCode();
 
         Assert.assertEquals(98765, code.getEmbeddedData());
+        Assert.assertEquals("12345", code.getLookupCode());
+        Assert.assertEquals("2123457987651", code.getCode());
+
+        code = newCodeTemplate("2{code:5}{i}{embed100:5}{ec}")
+                .code("12345")
+                .embed(9876500)
+                .buildCode();
+
+        Assert.assertEquals(9876500, code.getEmbeddedData());
         Assert.assertEquals("12345", code.getLookupCode());
         Assert.assertEquals("2123457987651", code.getCode());
     }

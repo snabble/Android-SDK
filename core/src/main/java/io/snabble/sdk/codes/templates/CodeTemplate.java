@@ -81,7 +81,10 @@ public class CodeTemplate {
                         }
                         break;
                     case "embed":
-                        group = new EmbedGroup(this, length);
+                        group = new EmbedGroup(this, length, 1);
+                        break;
+                    case "embed100":
+                        group = new EmbedGroup(this, length, 100);
                         break;
                     case "price":
                         group = new PriceGroup(this, length);

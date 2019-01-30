@@ -90,6 +90,7 @@ public class ScannableCode implements Serializable {
             scannableCode.transformationTemplateName = name;
             return this;
         }
+
         public ScannableCode create() {
             return scannableCode;
         }
@@ -124,6 +125,7 @@ public class ScannableCode implements Serializable {
                     if (defaultCode != null) {
                         defaultCode.embeddedData = scannableCode.getEmbeddedData();
                         defaultCode.embeddedUnit = Unit.PRICE;
+                        defaultCode.code = scannableCode.getCode();
                         defaultCode.transformationTemplateName = codeTemplate.getName();
 
                         matches.add(defaultCode);
