@@ -159,7 +159,6 @@ public class Snabble {
 
         transmissionOverrideTemplates = new HashMap<>();
         transmissionOverrideTemplates.put("edeka_discount", new CodeTemplate("edeka_discount_override", "241700{i}{embed:5}{ec}"));
-        transmissionOverrideTemplates.put("ikea_fundgrube", new CodeTemplate("ikea_fundgrube_override", "{*}"));
     }
 
     public String getVersionName() {

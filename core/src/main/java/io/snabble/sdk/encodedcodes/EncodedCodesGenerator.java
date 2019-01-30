@@ -150,14 +150,11 @@ public class EncodedCodesGenerator {
 
                 CodeTemplate codeTemplate = Snabble.getInstance().getTransmissionOverrideTemplate(productInfo.scannedCode.getTransformationTemplateName());
                 if (codeTemplate != null) {
-                    // TODO cleaner check then wildcard pattern match
-                    if (!codeTemplate.getPattern().equals("{*}")) {
-                        ScannableCode scannableCode = codeTemplate
-                                .code(productInfo.scannedCode.getLookupCode())
-                                .embed(productInfo.scannedCode.getEmbeddedData())
-                                .buildCode();
-                        transmissionCode = scannableCode.getCode();
-                    }
+                    ScannableCode scannableCode = codeTemplate
+                            .code(productInfo.scannedCode.getLookupCode())
+                            .embed(productInfo.scannedCode.getEmbeddedData())
+                            .buildCode();
+                    transmissionCode = scannableCode.getCode();
                 }
 
                 if (options.repeatCodes) {
