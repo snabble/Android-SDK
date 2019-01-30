@@ -131,7 +131,7 @@ has pricingCategories set for shop
 
 ### Fixed
 - Endless recursion when scanning non EAN13 codes starting with 0 that will not result in a 
-match on the database
+plainText on the database
 
 ## [0.10.3]
 

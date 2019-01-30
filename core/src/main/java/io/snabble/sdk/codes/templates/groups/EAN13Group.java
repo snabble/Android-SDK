@@ -10,6 +10,6 @@ public class EAN13Group extends CodeGroup {
 
     @Override
     public boolean validate() {
-        return EAN13.isEan13(data());
+        return EAN13.isEan13(string());
     }
 }

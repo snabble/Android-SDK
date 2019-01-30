@@ -9,7 +9,7 @@ public class NumberGroup extends Group {
 
     public int number() {
         try {
-            return Integer.parseInt(data());
+            return Integer.parseInt(string());
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -18,7 +18,7 @@ public class NumberGroup extends Group {
     @Override
     public boolean validate() {
         try {
-            Integer.parseInt(data());
+            Integer.parseInt(string());
             return true;
         } catch (NumberFormatException ignored) {
             return false;

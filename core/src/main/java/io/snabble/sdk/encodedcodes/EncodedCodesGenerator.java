@@ -7,7 +7,8 @@ import java.util.List;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.codes.EAN13;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class EncodedCodesGenerator {
@@ -73,9 +74,9 @@ public class EncodedCodesGenerator {
     private class ProductInfo {
         Product product;
         int quantity;
-        String scannedCode;
+        ScannableCode scannedCode;
 
-        public ProductInfo(Product product, int quantity, String scannedCode) {
+        public ProductInfo(Product product, int quantity, ScannableCode scannedCode) {
             this.product = product;
             this.quantity = quantity;
             this.scannedCode = scannedCode;
@@ -94,15 +95,15 @@ public class EncodedCodesGenerator {
 
             productInfos.add(new ProductInfo(product,
                     shoppingCart.getQuantity(i),
-                    shoppingCart.getScannedCode(i).getCode()));
+                    shoppingCart.getScannedCode(i)));
         }
 
         Collections.sort(productInfos, new Comparator<ProductInfo>() {
             @Override
             public int compare(ProductInfo p1, ProductInfo p2) {
-                if(p1.product.getDiscountedPrice() < p2.product.getDiscountedPrice()) {
+                if (p1.product.getDiscountedPrice() < p2.product.getDiscountedPrice()) {
                     return -1;
-                } else if(p1.product.getDiscountedPrice() > p2.product.getDiscountedPrice()) {
+                } else if (p1.product.getDiscountedPrice() > p2.product.getDiscountedPrice()) {
                     return 1;
                 }
 
@@ -116,54 +117,39 @@ public class EncodedCodesGenerator {
             }
 
             if (productInfo.product.getType() == Product.Type.UserWeighed) {
-                //encoding weight in ean
-                // TODO CHANGED: TEST THIS
-                for (Product.Code productCode : productInfo.product.getScannableCodes()) {
-                    boolean isEan13InStore = "ean13_instore".equals(productCode.template);
-                    boolean isEan13InStoreWithCheck = "ean13_instore_chk".equals(productCode.template);
+                // encoding weight in ean
+                CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate("ean13_instore_chk");
+                Product.Code[] codes = productInfo.product.getScannableCodes();
+                for (Product.Code code : codes) {
+                    if ("ean13_instore".equals(code.template) || "ean13_instore_chk".equals(code.template)) {
+                        ScannableCode scannableCode = codeTemplate.code(code.lookupCode)
+                                .embed(productInfo.quantity)
+                                .buildCode();
 
-                    if (isEan13InStore || isEan13InStoreWithCheck) {
-                        if (productCode.lookupCode.length() == 5) {
-                            StringBuilder code = new StringBuilder("2");
-                            code.append(productCode.lookupCode);
-
-                            StringBuilder embeddedWeight = new StringBuilder();
-                            String quantity = String.valueOf(productInfo.quantity);
-                            int leadingZeros = 5 - quantity.length();
-                            for (int j = 0; j < leadingZeros; j++) {
-                                embeddedWeight.append('0');
-                            }
-                            embeddedWeight.append(quantity);
-
-                            if (isEan13InStoreWithCheck) {
-                                code.append(Character.forDigit(EAN13.internalChecksum(embeddedWeight.toString(), 0), 10));
-                            } else {
-                                code.append('0');
-                            }
-
-                            code.append(embeddedWeight);
-                            code.append(Character.forDigit(EAN13.checksum(code.toString()), 10));
-
-                            if (options.repeatCodes) {
-                                addScannableCode(code.toString(), ageRestricted);
-                            } else {
-                                addScannableCode("1" + options.countSeparator + code.toString(), ageRestricted);
-                            }
+                        if (options.repeatCodes) {
+                            addScannableCode(scannableCode.getCode(), ageRestricted);
+                        } else {
+                            addScannableCode("1" + options.countSeparator + scannableCode.getCode(), ageRestricted);
                         }
                         break;
                     }
                 }
+            } else if (productInfo.product.getType() == Product.Type.PreWeighed) {
+                addScannableCode(productInfo.scannedCode.getCode(), ageRestricted);
             } else {
                 int q = productInfo.quantity;
-                String transmissionCode = productInfo.product.getTransmissionCode(productInfo.scannedCode);
-                if (transmissionCode != null) {
-                    if (options.repeatCodes) {
-                        for (int j = 0; j < q; j++) {
-                            addScannableCode(transmissionCode, ageRestricted);
-                        }
-                    } else {
-                        addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
+                String transmissionCode = productInfo.product.getTransmissionCode(productInfo.scannedCode.getLookupCode());
+
+                if (transmissionCode == null) {
+                    transmissionCode = productInfo.scannedCode.getCode();
+                }
+
+                if (options.repeatCodes) {
+                    for (int j = 0; j < q; j++) {
+                        addScannableCode(transmissionCode, ageRestricted);
                     }
+                } else {
+                    addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
                 }
             }
         }

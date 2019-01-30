@@ -1,14 +1,11 @@
 package io.snabble.sdk.codes;
 
-import android.os.SystemClock;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.templates.CodeTemplate;
-import io.snabble.sdk.utils.Logger;
 
 public class ScannableCode implements Serializable {
     private Integer embeddedData;
@@ -68,19 +65,26 @@ public class ScannableCode implements Serializable {
         }
     }
 
-    public static List<ScannableCode> parse(Project project, String code) {
+    public static ScannableCode parseDefault(String code) {
+        for (CodeTemplate codeTemplate : Snabble.getInstance().getCodeTemplates()) {
+            ScannableCode scannableCode = codeTemplate.match(code).buildCode();
+            if (scannableCode != null && scannableCode.getTemplateName().equals("default")) {
+                return scannableCode;
+            }
+        }
+
+        return null;
+    }
+
+    public static List<ScannableCode> parse(String code) {
         List<ScannableCode> matches = new ArrayList<>();
 
-        long time = SystemClock.elapsedRealtime();
-
-        for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
-            ScannableCode scannableCode = codeTemplate.match(code);
+        for (CodeTemplate codeTemplate : Snabble.getInstance().getCodeTemplates()) {
+            ScannableCode scannableCode = codeTemplate.match(code).buildCode();
             if (scannableCode != null) {
                 matches.add(scannableCode);
             }
         }
-
-        Logger.d("parse took: %dms", SystemClock.elapsedRealtime() - time);
 
         return matches;
     }

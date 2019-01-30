@@ -264,16 +264,12 @@ public class Product implements Serializable, Parcelable {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
                 if ((templateName != null && templateName.equals(code.template)) || "default".equals(code.template)) {
-                    if (code.transmissionCode == null) {
-                        return code.lookupCode;
-                    }
-
                     return code.transmissionCode;
                 }
             }
         }
 
-        return lookupCode;
+        return null;
     }
 
     /**

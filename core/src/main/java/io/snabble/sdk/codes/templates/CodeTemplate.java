@@ -1,13 +1,10 @@
 package io.snabble.sdk.codes.templates;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.snabble.sdk.Project;
-import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.codes.templates.groups.*;
 
@@ -15,6 +12,7 @@ public class CodeTemplate {
     private String pattern;
     private List<Group> groups;
     private String name;
+    private String matchedCode;
 
     public CodeTemplate(String name, String pattern) {
         this.name = name;
@@ -89,7 +87,10 @@ public class CodeTemplate {
                         group = new PriceGroup(this, length);
                         break;
                     case "i":
-                        group = new InternalChecksumGroup(this);
+                        group = new EAN13InternalChecksumGroup(this);
+                        break;
+                    case "ec":
+                        group = new EAN13ChecksumGroup(this);
                         break;
                     case "*":
                         group = new WildcardGroup(this, 0);
@@ -150,35 +151,91 @@ public class CodeTemplate {
         return null;
     }
 
-    public ScannableCode match(String match) {
-        int start = 0;
+    // TODO remove mutable state
+    public void reset() {
         for (Group group : groups) {
-            if (group instanceof WildcardGroup) {
-                ((WildcardGroup) group).setLength(match.length() - start);
-            }
-
-            int end = start + group.length();
-            if (match.length() < end) {
-                return null;
-            }
-
-            String input = match.substring(start, end);
             group.reset();
-            if (!group.apply(input)) {
-                return null;
+        }
+    }
+
+    public CodeTemplate match(String match) {
+        matchedCode = match;
+        return this;
+    }
+
+    public CodeTemplate code(String code) {
+        CodeGroup codeGroup = getGroup(CodeGroup.class);
+
+        if (codeGroup != null) {
+            codeGroup.apply(code);
+        }
+
+        return this;
+    }
+
+    public CodeTemplate embed(int embeddedData) {
+        EmbedGroup embedGroup = getGroup(EmbedGroup.class);
+        EAN13InternalChecksumGroup ean13InternalChecksumGroup = getGroup(EAN13InternalChecksumGroup.class);
+        EAN13ChecksumGroup ean13ChecksumGroup = getGroup(EAN13ChecksumGroup.class);
+
+        if (embedGroup != null) {
+            embedGroup.applyInt(embeddedData);
+        }
+
+        if (ean13InternalChecksumGroup != null) {
+            ean13InternalChecksumGroup.recalculate();
+        }
+
+        if (ean13ChecksumGroup != null) {
+            ean13ChecksumGroup.recalculate();
+        }
+
+        return this;
+    }
+
+    public ScannableCode buildCode() {
+        ScannableCode.Builder builder = new ScannableCode.Builder(name);
+
+        if (matchedCode != null) {
+            reset();
+
+            int start = 0;
+            for (Group group : groups) {
+                if (group instanceof WildcardGroup) {
+                    ((WildcardGroup) group).setLength(matchedCode.length() - start);
+                }
+
+                int end = start + group.length();
+                if (matchedCode.length() < end) {
+                    matchedCode = null;
+                    reset();
+                    return null;
+                }
+
+                String input = matchedCode.substring(start, end);
+                if (!group.apply(input)) {
+                    matchedCode = null;
+                    reset();
+                    return null;
+                }
+
+                start += group.length();
             }
 
-            start += group.length();
+            builder.setScannedCode(matchedCode);
+            matchedCode = null;
+        } else {
+            PlainTextGroup plainTextGroup = getGroup(PlainTextGroup.class);
+            plainTextGroup.apply(plainTextGroup.plainText());
+            builder.setScannedCode(string());
         }
 
         for (Group group : groups) {
             if (!group.validate()) {
+                reset();
                 return null;
             }
         }
-
-        ScannableCode.Builder builder = new ScannableCode.Builder(name);
-        builder.setScannedCode(match);
 
         for (Group group : groups) {
             if (group instanceof EmbedGroup) {
@@ -186,11 +243,32 @@ public class CodeTemplate {
             }
 
             if (group instanceof CodeGroup) {
-                builder.setLookupCode(group.data());
+                builder.setLookupCode(group.string());
             }
         }
 
+        reset();
         return builder.create();
+    }
+
+    public String string() {
+        StringBuilder sb = new StringBuilder(length());
+
+        for (Group group : groups) {
+            sb.append(group.string());
+        }
+
+        return sb.toString();
+    }
+
+    public int length() {
+        int len = 0;
+
+        for (Group group : groups) {
+            len += group.length();
+        }
+
+        return len;
     }
 
     public String getPattern() {

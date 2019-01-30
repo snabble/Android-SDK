@@ -10,33 +10,6 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class EAN13 implements Serializable {
-    public static ScannableCode generateNewCodeWithEmbeddedData(Project project,
-                                                        String code,
-                                                        int newEmbeddedData) {
-        // TODO use template for this instead of hardwiring for ean13
-
-        StringBuilder stringBuilder = new StringBuilder();
-        String lookupCode = code.substring(0, code.length() - 6);
-
-        stringBuilder.append(lookupCode);
-        String dataStr = String.valueOf(newEmbeddedData);
-
-        int remaining = 5 - dataStr.length();
-        for (int i = 0; i < remaining; i++) {
-            stringBuilder.append("0");
-        }
-
-        stringBuilder.append(dataStr);
-        stringBuilder.replace(6, 7, String.valueOf(EAN13.internalChecksum(stringBuilder.toString())));
-        stringBuilder.append(String.valueOf(EAN13.checksum(stringBuilder.toString())));
-
-        ScannableCode.Builder builder = new ScannableCode.Builder("ean13_instore_chk");
-        builder.setScannedCode(stringBuilder.toString());
-        builder.setEmbeddedData(newEmbeddedData);
-        builder.setLookupCode(lookupCode);
-        return builder.create();
-    }
-
     /**
      * Calculates the checksum of an given ean string.
      * <p>

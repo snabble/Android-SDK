@@ -82,7 +82,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         String code = ZebraSupport.dispatchKeyEvent(this, event);
         if (code != null) {
             new ProductResolver.Builder(this)
-                    .setCodes(ScannableCode.parse(SnabbleUI.getProject(), code))
+                    .setCodes(ScannableCode.parse(code))
                     .create()
                     .show();
 

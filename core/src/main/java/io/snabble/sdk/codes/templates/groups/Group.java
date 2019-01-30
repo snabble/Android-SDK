@@ -33,7 +33,11 @@ public abstract class Group {
         return false;
     }
 
-    public String data() {
+    public String string() {
+        if (data == null) {
+            return "0";
+        }
+
         return data;
     }
 

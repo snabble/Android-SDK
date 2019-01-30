@@ -28,10 +28,12 @@ import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -347,8 +349,10 @@ class ProductConfirmationDialog {
 
             // generate new code when the embedded data contains 0
             if (scannedCode.getEmbeddedData() == 0) {
-                scannedCode = EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
-                        scannedCode.getCode(), getQuantity());
+                CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(scannedCode.getTemplateName());
+                scannedCode = codeTemplate.code(scannedCode.getLookupCode())
+                        .embed(getQuantity())
+                        .buildCode();
                 isZeroAmountProduct = true;
             }
 

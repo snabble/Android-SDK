@@ -197,7 +197,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
+            lookupAndShowProduct(ScannableCode.parse(barcode.getText()), barcode.getFormat());
         }
     }
 
@@ -233,8 +233,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setPositiveButton(R.string.Snabble_Done, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(),
-                                        input.getText().toString()));
+                                lookupAndShowProduct(ScannableCode.parse(input.getText().toString()));
                             }
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)

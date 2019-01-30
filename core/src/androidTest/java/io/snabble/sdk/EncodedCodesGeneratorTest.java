@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import io.snabble.sdk.codes.ScannableCode;
@@ -102,8 +101,8 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Product duplo = project.getProductDatabase().findBySku("49");
         Product krombacherPils = project.getProductDatabase().findBySku("37");
 
-        project.getShoppingCart().add(duplo, 5, ScannableCode.parse(project, "4008400301020"));
-        project.getShoppingCart().add(krombacherPils, 2, ScannableCode.parse(project, "4008287051124"));
+        project.getShoppingCart().add(duplo, 5, ScannableCode.parseDefault("4008400301020"));
+        project.getShoppingCart().add(krombacherPils, 2, ScannableCode.parseDefault("4008287051124"));
 
         generator.add(project.getShoppingCart());
 
@@ -130,8 +129,8 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Product duplo = project.getProductDatabase().findBySku("49");
         Product krombacherPils = project.getProductDatabase().findBySku("37");
 
-        project.getShoppingCart().add(duplo, 3, ScannableCode.parse(project, "4008400301020"));
-        project.getShoppingCart().add(krombacherPils, 3, ScannableCode.parse(project, "4008287051124"));
+        project.getShoppingCart().add(duplo, 3, ScannableCode.parseDefault("4008400301020"));
+        project.getShoppingCart().add(krombacherPils, 3, ScannableCode.parseDefault("4008287051124"));
 
         generator.add(project.getShoppingCart());
 
@@ -159,8 +158,8 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Product duplo = project.getProductDatabase().findBySku("49");
         Product krombacherPils = project.getProductDatabase().findBySku("37");
 
-        project.getShoppingCart().add(duplo, 3, ScannableCode.parse(project, "4008400301020"));
-        project.getShoppingCart().add(krombacherPils, 3, ScannableCode.parse(project, "4008287051124"));
+        project.getShoppingCart().add(duplo, 3, ScannableCode.parseDefault("4008400301020"));
+        project.getShoppingCart().add(krombacherPils, 3, ScannableCode.parseDefault("4008287051124"));
 
         generator.add(project.getShoppingCart());
 
@@ -190,7 +189,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
         Product krombacherPils = project.getProductDatabase().findBySku("37");
 
-        project.getShoppingCart().add(krombacherPils, 1, ScannableCode.parse(project, "4008287051124"));
+        project.getShoppingCart().add(krombacherPils, 1, ScannableCode.parseDefault("4008287051124"));
 
         generator.add(project.getShoppingCart());
 
@@ -219,10 +218,10 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         generator.add("voucher2");
 
         Product duplo = project.getProductDatabase().findBySku("49");
-        project.getShoppingCart().add(duplo, 3, ScannableCode.parse(project, "4008400301020"));
+        project.getShoppingCart().add(duplo, 3, ScannableCode.parseDefault("4008400301020"));
 
         Product heinz = project.getProductDatabase().findBySku("42");
-        project.getShoppingCart().add(heinz, 2, ScannableCode.parse(project, "8715700421698"));
+        project.getShoppingCart().add(heinz, 2, ScannableCode.parseDefault("8715700421698"));
         generator.add(project.getShoppingCart());
 
         ArrayList<String> codes = generator.generate();
@@ -246,7 +245,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
 
         Product duplo = project.getProductDatabase().findBySku("48");
-        project.getShoppingCart().add(duplo, 3, ScannableCode.parse(project, "42276630"));
+        project.getShoppingCart().add(duplo, 3, ScannableCode.parseDefault("42276630"));
 
         generator.add(project.getShoppingCart());
 
@@ -271,7 +270,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
 
         Product duplo = project.getProductDatabase().findBySku("48");
-        project.getShoppingCart().add(duplo, 45, ScannableCode.parse(project, "42276630"));
+        project.getShoppingCart().add(duplo, 45, ScannableCode.parseDefault("42276630"));
 
         generator.add(project.getShoppingCart());
 
@@ -297,10 +296,10 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
 
         Product duplo = project.getProductDatabase().findBySku("48");
-        project.getShoppingCart().add(duplo, 3, ScannableCode.parse(project, "42276630"));
+        project.getShoppingCart().add(duplo, 3, ScannableCode.parseDefault("42276630"));
 
         Product krombacherPils = project.getProductDatabase().findBySku("37");
-        project.getShoppingCart().add(krombacherPils, 1, ScannableCode.parse(project, "4008287051124"));
+        project.getShoppingCart().add(krombacherPils, 1, ScannableCode.parseDefault("4008287051124"));
 
         generator.add(project.getShoppingCart());
 
@@ -323,10 +322,10 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
 
         Product duplo = project.getProductDatabase().findBySku("49");
-        project.getShoppingCart().add(duplo, 1, ScannableCode.parse(project, "4008400301020"));
+        project.getShoppingCart().add(duplo, 1, ScannableCode.parseDefault("4008400301020"));
 
         Product heinz = project.getProductDatabase().findBySku("42");
-        project.getShoppingCart().add(heinz, 1, ScannableCode.parse(project, "8715700421698"));
+        project.getShoppingCart().add(heinz, 1, ScannableCode.parseDefault("8715700421698"));
         generator.add(project.getShoppingCart());
 
         ArrayList<String> codes = generator.generate();
@@ -349,10 +348,10 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
 
         Product duplo = project.getProductDatabase().findBySku("49");
-        project.getShoppingCart().add(duplo, 7, ScannableCode.parse(project, "4008400301020"));
+        project.getShoppingCart().add(duplo, 7, ScannableCode.parseDefault("4008400301020"));
 
         Product heinz = project.getProductDatabase().findBySku("42");
-        project.getShoppingCart().add(heinz, 1000, ScannableCode.parse(project, "8715700421698"));
+        project.getShoppingCart().add(heinz, 1000, ScannableCode.parseDefault("8715700421698"));
         generator.add(project.getShoppingCart());
 
         ArrayList<String> codes = generator.generate();

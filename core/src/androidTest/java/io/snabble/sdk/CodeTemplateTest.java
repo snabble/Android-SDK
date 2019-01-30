@@ -52,75 +52,96 @@ public class CodeTemplateTest {
 
     @Test
     public void testEncoding() {
-        ScannableCode code = newCodeTemplate("97{code:ean13}{embed:6}{_}").match("9743115013222840001009");
+        ScannableCode code = newCodeTemplate("97{code:ean13}{embed:6}{_}").match("9743115013222840001009").buildCode();
         Assert.assertEquals("4311501322284", code.getLookupCode());
         Assert.assertEquals(100, code.getEmbeddedData());
     }
 
     @Test
     public void testTemplateMatcher() {
-        Assert.assertNotNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("960000000000000111111222223"));
+        Assert.assertNotNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("960000000000000111111222223").buildCode());
 
         // valid matches
-        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("0000000000000"));
-        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("0000000000017"));
-        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("2957783000742"));
-        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("4029764001807"));
-        Assert.assertNotNull(newCodeTemplate("{code:ean8}").match("87654325"));
-        Assert.assertNotNull(newCodeTemplate("{code:8}").match("87654325"));
-        Assert.assertNotNull(newCodeTemplate("{code:8}").match("87654320"));
-        Assert.assertNotNull(newCodeTemplate("{code:ean14}").match("18594001694690"));
-        Assert.assertNotNull(newCodeTemplate("{code:ean14}").match("28000017120605"));
-        Assert.assertNotNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("960000000000000111111222223"));
-        Assert.assertNotNull(newCodeTemplate("123{_:5}").match("12345678"));
+        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("0000000000000").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("0000000000017").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("2957783000742").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:ean13}").match("4029764001807").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:ean8}").match("87654325").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:8}").match("87654325").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:8}").match("87654320").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:ean14}").match("18594001694690").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:ean14}").match("28000017120605").buildCode());
+        Assert.assertNotNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("960000000000000111111222223").buildCode());
+        Assert.assertNotNull(newCodeTemplate("123{_:5}").match("12345678").buildCode());
 
-        Assert.assertEquals("123", newCodeTemplate("123{_:5}{code:3}").match("12345678123").getLookupCode());
+        Assert.assertEquals("123", newCodeTemplate("123{_:5}{code:3}").match("12345678123").buildCode().getLookupCode());
 
         // invalid matches
-        Assert.assertNull(newCodeTemplate("{code:ean13}").match("0000000000001"));
-        Assert.assertNull(newCodeTemplate("{code:ean13}").match("000000000000"));
-        Assert.assertNull(newCodeTemplate("{code:ean13}").match("4029764001800"));
-        Assert.assertNull(newCodeTemplate("{code:ean8}").match("87654320"));
-        Assert.assertNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("970000000000000111111222223"));
-        Assert.assertNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("96000000000000011111122222"));
-        Assert.assertNull(newCodeTemplate("123{_:5}").match("55545678"));
+        Assert.assertNull(newCodeTemplate("{code:ean13}").match("0000000000001").buildCode());
+        Assert.assertNull(newCodeTemplate("{code:ean13}").match("000000000000").buildCode());
+        Assert.assertNull(newCodeTemplate("{code:ean13}").match("4029764001800").buildCode());
+        Assert.assertNull(newCodeTemplate("{code:ean8}").match("87654320").buildCode());
+        Assert.assertNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("970000000000000111111222223").buildCode());
+        Assert.assertNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("96000000000000011111122222").buildCode());
+        Assert.assertNull(newCodeTemplate("123{_:5}").match("55545678").buildCode());
     }
 
     @Test
     public void testWildcardMatcher() {
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("0000000000000"));
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("0000000000017"));
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("2957783000742"));
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("4029764001807"));
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("ASDF"));
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("SKDFHSIDUFS"));
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("!73487#48tnq72**"));
-        Assert.assertNotNull(newCodeTemplate("{code:*}").match("******3732ha"));
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("0000000000000").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("0000000000017").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("2957783000742").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("4029764001807").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("ASDF").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("SKDFHSIDUFS").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("!73487#48tnq72**").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{code:*}").match("******3732ha").buildCode());
 
-        Assert.assertNotNull(newCodeTemplate("{*}").match("0000000000000"));
-        Assert.assertNotNull(newCodeTemplate("{*}").match("0000000000017"));
-        Assert.assertNotNull(newCodeTemplate("{*}").match("2957783000742"));
-        Assert.assertNotNull(newCodeTemplate("{*}").match("4029764001807"));
-        Assert.assertNotNull(newCodeTemplate("{*}").match("ASDF"));
-        Assert.assertNotNull(newCodeTemplate("{*}").match("SKDFHSIDUFS"));
-        Assert.assertNotNull(newCodeTemplate("{*}").match("!73487#48tnq72**"));
-        Assert.assertNotNull(newCodeTemplate("{*}").match("******3732ha"));
+        Assert.assertNotNull(newCodeTemplate("{*}").match("0000000000000").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{*}").match("0000000000017").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{*}").match("2957783000742").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{*}").match("4029764001807").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{*}").match("ASDF").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{*}").match("SKDFHSIDUFS").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{*}").match("!73487#48tnq72**").buildCode());
+        Assert.assertNotNull(newCodeTemplate("{*}").match("******3732ha").buildCode());
 
-        Assert.assertNotNull(newCodeTemplate("1234{code:*}").match("1234******3732ha"));
-        Assert.assertNotNull(newCodeTemplate("12345{code:*}").match("12345******3732ha"));
-        Assert.assertNotNull(newCodeTemplate("1234{*}").match("1234******3732ha"));
-        Assert.assertNotNull(newCodeTemplate("12345{*}").match("12345******3732ha"));
-        Assert.assertNull(newCodeTemplate("12345{*}").match("bla******3732ha"));
-        Assert.assertNull(newCodeTemplate("12345{code:*}").match("bla******3732ha"));
+        Assert.assertNotNull(newCodeTemplate("1234{code:*}").match("1234******3732ha").buildCode());
+        Assert.assertNotNull(newCodeTemplate("12345{code:*}").match("12345******3732ha").buildCode());
+        Assert.assertNotNull(newCodeTemplate("1234{*}").match("1234******3732ha").buildCode());
+        Assert.assertNotNull(newCodeTemplate("12345{*}").match("12345******3732ha").buildCode());
+        Assert.assertNull(newCodeTemplate("12345{*}").match("bla******3732ha").buildCode());
+        Assert.assertNull(newCodeTemplate("12345{code:*}").match("bla******3732ha").buildCode());
     }
     
     @Test
     public void testTemplateInternalChecksum() {
-        Assert.assertNotNull(newCodeTemplate("295778{i}{embed:5}{_}").match("2957783000742"));
-        Assert.assertNull(newCodeTemplate("295778{i}{embed:5}{_}").match("2957784000742"));
+        Assert.assertNotNull(newCodeTemplate("295778{i}{embed:5}{_}").match("2957783000742").buildCode());
+        Assert.assertNull(newCodeTemplate("295778{i}{embed:5}{_}").match("2957784000742").buildCode());
 
-        Assert.assertNotNull(newCodeTemplate("2{code:5}{i}{embed:5}{_}").match("2957783000742"));
-        Assert.assertNull(newCodeTemplate("2{code:5}{i}{embed:5}{_}").match("2957784000742"));
+        Assert.assertNotNull(newCodeTemplate("2{code:5}{i}{embed:5}{_}").match("2957783000742").buildCode());
+        Assert.assertNull(newCodeTemplate("2{code:5}{i}{embed:5}{_}").match("2957784000742").buildCode());
+    }
+
+    @Test
+    public void testEmbed() {
+        ScannableCode code = newCodeTemplate("2{code:5}{i}{embed:5}{_}")
+                .code("12345")
+                .embed(98765)
+                .buildCode();
+
+        Assert.assertEquals(98765, code.getEmbeddedData());
+        Assert.assertEquals("12345", code.getLookupCode());
+        Assert.assertEquals("2123457987650", code.getCode());
+
+        code = newCodeTemplate("2{code:5}{i}{embed:5}{ec}")
+                .code("12345")
+                .embed(98765)
+                .buildCode();
+
+        Assert.assertEquals(98765, code.getEmbeddedData());
+        Assert.assertEquals("12345", code.getLookupCode());
+        Assert.assertEquals("2123457987653", code.getCode());
     }
 
     private CodeTemplate newCodeTemplate(String pattern) {

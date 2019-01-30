@@ -10,6 +10,6 @@ public class EAN8Group extends CodeGroup {
 
     @Override
     public boolean validate() {
-        return EAN8.isEan8(data());
+        return EAN8.isEan8(string());
     }
 }

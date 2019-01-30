@@ -41,10 +41,12 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -454,7 +456,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             if (product != null) {
                 Product.Type type = product.getType();
 
-                ScannableCode scannedCode = cart.getScannedCode(position);
+                final ScannableCode scannedCode = cart.getScannedCode(position);
 
                 Unit encodingUnit = product.getEncodingUnit(scannedCode.getLookupCode());
                 String encodingDisplayValue = "g";
@@ -540,9 +542,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         int p = getAdapterPosition();
 
                         if (cart.isZeroAmountProduct(p)) {
-                            cart.setScannedCode(p,
-                                    EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
-                                            cart.getScannedCode(p).getLookupCode(), embeddedAmount + 1));
+                            CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(scannedCode.getTemplateName());
+                            ScannableCode scannableCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
+                                    .embed(embeddedAmount + 1)
+                                    .buildCode();
+
+                            cart.setScannedCode(p, scannableCode);
                         } else {
                             cart.setQuantity(p, quantity + 1);
                         }
@@ -563,9 +568,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             removeAndShowUndoSnackbar(p, product, cart.getScannedCode(p), q+1, isZeroAmountProduct);
                         } else {
                             if (isZeroAmountProduct) {
-                                cart.setScannedCode(p,
-                                        EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
-                                                cart.getScannedCode(p).getLookupCode(), q));
+                                CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(scannedCode.getTemplateName());
+                                ScannableCode scannableCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
+                                        .embed(q)
+                                        .buildCode();
+
+                                cart.setScannedCode(p, scannableCode);
                             } else {
                                 cart.setQuantity(p, q);
                             }

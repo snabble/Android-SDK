@@ -53,7 +53,6 @@ public class Project {
     private RoundingMode roundingMode;
     private BarcodeFormat[] supportedBarcodeFormats;
     private Shop checkedInShop;
-    private CodeTemplate[] codeTemplates;
     private CustomerCardInfo[] acceptedCustomerCardInfos;
     private CustomerCardInfo requiredCustomerCardInfo;
 
@@ -182,24 +181,6 @@ public class Project {
         if (shops == null) {
             shops = new Shop[0];
         }
-
-        // TODO parse from metadata
-        ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
-
-        codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
-        codeTemplates.add(new CodeTemplate("ean13_instore",  "2{code:5}{_}{embed:5}{_}"));
-        codeTemplates.add(new CodeTemplate("german_print", "4{code:2}{_:5}{embed:4}{_}"));
-        codeTemplates.add(new CodeTemplate("ean14_code128", "01{code:ean14}"));
-        codeTemplates.add(new CodeTemplate("edeka_discount", "97{code:ean13}{embed:6}{_}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade_ww", "94{code:5}{_:19}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade", "94{code:3}{_:10}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_1", "96{code:2}{_:36}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_2", "96{_:13}{code:3}{_:30}"));
-        codeTemplates.add(new CodeTemplate("globus_weighing", "96{code:ean13}{embed:7}{price:5}{_}"));
-        codeTemplates.add(new CodeTemplate("globus_discount", "98{code:ean13}{_:8}{embed:7}{_:2}"));
-        codeTemplates.add(new CodeTemplate("default", "{*}"));
-
-        this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
 
         notifyUpdate();
     }
@@ -353,10 +334,6 @@ public class Project {
 
     public String getCustomerCardId() {
         return loyaltyCardId;
-    }
-
-    public CodeTemplate[] getCodeTemplates() {
-        return codeTemplates;
     }
 
     /**
