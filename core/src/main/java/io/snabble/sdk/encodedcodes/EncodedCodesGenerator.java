@@ -118,10 +118,14 @@ public class EncodedCodesGenerator {
 
             if (productInfo.product.getType() == Product.Type.UserWeighed) {
                 // encoding weight in ean
-                CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate("ean13_instore_chk");
                 Product.Code[] codes = productInfo.product.getScannableCodes();
                 for (Product.Code code : codes) {
-                    if ("ean13_instore".equals(code.template) || "ean13_instore_chk".equals(code.template)) {
+                    if ("default".equals(code.template)) {
+                        continue;
+                    }
+
+                    CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(code.template);
+                    if (codeTemplate != null) {
                         ScannableCode scannableCode = codeTemplate.code(code.lookupCode)
                                 .embed(productInfo.quantity)
                                 .buildCode();

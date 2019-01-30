@@ -226,7 +226,10 @@ public class CodeTemplate {
             matchedCode = null;
         } else {
             PlainTextGroup plainTextGroup = getGroup(PlainTextGroup.class);
-            plainTextGroup.apply(plainTextGroup.plainText());
+            if (plainTextGroup != null) {
+                plainTextGroup.apply(plainTextGroup.plainText());
+            }
+
             builder.setScannedCode(string());
         }
 
