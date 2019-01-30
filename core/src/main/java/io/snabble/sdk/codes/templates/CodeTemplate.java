@@ -174,9 +174,14 @@ public class CodeTemplate {
     }
 
     public CodeTemplate embed(int embeddedData) {
+        PlainTextGroup plainTextGroup = getGroup(PlainTextGroup.class);
         EmbedGroup embedGroup = getGroup(EmbedGroup.class);
         EAN13InternalChecksumGroup ean13InternalChecksumGroup = getGroup(EAN13InternalChecksumGroup.class);
         EAN13ChecksumGroup ean13ChecksumGroup = getGroup(EAN13ChecksumGroup.class);
+
+        if (plainTextGroup != null) {
+            plainTextGroup.apply(plainTextGroup.plainText());
+        }
 
         if (embedGroup != null) {
             embedGroup.applyInt(embeddedData);

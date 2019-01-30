@@ -62,6 +62,8 @@ public class Project {
 
     private File internalStorageDirectory;
 
+    private Map<String, CodeTemplate> transmissionOverrideTemplates;
+
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
 

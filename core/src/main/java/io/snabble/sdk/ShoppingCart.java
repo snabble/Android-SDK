@@ -365,6 +365,10 @@ public class ShoppingCart {
 
         Unit unit = entry.product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
 
+        if (scannedCode.getEmbeddedUnit() != null) {
+            unit = scannedCode.getEmbeddedUnit();
+        }
+
         if (scannedCode.hasEmbeddedData()) {
             if (Unit.isMass(unit)) {
                 entry.weight = scannedCode.getEmbeddedData();

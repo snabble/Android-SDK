@@ -148,6 +148,14 @@ public class EncodedCodesGenerator {
                     transmissionCode = productInfo.scannedCode.getCode();
                 }
 
+                CodeTemplate codeTemplate = Snabble.getInstance().getTransmissionOverrideTemplate(productInfo.scannedCode.getTransformationTemplateName());
+                if (codeTemplate != null) {
+                    ScannableCode scannableCode = codeTemplate.embed(productInfo.scannedCode.getEmbeddedData())
+                            .buildCode();
+
+                    transmissionCode = scannableCode.getCode();
+                }
+
                 if (options.repeatCodes) {
                     for (int j = 0; j < q; j++) {
                         addScannableCode(transmissionCode, ageRestricted);

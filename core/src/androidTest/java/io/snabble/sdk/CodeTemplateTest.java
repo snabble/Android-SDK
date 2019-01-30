@@ -141,7 +141,7 @@ public class CodeTemplateTest {
 
         Assert.assertEquals(98765, code.getEmbeddedData());
         Assert.assertEquals("12345", code.getLookupCode());
-        Assert.assertEquals("2123457987653", code.getCode());
+        Assert.assertEquals("2123457987651", code.getCode());
     }
 
     private CodeTemplate newCodeTemplate(String pattern) {

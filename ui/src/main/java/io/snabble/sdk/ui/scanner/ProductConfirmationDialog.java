@@ -115,6 +115,9 @@ class ProductConfirmationDialog {
         int cartQuantity = shoppingCart.getQuantity(product);
 
         Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+        if (scannedCode.getEmbeddedUnit() != null) {
+            unit = scannedCode.getEmbeddedUnit();
+        }
 
         if (scannedCode.hasEmbeddedData()) {
             if (Unit.isMass(unit)) {
@@ -294,6 +297,10 @@ class ProductConfirmationDialog {
 
         int q = getQuantity();
         Unit encodingUnit = product.getEncodingUnit(scannedCode.getCode());
+
+        if (scannedCode.getEmbeddedUnit() != null) {
+            encodingUnit = scannedCode.getEmbeddedUnit();
+        }
 
         String encodingDisplayValue = "g";
         if (encodingUnit != null) {

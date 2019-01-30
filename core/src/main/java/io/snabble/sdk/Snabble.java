@@ -18,8 +18,10 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +57,7 @@ public class Snabble {
     private Environment environment;
     private List<X509Certificate> paymentCertificates;
     private CodeTemplate[] codeTemplates;
-
+    private Map<String, CodeTemplate> transmissionOverrideTemplates;
 
     private Snabble() {
 
@@ -153,6 +155,9 @@ public class Snabble {
         codeTemplates.add(new CodeTemplate("default", "{*}"));
 
         this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
+
+        transmissionOverrideTemplates = new HashMap<>();
+        transmissionOverrideTemplates.put("edeka_discount", new CodeTemplate("edeka_discount_override", "241700{i}{embed:5}{ec}"));
     }
 
     public String getVersionName() {
@@ -419,6 +424,14 @@ public class Snabble {
 
     public CodeTemplate[] getCodeTemplates() {
         return codeTemplates;
+    }
+
+    public CodeTemplate getTransmissionOverrideTemplate(String id) {
+        if (id == null) {
+            return null;
+        }
+
+        return transmissionOverrideTemplates.get(id);
     }
 
     public static Snabble getInstance() {
