@@ -7,8 +7,7 @@ import java.util.List;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class EncodedCodesGenerator {
@@ -74,9 +73,9 @@ public class EncodedCodesGenerator {
     private class ProductInfo {
         Product product;
         int quantity;
-        ScannableCode scannedCode;
+        ScannedCode scannedCode;
 
-        public ProductInfo(Product product, int quantity, ScannableCode scannedCode) {
+        public ProductInfo(Product product, int quantity, ScannedCode scannedCode) {
             this.product = product;
             this.quantity = quantity;
             this.scannedCode = scannedCode;
@@ -126,14 +125,14 @@ public class EncodedCodesGenerator {
 
                     CodeTemplate codeTemplate = options.project.getCodeTemplate(code.template);
                     if (codeTemplate != null) {
-                        ScannableCode scannableCode = codeTemplate.code(code.lookupCode)
+                        ScannedCode scannedCode = codeTemplate.code(code.lookupCode)
                                 .embed(productInfo.quantity)
                                 .buildCode();
 
                         if (options.repeatCodes) {
-                            addScannableCode(scannableCode.getCode(), ageRestricted);
+                            addScannableCode(scannedCode.getCode(), ageRestricted);
                         } else {
-                            addScannableCode("1" + options.countSeparator + scannableCode.getCode(), ageRestricted);
+                            addScannableCode("1" + options.countSeparator + scannedCode.getCode(), ageRestricted);
                         }
                         break;
                     }
@@ -150,11 +149,11 @@ public class EncodedCodesGenerator {
 
                 CodeTemplate codeTemplate = options.project.getTransformationTemplate(productInfo.scannedCode.getTransformationTemplateName());
                 if (codeTemplate != null) {
-                    ScannableCode scannableCode = codeTemplate
+                    ScannedCode scannedCode = codeTemplate
                             .code(productInfo.scannedCode.getLookupCode())
                             .embed(productInfo.scannedCode.getEmbeddedData())
                             .buildCode();
-                    transmissionCode = scannableCode.getCode();
+                    transmissionCode = scannedCode.getCode();
                 }
 
                 if (options.repeatCodes) {

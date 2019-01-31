@@ -3,8 +3,6 @@ package io.snabble.sdk;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
@@ -21,7 +19,7 @@ public class ShoppingCart {
     private static class Entry {
         private Product product;
         private final String sku;
-        private ScannableCode scannedCode;
+        private ScannedCode scannedCode;
         private int quantity;
 
         private Integer weight = null;
@@ -75,7 +73,7 @@ public class ShoppingCart {
         add(product, 1);
     }
 
-    public void add(Product product, ScannableCode scannedCode) {
+    public void add(Product product, ScannedCode scannedCode) {
         add(product, 1, scannedCode);
     }
 
@@ -83,11 +81,11 @@ public class ShoppingCart {
         insert(product, items.size(), quantity);
     }
 
-    public void add(Product product, int quantity, ScannableCode scannedCode) {
+    public void add(Product product, int quantity, ScannedCode scannedCode) {
         insert(product, items.size(), quantity, scannedCode);
     }
 
-    public void add(Product product, int quantity, ScannableCode scannedCode, boolean isZeroAmountProduct) {
+    public void add(Product product, int quantity, ScannedCode scannedCode, boolean isZeroAmountProduct) {
         insert(product, items.size(), quantity, scannedCode, isZeroAmountProduct);
     }
 
@@ -95,7 +93,7 @@ public class ShoppingCart {
         insert(product, index, 1);
     }
 
-    public void insert(Product product, int index, ScannableCode scannedCode) {
+    public void insert(Product product, int index, ScannedCode scannedCode) {
         insert(product, index, 1, scannedCode);
     }
 
@@ -103,7 +101,7 @@ public class ShoppingCart {
         insert(product, index, quantity, null);
     }
 
-    public void insert(Product product, int index, int quantity, ScannableCode scannedCode, boolean isZeroAmountProduct) {
+    public void insert(Product product, int index, int quantity, ScannedCode scannedCode, boolean isZeroAmountProduct) {
         Entry e = getEntryBySku(product.getSku());
 
 //        if (e == null || scannedCode.hasUnitData()
@@ -128,7 +126,7 @@ public class ShoppingCart {
         }
     }
 
-    public void insert(Product product, int index, int quantity, ScannableCode scannedCode) {
+    public void insert(Product product, int index, int quantity, ScannedCode scannedCode) {
         insert(product, index, quantity, scannedCode, false);
     }
 
@@ -136,7 +134,7 @@ public class ShoppingCart {
         setQuantity(index, quantity, null);
     }
 
-    public void setQuantity(int index, int quantity, ScannableCode scannedCode) {
+    public void setQuantity(int index, int quantity, ScannedCode scannedCode) {
         Entry e = getEntry(index);
 
         if (e != null) {
@@ -152,7 +150,7 @@ public class ShoppingCart {
         setQuantity(product, quantity, null);
     }
 
-    public void setQuantity(Product product, int quantity, ScannableCode scannedCode) {
+    public void setQuantity(Product product, int quantity, ScannedCode scannedCode) {
         if (product.getType() == Product.Type.Article) {
             Entry e = getEntryBySku(product.getSku());
 
@@ -193,7 +191,7 @@ public class ShoppingCart {
         return entry.product;
     }
 
-    public ScannableCode getScannedCode(int index) {
+    public ScannedCode getScannedCode(int index) {
         Entry entry = getEntry(index);
         if (entry == null) {
             return null;
@@ -353,14 +351,14 @@ public class ShoppingCart {
         }
     }
 
-    public void setScannedCode(int index, ScannableCode scannableCode) {
+    public void setScannedCode(int index, ScannedCode scannedCode) {
         Entry e = getEntry(index);
         if (e != null) {
-            setScannedCodeForEntry(e, scannableCode);
+            setScannedCodeForEntry(e, scannedCode);
         }
     }
 
-    private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode) {
+    private void setScannedCodeForEntry(Entry entry, ScannedCode scannedCode) {
         entry.scannedCode = scannedCode;
 
         Unit unit = entry.product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());

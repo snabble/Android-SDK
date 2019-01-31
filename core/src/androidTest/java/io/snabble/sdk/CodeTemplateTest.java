@@ -3,7 +3,7 @@ package io.snabble.sdk;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class CodeTemplateTest {
@@ -57,7 +57,7 @@ public class CodeTemplateTest {
 
     @Test
     public void testEncoding() {
-        ScannableCode code = newCodeTemplate("97{code:ean13}{embed:6}{_}").match("9743115013222840001009").buildCode();
+        ScannedCode code = newCodeTemplate("97{code:ean13}{embed:6}{_}").match("9743115013222840001009").buildCode();
         Assert.assertEquals("4311501322284", code.getLookupCode());
         Assert.assertEquals(100, code.getEmbeddedData());
 
@@ -142,7 +142,7 @@ public class CodeTemplateTest {
 
     @Test
     public void testEmbed() {
-        ScannableCode code = newCodeTemplate("2{code:5}{i}{embed:5}{_}")
+        ScannedCode code = newCodeTemplate("2{code:5}{i}{embed:5}{_}")
                 .code("12345")
                 .embed(98765)
                 .buildCode();

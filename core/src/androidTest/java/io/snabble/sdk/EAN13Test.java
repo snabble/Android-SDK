@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.codes.ScannableCode;
 
 public class EAN13Test extends SnabbleSdkTest {
     @Test

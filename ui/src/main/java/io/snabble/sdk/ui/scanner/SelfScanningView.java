@@ -35,8 +35,7 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -140,7 +139,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         startBarcodeScanner();
     }
 
-    public void lookupAndShowProduct(List<ScannableCode> scannedCodes, BarcodeFormat barcodeFormat) {
+    public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
         new ProductResolver.Builder(getContext())
                 .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
@@ -181,7 +180,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .show();
     }
 
-    public void lookupAndShowProduct(List<ScannableCode> scannedCodes) {
+    public void lookupAndShowProduct(List<ScannedCode> scannedCodes) {
         lookupAndShowProduct(scannedCodes, null);
     }
 
@@ -198,7 +197,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
+            lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
         }
     }
 
@@ -234,7 +233,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setPositiveButton(R.string.Snabble_Done, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), input.getText().toString()));
+                                lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
                             }
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)

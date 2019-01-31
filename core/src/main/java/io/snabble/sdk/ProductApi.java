@@ -5,13 +5,7 @@ import android.os.Looper;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.OkHttpClient;
@@ -100,7 +94,7 @@ class ProductApi {
         get(url, productAvailableListener);
     }
 
-    public void findByCode(final ScannableCode code, final OnProductAvailableListener productAvailableListener) {
+    public void findByCode(final ScannedCode code, final OnProductAvailableListener productAvailableListener) {
         if (productAvailableListener == null) {
             return;
         }

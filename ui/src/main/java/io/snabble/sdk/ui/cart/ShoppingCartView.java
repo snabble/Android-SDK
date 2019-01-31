@@ -41,10 +41,8 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
-import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
@@ -216,7 +214,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 final int pos = viewHolder.getAdapterPosition();
                 final Product product = cart.getProduct(pos);
-                final ScannableCode scannedCode = cart.getScannedCode(pos);
+                final ScannedCode scannedCode = cart.getScannedCode(pos);
                 final int quantity = cart.getQuantity(pos);
                 final boolean isZeroAmountProduct = cart.isZeroAmountProduct(pos);
 
@@ -227,7 +225,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeAndShowUndoSnackbar(final int pos, final Product product, final ScannableCode scannedCode, final int quantity, final boolean isZeroAmountProduct) {
+    private void removeAndShowUndoSnackbar(final int pos, final Product product, final ScannedCode scannedCode, final int quantity, final boolean isZeroAmountProduct) {
         cart.removeAll(pos);
         Telemetry.event(Telemetry.Event.DeletedFromCart, product);
         recyclerViewAdapter.notifyItemRemoved(pos);
@@ -457,7 +455,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             if (product != null) {
                 Product.Type type = product.getType();
 
-                final ScannableCode scannedCode = cart.getScannedCode(position);
+                final ScannedCode scannedCode = cart.getScannedCode(position);
 
                 Unit encodingUnit = product.getEncodingUnit(scannedCode.getLookupCode());
                 String encodingDisplayValue = "g";
@@ -544,11 +542,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                         if (cart.isZeroAmountProduct(p)) {
                             CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
-                            ScannableCode scannableCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
+                            ScannedCode scannedCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
                                     .embed(embeddedAmount + 1)
                                     .buildCode();
 
-                            cart.setScannedCode(p, scannableCode);
+                            cart.setScannedCode(p, scannedCode);
                         } else {
                             cart.setQuantity(p, quantity + 1);
                         }
@@ -570,11 +568,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         } else {
                             if (isZeroAmountProduct) {
                                 CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
-                                ScannableCode scannableCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
+                                ScannedCode scannedCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
                                         .embed(q)
                                         .buildCode();
 
-                                cart.setScannedCode(p, scannableCode);
+                                cart.setScannedCode(p, scannedCode);
                             } else {
                                 cart.setQuantity(p, q);
                             }

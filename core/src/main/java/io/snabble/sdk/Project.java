@@ -184,7 +184,7 @@ public class Project {
             shops = new Shop[0];
         }
 
-        // TODO parse from metadata
+        // TODO parse from metadata 
         ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
 
         codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));

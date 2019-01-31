@@ -28,10 +28,8 @@ import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
-import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
@@ -57,7 +55,7 @@ class ProductConfirmationDialog {
     private View minus;
 
     private Product product;
-    private ScannableCode scannedCode;
+    private ScannedCode scannedCode;
 
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
@@ -70,7 +68,7 @@ class ProductConfirmationDialog {
         priceFormatter = new PriceFormatter(project);
     }
 
-    public void show(Product newProduct, ScannableCode scannedCode) {
+    public void show(Product newProduct, ScannedCode scannedCode) {
         dismiss();
 
         this.product = newProduct;

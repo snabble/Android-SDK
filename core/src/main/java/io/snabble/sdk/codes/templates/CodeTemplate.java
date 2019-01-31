@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.groups.*;
 
 public class CodeTemplate {
@@ -214,8 +214,8 @@ public class CodeTemplate {
         return this;
     }
 
-    public ScannableCode buildCode() {
-        ScannableCode.Builder builder = new ScannableCode.Builder(name);
+    public ScannedCode buildCode() {
+        ScannedCode.Builder builder = new ScannedCode.Builder(name);
 
         if (matchedCode != null) {
             reset();

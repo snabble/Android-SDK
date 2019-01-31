@@ -16,15 +16,14 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 
 public class ProductResolver {
-    private List<ScannableCode> scannableCodes;
+    private List<ScannedCode> scannedCodes;
     private ProductConfirmationDialog productConfirmationDialog;
     private DelayedProgressDialog progressDialog;
     private Context context;
@@ -65,8 +64,8 @@ public class ProductResolver {
         });
     }
 
-    public List<ScannableCode> getScannableCodes() {
-        return scannableCodes;
+    public List<ScannedCode> getScannedCodes() {
+        return scannedCodes;
     }
 
     public BarcodeFormat getBarcodeFormat() {
@@ -76,12 +75,12 @@ public class ProductResolver {
     private class Result {
         Product product;
         boolean wasOnlineProduct;
-        ScannableCode code;
+        ScannedCode code;
         boolean error;
         int matchCount;
     }
 
-    private void lookupAndShowProduct(final List<ScannableCode> scannedCodes) {
+    private void lookupAndShowProduct(final List<ScannedCode> scannedCodes) {
         productConfirmationDialog.dismiss();
         progressDialog.showAfterDelay(300);
 
@@ -102,13 +101,13 @@ public class ProductResolver {
                 final Result result = new Result();
 
                 for (int i=0; i<scannedCodes.size(); i++) {
-                    final ScannableCode scannableCode = scannedCodes.get(i);
-                    productDatabase.findByCodeOnline(scannableCode, new OnProductAvailableListener() {
+                    final ScannedCode scannedCode = scannedCodes.get(i);
+                    productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
                         @Override
                         public void onProductAvailable(Product product, boolean wasOnlineProduct) {
                             result.product = product;
                             result.wasOnlineProduct = wasOnlineProduct;
-                            result.code = scannableCode;
+                            result.code = scannedCode;
                             result.matchCount++;
                             countDownLatch.countDown();
                         }
@@ -116,7 +115,7 @@ public class ProductResolver {
                         @Override
                         public void onProductNotFound() {
                             if (result.code == null) {
-                                result.code = scannableCode;
+                                result.code = scannedCode;
                             }
 
                             countDownLatch.countDown();
@@ -158,7 +157,7 @@ public class ProductResolver {
         });
     }
 
-    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannableCode scannedCode) {
+    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannedCode scannedCode) {
         progressDialog.dismiss();
 
         if(product.getBundleProducts().length > 0){
@@ -194,9 +193,9 @@ public class ProductResolver {
 
                 Product.Code[] codes = product.getScannableCodes();
                 if(codes.length > 0) {
-                    List<ScannableCode> scannableCodes = ScannableCode.parse(SnabbleUI.getProject(), codes[0].lookupCode);
-                    if (scannableCodes != null && scannableCodes.size() > 0) {
-                        showProduct(product, scannableCodes.get(0));
+                    List<ScannedCode> scannedCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].lookupCode);
+                    if (scannedCodes != null && scannedCodes.size() > 0) {
+                        showProduct(product, scannedCodes.get(0));
                     }
                 }
             }
@@ -210,7 +209,7 @@ public class ProductResolver {
         });
     }
 
-    private void handleProductNotFound(ScannableCode scannedCode) {
+    private void handleProductNotFound(ScannedCode scannedCode) {
         progressDialog.dismiss();
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
 
@@ -235,12 +234,12 @@ public class ProductResolver {
         }
     }
 
-    private void showProduct(Product product, ScannableCode scannedCode) {
+    private void showProduct(Product product, ScannedCode scannedCode) {
         productConfirmationDialog.show(product, scannedCode);
     }
 
     public void show() {
-        lookupAndShowProduct(scannableCodes);
+        lookupAndShowProduct(scannedCodes);
     }
 
     public void dismiss() {
@@ -282,8 +281,8 @@ public class ProductResolver {
             productResolver = new ProductResolver(context);
         }
 
-        public Builder setCodes(List<ScannableCode> codes) {
-            productResolver.scannableCodes = codes;
+        public Builder setCodes(List<ScannedCode> codes) {
+            productResolver.scannedCodes = codes;
             return this;
         }
 

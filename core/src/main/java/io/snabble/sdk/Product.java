@@ -12,11 +12,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import io.snabble.sdk.codes.ScannableCode;
-import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.GsonHolder;
 
 /**

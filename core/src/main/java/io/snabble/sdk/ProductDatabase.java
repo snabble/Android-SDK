@@ -16,7 +16,6 @@ import android.text.format.Formatter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.Logger;
@@ -1108,8 +1107,8 @@ public class ProductDatabase {
      * <p>
      * Searches the local database first before making any network calls.
      */
-    public void findByCodeOnline(ScannableCode scannableCode, OnProductAvailableListener productAvailableListener) {
-        findByCodeOnline(scannableCode, productAvailableListener, false);
+    public void findByCodeOnline(ScannedCode scannedCode, OnProductAvailableListener productAvailableListener) {
+        findByCodeOnline(scannedCode, productAvailableListener, false);
     }
 
     /**
@@ -1117,7 +1116,7 @@ public class ProductDatabase {
      * <p>
      * If onlineOnly is true, it does not search the local database first and only searches online.
      */
-    public void findByCodeOnline(ScannableCode scannableCode,
+    public void findByCodeOnline(ScannedCode scannedCode,
                                  OnProductAvailableListener productAvailableListener,
                                  boolean onlineOnly) {
         if (productAvailableListener == null) {
@@ -1125,13 +1124,13 @@ public class ProductDatabase {
         }
 
         if (onlineOnly || !isUpToDate()) {
-            productApi.findByCode(scannableCode, productAvailableListener);
+            productApi.findByCode(scannedCode, productAvailableListener);
         } else {
-            Product local = findByCode(scannableCode);
+            Product local = findByCode(scannedCode);
             if (local != null) {
                 productAvailableListener.onProductAvailable(local, false);
             } else {
-                productApi.findByCode(scannableCode, productAvailableListener);
+                productApi.findByCode(scannedCode, productAvailableListener);
             }
         }
     }
@@ -1162,21 +1161,21 @@ public class ProductDatabase {
     /**
      * Find a product via its scannable code.
      *
-     * @param scannableCode A valid scannableCode code.
+     * @param scannedCode A valid scannedCode code.
      * @return The first product containing the given EAN, otherwise null if no product was found.
      */
-    public Product findByCode(ScannableCode scannableCode) {
-        if (scannableCode == null
-                || scannableCode.getLookupCode() == null
-                || scannableCode.getLookupCode().length() == 0
-                || scannableCode.getTemplateName() == null) {
+    public Product findByCode(ScannedCode scannedCode) {
+        if (scannedCode == null
+                || scannedCode.getLookupCode() == null
+                || scannedCode.getLookupCode().length() == 0
+                || scannedCode.getTemplateName() == null) {
             return null;
         }
 
         Cursor cursor = productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
                 "WHERE s.code = ? AND s.template = ? LIMIT 1", new String[]{
-                scannableCode.getLookupCode(),
-                scannableCode.getTemplateName()
+                scannedCode.getLookupCode(),
+                scannedCode.getTemplateName()
         }, false);
 
         return getFirstProductAndClose(cursor);

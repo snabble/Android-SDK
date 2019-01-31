@@ -9,7 +9,7 @@ import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 
-public class ScannableCode implements Serializable {
+public class ScannedCode implements Serializable {
     private Integer embeddedData;
     private Integer price;
     private String lookupCode;
@@ -19,7 +19,7 @@ public class ScannableCode implements Serializable {
     private Unit embeddedUnit;
     private String transformationTemplateName;
 
-    private ScannableCode() {
+    private ScannedCode() {
 
     }
 
@@ -60,82 +60,81 @@ public class ScannableCode implements Serializable {
     }
 
     public static class Builder {
-
-        ScannableCode scannableCode;
+        ScannedCode scannedCode;
 
         public Builder(String templateName) {
-            scannableCode = new ScannableCode();
-            scannableCode.templateName = templateName;
+            scannedCode = new ScannedCode();
+            scannedCode.templateName = templateName;
         }
 
         public Builder setScannedCode(String scannedCode) {
-            scannableCode.code = scannedCode;
+            this.scannedCode.code = scannedCode;
             return this;
         }
 
         public Builder setLookupCode(String lookupCode) {
-            scannableCode.lookupCode = lookupCode;
+            scannedCode.lookupCode = lookupCode;
             return this;
         }
 
         public Builder setEmbeddedData(int embeddedData) {
-            scannableCode.embeddedData = embeddedData;
+            scannedCode.embeddedData = embeddedData;
             return this;
         }
 
         public Builder setEmbeddedUnit(Unit unit) {
-            scannableCode.embeddedUnit = unit;
+            scannedCode.embeddedUnit = unit;
             return this;
         }
 
         public Builder setTransformationTemplateName(String name) {
-            scannableCode.transformationTemplateName = name;
+            scannedCode.transformationTemplateName = name;
             return this;
         }
 
         public Builder setPrice(int price) {
-            scannableCode.price = price;
+            scannedCode.price = price;
             return this;
         }
 
-        public ScannableCode create() {
-            return scannableCode;
+        public ScannedCode create() {
+            return scannedCode;
         }
     }
 
-    public static ScannableCode parseDefault(Project project, String code) {
+    public static ScannedCode parseDefault(Project project, String code) {
         for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
-            ScannableCode scannableCode = codeTemplate.match(code).buildCode();
-            if (scannableCode != null && scannableCode.getTemplateName().equals("default")) {
-                return scannableCode;
+            ScannedCode scannedCode = codeTemplate.match(code).buildCode();
+            if (scannedCode != null && scannedCode.getTemplateName().equals("default")) {
+                return scannedCode;
             }
         }
 
         return null;
     }
 
-    public static List<ScannableCode> parse(Project project, String code) {
-        List<ScannableCode> matches = new ArrayList<>();
+    public static List<ScannedCode> parse(Project project, String code) {
+        List<ScannedCode> matches = new ArrayList<>();
         CodeTemplate defaultTemplate = project.getCodeTemplate("default");
 
         for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
-            ScannableCode scannableCode = codeTemplate.match(code).buildCode();
-            if (scannableCode != null) {
-                matches.add(scannableCode);
+            ScannedCode scannedCode = codeTemplate.match(code).buildCode();
+            if (scannedCode != null) {
+                matches.add(scannedCode);
             }
         }
 
         for (PriceOverrideTemplate priceOverrideTemplate : project.getPriceOverrideTemplates()) {
             CodeTemplate codeTemplate = priceOverrideTemplate.getCodeTemplate();
-            ScannableCode scannableCode = codeTemplate.match(code).buildCode();
-            if (scannableCode != null) {
-                String lookupCode = scannableCode.getLookupCode();
+            ScannedCode scannedCode = codeTemplate.match(code).buildCode();
+            if (scannedCode != null) {
+                String lookupCode = scannedCode.getLookupCode();
                 if (!lookupCode.equals(code)) {
-                    ScannableCode defaultCode = defaultTemplate.match(lookupCode).buildCode();
+                    ScannedCode defaultCode = defaultTemplate.match(lookupCode).buildCode();
                     if (defaultCode != null) {
-                        defaultCode.embeddedData = scannableCode.getEmbeddedData();
+                        defaultCode.embeddedData = scannedCode.getEmbeddedData();
                         defaultCode.embeddedUnit = Unit.PRICE;
-                        defaultCode.code = scannableCode.getCode();
+                        defaultCode.code = scannedCode.getCode();
 
                         CodeTemplate transformTemplate = priceOverrideTemplate.getTransmissionCodeTemplate();
                         if (transformTemplate != null) {
