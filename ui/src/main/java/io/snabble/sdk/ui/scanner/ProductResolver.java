@@ -16,6 +16,7 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -193,7 +194,7 @@ public class ProductResolver {
 
                 Product.Code[] codes = product.getScannableCodes();
                 if(codes.length > 0) {
-                    List<ScannableCode> scannableCodes = ScannableCode.parse(codes[0].lookupCode);
+                    List<ScannableCode> scannableCodes = ScannableCode.parse(SnabbleUI.getProject(), codes[0].lookupCode);
                     if (scannableCodes != null && scannableCodes.size() > 0) {
                         showProduct(product, scannableCodes.get(0));
                     }

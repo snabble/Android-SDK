@@ -124,7 +124,7 @@ public class EncodedCodesGenerator {
                         continue;
                     }
 
-                    CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(code.template);
+                    CodeTemplate codeTemplate = options.project.getCodeTemplate(code.template);
                     if (codeTemplate != null) {
                         ScannableCode scannableCode = codeTemplate.code(code.lookupCode)
                                 .embed(productInfo.quantity)
@@ -148,7 +148,7 @@ public class EncodedCodesGenerator {
                     transmissionCode = productInfo.scannedCode.getCode();
                 }
 
-                CodeTemplate codeTemplate = Snabble.getInstance().getTransmissionOverrideTemplate(productInfo.scannedCode.getTransformationTemplateName());
+                CodeTemplate codeTemplate = options.project.getTransformationTemplate(productInfo.scannedCode.getTransformationTemplateName());
                 if (codeTemplate != null) {
                     ScannableCode scannableCode = codeTemplate
                             .code(productInfo.scannedCode.getLookupCode())

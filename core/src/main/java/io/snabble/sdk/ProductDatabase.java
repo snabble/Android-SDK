@@ -837,7 +837,7 @@ public class ProductDatabase {
 
                 if (templates != null) {
                     String templateStr = templates[i];
-                    for (CodeTemplate codeTemplate : Snabble.getInstance().getCodeTemplates()) {
+                    for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
                         if (codeTemplate.getName().equals(templateStr)) {
                             template = codeTemplate;
                         }
@@ -1240,16 +1240,33 @@ public class ProductDatabase {
         // UNION ALL is used for two reasons:
         // 1) sorting the ean 8 matches on top without using ORDER BY for performance reasons
         // 2) avoiding the usage of OR between two GLOB's because in sqlite versions < 3.8
-        // the query optimizer chooses to do a full table search instead of a scan
-        String commonSql = "JOIN scannableCodes s ON s.sku = p.sku " +
-                "WHERE s.code GLOB ? AND s.template = 'default' " +
-                "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
-                "AND p.isDeposit = 0 ";
+        // the query optimizer chooses to do a full table scan instead of a search
 
-        String query = productSqlString(commonSql, true);
-        query += " UNION ALL ";
-        query += productSqlString(commonSql, true);
-        query += " LIMIT 100";
+        StringBuilder sb = new StringBuilder();
+        sb.append("JOIN scannableCodes s ON s.sku = p.sku WHERE s.code GLOB ? AND (");
+
+        int count = 0;
+        for (String searchTemplate : project.getSearchableTemplates()) {
+            if (count > 0) {
+                sb.append(" OR ");
+            }
+
+            sb.append("s.template = '");
+            sb.append(searchTemplate);
+            sb.append("'");
+            count++;
+        }
+
+        sb.append(") AND p.weighing != ");
+        sb.append(Product.Type.PreWeighed.getDatabaseValue());
+        sb.append(" AND p.isDeposit = 0 ");
+
+        String commonSql = sb.toString();
+
+        String query = productSqlString(commonSql, true) +
+                " UNION ALL " +
+                productSqlString(commonSql, true) +
+                " LIMIT 100";
 
         return rawQuery(query, new String[]{
                 "00000" + searchString + "*",

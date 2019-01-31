@@ -8,7 +8,6 @@ import androidx.test.runner.AndroidJUnit4;
 import io.snabble.sdk.codes.ScannableCode;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,13 +89,13 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFindByCode() {
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product product = productDatabase.findByCode(ScannableCode.parse("0885580466725").get(0));
-        Product product2 = productDatabase.findByCode(ScannableCode.parse("test1234").get(0));
+        Product product = productDatabase.findByCode(ScannableCode.parse(project, "0885580466725").get(0));
+        Product product2 = productDatabase.findByCode(ScannableCode.parse(project, "test1234").get(0));
 
         assertEquals(product.getSku(), "6");
         assertEquals(product, product2);
 
-        assertNull(productDatabase.findByCode(ScannableCode.parse("unknownCode").get(0)));
+        assertNull(productDatabase.findByCode(ScannableCode.parse(project, "unknownCode").get(0)));
     }
 
     @Test
@@ -334,12 +333,12 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFindProductWithByEan8WhenScanningEan13() {
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product product = productDatabase.findByCode(ScannableCode.parse("42276630").get(0));
+        Product product = productDatabase.findByCode(ScannableCode.parse(project, "42276630").get(0));
         Assert.assertNotNull(product);
 
         containsCode(product, "42276630");
 
-        Product product2 = productDatabase.findByCode(ScannableCode.parse("0000042276630").get(0));
+        Product product2 = productDatabase.findByCode(ScannableCode.parse(project, "0000042276630").get(0));
         Assert.assertNotNull(product2);
 
         containsCode(product2, "42276630");
@@ -348,7 +347,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFindProductWithEan13ByEan8() {
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product product = productDatabase.findByCode(ScannableCode.parse("42276630").get(0));
+        Product product = productDatabase.findByCode(ScannableCode.parse(project, "42276630").get(0));
         Assert.assertNotNull(product);
 
         containsCode(product, "0000042276630");

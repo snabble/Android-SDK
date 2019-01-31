@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 
 public class ScannableCode implements Serializable {
     private Integer embeddedData;
@@ -96,8 +98,8 @@ public class ScannableCode implements Serializable {
         }
     }
 
-    public static ScannableCode parseDefault(String code) {
-        for (CodeTemplate codeTemplate : Snabble.getInstance().getCodeTemplates()) {
+    public static ScannableCode parseDefault(Project project, String code) {
+        for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
             ScannableCode scannableCode = codeTemplate.match(code).buildCode();
             if (scannableCode != null && scannableCode.getTemplateName().equals("default")) {
                 return scannableCode;
@@ -107,18 +109,21 @@ public class ScannableCode implements Serializable {
         return null;
     }
 
-    public static List<ScannableCode> parse(String code) {
+    public static List<ScannableCode> parse(Project project, String code) {
         List<ScannableCode> matches = new ArrayList<>();
-        Snabble snabble = Snabble.getInstance();
+        CodeTemplate defaultTemplate = project.getCodeTemplate("default");
 
-        CodeTemplate defaultTemplate = snabble.getCodeTemplate("default");
-
-        for (CodeTemplate codeTemplate : snabble.getCodeTemplates()) {
+        for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
             ScannableCode scannableCode = codeTemplate.match(code).buildCode();
             if (scannableCode != null) {
                 matches.add(scannableCode);
+            }
+        }
 
-                // TODO / FIXME edgy...
+        for (PriceOverrideTemplate priceOverrideTemplate : project.getPriceOverrideTemplates()) {
+            CodeTemplate codeTemplate = priceOverrideTemplate.getCodeTemplate();
+            ScannableCode scannableCode = codeTemplate.match(code).buildCode();
+            if (scannableCode != null) {
                 String lookupCode = scannableCode.getLookupCode();
                 if (!lookupCode.equals(code)) {
                     ScannableCode defaultCode = defaultTemplate.match(lookupCode).buildCode();
@@ -126,7 +131,11 @@ public class ScannableCode implements Serializable {
                         defaultCode.embeddedData = scannableCode.getEmbeddedData();
                         defaultCode.embeddedUnit = Unit.PRICE;
                         defaultCode.code = scannableCode.getCode();
-                        defaultCode.transformationTemplateName = codeTemplate.getName();
+
+                        CodeTemplate transformTemplate = priceOverrideTemplate.getTransmissionCodeTemplate();
+                        if (transformTemplate != null) {
+                            defaultCode.transformationTemplateName = transformTemplate.getName();
+                        }
 
                         matches.add(defaultCode);
                     }

@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.JsonUtils;
@@ -62,7 +63,9 @@ public class Project {
 
     private File internalStorageDirectory;
 
-    private Map<String, CodeTemplate> transmissionOverrideTemplates;
+    private CodeTemplate[] codeTemplates;
+    private PriceOverrideTemplate[] priceOverrideTemplates;
+    private String[] searchableTemplates;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
@@ -126,7 +129,7 @@ public class Project {
             if (!encodedCodes.isJsonNull()) {
                 JsonObject object = encodedCodes.getAsJsonObject();
 
-                encodedCodesOptions = new EncodedCodesOptions.Builder()
+                encodedCodesOptions = new EncodedCodesOptions.Builder(this)
                         .prefix(JsonUtils.getStringOpt(object, "prefix", ""))
                         .separator(JsonUtils.getStringOpt(object, "separator", "\n"))
                         .suffix(JsonUtils.getStringOpt(object, "suffix", ""))
@@ -183,6 +186,51 @@ public class Project {
         if (shops == null) {
             shops = new Shop[0];
         }
+
+        // TODO parse from metadata
+        ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
+
+        codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
+        codeTemplates.add(new CodeTemplate("ean13_instore",  "2{code:5}{_}{embed:5}{_}"));
+        codeTemplates.add(new CodeTemplate("german_print", "4{code:2}{_:5}{embed:4}{_}"));
+        codeTemplates.add(new CodeTemplate("ean14_code128", "01{code:ean14}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade_ww", "94{code:5}{_:19}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade", "94{code:3}{_:10}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_1", "96{code:2}{_:36}"));
+        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_2", "96{_:13}{code:3}{_:30}"));
+        codeTemplates.add(new CodeTemplate("globus_weighing", "96{code:ean13}{embed:7}{price:5}{_}"));
+        codeTemplates.add(new CodeTemplate("ikea_itf14", "{code:8}{_:6}"));
+        codeTemplates.add(new CodeTemplate("default", "{*}"));
+
+        this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
+
+        List<PriceOverrideTemplate> priceOverrideTemplates = new ArrayList<>();
+        priceOverrideTemplates.add(new PriceOverrideTemplate(
+                new CodeTemplate("edeka_discount", "97{code:ean13}{embed:6}{_}"),
+                new CodeTemplate("edeka_discount_override", "241700{i}{embed:5}{ec}")));
+
+        if (id.contains("ikea")) {
+            priceOverrideTemplates.add(new PriceOverrideTemplate(
+                    new CodeTemplate("ikea_fundgrube", "{_}{_:7}{_}{_:17}{_}{_:3}{code:8}{_}{_:9}{embed100:5}{_}"),
+                    null));
+        }
+
+        if (id.contains("globus")) {
+            priceOverrideTemplates.add(new PriceOverrideTemplate(
+                    new CodeTemplate("globus_discount", "98{code:ean13}{_:8}{embed:7}{_:2}"),
+                    null));
+        }
+
+        this.priceOverrideTemplates = priceOverrideTemplates.toArray(new PriceOverrideTemplate[priceOverrideTemplates.size()]);
+
+        List<String> searchableTemplates = new ArrayList<>();
+        searchableTemplates.add("default");
+
+        if (id.contains("ikea")) {
+            searchableTemplates.add("ikea_itf14");
+        }
+
+        this.searchableTemplates = searchableTemplates.toArray(new String[searchableTemplates.size()]);
 
         notifyUpdate();
     }
@@ -336,6 +384,39 @@ public class Project {
 
     public String getCustomerCardId() {
         return loyaltyCardId;
+    }
+
+    public CodeTemplate getCodeTemplate(String name) {
+        for (CodeTemplate codeTemplate : codeTemplates) {
+            if (codeTemplate.getName().equals(name)) {
+                return codeTemplate;
+            }
+        }
+
+        return null;
+    }
+
+    public CodeTemplate[] getCodeTemplates() {
+        return codeTemplates;
+    }
+
+    public PriceOverrideTemplate[] getPriceOverrideTemplates() {
+        return priceOverrideTemplates;
+    }
+
+    public CodeTemplate getTransformationTemplate(String name) {
+        for (PriceOverrideTemplate priceOverrideTemplate : priceOverrideTemplates) {
+            CodeTemplate codeTemplate = priceOverrideTemplate.getTransmissionCodeTemplate();
+            if (codeTemplate != null && codeTemplate.getName().equals(name)) {
+                return codeTemplate;
+            }
+        }
+
+        return null;
+    }
+
+    public String[] getSearchableTemplates() {
+        return searchableTemplates;
     }
 
     /**

@@ -446,6 +446,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @SuppressLint("SetTextI18n")
         public void bindTo(final int position) {
+            final Project project = SnabbleUI.getProject();
             final Product product = cart.getProduct(position);
             final int quantity = cart.getQuantity(position);
             final Integer embeddedPrice = cart.getEmbeddedPrice(position);
@@ -542,7 +543,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         int p = getAdapterPosition();
 
                         if (cart.isZeroAmountProduct(p)) {
-                            CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(scannedCode.getTemplateName());
+                            CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
                             ScannableCode scannableCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
                                     .embed(embeddedAmount + 1)
                                     .buildCode();
@@ -568,7 +569,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             removeAndShowUndoSnackbar(p, product, cart.getScannedCode(p), q+1, isZeroAmountProduct);
                         } else {
                             if (isZeroAmountProduct) {
-                                CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(scannedCode.getTemplateName());
+                                CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
                                 ScannableCode scannableCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
                                         .embed(q)
                                         .buildCode();

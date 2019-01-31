@@ -356,7 +356,7 @@ class ProductConfirmationDialog {
 
             // generate new code when the embedded data contains 0
             if (scannedCode.getEmbeddedData() == 0) {
-                CodeTemplate codeTemplate = Snabble.getInstance().getCodeTemplate(scannedCode.getTemplateName());
+                CodeTemplate codeTemplate = SnabbleUI.getProject().getCodeTemplate(scannedCode.getTemplateName());
                 scannedCode = codeTemplate.code(scannedCode.getLookupCode())
                         .embed(getQuantity())
                         .buildCode();

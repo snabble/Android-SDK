@@ -35,6 +35,7 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -197,7 +198,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannableCode.parse(barcode.getText()), barcode.getFormat());
+            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
         }
     }
 
@@ -233,7 +234,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setPositiveButton(R.string.Snabble_Done, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                lookupAndShowProduct(ScannableCode.parse(input.getText().toString()));
+                                lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), input.getText().toString()));
                             }
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)

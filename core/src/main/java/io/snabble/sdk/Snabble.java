@@ -56,8 +56,6 @@ public class Snabble {
     private String versionName;
     private Environment environment;
     private List<X509Certificate> paymentCertificates;
-    private CodeTemplate[] codeTemplates;
-    private Map<String, CodeTemplate> transmissionOverrideTemplates;
 
     private Snabble() {
 
@@ -97,8 +95,6 @@ public class Snabble {
         userPreferences = new UserPreferences(app);
         receipts = new Receipts();
 
-        createPrebuiltTemplates();
-
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
         if (config.endpointBaseUrl == null) {
@@ -136,29 +132,6 @@ public class Snabble {
         }
 
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
-    }
-
-    private void createPrebuiltTemplates() {
-        ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
-
-        codeTemplates.add(new CodeTemplate("ean13_instore_chk", "2{code:5}{i}{embed:5}{_}"));
-        codeTemplates.add(new CodeTemplate("ean13_instore",  "2{code:5}{_}{embed:5}{_}"));
-        codeTemplates.add(new CodeTemplate("german_print", "4{code:2}{_:5}{embed:4}{_}"));
-        codeTemplates.add(new CodeTemplate("ean14_code128", "01{code:ean14}"));
-        codeTemplates.add(new CodeTemplate("edeka_discount", "97{code:ean13}{embed:6}{_}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade_ww", "94{code:5}{_:19}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade", "94{code:3}{_:10}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_1", "96{code:2}{_:36}"));
-        codeTemplates.add(new CodeTemplate("globus_unitrade_rep_2", "96{_:13}{code:3}{_:30}"));
-        codeTemplates.add(new CodeTemplate("globus_weighing", "96{code:ean13}{embed:7}{price:5}{_}"));
-        codeTemplates.add(new CodeTemplate("globus_discount", "98{code:ean13}{_:8}{embed:7}{_:2}"));
-        codeTemplates.add(new CodeTemplate("ikea_fundgrube", "{_}{_:7}{_}{_:17}{_}{_:3}{code:8}{_}{_:9}{embed100:5}{_}"));
-        codeTemplates.add(new CodeTemplate("default", "{*}"));
-
-        this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
-
-        transmissionOverrideTemplates = new HashMap<>();
-        transmissionOverrideTemplates.put("edeka_discount", new CodeTemplate("edeka_discount_override", "241700{i}{embed:5}{ec}"));
     }
 
     public String getVersionName() {
@@ -411,28 +384,6 @@ public class Snabble {
 
     public PaymentCredentialsStore getPaymentCredentialsStore() {
         return paymentCredentialsStore;
-    }
-
-    public CodeTemplate getCodeTemplate(String name) {
-        for (CodeTemplate codeTemplate : codeTemplates) {
-            if (codeTemplate.getName().equals(name)) {
-                return codeTemplate;
-            }
-        }
-
-        return null;
-    }
-
-    public CodeTemplate[] getCodeTemplates() {
-        return codeTemplates;
-    }
-
-    public CodeTemplate getTransmissionOverrideTemplate(String id) {
-        if (id == null) {
-            return null;
-        }
-
-        return transmissionOverrideTemplates.get(id);
     }
 
     public static Snabble getInstance() {

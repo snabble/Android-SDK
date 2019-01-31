@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -82,7 +83,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         String code = ZebraSupport.dispatchKeyEvent(this, event);
         if (code != null) {
             new ProductResolver.Builder(this)
-                    .setCodes(ScannableCode.parse(code))
+                    .setCodes(ScannableCode.parse(SnabbleUI.getProject(), code))
                     .create()
                     .show();
 

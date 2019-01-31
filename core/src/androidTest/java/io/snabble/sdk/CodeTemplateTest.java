@@ -48,6 +48,10 @@ public class CodeTemplateTest {
         newCodeTemplate("{code:}", false);
         newCodeTemplate("{embed:}", false);
         newCodeTemplate("{price:}", false);
+
+        newCodeTemplate("{{code:8{{{{}}}}}", false);
+        newCodeTemplate("{{}}", false);
+        newCodeTemplate("{code:8{_:3}}", false);
     }
 
     @Test

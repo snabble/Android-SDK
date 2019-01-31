@@ -159,7 +159,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayView(new CheckoutEncodedCodesView(getContext()));
                 break;
             case ENCODED_CODES_CSV:
-                EncodedCodesOptions options = new EncodedCodesOptions.Builder()
+                EncodedCodesOptions options = new EncodedCodesOptions.Builder(SnabbleUI.getProject())
                         .prefix("snabble;\n")
                         .separator("\n")
                         .suffix("")
