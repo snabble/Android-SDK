@@ -491,10 +491,10 @@ public class ProductDatabase {
                 int count = cursor.getCount();
 
                 long time2 = SystemClock.elapsedRealtime() - time;
-                //if (time2 >= 16) {
+                if (time2 >= 16) {
                     Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
                             time2, count, bindArgs(sql, args));
-                //}
+                }
             } catch (Exception e) {
                 // query could not be executed
                 Logger.e(e.toString());
