@@ -6,46 +6,36 @@ import java.math.RoundingMode;
 import io.snabble.sdk.utils.Logger;
 
 public enum Unit {
-    MILLILITER("ml"),
-    DECILITER("dl"),
-    LITER("l"),
-    CUBIC_METER("m³"),
-    CUBIC_CENTIMETER("cm³"),
-    SQUARE_METER("m²"),
-    SQUARE_CENTIMETER("cm²"),
-    MILLIMETER("mm"),
-    CENTIMETER("cm"),
-    METER("m"),
-    KILOGRAM("kg"),
-    GRAM("g"),
-    TONNE("t"),
-    PIECE(""),
-    PRICE("");
+    MILLILITER("ml", "ml"),
+    DECILITER("dl", "dl"),
+    LITER("l", "l"),
+    CUBIC_METER("m3", "m³"),
+    CUBIC_CENTIMETER("cm3", "cm³"),
+    SQUARE_METER("m2", "m²"),
+    SQUARE_CENTIMETER("cm2", "cm²"),
+    MILLIMETER("mm", "mm"),
+    CENTIMETER("cm", "cm"),
+    METER("m", "m"),
+    KILOGRAM("kg", "kg"),
+    GRAM("g", "g"),
+    TONNE("t", "t"),
+    PIECE("piece", ""),
+    PRICE("price", "");
 
+    private String id;
     private String displayValue;
 
-    Unit(String displayValue) {
+    Unit(String id, String displayValue) {
+        this.id = id;
         this.displayValue = displayValue;
     }
 
     public static Unit fromString(String value) {
         if (value != null) {
-            switch (value) {
-                case "ml": return MILLILITER;
-                case "dl": return DECILITER;
-                case "l": return LITER;
-                case "m3": return CUBIC_METER;
-                case "cm3": return CUBIC_CENTIMETER;
-                case "m2": return SQUARE_METER;
-                case "cm2": return SQUARE_CENTIMETER;
-                case "mm": return MILLIMETER;
-                case "cm": return CENTIMETER;
-                case "m": return METER;
-                case "kg": return KILOGRAM;
-                case "g": return GRAM;
-                case "t": return TONNE;
-                case "piece": return PIECE;
-                case "price": return PRICE;
+            for (Unit unit : values()) {
+                if (unit.id.equals(value)) {
+                    return unit;
+                }
             }
         }
 
@@ -93,6 +83,10 @@ public enum Unit {
         Logger.d("Unsupported conversion: %s -> %s", from.toString(), to.toString());
 
         return value;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getDisplayValue() {

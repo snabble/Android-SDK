@@ -5,7 +5,6 @@ import android.app.Application;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.internal.LinkedTreeMap;
 
 import org.apache.commons.lang3.LocaleUtils;
 
@@ -19,13 +18,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
-import io.snabble.sdk.utils.IntRange;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -200,7 +197,7 @@ public class Project {
         codeTemplates.add(new CodeTemplate("globus_unitrade_rep_2", "96{_:13}{code:3}{_:30}"));
         codeTemplates.add(new CodeTemplate("globus_weighing", "96{code:ean13}{embed:7}{price:5}{_}"));
         codeTemplates.add(new CodeTemplate("ikea_itf14", "{code:8}{_:6}"));
-        codeTemplates.add(new CodeTemplate("default", "{*}"));
+        codeTemplates.add(new CodeTemplate("default", "{code:*}"));
 
         this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
 

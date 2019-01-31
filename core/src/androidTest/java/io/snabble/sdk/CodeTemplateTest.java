@@ -16,15 +16,15 @@ public class CodeTemplateTest {
         newCodeTemplate("97{code:ean13}{price:6}{_}", true);
         newCodeTemplate("96{code:7}{price:5}", true);
         newCodeTemplate("96{_:5}{code:ean13}{_:3}", true);
-
         newCodeTemplate("96{_:5}{code:ean13}bla{_:3}", true);
-
         newCodeTemplate("{code:*}", true);
         newCodeTemplate("{*}", true);
         newCodeTemplate("96{code:*}", true);
         newCodeTemplate("96{*}", true);
-
         newCodeTemplate("123{_:5}", true);
+        newCodeTemplate("241700{i}{embed:5}{ec}", true);
+        newCodeTemplate("241700000000{ec}", true);
+        newCodeTemplate("2417000{ec}", true);
 
         // invalid templates
         newCodeTemplate("96{prize:5}", false);
@@ -48,10 +48,11 @@ public class CodeTemplateTest {
         newCodeTemplate("{code:}", false);
         newCodeTemplate("{embed:}", false);
         newCodeTemplate("{price:}", false);
-
         newCodeTemplate("{{code:8{{{{}}}}}", false);
         newCodeTemplate("{{}}", false);
         newCodeTemplate("{code:8{_:3}}", false);
+        newCodeTemplate("24170000000{ec}1", false);
+        newCodeTemplate("24170001{ec}", false);
     }
 
     @Test
@@ -63,6 +64,14 @@ public class CodeTemplateTest {
         code = newCodeTemplate("97{code:ean13}{embed100:6}{_}").match("9743115013222840001009").buildCode();
         Assert.assertEquals("4311501322284", code.getLookupCode());
         Assert.assertEquals(10000, code.getEmbeddedData());
+
+        code = newCodeTemplate("96{code:ean13}{embed:7}{price:5}{_}").match("9643115013222840001234005001").buildCode();
+        Assert.assertEquals("4311501322284", code.getLookupCode());
+        Assert.assertEquals(1234, code.getEmbeddedData());
+        Assert.assertEquals(500, code.getPrice());
+
+        code = newCodeTemplate("{code:1}{embed:15}").match("1000000000000100").buildCode();
+        Assert.assertEquals(100, code.getEmbeddedData());
     }
 
     @Test

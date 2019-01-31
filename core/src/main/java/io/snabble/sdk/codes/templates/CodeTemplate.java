@@ -1,6 +1,7 @@
 package io.snabble.sdk.codes.templates;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -93,7 +94,15 @@ public class CodeTemplate {
                         group = new EAN13InternalChecksumGroup(this);
                         break;
                     case "ec":
-                        group = new EAN13ChecksumGroup(this);
+                        if (length() != 7 && length() != 12) {
+                            throw new IllegalArgumentException("{ec} only supports ean 8 and ean 13 types");
+                        }
+
+                        if (i < pattern.length() - 1) {
+                            throw new IllegalArgumentException("{ec} always must be the last entry");
+                        }
+
+                        group = new EANChecksumGroup(this);
                         break;
                     case "*":
                         group = new WildcardGroup(this, 0);
@@ -144,6 +153,10 @@ public class CodeTemplate {
         return name;
     }
 
+    public List<Group> getGroups() {
+        return Collections.unmodifiableList(groups);
+    }
+
     public <T extends Group> T getGroup(Class<? extends Group> clazz) {
         for (Group group : groups) {
             if (group.getClass() == clazz) {
@@ -180,7 +193,7 @@ public class CodeTemplate {
         PlainTextGroup plainTextGroup = getGroup(PlainTextGroup.class);
         EmbedGroup embedGroup = getGroup(EmbedGroup.class);
         EAN13InternalChecksumGroup ean13InternalChecksumGroup = getGroup(EAN13InternalChecksumGroup.class);
-        EAN13ChecksumGroup ean13ChecksumGroup = getGroup(EAN13ChecksumGroup.class);
+        EANChecksumGroup eanChecksumGroup = getGroup(EANChecksumGroup.class);
 
         if (plainTextGroup != null) {
             plainTextGroup.apply(plainTextGroup.plainText());
@@ -194,8 +207,8 @@ public class CodeTemplate {
             ean13InternalChecksumGroup.recalculate();
         }
 
-        if (ean13ChecksumGroup != null) {
-            ean13ChecksumGroup.recalculate();
+        if (eanChecksumGroup != null) {
+            eanChecksumGroup.recalculate();
         }
 
         return this;
@@ -251,6 +264,10 @@ public class CodeTemplate {
         for (Group group : groups) {
             if (group instanceof EmbedGroup) {
                 builder.setEmbeddedData(((EmbedGroup) group).number());
+            }
+
+            if (group instanceof PriceGroup) {
+                builder.setPrice(((PriceGroup) group).number());
             }
 
             if (group instanceof CodeGroup) {

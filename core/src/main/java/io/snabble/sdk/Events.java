@@ -16,6 +16,7 @@ import java.util.IllegalFormatException;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import io.snabble.sdk.codes.ScannableCode;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -210,8 +211,16 @@ class Events {
 
             PayloadCartItem item = new PayloadCartItem();
 
+            ScannableCode scannedCode = shoppingCart.getScannedCode(i);
+            Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+
             item.sku = String.valueOf(product.getSku());
             item.scannedCode = shoppingCart.getScannedCode(i).getCode();
+
+            if (encodingUnit != null) {
+                item.encodingUnit = encodingUnit.getId();
+            }
+
             item.amount = quantity;
             item.units = shoppingCart.getEmbeddedUnits(i);
             item.weight = shoppingCart.getEmbeddedWeight(i);
@@ -311,6 +320,7 @@ class Events {
         private String sku;
         private String scannedCode;
         private int amount;
+        private String encodingUnit;
         private Integer price;
         private Integer weight;
         private Integer units;

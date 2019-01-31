@@ -9,7 +9,6 @@ public class EAN8Test {
     @Test
     public void testEAN8() {
         Assert.assertTrue(EAN8.isEan8("76543210"));
-        Assert.assertTrue(EAN8.isEan8("76543210"));
         Assert.assertFalse(EAN8.isEan8("76543211"));
         Assert.assertFalse(EAN8.isEan8("76543212"));
         Assert.assertFalse(EAN8.isEan8("76543213"));

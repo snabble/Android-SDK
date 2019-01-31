@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.snabble.sdk.Project;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 
 public class ScannableCode implements Serializable {
     private Integer embeddedData;
+    private Integer price;
     private String lookupCode;
     private String code;
     private String templateName;
@@ -47,16 +47,16 @@ public class ScannableCode implements Serializable {
         return embeddedUnit;
     }
 
-    public void setEmbeddedUnit(Unit embeddedUnit) {
-        this.embeddedUnit = embeddedUnit;
-    }
-
     public String getTransformationTemplateName() {
         return transformationTemplateName;
     }
 
-    public void setTransformationTemplateName(String transformationTemplateName) {
-        this.transformationTemplateName = transformationTemplateName;
+    public int getPrice() {
+        return price != null ? price : 0;
+    }
+
+    public boolean hasPrice() {
+        return price != null;
     }
 
     public static class Builder {
@@ -90,6 +90,11 @@ public class ScannableCode implements Serializable {
 
         public Builder setTransformationTemplateName(String name) {
             scannableCode.transformationTemplateName = name;
+            return this;
+        }
+
+        public Builder setPrice(int price) {
+            scannableCode.price = price;
             return this;
         }
 
