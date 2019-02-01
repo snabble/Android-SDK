@@ -18,6 +18,7 @@ public class ScannedCode implements Serializable {
 
     private Unit embeddedUnit;
     private String transformationTemplateName;
+    private String transformationCode;
 
     private ScannedCode() {
 
@@ -45,6 +46,10 @@ public class ScannedCode implements Serializable {
 
     public Unit getEmbeddedUnit() {
         return embeddedUnit;
+    }
+
+    public String getTransformationCode() {
+        return transformationCode;
     }
 
     public String getTransformationTemplateName() {
@@ -84,6 +89,11 @@ public class ScannedCode implements Serializable {
 
         public Builder setEmbeddedUnit(Unit unit) {
             scannedCode.embeddedUnit = unit;
+            return this;
+        }
+
+        public Builder setTransformationCode(String transformationCode) {
+            scannedCode.transformationCode = transformationCode;
             return this;
         }
 
@@ -139,6 +149,7 @@ public class ScannedCode implements Serializable {
                         CodeTemplate transformTemplate = priceOverrideTemplate.getTransmissionCodeTemplate();
                         if (transformTemplate != null) {
                             defaultCode.transformationTemplateName = transformTemplate.getName();
+                            defaultCode.transformationCode = priceOverrideTemplate.getTransmissionCode();
                         }
 
                         matches.add(defaultCode);

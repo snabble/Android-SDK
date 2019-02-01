@@ -168,6 +168,23 @@ public class CodeTemplateTest {
         Assert.assertEquals(9876500, code.getEmbeddedData());
         Assert.assertEquals("12345", code.getLookupCode());
         Assert.assertEquals("2123457987651", code.getCode());
+
+        code = newCodeTemplate("2{code:5}{_}{embed:5}{ec}")
+                .override("2417000")
+                .embed(12345)
+                .buildCode();
+
+        Assert.assertEquals(12345, code.getEmbeddedData());
+        Assert.assertEquals("2417000123451", code.getCode());
+
+        code = newCodeTemplate("2{code:5}{_}{embed:5}{ec}")
+                .override("2417000")
+                .code("55555")
+                .embed(12345)
+                .buildCode();
+
+        Assert.assertEquals(12345, code.getEmbeddedData());
+        Assert.assertEquals("2417000123451", code.getCode());
     }
 
     private CodeTemplate newCodeTemplate(String pattern) {

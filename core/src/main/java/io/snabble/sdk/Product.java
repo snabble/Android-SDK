@@ -279,8 +279,10 @@ public class Product implements Serializable, Parcelable {
 
     public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
+            String lookupCode = scannedCode != null ? scannedCode.getLookupCode() : null;
+
             Unit referenceUnit = this.referenceUnit;
-            Unit encodingUnit = getEncodingUnit(scannedCode.getLookupCode());
+            Unit encodingUnit = getEncodingUnit(lookupCode);
 
             if (referenceUnit == null) {
                 referenceUnit = Unit.KILOGRAM;
@@ -291,7 +293,7 @@ public class Product implements Serializable, Parcelable {
             }
 
             int price = getDiscountedPrice();
-            if (scannedCode.hasPrice()) {
+            if (scannedCode != null && scannedCode.hasPrice()) {
                 price = scannedCode.getPrice();
             }
 

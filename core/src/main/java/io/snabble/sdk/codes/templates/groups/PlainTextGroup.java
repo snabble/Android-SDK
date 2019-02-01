@@ -8,10 +8,12 @@ public class PlainTextGroup extends Group {
     public PlainTextGroup(CodeTemplate template, String plainText) {
         super(template, plainText.length());
         this.plainText = plainText;
+        apply(plainText);
     }
 
-    public String plainText() {
-        return plainText;
+    @Override
+    public void reset() {
+        apply(plainText);
     }
 
     @Override

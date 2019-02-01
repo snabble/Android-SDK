@@ -14,6 +14,7 @@ public class CodeTemplate {
     private List<Group> groups;
     private String name;
     private String matchedCode;
+    private String overrideCode;
 
     public CodeTemplate(String name, String pattern) {
         this.name = name;
@@ -149,6 +150,11 @@ public class CodeTemplate {
         }
     }
 
+    @SuppressWarnings("CopyConstructorMissesField") // copy through parsing again
+    public CodeTemplate(CodeTemplate other) {
+        this(other.getName(), other.getPattern());
+    }
+
     public String getName() {
         return name;
     }
@@ -179,6 +185,11 @@ public class CodeTemplate {
         return this;
     }
 
+    public CodeTemplate override(String override) {
+        overrideCode = override;
+        return this;
+    }
+
     public CodeTemplate code(String code) {
         CodeGroup codeGroup = getGroup(CodeGroup.class);
 
@@ -190,25 +201,10 @@ public class CodeTemplate {
     }
 
     public CodeTemplate embed(int embeddedData) {
-        PlainTextGroup plainTextGroup = getGroup(PlainTextGroup.class);
         EmbedGroup embedGroup = getGroup(EmbedGroup.class);
-        EAN13InternalChecksumGroup ean13InternalChecksumGroup = getGroup(EAN13InternalChecksumGroup.class);
-        EANChecksumGroup eanChecksumGroup = getGroup(EANChecksumGroup.class);
-
-        if (plainTextGroup != null) {
-            plainTextGroup.apply(plainTextGroup.plainText());
-        }
 
         if (embedGroup != null) {
             embedGroup.applyInt(embeddedData);
-        }
-
-        if (ean13InternalChecksumGroup != null) {
-            ean13InternalChecksumGroup.recalculate();
-        }
-
-        if (eanChecksumGroup != null) {
-            eanChecksumGroup.recalculate();
         }
 
         return this;
@@ -246,9 +242,27 @@ public class CodeTemplate {
             builder.setScannedCode(matchedCode);
             matchedCode = null;
         } else {
-            PlainTextGroup plainTextGroup = getGroup(PlainTextGroup.class);
-            if (plainTextGroup != null) {
-                plainTextGroup.apply(plainTextGroup.plainText());
+            if (overrideCode != null) {
+                int i = 0;
+                int p = 0;
+                while (p < overrideCode.length()) {
+                    Group group = groups.get(i);
+                    int len = group.length();
+                    String part = overrideCode.substring(p, p+len);
+                    group.apply(part);
+                    p += len;
+                    i++;
+                }
+            }
+
+            EAN13InternalChecksumGroup ean13InternalChecksumGroup = getGroup(EAN13InternalChecksumGroup.class);
+            EANChecksumGroup eanChecksumGroup = getGroup(EANChecksumGroup.class);
+            if (ean13InternalChecksumGroup != null) {
+                ean13InternalChecksumGroup.recalculate();
+            }
+
+            if (eanChecksumGroup != null) {
+                eanChecksumGroup.recalculate();
             }
 
             builder.setScannedCode(string());

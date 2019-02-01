@@ -1,7 +1,10 @@
 {
   "links": {
+    "clientOrders": {
+      "href": "/clients/{clientID}/orders"
+    },
     "self": {
-      "href": "/metadata/app/test/android/1.0"
+      "href": "/metadata/app/test-app/version/1.0"
     }
   },
   "metadata": {
@@ -9,9 +12,25 @@
   },
   "projects": [
     {
+      "codeTemplates": {
+        "default": "{code:*}",
+        "ean13_instore_chk": "2{code:5}{i}{embed:5}{ec}",
+        "ean14_code128": "01{code:ean14}"
+      },
       "currency": "EUR",
+      "customerCards": {
+        "accepted": [
+          "knauber"
+        ]
+      },
       "decimalDigits": 2,
       "enableCheckout": true,
+      "encodedCodes": {
+        "prefix": "",
+        "separator": "\n",
+        "suffix": "",
+        "maxCodes": 100
+      },
       "id": "test",
       "links": {
         "appEvents": {
@@ -55,25 +74,91 @@
         }
       },
       "locale": "de_DE",
+      "priceOverrideCodes": [],
       "pricePrefixes": [
         "26"
       ],
       "roundingMode": "up",
+      "scanFormats": [
+        "ean8",
+        "ean13",
+        "code128"
+      ],
+      "searchableTemplates": [
+        "default",
+        "ean14_code128"
+      ],
       "shops": [
         {
-          "city": "Bonn",
-          "country": "Deutschland",
+          "city": "Some City",
+          "country": "Deutschland ",
           "email": "info@snabble.io",
           "external": null,
           "externalId": null,
-          "id": "1775",
+          "id": "2311",
+          "lat": 2,
+          "links": {
+            "self": {
+              "href": "https://api.snabble-testing.io/test/shops/2311"
+            }
+          },
+          "lon": 2,
+          "name": "snabble Shop 2",
+          "openingHoursSpecification": [
+            {
+              "closes": "13:00:00",
+              "dayOfWeek": "Tuesday",
+              "opens": "12:00:00"
+            },
+            {
+              "closes": "23:48:00",
+              "dayOfWeek": "Monday",
+              "opens": "12:48:00"
+            }
+          ],
+          "phone": "12345",
+          "project": "test",
+          "services": [
+            "parking",
+            "bakery"
+          ],
+          "state": "NRW",
+          "street": "Some Street",
+          "zip": "12345"
+        },
+        {
+          "city": "Bonn",
+          "country": "Deutschland ",
+          "email": "info@snabble.io",
+          "external": null,
+          "externalId": null,
+          "id": "1774",
           "lat": 50.7352963,
+          "links": {
+            "self": {
+              "href": "https://api.snabble-testing.io/test/shops/1774"
+            }
+          },
           "lon": 7.1001417,
           "name": "snabble GmbH",
-          "openingHoursSpecification": [],
+          "openingHoursSpecification": [
+            {
+              "closes": "12:01:00",
+              "dayOfWeek": "Tuesday",
+              "opens": "12:00:00"
+            },
+            {
+              "closes": "12:00:00",
+              "dayOfWeek": "Monday",
+              "opens": "10:00:00"
+            }
+          ],
           "phone": "+491717673249",
           "project": "test",
-          "services": [],
+          "services": [
+            "parking",
+            "bakery"
+          ],
           "state": "NRW",
           "street": "Acherstraße 26",
           "zip": "53111"
@@ -84,22 +169,34 @@
           "email": "info@snabble.io",
           "external": null,
           "externalId": null,
-          "id": "1774",
-          "lat": 50.7352963,
-          "lon": 7.1001417,
-          "name": "snabble GmbH 2",
-          "openingHoursSpecification": [],
+          "id": "1775",
+          "lat": 50.7225521,
+          "links": {
+            "self": {
+              "href": "https://api.snabble-testing.io/test/shops/1775"
+            }
+          },
+          "lon": 7.0581994,
+          "name": "tarent solutions GmbH",
+          "openingHoursSpecification": [
+            {
+              "closes": "12:11:00",
+              "dayOfWeek": "Monday",
+              "opens": "11:11:00"
+            }
+          ],
           "phone": "+491717673249",
           "project": "test",
           "services": [],
           "state": "NRW",
-          "street": "Acherstraße 26",
-          "zip": "53111"
+          "street": "Rochusstraße 2-4",
+          "zip": "53123"
         }
       ],
       "unitPrefixes": [
         "25"
       ],
+      "useGermanPrintPrefix": true,
       "verifyInternalEanChecksum": true,
       "weighPrefixes": [
         "24"

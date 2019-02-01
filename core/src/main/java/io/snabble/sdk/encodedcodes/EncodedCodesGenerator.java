@@ -151,6 +151,7 @@ public class EncodedCodesGenerator {
                 CodeTemplate codeTemplate = options.project.getTransformationTemplate(productInfo.scannedCode.getTransformationTemplateName());
                 if (codeTemplate != null) {
                     ScannedCode scannedCode = codeTemplate
+                            .override(productInfo.scannedCode.getTransformationCode())
                             .code(productInfo.scannedCode.getLookupCode())
                             .embed(productInfo.scannedCode.getEmbeddedData())
                             .buildCode();
