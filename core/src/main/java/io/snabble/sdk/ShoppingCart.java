@@ -368,7 +368,7 @@ public class ShoppingCart {
         }
 
         if (scannedCode.hasEmbeddedData()) {
-            if (Unit.isMass(unit)) {
+            if (Unit.isMeasurable(unit)) {
                 entry.weight = scannedCode.getEmbeddedData();
             } else if (unit == Unit.PRICE) {
                 entry.price = scannedCode.getEmbeddedData();
@@ -418,13 +418,13 @@ public class ShoppingCart {
                 Product product = e.product;
 
                 if (e.weight != null) {
-                    sum += product.getPriceForQuantity(e.weight, e.scannedCode.getLookupCode(), project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.weight, e.scannedCode, project.getRoundingMode());
                 } else if (e.price != null) {
                     sum += e.price;
                 } else if (e.amount != null) {
                     sum += product.getPrice() * e.amount;
                 } else {
-                    sum += product.getPriceForQuantity(e.quantity, e.scannedCode.getLookupCode(), project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
                 }
             }
 
@@ -441,7 +441,7 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product depositProduct = e.product.getDepositProduct();
                 if (depositProduct != null) {
-                    sum += depositProduct.getPriceForQuantity(e.quantity, e.scannedCode.getLookupCode(), project.getRoundingMode());
+                    sum += depositProduct.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
                 }
             }
 

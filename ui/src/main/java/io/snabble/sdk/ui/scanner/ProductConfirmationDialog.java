@@ -118,7 +118,7 @@ class ProductConfirmationDialog {
         }
 
         if (scannedCode.hasEmbeddedData()) {
-            if (Unit.isMass(unit)) {
+            if (Unit.isMeasurable(unit)) {
                 quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode.getCode()).getDisplayValue());
                 quantityAnnotation.setVisibility(View.VISIBLE);
                 plus.setVisibility(View.GONE);
@@ -290,8 +290,8 @@ class ProductConfirmationDialog {
     private void updatePrice() {
         RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
 
-        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(), scannedCode.getCode(), roundingMode));
-        String singlePrice = priceFormatter.format(product);
+        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(), scannedCode, roundingMode));
+        String singlePrice = priceFormatter.format(product, true, scannedCode);
 
         int q = getQuantity();
         Unit encodingUnit = product.getEncodingUnit(scannedCode.getCode());
@@ -305,7 +305,7 @@ class ProductConfirmationDialog {
             encodingDisplayValue = encodingUnit.getDisplayValue();
         }
 
-        if (q > 0 && (Unit.isMass(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
+        if (q > 0 && (Unit.isMeasurable(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
             price.setText(String.format("%s %s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
         } else if (q > 1) {
             if (encodingUnit == Unit.PIECE) {
@@ -327,7 +327,7 @@ class ProductConfirmationDialog {
 
         Product depositProduct = product.getDepositProduct();
         if (depositProduct != null) {
-            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(), scannedCode.getCode(), roundingMode));
+            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(), scannedCode, roundingMode));
             Resources res = context.getResources();
             String text = res.getString(R.string.Snabble_Scanner_plusDeposit, depositPriceText);
             depositPrice.setText(text);

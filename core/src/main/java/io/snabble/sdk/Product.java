@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.GsonHolder;
 
 /**
@@ -276,10 +277,10 @@ public class Product implements Serializable, Parcelable {
         return saleStop;
     }
 
-    public int getPriceForQuantity(int quantity, String lookupCode, RoundingMode roundingMode) {
+    public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             Unit referenceUnit = this.referenceUnit;
-            Unit encodingUnit = getEncodingUnit(lookupCode);
+            Unit encodingUnit = getEncodingUnit(scannedCode.getLookupCode());
 
             if (referenceUnit == null) {
                 referenceUnit = Unit.KILOGRAM;
@@ -289,7 +290,12 @@ public class Product implements Serializable, Parcelable {
                 encodingUnit = Unit.GRAM;
             }
 
-            BigDecimal pricePerReferenceUnit = new BigDecimal(getDiscountedPrice());
+            int price = getDiscountedPrice();
+            if (scannedCode.hasPrice()) {
+                price = scannedCode.getPrice();
+            }
+
+            BigDecimal pricePerReferenceUnit = new BigDecimal(price);
             BigDecimal pricePerUnit = Unit.convert(pricePerReferenceUnit,
                     referenceUnit, encodingUnit, 16, roundingMode);
 

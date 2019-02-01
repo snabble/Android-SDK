@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Currency;
 
-import io.snabble.sdk.Product;
-import io.snabble.sdk.Project;
+import io.snabble.sdk.codes.ScannedCode;
 
 public class PriceFormatter {
     private Project project;
@@ -46,10 +45,18 @@ public class PriceFormatter {
     }
 
     public String format(Product product, boolean discountedPrice) {
+        return format(product, discountedPrice, null);
+    }
+
+    public String format(Product product, boolean discountedPrice, ScannedCode scannedCode) {
         int price = product.getPrice();
 
         if (discountedPrice) {
             price = product.getDiscountedPrice();
+        }
+
+        if (scannedCode != null && scannedCode.hasPrice()) {
+            price = scannedCode.getPrice();
         }
 
         String formattedString = format(price);

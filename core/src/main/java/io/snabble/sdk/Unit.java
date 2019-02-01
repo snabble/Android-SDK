@@ -93,6 +93,10 @@ public enum Unit {
         return displayValue;
     }
 
+    public static boolean isMeasurable(Unit unit) {
+        return isMass(unit) || isVolume(unit) || isArea(unit) || isCapacity(unit) || isLength(unit);
+    }
+
     public static boolean isMass(Unit unit) {
         return unit == KILOGRAM || unit == GRAM || unit == TONNE;
     }
@@ -107,5 +111,9 @@ public enum Unit {
 
     public static boolean isCapacity(Unit unit) {
         return unit == CUBIC_METER || unit == CUBIC_CENTIMETER;
+    }
+
+    public static boolean isLength(Unit unit) {
+        return unit == METER || unit == CENTIMETER || unit == MILLIMETER;
     }
 }
