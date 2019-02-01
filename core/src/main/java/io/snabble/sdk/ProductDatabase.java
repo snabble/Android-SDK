@@ -1232,15 +1232,6 @@ public class ProductDatabase {
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
     public Cursor searchByCode(String searchString, CancellationSignal cancellationSignal) {
-        // constructing a common query that gets repeated two times, one for the search
-        // using the "00000" prefix to match ean 8 in ean 13 codes
-        // and one for all other matches
-
-        // UNION ALL is used for two reasons:
-        // 1) sorting the ean 8 matches on top without using ORDER BY for performance reasons
-        // 2) avoiding the usage of OR between two GLOB's because in sqlite versions < 3.8
-        // the query optimizer chooses to do a full table scan instead of a search
-
         StringBuilder sb = new StringBuilder();
         sb.append("JOIN scannableCodes s ON s.sku = p.sku WHERE s.code GLOB ? AND (");
 
@@ -1260,17 +1251,10 @@ public class ProductDatabase {
         sb.append(Product.Type.PreWeighed.getDatabaseValue());
         sb.append(" AND p.isDeposit = 0 ");
 
-        String commonSql = sb.toString();
-
-        String query = productSqlString(commonSql, true) +
-                " UNION ALL " +
-                productSqlString(commonSql, true) +
+        String query = productSqlString(sb.toString(), true) +
                 " LIMIT 100";
 
-        return rawQuery(query, new String[]{
-                "00000" + searchString + "*",
-                searchString + "*"
-        }, cancellationSignal);
+        return rawQuery(query, new String[]{ searchString + "*" }, cancellationSignal);
     }
 
     private void notifyOnDatabaseUpdated() {
