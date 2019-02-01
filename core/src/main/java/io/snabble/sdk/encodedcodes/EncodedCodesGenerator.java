@@ -9,6 +9,7 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.codes.templates.groups.EmbedGroup;
 
 public class EncodedCodesGenerator {
     private StringBuilder stringBuilder;
@@ -124,7 +125,7 @@ public class EncodedCodesGenerator {
                     }
 
                     CodeTemplate codeTemplate = options.project.getCodeTemplate(code.template);
-                    if (codeTemplate != null) {
+                    if (codeTemplate != null && codeTemplate.getGroup(EmbedGroup.class) != null) {
                         ScannedCode scannedCode = codeTemplate.code(code.lookupCode)
                                 .embed(productInfo.quantity)
                                 .buildCode();

@@ -218,7 +218,7 @@ class Events {
             item.scannedCode = shoppingCart.getScannedCode(i).getCode();
 
             if (encodingUnit != null) {
-                item.encodingUnit = encodingUnit.getId();
+                item.weightUnit = encodingUnit.getId();
             }
 
             item.amount = quantity;
@@ -320,7 +320,7 @@ class Events {
         private String sku;
         private String scannedCode;
         private int amount;
-        private String encodingUnit;
+        private String weightUnit;
         private Integer price;
         private Integer weight;
         private Integer units;
