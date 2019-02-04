@@ -93,6 +93,18 @@ public class ProductResolver {
         final Project project = SnabbleUI.getProject();
         final ProductDatabase productDatabase = project.getProductDatabase();
 
+        // check if its available local first
+        if (productDatabase.isUpToDate()) {
+            for (ScannedCode scannedCode : scannedCodes) {
+                Product product = productDatabase.findByCode(scannedCode);
+                if (product != null) {
+                    handleProductAvailable(product, false, scannedCode);
+                    return;
+                }
+            }
+        }
+
+        // create multiple online requests asynchronously and wait for all to succeed or fail
         HandlerThread handlerThread = new HandlerThread("ProductResolver");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
@@ -128,7 +140,7 @@ public class ProductResolver {
                             result.error = true;
                             countDownLatch.countDown();
                         }
-                    });
+                    }, true);
                 }
 
                 try {
