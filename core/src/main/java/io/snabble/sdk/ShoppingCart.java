@@ -368,7 +368,7 @@ public class ShoppingCart {
         }
 
         if (scannedCode.hasEmbeddedData()) {
-            if (Unit.isMeasurable(unit)) {
+            if (Unit.hasDimension(unit)) {
                 entry.weight = scannedCode.getEmbeddedData();
             } else if (unit == Unit.PRICE) {
                 entry.price = scannedCode.getEmbeddedData();

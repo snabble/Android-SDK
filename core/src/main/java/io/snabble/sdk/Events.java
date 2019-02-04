@@ -214,6 +214,10 @@ class Events {
             ScannedCode scannedCode = shoppingCart.getScannedCode(i);
             Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
 
+            if (scannedCode.getEmbeddedUnit() != null) {
+                encodingUnit = scannedCode.getEmbeddedUnit();
+            }
+
             item.sku = String.valueOf(product.getSku());
             item.scannedCode = shoppingCart.getScannedCode(i).getCode();
 

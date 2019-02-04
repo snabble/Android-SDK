@@ -9,7 +9,7 @@ import java.math.RoundingMode;
 
 public class UnitTest extends SnabbleSdkTest {
     @Test
-    public void testUnitPrices() throws IOException, Snabble.SnabbleException {
+    public void testUnitPrices() {
         ProductDatabase productDatabase = project.getProductDatabase();
         final Product test_ml_1 = productDatabase.findBySku("test-ml-1");
         final Product test_g_1 = productDatabase.findBySku("test-g-1");
@@ -29,6 +29,7 @@ public class UnitTest extends SnabbleSdkTest {
         Assert.assertEquals(497, test_cm_1.getPriceForQuantity(250, null, RoundingMode.FLOOR));
     }
 
+    @Test
     public void testUnits() {
         testConvert(100, Unit.CENTIMETER, Unit.METER, 1);
         testConvert(1, Unit.METER, Unit.CENTIMETER, 100);
@@ -42,6 +43,8 @@ public class UnitTest extends SnabbleSdkTest {
     }
 
     private void testConvert(double value, Unit from, Unit to, double expected) {
-        Assert.assertEquals(Unit.convert(new BigDecimal(value), from, to, 16, RoundingMode.HALF_UP), new BigDecimal(expected));
+        Assert.assertEquals(Unit.convert(
+                new BigDecimal(value), from, to, RoundingMode.HALF_UP).setScale(16, RoundingMode.HALF_UP),
+                new BigDecimal(expected).setScale(16, RoundingMode.HALF_UP));
     }
 }

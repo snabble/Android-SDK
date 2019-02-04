@@ -457,8 +457,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 final ScannedCode scannedCode = cart.getScannedCode(position);
 
-                Unit encodingUnit = product.getEncodingUnit(scannedCode.getLookupCode());
                 String encodingDisplayValue = "g";
+
+                Unit encodingUnit = scannedCode.getEmbeddedUnit();
+                if (encodingUnit == null) {
+                    encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+                }
+
                 if (encodingUnit != null) {
                     encodingDisplayValue = encodingUnit.getDisplayValue();
                 }

@@ -1,6 +1,7 @@
 package io.snabble.sdk.codes;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 
 public class ScannedCode implements Serializable {
     private Integer embeddedData;
+    private BigDecimal embeddedDecimalData;
     private Integer price;
     private String lookupCode;
     private String code;
@@ -40,12 +42,28 @@ public class ScannedCode implements Serializable {
         return embeddedData != null;
     }
 
+    public void setEmbeddedData(int embeddedData) {
+        this.embeddedData = embeddedData;
+    }
+
+    public BigDecimal getEmbeddedDecimalData() {
+        return embeddedDecimalData != null ? embeddedDecimalData : BigDecimal.ZERO;
+    }
+
+    public boolean hasEmbeddedDecimalData() {
+        return embeddedDecimalData != null;
+    }
+
     public String getTemplateName() {
         return templateName;
     }
 
     public Unit getEmbeddedUnit() {
         return embeddedUnit;
+    }
+
+    public void setEmbeddedUnit(Unit embeddedUnit) {
+        this.embeddedUnit = embeddedUnit;
     }
 
     public String getTransformationCode() {
@@ -84,6 +102,11 @@ public class ScannedCode implements Serializable {
 
         public Builder setEmbeddedData(int embeddedData) {
             scannedCode.embeddedData = embeddedData;
+            return this;
+        }
+
+        public Builder setEmbeddedDecimalData(BigDecimal embeddedDecimalData) {
+            scannedCode.embeddedDecimalData = embeddedDecimalData;
             return this;
         }
 

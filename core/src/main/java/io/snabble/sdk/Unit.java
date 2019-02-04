@@ -2,32 +2,48 @@ package io.snabble.sdk;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.snabble.sdk.utils.Logger;
 
 public enum Unit {
-    MILLILITER("ml", "ml"),
-    DECILITER("dl", "dl"),
-    LITER("l", "l"),
-    CUBIC_METER("m3", "m³"),
-    CUBIC_CENTIMETER("cm3", "cm³"),
-    SQUARE_METER("m2", "m²"),
-    SQUARE_CENTIMETER("cm2", "cm²"),
-    MILLIMETER("mm", "mm"),
-    CENTIMETER("cm", "cm"),
-    METER("m", "m"),
-    KILOGRAM("kg", "kg"),
-    GRAM("g", "g"),
-    TONNE("t", "t"),
-    PIECE("piece", ""),
-    PRICE("price", "");
+    MILLILITER("ml", "ml", Dimension.VOLUME),
+    CENTILITER("cl", "cl", Dimension.VOLUME),
+    DECILITER("dl", "dl", Dimension.VOLUME),
+    LITER("l", "l", Dimension.VOLUME),
+
+    CUBIC_METER("m3", "m³", Dimension.CAPACITY),
+    CUBIC_CENTIMETER("cm3", "cm³", Dimension.CAPACITY),
+
+    SQUARE_METER("m2", "m²", Dimension.AREA),
+    SQUARE_METER_TENTH("m2e-1", "m2e-1", Dimension.AREA),
+    SQUARE_DECIMETER("dm2", "dm²", Dimension.AREA),
+    SQUARE_DECIMETER_TENTH("m2e-3", "m2e-3", Dimension.AREA),
+    SQUARE_CENTIMETER("cm2", "cm²", Dimension.AREA),
+
+    MILLIMETER("mm", "mm", Dimension.DISTANCE),
+    CENTIMETER("cm", "cm", Dimension.DISTANCE),
+    DECIMETER("dm", "dm", Dimension.DISTANCE),
+    METER("m", "m", Dimension.DISTANCE),
+
+    GRAM("g", "g", Dimension.MASS),
+    DECAGRAM("dag", "dag", Dimension.MASS),
+    HECTOGRAM("hg", "hg", Dimension.MASS),
+    KILOGRAM("kg", "kg", Dimension.MASS),
+    TONNE("t", "t", Dimension.MASS),
+
+    PIECE("piece", "", null),
+    PRICE("price", "", null);
 
     private String id;
     private String displayValue;
+    private Dimension dimension;
 
-    Unit(String id, String displayValue) {
+    Unit(String id, String displayValue, Dimension dimension) {
         this.id = id;
         this.displayValue = displayValue;
+        this.dimension = dimension;
     }
 
     public static Unit fromString(String value) {
@@ -42,49 +58,6 @@ public enum Unit {
         return null;
     }
 
-    public static BigDecimal convert(BigDecimal value, Unit from, Unit to, int scale, RoundingMode rm) {
-        if (from == to) return value;
-
-        value = value.setScale(scale, rm);
-
-        if (from == LITER && to == DECILITER) return value.divide(new BigDecimal(10), rm);
-        if (from == DECILITER && to == LITER) return value.multiply(new BigDecimal(10));
-
-        if (from == LITER && to == MILLILITER) return value.divide(new BigDecimal(1000), rm);
-        if (from == MILLILITER && to == LITER) return value.multiply(new BigDecimal(1000));
-
-        if (from == DECILITER && to == MILLILITER) return value.divide(new BigDecimal(100), rm);
-        if (from == MILLILITER && to == DECILITER) return value.multiply(new BigDecimal(100));
-
-        if (from == CUBIC_METER && to == CUBIC_CENTIMETER) return value.divide(new BigDecimal(1_000_000), rm);
-        if (from == CUBIC_CENTIMETER && to == CUBIC_METER) return value.multiply(new BigDecimal(1_000_000));
-
-        if (from == SQUARE_METER && to == SQUARE_CENTIMETER) return value.divide(new BigDecimal(10_000), rm);
-        if (from == SQUARE_CENTIMETER && to == SQUARE_METER) return value.multiply(new BigDecimal(10_000));
-
-        if (from == METER && to == CENTIMETER) return value.divide(new BigDecimal(100), rm);
-        if (from == CENTIMETER && to == METER) return value.multiply(new BigDecimal(100));
-
-        if (from == METER && to == MILLIMETER) return value.divide(new BigDecimal(1000), rm);
-        if (from == MILLIMETER && to == METER) return value.multiply(new BigDecimal(1000));
-
-        if (from == CENTIMETER && to == MILLIMETER) return value.divide(new BigDecimal(10), rm);
-        if (from == MILLIMETER && to == CENTIMETER) return value.multiply(new BigDecimal(10));
-
-        if (from == TONNE && to == KILOGRAM) return value.divide(new BigDecimal(1000), rm);
-        if (from == KILOGRAM && to == TONNE) return value.multiply(new BigDecimal(1000));
-
-        if (from == TONNE && to == GRAM) return value.divide(new BigDecimal(1_000_000), rm);
-        if (from == GRAM && to == TONNE) return value.multiply(new BigDecimal(1_000_000));
-
-        if (from == KILOGRAM && to == GRAM) return value.divide(new BigDecimal(1000), rm);
-        if (from == GRAM && to == KILOGRAM) return value.multiply(new BigDecimal(1000));
-
-        Logger.d("Unsupported conversion: %s -> %s", from.toString(), to.toString());
-
-        return value;
-    }
-
     public String getId() {
         return id;
     }
@@ -93,27 +66,88 @@ public enum Unit {
         return displayValue;
     }
 
-    public static boolean isMeasurable(Unit unit) {
-        return isMass(unit) || isVolume(unit) || isArea(unit) || isCapacity(unit) || isLength(unit);
+    public Dimension getDimension() {
+        return dimension;
     }
 
-    public static boolean isMass(Unit unit) {
-        return unit == KILOGRAM || unit == GRAM || unit == TONNE;
+    public Unit getFractionalUnit(int decimal) {
+        for (Conversion conversion : conversions) {
+            if (conversion.from == this && conversion.factor == (int)Math.pow(10, decimal)) {
+                return conversion.to;
+            }
+        }
+
+        return null;
     }
 
-    public static boolean isVolume(Unit unit) {
-        return unit == MILLILITER || unit == DECILITER || unit == LITER;
+    public static boolean hasDimension(Unit unit) {
+        if (unit != null) {
+            return unit.dimension != null;
+        }
+
+        return false;
     }
 
-    public static boolean isArea(Unit unit) {
-        return unit == SQUARE_CENTIMETER || unit == SQUARE_METER;
+    private static class Conversion {
+        Unit from;
+        Unit to;
+        int factor;
+        int divisor;
+
+        Conversion(Unit from, Unit to, int factor, int divisor) {
+            this.from = from;
+            this.to = to;
+            this.factor = factor;
+            this.divisor = divisor;
+        }
     }
 
-    public static boolean isCapacity(Unit unit) {
-        return unit == CUBIC_METER || unit == CUBIC_CENTIMETER;
+    private static List<Conversion> conversions = new ArrayList<>();
+
+    private static void addConversion(Unit from, Unit to, int factor, int divisor) {
+        conversions.add(new Conversion(from, to, factor, divisor));
+        conversions.add(new Conversion(to, from, divisor, factor));
     }
 
-    public static boolean isLength(Unit unit) {
-        return unit == METER || unit == CENTIMETER || unit == MILLIMETER;
+    static {
+        addConversion(LITER, DECILITER, 10, 1);
+        addConversion(LITER, CENTILITER, 100, 1);
+        addConversion(LITER, MILLILITER, 1000, 1);
+        addConversion(DECILITER, MILLILITER, 100, 1);
+
+        addConversion(CUBIC_METER, CUBIC_CENTIMETER, 1_000_000, 1);
+
+        addConversion(SQUARE_METER, SQUARE_CENTIMETER, 10_000, 1);
+        addConversion(SQUARE_METER, SQUARE_DECIMETER_TENTH, 1000, 1);
+        addConversion(SQUARE_METER, SQUARE_DECIMETER, 100, 1);
+        addConversion(SQUARE_METER, SQUARE_METER_TENTH, 10, 1);
+
+        addConversion(METER, CENTIMETER, 100, 1);
+        addConversion(METER, DECIMETER, 10, 1);
+        addConversion(METER, MILLIMETER, 1000, 1);
+        addConversion(CENTIMETER, MILLIMETER, 10, 1);
+
+        addConversion(TONNE, KILOGRAM, 1000, 1);
+        addConversion(TONNE, GRAM, 1_000_000, 1);
+        addConversion(KILOGRAM, GRAM, 1000, 1);
+        addConversion(KILOGRAM, DECAGRAM, 100, 1);
+        addConversion(KILOGRAM, HECTOGRAM, 10, 1);
+    }
+
+    public static BigDecimal convert(BigDecimal value, Unit from, Unit to, RoundingMode rm) {
+        if (from == to) return value;
+
+        value = value.setScale(16, rm);
+
+        for (Conversion conversion : conversions) {
+            if (conversion.from == from && conversion.to == to) {
+                return value.multiply(new BigDecimal(conversion.factor))
+                        .divide(new BigDecimal(conversion.divisor), rm);
+            }
+        }
+
+        Logger.d("Unsupported conversion: %s -> %s", from.toString(), to.toString());
+
+        return value;
     }
 }

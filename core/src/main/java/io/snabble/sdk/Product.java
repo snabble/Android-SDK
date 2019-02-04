@@ -282,7 +282,15 @@ public class Product implements Serializable, Parcelable {
             String lookupCode = scannedCode != null ? scannedCode.getLookupCode() : null;
 
             Unit referenceUnit = this.referenceUnit;
-            Unit encodingUnit = getEncodingUnit(lookupCode);
+            Unit encodingUnit = null;
+
+            if (scannedCode != null) {
+                encodingUnit = scannedCode.getEmbeddedUnit();
+            }
+
+            if (encodingUnit == null) {
+                encodingUnit = getEncodingUnit(lookupCode);
+            }
 
             if (referenceUnit == null) {
                 referenceUnit = Unit.KILOGRAM;
@@ -299,7 +307,7 @@ public class Product implements Serializable, Parcelable {
 
             BigDecimal pricePerReferenceUnit = new BigDecimal(price);
             BigDecimal pricePerUnit = Unit.convert(pricePerReferenceUnit,
-                    referenceUnit, encodingUnit, 16, roundingMode);
+                    encodingUnit, referenceUnit, roundingMode);
 
             return pricePerUnit.multiply(new BigDecimal(quantity))
                     .setScale(0, roundingMode)

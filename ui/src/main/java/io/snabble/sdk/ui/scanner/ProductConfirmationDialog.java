@@ -118,8 +118,8 @@ class ProductConfirmationDialog {
         }
 
         if (scannedCode.hasEmbeddedData()) {
-            if (Unit.isMeasurable(unit)) {
-                quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode.getCode()).getDisplayValue());
+            if (Unit.hasDimension(unit)) {
+                quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
                 quantityAnnotation.setVisibility(View.VISIBLE);
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
@@ -156,7 +156,7 @@ class ProductConfirmationDialog {
             }
         } else if (type == Product.Type.UserWeighed) {
             quantityAnnotation.setVisibility(View.VISIBLE);
-            quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode.getCode()).getDisplayValue());
+            quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
             quantity.setText("");
@@ -278,8 +278,12 @@ class ProductConfirmationDialog {
         window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
-    private Unit getNonNullEncodingUnit(Product product, String code) {
-        Unit unit = product.getEncodingUnit(code);
+    private Unit getNonNullEncodingUnit(Product product, ScannedCode code) {
+        if (code.getEmbeddedUnit() != null) {
+            return code.getEmbeddedUnit();
+        }
+
+        Unit unit = product.getEncodingUnit(code.getTemplateName(), code.getLookupCode());
         if (unit == null) {
             unit = Unit.GRAM;
         }
@@ -294,7 +298,7 @@ class ProductConfirmationDialog {
         String singlePrice = priceFormatter.format(product, true, scannedCode);
 
         int q = getQuantity();
-        Unit encodingUnit = product.getEncodingUnit(scannedCode.getCode());
+        Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getCode());
 
         if (scannedCode.getEmbeddedUnit() != null) {
             encodingUnit = scannedCode.getEmbeddedUnit();
@@ -305,7 +309,7 @@ class ProductConfirmationDialog {
             encodingDisplayValue = encodingUnit.getDisplayValue();
         }
 
-        if (q > 0 && (Unit.isMeasurable(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
+        if (q > 0 && (Unit.hasDimension(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
             price.setText(String.format("%s %s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
         } else if (q > 1) {
             if (encodingUnit == Unit.PIECE) {

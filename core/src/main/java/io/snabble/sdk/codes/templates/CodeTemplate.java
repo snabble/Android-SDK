@@ -83,7 +83,23 @@ public class CodeTemplate {
                         }
                         break;
                     case "embed":
-                        group = new EmbedGroup(this, length, 1);
+                        if (subType != null) {
+                            String[] split = subType.split("\\.");
+                            if (split.length == 2) {
+                                try {
+                                    int integerParts = Integer.parseInt(split[0]);
+                                    int fractionalParts = Integer.parseInt(split[1]);
+
+                                    group = new EmbedDecimalGroup(this, integerParts, fractionalParts);
+                                } catch (NumberFormatException e) {
+                                    throw new IllegalArgumentException("Illegal embed format: " + e.getMessage());
+                                }
+                            } else {
+                                throw new IllegalArgumentException("Illegal embed format: only one fractional part is allowed");
+                            }
+                        } else {
+                            group = new EmbedGroup(this, length, 1);
+                        }
                         break;
                     case "embed100":
                         group = new EmbedGroup(this, length, 100);
@@ -278,6 +294,10 @@ public class CodeTemplate {
         for (Group group : groups) {
             if (group instanceof EmbedGroup) {
                 builder.setEmbeddedData(((EmbedGroup) group).number());
+            }
+
+            if (group instanceof EmbedDecimalGroup) {
+                builder.setEmbeddedDecimalData(((EmbedDecimalGroup) group).decimal());
             }
 
             if (group instanceof PriceGroup) {

@@ -8,6 +8,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.KeyEvent;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -16,6 +17,7 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -160,10 +162,30 @@ public class ProductResolver {
     private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannedCode scannedCode) {
         progressDialog.dismiss();
 
+        if (scannedCode.hasEmbeddedDecimalData()) {
+            Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+            if (unit != null) {
+                BigDecimal decimal = scannedCode.getEmbeddedDecimalData();
+                if (unit == Unit.PIECE || unit == Unit.PRICE) {
+                    scannedCode.setEmbeddedData(decimal.intValue());
+                    scannedCode.setEmbeddedUnit(unit);
+                } else {
+                    int scale = decimal.scale();
+                    Unit fractionalUnit = unit.getFractionalUnit(scale);
+                    if (fractionalUnit != null) {
+                        BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit, SnabbleUI.getProject().getRoundingMode());
+                        scannedCode.setEmbeddedData(converted.intValue());
+                        scannedCode.setEmbeddedUnit(fractionalUnit);
+                    }
+                }
+            }
+        }
+
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product);
         } else {
-            if (product.getType() == Product.Type.PreWeighed && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
+            if (product.getType() == Product.Type.PreWeighed
+                    && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
                 if (onShelfCodeScannedListener != null) {
                     onShelfCodeScannedListener.onShelfCodeScanned();
                 }
