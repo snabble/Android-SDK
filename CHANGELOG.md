@@ -10,9 +10,14 @@ only mode. Calling update() will download a up to date version of the database.
 
 If you are using a bundled database make sure to update it to a database with schema 1.18 or higher.
 
+### Changes
+- ScannableCode is now renamed to ScannedCode
+- ScannedCode.parse is now returning a list of ScannedCode matches which need to be looked up 
+in the database
 - Support for Units is now migrated to new database schema, the older schema used in previous 
 versions will fall back to g/kg only
 - Product.getScannableCodes() is now returning a Product.Code object
+- Added more Units and removed isXXX functions in favor of Unit.getDimension()
 
 ### Added
 - Support for code templates
