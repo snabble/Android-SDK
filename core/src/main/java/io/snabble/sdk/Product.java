@@ -306,8 +306,7 @@ public class Product implements Serializable, Parcelable {
             }
 
             BigDecimal pricePerReferenceUnit = new BigDecimal(price);
-            BigDecimal pricePerUnit = Unit.convert(pricePerReferenceUnit,
-                    encodingUnit, referenceUnit, roundingMode);
+            BigDecimal pricePerUnit = Unit.convert(pricePerReferenceUnit, encodingUnit, referenceUnit);
 
             return pricePerUnit.multiply(new BigDecimal(quantity))
                     .setScale(0, roundingMode)

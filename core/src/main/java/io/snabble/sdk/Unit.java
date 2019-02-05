@@ -1,7 +1,7 @@
 package io.snabble.sdk;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,15 +134,13 @@ public enum Unit {
         addConversion(KILOGRAM, HECTOGRAM, 10, 1);
     }
 
-    public static BigDecimal convert(BigDecimal value, Unit from, Unit to, RoundingMode rm) {
+    public static BigDecimal convert(BigDecimal value, Unit from, Unit to) {
         if (from == to) return value;
-
-        value = value.setScale(16, rm);
 
         for (Conversion conversion : conversions) {
             if (conversion.from == from && conversion.to == to) {
                 return value.multiply(new BigDecimal(conversion.factor))
-                        .divide(new BigDecimal(conversion.divisor), rm);
+                        .divide(new BigDecimal(conversion.divisor), MathContext.UNLIMITED);
             }
         }
 

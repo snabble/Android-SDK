@@ -44,7 +44,7 @@ public class UnitTest extends SnabbleSdkTest {
 
     private void testConvert(double value, Unit from, Unit to, double expected) {
         Assert.assertEquals(Unit.convert(
-                new BigDecimal(value), from, to, RoundingMode.HALF_UP).setScale(16, RoundingMode.HALF_UP),
+                new BigDecimal(value), from, to).setScale(16, RoundingMode.HALF_UP),
                 new BigDecimal(expected).setScale(16, RoundingMode.HALF_UP));
     }
 }
