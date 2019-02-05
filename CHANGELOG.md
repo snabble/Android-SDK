@@ -18,6 +18,7 @@ in the database
 versions will fall back to g/kg only
 - Product.getScannableCodes() is now returning a Product.Code object
 - Added more Units and removed isXXX functions in favor of Unit.getDimension()
+- Small layout improvements for qr and encoded codes checkout
 
 ### Added
 - Support for code templates

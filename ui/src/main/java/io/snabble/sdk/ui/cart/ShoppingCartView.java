@@ -312,10 +312,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void updatePayText() {
         if (cart != null) {
             int quantity = cart.getTotalQuantity();
-            String price = priceFormatter.format(cart.getTotalPrice());
-
-            pay.setText(getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
-                    quantity, quantity, price));
+            int price = cart.getTotalPrice();
+            if (price > 0) {
+                String formattedPrice = priceFormatter.format(price);
+                pay.setText(getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
+                                quantity, quantity, formattedPrice));
+            } else {
+                pay.setText(R.string.Snabble_Shoppingcart_buyProducts_now);
+            }
         }
     }
 

@@ -34,6 +34,8 @@ class CheckoutQRCodePOSView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.view_checkout_qrcode, this);
 
+        Project project = SnabbleUI.getProject();
+
         barcodeView = findViewById(R.id.qr_code);
 
         findViewById(R.id.abort).setOnClickListener(new OnClickListener() {
@@ -43,19 +45,18 @@ class CheckoutQRCodePOSView extends FrameLayout {
             }
         });
 
-        Project project = SnabbleUI.getProject();
-
+        TextView payAmount = findViewById(R.id.pay_amount);
         PriceFormatter priceFormatter = new PriceFormatter(project);
-        String formattedAmount = priceFormatter.format(project.getCheckout().getPriceToPay());
 
-        TextView textView = findViewById(R.id.pay_amount);
-        String text = getContext().getString(R.string.Snabble_QRCode_total) + " " + formattedAmount;
+        int priceToPay = project.getCheckout().getPriceToPay();
+        if (priceToPay > 0) {
+            String formattedAmount = priceFormatter.format(priceToPay);
+            String text = getContext().getString(R.string.Snabble_QRCode_total) + " " + formattedAmount;
 
-        if (SnabbleUI.getActionBar() != null) {
-            textView.setVisibility(View.GONE);
-            SnabbleUI.getActionBar().setTitle(text);
+            payAmount.setText(text);
         } else {
-            textView.setText(text);
+            payAmount.setVisibility(View.GONE);
+            findViewById(R.id.explanation2).setVisibility(View.GONE);
         }
     }
 

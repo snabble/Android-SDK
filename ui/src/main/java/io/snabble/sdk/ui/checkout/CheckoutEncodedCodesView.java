@@ -56,6 +56,9 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         scrollContainer = findViewById(R.id.scroll_container);
         scrollView = findViewById(R.id.scroll_view);
 
+        explanationText = findViewById(R.id.explanation1);
+        explanationText2 = findViewById(R.id.explanation2);
+
         encodedCodesGenerator = new EncodedCodesGenerator(options);
 
         Button paidButton = findViewById(R.id.paid);
@@ -74,15 +77,20 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             }
         });
 
+
+        TextView payAmount = findViewById(R.id.pay_amount);
+
         PriceFormatter priceFormatter = new PriceFormatter(project);
-        String formattedAmount = priceFormatter.format(project.getCheckout().getPriceToPay());
 
-        TextView textView = findViewById(R.id.pay_amount);
-        String text = getContext().getString(R.string.Snabble_QRCode_total) + " " + formattedAmount;
-        textView.setText(text);
-
-        explanationText = findViewById(R.id.explanation1);
-        explanationText2 = findViewById(R.id.explanation2);
+        int priceToPay = project.getCheckout().getPriceToPay();
+        if (priceToPay > 0) {
+            String formattedAmount = priceFormatter.format(priceToPay);
+            String text = getContext().getString(R.string.Snabble_QRCode_total) + " " + formattedAmount;
+            payAmount.setText(text);
+        } else {
+            payAmount.setVisibility(View.GONE);
+            explanationText2.setVisibility(View.GONE);
+        }
     }
 
     private void updateExplanationText(int codeCount) {

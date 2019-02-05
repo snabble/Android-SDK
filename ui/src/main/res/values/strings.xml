@@ -48,6 +48,7 @@
 	<string name="Snabble.ShoppingCart.title">Shopping Cart</string>
 	<string name="Snabble.Shoppingcart.buyProducts.one">Buy %d product for %s</string>
 	<string name="Snabble.Shoppingcart.buyProducts">Buy %d products for %s</string>
+	<string name="Snabble.Shoppingcart.buyProducts.now">Pay now</string>
 	<string name="Snabble.Shoppingcart.emptyState.buttonTitle">Scan products</string>
 	<string name="Snabble.Shoppingcart.emptyState.description">Scan products to add them to your shopping cart.</string>
 	<string name="Snabble.Shoppingcart.emptyState.title">Your Shopping Cart</string>
