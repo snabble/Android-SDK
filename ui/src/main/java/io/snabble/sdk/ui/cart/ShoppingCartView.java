@@ -540,6 +540,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         break;
                 }
 
+                // special case if price is zero we assume its a picking product
+                if (product.getDiscountedPrice() == 0) {
+                    controlsDefault.setVisibility(View.GONE);
+                    controlsUserWeighed.setVisibility(View.GONE);
+                }
+
                 plus.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -14,6 +14,10 @@ public class PriceFormatter {
     }
 
     public String format(int price) {
+        if (price == 0) {
+            return "";
+        }
+
         NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
         Currency currency = project.getCurrency();
         numberFormat.setCurrency(currency);

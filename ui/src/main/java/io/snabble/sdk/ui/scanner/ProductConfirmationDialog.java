@@ -162,6 +162,14 @@ class ProductConfirmationDialog {
             quantity.setText("");
         }
 
+        // special case if price is zero we assume its a picking product
+        if (product.getDiscountedPrice() == 0) {
+            quantityAnnotation.setVisibility(View.GONE);
+            plus.setVisibility(View.GONE);
+            minus.setVisibility(View.GONE);
+            quantity.setText("1");
+        }
+
         quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
         quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -373,7 +381,11 @@ class ProductConfirmationDialog {
                 shoppingCart.insert(product, 0, 1, scannedCode, isZeroAmountProduct);
             }
         } else if (product.getType() == Product.Type.Article) {
-            shoppingCart.setQuantity(product, q, scannedCode);
+            if (product.getDiscountedPrice() == 0) {
+                shoppingCart.insert(product, 0, q, scannedCode);
+            } else {
+                shoppingCart.setQuantity(product, q, scannedCode);
+            }
         } else if (product.getType() == Product.Type.UserWeighed) {
             if (q > 0) {
                 shoppingCart.insert(product, 0, q, scannedCode);
