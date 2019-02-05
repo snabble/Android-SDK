@@ -9,6 +9,34 @@ import java.util.Set;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.groups.*;
 
+/**
+ * Class for parsing of code templates.
+ *
+ * Example: "2{code:5}{i}{code:5}{ec}", resembling a standard EAN13 containing embedded weight or prices
+ *
+ * Valid groups
+ *
+ * code         | either a known format (ean8, ean13 or ean14), or a length
+ *
+ * embed        | embedded data in the code. This may be a weight, amount or price,
+ *                depending on the encodingUnit of the scanned code
+ *
+ *                Supports decimal lengths such as "4.3",
+ *                which tells the parser that there are 4 decimal and 3 fractional digits encoded.
+ *
+ * embed100     | embedded data in the code that must be multiplied by 100 (e.g. for an embedded price in Euros)
+ *
+ * price        | price of one referenceUnit of the product
+ *
+ * _            | ignore length character(s)
+ *
+ * i            | length is always 1, other values will be ignored.
+ *                Represents the internal 5-digit checksum of an EAN-13.
+ *                Presence of this property requires that the embed property is also present and has a length of 5.
+ *
+ * ec           | length is always 1, other values will be ignored, and must be the last component of a template.
+ *                Represents the check digit of an EAN-8, EAN-13 or EAN-14 code.
+ */
 public class CodeTemplate {
     private String pattern;
     private List<Group> groups;
@@ -189,23 +217,31 @@ public class CodeTemplate {
         return null;
     }
 
-    // TODO remove mutable state
     public void reset() {
         for (Group group : groups) {
             group.reset();
         }
     }
 
+    /**
+     * Matches a code to the template, extracting information that resides in the code.
+     */
     public CodeTemplate match(String match) {
         matchedCode = match;
         return this;
     }
 
+    /**
+     * Overrides the code (or part of). Can be used to provide static prefixes.
+     */
     public CodeTemplate override(String override) {
         overrideCode = override;
         return this;
     }
 
+    /**
+     * Sets the code of the code group
+     */
     public CodeTemplate code(String code) {
         CodeGroup codeGroup = getGroup(CodeGroup.class);
 
@@ -216,6 +252,9 @@ public class CodeTemplate {
         return this;
     }
 
+    /**
+     * The embedded data that will be embedded in the code, if the code has a embed group
+     */
     public CodeTemplate embed(int embeddedData) {
         EmbedGroup embedGroup = getGroup(EmbedGroup.class);
 
@@ -226,6 +265,9 @@ public class CodeTemplate {
         return this;
     }
 
+    /**
+     * Generates a parsed {@link ScannedCode} containing code and embedded data.
+     */
     public ScannedCode buildCode() {
         ScannedCode.Builder builder = new ScannedCode.Builder(name);
 

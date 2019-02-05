@@ -426,6 +426,8 @@ public class Snabble {
     public static class Config {
         /**
          * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
+         *
+         * If null points to the Production Environment
          */
         public String endpointBaseUrl;
 
