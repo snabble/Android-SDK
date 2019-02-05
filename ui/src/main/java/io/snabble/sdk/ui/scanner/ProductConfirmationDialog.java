@@ -154,20 +154,20 @@ class ProductConfirmationDialog {
             } else {
                 quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
             }
+
+            // special case if price is zero we assume its a picking product and hide the
+            // controls to adjust the quantity
+            if (product.getDiscountedPrice() == 0) {
+                plus.setVisibility(View.GONE);
+                minus.setVisibility(View.GONE);
+                quantity.setText("1");
+            }
         } else if (type == Product.Type.UserWeighed) {
             quantityAnnotation.setVisibility(View.VISIBLE);
             quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
             quantity.setText("");
-        }
-
-        // special case if price is zero we assume its a picking product
-        if (product.getDiscountedPrice() == 0) {
-            quantityAnnotation.setVisibility(View.GONE);
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
-            quantity.setText("1");
         }
 
         quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
@@ -239,7 +239,8 @@ class ProductConfirmationDialog {
         if (cartQuantity > 0
                 && product.getType() == Product.Type.Article
                 && unit != Unit.PRICE
-                && unit != Unit.PIECE) {
+                && unit != Unit.PIECE
+                && product.getDiscountedPrice() != 0) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
@@ -346,6 +347,12 @@ class ProductConfirmationDialog {
             depositPrice.setVisibility(View.VISIBLE);
         } else {
             depositPrice.setVisibility(View.GONE);
+        }
+
+        if (price.getText().equals("")) {
+            price.setVisibility(View.GONE);
+        } else {
+            price.setVisibility(View.VISIBLE);
         }
     }
 
