@@ -18,14 +18,10 @@ class ProductApi {
         String name;
         String description;
         String subtitle;
-        String taxCategory;
-        boolean outOfStock;
-        boolean deleted;
         boolean weighByCustomer;
         String referenceUnit;
         String encodingUnit;
         String imageUrl;
-        String[] eans;
         ApiPrice price;
         boolean saleStop;
         ApiScannableCode[] codes;
@@ -235,10 +231,14 @@ class ProductApi {
         if (apiProduct.weighByCustomer) {
             builder.setType(Product.Type.UserWeighed);
         } else {
-            if (referenceUnit == null || referenceUnit == Unit.PIECE) {
-                builder.setType(Product.Type.Article);
+            if (apiProduct.productType == ApiProductType.WEIGHABLE) {
+                if (referenceUnit == null || referenceUnit == Unit.PIECE) {
+                    builder.setType(Product.Type.Article);
+                } else {
+                    builder.setType(Product.Type.PreWeighed);
+                }
             } else {
-                builder.setType(Product.Type.PreWeighed);
+                builder.setType(Product.Type.Article);
             }
         }
 
