@@ -3,6 +3,8 @@ package io.snabble.sdk;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
@@ -68,6 +70,11 @@ public class CodeTemplateTest {
         code = newCodeTemplate("96{code:ean13}{embed:7}{price:5}{_}").match("9643115013222840001234005001").buildCode();
         Assert.assertEquals("4311501322284", code.getLookupCode());
         Assert.assertEquals(1234, code.getEmbeddedData());
+        Assert.assertEquals(500, code.getPrice());
+
+        code = newCodeTemplate("96{code:ean13}{embed:4.3}{price:5}{_}").match("9643115013222841234567005001").buildCode();
+        Assert.assertEquals("4311501322284", code.getLookupCode());
+        Assert.assertEquals(new BigDecimal("1234.567"), code.getEmbeddedDecimalData().setScale(3));
         Assert.assertEquals(500, code.getPrice());
 
         code = newCodeTemplate("{code:1}{embed:15}").match("1000000000000100").buildCode();
