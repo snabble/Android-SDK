@@ -194,11 +194,6 @@ public class CodeTemplate {
         }
     }
 
-    @SuppressWarnings("CopyConstructorMissesField") // copy through parsing again
-    public CodeTemplate(CodeTemplate other) {
-        this(other.getName(), other.getPattern());
-    }
-
     public String getName() {
         return name;
     }
