@@ -185,7 +185,7 @@ public class ProductResolver {
                     int scale = decimal.scale();
                     Unit fractionalUnit = unit.getFractionalUnit(scale);
                     if (fractionalUnit != null) {
-                        BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit, SnabbleUI.getProject().getRoundingMode());
+                        BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit);
                         scannedCode.setEmbeddedData(converted.intValue());
                         scannedCode.setEmbeddedUnit(fractionalUnit);
                     }
