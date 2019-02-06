@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.receipts;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,17 +12,14 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,9 +30,8 @@ import io.snabble.sdk.Receipts;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
-public class ReceiptListView extends FrameLayout {
+public class ReceiptListView extends CoordinatorLayout {
     private ReceiptInfo[] receiptInfos;
     private RecyclerView recyclerView;
     private View emptyState;
@@ -99,10 +94,12 @@ public class ReceiptListView extends FrameLayout {
             public void failure() {
                 swipeRefreshLayout.setRefreshing(false);
 
-                if (receiptInfos == null || receiptInfos.length == 0) {
+                if (receiptInfos != null && receiptInfos.length == 0) {
                     emptyState.setVisibility(View.VISIBLE);
                 } else {
                     emptyState.setVisibility(View.GONE);
+
+                    UIUtils.snackbar(ReceiptListView.this, R.string.Snabble_networkError, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show();
                 }
             }
         });

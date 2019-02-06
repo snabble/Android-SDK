@@ -82,6 +82,7 @@
 	<string name="Snabble.Checkout.done">Finished!</string>
 	<string name="Snabble.Checkout.payAtCashRegister">Pay at cash register</string>
 	<string name="Snabble.Checkout.error">An error has occurred</string>
+	<string name="Snabble.networkError">Connection error</string>
 
 	<!-- SECTION: Android -->
 	<string name="Snabble.askForPermission">Ask for permission</string>

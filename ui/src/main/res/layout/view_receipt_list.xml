@@ -12,12 +12,14 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        <TextView android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="17sp"
-                android:id="@+id/empty_state"
-                android:visibility="gone"
-                android:text="@string/Snabble.Receipt.noReceipt"/>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="17sp"
+        android:id="@+id/empty_state"
+        android:visibility="gone"
+        android:text="@string/Snabble.Receipt.noReceipt"/>
 </merge>

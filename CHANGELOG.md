@@ -1,6 +1,16 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.0-beta5]
+
+### Changes
+- Show network error on receipts list if receipt list could not be fetched 
+- Use FloatingActionButton for payment list view
+- Unified ic_chevron and ic_chevron_right
+
+### New string keys
+- Snabble.networkError
+
 ## [0.12.0-beta4]
 
 ### Changes
