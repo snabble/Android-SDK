@@ -14,7 +14,11 @@ public class PriceFormatter {
     }
 
     public String format(int price) {
-        if (price == 0) {
+        return format(price, true);
+    }
+
+    public String format(int price, boolean allowZeroPrice) {
+        if (price == 0 && !allowZeroPrice) {
             return "";
         }
 
@@ -63,7 +67,7 @@ public class PriceFormatter {
             price = scannedCode.getPrice();
         }
 
-        String formattedString = format(price);
+        String formattedString = format(price, false);
         Product.Type type = product.getType();
 
         Unit referenceUnit = product.getReferenceUnit();

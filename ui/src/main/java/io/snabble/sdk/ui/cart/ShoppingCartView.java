@@ -486,7 +486,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     priceTextView.setText(" " + priceFormatter.format(embeddedPrice));
                 } else if (embeddedAmount != null) {
                     priceTextView.setText(String.format(" * %s = %s",
-                            priceFormatter.format(productPrice),
+                            priceFormatter.format(productPrice, true),
                             priceFormatter.format(productPrice * embeddedAmount)));
                 } else if (embeddedWeight != null) {
                     String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, scannedCode, roundingMode));
