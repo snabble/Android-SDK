@@ -29,6 +29,8 @@ class ReceiptsApi {
         public String id;
         public String project;
         public String date;
+        public String shopName;
+        public int price;
         public Map<String, ApiLink> links;
     }
 
@@ -79,14 +81,16 @@ class ReceiptsApi {
 
                         Project project = projectsById.get(apiOrder.project);
                         if (project != null) {
+                            PriceFormatter priceFormatter = new PriceFormatter(project);
+
                             try {
                                 ReceiptInfo receiptInfo = new ReceiptInfo(
                                         apiOrder.id,
                                         project,
                                         simpleDateFormat.parse(apiOrder.date),
                                         snabble.absoluteUrl(apiLink.href),
-                                        "",
-                                        "0,00 €");
+                                        apiOrder.shopName,
+                                        priceFormatter.format(apiOrder.price));
 
                                 result.add(receiptInfo);
                             } catch (ParseException e) {

@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.0-beta4]
+
+## Changes
+- Add support for new receipts api
+- OkHttpClient is now shared across projects
+
 ## [0.12.0-beta3]
 
 ### Important Changes
