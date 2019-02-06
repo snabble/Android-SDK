@@ -101,9 +101,19 @@ public class EncodedCodesGenerator {
         Collections.sort(productInfos, new Comparator<ProductInfo>() {
             @Override
             public int compare(ProductInfo p1, ProductInfo p2) {
-                if (p1.product.getDiscountedPrice() < p2.product.getDiscountedPrice()) {
+                int price1 = p1.product.getDiscountedPrice();
+                if (p1.scannedCode.hasPrice()) {
+                    price1 = p1.scannedCode.getPrice();
+                }
+
+                int price2 = p2.product.getDiscountedPrice();
+                if (p2.scannedCode.hasPrice()) {
+                    price2 = p2.scannedCode.getPrice();
+                }
+
+                if (price1 < price2) {
                     return -1;
-                } else if (p1.product.getDiscountedPrice() > p2.product.getDiscountedPrice()) {
+                } else if (price1 > price2) {
                     return 1;
                 }
 

@@ -422,7 +422,11 @@ public class ShoppingCart {
                 } else if (e.price != null) {
                     sum += e.price;
                 } else if (e.amount != null) {
-                    sum += product.getPrice() * e.amount;
+                    int productPrice = product.getDiscountedPrice();
+                    if (e.scannedCode.hasPrice()) {
+                        productPrice = e.scannedCode.getPrice();
+                    }
+                    sum += productPrice * e.amount;
                 } else {
                     sum += product.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
                 }

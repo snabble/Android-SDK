@@ -117,6 +117,11 @@ class ProductConfirmationDialog {
             unit = scannedCode.getEmbeddedUnit();
         }
 
+        int productPrice = product.getDiscountedPrice();
+        if (scannedCode.hasPrice()) {
+            productPrice = scannedCode.getPrice();
+        }
+
         if (scannedCode.hasEmbeddedData()) {
             if (Unit.hasDimension(unit)) {
                 quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
@@ -157,7 +162,7 @@ class ProductConfirmationDialog {
 
             // special case if price is zero we assume its a picking product and hide the
             // controls to adjust the quantity
-            if (product.getDiscountedPrice() == 0) {
+            if (productPrice == 0) {
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
                 quantity.setText("1");
@@ -318,14 +323,19 @@ class ProductConfirmationDialog {
             encodingDisplayValue = encodingUnit.getDisplayValue();
         }
 
+        int productPrice = product.getDiscountedPrice();
+        if (scannedCode.hasPrice()) {
+            productPrice = scannedCode.getPrice();
+        }
+
         if (q > 0 && (Unit.hasDimension(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
             price.setText(String.format("%s %s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
         } else if (q > 1) {
             if (encodingUnit == Unit.PIECE) {
                 price.setText(String.format("%s * %s = %s",
                         String.valueOf(q),
-                        priceFormatter.format(product.getPrice()),
-                        priceFormatter.format(product.getPrice() * q)));
+                        priceFormatter.format(productPrice),
+                        priceFormatter.format(productPrice * q)));
             } else {
                 price.setText(String.format("%s * %s = %s", String.valueOf(q), singlePrice, priceText));
             }

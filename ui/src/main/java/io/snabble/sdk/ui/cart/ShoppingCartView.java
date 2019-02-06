@@ -477,12 +477,17 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 String price = priceFormatter.format(product, true, scannedCode);
 
+                int productPrice = product.getDiscountedPrice();
+                if (scannedCode.hasPrice()) {
+                    productPrice = scannedCode.getPrice();
+                }
+
                 if (embeddedPrice != null) {
                     priceTextView.setText(" " + priceFormatter.format(embeddedPrice));
                 } else if (embeddedAmount != null) {
                     priceTextView.setText(String.format(" * %s = %s",
-                            priceFormatter.format(product.getPrice()),
-                            priceFormatter.format(product.getPrice() * embeddedAmount)));
+                            priceFormatter.format(productPrice),
+                            priceFormatter.format(productPrice * embeddedAmount)));
                 } else if (embeddedWeight != null) {
                     String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, scannedCode, roundingMode));
                     priceTextView.setText(String.format(" * %s = %s", price, priceSum));
@@ -545,7 +550,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 }
 
                 // special case if price is zero we assume its a picking product
-                if (product.getDiscountedPrice() == 0) {
+                if (productPrice == 0) {
                     controlsDefault.setVisibility(View.GONE);
                     controlsUserWeighed.setVisibility(View.GONE);
                 }

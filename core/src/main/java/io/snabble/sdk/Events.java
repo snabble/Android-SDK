@@ -240,6 +240,10 @@ class Events {
                 item.units = quantity;
             }
 
+            if (item.price == null && item.units != null && scannedCode.hasPrice()) {
+                item.price = item.units * scannedCode.getPrice();
+            }
+
             payloadCart.items[i] = item;
         }
 
