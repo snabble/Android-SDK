@@ -83,23 +83,24 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
 
         holder.name.setText(product.getName());
 
-        String[] scannableCodes = product.getScannableCodes();
+        Product.Code[] scannableCodes = product.getScannableCodes();
 
         String selectedCode = null;
         if (scannableCodes.length > 0) {
-            selectedCode = product.getScannableCodes()[0];
+            selectedCode = scannableCodes[0].lookupCode;
         }
 
         if (showBarcode) {
-            for (String code : product.getScannableCodes()) {
-                if (code.contains(lastQuery)) {
-                    if (code.startsWith("00000")) {
-                        code = code.replace("00000", "");
+                for (Product.Code code : product.getScannableCodes()) {
+                String lookupCode = code.lookupCode;
+                if (lookupCode.contains(lastQuery)) {
+                    if (lookupCode.startsWith("00000")) {
+                        lookupCode = lookupCode.replace("00000", "");
                     }
 
-                    Spannable spannable = highlight(lastQuery, code);
+                    Spannable spannable = highlight(lastQuery, lookupCode);
                     holder.code.setText(spannable);
-                    selectedCode = code;
+                    selectedCode = lookupCode;
                     break;
                 }
             }

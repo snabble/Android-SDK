@@ -62,7 +62,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
-        android:textSize="13sp" />
+        android:textSize="14sp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/paid"

@@ -3,22 +3,29 @@ package io.snabble.sdk.ui.scanner;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.view.KeyEvent;
-import android.widget.Toast;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Unit;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
-import io.snabble.sdk.utils.IntRange;
 
 public class ProductResolver {
-    private String scannableCode;
+    private List<ScannedCode> scannedCodes;
     private ProductConfirmationDialog productConfirmationDialog;
     private DelayedProgressDialog progressDialog;
     private Context context;
@@ -59,15 +66,23 @@ public class ProductResolver {
         });
     }
 
-    public String getScannableCode() {
-        return scannableCode;
+    public List<ScannedCode> getScannedCodes() {
+        return scannedCodes;
     }
 
     public BarcodeFormat getBarcodeFormat() {
         return barcodeFormat;
     }
 
-    private void lookupAndShowProduct(final ScannableCode scannedCode) {
+    private class Result {
+        Product product;
+        boolean wasOnlineProduct;
+        ScannedCode code;
+        boolean error;
+        int matchCount;
+    }
+
+    private void lookupAndShowProduct(final List<ScannedCode> scannedCodes) {
         productConfirmationDialog.dismiss();
         progressDialog.showAfterDelay(300);
 
@@ -75,60 +90,114 @@ public class ProductResolver {
             onShowListener.onShow();
         }
 
-        ProductDatabase productDatabase = SnabbleUI.getProject().getProductDatabase();
+        final Project project = SnabbleUI.getProject();
+        final ProductDatabase productDatabase = project.getProductDatabase();
 
-        if(scannedCode.hasEmbeddedData() && scannedCode.getMaskedCode().length() > 0) {
-            productDatabase.findByWeighItemIdOnline(scannedCode.getMaskedCode(), new OnProductAvailableListener() {
-                @Override
-                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
-                }
-
-                @Override
-                public void onProductNotFound() {
-                    handleProductNotFound(scannedCode);
-                }
-
-                @Override
-                public void onError() {
-                    handleProductError();
-                }
-            });
-        } else {
-            String lookupCode = scannedCode.getLookupCode();
-            if (barcodeFormat != null) {
-                IntRange range = SnabbleUI.getProject().getRangeForBarcodeFormat(barcodeFormat);
-                if (range != null) {
-                    lookupCode = lookupCode.substring(range.min, range.max);
+        // check if its available local first
+        if (productDatabase.isUpToDate()) {
+            for (ScannedCode scannedCode : scannedCodes) {
+                Product product = productDatabase.findByCode(scannedCode);
+                if (product != null) {
+                    handleProductAvailable(product, false, scannedCode);
+                    return;
                 }
             }
-
-            productDatabase.findByCodeOnline(lookupCode, new OnProductAvailableListener() {
-                @Override
-                public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                    handleProductAvailable(product, wasOnlineProduct, scannedCode);
-                }
-
-                @Override
-                public void onProductNotFound() {
-                    handleProductNotFound(scannedCode);
-                }
-
-                @Override
-                public void onError() {
-                    handleProductError();
-                }
-            });
         }
+
+        // create multiple online requests asynchronously and wait for all to succeed or fail
+        HandlerThread handlerThread = new HandlerThread("ProductResolver");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                final CountDownLatch countDownLatch = new CountDownLatch(scannedCodes.size());
+                final Result result = new Result();
+
+                for (int i=0; i<scannedCodes.size(); i++) {
+                    final ScannedCode scannedCode = scannedCodes.get(i);
+                    productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
+                        @Override
+                        public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                            result.product = product;
+                            result.wasOnlineProduct = wasOnlineProduct;
+                            result.code = scannedCode;
+                            result.matchCount++;
+                            countDownLatch.countDown();
+                        }
+
+                        @Override
+                        public void onProductNotFound() {
+                            if (result.code == null) {
+                                result.code = scannedCode;
+                            }
+
+                            countDownLatch.countDown();
+                        }
+
+                        @Override
+                        public void onError() {
+                            result.error = true;
+                            countDownLatch.countDown();
+                        }
+                    }, true);
+                }
+
+                try {
+                    countDownLatch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+                Handler mainThread = new Handler(Looper.getMainLooper());
+                mainThread.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result.matchCount > 1) {
+                            project.logErrorEvent("Multiple code matches for product " + result.product.getSku());
+                        }
+
+                        if (result.product != null) {
+                            handleProductAvailable(result.product, result.wasOnlineProduct, result.code);
+                        } else if (result.error) {
+                            handleProductError();
+                        } else {
+                            handleProductNotFound(result.code);
+                        }
+                    }
+                });
+            }
+        });
     }
 
-    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannableCode scannedCode) {
+    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannedCode scannedCode) {
         progressDialog.dismiss();
+
+        if (scannedCode.hasEmbeddedDecimalData()) {
+            Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+            if (unit != null) {
+                BigDecimal decimal = scannedCode.getEmbeddedDecimalData();
+                if (unit == Unit.PIECE || unit == Unit.PRICE) {
+                    scannedCode.setEmbeddedData(decimal.intValue());
+                    scannedCode.setEmbeddedUnit(unit);
+                } else {
+                    int scale = decimal.scale();
+                    Unit fractionalUnit = unit.getFractionalUnit(scale);
+                    if (fractionalUnit != null) {
+                        BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit);
+                        scannedCode.setEmbeddedData(converted.intValue());
+                        scannedCode.setEmbeddedUnit(fractionalUnit);
+                    }
+                }
+            }
+        }
 
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product);
         } else {
-            if (product.getType() == Product.Type.PreWeighed && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
+            if (product.getType() == Product.Type.PreWeighed
+                    && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
                 if (onShelfCodeScannedListener != null) {
                     onShelfCodeScannedListener.onShelfCodeScanned();
                 }
@@ -156,9 +225,12 @@ public class ProductResolver {
             public void onProductSelected(Product product) {
                 Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
 
-                String[] codes = product.getScannableCodes();
+                Product.Code[] codes = product.getScannableCodes();
                 if(codes.length > 0) {
-                    showProduct(product, ScannableCode.parse(SnabbleUI.getProject(), codes[0]));
+                    List<ScannedCode> scannedCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].lookupCode);
+                    if (scannedCodes != null && scannedCodes.size() > 0) {
+                        showProduct(product, scannedCodes.get(0));
+                    }
                 }
             }
 
@@ -171,7 +243,7 @@ public class ProductResolver {
         });
     }
 
-    private void handleProductNotFound(ScannableCode scannedCode) {
+    private void handleProductNotFound(ScannedCode scannedCode) {
         progressDialog.dismiss();
         Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.getCode());
 
@@ -196,12 +268,12 @@ public class ProductResolver {
         }
     }
 
-    private void showProduct(Product product, ScannableCode scannedCode) {
+    private void showProduct(Product product, ScannedCode scannedCode) {
         productConfirmationDialog.show(product, scannedCode);
     }
 
     public void show() {
-        lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), scannableCode));
+        lookupAndShowProduct(scannedCodes);
     }
 
     public void dismiss() {
@@ -243,8 +315,8 @@ public class ProductResolver {
             productResolver = new ProductResolver(context);
         }
 
-        public Builder setCode(String code) {
-            productResolver.scannableCode = code;
+        public Builder setCodes(List<ScannedCode> codes) {
+            productResolver.scannedCodes = codes;
             return this;
         }
 

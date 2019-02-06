@@ -19,8 +19,10 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +32,7 @@ import javax.net.ssl.X509TrustManager;
 
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.auth.TokenRegistry;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.JsonUtils;
@@ -449,6 +452,8 @@ public class Snabble {
     public static class Config {
         /**
          * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
+         *
+         * If null points to the Production Environment
          */
         public String endpointBaseUrl;
 

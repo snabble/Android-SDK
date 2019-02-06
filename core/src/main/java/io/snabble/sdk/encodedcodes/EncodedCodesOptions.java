@@ -1,5 +1,7 @@
 package io.snabble.sdk.encodedcodes;
 
+import io.snabble.sdk.Project;
+
 public class EncodedCodesOptions {
     public final String prefix;
     public final String separator;
@@ -9,9 +11,14 @@ public class EncodedCodesOptions {
     public final String finalCode;
     public final String nextCode;
     public final String nextCodeWithCheck;
+    public final boolean repeatCodes;
+    public final String countSeparator;
+    public final Project project;
 
     private EncodedCodesOptions(String prefix, String separator, String suffix, int maxChars,
-                                int maxCodes, String finalCode, String nextCode, String nextCodeWithCheck) {
+                                int maxCodes, String finalCode, String nextCode,
+                                String nextCodeWithCheck, boolean repeatCodes, String countSeparator,
+                                Project project) {
         this.prefix = prefix;
         this.separator = separator;
         this.suffix = suffix;
@@ -20,9 +27,13 @@ public class EncodedCodesOptions {
         this.finalCode = finalCode;
         this.nextCode = nextCode;
         this.nextCodeWithCheck = nextCodeWithCheck;
+        this.repeatCodes = repeatCodes;
+        this.countSeparator = countSeparator;
+        this.project = project;
     }
 
     public static class Builder {
+        private Project project;
         private String prefix = "";
         private String separator = "\n";
         private String suffix = "";
@@ -31,6 +42,12 @@ public class EncodedCodesOptions {
         private String nextCode = "";
         private String nextCodeWithCheck = "";
         private int maxCodes = 100;
+        private boolean repeatCodes = true;
+        private String countSeparator = ";";
+
+        public Builder(Project project) {
+            this.project = project;
+        }
 
         public Builder prefix(String prefix) {
             this.prefix = prefix;
@@ -72,9 +89,19 @@ public class EncodedCodesOptions {
             return this;
         }
 
+        public Builder repeatCodes(boolean repeatCodes) {
+            this.repeatCodes = repeatCodes;
+            return this;
+        }
+
+        public Builder countSeparator(String countSeparator) {
+            this.countSeparator = countSeparator;
+            return this;
+        }
+
         public EncodedCodesOptions build() {
             return new EncodedCodesOptions(prefix, separator, suffix, maxChars, maxCodes,
-                    finalCode, nextCode, nextCodeWithCheck);
+                    finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator, project);
         }
     }
 }

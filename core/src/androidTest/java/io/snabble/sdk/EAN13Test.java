@@ -4,21 +4,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.codes.ScannableCode;
 
 public class EAN13Test extends SnabbleSdkTest {
     @Test
     public void testEAN13() {
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001801").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001802").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001803").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001804").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001805").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001806").getClass());
-        Assert.assertEquals(EAN13.class, ScannableCode.parse(project, "4029764001807").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001808").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001809").getClass());
-        Assert.assertEquals(ScannableCode.class, ScannableCode.parse(project, "4029764001800").getClass());
+        Assert.assertFalse(EAN13.isEan13("4029764001800"));
+        Assert.assertFalse(EAN13.isEan13("4029764001801"));
+        Assert.assertFalse(EAN13.isEan13("4029764001802"));
+        Assert.assertFalse(EAN13.isEan13("4029764001803"));
+        Assert.assertFalse(EAN13.isEan13("4029764001804"));
+        Assert.assertFalse(EAN13.isEan13("4029764001805"));
+        Assert.assertFalse(EAN13.isEan13("4029764001806"));
+        Assert.assertTrue(EAN13.isEan13("4029764001807"));
+        Assert.assertFalse(EAN13.isEan13("4029764001808"));
+        Assert.assertFalse(EAN13.isEan13("4029764001809"));
 
         Assert.assertEquals(7, EAN13.checksum("402976400180"));
         Assert.assertEquals(0, EAN13.checksum("200123400000"));
@@ -26,6 +25,7 @@ public class EAN13Test extends SnabbleSdkTest {
         Assert.assertEquals(3, EAN13.checksum("629104150021"));
         Assert.assertEquals(2, EAN13.checksum("222111100000"));
         Assert.assertEquals(1, EAN13.checksum("222111200000"));
+        Assert.assertEquals(1, EAN13.checksum("241700012345"));
     }
 
     @Test

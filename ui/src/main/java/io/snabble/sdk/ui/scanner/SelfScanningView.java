@@ -21,9 +21,12 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
@@ -32,7 +35,7 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -54,8 +57,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private long detectAfterTimeMs;
     private ShoppingCart shoppingCart;
     private boolean allowShowingHints;
-    private TextView info;
-    private Handler infoHandler = new Handler(Looper.getMainLooper());
     private boolean isShowingHint;
 
     public SelfScanningView(Context context) {
@@ -82,16 +83,6 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
-        info = findViewById(R.id.info);
-        info.setVisibility(View.INVISIBLE);
-        info.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                info.setTranslationY(-info.getHeight());
-                info.setVisibility(View.VISIBLE);
-            }
-        });
 
         enterBarcode = findViewById(R.id.enter_barcode);
         TextView light = findViewById(R.id.light);
@@ -148,9 +139,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         startBarcodeScanner();
     }
 
-    public void lookupAndShowProduct(ScannableCode scannedCode, BarcodeFormat barcodeFormat) {
+    public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
         new ProductResolver.Builder(getContext())
-                .setCode(scannedCode.getCode())
+                .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
                 .setOnShowListener(new ProductResolver.OnShowListener() {
                     @Override
@@ -189,8 +180,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 .show();
     }
 
-    public void lookupAndShowProduct(ScannableCode scannedCode) {
-        lookupAndShowProduct(scannedCode, null);
+    public void lookupAndShowProduct(List<ScannedCode> scannedCodes) {
+        lookupAndShowProduct(scannedCodes, null);
     }
 
     private void delayNextScan() {
@@ -206,22 +197,19 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
+            lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
         }
     }
 
-    private void showInfo(@StringRes int resId) {
-        info.setVisibility(View.VISIBLE);
-        info.setText(resId);
-        info.animate().translationY(0).start();
-
-        infoHandler.removeCallbacksAndMessages(null);
-        infoHandler.postDelayed(new Runnable() {
+    private void showInfo(@StringRes final int resId) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
             @Override
             public void run() {
-                info.animate().translationY(-info.getHeight()).start();
+                UIUtils.showTopDownInfoBox(SelfScanningView.this, getResources().getString(resId),
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_WARNING);
             }
-        }, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+        });
     }
 
     private void onClickEnterBarcode() {
@@ -245,8 +233,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .setPositiveButton(R.string.Snabble_Done, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(),
-                                        input.getText().toString()));
+                                lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
                             }
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)
@@ -259,6 +246,15 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                         .create()
                         .show();
 
+                input.requestFocus();
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                });
             }
         }
     }

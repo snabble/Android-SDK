@@ -57,9 +57,6 @@ public class SnabbleSdkTest {
         final Buffer product2Buffer = new Buffer();
         product2Buffer.readFrom(context.getAssets().open("product2.json"));
 
-        final Buffer productListBuffer = new Buffer();
-        productListBuffer.readFrom(context.getAssets().open("product_list.json"));
-
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
@@ -73,26 +70,21 @@ public class SnabbleSdkTest {
                             .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(productDbBuffer);
-                } else if (request.getPath().contains("/products/sku/online1?shopID=42")) {
+                } else if (request.getPath().contains("/resolvedProducts/sku/1?shopID=1774")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product1OtherPriceBuffer);
-                } else if (request.getPath().contains("/products/sku/online1")) {
+                } else if (request.getPath().contains("/resolvedProducts/sku/1")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product1Buffer);
-                } else if (request.getPath().contains("/products/sku/online2")) {
+                } else if (request.getPath().contains("/resolvedProducts/sku/2")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(product2Buffer);
-                } else if (request.getPath().contains("/products/search/bySkus")) {
-                    return new MockResponse()
-                            .addHeader("Content-Type", "application/json")
-                            .addHeader("Cache-Control", "no-cache")
-                            .setBody(productListBuffer);
                 } else if (request.getPath().contains("/products/")) {
                     return new MockResponse()
                             .addHeader("Content-Type", "application/json")
@@ -125,7 +117,7 @@ public class SnabbleSdkTest {
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        withDb("testDb.sqlite3");
+        withDb("test_1_18.sqlite3");
     }
 
     public void withDb(String testDbName) throws IOException, Snabble.SnabbleException {

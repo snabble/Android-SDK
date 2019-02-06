@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.SelfScanningView;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -84,7 +84,7 @@ public class SelfScanningFragment extends Fragment {
         if (args != null) {
             String scannableCode = args.getString("showProductCode");
             if (scannableCode != null) {
-                selfScanningView.lookupAndShowProduct(ScannableCode.parse(SnabbleUI.getProject(), scannableCode));
+                selfScanningView.lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), scannableCode));
             }
             setArguments(null);
         }

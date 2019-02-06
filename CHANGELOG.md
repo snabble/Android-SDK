@@ -1,16 +1,64 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.11.4]
+## [0.12.0-beta3]
+
+### Important Changes
+- The minimum required database schema version is now 1.18. Backwards support is dropped and 
+opening a old database will result in deletion of the database and fallback to online 
+only mode. Calling update() will download a up to date version of the database.
+
+If you are using a bundled database make sure to update it to a database with schema 1.18 or higher.
 
 ### Changes
-- Now listing the offending products if a checkout is failing because of a sale stop or other 
-various reasons
+- ScannableCode is now renamed to ScannedCode
+- ScannedCode.parse is now returning a list of ScannedCode matches which need to be looked up 
+in the database
+- Support for Units is now migrated to new database schema, the older schema used in previous 
+versions will fall back to g/kg only
+- Product.getScannableCodes() is now returning a Product.Code object
+- Added more Units and removed isXXX functions in favor of Unit.getDimension()
+- Small layout improvements for qr and encoded codes checkout
 
-## [0.11.3]
+### Added
+- Support for code templates
+- Support for product api v2
+
+### Fixed
+- Crash when a network error occurred when scanning a product
+
+## [0.12.0-beta2]
+
+### Added
+- Added support for encoded codes csv 
+
+## [0.12.0-beta1]
 
 ### Important Changes
 - All requests to our domains are now using certificate pinning
+
+### Changed
+- Renamed get/set LoyaltyCardId to CustomerCardId 
+- Now listing the offending products if a checkout is failing because of a sale stop or other 
+various reasons
+
+### Added
+- Added support for Units (ml, kg, cm...)
+- Added support for customer card metadata
+- Added customizing options for ProductSearchView
+- Added top-down info box in UIUtils
+- Database error event logging (to the servers of snabble)
+- Parsing of reference units 
+
+### Fixed
+- Directly showing keyboard when entering barcode when no database is available and the 
+- Fixed dialog showing "null " + Product name when no subtitle is set
+- Use reference units for weight/amount transmission when checking out
+
+### New string keys
+- Snabble.saleStop.errorMsg.title
+- Snabble.saleStop.errorMsg.one
+- Snabble.saleStop.errorMsg
 
 ## [0.11.2]
 

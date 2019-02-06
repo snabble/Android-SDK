@@ -41,9 +41,10 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.Unit;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -213,7 +214,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 final int pos = viewHolder.getAdapterPosition();
                 final Product product = cart.getProduct(pos);
-                final String scannedCode = cart.getScannedCode(pos);
+                final ScannedCode scannedCode = cart.getScannedCode(pos);
                 final int quantity = cart.getQuantity(pos);
                 final boolean isZeroAmountProduct = cart.isZeroAmountProduct(pos);
 
@@ -224,7 +225,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeAndShowUndoSnackbar(final int pos, final Product product, final String scannedCode, final int quantity, final boolean isZeroAmountProduct) {
+    private void removeAndShowUndoSnackbar(final int pos, final Product product, final ScannedCode scannedCode, final int quantity, final boolean isZeroAmountProduct) {
         cart.removeAll(pos);
         Telemetry.event(Telemetry.Event.DeletedFromCart, product);
         recyclerViewAdapter.notifyItemRemoved(pos);
@@ -235,8 +236,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ScannableCode parsedCode = ScannableCode.parse(SnabbleUI.getProject(), scannedCode);
-                cart.insert(product, pos, quantity, parsedCode, isZeroAmountProduct);
+                cart.insert(product, pos, quantity, scannedCode, isZeroAmountProduct);
                 recyclerView.getAdapter().notifyDataSetChanged();
                 Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
             }
@@ -269,8 +269,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 sb.append("\n\n");
 
                 for(Product product : invalidProducts) {
-                    sb.append(product.getSubtitle());
-                    sb.append(" ");
+                    if (product.getSubtitle() != null) {
+                        sb.append(product.getSubtitle());
+                        sb.append(" ");
+                    }
+
                     sb.append(product.getName());
                     sb.append("\n");
                 }
@@ -309,10 +312,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void updatePayText() {
         if (cart != null) {
             int quantity = cart.getTotalQuantity();
-            String price = priceFormatter.format(cart.getTotalPrice());
-
-            pay.setText(getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
-                    quantity, quantity, price));
+            int price = cart.getTotalPrice();
+            if (price > 0) {
+                String formattedPrice = priceFormatter.format(price);
+                pay.setText(getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
+                                quantity, quantity, formattedPrice));
+            } else {
+                pay.setText(R.string.Snabble_Shoppingcart_buyProducts_now);
+            }
         }
     }
 
@@ -418,6 +425,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         View controlsUserWeighed;
         View controlsDefault;
         View quantityEditApply;
+        TextView quantityAnnotation;
 
         TextWatcher textWatcher;
 
@@ -435,10 +443,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             controlsDefault = itemView.findViewById(R.id.controls_default);
             quantityEdit = itemView.findViewById(R.id.quantity_edit);
             quantityEditApply = itemView.findViewById(R.id.quantity_edit_apply);
+            quantityAnnotation = itemView.findViewById(R.id.quantity_annotation);
         }
 
         @SuppressLint("SetTextI18n")
         public void bindTo(final int position) {
+            final Project project = SnabbleUI.getProject();
             final Product product = cart.getProduct(position);
             final int quantity = cart.getQuantity(position);
             final Integer embeddedPrice = cart.getEmbeddedPrice(position);
@@ -449,32 +459,51 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             if (product != null) {
                 Product.Type type = product.getType();
 
-                name.setText(product.getName());
+                final ScannedCode scannedCode = cart.getScannedCode(position);
 
-                String price = priceFormatter.format(product);
+                String encodingDisplayValue = "g";
+
+                Unit encodingUnit = scannedCode.getEmbeddedUnit();
+                if (encodingUnit == null) {
+                    encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+                }
+
+                if (encodingUnit != null) {
+                    encodingDisplayValue = encodingUnit.getDisplayValue();
+                }
+
+                name.setText(product.getName());
+                quantityAnnotation.setText(encodingDisplayValue);
+
+                String price = priceFormatter.format(product, true, scannedCode);
+
+                int productPrice = product.getDiscountedPrice();
+                if (scannedCode.hasPrice()) {
+                    productPrice = scannedCode.getPrice();
+                }
 
                 if (embeddedPrice != null) {
                     priceTextView.setText(" " + priceFormatter.format(embeddedPrice));
                 } else if (embeddedAmount != null) {
                     priceTextView.setText(String.format(" * %s = %s",
-                            priceFormatter.format(product.getPrice()),
-                            priceFormatter.format(product.getPrice() * embeddedAmount)));
+                            priceFormatter.format(productPrice, true),
+                            priceFormatter.format(productPrice * embeddedAmount)));
                 } else if (embeddedWeight != null) {
-                    String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, roundingMode));
+                    String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, scannedCode, roundingMode));
                     priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 } else if (quantity == 1) {
                     priceTextView.setText(" " + price);
                 } else {
-                    String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, roundingMode));
+                    String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, scannedCode, roundingMode));
                     priceTextView.setText(String.format(" * %s = %s", price, priceSum));
                 }
 
                 if (embeddedWeight != null) {
-                    quantityTextView.setText(String.format("%s g", String.valueOf(embeddedWeight)));
+                    quantityTextView.setText(String.format("%s %s", String.valueOf(embeddedWeight), encodingDisplayValue));
                 } else if (embeddedAmount != null) {
                     quantityTextView.setText(String.valueOf(embeddedAmount));
                 } else if (type == Product.Type.UserWeighed) {
-                    quantityTextView.setText(String.format("%s g", String.valueOf(quantity)));
+                    quantityTextView.setText(String.format("%s %s", String.valueOf(quantity), encodingDisplayValue));
                 } else {
                     quantityTextView.setText(String.valueOf(quantity));
                 }
@@ -520,15 +549,24 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         break;
                 }
 
+                // special case if price is zero we assume its a picking product
+                if (productPrice == 0) {
+                    controlsDefault.setVisibility(View.GONE);
+                    controlsUserWeighed.setVisibility(View.GONE);
+                }
+
                 plus.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         int p = getAdapterPosition();
 
                         if (cart.isZeroAmountProduct(p)) {
-                            cart.setScannedCode(p,
-                                    EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
-                                            cart.getScannedCode(p), embeddedAmount + 1));
+                            CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
+                            ScannedCode scannedCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
+                                    .embed(embeddedAmount + 1)
+                                    .buildCode();
+
+                            cart.setScannedCode(p, scannedCode);
                         } else {
                             cart.setQuantity(p, quantity + 1);
                         }
@@ -549,9 +587,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             removeAndShowUndoSnackbar(p, product, cart.getScannedCode(p), q+1, isZeroAmountProduct);
                         } else {
                             if (isZeroAmountProduct) {
-                                cart.setScannedCode(p,
-                                        EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
-                                                cart.getScannedCode(p), q));
+                                CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
+                                ScannedCode scannedCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
+                                        .embed(q)
+                                        .buildCode();
+
+                                cart.setScannedCode(p, scannedCode);
                             } else {
                                 cart.setQuantity(p, q);
                             }

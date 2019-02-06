@@ -9,6 +9,8 @@ public enum PaymentMethod {
     QRCODE_POS(false, false),
     @SerializedName("encodedCodes")
     ENCODED_CODES(true, false),
+    @SerializedName("encodedCodesCSV")
+    ENCODED_CODES_CSV(true, false),
     @SerializedName("teleCashDeDirectDebit")
     TELECASH_DIRECT_DEBIT(false, true);
 

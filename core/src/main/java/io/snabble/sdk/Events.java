@@ -12,12 +12,15 @@ import com.google.gson.annotations.SerializedName;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.IllegalFormatException;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import io.snabble.sdk.utils.Utils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -92,8 +95,18 @@ class Events {
     }
 
     public void logError(String format, Object... args) {
+        if (Utils.isDebugBuild(Snabble.getInstance().getApplication())) {
+            return; // do not log in errors in debug builds
+        }
+
         PayloadError error = new PayloadError();
-        error.message = String.format(format, args);
+
+        try {
+            error.message = String.format(format, args);
+        } catch (IllegalFormatException e) {
+            Logger.e("Could not post event error: invalid format");
+        }
+
         error.session = cartId;
 
         post(error, false);
@@ -176,7 +189,7 @@ class Events {
         payloadCart.session = shoppingCart.getId();
         payloadCart.shopId = "unknown";
 
-        String loyaltyCardId = project.getLoyaltyCardId();
+        String loyaltyCardId = project.getCustomerCardId();
         if (loyaltyCardId != null) {
             payloadCart.customer = new PayloadCartCustomer();
             payloadCart.customer.loyaltyCard = loyaltyCardId;
@@ -196,18 +209,42 @@ class Events {
             Product product = shoppingCart.getProduct(i);
             int quantity = shoppingCart.getQuantity(i);
 
-            payloadCart.items[i] = new PayloadCartItem();
-            payloadCart.items[i].sku = String.valueOf(product.getSku());
-            payloadCart.items[i].scannedCode = shoppingCart.getScannedCode(i);
-            payloadCart.items[i].amount = quantity;
-            payloadCart.items[i].units = shoppingCart.getEmbeddedUnits(i);
-            payloadCart.items[i].weight = shoppingCart.getEmbeddedWeight(i);
-            payloadCart.items[i].price = shoppingCart.getEmbeddedPrice(i);
+            PayloadCartItem item = new PayloadCartItem();
+
+            ScannedCode scannedCode = shoppingCart.getScannedCode(i);
+            Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+
+            if (scannedCode.getEmbeddedUnit() != null) {
+                encodingUnit = scannedCode.getEmbeddedUnit();
+            }
+
+            item.sku = String.valueOf(product.getSku());
+            item.scannedCode = shoppingCart.getScannedCode(i).getCode();
+
+            if (encodingUnit != null) {
+                item.weightUnit = encodingUnit.getId();
+            }
+
+            item.amount = quantity;
+            item.units = shoppingCart.getEmbeddedUnits(i);
+            item.weight = shoppingCart.getEmbeddedWeight(i);
+            item.price = shoppingCart.getEmbeddedPrice(i);
 
             if (product.getType() == Product.Type.UserWeighed) {
-                payloadCart.items[i].amount = 1;
-                payloadCart.items[i].weight = quantity;
+                item.amount = 1;
+                item.weight = quantity;
             }
+
+            if (item.units == null && product.getReferenceUnit() == Unit.PIECE) {
+                item.amount = 1;
+                item.units = quantity;
+            }
+
+            if (item.price == null && item.units != null && scannedCode.hasPrice()) {
+                item.price = item.units * scannedCode.getPrice();
+            }
+
+            payloadCart.items[i] = item;
         }
 
         return payloadCart;
@@ -291,6 +328,7 @@ class Events {
         private String sku;
         private String scannedCode;
         private int amount;
+        private String weightUnit;
         private Integer price;
         private Integer weight;
         private Integer units;

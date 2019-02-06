@@ -6,31 +6,18 @@
     android:background="#ffffff">
 
     <TextView
-        android:id="@+id/pay_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:textSize="17sp"
-        android:textColor="@color/snabble_textColorDark"
-        tools:text="@string/Snabble.PaymentSelection.title" />
-
-    <TextView
         android:id="@+id/explanation1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/pay_amount"
+        android:layout_alignParentTop="true"
         android:text="@string/Snabble.QRCode.showThisCode"
         android:textColor="@color/snabble_textColorDark"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        android:textSize="17sp" />
 
     <io.snabble.sdk.ui.scanner.BarcodeView
         android:id="@+id/qr_code"
@@ -41,6 +28,20 @@
         android:layout_below="@+id/explanation1"
         tools:format="QR_CODE"
         tools:text="357294723482348234283472834732748327493473274832749347327483274947327483274838;" />
+
+    <TextView
+        android:id="@+id/pay_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/explanation2"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textSize="19sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/snabble_textColorDark"
+        tools:text="@string/Snabble.PaymentSelection.title" />
 
     <TextView
         android:id="@+id/explanation2"

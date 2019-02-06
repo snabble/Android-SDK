@@ -3,8 +3,6 @@ package io.snabble.sdk;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.codes.ScannedCode;
 
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
@@ -21,7 +19,7 @@ public class ShoppingCart {
     private static class Entry {
         private Product product;
         private final String sku;
-        private String scannedCode;
+        private ScannedCode scannedCode;
         private int quantity;
 
         private Integer weight = null;
@@ -75,7 +73,7 @@ public class ShoppingCart {
         add(product, 1);
     }
 
-    public void add(Product product, ScannableCode scannedCode) {
+    public void add(Product product, ScannedCode scannedCode) {
         add(product, 1, scannedCode);
     }
 
@@ -83,11 +81,11 @@ public class ShoppingCart {
         insert(product, items.size(), quantity);
     }
 
-    public void add(Product product, int quantity, ScannableCode scannedCode) {
+    public void add(Product product, int quantity, ScannedCode scannedCode) {
         insert(product, items.size(), quantity, scannedCode);
     }
 
-    public void add(Product product, int quantity, ScannableCode scannedCode, boolean isZeroAmountProduct) {
+    public void add(Product product, int quantity, ScannedCode scannedCode, boolean isZeroAmountProduct) {
         insert(product, items.size(), quantity, scannedCode, isZeroAmountProduct);
     }
 
@@ -95,7 +93,7 @@ public class ShoppingCart {
         insert(product, index, 1);
     }
 
-    public void insert(Product product, int index, ScannableCode scannedCode) {
+    public void insert(Product product, int index, ScannedCode scannedCode) {
         insert(product, index, 1, scannedCode);
     }
 
@@ -103,25 +101,32 @@ public class ShoppingCart {
         insert(product, index, quantity, null);
     }
 
-    public void insert(Product product, int index, int quantity, ScannableCode scannedCode, boolean isZeroAmountProduct) {
+    public void insert(Product product, int index, int quantity, ScannedCode scannedCode, boolean isZeroAmountProduct) {
         Entry e = getEntryBySku(product.getSku());
 
-        if (e == null || scannedCode.hasUnitData()
-                || scannedCode.hasPriceData()
-                || product.getType() == Product.Type.UserWeighed
-                || product.getType() == Product.Type.PreWeighed) {
-            if (quantity > 0) {
-                Entry entry = new Entry(product, quantity);
-                setScannedCodeForEntry(entry, scannedCode);
-                entry.isZeroAmountProduct = isZeroAmountProduct;
-                addEntry(entry, index);
-            }
-        } else {
-            setEntryQuantity(e, e.quantity + quantity);
+//        if (e == null || scannedCode.hasUnitData()
+//                || scannedCode.hasPriceData()
+//                || product.getType() == Product.Type.UserWeighed
+//                || product.getType() == Product.Type.PreWeighed) {
+//            if (quantity > 0) {
+//                Entry entry = new Entry(product, quantity);
+//                setScannedCodeForEntry(entry, scannedCode);
+//                entry.isZeroAmountProduct = isZeroAmountProduct;
+//                addEntry(entry, index);
+//            }
+//        } else {
+//            setEntryQuantity(e, e.quantity + quantity);
+//        }
+
+        if (quantity > 0) {
+            Entry entry = new Entry(product, quantity);
+            setScannedCodeForEntry(entry, scannedCode);
+            entry.isZeroAmountProduct = isZeroAmountProduct;
+            addEntry(entry, index);
         }
     }
 
-    public void insert(Product product, int index, int quantity, ScannableCode scannedCode) {
+    public void insert(Product product, int index, int quantity, ScannedCode scannedCode) {
         insert(product, index, quantity, scannedCode, false);
     }
 
@@ -129,7 +134,7 @@ public class ShoppingCart {
         setQuantity(index, quantity, null);
     }
 
-    public void setQuantity(int index, int quantity, ScannableCode scannedCode) {
+    public void setQuantity(int index, int quantity, ScannedCode scannedCode) {
         Entry e = getEntry(index);
 
         if (e != null) {
@@ -145,11 +150,11 @@ public class ShoppingCart {
         setQuantity(product, quantity, null);
     }
 
-    public void setQuantity(Product product, int quantity, ScannableCode scannedCode) {
+    public void setQuantity(Product product, int quantity, ScannedCode scannedCode) {
         if (product.getType() == Product.Type.Article) {
             Entry e = getEntryBySku(product.getSku());
 
-            if (e != null) {
+            if (e != null && product.getReferenceUnit() != Unit.PIECE) {
                 // update product for changing prices
                 e.product = product;
 
@@ -186,7 +191,7 @@ public class ShoppingCart {
         return entry.product;
     }
 
-    public String getScannedCode(int index) {
+    public ScannedCode getScannedCode(int index) {
         Entry entry = getEntry(index);
         if (entry == null) {
             return null;
@@ -346,55 +351,34 @@ public class ShoppingCart {
         }
     }
 
-    public void setScannedCode(int index, ScannableCode scannableCode) {
+    public void setScannedCode(int index, ScannedCode scannedCode) {
         Entry e = getEntry(index);
         if (e != null) {
-            setScannedCodeForEntry(e, scannableCode);
+            setScannedCodeForEntry(e, scannedCode);
         }
     }
 
-    private void setScannedCodeForEntry(Entry entry, ScannableCode scannedCode) {
-        entry.scannedCode = findCodeByScannedCode(entry.product, scannedCode);
+    private void setScannedCodeForEntry(Entry entry, ScannedCode scannedCode) {
+        entry.scannedCode = scannedCode;
 
-        if (scannedCode.hasWeighData()) {
-            entry.weight = scannedCode.getEmbeddedData();
-        } else if (scannedCode.hasPriceData()) {
-            entry.price = scannedCode.getEmbeddedData();
-        } else if (scannedCode.hasUnitData()) {
-            entry.amount = scannedCode.getEmbeddedData();
+        Unit unit = entry.product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+
+        if (scannedCode.getEmbeddedUnit() != null) {
+            unit = scannedCode.getEmbeddedUnit();
+        }
+
+        if (scannedCode.hasEmbeddedData()) {
+            if (Unit.hasDimension(unit)) {
+                entry.weight = scannedCode.getEmbeddedData();
+            } else if (unit == Unit.PRICE) {
+                entry.price = scannedCode.getEmbeddedData();
+            } else if (unit == Unit.PIECE) {
+                entry.amount = scannedCode.getEmbeddedData();
+            }
         }
 
         modCount++;
         notifyQuantityChanged(this, entry.product);
-    }
-
-    private String findCodeByScannedCode(Product product, ScannableCode scannableCode) {
-        String code = findCodeByScannedCodeInternal(product, scannableCode, true);
-        return code != null ? code : scannableCode.getCode();
-    }
-
-    // finds the code matching the code in the product if it was scanned with leading zeros
-    // and the leading zeros are missing in the scannableCodes of the product
-    private String findCodeByScannedCodeInternal(Product product, ScannableCode scannableCode, boolean recursive) {
-        String scannedCode = scannableCode.getCode();
-
-        for (String code : product.getScannableCodes()) {
-            if (code.equals(scannedCode)) {
-                return code;
-            }
-        }
-
-        if (recursive) {
-            if (scannedCode.length() > 0 && scannedCode.startsWith("0")) {
-                scannedCode = scannedCode.substring(1, scannedCode.length());
-                return findCodeByScannedCodeInternal(product, ScannableCode.parse(project, scannedCode), true);
-            } else if (scannedCode.length() < 13) {
-                scannedCode = StringUtils.repeat('0', 13 - scannedCode.length()) + scannedCode;
-                return findCodeByScannedCodeInternal(product, ScannableCode.parse(project, scannedCode), false);
-            }
-        }
-
-        return null;
     }
 
     private int indexOf(Entry e) {
@@ -434,13 +418,17 @@ public class ShoppingCart {
                 Product product = e.product;
 
                 if (e.weight != null) {
-                    sum += product.getPriceForQuantity(e.weight, project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.weight, e.scannedCode, project.getRoundingMode());
                 } else if (e.price != null) {
                     sum += e.price;
                 } else if (e.amount != null) {
-                    sum += product.getPrice() * e.amount;
+                    int productPrice = product.getDiscountedPrice();
+                    if (e.scannedCode.hasPrice()) {
+                        productPrice = e.scannedCode.getPrice();
+                    }
+                    sum += productPrice * e.amount;
                 } else {
-                    sum += product.getPriceForQuantity(e.quantity, project.getRoundingMode());
+                    sum += product.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
                 }
             }
 
@@ -457,7 +445,7 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product depositProduct = e.product.getDepositProduct();
                 if (depositProduct != null) {
-                    sum += depositProduct.getPriceForQuantity(e.quantity, project.getRoundingMode());
+                    sum += depositProduct.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
                 }
             }
 
@@ -472,7 +460,8 @@ public class ShoppingCart {
             for (Entry e : items) {
                 Product product = e.product;
                 if (product.getType() == Product.Type.UserWeighed
-                        || product.getType() == Product.Type.PreWeighed) {
+                        || product.getType() == Product.Type.PreWeighed
+                        || product.getReferenceUnit() == Unit.PIECE) {
                     sum += 1;
                 } else {
                     sum += e.quantity;

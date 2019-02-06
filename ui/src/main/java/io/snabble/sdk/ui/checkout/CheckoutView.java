@@ -18,6 +18,7 @@ import android.widget.ViewAnimator;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -156,6 +157,18 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 break;
             case ENCODED_CODES:
                 displayView(new CheckoutEncodedCodesView(getContext()));
+                break;
+            case ENCODED_CODES_CSV:
+                EncodedCodesOptions options = new EncodedCodesOptions.Builder(SnabbleUI.getProject())
+                        .prefix("snabble;\n")
+                        .separator("\n")
+                        .suffix("")
+                        .repeatCodes(false)
+                        .countSeparator(";")
+                        .maxCodes(100)
+                        .build();
+
+                displayView(new CheckoutEncodedCodesView(getContext(), options));
                 break;
         }
     }

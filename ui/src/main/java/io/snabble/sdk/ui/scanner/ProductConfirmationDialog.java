@@ -28,9 +28,10 @@ import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.codes.ScannableCode;
+import io.snabble.sdk.Unit;
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -54,7 +55,7 @@ class ProductConfirmationDialog {
     private View minus;
 
     private Product product;
-    private ScannableCode scannedCode;
+    private ScannedCode scannedCode;
 
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
@@ -67,7 +68,7 @@ class ProductConfirmationDialog {
         priceFormatter = new PriceFormatter(project);
     }
 
-    public void show(Product newProduct, ScannableCode scannedCode) {
+    public void show(Product newProduct, ScannedCode scannedCode) {
         dismiss();
 
         this.product = newProduct;
@@ -109,17 +110,26 @@ class ProductConfirmationDialog {
         quantity.clearFocus();
 
         Product.Type type = product.getType();
-
         int cartQuantity = shoppingCart.getQuantity(product);
 
+        Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+        if (scannedCode.getEmbeddedUnit() != null) {
+            unit = scannedCode.getEmbeddedUnit();
+        }
+
+        int productPrice = product.getDiscountedPrice();
+        if (scannedCode.hasPrice()) {
+            productPrice = scannedCode.getPrice();
+        }
+
         if (scannedCode.hasEmbeddedData()) {
-            if (scannedCode.hasWeighData()) {
-                quantityAnnotation.setText("g");
+            if (Unit.hasDimension(unit)) {
+                quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
+                quantityAnnotation.setVisibility(View.VISIBLE);
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
-                quantityAnnotation.setVisibility(View.VISIBLE);
                 quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
-            } else if (scannedCode.hasPriceData()) {
+            } else if (unit == Unit.PRICE) {
                 quantityAnnotation.setText(SnabbleUI.getProject().getCurrency().getSymbol());
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
@@ -128,7 +138,7 @@ class ProductConfirmationDialog {
 
                 PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
                 quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
-            } else if (scannedCode.hasUnitData()) {
+            } else if (unit == Unit.PIECE) {
                 if (scannedCode.getEmbeddedData() == 0) {
                     quantityAnnotation.setVisibility(View.GONE);
                     plus.setVisibility(View.VISIBLE);
@@ -143,10 +153,23 @@ class ProductConfirmationDialog {
             }
         } else if (type == Product.Type.Article) {
             quantityAnnotation.setVisibility(View.GONE);
-            quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
+
+            if (product.getReferenceUnit() == Unit.PIECE) {
+                quantity.setText("1");
+            } else {
+                quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
+            }
+
+            // special case if price is zero we assume its a picking product and hide the
+            // controls to adjust the quantity
+            if (productPrice == 0) {
+                plus.setVisibility(View.GONE);
+                minus.setVisibility(View.GONE);
+                quantity.setText("1");
+            }
         } else if (type == Product.Type.UserWeighed) {
             quantityAnnotation.setVisibility(View.VISIBLE);
-            quantityAnnotation.setText("g");
+            quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
             quantity.setText("");
@@ -220,8 +243,9 @@ class ProductConfirmationDialog {
 
         if (cartQuantity > 0
                 && product.getType() == Product.Type.Article
-                && !scannedCode.hasUnitData()
-                && !scannedCode.hasPriceData()) {
+                && unit != Unit.PRICE
+                && unit != Unit.PIECE
+                && product.getDiscountedPrice() != 0) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
@@ -268,23 +292,50 @@ class ProductConfirmationDialog {
         window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
+    private Unit getNonNullEncodingUnit(Product product, ScannedCode code) {
+        if (code.getEmbeddedUnit() != null) {
+            return code.getEmbeddedUnit();
+        }
+
+        Unit unit = product.getEncodingUnit(code.getTemplateName(), code.getLookupCode());
+        if (unit == null) {
+            unit = Unit.GRAM;
+        }
+
+        return unit;
+    }
+
     private void updatePrice() {
         RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
 
-        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(),
-                roundingMode));
-        String singlePrice = priceFormatter.format(product);
+        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(), scannedCode, roundingMode));
+        String singlePrice = priceFormatter.format(product, true, scannedCode);
 
         int q = getQuantity();
+        Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getCode());
 
-        if (q > 0 && (scannedCode.hasWeighData() || product.getType() == Product.Type.UserWeighed)) {
-            price.setText(String.format("%sg * %s = %s", String.valueOf(q), singlePrice, priceText));
+        if (scannedCode.getEmbeddedUnit() != null) {
+            encodingUnit = scannedCode.getEmbeddedUnit();
+        }
+
+        String encodingDisplayValue = "g";
+        if (encodingUnit != null) {
+            encodingDisplayValue = encodingUnit.getDisplayValue();
+        }
+
+        int productPrice = product.getDiscountedPrice();
+        if (scannedCode.hasPrice()) {
+            productPrice = scannedCode.getPrice();
+        }
+
+        if (q > 0 && (Unit.hasDimension(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
+            price.setText(String.format("%s %s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
         } else if (q > 1) {
-            if (scannedCode.hasUnitData()) {
+            if (encodingUnit == Unit.PIECE) {
                 price.setText(String.format("%s * %s = %s",
                         String.valueOf(q),
-                        priceFormatter.format(product.getPrice()),
-                        priceFormatter.format(product.getPrice() * q)));
+                        priceFormatter.format(productPrice),
+                        priceFormatter.format(productPrice * q)));
             } else {
                 price.setText(String.format("%s * %s = %s", String.valueOf(q), singlePrice, priceText));
             }
@@ -292,22 +343,26 @@ class ProductConfirmationDialog {
             price.setText(singlePrice);
         }
 
-        if (scannedCode.hasPriceData()) {
+        if (encodingUnit == Unit.PRICE) {
             int embeddedPrice = scannedCode.getEmbeddedData();
             price.setText(priceFormatter.format(embeddedPrice));
         }
 
         Product depositProduct = product.getDepositProduct();
         if (depositProduct != null) {
-            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(),
-                    roundingMode));
-
+            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(), scannedCode, roundingMode));
             Resources res = context.getResources();
             String text = res.getString(R.string.Snabble_Scanner_plusDeposit, depositPriceText);
             depositPrice.setText(text);
             depositPrice.setVisibility(View.VISIBLE);
         } else {
             depositPrice.setVisibility(View.GONE);
+        }
+
+        if (price.getText().equals("")) {
+            price.setVisibility(View.GONE);
+        } else {
+            price.setVisibility(View.VISIBLE);
         }
     }
 
@@ -328,8 +383,10 @@ class ProductConfirmationDialog {
 
             // generate new code when the embedded data contains 0
             if (scannedCode.getEmbeddedData() == 0) {
-                scannedCode = EAN13.generateNewCodeWithEmbeddedData(SnabbleUI.getProject(),
-                        scannedCode.getCode(), getQuantity());
+                CodeTemplate codeTemplate = SnabbleUI.getProject().getCodeTemplate(scannedCode.getTemplateName());
+                scannedCode = codeTemplate.code(scannedCode.getLookupCode())
+                        .embed(getQuantity())
+                        .buildCode();
                 isZeroAmountProduct = true;
             }
 
@@ -341,7 +398,11 @@ class ProductConfirmationDialog {
                 shoppingCart.insert(product, 0, 1, scannedCode, isZeroAmountProduct);
             }
         } else if (product.getType() == Product.Type.Article) {
-            shoppingCart.setQuantity(product, q, scannedCode);
+            if (product.getDiscountedPrice() == 0) {
+                shoppingCart.insert(product, 0, q, scannedCode);
+            } else {
+                shoppingCart.setQuantity(product, q, scannedCode);
+            }
         } else if (product.getType() == Product.Type.UserWeighed) {
             if (q > 0) {
                 shoppingCart.insert(product, 0, q, scannedCode);

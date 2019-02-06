@@ -7,141 +7,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.io.Serializable;
 
 import io.snabble.sdk.Project;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 
-public class EAN13 extends ScannableCode implements Serializable {
-    private final static String[] germanPrintPrefixes = new String[]{
-            "414", "419", "434", "449"
-    };
-
-    private String maskedCode;
-    private int embeddedData;
-    private boolean hasUnitData;
-    private boolean hasPriceData;
-    private boolean hasWeighData;
-
-    private boolean verifyInternalEanChecksum;
-    private boolean useGermanPrintPrefix;
-
-    EAN13(Project project, String code) {
-        super(project, code);
-
-        if (!isEan13(code)) {
-            throw new IllegalArgumentException("Not a valid EAN13 code");
-        }
-
-        verifyInternalEanChecksum = project.isVerifyingInternalEanChecksum();
-        useGermanPrintPrefix = project.isUsingGermanPrintPrefix();
-
-        for (String prefix : project.getWeighPrefixes()) {
-            if (code.startsWith(prefix)) {
-                hasWeighData = true;
-            }
-        }
-
-        for (String prefix : project.getPricePrefixes()) {
-            if (code.startsWith(prefix)) {
-                hasPriceData = true;
-            }
-        }
-
-        for (String prefix : project.getUnitPrefixes()) {
-            if (code.startsWith(prefix)) {
-                hasUnitData = true;
-            }
-        }
-
-        if (containsGermanPrintPrefix()) {
-            maskedCode = code.substring(0, 3) + "0000000000";
-            embeddedData = Integer.parseInt(code.substring(8, 12));
-            hasPriceData = true;
-        } else if (isEmbeddedDataOk()) {
-            maskedCode = code.substring(0, 6) + "0000000";
-            embeddedData = Integer.parseInt(code.substring(7, 12));
-        } else {
-            maskedCode = code;
-            hasWeighData = false;
-            hasUnitData = false;
-            hasPriceData = false;
-        }
-    }
-
-    private boolean containsGermanPrintPrefix() {
-        if (!useGermanPrintPrefix) {
-            return false;
-        }
-
-        return ArrayUtils.contains(germanPrintPrefixes, getCode().substring(0, 3));
-    }
-
-    @Override
-    public String getMaskedCode() {
-        return maskedCode;
-    }
-
-    @Override
-    public int getEmbeddedData() {
-        return embeddedData;
-    }
-
-    @Override
-    public boolean hasUnitData() {
-        return hasUnitData;
-    }
-
-    @Override
-    public boolean hasPriceData() {
-        return hasPriceData;
-    }
-
-    @Override
-    public boolean hasWeighData() {
-        return hasWeighData;
-    }
-
-    @Override
-    public boolean hasEmbeddedData() {
-        return hasUnitData || hasPriceData || hasWeighData;
-    }
-
-    @Override
-    public boolean isEmbeddedDataOk() {
-        if (containsGermanPrintPrefix()) {
-            return true;
-        }
-
-        if (!hasEmbeddedData()) {
-            return false;
-        }
-
-        if (!verifyInternalEanChecksum) {
-            return true;
-        }
-
-        String code = getCode();
-        int digit = Character.digit(code.charAt(6), 10);
-        int check = internalChecksum(code);
-        return check == digit;
-    }
-
-    public static EAN13 generateNewCodeWithEmbeddedData(Project project,
-                                                        String code,
-                                                        int newEmbeddedData) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(code.substring(0, code.length() - 6));
-        String dataStr = String.valueOf(newEmbeddedData);
-
-        int remaining = 5 - dataStr.length();
-        for (int i = 0; i < remaining; i++) {
-            stringBuilder.append("0");
-        }
-
-        stringBuilder.append(dataStr);
-        stringBuilder.replace(6, 7, String.valueOf(EAN13.internalChecksum(stringBuilder.toString())));
-        stringBuilder.append(String.valueOf(EAN13.checksum(stringBuilder.toString())));
-
-        return (EAN13) ScannableCode.parse(project, stringBuilder.toString());
-    }
-
+public class EAN13 implements Serializable {
     /**
      * Calculates the checksum of an given ean string.
      * <p>
@@ -171,9 +39,13 @@ public class EAN13 extends ScannableCode implements Serializable {
     }
 
     public static int internalChecksum(String code) {
+        return internalChecksum(code, 7);
+    }
+
+    public static int internalChecksum(String code, int offset) {
         int sum = 0;
         for (int i = 0; i < 5; i++) {
-            int d = Character.digit(code.charAt(i + 7), 10);
+            int d = Character.digit(code.charAt(i + offset), 10);
             sum += i + weightedProduct(i, d);
         }
         int mod10 = (10 - (sum % 10)) % 10;

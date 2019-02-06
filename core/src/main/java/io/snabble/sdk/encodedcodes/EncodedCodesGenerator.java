@@ -7,7 +7,9 @@ import java.util.List;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.codes.EAN13;
+import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.codes.templates.groups.EmbedGroup;
 
 public class EncodedCodesGenerator {
     private StringBuilder stringBuilder;
@@ -72,9 +74,9 @@ public class EncodedCodesGenerator {
     private class ProductInfo {
         Product product;
         int quantity;
-        String scannedCode;
+        ScannedCode scannedCode;
 
-        public ProductInfo(Product product, int quantity, String scannedCode) {
+        public ProductInfo(Product product, int quantity, ScannedCode scannedCode) {
             this.product = product;
             this.quantity = quantity;
             this.scannedCode = scannedCode;
@@ -99,9 +101,19 @@ public class EncodedCodesGenerator {
         Collections.sort(productInfos, new Comparator<ProductInfo>() {
             @Override
             public int compare(ProductInfo p1, ProductInfo p2) {
-                if(p1.product.getDiscountedPrice() < p2.product.getDiscountedPrice()) {
+                int price1 = p1.product.getDiscountedPrice();
+                if (p1.scannedCode.hasPrice()) {
+                    price1 = p1.scannedCode.getPrice();
+                }
+
+                int price2 = p2.product.getDiscountedPrice();
+                if (p2.scannedCode.hasPrice()) {
+                    price2 = p2.scannedCode.getPrice();
+                }
+
+                if (price1 < price2) {
                     return -1;
-                } else if(p1.product.getDiscountedPrice() > p2.product.getDiscountedPrice()) {
+                } else if (price1 > price2) {
                     return 1;
                 }
 
@@ -115,28 +127,57 @@ public class EncodedCodesGenerator {
             }
 
             if (productInfo.product.getType() == Product.Type.UserWeighed) {
-                //encoding weight in ean
-                String[] weighItemIds = productInfo.product.getWeighedItemIds();
-                if (weighItemIds != null && weighItemIds.length > 0) {
-                    StringBuilder code = new StringBuilder(weighItemIds[0]);
-                    if (code.length() == 13) {
-                        StringBuilder embeddedWeight = new StringBuilder();
-                        String quantity = String.valueOf(productInfo.quantity);
-                        int leadingZeros = 5 - quantity.length();
-                        for (int j = 0; j < leadingZeros; j++) {
-                            embeddedWeight.append('0');
-                        }
-                        embeddedWeight.append(quantity);
-                        code.replace(7, 12, embeddedWeight.toString());
-                        code.setCharAt(6, Character.forDigit(EAN13.internalChecksum(code.toString()), 10));
-                        code.setCharAt(12, Character.forDigit(EAN13.checksum(code.substring(0, 12)), 10));
-                        addScannableCode(code.toString(), ageRestricted);
+                // encoding weight in ean
+                Product.Code[] codes = productInfo.product.getScannableCodes();
+                for (Product.Code code : codes) {
+                    if ("default".equals(code.template)) {
+                        continue;
                     }
+
+                    CodeTemplate codeTemplate = options.project.getCodeTemplate(code.template);
+                    if (codeTemplate != null && codeTemplate.getGroup(EmbedGroup.class) != null) {
+                        ScannedCode scannedCode = codeTemplate.code(code.lookupCode)
+                                .embed(productInfo.quantity)
+                                .buildCode();
+
+                        if (options.repeatCodes) {
+                            addScannableCode(scannedCode.getCode(), ageRestricted);
+                        } else {
+                            addScannableCode("1" + options.countSeparator + scannedCode.getCode(), ageRestricted);
+                        }
+                        break;
+                    }
+                }
+            } else if (productInfo.product.getType() == Product.Type.PreWeighed) {
+                if (options.repeatCodes) {
+                    addScannableCode(productInfo.scannedCode.getCode(), ageRestricted);
+                } else {
+                    addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(), ageRestricted);
                 }
             } else {
                 int q = productInfo.quantity;
-                for (int j = 0; j < q; j++) {
-                    addScannableCode(productInfo.product.getTransmissionCode(productInfo.scannedCode), ageRestricted);
+                String transmissionCode = productInfo.product.getTransmissionCode(productInfo.scannedCode.getLookupCode());
+
+                if (transmissionCode == null) {
+                    transmissionCode = productInfo.scannedCode.getCode();
+                }
+
+                CodeTemplate codeTemplate = options.project.getTransformationTemplate(productInfo.scannedCode.getTransformationTemplateName());
+                if (codeTemplate != null) {
+                    ScannedCode scannedCode = codeTemplate
+                            .override(productInfo.scannedCode.getTransformationCode())
+                            .code(productInfo.scannedCode.getLookupCode())
+                            .embed(productInfo.scannedCode.getEmbeddedData())
+                            .buildCode();
+                    transmissionCode = scannedCode.getCode();
+                }
+
+                if (options.repeatCodes) {
+                    for (int j = 0; j < q; j++) {
+                        addScannableCode(transmissionCode, ageRestricted);
+                    }
+                } else {
+                    addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
                 }
             }
         }
