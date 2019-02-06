@@ -67,6 +67,17 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         dividerItemDecoration.setDrawable(new ColorDrawable(dividerColor));
         recyclerView.addItemDecoration(dividerItemDecoration);
 
+        View fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new OneShotClickListener() {
+            @Override
+            public void click() {
+                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                if (callback != null) {
+                    callback.showSEPACardInput();
+                }
+            }
+        });
+
         entries.clear();
 
         paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
@@ -89,15 +100,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         View add;
 
         EmptyStateViewHolder(View itemView) {
-            super(itemView);
-            add = itemView.findViewById(R.id.add);
-        }
-    }
-
-    private class AddViewHolder extends RecyclerView.ViewHolder {
-        View add;
-
-        AddViewHolder(View itemView) {
             super(itemView);
             add = itemView.findViewById(R.id.add);
         }
@@ -135,17 +137,13 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final static int TYPE_EMPTYSTATE = 0;
         private final static int TYPE_ENTRY = 1;
-        private final static int TYPE_ADD = 2;
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if(viewType == TYPE_EMPTYSTATE) {
                 View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_emptystate, parent, false);
                 return new EmptyStateViewHolder(v);
-            } else if(viewType == TYPE_ADD) {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_add, parent, false);
-                return new AddViewHolder(v);
-            } else {
+            }  else {
                 View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_entry, parent, false);
                 return new EntryViewHolder(v);
             }
@@ -157,10 +155,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 return TYPE_EMPTYSTATE;
             }
 
-            if(position >= entries.size()) {
-                return TYPE_ADD;
-            }
-
             return TYPE_ENTRY;
         }
 
@@ -170,17 +164,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
             if(type == TYPE_EMPTYSTATE) {
                 EmptyStateViewHolder vh = (EmptyStateViewHolder)holder;
-                vh.add.setOnClickListener(new OneShotClickListener() {
-                    @Override
-                    public void click() {
-                        SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                        if (callback != null) {
-                            callback.showSEPACardInput();
-                        }
-                    }
-                });
-            } else if(type == TYPE_ADD) {
-                AddViewHolder vh = (AddViewHolder)holder;
                 vh.add.setOnClickListener(new OneShotClickListener() {
                     @Override
                     public void click() {
@@ -217,7 +200,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         @Override
         public int getItemCount() {
-            return entries.size() + 1;
+            return entries.size();
         }
     }
 
