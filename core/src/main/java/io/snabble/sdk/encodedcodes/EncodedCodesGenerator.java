@@ -149,7 +149,11 @@ public class EncodedCodesGenerator {
                     }
                 }
             } else if (productInfo.product.getType() == Product.Type.PreWeighed) {
-                addScannableCode(productInfo.scannedCode.getCode(), ageRestricted);
+                if (options.repeatCodes) {
+                    addScannableCode(productInfo.scannedCode.getCode(), ageRestricted);
+                } else {
+                    addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(), ageRestricted);
+                }
             } else {
                 int q = productInfo.quantity;
                 String transmissionCode = productInfo.product.getTransmissionCode(productInfo.scannedCode.getLookupCode());
