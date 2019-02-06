@@ -33,6 +33,9 @@ versions will fall back to g/kg only
 ### Fixed
 - Crash when a network error occurred when scanning a product
 
+### New string keys
+- Snabble.Shoppingcart.buyProducts.now
+
 ## [0.12.0-beta2]
 
 ### Added
