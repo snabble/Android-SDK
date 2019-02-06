@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.0-beta6]
+
+### Fixed
+- Fixed border width to be the same on all bordered buttons 
+
 ## [0.12.0-beta5]
 
 ### Changes
