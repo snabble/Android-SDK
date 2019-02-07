@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.0-beta7]
+
+### Fixed
+- Restored payment credentials list empty state
+
 ## [0.12.0-beta6]
 
 ### Fixed

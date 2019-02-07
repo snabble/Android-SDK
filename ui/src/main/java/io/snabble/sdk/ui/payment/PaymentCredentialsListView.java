@@ -162,18 +162,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             int type = getItemViewType(position);
 
-            if(type == TYPE_EMPTYSTATE) {
-                EmptyStateViewHolder vh = (EmptyStateViewHolder)holder;
-                vh.add.setOnClickListener(new OneShotClickListener() {
-                    @Override
-                    public void click() {
-                        SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                        if (callback != null) {
-                            callback.showSEPACardInput();
-                        }
-                    }
-                });
-            } else if(type == TYPE_ENTRY){
+            if(type == TYPE_ENTRY){
                 EntryViewHolder vh = (EntryViewHolder)holder;
                 final Entry e = entries.get(position);
 
@@ -200,7 +189,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         @Override
         public int getItemCount() {
-            return entries.size();
+            return Math.max(1, entries.size());
         }
     }
 
