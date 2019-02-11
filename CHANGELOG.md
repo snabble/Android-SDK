@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.0]
+
+### Fixed
+- Top down info box appearing again on layout change
+- Quantity is now not editable anymore over keyboard input for commission products
+
 ## [0.12.0-beta7]
 
 ### Fixed

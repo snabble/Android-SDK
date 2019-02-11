@@ -80,9 +80,10 @@ public class UIUtils {
             @Override
             public void onLayoutChange(View view, int left, int top, int right, int bottom,
                                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                info.removeOnLayoutChangeListener(this);
+
                 info.setTranslationY(-info.getHeight());
                 info.setVisibility(View.VISIBLE);
-
                 info.animate().translationY(0).start();
             }
         });

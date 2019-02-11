@@ -165,6 +165,7 @@ class ProductConfirmationDialog {
             if (productPrice == 0) {
                 plus.setVisibility(View.GONE);
                 minus.setVisibility(View.GONE);
+                quantity.setEnabled(false);
                 quantity.setText("1");
             }
         } else if (type == Product.Type.UserWeighed) {
