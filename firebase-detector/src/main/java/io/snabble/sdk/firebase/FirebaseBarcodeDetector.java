@@ -11,6 +11,7 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOption
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
@@ -30,13 +31,25 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
 
     @Override
     public void setup(List<BarcodeFormat> barcodeFormats) {
-        int[] formats = new int[barcodeFormats.size()];
-        for (int i = 0; i<formats.length; i++) {
-            formats[i] = FirebaseBarcodeHelper.toFirebaseFormat(barcodeFormats.get(i));
+        List<Integer> formats = new ArrayList<>();
+
+        for (int i = 0; i<barcodeFormats.size(); i++) {
+            int format = FirebaseBarcodeHelper.toFirebaseFormat(barcodeFormats.get(i));
+            formats.add(format);
+
+            // EAN13 with 0 prefixes are detected as UPC-A
+            if (format == FirebaseVisionBarcode.FORMAT_EAN_13) {
+                formats.add(FirebaseVisionBarcode.FORMAT_UPC_A);
+            }
+        }
+
+        int[] ints = new int[formats.size()];
+        for (int i=0; i<formats.size(); i++) {
+            ints[i] = formats.get(i);
         }
 
         FirebaseVisionBarcodeDetectorOptions options = new FirebaseVisionBarcodeDetectorOptions.Builder()
-                .setBarcodeFormats(formats[0], formats)
+                .setBarcodeFormats(ints[0], ints)
                 .build();
 
         detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
@@ -84,16 +97,38 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
             List<FirebaseVisionBarcode> firebaseBarcodes = result.getResult();
             if(firebaseBarcodes != null && firebaseBarcodes.size() > 0) {
                 FirebaseVisionBarcode firebaseVisionBarcode = firebaseBarcodes.get(0);
+                String rawValue = firebaseVisionBarcode.getRawValue();
+
+                if (rawValue == null) {
+                    return null;
+                }
 
                 // MLKit decodes all ITF lengths, but we only care about ITF14.
                 if (firebaseVisionBarcode.getFormat() == FirebaseVisionBarcode.FORMAT_ITF) {
-                    if (firebaseVisionBarcode.getRawValue().length() != 14) {
+                    if (rawValue.length() != 14) {
                         return null;
                     }
                 }
 
+                if (firebaseVisionBarcode.getFormat() == FirebaseVisionBarcode.FORMAT_UPC_A) {
+                    if (rawValue.length() > 13) {
+                        return null;
+                    }
+
+                    Logger.d("Detected UPC-A with length %d, converting to EAN13", rawValue.length());
+
+                    int diff = 13 - rawValue.length();
+                    StringBuilder sb = new StringBuilder();
+                    for (int i=0; i<diff; i++) {
+                        sb.append('0');
+                    }
+                    sb.append(rawValue);
+
+                    rawValue = sb.toString();
+                }
+
                 Barcode barcode = new Barcode(FirebaseBarcodeHelper.fromFirebaseFormat(firebaseVisionBarcode.getFormat()),
-                        firebaseVisionBarcode.getRawValue(),
+                        rawValue,
                         System.currentTimeMillis());
 
                 Barcode filtered = falsePositiveFilter.filter(barcode);

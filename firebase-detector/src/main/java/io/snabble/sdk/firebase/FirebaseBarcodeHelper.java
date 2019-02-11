@@ -31,6 +31,7 @@ class FirebaseBarcodeHelper {
             case FirebaseVisionBarcode.FORMAT_EAN_8:
                 return BarcodeFormat.EAN_8;
             case FirebaseVisionBarcode.FORMAT_EAN_13:
+            case FirebaseVisionBarcode.FORMAT_UPC_A:
                 return BarcodeFormat.EAN_13;
             case FirebaseVisionBarcode.FORMAT_CODE_128:
                 return BarcodeFormat.CODE_128;

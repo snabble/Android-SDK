@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.1]
+
+### Fixed
+- Configured FirebaseBarcodeDetector to detect UPC-A as EAN13 to match the behaviour of ZXing
+
 ## [0.12.0]
 
 ### Fixed
