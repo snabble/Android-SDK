@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.2]
+
+### Changed
+- Improved layout of checkout status screen
+- List dividers are now using the style attribute android:listDivider
+- The color snabble_dividerColor is removed
+
 ## [0.12.1]
 
 ### Fixed

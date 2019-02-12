@@ -63,8 +63,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         recyclerView.setItemAnimator(null);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        int dividerColor = ResourcesCompat.getColor(getResources(), R.color.snabble_dividerColor, null);
-        dividerItemDecoration.setDrawable(new ColorDrawable(dividerColor));
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         View fab = findViewById(R.id.fab);

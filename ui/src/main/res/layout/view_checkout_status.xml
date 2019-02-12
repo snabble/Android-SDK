@@ -5,177 +5,57 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.google.android.flexbox.FlexboxLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_container"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        app:flexDirection="column"
-        app:justifyContent="center"
-        app:flexWrap="nowrap">
-        <FrameLayout
-            android:id="@+id/step1"
+        android:orientation="vertical"
+        android:gravity="center">
+        <io.snabble.sdk.ui.scanner.BarcodeView
+            android:id="@+id/checkout_id_code"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            app:layout_maxHeight="80dp"
-            app:layout_flexGrow="1">
-
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="4dp"
-                android:tag="progress" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:adjustViewBounds="true"
-                android:layout_gravity="bottom|center_horizontal"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_verify_1"
-                android:tag="image" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:adjustViewBounds="true"
-                android:layout_gravity="bottom|center_horizontal"
-                android:alpha="0"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_verify_ok"
-                android:tag="image_ok" />
-        </FrameLayout>
+            android:layout_height="168dp"
+            android:background="?android:attr/windowBackground"
+            app:format="DATA_MATRIX"
+            tools:ignore="RtlHardcoded" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            app:layout_maxHeight="48dp"
-            app:layout_flexGrow="0.5"
-            android:gravity="center"
-            android:text="@string/Snabble.PaymentStatus.step1"
-            android:textSize="15sp" />
-
-        <FrameLayout
-            android:id="@+id/step2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            app:layout_maxHeight="80dp"
-            app:layout_flexGrow="1">
-
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="4dp"
-                android:tag="progress" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:adjustViewBounds="true"
-                android:layout_gravity="bottom|center_horizontal"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_verify_2"
-                android:tag="image" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:adjustViewBounds="true"
-                android:layout_gravity="bottom|center_horizontal"
-                android:alpha="0"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_verify_ok"
-                android:tag="image_ok" />
-        </FrameLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            app:layout_maxHeight="48dp"
-            app:layout_flexGrow="0.5"
-            android:gravity="center"
-            android:text="@string/Snabble.PaymentStatus.step2"
-            android:textSize="15sp" />
-
-        <FrameLayout
-            android:id="@+id/step3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            app:layout_maxHeight="80dp"
-            app:layout_flexGrow="1">
-
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="4dp"
-                android:tag="progress" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:adjustViewBounds="true"
-                android:layout_gravity="bottom|center_horizontal"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_verify_3"
-                android:tag="image" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="bottom|center_horizontal"
-                android:alpha="0"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_verify_ok"
-                android:tag="image_ok" />
-        </FrameLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            app:layout_maxHeight="48dp"
-            app:layout_flexGrow="0.5"
-            android:gravity="center"
-            android:text="@string/Snabble.PaymentStatus.step3"
-            android:textSize="15sp" />
-    </com.google.android.flexbox.FlexboxLayout>
-
-    <FrameLayout
-        android:id="@+id/bottom_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-
-        <TextView
-            android:id="@+id/cancel"
+            android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="16dp"
-            android:text="@string/Snabble.Cancel"
-            android:textColor="@color/snabble_primaryColor"
+            android:text="@string/Snabble.Payment.presentCode"
             android:textSize="17sp" />
 
-        <io.snabble.sdk.ui.scanner.BarcodeView
-            android:id="@+id/checkout_id_code"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="right"
-            android:padding="8dp"
-            app:format="DATA_MATRIX"
-            tools:ignore="RtlHardcoded" />
-    </FrameLayout>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:indeterminate="true"/>
+
+        <TextView
+            android:id="@+id/waiting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/Snabble.Payment.waiting"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="@string/Snabble.Cancel"
+        android:textColor="@color/snabble_primaryColor"
+        android:textSize="17sp" />
 </RelativeLayout>

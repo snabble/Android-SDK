@@ -127,8 +127,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 layoutManager.getOrientation());
-        int dividerColor = ResourcesCompat.getColor(getResources(), R.color.snabble_dividerColor, null);
-        itemDecoration.setDrawable(new ColorDrawable(dividerColor));
         recyclerView.addItemDecoration(itemDecoration);
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);

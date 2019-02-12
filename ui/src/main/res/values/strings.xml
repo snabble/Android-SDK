@@ -82,6 +82,9 @@
 	<string name="Snabble.Checkout.done">Finished!</string>
 	<string name="Snabble.Checkout.payAtCashRegister">Pay at cash register</string>
 	<string name="Snabble.Checkout.error">An error has occurred</string>
+	<string name="Snabble.Payment.confirm">Confirm purchase</string>
+	<string name="Snabble.Payment.presentCode">Show this code at a snabble monitor or to a cashier to confirm your purchase.</string>
+	<string name="Snabble.Payment.waiting">Waiting for confirmation</string>
 	<string name="Snabble.networkError">Connection error</string>
 
 	<!-- SECTION: Android -->
