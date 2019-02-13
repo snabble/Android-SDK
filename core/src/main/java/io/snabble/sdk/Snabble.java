@@ -178,7 +178,7 @@ public class Snabble {
             return absoluteUrl(jsonObject.get("links").getAsJsonObject()
                     .get(urlName).getAsJsonObject()
                     .get("href").getAsString());
-        } catch (JsonParseException e) {
+        } catch (Exception e) {
             return null;
         }
     }
