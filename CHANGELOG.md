@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.3]
+
+### Fixed
+- Added missing Checkout-ID to QRCodePOS checkout types
+- Fixed hiding of explanation text on small displays (QVGA or smaller)
+- Checkout screen with QRCodePOS type now also sets the ActionBar title if an ActionBar is
+set with SnabbleUI.registerActionBar
+
 ## [0.12.2]
 
 ### Changed

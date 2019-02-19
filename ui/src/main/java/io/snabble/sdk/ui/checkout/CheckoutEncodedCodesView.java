@@ -1,11 +1,10 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
-import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -141,10 +140,9 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                                 ViewGroup.LayoutParams.WRAP_CONTENT));
                     }
 
-                    Resources resources = getResources();
-
-                    int h = Math.round(scrollContainer.getHeight() * resources.getDisplayMetrics().density);
-                    if (h < 160) {
+                    DisplayMetrics dm = getResources().getDisplayMetrics();
+                    int dpHeight = Math.round(scrollContainer.getHeight() / dm.density);
+                    if (dpHeight < 220) {
                         explanationText.setVisibility(View.GONE);
                         explanationText2.setVisibility(View.GONE);
                     }
