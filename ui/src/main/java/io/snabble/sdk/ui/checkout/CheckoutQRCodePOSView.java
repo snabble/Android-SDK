@@ -1,8 +1,13 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -56,6 +61,32 @@ class CheckoutQRCodePOSView extends FrameLayout {
             payAmount.setText(text);
         } else {
             payAmount.setVisibility(View.GONE);
+            findViewById(R.id.explanation2).setVisibility(View.GONE);
+        }
+
+        if (SnabbleUI.getActionBar() != null) {
+            findViewById(R.id.explanation1).setVisibility(View.GONE);
+            SnabbleUI.getActionBar().setTitle(R.string.Snabble_QRCode_showThisCode);
+        }
+
+        TextView checkoutId = findViewById(R.id.checkout_id);
+        String id = project.getCheckout().getId();
+        if (id != null && id.length() >= 4) {
+            String text = getResources().getString(R.string.Snabble_Checkout_ID);
+            checkoutId.setText(String.format("%s: %s", text, id.substring(id.length() - 4)));
+        } else {
+            checkoutId.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        int dpHeight = Math.round(h / dm.density);
+        if (dpHeight < 400) {
+            findViewById(R.id.explanation1).setVisibility(View.GONE);
             findViewById(R.id.explanation2).setVisibility(View.GONE);
         }
     }
