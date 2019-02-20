@@ -245,9 +245,9 @@ class CheckoutApi {
                     }
 
                     List<Product> invalidProducts = new ArrayList<>();
-                    ShoppingCart cart = project.getShoppingCart();
+                    ShoppingCart2 cart = project.getShoppingCart();
                     for (int i=0; i<cart.size(); i++) {
-                        Product product = project.getShoppingCart().getProduct(i);
+                        Product product = cart.get(i).getProduct();
                         if (invalidSkus.contains(product.getSku())) {
                             invalidProducts.add(product);
                         }

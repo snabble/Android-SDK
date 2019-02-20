@@ -46,9 +46,9 @@ class Events {
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
+        project.getShoppingCart().addListener(new ShoppingCart2.SimpleShoppingCartListener() {
             @Override
-            public void onChanged(ShoppingCart list) {
+            public void onChanged(ShoppingCart2 list) {
                 if (cartId != null && !list.getId().equals(cartId)) {
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
@@ -183,7 +183,7 @@ class Events {
     }
 
     private PayloadCart getPayloadCart() {
-        ShoppingCart shoppingCart = project.getShoppingCart();
+        ShoppingCart2 shoppingCart = project.getShoppingCart();
 
         PayloadCart payloadCart = new PayloadCart();
         payloadCart.session = shoppingCart.getId();
@@ -206,12 +206,14 @@ class Events {
         payloadCart.items = new PayloadCartItem[shoppingCart.size()];
 
         for (int i = 0; i < shoppingCart.size(); i++) {
-            Product product = shoppingCart.getProduct(i);
-            int quantity = shoppingCart.getQuantity(i);
+            ShoppingCart2.Item cartItem = shoppingCart.get(i);
+
+            Product product = cartItem.getProduct();
+            int quantity = cartItem.getQuantity();
 
             PayloadCartItem item = new PayloadCartItem();
 
-            ScannedCode scannedCode = shoppingCart.getScannedCode(i);
+            ScannedCode scannedCode = cartItem.getScannedCode();
             Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
 
             if (scannedCode.getEmbeddedUnit() != null) {
@@ -219,16 +221,25 @@ class Events {
             }
 
             item.sku = String.valueOf(product.getSku());
-            item.scannedCode = shoppingCart.getScannedCode(i).getCode();
+            item.scannedCode = scannedCode.getCode();
 
             if (encodingUnit != null) {
                 item.weightUnit = encodingUnit.getId();
             }
 
             item.amount = quantity;
-            item.units = shoppingCart.getEmbeddedUnits(i);
-            item.weight = shoppingCart.getEmbeddedWeight(i);
-            item.price = shoppingCart.getEmbeddedPrice(i);
+
+            if (cartItem.getUnit() == Unit.PIECE) {
+                item.units = cartItem.getQuantity();
+            }
+
+            if (cartItem.getUnit() == Unit.PIECE) {
+                item.units = cartItem.getEffectiveQuantity();
+            } else if (cartItem.getUnit() == Unit.PIECE) {
+                item.weight = cartItem.getEffectiveQuantity();
+            } else if (cartItem.getUnit() == Unit.PRICE) {
+                item.price = cartItem.getTotalPrice();
+            }
 
             if (product.getType() == Product.Type.UserWeighed) {
                 item.amount = 1;

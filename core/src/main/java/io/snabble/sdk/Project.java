@@ -327,7 +327,7 @@ public class Project {
         return shops;
     }
 
-    public ShoppingCart getShoppingCart() {
+    public ShoppingCart2 getShoppingCart() {
         return shoppingCartManager.getShoppingCart();
     }
 

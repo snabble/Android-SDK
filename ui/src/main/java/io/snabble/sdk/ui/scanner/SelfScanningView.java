@@ -35,6 +35,7 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.ShoppingCart2;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -55,7 +56,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
     private DelayedProgressDialog progressDialog;
     private long detectAfterTimeMs;
-    private ShoppingCart shoppingCart;
+    private ShoppingCart2 shoppingCart;
     private boolean allowShowingHints;
     private boolean isShowingHint;
 
@@ -380,36 +381,31 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         unregisterListeners();
     }
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
+    private ShoppingCart2.ShoppingCartListener shoppingCartListener = new ShoppingCart2.ShoppingCartListener() {
         @Override
-        public void onItemAdded(ShoppingCart list, Product product) {
+        public void onItemAdded(ShoppingCart2 list, ShoppingCart2.Item item) {
             if (list.getAddCount() == 1) {
                 showHints();
             }
         }
 
         @Override
-        public void onQuantityChanged(ShoppingCart list, Product product) {
+        public void onQuantityChanged(ShoppingCart2 list, ShoppingCart2.Item item) {
 
         }
 
         @Override
-        public void onCleared(ShoppingCart list) {
+        public void onCleared(ShoppingCart2 list) {
 
         }
 
         @Override
-        public void onItemMoved(ShoppingCart list, int fromIndex, int toIndex) {
+        public void onItemRemoved(ShoppingCart2 list, ShoppingCart2.Item item) {
 
         }
 
         @Override
-        public void onItemRemoved(ShoppingCart list, Product product) {
-
-        }
-
-        @Override
-        public void onUpdate(ShoppingCart list) {
+        public void onUpdate(ShoppingCart2 list) {
 
         }
     };

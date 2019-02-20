@@ -71,8 +71,7 @@ public class Checkout {
 
     private Project project;
     private CheckoutApi checkoutApi;
-    private ShoppingCart shoppingCart;
-    private Receipts receipts;
+    private ShoppingCart2 shoppingCart;
 
     private CheckoutApi.SignedCheckoutInfo signedCheckoutInfo;
     private CheckoutApi.CheckoutProcessResponse checkoutProcess;
@@ -103,7 +102,6 @@ public class Checkout {
         this.project = project;
         this.shoppingCart = project.getShoppingCart();
         this.checkoutApi = new CheckoutApi(project);
-        this.receipts = Snabble.getInstance().getReceipts();
 
         HandlerThread handlerThread = new HandlerThread("Checkout");
         handlerThread.start();

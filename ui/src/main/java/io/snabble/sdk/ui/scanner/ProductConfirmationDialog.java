@@ -28,6 +28,7 @@ import java.math.RoundingMode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.ShoppingCart2;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
@@ -40,7 +41,7 @@ import io.snabble.sdk.ui.utils.InputFilterMinMax;
 class ProductConfirmationDialog {
     private Context context;
     private AlertDialog alertDialog;
-    private ShoppingCart shoppingCart;
+    private ShoppingCart2 shoppingCart;
     private PriceFormatter priceFormatter;
 
     private EditText quantity;
@@ -110,7 +111,7 @@ class ProductConfirmationDialog {
         quantity.clearFocus();
 
         Product.Type type = product.getType();
-        int cartQuantity = shoppingCart.getQuantity(product);
+        int cartQuantity = 1; // TODO get current item
 
         Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
         if (scannedCode.getEmbeddedUnit() != null) {
@@ -378,40 +379,7 @@ class ProductConfirmationDialog {
         Telemetry.event(Telemetry.Event.ConfirmedProduct, product);
 
         int q = getQuantity();
-
-        if (scannedCode.hasEmbeddedData()) {
-            boolean isZeroAmountProduct = false;
-
-            // generate new code when the embedded data contains 0
-            if (scannedCode.getEmbeddedData() == 0) {
-                CodeTemplate codeTemplate = SnabbleUI.getProject().getCodeTemplate(scannedCode.getTemplateName());
-                scannedCode = codeTemplate.code(scannedCode.getLookupCode())
-                        .embed(getQuantity())
-                        .buildCode();
-                isZeroAmountProduct = true;
-            }
-
-            // if the user entered 0, shake
-            if (scannedCode.getEmbeddedData() == 0) {
-                shake();
-                return;
-            } else {
-                shoppingCart.insert(product, 0, 1, scannedCode, isZeroAmountProduct);
-            }
-        } else if (product.getType() == Product.Type.Article) {
-            if (product.getDiscountedPrice() == 0) {
-                shoppingCart.insert(product, 0, q, scannedCode);
-            } else {
-                shoppingCart.setQuantity(product, q, scannedCode);
-            }
-        } else if (product.getType() == Product.Type.UserWeighed) {
-            if (q > 0) {
-                shoppingCart.insert(product, 0, q, scannedCode);
-            } else {
-                shake();
-                return;
-            }
-        }
+        shoppingCart.add(product, scannedCode).setQuantity(q);
 
         dismiss();
     }

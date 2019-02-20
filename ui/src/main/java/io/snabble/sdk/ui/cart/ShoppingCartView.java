@@ -41,6 +41,7 @@ import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.ShoppingCart2;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
@@ -57,7 +58,7 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private RecyclerView recyclerView;
     private Adapter recyclerViewAdapter;
-    private ShoppingCart cart;
+    private ShoppingCart2 cart;
     private Checkout checkout;
     private PriceFormatter priceFormatter;
     private Button pay;
@@ -67,34 +68,29 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
+    private ShoppingCart2.ShoppingCartListener shoppingCartListener = new ShoppingCart2.ShoppingCartListener() {
         @Override
-        public void onItemAdded(ShoppingCart list, Product product) {
+        public void onItemAdded(ShoppingCart2 list, ShoppingCart2.Item  product) {
             onCartUpdated();
         }
 
         @Override
-        public void onQuantityChanged(ShoppingCart list, Product product) {
+        public void onQuantityChanged(ShoppingCart2 list, ShoppingCart2.Item  product) {
 
         }
 
         @Override
-        public void onCleared(ShoppingCart list) {
+        public void onCleared(ShoppingCart2 list) {
             onCartUpdated();
         }
 
         @Override
-        public void onItemMoved(ShoppingCart list, int fromIndex, int toIndex) {
+        public void onItemRemoved(ShoppingCart2 list, ShoppingCart2.Item item) {
 
         }
 
         @Override
-        public void onItemRemoved(ShoppingCart list, Product product) {
-
-        }
-
-        @Override
-        public void onUpdate(ShoppingCart list) {
+        public void onUpdate(ShoppingCart2 list) {
             onCartUpdated();
         }
     };
@@ -211,21 +207,19 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 holder.hideInput();
 
                 final int pos = viewHolder.getAdapterPosition();
-                final Product product = cart.getProduct(pos);
-                final ScannedCode scannedCode = cart.getScannedCode(pos);
-                final int quantity = cart.getQuantity(pos);
-                final boolean isZeroAmountProduct = cart.isZeroAmountProduct(pos);
 
-                removeAndShowUndoSnackbar(pos, product, scannedCode, quantity, isZeroAmountProduct);
+                ShoppingCart2.Item item = cart.get(pos);
+
+                removeAndShowUndoSnackbar(pos, item);
             }
         });
 
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeAndShowUndoSnackbar(final int pos, final Product product, final ScannedCode scannedCode, final int quantity, final boolean isZeroAmountProduct) {
-        cart.removeAll(pos);
-        Telemetry.event(Telemetry.Event.DeletedFromCart, product);
+    private void removeAndShowUndoSnackbar(final int pos, final ShoppingCart2.Item item) {
+        cart.remove(pos);
+        Telemetry.event(Telemetry.Event.DeletedFromCart, item.getProduct());
         recyclerViewAdapter.notifyItemRemoved(pos);
         update();
 
@@ -234,9 +228,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
             @Override
             public void onClick(View v) {
-                cart.insert(product, pos, quantity, scannedCode, isZeroAmountProduct);
+                cart.insert(pos, item.getProduct(), item.getScannedCode()).setQuantity(pos);
                 recyclerView.getAdapter().notifyDataSetChanged();
-                Telemetry.event(Telemetry.Event.UndoDeleteFromCart, product);
+                Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
             }
         });
 
@@ -343,7 +337,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         hasAnyImages = false;
 
         for (int i = 0; i < cart.size(); i++) {
-            Product product = cart.getProduct(i);
+            Product product = cart.get(i).getProduct();
             String url = product.getImageUrl();
             if (url != null && url.length() > 0) {
                 hasAnyImages = true;
@@ -447,17 +441,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         @SuppressLint("SetTextI18n")
         public void bindTo(final int position) {
             final Project project = SnabbleUI.getProject();
-            final Product product = cart.getProduct(position);
-            final int quantity = cart.getQuantity(position);
-            final Integer embeddedPrice = cart.getEmbeddedPrice(position);
-            final Integer embeddedAmount = cart.getEmbeddedUnits(position);
-            final Integer embeddedWeight = cart.getEmbeddedWeight(position);
-            RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
+            final ShoppingCart2.Item item = cart.get(position);
+
+            final Product product = item.getProduct();
+            final int quantity = item.getQuantity();
 
             if (product != null) {
-                Product.Type type = product.getType();
-
-                final ScannedCode scannedCode = cart.getScannedCode(position);
+                final ScannedCode scannedCode = item.getScannedCode();
 
                 String encodingDisplayValue = "g";
 
@@ -472,39 +462,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 name.setText(product.getName());
                 quantityAnnotation.setText(encodingDisplayValue);
+                priceTextView.setText(item.getPriceText());
 
-                String price = priceFormatter.format(product, true, scannedCode);
-
-                int productPrice = product.getDiscountedPrice();
-                if (scannedCode.hasPrice()) {
-                    productPrice = scannedCode.getPrice();
-                }
-
-                if (embeddedPrice != null) {
-                    priceTextView.setText(" " + priceFormatter.format(embeddedPrice));
-                } else if (embeddedAmount != null) {
-                    priceTextView.setText(String.format(" * %s = %s",
-                            priceFormatter.format(productPrice, true),
-                            priceFormatter.format(productPrice * embeddedAmount)));
-                } else if (embeddedWeight != null) {
-                    String priceSum = priceFormatter.format(product.getPriceForQuantity(embeddedWeight, scannedCode, roundingMode));
-                    priceTextView.setText(String.format(" * %s = %s", price, priceSum));
-                } else if (quantity == 1) {
-                    priceTextView.setText(" " + price);
-                } else {
-                    String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, scannedCode, roundingMode));
-                    priceTextView.setText(String.format(" * %s = %s", price, priceSum));
-                }
-
-                if (embeddedWeight != null) {
-                    quantityTextView.setText(String.format("%s %s", String.valueOf(embeddedWeight), encodingDisplayValue));
-                } else if (embeddedAmount != null) {
-                    quantityTextView.setText(String.valueOf(embeddedAmount));
-                } else if (type == Product.Type.UserWeighed) {
-                    quantityTextView.setText(String.format("%s %s", String.valueOf(quantity), encodingDisplayValue));
-                } else {
-                    quantityTextView.setText(String.valueOf(quantity));
-                }
+                quantityTextView.setText(item.getQuantityText());
 
                 if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
                     subtitle.setVisibility(View.GONE);
@@ -512,43 +472,15 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     subtitle.setText(product.getSubtitle());
                 }
 
-                switch (type) {
-                    case Article:
-                        if (embeddedAmount != null) {
-                            if (cart.isZeroAmountProduct(position)) {
-                                controlsDefault.setVisibility(View.VISIBLE);
-                            } else {
-                                controlsDefault.setVisibility(View.GONE);
-                            }
-
-                            controlsUserWeighed.setVisibility(View.GONE);
-                        } else {
-                            if (embeddedPrice != null) {
-                                controlsDefault.setVisibility(View.GONE);
-                                controlsUserWeighed.setVisibility(View.GONE);
-                            } else {
-                                controlsDefault.setVisibility(View.VISIBLE);
-                                controlsUserWeighed.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                        break;
-                    case PreWeighed:
-                        if (cart.isZeroAmountProduct(position)) {
-                            controlsDefault.setVisibility(View.VISIBLE);
-                        } else {
-                            controlsDefault.setVisibility(View.GONE);
-                        }
-
-                        controlsUserWeighed.setVisibility(View.GONE);
-                        break;
-                    case UserWeighed:
-                        controlsDefault.setVisibility(View.INVISIBLE);
+                if (item.isEditable()) {
+                    if (item.getProduct().getType() == Product.Type.UserWeighed) {
+                        controlsDefault.setVisibility(View.GONE);
                         controlsUserWeighed.setVisibility(View.VISIBLE);
-                        break;
-                }
-
-                // special case if price is zero we assume its a picking product
-                if (productPrice == 0) {
+                    } else {
+                        controlsDefault.setVisibility(View.VISIBLE);
+                        controlsUserWeighed.setVisibility(View.GONE);
+                    }
+                } else {
                     controlsDefault.setVisibility(View.GONE);
                     controlsUserWeighed.setVisibility(View.GONE);
                 }
@@ -556,19 +488,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 plus.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int p = getAdapterPosition();
-
-                        if (cart.isZeroAmountProduct(p)) {
-                            CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
-                            ScannedCode scannedCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
-                                    .embed(embeddedAmount + 1)
-                                    .buildCode();
-
-                            cart.setScannedCode(p, scannedCode);
-                        } else {
-                            cart.setQuantity(p, quantity + 1);
-                        }
-
+                        item.setQuantity(item.getQuantity() + 1);
                         recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
                         update();
                     }
@@ -579,22 +499,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     public void onClick(View v) {
                         int p = getAdapterPosition();
 
-                        boolean isZeroAmountProduct = cart.isZeroAmountProduct(p);
-                        int q = isZeroAmountProduct ? embeddedAmount - 1 : quantity - 1;
-                        if (q <= 0) {
-                            removeAndShowUndoSnackbar(p, product, cart.getScannedCode(p), q+1, isZeroAmountProduct);
+                        int newQuantity = item.getQuantity() - 1;
+                        if (newQuantity <= 0) {
+                            removeAndShowUndoSnackbar(p, item);
                         } else {
-                            if (isZeroAmountProduct) {
-                                CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
-                                ScannedCode scannedCode = codeTemplate.code(cart.getScannedCode(p).getLookupCode())
-                                        .embed(q)
-                                        .buildCode();
-
-                                cart.setScannedCode(p, scannedCode);
-                            } else {
-                                cart.setQuantity(p, q);
-                            }
-
+                            item.setQuantity(newQuantity);
                             recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
                             update();
                         }
@@ -605,7 +514,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     @Override
                     public void click() {
                         int pos = getAdapterPosition();
-                        cart.setQuantity(pos, getQuantityEditValue());
+                        item.setQuantity(getQuantityEditValue());
                         recyclerViewAdapter.notifyItemChanged(pos);
                         update();
 

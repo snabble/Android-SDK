@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannedCode;
 
+import static io.snabble.sdk.Unit.PIECE;
+import static io.snabble.sdk.Unit.PRICE;
+
 public class ShoppingCart2 {
     public static final int MAX_QUANTITY = 99999;
     public static final long TIMEOUT = TimeUnit.HOURS.toMillis(4);
@@ -28,7 +31,7 @@ public class ShoppingCart2 {
     private transient Project project;
 
     protected ShoppingCart2() {
-        //empty constructor for gson
+        // for gson
     }
 
     ShoppingCart2(Project project) {
@@ -41,25 +44,49 @@ public class ShoppingCart2 {
     void initWithProject(Project project) {
         this.project = project;
         checkForTimeout();
+
+        for (Item item : items) {
+            item.cart = this;
+        }
     }
 
     public String getId() {
         return id;
     }
 
-    public void add(Item item) {
-        items.add(item);
+    public Item add(Product product, ScannedCode scannedCode) {
+        for (Item item : items) {
+            if (item.product.getSku().equals(product.getSku())) {
+                if (item.isMergeAllowed()) {
+                    item.quantity += 1;
+                    notifyQuantityChanged(this, item);
+                    return item;
+                }
+            }
+        }
+
+        return insert(0, product, scannedCode);
+    }
+
+    public Item insert(int index, Product product, ScannedCode scannedCode) {
+        Item item = new Item(this, product, scannedCode);
+
+        items.add(index, item);
         notifyItemAdded(this, item);
+        return item;
     }
 
     public Item get(int index) {
         return items.get(index);
     }
 
+    public int indexOf(Item item) {
+        return items.indexOf(item);
+    }
+
     public void remove(int index) {
         notifyItemRemoved(this, items.remove(index));
     }
-
 
     public int size() {
         return items.size();
@@ -143,7 +170,7 @@ public class ShoppingCart2 {
                 Product product = e.product;
                 if (product.getType() == Product.Type.UserWeighed
                         || product.getType() == Product.Type.PreWeighed
-                        || product.getReferenceUnit() == Unit.PIECE) {
+                        || product.getReferenceUnit() == PIECE) {
                     sum += 1;
                 } else {
                     sum += e.quantity;
@@ -162,10 +189,17 @@ public class ShoppingCart2 {
         private Product product;
         private ScannedCode scannedCode;
         private int quantity;
+        private transient ShoppingCart2 cart;
 
-        public Item(Product product, ScannedCode scannedCode) {
+        protected Item() {
+            // for gson
+        }
+
+        public Item(ShoppingCart2 cart, Product product, ScannedCode scannedCode) {
+            this.cart = cart;
             this.scannedCode = scannedCode;
             this.product = product;
+            this.quantity = 1;
         }
 
         public Product getProduct() {
@@ -176,24 +210,45 @@ public class ShoppingCart2 {
             return scannedCode;
         }
 
+        public int getEffectiveQuantity() {
+            Unit unit = getUnit();
+            if (unit == null || unit == PRICE || unit == PIECE) {
+                return quantity;
+            } else {
+                return scannedCode.hasEmbeddedData() ? scannedCode.getEmbeddedData() : quantity;
+            }
+        }
+
         public int getQuantity() {
             return quantity;
         }
 
         public void setQuantity(int quantity) {
-            this.quantity = quantity; // TODO impl
+            this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
+            cart.notifyQuantityChanged(cart, this);
         }
 
         public boolean isEditable() {
-            return true; // TODO impl
+            return !scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0;
         }
 
         public boolean isMergeAllowed() {
-            return true; // TODO impl
+            return product.getType() == Product.Type.Article
+                    && getUnit() != PIECE
+                    && product.getDiscountedPrice() != 0;
+        }
+
+        public Unit getUnit() {
+            return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
+                    : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
         }
 
         public int getTotalPrice() {
-            return quantity * product.getDiscountedPrice(); // TODO impl
+            if (getUnit() == Unit.PRICE) {
+                return scannedCode.getEmbeddedData();
+            }
+
+            return product.getPriceForQuantity(getEffectiveQuantity(), scannedCode, cart.project.getRoundingMode());
         }
 
         public int getTotalDepositPrice() {
@@ -202,6 +257,34 @@ public class ShoppingCart2 {
             }
 
             return 0;
+        }
+
+        public String getQuantityText() {
+            Unit unit = getUnit();
+            if (unit == null || unit == PRICE || unit == PIECE) {
+                return String.valueOf(getEffectiveQuantity());
+            } else {
+                return String.valueOf(getEffectiveQuantity()) + unit.getDisplayValue();
+            }
+        }
+
+        public String getPriceText() {
+            PriceFormatter priceFormatter = new PriceFormatter(cart.project);
+            Unit unit = getUnit();
+
+            if (unit == Unit.PRICE) {
+                return " " + priceFormatter.format(getTotalPrice());
+            } else if (unit == PIECE){
+                return String.format(" * %s = %s",
+                        priceFormatter.format(product),
+                        priceFormatter.format(getTotalPrice()));
+            } else if (quantity == 1) {
+                return " " + priceFormatter.format(product);
+            } else {
+                String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, scannedCode, cart.project.getRoundingMode()));
+                String priceDisplay = priceFormatter.format(product);
+                return String.format(" * %s = %s", priceDisplay, priceSum);
+            }
         }
     }
 
