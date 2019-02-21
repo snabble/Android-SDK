@@ -228,7 +228,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
             @Override
             public void onClick(View v) {
-                cart.insert(pos, item.getProduct(), item.getScannedCode()).setQuantity(pos);
+                cart.insert(item, pos);
                 recyclerView.getAdapter().notifyDataSetChanged();
                 Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
             }

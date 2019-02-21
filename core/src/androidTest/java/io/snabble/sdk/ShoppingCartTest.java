@@ -27,10 +27,14 @@ public class ShoppingCartTest extends SnabbleSdkTest {
             this.product = product;
             this.scannedCode = scannedCode;
         }
+
+        public ShoppingCart2.Item cartItem() {
+            return cart.newItem(product, scannedCode);
+        }
     }
 
     private void add(TestProduct testProduct) {
-        cart.add(testProduct.product, testProduct.scannedCode);
+        cart.add(testProduct.cartItem());
     }
 
     private ScannedCode code(String code, String templateName) {
@@ -70,19 +74,14 @@ public class ShoppingCartTest extends SnabbleSdkTest {
 
     @Test
     public void testMerge() {
-        add(simpleProduct1);
-        add(simpleProduct2);
-        Assert.assertEquals(cart.size(), 2);
-        add(simpleProduct1);
-        Assert.assertEquals(cart.size(), 2);
-    }
-
-    @Test
-    public void testNoMerge() {
-        add(preWeighedProduct);
-        Assert.assertEquals(cart.size(), 1);
-        add(preWeighedProduct);
-        Assert.assertEquals(cart.size(), 2);
+        Assert.assertTrue(simpleProduct1.cartItem().isMergeAllowed());
+        Assert.assertTrue(simpleProduct2.cartItem().isMergeAllowed());
+        Assert.assertTrue(simpleProduct3.cartItem().isMergeAllowed());
+        Assert.assertFalse(userWeighedProduct.cartItem().isMergeAllowed());
+        Assert.assertFalse(preWeighedProduct.cartItem().isMergeAllowed());
+        Assert.assertFalse(pieceProduct.cartItem().isMergeAllowed());
+        Assert.assertFalse(priceProduct.cartItem().isMergeAllowed());
+        Assert.assertFalse(zeroAmountProduct.cartItem().isMergeAllowed());
     }
 
     @Test
@@ -105,20 +104,18 @@ public class ShoppingCartTest extends SnabbleSdkTest {
     public void testTotalPrice() {
         add(simpleProduct1);
         Assert.assertEquals(cart.get(0).getTotalPrice(), simpleProduct1.product.getDiscountedPrice());
-        Assert.assertEquals(cart.getTotalPrice(), simpleProduct1.product.getDiscountedPrice());
+
         cart.get(0).setQuantity(2);
         Assert.assertEquals(cart.get(0).getTotalPrice(), simpleProduct1.product.getDiscountedPrice() * 2);
-        Assert.assertEquals(cart.getTotalPrice(), simpleProduct1.product.getDiscountedPrice() * 2);
 
         add(preWeighedProduct);
-        Assert.assertEquals(cart.get(1).getTotalPrice(), 47);
-        Assert.assertEquals(cart.getTotalPrice(), simpleProduct1.product.getDiscountedPrice() * 2 + 47);
+        Assert.assertEquals(cart.get(0).getTotalPrice(), 47);
 
         add(pieceProduct);
-        Assert.assertEquals(cart.get(2).getTotalPrice(), pieceProduct.product.getDiscountedPrice() * 6);
+        Assert.assertEquals(cart.get(0).getTotalPrice(), pieceProduct.product.getDiscountedPrice() * 6);
 
         add(priceProduct);
-        Assert.assertEquals(cart.get(3).getTotalPrice(), priceProduct.scannedCode.getEmbeddedData());
+        Assert.assertEquals(cart.get(0).getTotalPrice(), priceProduct.scannedCode.getEmbeddedData());
     }
 
     @Test

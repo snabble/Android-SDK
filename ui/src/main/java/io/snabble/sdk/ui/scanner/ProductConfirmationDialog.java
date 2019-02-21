@@ -55,8 +55,7 @@ class ProductConfirmationDialog {
     private View plus;
     private View minus;
 
-    private Product product;
-    private ScannedCode scannedCode;
+    private ShoppingCart2.Item cartItem;
 
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
@@ -69,11 +68,8 @@ class ProductConfirmationDialog {
         priceFormatter = new PriceFormatter(project);
     }
 
-    public void show(Product newProduct, ScannedCode scannedCode) {
+    public void show(Product product, ScannedCode scannedCode) {
         dismiss();
-
-        this.product = newProduct;
-        this.scannedCode = scannedCode;
 
         View view = View.inflate(context, R.layout.dialog_product_confirmation, null);
 
@@ -110,71 +106,25 @@ class ProductConfirmationDialog {
         price.setVisibility(View.VISIBLE);
         quantity.clearFocus();
 
-        Product.Type type = product.getType();
-        int cartQuantity = 1; // TODO get current item
-
-        Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
-        if (scannedCode.getEmbeddedUnit() != null) {
-            unit = scannedCode.getEmbeddedUnit();
+        cartItem = shoppingCart.getByProduct(product);
+        if (cartItem == null || !cartItem.isMergeAllowed()) {
+            cartItem = shoppingCart.newItem(product, scannedCode);
         }
 
-        int productPrice = product.getDiscountedPrice();
-        if (scannedCode.hasPrice()) {
-            productPrice = scannedCode.getPrice();
-        }
-
-        if (scannedCode.hasEmbeddedData()) {
-            if (Unit.hasDimension(unit)) {
-                quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
-                quantityAnnotation.setVisibility(View.VISIBLE);
-                plus.setVisibility(View.GONE);
-                minus.setVisibility(View.GONE);
-                quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
-            } else if (unit == Unit.PRICE) {
-                quantityAnnotation.setText(SnabbleUI.getProject().getCurrency().getSymbol());
-                plus.setVisibility(View.GONE);
-                minus.setVisibility(View.GONE);
-                quantityAnnotation.setVisibility(View.GONE);
-                price.setVisibility(View.GONE);
-
-                PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
-                quantity.setText(priceFormatter.format(scannedCode.getEmbeddedData()));
-            } else if (unit == Unit.PIECE) {
-                if (scannedCode.getEmbeddedData() == 0) {
-                    quantityAnnotation.setVisibility(View.GONE);
-                    plus.setVisibility(View.VISIBLE);
-                    minus.setVisibility(View.VISIBLE);
-                    quantity.setText("1");
-                } else {
-                    quantityAnnotation.setVisibility(View.GONE);
-                    plus.setVisibility(View.GONE);
-                    minus.setVisibility(View.GONE);
-                    quantity.setText(String.valueOf(scannedCode.getEmbeddedData()));
-                }
-            }
-        } else if (type == Product.Type.Article) {
-            quantityAnnotation.setVisibility(View.GONE);
-
-            if (product.getReferenceUnit() == Unit.PIECE) {
-                quantity.setText("1");
-            } else {
-                quantity.setText(String.valueOf(Math.min(ShoppingCart.MAX_QUANTITY, cartQuantity + 1)));
-            }
-
-            // special case if price is zero we assume its a picking product and hide the
-            // controls to adjust the quantity
-            if (productPrice == 0) {
-                plus.setVisibility(View.GONE);
-                minus.setVisibility(View.GONE);
-                quantity.setEnabled(false);
-                quantity.setText("1");
-            }
-        } else if (type == Product.Type.UserWeighed) {
+        Unit unit = cartItem.getUnit();
+        if (unit != null) {
+            quantityAnnotation.setText(unit.getDisplayValue());
             quantityAnnotation.setVisibility(View.VISIBLE);
-            quantityAnnotation.setText(getNonNullEncodingUnit(product, scannedCode).getDisplayValue());
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
-            quantity.setText("");
+        } else {
+            quantityAnnotation.setVisibility(View.GONE);
+        }
+
+        if (shoppingCart.indexOf(cartItem) != -1) {
+            setQuantity(cartItem.getEffectiveQuantity() + 1);
+            addToCart.setText(R.string.Snabble_Scanner_updateCart);
+        } else {
+            setQuantity(cartItem.getEffectiveQuantity());
+            addToCart.setText(R.string.Snabble_Scanner_addToCart);
         }
 
         quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
@@ -207,7 +157,7 @@ class ProductConfirmationDialog {
             public void afterTextChanged(Editable s) {
                 // its possible that the callback gets called before a dismiss is dispatched
                 // and when that happens the product is already null
-                if (product == null) {
+                if (cartItem == null) {
                     dismiss();
                     return;
                 }
@@ -243,27 +193,17 @@ class ProductConfirmationDialog {
             }
         });
 
-        if (cartQuantity > 0
-                && product.getType() == Product.Type.Article
-                && unit != Unit.PRICE
-                && unit != Unit.PIECE
-                && product.getDiscountedPrice() != 0) {
-            addToCart.setText(R.string.Snabble_Scanner_updateCart);
-        } else {
-            addToCart.setText(R.string.Snabble_Scanner_addToCart);
-        }
-
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Telemetry.event(Telemetry.Event.RejectedProduct, product);
+                Telemetry.event(Telemetry.Event.RejectedProduct, cartItem.getProduct());
                 dismiss();
             }
         });
 
         Window window = alertDialog.getWindow();
         if (window == null) {
-            product = null;
+            cartItem = null;
             return;
         }
 
@@ -294,65 +234,12 @@ class ProductConfirmationDialog {
         window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
-    private Unit getNonNullEncodingUnit(Product product, ScannedCode code) {
-        if (code.getEmbeddedUnit() != null) {
-            return code.getEmbeddedUnit();
-        }
-
-        Unit unit = product.getEncodingUnit(code.getTemplateName(), code.getLookupCode());
-        if (unit == null) {
-            unit = Unit.GRAM;
-        }
-
-        return unit;
-    }
-
     private void updatePrice() {
-        RoundingMode roundingMode = SnabbleUI.getProject().getRoundingMode();
+        price.setText(cartItem.getFullPriceText());
 
-        String priceText = priceFormatter.format(product.getPriceForQuantity(getQuantity(), scannedCode, roundingMode));
-        String singlePrice = priceFormatter.format(product, true, scannedCode);
-
-        int q = getQuantity();
-        Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getCode());
-
-        if (scannedCode.getEmbeddedUnit() != null) {
-            encodingUnit = scannedCode.getEmbeddedUnit();
-        }
-
-        String encodingDisplayValue = "g";
-        if (encodingUnit != null) {
-            encodingDisplayValue = encodingUnit.getDisplayValue();
-        }
-
-        int productPrice = product.getDiscountedPrice();
-        if (scannedCode.hasPrice()) {
-            productPrice = scannedCode.getPrice();
-        }
-
-        if (q > 0 && (Unit.hasDimension(encodingUnit) || product.getType() == Product.Type.UserWeighed)) {
-            price.setText(String.format("%s %s * %s = %s", String.valueOf(q), encodingDisplayValue, singlePrice, priceText));
-        } else if (q > 1) {
-            if (encodingUnit == Unit.PIECE) {
-                price.setText(String.format("%s * %s = %s",
-                        String.valueOf(q),
-                        priceFormatter.format(productPrice),
-                        priceFormatter.format(productPrice * q)));
-            } else {
-                price.setText(String.format("%s * %s = %s", String.valueOf(q), singlePrice, priceText));
-            }
-        } else {
-            price.setText(singlePrice);
-        }
-
-        if (encodingUnit == Unit.PRICE) {
-            int embeddedPrice = scannedCode.getEmbeddedData();
-            price.setText(priceFormatter.format(embeddedPrice));
-        }
-
-        Product depositProduct = product.getDepositProduct();
-        if (depositProduct != null) {
-            String depositPriceText = priceFormatter.format(depositProduct.getPriceForQuantity(getQuantity(), scannedCode, roundingMode));
+        int cartItemDepositPrice = cartItem.getTotalDepositPrice();
+        if (cartItemDepositPrice > 0) {
+            String depositPriceText = priceFormatter.format(cartItemDepositPrice);
             Resources res = context.getResources();
             String text = res.getString(R.string.Snabble_Scanner_plusDeposit, depositPriceText);
             depositPrice.setText(text);
@@ -360,26 +247,29 @@ class ProductConfirmationDialog {
         } else {
             depositPrice.setVisibility(View.GONE);
         }
-
-        if (price.getText().equals("")) {
-            price.setVisibility(View.GONE);
-        } else {
-            price.setVisibility(View.VISIBLE);
-        }
     }
 
     private void addToCart() {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
-        if (product == null) {
+        if (cartItem == null) {
             dismiss();
             return;
         }
 
-        Telemetry.event(Telemetry.Event.ConfirmedProduct, product);
+        Telemetry.event(Telemetry.Event.ConfirmedProduct, cartItem.getProduct());
 
         int q = getQuantity();
-        shoppingCart.add(product, scannedCode).setQuantity(q);
+        if (cartItem.getProduct().getType() == Product.Type.UserWeighed && q == 0) {
+            shake();
+            return;
+        }
+
+        if (shoppingCart.indexOf(cartItem) == -1) {
+            shoppingCart.add(cartItem);
+        }
+
+        cartItem.setQuantity(q);
 
         dismiss();
     }
@@ -403,9 +293,25 @@ class ProductConfirmationDialog {
     private void setQuantity(int number) {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
-        if (product == null) {
+        if (cartItem == null) {
             dismiss();
             return;
+        }
+
+        if (cartItem.isEditable()) {
+            quantity.setEnabled(true);
+
+            if (cartItem.getProduct().getType() == Product.Type.UserWeighed) {
+                plus.setVisibility(View.GONE);
+                minus.setVisibility(View.GONE);
+            } else {
+                plus.setVisibility(View.VISIBLE);
+                minus.setVisibility(View.VISIBLE);
+            }
+        } else {
+            quantity.setEnabled(false);
+            plus.setVisibility(View.GONE);
+            minus.setVisibility(View.GONE);
         }
 
         quantity.setText(String.valueOf(number));
@@ -419,7 +325,7 @@ class ProductConfirmationDialog {
             alertDialog = null;
         }
 
-        product = null;
+        cartItem = null;
     }
 
     public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {

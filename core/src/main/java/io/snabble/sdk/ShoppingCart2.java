@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -54,30 +53,31 @@ public class ShoppingCart2 {
         return id;
     }
 
-    public Item add(Product product, ScannedCode scannedCode) {
-        for (Item item : items) {
-            if (item.product.getSku().equals(product.getSku())) {
-                if (item.isMergeAllowed()) {
-                    item.quantity += 1;
-                    notifyQuantityChanged(this, item);
-                    return item;
-                }
-            }
-        }
-
-        return insert(0, product, scannedCode);
+    public Item newItem(Product product, ScannedCode scannedCode) {
+        return new Item(this, product, scannedCode);
     }
 
-    public Item insert(int index, Product product, ScannedCode scannedCode) {
-        Item item = new Item(this, product, scannedCode);
+    public void add(Item item) {
+        insert(item, 0);
+    }
 
+    public void insert(Item item, int index) {
         items.add(index, item);
         notifyItemAdded(this, item);
-        return item;
     }
 
     public Item get(int index) {
         return items.get(index);
+    }
+
+    public Item getByProduct(Product product) {
+        for (Item item : items) {
+            if (item.product.equals(product)) {
+                return item;
+            }
+        }
+
+        return null;
     }
 
     public int indexOf(Item item) {
@@ -195,7 +195,7 @@ public class ShoppingCart2 {
             // for gson
         }
 
-        public Item(ShoppingCart2 cart, Product product, ScannedCode scannedCode) {
+        private Item(ShoppingCart2 cart, Product product, ScannedCode scannedCode) {
             this.cart = cart;
             this.scannedCode = scannedCode;
             this.product = product;
@@ -211,12 +211,7 @@ public class ShoppingCart2 {
         }
 
         public int getEffectiveQuantity() {
-            Unit unit = getUnit();
-            if (unit == null || unit == PRICE || unit == PIECE) {
-                return quantity;
-            } else {
-                return scannedCode.hasEmbeddedData() ? scannedCode.getEmbeddedData() : quantity;
-            }
+            return scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : quantity;
         }
 
         public int getQuantity() {
@@ -225,7 +220,13 @@ public class ShoppingCart2 {
 
         public void setQuantity(int quantity) {
             this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
-            cart.notifyQuantityChanged(cart, this);
+
+            if (quantity == 0) {
+                cart.items.remove(this);
+                cart.notifyItemRemoved(cart, this);
+            } else {
+                cart.notifyQuantityChanged(cart, this);
+            }
         }
 
         public boolean isEditable() {
@@ -262,9 +263,17 @@ public class ShoppingCart2 {
         public String getQuantityText() {
             Unit unit = getUnit();
             if (unit == null || unit == PRICE || unit == PIECE) {
-                return String.valueOf(getEffectiveQuantity());
+                return "1";
             } else {
                 return String.valueOf(getEffectiveQuantity()) + unit.getDisplayValue();
+            }
+        }
+
+        public String getFullPriceText() {
+            if (quantity > 1) {
+                return quantity + " " + getPriceText();
+            } else {
+                return getPriceText();
             }
         }
 
@@ -274,16 +283,12 @@ public class ShoppingCart2 {
 
             if (unit == Unit.PRICE) {
                 return " " + priceFormatter.format(getTotalPrice());
-            } else if (unit == PIECE){
-                return String.format(" * %s = %s",
-                        priceFormatter.format(product),
-                        priceFormatter.format(getTotalPrice()));
             } else if (quantity == 1) {
                 return " " + priceFormatter.format(product);
             } else {
-                String priceSum = priceFormatter.format(product.getPriceForQuantity(quantity, scannedCode, cart.project.getRoundingMode()));
-                String priceDisplay = priceFormatter.format(product);
-                return String.format(" * %s = %s", priceDisplay, priceSum);
+                return String.format(" * %s = %s",
+                        priceFormatter.format(product),
+                        priceFormatter.format(getTotalPrice()));
             }
         }
     }
