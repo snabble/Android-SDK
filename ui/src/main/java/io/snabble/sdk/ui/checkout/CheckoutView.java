@@ -16,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.KeyguardHandler;
@@ -31,10 +30,6 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     private CoordinatorLayout coordinatorLayout;
     private ViewAnimator viewAnimator;
     private Checkout checkout;
-
-    private Handler handler = new Handler(Looper.getMainLooper());
-
-    private Checkout.State previousState;
     private DelayedProgressDialog progressDialog;
 
     public CheckoutView(Context context) {
@@ -95,18 +90,8 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayPaymentView();
                 break;
             case PAYMENT_APPROVED:
-                if (previousState != null && (checkout.getSelectedPaymentMethod() == PaymentMethod.CASH
-                        || checkout.getSelectedPaymentMethod() == PaymentMethod.TELECASH_DIRECT_DEBIT)) {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            displayView(new CheckoutDoneView(getContext()));
-                        }
-                    }, 3000);
-                } else {
-                    if (checkout.getSelectedPaymentMethod() != PaymentMethod.ENCODED_CODES) {
-                        displayView(new CheckoutDoneView(getContext()));
-                    }
+                if (!checkout.getSelectedPaymentMethod().isOfflineMethod()) {
+                    displayView(new CheckoutDoneView(getContext()));
                 }
                 break;
             case PAYMENT_ABORTED:
@@ -122,8 +107,6 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
                 break;
         }
-
-        previousState = state;
     }
 
     private void displayPaymentView() {
