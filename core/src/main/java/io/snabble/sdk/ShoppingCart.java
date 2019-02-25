@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,37 +11,18 @@ import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannedCode;
 
+import static io.snabble.sdk.Unit.PIECE;
+import static io.snabble.sdk.Unit.PRICE;
+
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
     public static final long TIMEOUT = TimeUnit.HOURS.toMillis(4);
-
-    private static class Entry {
-        private Product product;
-        private final String sku;
-        private ScannedCode scannedCode;
-        private int quantity;
-
-        private Integer weight = null;
-        private Integer price = null;
-        private Integer amount = null;
-
-        // flag for products that have the quantity normally encoded in code
-        // but can still be modified in the cart because the initial amount was set by the user
-        // which happens when the amount of the original scanned code is 0
-        private boolean isZeroAmountProduct = false;
-
-        private Entry(Product product, int quantity) {
-            this.sku = product.getSku();
-            this.product = product;
-            this.quantity = quantity;
-        }
-    }
 
     private final transient Object lock = new Object();
 
     private String id;
     private long lastModificationTime;
-    private List<Entry> items = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
     private int modCount = 0;
     private int addCount = 0;
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
@@ -50,7 +30,7 @@ public class ShoppingCart {
     private transient Project project;
 
     protected ShoppingCart() {
-        //empty constructor for gson
+        // for gson
     }
 
     ShoppingCart(Project project) {
@@ -63,207 +43,59 @@ public class ShoppingCart {
     void initWithProject(Project project) {
         this.project = project;
         checkForTimeout();
+
+        for (Item item : items) {
+            item.cart = this;
+        }
     }
 
     public String getId() {
         return id;
     }
 
-    public void add(Product product) {
-        add(product, 1);
+    public Item newItem(Product product, ScannedCode scannedCode) {
+        return new Item(this, product, scannedCode);
     }
 
-    public void add(Product product, ScannedCode scannedCode) {
-        add(product, 1, scannedCode);
+    public void add(Item item) {
+        insert(item, 0);
     }
 
-    public void add(Product product, int quantity) {
-        insert(product, items.size(), quantity);
-    }
-
-    public void add(Product product, int quantity, ScannedCode scannedCode) {
-        insert(product, items.size(), quantity, scannedCode);
-    }
-
-    public void add(Product product, int quantity, ScannedCode scannedCode, boolean isZeroAmountProduct) {
-        insert(product, items.size(), quantity, scannedCode, isZeroAmountProduct);
-    }
-
-    public void insert(Product product, int index) {
-        insert(product, index, 1);
-    }
-
-    public void insert(Product product, int index, ScannedCode scannedCode) {
-        insert(product, index, 1, scannedCode);
-    }
-
-    public void insert(Product product, int index, int quantity) {
-        insert(product, index, quantity, null);
-    }
-
-    public void insert(Product product, int index, int quantity, ScannedCode scannedCode, boolean isZeroAmountProduct) {
-        Entry e = getEntryBySku(product.getSku());
-
-//        if (e == null || scannedCode.hasUnitData()
-//                || scannedCode.hasPriceData()
-//                || product.getType() == Product.Type.UserWeighed
-//                || product.getType() == Product.Type.PreWeighed) {
-//            if (quantity > 0) {
-//                Entry entry = new Entry(product, quantity);
-//                setScannedCodeForEntry(entry, scannedCode);
-//                entry.isZeroAmountProduct = isZeroAmountProduct;
-//                addEntry(entry, index);
-//            }
-//        } else {
-//            setEntryQuantity(e, e.quantity + quantity);
-//        }
-
-        if (quantity > 0) {
-            Entry entry = new Entry(product, quantity);
-            setScannedCodeForEntry(entry, scannedCode);
-            entry.isZeroAmountProduct = isZeroAmountProduct;
-            addEntry(entry, index);
-        }
-    }
-
-    public void insert(Product product, int index, int quantity, ScannedCode scannedCode) {
-        insert(product, index, quantity, scannedCode, false);
-    }
-
-    public void setQuantity(int index, int quantity) {
-        setQuantity(index, quantity, null);
-    }
-
-    public void setQuantity(int index, int quantity, ScannedCode scannedCode) {
-        Entry e = getEntry(index);
-
-        if (e != null) {
-            if (scannedCode != null) {
-                setScannedCodeForEntry(e, scannedCode);
-            }
-
-            setEntryQuantity(e, quantity);
-        }
-    }
-
-    public void setQuantity(Product product, int quantity) {
-        setQuantity(product, quantity, null);
-    }
-
-    public void setQuantity(Product product, int quantity, ScannedCode scannedCode) {
-        if (product.getType() == Product.Type.Article) {
-            Entry e = getEntryBySku(product.getSku());
-
-            if (e != null && product.getReferenceUnit() != Unit.PIECE) {
-                // update product for changing prices
-                e.product = product;
-
-                if (scannedCode != null) {
-                    setScannedCodeForEntry(e, scannedCode);
-                }
-
-                setEntryQuantity(e, quantity);
-            } else {
-                insert(product, 0, quantity, scannedCode);
-            }
-        }
-    }
-
-    public void removeAll(int index) {
-        Entry entry = getEntry(index);
-        removeAll(entry);
-    }
-
-    /**
-     * Deprecated: Use {@link ShoppingCart#getProduct} instead.
-     */
-    @Deprecated
-    public Product getProductAtPosition(int index) {
-        return getProduct(index);
-    }
-
-    public Product getProduct(int index) {
-        Entry entry = getEntry(index);
-        if (entry == null) {
-            return null;
-        }
-
-        return entry.product;
-    }
-
-    public ScannedCode getScannedCode(int index) {
-        Entry entry = getEntry(index);
-        if (entry == null) {
-            return null;
-        }
-
-        return entry.scannedCode;
-    }
-
-    public boolean isZeroAmountProduct(int index) {
-        Entry entry = getEntry(index);
-        return entry != null && entry.isZeroAmountProduct;
-    }
-
-    public Integer getEmbeddedWeight(int index) {
-        Entry entry = getEntry(index);
-        if (entry == null) {
-            return null;
-        }
-
-        return entry.weight;
-    }
-
-    public Integer getEmbeddedPrice(int index) {
-        Entry entry = getEntry(index);
-        if (entry == null) {
-            return null;
-        }
-
-        return entry.price;
-    }
-
-    public Integer getEmbeddedUnits(int index) {
-        Entry entry = getEntry(index);
-        if (entry == null) {
-            return null;
-        }
-
-        return entry.amount;
-    }
-
-    public int getQuantity(Product product) {
-        int q = 0;
-
-        for (Entry entry : items) {
-            if (entry.sku.equals(product.getSku())) {
-                q += entry.quantity;
+    public void insert(Item item, int index) {
+        if (item.isMergeRequired()) {
+            Item existing = getByProduct(item.getProduct());
+            if (existing != null) {
+                items.remove(existing);
+                items.add(index, item);
+                notifyQuantityChanged(this, item);
+                return;
             }
         }
 
-        return q;
+        items.add(index, item);
+        notifyItemAdded(this, item);
     }
 
-    public int getQuantity(int index) {
-        Entry entry = getEntry(index);
-        if (entry != null) {
-            return entry.quantity;
-        } else {
-            return 0;
-        }
+    public Item get(int index) {
+        return items.get(index);
     }
 
-    /**
-     * Removed the given entry from the list of {@link #items} regardless of the entry quantity.
-     *
-     * @param e the entry to remove
-     */
-    private void removeAll(Entry e) {
-        if (e != null) {
-            items.remove(e);
-            modCount++;
-            notifyItemRemoved(this, e.product);
+    public Item getByProduct(Product product) {
+        for (Item item : items) {
+            if (item.product.equals(product)) {
+                return item;
+            }
         }
+
+        return null;
+    }
+
+    public int indexOf(Item item) {
+        return items.indexOf(item);
+    }
+
+    public void remove(int index) {
+        notifyItemRemoved(this, items.remove(index));
     }
 
     public int size() {
@@ -286,7 +118,7 @@ public class ShoppingCart {
         ProductDatabase productDatabase = project.getProductDatabase();
 
         if (productDatabase.isUpToDate()) {
-            for (Entry e : items) {
+            for (Item e : items) {
                 Product product = productDatabase.findByCode(e.scannedCode);
 
                 if (product != null) {
@@ -306,89 +138,6 @@ public class ShoppingCart {
         }
     }
 
-    private void setEntryQuantity(Entry e, int newQuantity) {
-        if (e != null) {
-            if (newQuantity > 0) {
-                if (newQuantity != e.quantity) {
-                    e.quantity = Math.max(0, Math.min(MAX_QUANTITY, newQuantity));
-                    modCount++;
-                    notifyQuantityChanged(this, e.product);
-                }
-            } else {
-                removeAll(e);
-            }
-        }
-    }
-
-    private void addEntry(Entry e, int index) {
-        if (contains(e)) {
-            setEntryQuantity(e, e.quantity + 1);
-        } else {
-            items.add(index, e);
-            modCount++;
-            addCount++;
-            notifyItemAdded(this, e.product);
-        }
-    }
-
-    private Entry getEntry(final int index) {
-        try {
-            return items.get(index);
-        } catch (IndexOutOfBoundsException ioobe) {
-            return null;
-        }
-    }
-
-    private Entry getEntryBySku(final String sku) {
-        synchronized (lock) {
-            for (Entry entry : items) {
-                if (entry.sku.equals(sku)) {
-                    return entry;
-                }
-            }
-
-            return null;
-        }
-    }
-
-    public void setScannedCode(int index, ScannedCode scannedCode) {
-        Entry e = getEntry(index);
-        if (e != null) {
-            setScannedCodeForEntry(e, scannedCode);
-        }
-    }
-
-    private void setScannedCodeForEntry(Entry entry, ScannedCode scannedCode) {
-        entry.scannedCode = scannedCode;
-
-        Unit unit = entry.product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
-
-        if (scannedCode.getEmbeddedUnit() != null) {
-            unit = scannedCode.getEmbeddedUnit();
-        }
-
-        if (scannedCode.hasEmbeddedData()) {
-            if (Unit.hasDimension(unit)) {
-                entry.weight = scannedCode.getEmbeddedData();
-            } else if (unit == Unit.PRICE) {
-                entry.price = scannedCode.getEmbeddedData();
-            } else if (unit == Unit.PIECE) {
-                entry.amount = scannedCode.getEmbeddedData();
-            }
-        }
-
-        modCount++;
-        notifyQuantityChanged(this, entry.product);
-    }
-
-    private int indexOf(Entry e) {
-        return items.indexOf(e);
-    }
-
-    private boolean contains(Entry e) {
-        return items.contains(e);
-    }
-
     public int getAddCount() {
         return addCount;
     }
@@ -397,39 +146,12 @@ public class ShoppingCart {
         return modCount;
     }
 
-    /**
-     * Swaps the position of two entries based on their index.
-     * <p>
-     * Useful for swapping elements in list views.
-     */
-    public void swap(int fromIndex, int toIndex) {
-        if (fromIndex >= 0 && fromIndex < items.size() && toIndex >= 0 && toIndex < items.size() && fromIndex != toIndex) {
-            Collections.swap(items, fromIndex, toIndex);
-            modCount++;
-            notifyItemMoved(this, fromIndex, toIndex);
-        }
-    }
-
     public int getTotalPrice() {
         synchronized (lock) {
             int sum = 0;
 
-            for (Entry e : items) {
-                Product product = e.product;
-
-                if (e.weight != null) {
-                    sum += product.getPriceForQuantity(e.weight, e.scannedCode, project.getRoundingMode());
-                } else if (e.price != null) {
-                    sum += e.price;
-                } else if (e.amount != null) {
-                    int productPrice = product.getDiscountedPrice();
-                    if (e.scannedCode.hasPrice()) {
-                        productPrice = e.scannedCode.getPrice();
-                    }
-                    sum += productPrice * e.amount;
-                } else {
-                    sum += product.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
-                }
+            for (Item e : items) {
+                sum += e.getTotalPrice();
             }
 
             sum += getTotalDepositPrice();
@@ -442,11 +164,8 @@ public class ShoppingCart {
         synchronized (lock) {
             int sum = 0;
 
-            for (Entry e : items) {
-                Product depositProduct = e.product.getDepositProduct();
-                if (depositProduct != null) {
-                    sum += depositProduct.getPriceForQuantity(e.quantity, e.scannedCode, project.getRoundingMode());
-                }
+            for (Item e : items) {
+                e.getTotalDepositPrice();
             }
 
             return sum;
@@ -457,11 +176,11 @@ public class ShoppingCart {
         synchronized (lock) {
             int sum = 0;
 
-            for (Entry e : items) {
+            for (Item e : items) {
                 Product product = e.product;
                 if (product.getType() == Product.Type.UserWeighed
                         || product.getType() == Product.Type.PreWeighed
-                        || product.getReferenceUnit() == Unit.PIECE) {
+                        || product.getReferenceUnit() == PIECE) {
                     sum += 1;
                 } else {
                     sum += e.quantity;
@@ -474,6 +193,123 @@ public class ShoppingCart {
 
     private void updateTimestamp() {
         lastModificationTime = System.currentTimeMillis();
+    }
+
+    public static class Item {
+        private Product product;
+        private ScannedCode scannedCode;
+        private int quantity;
+        private transient ShoppingCart cart;
+
+        protected Item() {
+            // for gson
+        }
+
+        private Item(ShoppingCart cart, Product product, ScannedCode scannedCode) {
+            this.cart = cart;
+            this.scannedCode = scannedCode;
+            this.product = product;
+            this.quantity = 1;
+        }
+
+        public Product getProduct() {
+            return product;
+        }
+
+        public ScannedCode getScannedCode() {
+            return scannedCode;
+        }
+
+        public int getEffectiveQuantity() {
+            return scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : quantity;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
+
+            if (quantity == 0) {
+                cart.items.remove(this);
+                cart.notifyItemRemoved(cart, this);
+            } else {
+                cart.notifyQuantityChanged(cart, this);
+            }
+        }
+
+        public boolean isEditable() {
+            return !scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0;
+        }
+
+        public boolean isMergeRequired() {
+            return product.getType() == Product.Type.Article
+                    && getUnit() != PIECE
+                    && product.getDiscountedPrice() != 0;
+        }
+
+        public Unit getUnit() {
+            return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
+                    : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+        }
+
+        public int getTotalPrice() {
+            if (getUnit() == Unit.PRICE) {
+                return scannedCode.getEmbeddedData();
+            }
+
+            return product.getPriceForQuantity(getEffectiveQuantity(), scannedCode, cart.project.getRoundingMode());
+        }
+
+        public int getTotalDepositPrice() {
+            if (product.getDepositProduct() != null) {
+                return quantity * product.getDepositProduct().getDiscountedPrice(); // TODO impl
+            }
+
+            return 0;
+        }
+
+        public String getQuantityText() {
+            Unit unit = getUnit();
+            if (unit == PRICE) {
+                return "1";
+            }
+
+            return String.valueOf(getEffectiveQuantity()) + (unit != null ? unit.getDisplayValue() : "");
+        }
+
+        public String getFullPriceText() {
+            String priceText = getPriceText();
+            if (priceText != null) {
+                if (quantity > 1) {
+                    return quantity + " " + getPriceText();
+                } else {
+                    return getPriceText();
+                }
+            }
+
+            return null;
+        }
+
+        public String getPriceText() {
+            if (product.getDiscountedPrice() > 0) {
+                PriceFormatter priceFormatter = new PriceFormatter(cart.project);
+                Unit unit = getUnit();
+
+                if (unit == Unit.PRICE) {
+                    return " " + priceFormatter.format(getTotalPrice());
+                } else if (quantity <= 1) {
+                    return " " + priceFormatter.format(product);
+                } else {
+                    return String.format(" * %s = %s",
+                            priceFormatter.format(product),
+                            priceFormatter.format(getTotalPrice()));
+                }
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -500,15 +336,13 @@ public class ShoppingCart {
      * Shopping list listener that detects various changes to the shopping list.
      */
     public interface ShoppingCartListener {
-        void onItemAdded(ShoppingCart list, Product product);
+        void onItemAdded(ShoppingCart list, Item item);
 
-        void onQuantityChanged(ShoppingCart list, Product product);
+        void onQuantityChanged(ShoppingCart list, Item item);
 
         void onCleared(ShoppingCart list);
 
-        void onItemMoved(ShoppingCart list, int fromIndex, int toIndex);
-
-        void onItemRemoved(ShoppingCart list, Product product);
+        void onItemRemoved(ShoppingCart list, Item item);
 
         void onUpdate(ShoppingCart list);
     }
@@ -522,12 +356,12 @@ public class ShoppingCart {
         }
 
         @Override
-        public void onItemAdded(ShoppingCart list, Product product) {
+        public void onItemAdded(ShoppingCart list, Item item) {
             onChanged(list);
         }
 
         @Override
-        public void onQuantityChanged(ShoppingCart list, Product product) {
+        public void onQuantityChanged(ShoppingCart list, Item item) {
             onChanged(list);
         }
 
@@ -537,63 +371,45 @@ public class ShoppingCart {
         }
 
         @Override
-        public void onItemMoved(ShoppingCart list, int fromIndex, int toIndex) {
-            onChanged(list);
-        }
-
-        @Override
-        public void onItemRemoved(ShoppingCart list, Product product) {
+        public void onItemRemoved(ShoppingCart list, Item item) {
             onChanged(list);
         }
     }
 
-    private void notifyItemAdded(final ShoppingCart list, final Product product) {
+    private void notifyItemAdded(final ShoppingCart list, final Item item) {
         updateTimestamp();
 
         handler.post(new Runnable() {
             @Override
             public void run() {
                 for (ShoppingCartListener listener : listeners) {
-                    listener.onItemAdded(list, product);
+                    listener.onItemAdded(list, item);
                 }
             }
         });
     }
 
-    private void notifyItemRemoved(final ShoppingCart list, final Product product) {
+    private void notifyItemRemoved(final ShoppingCart list, final Item item) {
         updateTimestamp();
 
         handler.post(new Runnable() {
             @Override
             public void run() {
                 for (ShoppingCartListener listener : listeners) {
-                    listener.onItemRemoved(list, product);
+                    listener.onItemRemoved(list, item);
                 }
             }
         });
     }
 
-    private void notifyQuantityChanged(final ShoppingCart list, final Product product) {
+    private void notifyQuantityChanged(final ShoppingCart list, final Item item) {
         updateTimestamp();
 
         handler.post(new Runnable() {
             @Override
             public void run() {
                 for (ShoppingCartListener listener : listeners) {
-                    listener.onQuantityChanged(list, product);
-                }
-            }
-        });
-    }
-
-    private void notifyItemMoved(final ShoppingCart list, final int fromIndex, final int toIndex) {
-        updateTimestamp();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onItemMoved(list, fromIndex, toIndex);
+                    listener.onQuantityChanged(list, item);
                 }
             }
         });
@@ -609,6 +425,7 @@ public class ShoppingCart {
             }
         });
     }
+
     /**
      * Notifies all {@link #listeners} that the shopping list was cleared of all entries.
      *

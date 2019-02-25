@@ -9,7 +9,7 @@ import java.util.List;
 import io.snabble.sdk.codes.ScannedCode;
 
 public class ShoppingCartTest extends SnabbleSdkTest {
-    private ShoppingCart2 cart;
+    private ShoppingCart cart;
     private TestProduct simpleProduct1;
     private TestProduct simpleProduct2;
     private TestProduct simpleProduct3;
@@ -28,7 +28,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
             this.scannedCode = scannedCode;
         }
 
-        public ShoppingCart2.Item cartItem() {
+        public ShoppingCart.Item cartItem() {
             return cart.newItem(product, scannedCode);
         }
     }
@@ -50,7 +50,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
 
     @Before
     public void setup() {
-        cart = new ShoppingCart2(project);
+        cart = new ShoppingCart(project);
 
         simpleProduct1 = new TestProduct(project.getProductDatabase().findBySku("1"), code("4008258510001", "default"));
         simpleProduct2 = new TestProduct(project.getProductDatabase().findBySku("2"), code("0885580294533", "default"));
@@ -74,14 +74,14 @@ public class ShoppingCartTest extends SnabbleSdkTest {
 
     @Test
     public void testMerge() {
-        Assert.assertTrue(simpleProduct1.cartItem().isMergeAllowed());
-        Assert.assertTrue(simpleProduct2.cartItem().isMergeAllowed());
-        Assert.assertTrue(simpleProduct3.cartItem().isMergeAllowed());
-        Assert.assertFalse(userWeighedProduct.cartItem().isMergeAllowed());
-        Assert.assertFalse(preWeighedProduct.cartItem().isMergeAllowed());
-        Assert.assertFalse(pieceProduct.cartItem().isMergeAllowed());
-        Assert.assertFalse(priceProduct.cartItem().isMergeAllowed());
-        Assert.assertFalse(zeroAmountProduct.cartItem().isMergeAllowed());
+        Assert.assertTrue(simpleProduct1.cartItem().isMergeRequired());
+        Assert.assertTrue(simpleProduct2.cartItem().isMergeRequired());
+        Assert.assertTrue(simpleProduct3.cartItem().isMergeRequired());
+        Assert.assertFalse(userWeighedProduct.cartItem().isMergeRequired());
+        Assert.assertFalse(preWeighedProduct.cartItem().isMergeRequired());
+        Assert.assertFalse(pieceProduct.cartItem().isMergeRequired());
+        Assert.assertFalse(priceProduct.cartItem().isMergeRequired());
+        Assert.assertFalse(zeroAmountProduct.cartItem().isMergeRequired());
     }
 
     @Test
@@ -127,6 +127,6 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         Assert.assertEquals(cart.size(), 2);
 
         Assert.assertTrue(cart.get(0).isEditable());
-        Assert.assertFalse(cart.get(0).isMergeAllowed());
+        Assert.assertFalse(cart.get(0).isMergeRequired());
     }
 }

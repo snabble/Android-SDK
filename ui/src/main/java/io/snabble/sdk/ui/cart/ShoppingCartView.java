@@ -8,10 +8,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
+
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,18 +33,15 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.math.RoundingMode;
 import java.util.List;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.ShoppingCart2;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
-import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -58,7 +54,7 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private RecyclerView recyclerView;
     private Adapter recyclerViewAdapter;
-    private ShoppingCart2 cart;
+    private ShoppingCart cart;
     private Checkout checkout;
     private PriceFormatter priceFormatter;
     private Button pay;
@@ -68,29 +64,29 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
 
-    private ShoppingCart2.ShoppingCartListener shoppingCartListener = new ShoppingCart2.ShoppingCartListener() {
+    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
-        public void onItemAdded(ShoppingCart2 list, ShoppingCart2.Item  product) {
+        public void onItemAdded(ShoppingCart list, ShoppingCart.Item  product) {
             onCartUpdated();
         }
 
         @Override
-        public void onQuantityChanged(ShoppingCart2 list, ShoppingCart2.Item  product) {
+        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item  product) {
 
         }
 
         @Override
-        public void onCleared(ShoppingCart2 list) {
+        public void onCleared(ShoppingCart list) {
             onCartUpdated();
         }
 
         @Override
-        public void onItemRemoved(ShoppingCart2 list, ShoppingCart2.Item item) {
+        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item) {
 
         }
 
         @Override
-        public void onUpdate(ShoppingCart2 list) {
+        public void onUpdate(ShoppingCart list) {
             onCartUpdated();
         }
     };
@@ -208,7 +204,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 final int pos = viewHolder.getAdapterPosition();
 
-                ShoppingCart2.Item item = cart.get(pos);
+                ShoppingCart.Item item = cart.get(pos);
 
                 removeAndShowUndoSnackbar(pos, item);
             }
@@ -217,7 +213,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeAndShowUndoSnackbar(final int pos, final ShoppingCart2.Item item) {
+    private void removeAndShowUndoSnackbar(final int pos, final ShoppingCart.Item item) {
         cart.remove(pos);
         Telemetry.event(Telemetry.Event.DeletedFromCart, item.getProduct());
         recyclerViewAdapter.notifyItemRemoved(pos);
@@ -441,7 +437,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         @SuppressLint("SetTextI18n")
         public void bindTo(final int position) {
             final Project project = SnabbleUI.getProject();
-            final ShoppingCart2.Item item = cart.get(position);
+            final ShoppingCart.Item item = cart.get(position);
 
             final Product product = item.getProduct();
             final int quantity = item.getQuantity();
@@ -462,7 +458,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 name.setText(product.getName());
                 quantityAnnotation.setText(encodingDisplayValue);
-                priceTextView.setText(item.getPriceText());
+
+                String priceText = item.getPriceText();
+                if (priceText != null) {
+                    priceTextView.setText(item.getPriceText());
+                    priceTextView.setVisibility(View.VISIBLE);
+                } else {
+                    priceTextView.setVisibility(View.GONE);
+                }
 
                 quantityTextView.setText(item.getQuantityText());
 

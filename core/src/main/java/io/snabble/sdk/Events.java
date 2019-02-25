@@ -46,9 +46,9 @@ class Events {
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        project.getShoppingCart().addListener(new ShoppingCart2.SimpleShoppingCartListener() {
+        project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
-            public void onChanged(ShoppingCart2 list) {
+            public void onChanged(ShoppingCart list) {
                 if (cartId != null && !list.getId().equals(cartId)) {
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
@@ -183,7 +183,7 @@ class Events {
     }
 
     private PayloadCart getPayloadCart() {
-        ShoppingCart2 shoppingCart = project.getShoppingCart();
+        ShoppingCart shoppingCart = project.getShoppingCart();
 
         PayloadCart payloadCart = new PayloadCart();
         payloadCart.session = shoppingCart.getId();
@@ -206,7 +206,7 @@ class Events {
         payloadCart.items = new PayloadCartItem[shoppingCart.size()];
 
         for (int i = 0; i < shoppingCart.size(); i++) {
-            ShoppingCart2.Item cartItem = shoppingCart.get(i);
+            ShoppingCart.Item cartItem = shoppingCart.get(i);
 
             Product product = cartItem.getProduct();
             int quantity = cartItem.getQuantity();
@@ -230,15 +230,11 @@ class Events {
             item.amount = quantity;
 
             if (cartItem.getUnit() == Unit.PIECE) {
-                item.units = cartItem.getQuantity();
-            }
-
-            if (cartItem.getUnit() == Unit.PIECE) {
                 item.units = cartItem.getEffectiveQuantity();
-            } else if (cartItem.getUnit() == Unit.PIECE) {
-                item.weight = cartItem.getEffectiveQuantity();
             } else if (cartItem.getUnit() == Unit.PRICE) {
                 item.price = cartItem.getTotalPrice();
+            } else if (cartItem.getUnit() != null) {
+                item.weight = cartItem.getEffectiveQuantity();
             }
 
             if (product.getType() == Product.Type.UserWeighed) {

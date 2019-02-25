@@ -22,26 +22,20 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.math.RoundingMode;
-
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.ShoppingCart2;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
-import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 
 class ProductConfirmationDialog {
     private Context context;
     private AlertDialog alertDialog;
-    private ShoppingCart2 shoppingCart;
+    private ShoppingCart shoppingCart;
     private PriceFormatter priceFormatter;
 
     private EditText quantity;
@@ -55,7 +49,7 @@ class ProductConfirmationDialog {
     private View plus;
     private View minus;
 
-    private ShoppingCart2.Item cartItem;
+    private ShoppingCart.Item cartItem;
 
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
@@ -106,9 +100,13 @@ class ProductConfirmationDialog {
         price.setVisibility(View.VISIBLE);
         quantity.clearFocus();
 
-        cartItem = shoppingCart.getByProduct(product);
-        if (cartItem == null || !cartItem.isMergeAllowed()) {
-            cartItem = shoppingCart.newItem(product, scannedCode);
+        cartItem = shoppingCart.newItem(product, scannedCode);
+
+        ShoppingCart.Item existingItem = shoppingCart.getByProduct(product);
+        if (existingItem != null && existingItem.isMergeRequired()) {
+            setQuantity(existingItem.getEffectiveQuantity() + 1);
+        } else{
+            setQuantity(cartItem.getEffectiveQuantity());
         }
 
         Unit unit = cartItem.getUnit();
@@ -119,11 +117,9 @@ class ProductConfirmationDialog {
             quantityAnnotation.setVisibility(View.GONE);
         }
 
-        if (shoppingCart.indexOf(cartItem) != -1) {
-            setQuantity(cartItem.getEffectiveQuantity() + 1);
+        if (existingItem != null && product.getType() != Product.Type.UserWeighed) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
-            setQuantity(cartItem.getEffectiveQuantity());
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
         }
 
@@ -162,6 +158,15 @@ class ProductConfirmationDialog {
                     return;
                 }
 
+                int number;
+
+                try {
+                    number = Integer.parseInt(s.toString());
+                } catch (NumberFormatException e) {
+                    number = 0;
+                }
+
+                cartItem.setQuantity(number);
                 updatePrice();
             }
         });
@@ -235,7 +240,13 @@ class ProductConfirmationDialog {
     }
 
     private void updatePrice() {
-        price.setText(cartItem.getFullPriceText());
+        String fullPriceText = cartItem.getFullPriceText();
+        if (fullPriceText != null) {
+            price.setText(cartItem.getFullPriceText());
+            price.setVisibility(View.VISIBLE);
+        } else {
+            price.setVisibility(View.GONE);
+        }
 
         int cartItemDepositPrice = cartItem.getTotalDepositPrice();
         if (cartItemDepositPrice > 0) {
@@ -314,8 +325,15 @@ class ProductConfirmationDialog {
             minus.setVisibility(View.GONE);
         }
 
-        quantity.setText(String.valueOf(number));
-        quantity.setSelection(quantity.getText().length());
+        if (cartItem.getProduct().getType() != Product.Type.UserWeighed) {
+            quantity.setText(String.valueOf(number));
+            quantity.setSelection(quantity.getText().length());
+        } else {
+            quantity.setText("");
+        }
+
+        cartItem.setQuantity(number);
+        updatePrice();
     }
 
     public void dismiss() {

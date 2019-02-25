@@ -360,8 +360,8 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     private void addToCart(Product product, int quantity, ScannedCode scannedCode) {
-        ShoppingCart2 cart = project.getShoppingCart();
-        ShoppingCart2.Item item = cart.newItem(product, scannedCode);
+        ShoppingCart cart = project.getShoppingCart();
+        ShoppingCart.Item item = cart.newItem(product, scannedCode);
         item.setQuantity(quantity);
         cart.add(item);
     }

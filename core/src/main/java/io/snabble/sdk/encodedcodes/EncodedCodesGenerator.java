@@ -7,7 +7,6 @@ import java.util.List;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.ShoppingCart2;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.groups.EmbedGroup;
@@ -29,7 +28,7 @@ public class EncodedCodesGenerator {
         addScannableCode(code, false);
     }
 
-    public void add(ShoppingCart2 shoppingCart) {
+    public void add(ShoppingCart shoppingCart) {
         addProducts(shoppingCart, false);
         addProducts(shoppingCart, true);
     }
@@ -50,7 +49,7 @@ public class EncodedCodesGenerator {
         return ret;
     }
 
-    private boolean hasAgeRestrictedCode(ShoppingCart2 shoppingCart) {
+    private boolean hasAgeRestrictedCode(ShoppingCart shoppingCart) {
         for (int i = 0; i < shoppingCart.size(); i++) {
             Product product = shoppingCart.get(i).getProduct();
 
@@ -84,12 +83,12 @@ public class EncodedCodesGenerator {
         }
     }
 
-    private void addProducts(ShoppingCart2 shoppingCart, boolean ageRestricted) {
+    private void addProducts(ShoppingCart shoppingCart, boolean ageRestricted) {
         hasAgeRestrictedCode = hasAgeRestrictedCode(shoppingCart);
 
         List<ProductInfo> productInfos = new ArrayList<>();
         for (int i = 0; i < shoppingCart.size(); i++) {
-            ShoppingCart2.Item item = shoppingCart.get(i);
+            ShoppingCart.Item item = shoppingCart.get(i);
             Product product = item.getProduct();
             if (ageRestricted != isAgeRestricted(product)) {
                 continue;

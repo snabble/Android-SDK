@@ -71,7 +71,7 @@ public class Checkout {
 
     private Project project;
     private CheckoutApi checkoutApi;
-    private ShoppingCart2 shoppingCart;
+    private ShoppingCart shoppingCart;
 
     private CheckoutApi.SignedCheckoutInfo signedCheckoutInfo;
     private CheckoutApi.CheckoutProcessResponse checkoutProcess;

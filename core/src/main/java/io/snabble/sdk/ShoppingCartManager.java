@@ -18,7 +18,7 @@ import io.snabble.sdk.utils.Logger;
 
 class ShoppingCartManager {
     private Project project;
-    private ShoppingCart2 shoppingCart;
+    private ShoppingCart shoppingCart;
     private File file;
     private Handler backgroundHandler;
 
@@ -32,9 +32,9 @@ class ShoppingCartManager {
 
         load();
 
-        shoppingCart.addListener(new ShoppingCart2.SimpleShoppingCartListener() {
+        shoppingCart.addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
-            public void onChanged(ShoppingCart2 list) {
+            public void onChanged(ShoppingCart list) {
                 save();
             }
         });
@@ -44,15 +44,15 @@ class ShoppingCartManager {
         try {
             if (file.exists()) {
                 String contents = IOUtils.toString(new FileInputStream(file), Charset.forName("UTF-8"));
-                shoppingCart = GsonHolder.get().fromJson(contents, ShoppingCart2.class);
+                shoppingCart = GsonHolder.get().fromJson(contents, ShoppingCart.class);
                 shoppingCart.initWithProject(project);
             } else {
-                shoppingCart = new ShoppingCart2(project);
+                shoppingCart = new ShoppingCart(project);
             }
         } catch (Exception e) {
             //shopping cart could not be read, create a new one.
             Logger.e("Could not load shopping list from: " + file.getAbsolutePath() + ", creating a new one.");
-            shoppingCart = new ShoppingCart2(project);
+            shoppingCart = new ShoppingCart(project);
         }
     }
 
@@ -72,7 +72,7 @@ class ShoppingCartManager {
         });
     }
 
-    public ShoppingCart2 getShoppingCart() {
+    public ShoppingCart getShoppingCart() {
         return shoppingCart;
     }
 }
