@@ -305,7 +305,7 @@ public class ProductDatabase {
         File tempDbFile = application.getDatabasePath("_" + dbName);
 
         if (!deleteDatabase(tempDbFile)) {
-            Logger.e("Could not recalculate delta update: Could not delete temp database");
+            Logger.e("Could not apply delta update: Could not delete temp database");
             throw new IOException();
         }
 
@@ -328,7 +328,7 @@ public class ProductDatabase {
         try {
             tempDb.beginTransaction();
         } catch (SQLiteException e) {
-            project.logErrorEvent("Could not recalculate delta update: Could not access temp database");
+            project.logErrorEvent("Could not apply delta update: Could not access temp database");
             throw new IOException();
         }
 
@@ -341,7 +341,7 @@ public class ProductDatabase {
                 //occurred
                 IOException lastException = scanner.ioException();
                 if (lastException != null) {
-                    project.logErrorEvent("Could not recalculate delta update: %s", lastException.getMessage());
+                    project.logErrorEvent("Could not apply delta update: %s", lastException.getMessage());
                     tempDb.close();
                     deleteDatabase(tempDbFile);
                     throw lastException;
@@ -352,7 +352,7 @@ public class ProductDatabase {
                 //code 0 = "not an error" - statements like empty strings are causing that exception
                 //which we want to allow
                 if (!e.getMessage().contains("code 0")) {
-                    project.logErrorEvent("Could not recalculate delta update: %s", e.getMessage());
+                    project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
                     tempDb.close();
                     deleteDatabase(tempDbFile);
                     throw new IOException();
@@ -364,7 +364,7 @@ public class ProductDatabase {
             tempDb.setTransactionSuccessful();
             tempDb.endTransaction();
         } catch (SQLiteException e) {
-            project.logErrorEvent("Could not recalculate delta update: Could not finish transaction on temp database");
+            project.logErrorEvent("Could not apply delta update: Could not finish transaction on temp database");
             throw new IOException();
         }
 
@@ -374,7 +374,7 @@ public class ProductDatabase {
         try {
             tempDb.execSQL("VACUUM");
         } catch (SQLiteException e) {
-            project.logErrorEvent("Could not recalculate delta update: %s", e.getMessage());
+            project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
             deleteDatabase(tempDbFile);
             throw new IOException();
         }
@@ -387,7 +387,7 @@ public class ProductDatabase {
         try {
             swap(tempDbFile);
         } catch (IOException e) {
-            project.logErrorEvent("Could not recalculate delta update: %s", e.getMessage());
+            project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
             throw new IOException();
         }
 
@@ -413,7 +413,7 @@ public class ProductDatabase {
         File tempDbFile = application.getDatabasePath("_" + dbName);
 
         if (!deleteDatabase(tempDbFile)) {
-            project.logErrorEvent("Could not recalculate full update: Could not delete old database download");
+            project.logErrorEvent("Could not apply full update: Could not delete old database download");
             throw new IOException();
         }
 
@@ -423,7 +423,7 @@ public class ProductDatabase {
             IOUtils.copy(inputStream, new FileOutputStream(tempDbFile));
             swap(tempDbFile);
         } catch (IOException e) {
-            project.logErrorEvent("Could not recalculate full update: %s", e.getMessage());
+            project.logErrorEvent("Could not apply full update: %s", e.getMessage());
             throw e;
         }
 

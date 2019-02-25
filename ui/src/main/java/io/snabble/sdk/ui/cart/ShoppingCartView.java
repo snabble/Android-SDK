@@ -436,7 +436,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @SuppressLint("SetTextI18n")
         public void bindTo(final int position) {
-            final Project project = SnabbleUI.getProject();
             final ShoppingCart.Item item = cart.get(position);
 
             final Product product = item.getProduct();
