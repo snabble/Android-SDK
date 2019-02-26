@@ -231,11 +231,13 @@ public class ShoppingCart {
         public void setQuantity(int quantity) {
             this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
 
-            if (quantity == 0) {
-                cart.items.remove(this);
-                cart.notifyItemRemoved(cart, this);
-            } else {
-                cart.notifyQuantityChanged(cart, this);
+            if (cart.items.contains(this)) {
+                if (quantity == 0) {
+                    cart.items.remove(this);
+                    cart.notifyItemRemoved(cart, this);
+                } else {
+                    cart.notifyQuantityChanged(cart, this);
+                }
             }
         }
 
