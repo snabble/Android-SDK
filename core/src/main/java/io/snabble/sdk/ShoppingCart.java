@@ -72,6 +72,8 @@ public class ShoppingCart {
             }
         }
 
+        addCount++;
+        modCount++;
         items.add(index, item);
         notifyItemAdded(this, item);
     }
@@ -95,7 +97,8 @@ public class ShoppingCart {
     }
 
     public void remove(int index) {
-        notifyItemRemoved(this, items.remove(index));
+        modCount++;
+        notifyItemRemoved(this, items.remove(index), index);
     }
 
     public int size() {
@@ -231,13 +234,16 @@ public class ShoppingCart {
         public void setQuantity(int quantity) {
             this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
 
-            if (cart.items.contains(this)) {
+            int index = cart.items.indexOf(this);
+            if (index != -1) {
                 if (quantity == 0) {
                     cart.items.remove(this);
-                    cart.notifyItemRemoved(cart, this);
+                    cart.notifyItemRemoved(cart, this, index);
                 } else {
                     cart.notifyQuantityChanged(cart, this);
                 }
+
+                cart.modCount++;
             }
         }
 
@@ -266,7 +272,7 @@ public class ShoppingCart {
 
         public int getTotalDepositPrice() {
             if (product.getDepositProduct() != null) {
-                return quantity * product.getDepositProduct().getDiscountedPrice(); // TODO impl
+                return quantity * product.getDepositProduct().getDiscountedPrice();
             }
 
             return 0;
@@ -344,7 +350,7 @@ public class ShoppingCart {
 
         void onCleared(ShoppingCart list);
 
-        void onItemRemoved(ShoppingCart list, Item item);
+        void onItemRemoved(ShoppingCart list, Item item, int pos);
 
         void onUpdate(ShoppingCart list);
     }
@@ -373,7 +379,7 @@ public class ShoppingCart {
         }
 
         @Override
-        public void onItemRemoved(ShoppingCart list, Item item) {
+        public void onItemRemoved(ShoppingCart list, Item item, int pos) {
             onChanged(list);
         }
     }
@@ -391,14 +397,14 @@ public class ShoppingCart {
         });
     }
 
-    private void notifyItemRemoved(final ShoppingCart list, final Item item) {
+    private void notifyItemRemoved(final ShoppingCart list, final Item item, final int pos) {
         updateTimestamp();
 
         handler.post(new Runnable() {
             @Override
             public void run() {
                 for (ShoppingCartListener listener : listeners) {
-                    listener.onItemRemoved(list, item);
+                    listener.onItemRemoved(list, item, pos);
                 }
             }
         });

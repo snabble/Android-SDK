@@ -398,7 +398,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
 
         @Override
-        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item) {
+        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int index) {
 
         }
 

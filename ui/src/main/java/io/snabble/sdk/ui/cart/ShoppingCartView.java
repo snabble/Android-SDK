@@ -83,7 +83,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
 
         @Override
-        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item) {
+        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int index) {
 
         }
 
@@ -451,15 +451,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             final int quantity = item.getQuantity();
 
             if (product != null) {
-                final ScannedCode scannedCode = item.getScannedCode();
-
                 String encodingDisplayValue = "g";
-
-                Unit encodingUnit = scannedCode.getEmbeddedUnit();
-                if (encodingUnit == null) {
-                    encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
-                }
-
+                Unit encodingUnit = item.getUnit();
                 if (encodingUnit != null) {
                     encodingDisplayValue = encodingUnit.getDisplayValue();
                 }
