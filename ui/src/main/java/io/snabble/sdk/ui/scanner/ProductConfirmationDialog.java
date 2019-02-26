@@ -105,7 +105,7 @@ class ProductConfirmationDialog {
         ShoppingCart.Item existingItem = shoppingCart.getByProduct(product);
         if (existingItem != null && existingItem.isMergeRequired()) {
             setQuantity(existingItem.getEffectiveQuantity() + 1);
-        } else{
+        } else {
             setQuantity(cartItem.getEffectiveQuantity());
         }
 
@@ -117,7 +117,7 @@ class ProductConfirmationDialog {
             quantityAnnotation.setVisibility(View.GONE);
         }
 
-        if (existingItem != null && product.getType() != Product.Type.UserWeighed) {
+        if (existingItem != null && existingItem.isMergeRequired()) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
@@ -248,6 +248,10 @@ class ProductConfirmationDialog {
             price.setVisibility(View.GONE);
         }
 
+        if (cartItem.getUnit() == Unit.PRICE) {
+            price.setVisibility(View.GONE);
+        }
+
         int cartItemDepositPrice = cartItem.getTotalDepositPrice();
         if (cartItemDepositPrice > 0) {
             String depositPriceText = priceFormatter.format(cartItemDepositPrice);
@@ -256,7 +260,11 @@ class ProductConfirmationDialog {
             depositPrice.setText(text);
             depositPrice.setVisibility(View.VISIBLE);
         } else {
-            depositPrice.setVisibility(View.GONE);
+            if (cartItem.getProduct().getDepositProduct() == null) {
+                depositPrice.setVisibility(View.GONE);
+            } else {
+                depositPrice.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -330,6 +338,10 @@ class ProductConfirmationDialog {
             quantity.setSelection(quantity.getText().length());
         } else {
             quantity.setText("");
+        }
+
+        if (cartItem.getUnit() == Unit.PRICE) {
+            quantity.setText(cartItem.getPriceText());
         }
 
         cartItem.setQuantity(number);

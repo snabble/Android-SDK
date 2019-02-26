@@ -67,6 +67,7 @@ public class ShoppingCart {
             if (existing != null) {
                 items.remove(existing);
                 items.add(index, item);
+                modCount++;
                 notifyQuantityChanged(this, item);
                 return;
             }
@@ -212,7 +213,12 @@ public class ShoppingCart {
             this.cart = cart;
             this.scannedCode = scannedCode;
             this.product = product;
-            this.quantity = 1;
+
+            if (product.getType() == Product.Type.UserWeighed) {
+                this.quantity = 0;
+            } else {
+                this.quantity = 1;
+            }
         }
 
         public Product getProduct() {
@@ -232,6 +238,10 @@ public class ShoppingCart {
         }
 
         public void setQuantity(int quantity) {
+            if (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() != 0) {
+                return;
+            }
+
             this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
 
             int index = cart.items.indexOf(this);
@@ -284,16 +294,22 @@ public class ShoppingCart {
                 return "1";
             }
 
-            return String.valueOf(getEffectiveQuantity()) + (unit != null ? unit.getDisplayValue() : "");
+            int q = getEffectiveQuantity();
+            if (q > 0) {
+                return String.valueOf(q) + (unit != null ? unit.getDisplayValue() : "");
+            } else {
+                return "1";
+            }
         }
 
         public String getFullPriceText() {
             String priceText = getPriceText();
             if (priceText != null) {
-                if (quantity > 1) {
-                    return quantity + " " + getPriceText();
+                String quantityText = getQuantityText();
+                if (quantityText.equals("1")) {
+                    return getPriceText().trim();
                 } else {
-                    return getPriceText();
+                    return quantityText + getPriceText();
                 }
             }
 
@@ -307,7 +323,7 @@ public class ShoppingCart {
 
                 if (unit == Unit.PRICE) {
                     return " " + priceFormatter.format(getTotalPrice());
-                } else if (quantity <= 1) {
+                } else if (getEffectiveQuantity() <= 1) {
                     return " " + priceFormatter.format(product);
                 } else {
                     return String.format(" * %s = %s",
