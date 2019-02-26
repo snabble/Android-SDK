@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,12 +67,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
-        public void onItemAdded(ShoppingCart list, ShoppingCart.Item  product) {
-            onCartUpdated();
+        public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
+            recyclerViewAdapter.notifyItemInserted(list.indexOf(item));
+            update();
         }
 
         @Override
-        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item  product) {
+        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
 
         }
 
@@ -115,7 +117,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(null);
+        DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
+        itemAnimator.setSupportsChangeAnimations(false);
+        recyclerView.setItemAnimator(itemAnimator);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 layoutManager.getOrientation());
@@ -189,7 +193,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                if (recyclerView.getAdapter().getItemViewType(viewHolder.getAdapterPosition())
+                if (recyclerViewAdapter.getItemViewType(viewHolder.getAdapterPosition())
                         == Adapter.TYPE_DEPOSIT) {
                     return 0;
                 }
@@ -225,7 +229,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             @Override
             public void onClick(View v) {
                 cart.insert(item, pos);
-                recyclerView.getAdapter().notifyDataSetChanged();
                 Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
             }
         });
@@ -330,6 +333,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void scanForImages() {
+        boolean lastHasAnyImages = hasAnyImages;
+
         hasAnyImages = false;
 
         for (int i = 0; i < cart.size(); i++) {
@@ -339,6 +344,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 hasAnyImages = true;
                 break;
             }
+        }
+
+        if (hasAnyImages != lastHasAnyImages) {
+            recyclerViewAdapter.notifyDataSetChanged();
         }
     }
 
@@ -471,6 +480,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
                     subtitle.setVisibility(View.GONE);
                 } else {
+                    subtitle.setVisibility(View.VISIBLE);
                     subtitle.setText(product.getSubtitle());
                 }
 
