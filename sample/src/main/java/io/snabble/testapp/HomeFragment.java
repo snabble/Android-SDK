@@ -115,7 +115,13 @@ public class HomeFragment extends Fragment {
         projects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                SnabbleUI.useProject(projectList.get(position));
+                Project project = projectList.get(position);
+
+                SnabbleUI.useProject(project);
+
+                if (project.getShops().length > 0) {
+                    project.setCheckedInShop(project.getShops()[0]);
+                }
             }
 
             @Override
