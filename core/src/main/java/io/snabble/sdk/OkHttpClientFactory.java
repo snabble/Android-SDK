@@ -1,7 +1,7 @@
 package io.snabble.sdk;
 
 import android.app.Application;
-import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
+import java.util.concurrent.TimeUnit;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
@@ -27,8 +27,8 @@ class OkHttpClientFactory {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
-
         builder.retryOnConnectionFailure(true);
+        builder.pingInterval(5, TimeUnit.SECONDS); // workaround for https://github.com/square/okhttp/issues/3146
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
                 new HttpLoggingInterceptor.Logger() {
