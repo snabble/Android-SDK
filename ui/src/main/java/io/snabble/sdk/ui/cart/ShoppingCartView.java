@@ -509,6 +509,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
                     subtitle.setVisibility(View.GONE);
                 } else {
+                    subtitle.setVisibility(View.VISIBLE);
                     subtitle.setText(product.getSubtitle());
                 }
 
