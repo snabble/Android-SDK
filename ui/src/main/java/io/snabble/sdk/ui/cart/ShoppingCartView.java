@@ -663,9 +663,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             if (hasDeposit != newHasDeposit) {
                 if (newHasDeposit) {
-                    notifyItemInserted(getItemCount());
+                    notifyItemInserted(getItemCount() - 1);
                 } else {
-                    notifyItemRemoved(getItemCount() + 1);
+                    notifyItemRemoved(getItemCount());
                 }
             } else {
                 notifyItemChanged(getItemCount() - 1);
