@@ -5,15 +5,23 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.receipts.ReceiptListView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
     @Nullable
@@ -77,6 +85,44 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // convenience project switching for debugging - use geofencing or a single project in real apps
+        final List<Project> projectList = Snabble.getInstance().getProjects();
+        Spinner projects = v.findViewById(R.id.projects);
+        projects.setAdapter(new ArrayAdapter<Project>(requireContext(), R.layout.item_project, projectList) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView v = (TextView) super.getView(position, convertView, parent);
+                v.setText(projectList.get(position).getId());
+                return v;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView v = (TextView) super.getDropDownView(position, convertView, parent);
+                v.setText(projectList.get(position).getId());
+                return v;
+            }
+        });
+
+        for (int i=0; i<projectList.size(); i++) {
+            if (SnabbleUI.getProject() == projectList.get(i)) {
+                projects.setSelection(i);
+                break;
+            }
+        }
+
+        projects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SnabbleUI.useProject(projectList.get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         return v;
     }

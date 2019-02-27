@@ -129,7 +129,7 @@ public class App extends Application {
     }
 
     public Project getProject() {
-        return project;
+        return SnabbleUI.getProject();
     }
 
     private int getBundledRevisionId(String projectId) {

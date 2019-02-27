@@ -253,6 +253,10 @@ class ProductConfirmationDialog {
         }
 
         int cartItemDepositPrice = cartItem.getTotalDepositPrice();
+        if (cartItemDepositPrice == 0 && cartItem.getProduct().getDepositProduct() != null) {
+            cartItemDepositPrice = cartItem.getProduct().getDepositProduct().getDiscountedPrice();
+        }
+
         if (cartItemDepositPrice > 0) {
             String depositPriceText = priceFormatter.format(cartItemDepositPrice);
             Resources res = context.getResources();
@@ -260,11 +264,7 @@ class ProductConfirmationDialog {
             depositPrice.setText(text);
             depositPrice.setVisibility(View.VISIBLE);
         } else {
-            if (cartItem.getProduct().getDepositProduct() == null) {
-                depositPrice.setVisibility(View.GONE);
-            } else {
-                depositPrice.setVisibility(View.INVISIBLE);
-            }
+            depositPrice.setVisibility(View.GONE);
         }
     }
 

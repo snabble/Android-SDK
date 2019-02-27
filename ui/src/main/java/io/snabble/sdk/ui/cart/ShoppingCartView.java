@@ -41,7 +41,6 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Unit;
-import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -74,22 +73,26 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
-
+            recyclerViewAdapter.notifyItemChanged(list.indexOf(item));
+            update();
         }
 
         @Override
         public void onCleared(ShoppingCart list) {
-            onCartUpdated();
+            recyclerViewAdapter.notifyDataSetChanged();
+            update();
         }
 
         @Override
         public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int index) {
-
+            recyclerViewAdapter.notifyItemRemoved(index);
+            update();
         }
 
         @Override
         public void onUpdate(ShoppingCart list) {
-            onCartUpdated();
+            recyclerViewAdapter.notifyDataSetChanged();
+            update();
         }
     };
 
@@ -110,6 +113,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
     private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.view_shopping_cart, this);
+
+        Project project = SnabbleUI.getProject();
+
+        if (cart != null) {
+            cart.removeListener(shoppingCartListener);
+        }
+
+        cart = project.getShoppingCart();
+        checkout = project.getCheckout();
+        priceFormatter = new PriceFormatter(project);
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerViewAdapter = new Adapter();
@@ -166,16 +179,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         createItemTouchHelper();
 
-        Project project = SnabbleUI.getProject();
-
-        if (cart != null) {
-            cart.removeListener(shoppingCartListener);
-        }
-
-        cart = project.getShoppingCart();
-        checkout = project.getCheckout();
-        priceFormatter = new PriceFormatter(project);
-
         updatePayText();
         updateEmptyState();
         scanForImages();
@@ -220,8 +223,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void removeAndShowUndoSnackbar(final int pos, final ShoppingCart.Item item) {
         cart.remove(pos);
         Telemetry.event(Telemetry.Event.DeletedFromCart, item.getProduct());
-        recyclerViewAdapter.notifyItemRemoved(pos);
-        update();
 
         snackbar = UIUtils.snackbar(coordinatorLayout,
                 R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
@@ -314,22 +315,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     }
 
-    private void onCartUpdated() {
-        update();
-
-        recyclerViewAdapter.notifyDataSetChanged();
-    }
-
     private void update() {
         updatePayText();
         updateEmptyState();
         scanForImages();
 
         recyclerViewAdapter.updateDeposit();
-
-        if (snackbar != null) {
-            snackbar.dismiss();
-        }
     }
 
     private void scanForImages() {
@@ -389,7 +380,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
 
-        onCartUpdated();
+        recyclerViewAdapter.notifyDataSetChanged();
+        update();
     }
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
@@ -398,7 +390,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 public void onActivityStarted(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
                         registerListeners();
-                        onCartUpdated();
+
+                        recyclerViewAdapter.notifyDataSetChanged();
+                        update();
                     }
                 }
 
@@ -494,8 +488,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     @Override
                     public void onClick(View v) {
                         item.setQuantity(item.getQuantity() + 1);
-                        recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
-                        update();
                     }
                 });
 
@@ -509,8 +501,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                             removeAndShowUndoSnackbar(p, item);
                         } else {
                             item.setQuantity(newQuantity);
-                            recyclerViewAdapter.notifyItemChanged(getAdapterPosition());
-                            update();
                         }
                     }
                 });
@@ -518,11 +508,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 quantityEditApply.setOnClickListener(new OneShotClickListener() {
                     @Override
                     public void click() {
-                        int pos = getAdapterPosition();
                         item.setQuantity(getQuantityEditValue());
-                        recyclerViewAdapter.notifyItemChanged(pos);
-                        update();
-
                         hideInput();
                     }
                 });
@@ -634,6 +620,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         public static final int TYPE_ITEM = 0;
         public static final int TYPE_DEPOSIT = 1;
 
+        public boolean hasDeposit;
+
+        public Adapter() {
+            super();
+            hasDeposit = cart.getTotalDepositPrice() > 0;
+        }
+
         @Override
         public int getItemViewType(int position) {
             if (cart.getTotalDepositPrice() > 0 && position == getItemCount() - 1) {
@@ -666,11 +659,19 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
 
         public void updateDeposit() {
-            for (int i = 0; i < getItemCount(); i++) {
-                if (getItemViewType(i) == TYPE_DEPOSIT) {
-                    notifyItemChanged(i);
+            boolean newHasDeposit = cart.getTotalDepositPrice() > 0;
+
+            if (hasDeposit != newHasDeposit) {
+                if (newHasDeposit) {
+                    notifyItemInserted(getItemCount());
+                } else {
+                    notifyItemRemoved(getItemCount() + 1);
                 }
+            } else {
+                notifyItemChanged(getItemCount() - 1);
             }
+
+            hasDeposit = newHasDeposit;
         }
 
         @Override

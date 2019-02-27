@@ -170,7 +170,7 @@ public class ShoppingCart {
             int sum = 0;
 
             for (Item e : items) {
-                e.getTotalDepositPrice();
+                sum += e.getTotalDepositPrice();
             }
 
             return sum;
@@ -318,7 +318,7 @@ public class ShoppingCart {
         }
 
         public String getPriceText() {
-            if (product.getDiscountedPrice() > 0) {
+            if (product.getDiscountedPrice() > 0 || (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0)) {
                 PriceFormatter priceFormatter = new PriceFormatter(cart.project);
                 Unit unit = getUnit();
 
