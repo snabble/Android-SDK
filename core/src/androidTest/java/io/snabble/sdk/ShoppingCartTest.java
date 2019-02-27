@@ -74,14 +74,14 @@ public class ShoppingCartTest extends SnabbleSdkTest {
 
     @Test
     public void testMerge() {
-        Assert.assertTrue(simpleProduct1.cartItem().isMergeRequired());
-        Assert.assertTrue(simpleProduct2.cartItem().isMergeRequired());
-        Assert.assertTrue(simpleProduct3.cartItem().isMergeRequired());
-        Assert.assertFalse(userWeighedProduct.cartItem().isMergeRequired());
-        Assert.assertFalse(preWeighedProduct.cartItem().isMergeRequired());
-        Assert.assertFalse(pieceProduct.cartItem().isMergeRequired());
-        Assert.assertFalse(priceProduct.cartItem().isMergeRequired());
-        Assert.assertFalse(zeroAmountProduct.cartItem().isMergeRequired());
+        Assert.assertTrue(simpleProduct1.cartItem().isMergeable());
+        Assert.assertTrue(simpleProduct2.cartItem().isMergeable());
+        Assert.assertTrue(simpleProduct3.cartItem().isMergeable());
+        Assert.assertFalse(userWeighedProduct.cartItem().isMergeable());
+        Assert.assertFalse(preWeighedProduct.cartItem().isMergeable());
+        Assert.assertFalse(pieceProduct.cartItem().isMergeable());
+        Assert.assertFalse(priceProduct.cartItem().isMergeable());
+        Assert.assertFalse(zeroAmountProduct.cartItem().isMergeable());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         Assert.assertEquals(cart.size(), 2);
 
         Assert.assertTrue(cart.get(0).isEditable());
-        Assert.assertFalse(cart.get(0).isMergeRequired());
+        Assert.assertFalse(cart.get(0).isMergeable());
     }
 
     @Test

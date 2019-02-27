@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -62,7 +63,7 @@ public class ShoppingCart {
     }
 
     public void insert(Item item, int index) {
-        if (item.isMergeRequired()) {
+        if (item.isMergeable()) {
             Item existing = getByProduct(item.getProduct());
             if (existing != null) {
                 items.remove(existing);
@@ -261,7 +262,7 @@ public class ShoppingCart {
             return !scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0;
         }
 
-        public boolean isMergeRequired() {
+        public boolean isMergeable() {
             return product.getType() == Product.Type.Article
                     && getUnit() != PIECE
                     && product.getDiscountedPrice() != 0;

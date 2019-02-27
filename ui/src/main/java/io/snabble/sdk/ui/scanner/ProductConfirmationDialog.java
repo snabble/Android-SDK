@@ -103,7 +103,7 @@ class ProductConfirmationDialog {
         cartItem = shoppingCart.newItem(product, scannedCode);
 
         ShoppingCart.Item existingItem = shoppingCart.getByProduct(product);
-        if (existingItem != null && existingItem.isMergeRequired()) {
+        if (existingItem != null && existingItem.isMergeable()) {
             setQuantity(existingItem.getEffectiveQuantity() + 1);
         } else {
             setQuantity(cartItem.getEffectiveQuantity());
@@ -117,7 +117,7 @@ class ProductConfirmationDialog {
             quantityAnnotation.setVisibility(View.GONE);
         }
 
-        if (existingItem != null && existingItem.isMergeRequired()) {
+        if (existingItem != null && existingItem.isMergeable()) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
