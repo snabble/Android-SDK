@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.12.4]
+
+### Fixed
+- Fixed an issue that prevented repeated network calls would reuse dead connection
+pools and result in network errors even when network was available again
+- Subtitle visibility for recycled shopping cart cells
+
 ## [0.12.3]
 
 ### Fixed
