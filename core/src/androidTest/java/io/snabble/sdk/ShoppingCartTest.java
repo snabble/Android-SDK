@@ -157,7 +157,6 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         item = userWeighedProduct.cartItem();
         item.setQuantity(0);
         assertStrEquals(item.getPriceText(), " 2,99 € / kg");
-        assertStrEquals(item.getQuantityText(), "1"); // TODO hmm
         assertStrEquals(item.getFullPriceText(), "2,99 € / kg");
 
         item = pieceProduct.cartItem();
