@@ -178,7 +178,7 @@ class CheckoutApi {
     }
 
     public void createCheckoutInfo(final Shop shop,
-                                   final String cartJson,
+                                   final ShoppingCart.BackendCart backendCart,
                                    final PaymentMethod[] clientAcceptedPaymentMethods,
                                    final CheckoutInfoResult checkoutInfoResult) {
         String checkoutUrl = project.getCheckoutUrl();
@@ -196,7 +196,7 @@ class CheckoutApi {
 
         final Request request = new Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(checkoutUrl))
-                .post(RequestBody.create(JSON, cartJson))
+                .post(RequestBody.create(JSON, GsonHolder.get().toJson(backendCart)))
                 .build();
 
         cancel();

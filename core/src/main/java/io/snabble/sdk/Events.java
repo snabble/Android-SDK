@@ -55,7 +55,7 @@ class Events {
                     post(payloadSessionEnd, false);
                 }
 
-                post(getPayloadCart(), true);
+                post(Events.this.project.getShoppingCart().toBackendCart(), true);
             }
         });
 
@@ -78,13 +78,14 @@ class Events {
 
     public void updateShop(Shop newShop) {
         if (newShop != null) {
-            cartId = project.getShoppingCart().getId();
+            ShoppingCart cart = project.getShoppingCart();
+            cartId = cart.getId();
             shop = newShop;
 
             PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
             payloadSessionStart.session = cartId;
             post(payloadSessionStart, false);
-            post(getPayloadCart(), true);
+            post(cart.toBackendCart(), true);
         } else {
             PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
             payloadSessionEnd.session = cartId;
@@ -182,86 +183,7 @@ class Events {
         });
     }
 
-    private PayloadCart getPayloadCart() {
-        ShoppingCart shoppingCart = project.getShoppingCart();
-
-        PayloadCart payloadCart = new PayloadCart();
-        payloadCart.session = shoppingCart.getId();
-        payloadCart.shopId = "unknown";
-
-        String loyaltyCardId = project.getCustomerCardId();
-        if (loyaltyCardId != null) {
-            payloadCart.customer = new PayloadCartCustomer();
-            payloadCart.customer.loyaltyCard = loyaltyCardId;
-        }
-
-        Shop shop = project.getCheckedInShop();
-        if (shop != null) {
-            String id = shop.getId();
-            if (id != null) {
-                payloadCart.shopId = id;
-            }
-        }
-
-        payloadCart.items = new PayloadCartItem[shoppingCart.size()];
-
-        for (int i = 0; i < shoppingCart.size(); i++) {
-            ShoppingCart.Item cartItem = shoppingCart.get(i);
-
-            Product product = cartItem.getProduct();
-            int quantity = cartItem.getQuantity();
-
-            PayloadCartItem item = new PayloadCartItem();
-
-            ScannedCode scannedCode = cartItem.getScannedCode();
-            Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
-
-            if (scannedCode.getEmbeddedUnit() != null) {
-                encodingUnit = scannedCode.getEmbeddedUnit();
-            }
-
-            item.sku = String.valueOf(product.getSku());
-            item.scannedCode = scannedCode.getCode();
-
-            if (encodingUnit != null) {
-                item.weightUnit = encodingUnit.getId();
-            }
-
-            item.amount = quantity;
-
-            if (cartItem.getUnit() == Unit.PIECE) {
-                item.units = cartItem.getEffectiveQuantity();
-            } else if (cartItem.getUnit() == Unit.PRICE) {
-                item.price = cartItem.getTotalPrice();
-            } else if (cartItem.getUnit() != null) {
-                item.weight = cartItem.getEffectiveQuantity();
-            }
-
-            if (product.getType() == Product.Type.UserWeighed) {
-                item.amount = 1;
-                item.weight = quantity;
-            }
-
-            if (item.units == null && product.getReferenceUnit() == Unit.PIECE) {
-                item.amount = 1;
-                item.units = quantity;
-            }
-
-            if (item.price == null && item.units != null && scannedCode.hasPrice()) {
-                item.price = item.units * scannedCode.getPrice();
-            }
-
-            payloadCart.items[i] = item;
-        }
-
-        return payloadCart;
-    }
-
-    public String getPayloadCartJson() {
-        return GsonHolder.get().toJson(getPayloadCart());
-    }
-
-    private enum EventType {
+    public enum EventType {
         @SerializedName("sessionStart")
         SESSION_START,
         @SerializedName("sessionEnd")
@@ -272,11 +194,11 @@ class Events {
         ERROR
     }
 
-    private interface Payload {
+    public interface Payload {
         EventType getEventType();
     }
 
-    private static class Event {
+    public static class Event {
         public EventType type;
         public String appId;
         @SerializedName("shopID")
@@ -314,30 +236,5 @@ class Events {
         }
     }
 
-    private static class PayloadCart implements Payload {
-        private String session;
-        @SerializedName("shopID")
-        private String shopId;
-        private PayloadCartCustomer customer;
-        private PayloadCartItem[] items;
 
-        @Override
-        public EventType getEventType() {
-            return EventType.CART;
-        }
-    }
-
-    private static class PayloadCartCustomer {
-        private String loyaltyCard;
-    }
-
-    private static class PayloadCartItem {
-        private String sku;
-        private String scannedCode;
-        private int amount;
-        private String weightUnit;
-        private Integer price;
-        private Integer weight;
-        private Integer units;
-    }
 }

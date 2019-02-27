@@ -200,7 +200,7 @@ public class Checkout {
         notifyStateChanged(State.HANDSHAKING);
 
         checkoutApi.createCheckoutInfo(project.getCheckedInShop(),
-                project.getEvents().getPayloadCartJson(),
+                shoppingCart.toBackendCart(),
                 clientAcceptedPaymentMethods,
                 new CheckoutApi.CheckoutInfoResult() {
             @Override
@@ -376,13 +376,12 @@ public class Checkout {
 
 
     private void retryPostSilent() {
-        final String cartJson = project.getEvents().getPayloadCartJson();
         final PaymentMethod pm = paymentMethod;
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                checkoutApi.createCheckoutInfo(shop, cartJson, clientAcceptedPaymentMethods,
+                checkoutApi.createCheckoutInfo(shop, shoppingCart.toBackendCart(), clientAcceptedPaymentMethods,
                         new CheckoutApi.CheckoutInfoResult() {
                     @Override
                     public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo,

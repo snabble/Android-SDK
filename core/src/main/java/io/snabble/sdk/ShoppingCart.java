@@ -3,14 +3,16 @@ package io.snabble.sdk;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.utils.GsonHolder;
 
 import static io.snabble.sdk.Unit.PIECE;
 import static io.snabble.sdk.Unit.PRICE;
@@ -335,6 +337,108 @@ public class ShoppingCart {
 
             return null;
         }
+    }
+
+    public BackendCart toBackendCart() {
+        ShoppingCart shoppingCart = project.getShoppingCart();
+
+        BackendCart backendCart = new BackendCart();
+        backendCart.session = shoppingCart.getId();
+        backendCart.shopId = "unknown";
+
+        String loyaltyCardId = project.getCustomerCardId();
+        if (loyaltyCardId != null) {
+            backendCart.customer = new BackendCartCustomer();
+            backendCart.customer.loyaltyCard = loyaltyCardId;
+        }
+
+        Shop shop = project.getCheckedInShop();
+        if (shop != null) {
+            String id = shop.getId();
+            if (id != null) {
+                backendCart.shopId = id;
+            }
+        }
+
+        backendCart.items = new BackendCartItem[shoppingCart.size()];
+
+        for (int i = 0; i < shoppingCart.size(); i++) {
+            ShoppingCart.Item cartItem = shoppingCart.get(i);
+
+            Product product = cartItem.getProduct();
+            int quantity = cartItem.getQuantity();
+
+            BackendCartItem item = new BackendCartItem();
+
+            ScannedCode scannedCode = cartItem.getScannedCode();
+            Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+
+            if (scannedCode.getEmbeddedUnit() != null) {
+                encodingUnit = scannedCode.getEmbeddedUnit();
+            }
+
+            item.sku = String.valueOf(product.getSku());
+            item.scannedCode = scannedCode.getCode();
+
+            if (encodingUnit != null) {
+                item.weightUnit = encodingUnit.getId();
+            }
+
+            item.amount = quantity;
+
+            if (cartItem.getUnit() == Unit.PIECE) {
+                item.units = cartItem.getEffectiveQuantity();
+            } else if (cartItem.getUnit() == Unit.PRICE) {
+                item.price = cartItem.getTotalPrice();
+            } else if (cartItem.getUnit() != null) {
+                item.weight = cartItem.getEffectiveQuantity();
+            }
+
+            if (product.getType() == Product.Type.UserWeighed) {
+                item.amount = 1;
+                item.weight = quantity;
+            }
+
+            if (item.units == null && product.getReferenceUnit() == Unit.PIECE) {
+                item.amount = 1;
+                item.units = quantity;
+            }
+
+            if (item.price == null && item.units != null && scannedCode.hasPrice()) {
+                item.price = item.units * scannedCode.getPrice();
+            }
+
+            backendCart.items[i] = item;
+        }
+
+        return backendCart;
+    }
+
+    public static class BackendCart implements Events.Payload {
+        private String session;
+        @SerializedName("shopID")
+        private String shopId;
+        private BackendCartCustomer customer;
+        private BackendCartItem[] items;
+
+        @Override
+        public Events.EventType getEventType() {
+            return Events.EventType.CART;
+        }
+    }
+
+    public static class BackendCartCustomer {
+        private String loyaltyCard;
+    }
+
+    public static class BackendCartItem {
+        private String sku;
+        private String scannedCode;
+        private int amount;
+        private String weightUnit;
+        private Integer price;
+        private Integer weight;
+        private Integer units;
     }
 
     /**
