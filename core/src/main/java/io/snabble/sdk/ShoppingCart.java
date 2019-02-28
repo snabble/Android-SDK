@@ -12,7 +12,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannedCode;
-import io.snabble.sdk.utils.GsonHolder;
 
 import static io.snabble.sdk.Unit.PIECE;
 import static io.snabble.sdk.Unit.PRICE;
@@ -31,6 +30,8 @@ public class ShoppingCart {
     private transient List<ShoppingCartListener> listeners = new CopyOnWriteArrayList<>();
     private transient Handler handler = new Handler(Looper.getMainLooper());
     private transient Project project;
+    private transient ShoppingCartUpdater updater;
+    private transient PriceFormatter priceFormatter;
 
     protected ShoppingCart() {
         // for gson
@@ -45,6 +46,9 @@ public class ShoppingCart {
 
     void initWithProject(Project project) {
         this.project = project;
+        this.updater = new ShoppingCartUpdater(project, this);
+        this.priceFormatter = new PriceFormatter(project);
+
         checkForTimeout();
 
         for (Item item : items) {
@@ -58,6 +62,10 @@ public class ShoppingCart {
 
     public Item newItem(Product product, ScannedCode scannedCode) {
         return new Item(this, product, scannedCode);
+    }
+
+    public Item newItem(CheckoutApi.LineItem lineItem) {
+        return new Item(this, lineItem);
     }
 
     public void add(Item item) {
@@ -87,8 +95,26 @@ public class ShoppingCart {
     }
 
     public Item getByProduct(Product product) {
+        if (product == null) {
+            return null;
+        }
+
         for (Item item : items) {
-            if (item.product.equals(product)) {
+            if (product.equals(item.product)) {
+                return item;
+            }
+        }
+
+        return null;
+    }
+
+    public Item getByItemId(String itemId) {
+        if (itemId == null) {
+            return null;
+        }
+
+        for (Item item : items) {
+            if (itemId.equals(item.id)) {
                 return item;
             }
         }
@@ -121,7 +147,7 @@ public class ShoppingCart {
         clear();
     }
 
-    public void update() {
+    public void updateProducts() {
         ProductDatabase productDatabase = project.getProductDatabase();
 
         if (productDatabase.isUpToDate()) {
@@ -133,7 +159,27 @@ public class ShoppingCart {
                 }
             }
 
-            notifyUpdate(this);
+            notifyProductsUpdate(this);
+        }
+    }
+
+    public void updatePrices(boolean debounce) {
+        // reverse-order because we are removing items
+        for (int i = items.size() - 1; i >= 0; i--) {
+            Item item = items.get(i);
+            if (item.isLineItem()) {
+                items.remove(i);
+                notifyItemRemoved(this, item, i);
+            } else {
+                item.lineItem = null; // TODO ugh...
+                notifyQuantityChanged(this, item);
+            }
+        }
+
+        if(debounce) {
+            updater.dispatchUpdate();
+        } else {
+            updater.update();
         }
     }
 
@@ -184,6 +230,11 @@ public class ShoppingCart {
             int sum = 0;
 
             for (Item e : items) {
+                if (e.isLineItem()) {
+                    sum += e.lineItem.amount;
+                    continue;
+                }
+
                 Product product = e.product;
                 if (product.getType() == Product.Type.UserWeighed
                         || product.getType() == Product.Type.PreWeighed
@@ -206,6 +257,8 @@ public class ShoppingCart {
         private Product product;
         private ScannedCode scannedCode;
         private int quantity;
+        private CheckoutApi.LineItem lineItem;
+        private String id;
         private transient ShoppingCart cart;
 
         protected Item() {
@@ -213,6 +266,7 @@ public class ShoppingCart {
         }
 
         private Item(ShoppingCart cart, Product product, ScannedCode scannedCode) {
+            this.id = UUID.randomUUID().toString();
             this.cart = cart;
             this.scannedCode = scannedCode;
             this.product = product;
@@ -222,6 +276,25 @@ public class ShoppingCart {
             } else {
                 this.quantity = 1;
             }
+        }
+
+        private Item(ShoppingCart cart, CheckoutApi.LineItem lineItem) {
+            this.id = UUID.randomUUID().toString();
+            this.cart = cart;
+            this.lineItem = lineItem;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        void setLineItem(CheckoutApi.LineItem lineItem) {
+            this.lineItem = lineItem;
+            cart.notifyQuantityChanged(cart, this);
+        }
+
+        public CheckoutApi.LineItem getLineItem() {
+            return lineItem;
         }
 
         public Product getProduct() {
@@ -257,25 +330,40 @@ public class ShoppingCart {
                 }
 
                 cart.modCount++;
+                cart.updatePrices(true);
             }
         }
 
+        public boolean isLineItem() {
+            return product == null && lineItem != null;
+        }
+
         public boolean isEditable() {
+            if (isLineItem()) return false;
+
             return !scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0;
         }
 
         public boolean isMergeable() {
+            if (isLineItem()) return false;
+
             return product.getType() == Product.Type.Article
                     && getUnit() != PIECE
                     && product.getDiscountedPrice() != 0;
         }
 
         public Unit getUnit() {
+            if (isLineItem()) return null;
+
             return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
                     : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
         }
 
         public int getTotalPrice() {
+            if (lineItem != null) {
+                return lineItem.totalPrice;
+            }
+
             if (getUnit() == Unit.PRICE) {
                 return scannedCode.getEmbeddedData();
             }
@@ -284,6 +372,8 @@ public class ShoppingCart {
         }
 
         public int getTotalDepositPrice() {
+            if (isLineItem()) return 0;
+
             if (product.getDepositProduct() != null) {
                 return quantity * product.getDepositProduct().getDiscountedPrice();
             }
@@ -291,7 +381,19 @@ public class ShoppingCart {
             return 0;
         }
 
+        public String getDisplayName() {
+            if (isLineItem()) {
+                return lineItem.name;
+            } else {
+                return product.getName();
+            }
+        }
+
         public String getQuantityText() {
+            if (isLineItem()) {
+                return String.valueOf(lineItem.amount);
+            }
+
             Unit unit = getUnit();
             if (unit == PRICE) {
                 return "1";
@@ -320,18 +422,27 @@ public class ShoppingCart {
         }
 
         public String getPriceText() {
+            if (lineItem != null) {
+                if (lineItem.amount > 1) {
+                    return String.format(" * %s = %s",
+                            cart.priceFormatter.format(lineItem.price),
+                            cart.priceFormatter.format(getTotalPrice()));
+                } else {
+                    return " " + cart.priceFormatter.format(getTotalPrice(), true);
+                }
+            }
+
             if (product.getDiscountedPrice() > 0 || (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0)) {
-                PriceFormatter priceFormatter = new PriceFormatter(cart.project);
                 Unit unit = getUnit();
 
                 if (unit == Unit.PRICE) {
-                    return " " + priceFormatter.format(getTotalPrice());
+                    return " " + cart.priceFormatter.format(getTotalPrice());
                 } else if (getEffectiveQuantity() <= 1) {
-                    return " " + priceFormatter.format(product);
+                    return " " + cart.priceFormatter.format(product) + "*";
                 } else {
-                    return String.format(" * %s = %s",
-                            priceFormatter.format(product),
-                            priceFormatter.format(getTotalPrice()));
+                    return String.format(" * %s = %s*",
+                            cart.priceFormatter.format(product),
+                            cart.priceFormatter.format(getTotalPrice()));
                 }
             }
 
@@ -360,15 +471,16 @@ public class ShoppingCart {
             }
         }
 
-        backendCart.items = new BackendCartItem[shoppingCart.size()];
+        List<BackendCartItem> items = new ArrayList<>();
 
         for (int i = 0; i < shoppingCart.size(); i++) {
             ShoppingCart.Item cartItem = shoppingCart.get(i);
+            if (cartItem.isLineItem()) continue;
+
+            BackendCartItem item = new BackendCartItem();
 
             Product product = cartItem.getProduct();
             int quantity = cartItem.getQuantity();
-
-            BackendCartItem item = new BackendCartItem();
 
             ScannedCode scannedCode = cartItem.getScannedCode();
             Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
@@ -377,6 +489,7 @@ public class ShoppingCart {
                 encodingUnit = scannedCode.getEmbeddedUnit();
             }
 
+            item.id = cartItem.id;
             item.sku = String.valueOf(product.getSku());
             item.scannedCode = scannedCode.getCode();
 
@@ -408,8 +521,10 @@ public class ShoppingCart {
                 item.price = item.units * scannedCode.getPrice();
             }
 
-            backendCart.items[i] = item;
+            items.add(item);
         }
+
+        backendCart.items = items.toArray(new BackendCartItem[items.size()]);
 
         return backendCart;
     }
@@ -432,6 +547,7 @@ public class ShoppingCart {
     }
 
     public static class BackendCartItem {
+        private String id;
         private String sku;
         private String scannedCode;
         private int amount;
@@ -473,14 +589,16 @@ public class ShoppingCart {
 
         void onItemRemoved(ShoppingCart list, Item item, int pos);
 
-        void onUpdate(ShoppingCart list);
+        void onProductsUpdated(ShoppingCart list);
+
+        void onPricesUpdated(ShoppingCart list);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
         public abstract void onChanged(ShoppingCart list);
 
         @Override
-        public void onUpdate(ShoppingCart list) {
+        public void onProductsUpdated(ShoppingCart list) {
             onChanged(list);
         }
 
@@ -501,6 +619,11 @@ public class ShoppingCart {
 
         @Override
         public void onItemRemoved(ShoppingCart list, Item item, int pos) {
+            onChanged(list);
+        }
+
+        @Override
+        public void onPricesUpdated(ShoppingCart list) {
             onChanged(list);
         }
     }
@@ -544,12 +667,23 @@ public class ShoppingCart {
         });
     }
 
-    private void notifyUpdate(final ShoppingCart list) {
+    private void notifyProductsUpdate(final ShoppingCart list) {
         handler.post(new Runnable() {
             @Override
             public void run() {
                 for (ShoppingCartListener listener : listeners) {
-                    listener.onUpdate(list);
+                    listener.onProductsUpdated(list);
+                }
+            }
+        });
+    }
+
+    void notifyPriceUpdate(final ShoppingCart list) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (ShoppingCartListener listener : listeners) {
+                    listener.onPricesUpdated(list);
                 }
             }
         });

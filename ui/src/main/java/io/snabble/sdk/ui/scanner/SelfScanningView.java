@@ -403,7 +403,12 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
 
         @Override
-        public void onUpdate(ShoppingCart list) {
+        public void onProductsUpdated(ShoppingCart list) {
+
+        }
+
+        @Override
+        public void onPricesUpdated(ShoppingCart list) {
 
         }
     };

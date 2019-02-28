@@ -479,6 +479,10 @@ public class Product implements Serializable, Parcelable {
         }
 
         public Product build() {
+            if (product.sku.equals("0")) {
+                product.price = 100; // TODO remove
+            }
+
             if (product.scannableCodes == null) {
                 product.scannableCodes = new Code[0];
             }

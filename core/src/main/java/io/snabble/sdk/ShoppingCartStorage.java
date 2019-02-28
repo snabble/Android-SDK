@@ -16,17 +16,17 @@ import java.nio.charset.Charset;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
-class ShoppingCartManager {
+class ShoppingCartStorage {
     private Project project;
     private ShoppingCart shoppingCart;
     private File file;
     private Handler backgroundHandler;
 
-    public ShoppingCartManager(final Project project) {
+    ShoppingCartStorage(final Project project) {
         this.project = project;
         file = new File(project.getInternalStorageDirectory(), "shoppingCart.json");
 
-        HandlerThread handlerThread = new HandlerThread("ShoppingCartManager");
+        HandlerThread handlerThread = new HandlerThread("ShoppingCartStorage");
         handlerThread.start();
         backgroundHandler = new Handler(handlerThread.getLooper());
 

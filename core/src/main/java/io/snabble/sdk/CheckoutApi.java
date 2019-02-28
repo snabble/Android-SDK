@@ -77,6 +77,24 @@ class CheckoutApi {
         }
     }
 
+    public static class CheckoutInfo {
+        Price price;
+        LineItem[] lineItems;
+    }
+
+    public static class LineItem {
+        String cartItemID;
+        String sku;
+        String name;
+        int amount;
+        int price;
+        int totalPrice;
+    }
+
+    public static class Price {
+        int price;
+    }
+
     public static class PaymentInformation {
         public String qrCodeContent;
         public String encryptedOrigin;
@@ -262,7 +280,7 @@ class CheckoutApi {
 
             @Override
             public void error(Throwable t) {
-                Logger.e("Error while trying to check out: " + t.getMessage());
+                Logger.e("Error creating checkout info: " + t.getMessage());
                 checkoutInfoResult.error();
             }
         });

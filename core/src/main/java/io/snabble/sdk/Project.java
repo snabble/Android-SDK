@@ -36,7 +36,7 @@ public class Project {
     private ProductDatabase productDatabase;
     private Shop[] shops;
     private Checkout checkout;
-    private ShoppingCartManager shoppingCartManager;
+    private ShoppingCartStorage shoppingCartStorage;
     private Events events;
 
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
@@ -80,7 +80,7 @@ public class Project {
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
 
         productDatabase = new ProductDatabase(this, id + ".sqlite3", generateSearchIndex);
-        shoppingCartManager = new ShoppingCartManager(this);
+        shoppingCartStorage = new ShoppingCartStorage(this);
         checkout = new Checkout(this);
         events = new Events(this);
 
@@ -328,7 +328,7 @@ public class Project {
     }
 
     public ShoppingCart getShoppingCart() {
-        return shoppingCartManager.getShoppingCart();
+        return shoppingCartStorage.getShoppingCart();
     }
 
     public Currency getCurrency() {

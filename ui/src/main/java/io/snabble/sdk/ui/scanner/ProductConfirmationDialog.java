@@ -290,6 +290,8 @@ class ProductConfirmationDialog {
 
         cartItem.setQuantity(q);
 
+        shoppingCart.updatePrices(false);
+
         dismiss();
     }
 

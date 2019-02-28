@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.cart;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,9 +22,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.CycleInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -36,6 +39,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
@@ -54,6 +58,7 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private RecyclerView recyclerView;
     private Adapter recyclerViewAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ShoppingCart cart;
     private Checkout checkout;
     private PriceFormatter priceFormatter;
@@ -63,36 +68,49 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
+    private boolean isUsingOnlinePrices;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
+            isUsingOnlinePrices = false;
             recyclerViewAdapter.notifyItemInserted(list.indexOf(item));
             update();
         }
 
         @Override
         public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
+            isUsingOnlinePrices = false;
             recyclerViewAdapter.notifyItemChanged(list.indexOf(item));
             update();
         }
 
         @Override
         public void onCleared(ShoppingCart list) {
+            isUsingOnlinePrices = false;
             recyclerViewAdapter.notifyDataSetChanged();
             update();
         }
 
         @Override
         public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int index) {
+            isUsingOnlinePrices = false;
             recyclerViewAdapter.notifyItemRemoved(index);
             update();
         }
 
         @Override
-        public void onUpdate(ShoppingCart list) {
+        public void onProductsUpdated(ShoppingCart list) {
+            isUsingOnlinePrices = false;
             recyclerViewAdapter.notifyDataSetChanged();
             update();
+        }
+
+        @Override
+        public void onPricesUpdated(ShoppingCart list) {
+            isUsingOnlinePrices = true;
+            update();
+            swipeRefreshLayout.setRefreshing(false);
         }
     };
 
@@ -137,6 +155,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 layoutManager.getOrientation());
         recyclerView.addItemDecoration(itemDecoration);
+
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                cart.updatePrices(false);
+            }
+        });
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         emptyState = findViewById(R.id.empty_state);
@@ -307,8 +333,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             int price = cart.getTotalPrice();
             if (price > 0) {
                 String formattedPrice = priceFormatter.format(price);
-                pay.setText(getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
-                                quantity, quantity, formattedPrice));
+                String text = getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
+                        quantity, quantity, formattedPrice);
+                if (!isUsingOnlinePrices) {
+                    text += "*";
+                }
+                pay.setText(text);
             } else {
                 pay.setText(R.string.Snabble_Shoppingcart_buyProducts_now);
             }
@@ -329,7 +359,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         hasAnyImages = false;
 
         for (int i = 0; i < cart.size(); i++) {
-            Product product = cart.get(i).getProduct();
+            ShoppingCart.Item item = cart.get(i);
+            if (item.isLineItem()) continue;
+
+            Product product = item.getProduct();
             String url = product.getImageUrl();
             if (url != null && url.length() > 0) {
                 hasAnyImages = true;
@@ -445,116 +478,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             final int quantity = item.getQuantity();
 
             if (product != null) {
-                String encodingDisplayValue = "g";
-                Unit encodingUnit = item.getUnit();
-                if (encodingUnit != null) {
-                    encodingDisplayValue = encodingUnit.getDisplayValue();
-                }
-
-                name.setText(product.getName());
-                quantityAnnotation.setText(encodingDisplayValue);
-
-                String priceText = item.getPriceText();
-                if (priceText != null) {
-                    priceTextView.setText(item.getPriceText());
-                    priceTextView.setVisibility(View.VISIBLE);
-                } else {
-                    priceTextView.setVisibility(View.GONE);
-                }
-
-                quantityTextView.setText(item.getQuantityText());
-
                 if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
                     subtitle.setVisibility(View.GONE);
                 } else {
                     subtitle.setVisibility(View.VISIBLE);
                     subtitle.setText(product.getSubtitle());
                 }
-
-                if (item.isEditable()) {
-                    if (item.getProduct().getType() == Product.Type.UserWeighed) {
-                        controlsDefault.setVisibility(View.GONE);
-                        controlsUserWeighed.setVisibility(View.VISIBLE);
-                    } else {
-                        controlsDefault.setVisibility(View.VISIBLE);
-                        controlsUserWeighed.setVisibility(View.GONE);
-                    }
-                } else {
-                    controlsDefault.setVisibility(View.GONE);
-                    controlsUserWeighed.setVisibility(View.GONE);
-                }
-
-                plus.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        item.setQuantity(item.getQuantity() + 1);
-                    }
-                });
-
-                minus.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int p = getAdapterPosition();
-
-                        int newQuantity = item.getQuantity() - 1;
-                        if (newQuantity <= 0) {
-                            removeAndShowUndoSnackbar(p, item);
-                        } else {
-                            item.setQuantity(newQuantity);
-                        }
-                    }
-                });
-
-                quantityEditApply.setOnClickListener(new OneShotClickListener() {
-                    @Override
-                    public void click() {
-                        item.setQuantity(getQuantityEditValue());
-                        hideInput();
-                    }
-                });
-
-                quantityEdit.setText(String.valueOf(quantity));
-                itemView.setFocusable(true);
-                itemView.setFocusableInTouchMode(true);
-
-                if (position == 0) {
-                    itemView.requestFocus();
-                }
-
-                quantityEdit.removeTextChangedListener(textWatcher);
-                textWatcher = new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        updateQuantityEditApplyVisibility(quantity);
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-
-                    }
-                };
-
-                updateQuantityEditApplyVisibility(quantity);
-
-                quantityEdit.addTextChangedListener(textWatcher);
-                quantityEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_DONE
-                                || (event.getAction() == KeyEvent.ACTION_DOWN
-                                && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                            quantityEditApply.callOnClick();
-                            return true;
-                        }
-
-                        return false;
-                    }
-                });
 
                 String imageUrl = product.getImageUrl();
                 if (imageUrl != null && !imageUrl.equals("")) {
@@ -564,9 +493,118 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
                     image.setImageBitmap(null);
                 }
+
+                quantityTextView.setVisibility(View.VISIBLE);
             } else {
-                itemView.setVisibility(View.GONE);
+                image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
+                subtitle.setVisibility(View.GONE);
+                quantityTextView.setVisibility(View.GONE);
             }
+
+            name.setText(item.getDisplayName());
+
+            String encodingDisplayValue = "g";
+            Unit encodingUnit = item.getUnit();
+            if (encodingUnit != null) {
+                encodingDisplayValue = encodingUnit.getDisplayValue();
+            }
+            quantityAnnotation.setText(encodingDisplayValue);
+
+            String priceText = item.getPriceText();
+            if (priceText != null) {
+                priceTextView.setText(item.getPriceText());
+                priceTextView.setVisibility(View.VISIBLE);
+            } else {
+                priceTextView.setVisibility(View.GONE);
+            }
+
+            quantityTextView.setText(item.getQuantityText());
+
+            if (item.isEditable()) {
+                if (item.getProduct().getType() == Product.Type.UserWeighed) {
+                    controlsDefault.setVisibility(View.GONE);
+                    controlsUserWeighed.setVisibility(View.VISIBLE);
+                } else {
+                    controlsDefault.setVisibility(View.VISIBLE);
+                    controlsUserWeighed.setVisibility(View.GONE);
+                }
+            } else {
+                controlsDefault.setVisibility(View.GONE);
+                controlsUserWeighed.setVisibility(View.GONE);
+            }
+
+
+            plus.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    item.setQuantity(item.getQuantity() + 1);
+                }
+            });
+
+            minus.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int p = getAdapterPosition();
+
+                    int newQuantity = item.getQuantity() - 1;
+                    if (newQuantity <= 0) {
+                        removeAndShowUndoSnackbar(p, item);
+                    } else {
+                        item.setQuantity(newQuantity);
+                    }
+                }
+            });
+
+            quantityEditApply.setOnClickListener(new OneShotClickListener() {
+                @Override
+                public void click() {
+                    item.setQuantity(getQuantityEditValue());
+                    hideInput();
+                }
+            });
+
+            quantityEdit.setText(String.valueOf(quantity));
+            itemView.setFocusable(true);
+            itemView.setFocusableInTouchMode(true);
+
+            if (position == 0) {
+                itemView.requestFocus();
+            }
+
+            quantityEdit.removeTextChangedListener(textWatcher);
+            textWatcher = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    updateQuantityEditApplyVisibility(quantity);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            };
+
+            updateQuantityEditApplyVisibility(quantity);
+
+            quantityEdit.addTextChangedListener(textWatcher);
+            quantityEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE
+                            || (event.getAction() == KeyEvent.ACTION_DOWN
+                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                        quantityEditApply.callOnClick();
+                        return true;
+                    }
+
+                    return false;
+                }
+            });
         }
 
         private void hideInput() {

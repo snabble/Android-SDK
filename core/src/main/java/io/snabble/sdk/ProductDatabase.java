@@ -592,7 +592,7 @@ public class ProductDatabase {
                     callback.success();
                 }
 
-                project.getShoppingCart().update();
+                project.getShoppingCart().updateProducts();
             }
         }, deltaUpdateOnly);
     }
