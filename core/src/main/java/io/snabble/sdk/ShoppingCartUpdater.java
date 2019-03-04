@@ -36,6 +36,8 @@ class ShoppingCartUpdater {
             @Override
             public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
                 synchronized (lock) {
+                    cart.removeLineItems();
+
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
 

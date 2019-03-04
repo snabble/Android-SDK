@@ -174,7 +174,7 @@ public class ShoppingCart {
         }
     }
 
-    public void updatePrices(boolean debounce) {
+    void removeLineItems() {
         // reverse-order because we are removing items
         synchronized (lock) {
             for (int i = items.size() - 1; i >= 0; i--) {
@@ -188,6 +188,10 @@ public class ShoppingCart {
                 }
             }
         }
+    }
+
+    public void updatePrices(boolean debounce) {
+        removeLineItems();
 
         if(debounce) {
             updater.dispatchUpdate();
