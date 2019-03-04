@@ -15,7 +15,7 @@ class ShoppingCartUpdater {
     private ShoppingCart cart;
     private CheckoutApi checkoutApi;
     private Handler handler;
-    private Object lock = new Object();
+    private final Object lock = new Object();
 
     ShoppingCartUpdater(Project project, ShoppingCart shoppingCart) {
         this.project = project;
@@ -35,7 +35,6 @@ class ShoppingCartUpdater {
         checkoutApi.createCheckoutInfo(project.getCheckedInShop(), cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
             public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
-                // TODO thread safety
                 synchronized (lock) {
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
@@ -61,7 +60,7 @@ class ShoppingCartUpdater {
                             }
                         }
                     } catch (Exception e) {
-                        Logger.e("Could not dispatchUpdate price: %s", e.getMessage());
+                        Logger.e("Could not update price: %s", e.getMessage());
                     }
                 }
 
@@ -70,19 +69,16 @@ class ShoppingCartUpdater {
 
             @Override
             public void noShop() {
-                // ignore
                 cart.notifyPriceUpdate(cart);
             }
 
             @Override
             public void invalidProducts(List<Product> products) {
-                // ignore
                 cart.notifyPriceUpdate(cart);
             }
 
             @Override
             public void error() {
-                // ignore
                 cart.notifyPriceUpdate(cart);
             }
         });

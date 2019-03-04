@@ -12,6 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.utils.GsonHolder;
 
 import static io.snabble.sdk.Unit.PIECE;
 import static io.snabble.sdk.Unit.PRICE;
@@ -73,21 +74,23 @@ public class ShoppingCart {
     }
 
     public void insert(Item item, int index) {
-        if (item.isMergeable()) {
-            Item existing = getByProduct(item.getProduct());
-            if (existing != null) {
-                items.remove(existing);
-                items.add(index, item);
-                modCount++;
-                notifyQuantityChanged(this, item);
-                return;
+        synchronized (lock) {
+            if (item.isMergeable()) {
+                Item existing = getByProduct(item.getProduct());
+                if (existing != null) {
+                    items.remove(existing);
+                    items.add(index, item);
+                    modCount++;
+                    notifyQuantityChanged(this, item);
+                    return;
+                }
             }
-        }
 
-        addCount++;
-        modCount++;
-        items.add(index, item);
-        notifyItemAdded(this, item);
+            addCount++;
+            modCount++;
+            items.add(index, item);
+            notifyItemAdded(this, item);
+        }
     }
 
     public Item get(int index) {
@@ -127,8 +130,10 @@ public class ShoppingCart {
     }
 
     public void remove(int index) {
-        modCount++;
-        notifyItemRemoved(this, items.remove(index), index);
+        synchronized (lock) {
+            modCount++;
+            notifyItemRemoved(this, items.remove(index), index);
+        }
     }
 
     public int size() {
@@ -136,43 +141,51 @@ public class ShoppingCart {
     }
 
     public void clear() {
-        items.clear();
-        modCount = 0;
-        addCount = 0;
-        notifyCleared(this);
+        synchronized (lock) {
+            items.clear();
+            modCount = 0;
+            addCount = 0;
+            notifyCleared(this);
+        }
     }
 
     public void invalidate() {
-        id = UUID.randomUUID().toString();
-        clear();
+        synchronized (lock) {
+            id = UUID.randomUUID().toString();
+            clear();
+        }
     }
 
     public void updateProducts() {
-        ProductDatabase productDatabase = project.getProductDatabase();
+        synchronized (lock) {
+            ProductDatabase productDatabase = project.getProductDatabase();
 
-        if (productDatabase.isUpToDate()) {
-            for (Item e : items) {
-                Product product = productDatabase.findByCode(e.scannedCode);
+            if (productDatabase.isUpToDate()) {
+                for (Item e : items) {
+                    Product product = productDatabase.findByCode(e.scannedCode);
 
-                if (product != null) {
-                    e.product = product;
+                    if (product != null) {
+                        e.product = product;
+                    }
                 }
-            }
 
-            notifyProductsUpdate(this);
+                notifyProductsUpdate(this);
+            }
         }
     }
 
     public void updatePrices(boolean debounce) {
         // reverse-order because we are removing items
-        for (int i = items.size() - 1; i >= 0; i--) {
-            Item item = items.get(i);
-            if (item.isLineItem()) {
-                items.remove(i);
-                notifyItemRemoved(this, item, i);
-            } else {
-                item.lineItem = null; // TODO ugh...
-                notifyQuantityChanged(this, item);
+        synchronized (lock) {
+            for (int i = items.size() - 1; i >= 0; i--) {
+                Item item = items.get(i);
+                if (item.isLineItem()) {
+                    items.remove(i);
+                    notifyItemRemoved(this, item, i);
+                } else {
+                    item.lineItem = null; // TODO ugh...
+                    notifyQuantityChanged(this, item);
+                }
             }
         }
 
@@ -447,6 +460,12 @@ public class ShoppingCart {
             }
 
             return null;
+        }
+    }
+
+    public String toJson() {
+        synchronized (lock) {
+            return GsonHolder.get().toJson(this);
         }
     }
 

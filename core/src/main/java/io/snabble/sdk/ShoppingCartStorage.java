@@ -60,7 +60,7 @@ class ShoppingCartStorage {
         backgroundHandler.post(new Runnable() {
             @Override
             public void run() {
-                String json = GsonHolder.get().toJson(shoppingCart);
+                String json = shoppingCart.toJson();
                 try {
                     FileUtils.forceMkdirParent(file);
                     IOUtils.write(json, new FileOutputStream(file), Charset.forName("UTF-8"));
