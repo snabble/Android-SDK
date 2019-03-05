@@ -397,7 +397,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             };
 
     private String sanitize(String input) {
-        if (input.equals("")) return null;
+        if (input != null && input.equals("")) return null;
         return input;
     }
 
