@@ -5,12 +5,16 @@ import android.os.Looper;
 import android.os.SystemClock;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
 class ShoppingCartUpdater {
+    private static final int DEBOUNCE_DELAY_MS = 1000;
+
     private Project project;
     private ShoppingCart cart;
     private CheckoutApi checkoutApi;
@@ -41,8 +45,6 @@ class ShoppingCartUpdater {
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
 
-                        // TODO remove missing items ?
-
                         checkoutInfo.lineItems = Arrays.copyOf(checkoutInfo.lineItems, checkoutInfo.lineItems.length + 1);
                         CheckoutApi.LineItem debugItem = new CheckoutApi.LineItem();
                         debugItem.amount = 1;
@@ -52,7 +54,36 @@ class ShoppingCartUpdater {
 
                         checkoutInfo.lineItems[checkoutInfo.lineItems.length - 1] = debugItem;
 
+                        Set<String> depositSkus = new HashSet<>();
+                        Set<String> requiredSkus = new HashSet<>();
+
+                        for (int i=0; i<cart.size(); i++) {
+                            ShoppingCart.Item item = cart.get(i);
+                            requiredSkus.add(item.getProduct().getSku());
+
+                            Product depositProduct = item.getProduct().getDepositProduct();
+                            if (depositProduct != null) {
+                                depositSkus.add(depositProduct.getSku());
+                            }
+                        }
+
                         for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                            requiredSkus.remove(lineItem.sku);
+                        }
+
+                        // error out when items are missing
+                        if (requiredSkus.size() > 0) {
+                            Logger.e("Missing products in price update: " + requiredSkus.toString());
+                            error();
+                            return;
+                        }
+
+                        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                            // exclude deposit line items
+                            if (depositSkus.contains(lineItem.sku)) {
+                                continue;
+                            }
+
                             ShoppingCart.Item item = cart.getByItemId(lineItem.cartItemID);
 
                             if (item != null) {
@@ -63,6 +94,8 @@ class ShoppingCartUpdater {
                         }
                     } catch (Exception e) {
                         Logger.e("Could not update price: %s", e.getMessage());
+                        error();
+                        return;
                     }
                 }
 
@@ -88,6 +121,6 @@ class ShoppingCartUpdater {
 
     public void dispatchUpdate() {
         handler.removeCallbacksAndMessages(this);
-        handler.postAtTime(updatePriceRunnable, this, SystemClock.uptimeMillis() + 2000);
+        handler.postAtTime(updatePriceRunnable, this, SystemClock.uptimeMillis() + DEBOUNCE_DELAY_MS);
     }
 }
