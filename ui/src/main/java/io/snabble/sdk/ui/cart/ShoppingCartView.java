@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.cart;
 
-import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,24 +8,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.CycleInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -35,17 +22,28 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Unit;
-import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -70,47 +68,20 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private boolean hasAnyImages;
     private boolean isUsingOnlinePrices;
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
+    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
-        public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
-            isUsingOnlinePrices = false;
-            recyclerViewAdapter.notifyItemInserted(list.indexOf(item));
+        public void onChanged(ShoppingCart list) {
+            submitList();
             update();
-        }
-
-        @Override
-        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
             isUsingOnlinePrices = false;
-            recyclerViewAdapter.notifyItemChanged(list.indexOf(item));
-            update();
-        }
-
-        @Override
-        public void onCleared(ShoppingCart list) {
-            isUsingOnlinePrices = false;
-            recyclerViewAdapter.notifyDataSetChanged();
-            update();
-        }
-
-        @Override
-        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int index) {
-            isUsingOnlinePrices = false;
-            recyclerViewAdapter.notifyItemRemoved(index);
-            update();
-        }
-
-        @Override
-        public void onProductsUpdated(ShoppingCart list) {
-            isUsingOnlinePrices = false;
-            recyclerViewAdapter.notifyDataSetChanged();
-            update();
         }
 
         @Override
         public void onPricesUpdated(ShoppingCart list) {
+            super.onPricesUpdated(list);
+            swipeRefreshLayout.setRefreshing(false);
             isUsingOnlinePrices = true;
             update();
-            swipeRefreshLayout.setRefreshing(false);
         }
     };
 
@@ -205,9 +176,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         createItemTouchHelper();
 
-        updatePayText();
-        updateEmptyState();
-        scanForImages();
+//        updatePayText();
+//        updateEmptyState();
+//        scanForImages();
+//
+        submitList();
     }
 
     private void createItemTouchHelper() {
@@ -349,8 +322,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         updatePayText();
         updateEmptyState();
         scanForImages();
-
-        recyclerViewAdapter.updateDeposit();
     }
 
     private void scanForImages() {
@@ -437,6 +408,123 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 }
             };
 
+    private String sanitize(String input) {
+        if (input.equals("")) return null;
+        return input;
+    }
+
+    private void submitList() {
+        List<Row> rows = new ArrayList<>();
+
+        for (int i=0; i<cart.size(); i++) {
+            final ProductRow row = new ProductRow();
+            final ShoppingCart.Item item = cart.get(i);
+            final Product product = item.getProduct();
+            final int quantity = item.getQuantity();
+
+            if (product != null) {
+                row.subtitle = sanitize(product.getSubtitle());
+                row.imageUrl = sanitize(product.getImageUrl());
+            }
+
+            row.name = sanitize(item.getDisplayName());
+            row.encodingUnit = item.getUnit();
+            row.priceText = sanitize(item.getPriceText());
+            row.quantity = quantity;
+            row.quantityText = sanitize(item.getQuantityText());
+            row.editable = item.isEditable();
+            row.item = item;
+
+            rows.add(row);
+        }
+
+        if (cart.getTotalDepositPrice() > 0) {
+            DepositRow row = new DepositRow();
+            row.depositPrice = cart.getTotalDepositPrice();
+            rows.add(row);
+        }
+
+        recyclerViewAdapter.submitList(rows);
+    }
+
+    private void setTextOrHide(TextView textView, String text, int hideVisibility) {
+        if (text != null) {
+            textView.setText(text);
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(hideVisibility);
+        }
+    }
+
+    private interface Row {}
+
+    private class ProductRow implements Row {
+        ShoppingCart.Item item;
+
+        String name;
+        String subtitle;
+        String imageUrl;
+        Unit encodingUnit;
+        String priceText;
+        String quantityText;
+        int quantity;
+        boolean editable;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ProductRow that = (ProductRow) o;
+
+            if (quantity != that.quantity) return false;
+            if (editable != that.editable) return false;
+            if (item != null ? !item.equals(that.item) : that.item != null) return false;
+            if (name != null ? !name.equals(that.name) : that.name != null) return false;
+            if (subtitle != null ? !subtitle.equals(that.subtitle) : that.subtitle != null)
+                return false;
+            if (imageUrl != null ? !imageUrl.equals(that.imageUrl) : that.imageUrl != null)
+                return false;
+            if (encodingUnit != that.encodingUnit) return false;
+            if (priceText != null ? !priceText.equals(that.priceText) : that.priceText != null)
+                return false;
+            return quantityText != null ? quantityText.equals(that.quantityText) : that.quantityText == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = item != null ? item.hashCode() : 0;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            result = 31 * result + (subtitle != null ? subtitle.hashCode() : 0);
+            result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
+            result = 31 * result + (encodingUnit != null ? encodingUnit.hashCode() : 0);
+            result = 31 * result + (priceText != null ? priceText.hashCode() : 0);
+            result = 31 * result + (quantityText != null ? quantityText.hashCode() : 0);
+            result = 31 * result + quantity;
+            result = 31 * result + (editable ? 1 : 0);
+            return result;
+        }
+    }
+
+    private class DepositRow implements Row {
+        int depositPrice;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DepositRow row = (DepositRow) o;
+
+            return depositPrice == row.depositPrice;
+        }
+
+        @Override
+        public int hashCode() {
+            return depositPrice;
+        }
+    }
+
     private class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView name;
@@ -450,7 +538,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         View controlsDefault;
         View quantityEditApply;
         TextView quantityAnnotation;
-
         TextWatcher textWatcher;
 
         public ViewHolder(View itemView) {
@@ -471,57 +558,29 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
 
         @SuppressLint("SetTextI18n")
-        public void bindTo(final int position) {
-            final ShoppingCart.Item item = cart.get(position);
+        public void bindTo(final ProductRow row) {
+            setTextOrHide(subtitle, row.subtitle, View.GONE);
+            setTextOrHide(name, row.name, View.GONE);
+            setTextOrHide(priceTextView, row.priceText, View.GONE);
+            setTextOrHide(quantityTextView, row.quantityText, View.GONE);
 
-            final Product product = item.getProduct();
-            final int quantity = item.getQuantity();
-
-            if (product != null) {
-                if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
-                    subtitle.setVisibility(View.GONE);
-                } else {
-                    subtitle.setVisibility(View.VISIBLE);
-                    subtitle.setText(product.getSubtitle());
-                }
-
-                String imageUrl = product.getImageUrl();
-                if (imageUrl != null && !imageUrl.equals("")) {
-                    image.setVisibility(View.VISIBLE);
-                    Picasso.with(getContext()).load(imageUrl).into(image);
-                } else {
-                    image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
-                    image.setImageBitmap(null);
-                }
-
-                quantityTextView.setVisibility(View.VISIBLE);
+            if (row.imageUrl != null) {
+                image.setVisibility(View.VISIBLE);
+                Picasso.with(getContext()).load(row.imageUrl).into(image);
             } else {
                 image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
-                subtitle.setVisibility(View.GONE);
-                quantityTextView.setVisibility(View.GONE);
+                image.setImageBitmap(null);
             }
 
-            name.setText(item.getDisplayName());
-
             String encodingDisplayValue = "g";
-            Unit encodingUnit = item.getUnit();
+            Unit encodingUnit = row.encodingUnit;
             if (encodingUnit != null) {
                 encodingDisplayValue = encodingUnit.getDisplayValue();
             }
             quantityAnnotation.setText(encodingDisplayValue);
 
-            String priceText = item.getPriceText();
-            if (priceText != null) {
-                priceTextView.setText(item.getPriceText());
-                priceTextView.setVisibility(View.VISIBLE);
-            } else {
-                priceTextView.setVisibility(View.GONE);
-            }
-
-            quantityTextView.setText(item.getQuantityText());
-
-            if (item.isEditable()) {
-                if (item.getProduct().getType() == Product.Type.UserWeighed) {
+            if (row.editable) {
+                if (row.item.getProduct().getType() == Product.Type.UserWeighed) {
                     controlsDefault.setVisibility(View.GONE);
                     controlsUserWeighed.setVisibility(View.VISIBLE);
                 } else {
@@ -533,11 +592,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 controlsUserWeighed.setVisibility(View.GONE);
             }
 
-
             plus.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    item.setQuantity(item.getQuantity() + 1);
+                    row.item.setQuantity(row.item.getQuantity() + 1);
                 }
             });
 
@@ -546,11 +604,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 public void onClick(View v) {
                     int p = getAdapterPosition();
 
-                    int newQuantity = item.getQuantity() - 1;
+                    int newQuantity = row.item.getQuantity() - 1;
                     if (newQuantity <= 0) {
-                        removeAndShowUndoSnackbar(p, item);
+                        removeAndShowUndoSnackbar(p, row.item);
                     } else {
-                        item.setQuantity(newQuantity);
+                        row.item.setQuantity(newQuantity);
                     }
                 }
             });
@@ -558,16 +616,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             quantityEditApply.setOnClickListener(new OneShotClickListener() {
                 @Override
                 public void click() {
-                    item.setQuantity(getQuantityEditValue());
+                    row.item.setQuantity(getQuantityEditValue());
                     hideInput();
                 }
             });
 
-            quantityEdit.setText(String.valueOf(quantity));
+            quantityEdit.setText(Integer.toString(row.quantity));
             itemView.setFocusable(true);
             itemView.setFocusableInTouchMode(true);
 
-            if (position == 0) {
+            if (getAdapterPosition() == 0) {
                 itemView.requestFocus();
             }
 
@@ -580,7 +638,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    updateQuantityEditApplyVisibility(quantity);
+                    updateQuantityEditApplyVisibility(row.quantity);
                 }
 
                 @Override
@@ -589,7 +647,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 }
             };
 
-            updateQuantityEditApplyVisibility(quantity);
+            updateQuantityEditApplyVisibility(row.quantity);
 
             quantityEdit.addTextChangedListener(textWatcher);
             quantityEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -647,27 +705,47 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             image = itemView.findViewById(R.id.image);
         }
 
-        public void update() {
+        public void update(DepositRow row) {
             PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
-            String depositText = priceFormatter.format(cart.getTotalDepositPrice());
+            String depositText = priceFormatter.format(row.depositPrice);
             deposit.setText(depositText);
         }
     }
 
-    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static final DiffUtil.ItemCallback<Row> DIFF_CALLBACK = new DiffUtil.ItemCallback<Row>() {
+        @Override
+        public boolean areItemsTheSame(
+                @NonNull Row oldRow, @NonNull Row newRow) {
+            if (oldRow instanceof ProductRow && newRow instanceof ProductRow) {
+                ProductRow productOldRow = (ProductRow) oldRow;
+                ProductRow productNewRow = (ProductRow) newRow;
+
+                return productOldRow.item == productNewRow.item;
+            } else if (oldRow instanceof DepositRow && newRow instanceof DepositRow) {
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean areContentsTheSame(
+                @NonNull Row oldRow, @NonNull Row newRow) {
+            return oldRow.equals(newRow);
+        }
+    };
+
+    private class Adapter extends ListAdapter<Row, RecyclerView.ViewHolder> {
         public static final int TYPE_ITEM = 0;
         public static final int TYPE_DEPOSIT = 1;
 
-        public boolean hasDeposit;
-
         public Adapter() {
-            super();
-            hasDeposit = cart.getTotalDepositPrice() > 0;
+            super(DIFF_CALLBACK);
         }
 
         @Override
         public int getItemViewType(int position) {
-            if (cart.getTotalDepositPrice() > 0 && position == getItemCount() - 1) {
+            if (getItem(position) instanceof DepositRow) {
                 return TYPE_DEPOSIT;
             }
 
@@ -687,38 +765,15 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-            if (getItemViewType(position) == TYPE_DEPOSIT) {
-                DepositViewHolder viewHolder = (DepositViewHolder) holder;
-                viewHolder.update();
-            } else {
+            int type = getItemViewType(position);
+
+            if (type == TYPE_ITEM) {
                 ViewHolder viewHolder = (ViewHolder) holder;
-                viewHolder.bindTo(position);
-            }
-        }
-
-        public void updateDeposit() {
-            boolean newHasDeposit = cart.getTotalDepositPrice() > 0;
-
-            if (hasDeposit != newHasDeposit) {
-                if (newHasDeposit) {
-                    notifyItemInserted(getItemCount() - 1);
-                } else {
-                    notifyItemRemoved(getItemCount());
-                }
+                viewHolder.bindTo((ProductRow) getItem(position));
             } else {
-                notifyItemChanged(getItemCount() - 1);
+                DepositViewHolder viewHolder = (DepositViewHolder) holder;
+                viewHolder.update((DepositRow) getItem(position));
             }
-
-            hasDeposit = newHasDeposit;
-        }
-
-        @Override
-        public int getItemCount() {
-            if (cart.getTotalDepositPrice() > 0) {
-                return cart.size() + 1;
-            }
-
-            return cart.size();
         }
     }
 }
