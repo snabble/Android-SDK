@@ -45,15 +45,6 @@ class ShoppingCartUpdater {
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
 
-                        checkoutInfo.lineItems = Arrays.copyOf(checkoutInfo.lineItems, checkoutInfo.lineItems.length + 1);
-                        CheckoutApi.LineItem debugItem = new CheckoutApi.LineItem();
-                        debugItem.amount = 1;
-                        debugItem.name = "Snabble Rabatt";
-                        debugItem.price = -100;
-                        debugItem.totalPrice = -100;
-
-                        checkoutInfo.lineItems[checkoutInfo.lineItems.length - 1] = debugItem;
-
                         Set<String> depositSkus = new HashSet<>();
                         Set<String> requiredSkus = new HashSet<>();
 

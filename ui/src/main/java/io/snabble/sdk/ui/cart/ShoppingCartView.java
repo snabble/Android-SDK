@@ -66,21 +66,18 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
-    private boolean isUsingOnlinePrices;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
         public void onChanged(ShoppingCart list) {
             submitList();
             update();
-            isUsingOnlinePrices = false;
         }
 
         @Override
         public void onPricesUpdated(ShoppingCart list) {
             super.onPricesUpdated(list);
             swipeRefreshLayout.setRefreshing(false);
-            isUsingOnlinePrices = true;
             update();
         }
     };
@@ -175,11 +172,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         });
 
         createItemTouchHelper();
-
-//        updatePayText();
-//        updateEmptyState();
-//        scanForImages();
-//
         submitList();
     }
 
@@ -195,8 +187,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                if (recyclerViewAdapter.getItemViewType(viewHolder.getAdapterPosition())
-                        == Adapter.TYPE_DEPOSIT) {
+                if (!recyclerViewAdapter.isDismissable(viewHolder.getAdapterPosition())) {
                     return 0;
                 }
 
@@ -308,9 +299,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 String formattedPrice = priceFormatter.format(price);
                 String text = getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
                         quantity, quantity, formattedPrice);
-                if (!isUsingOnlinePrices) {
-                    text += "*";
-                }
                 pay.setText(text);
             } else {
                 pay.setText(R.string.Snabble_Shoppingcart_buyProducts_now);
@@ -750,6 +738,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             }
 
             return TYPE_ITEM;
+        }
+
+        public boolean isDismissable(int position) {
+            return getItemViewType(position) != TYPE_DEPOSIT && !((ProductRow)getItem(position)).item.isLineItem();
         }
 
         @Override

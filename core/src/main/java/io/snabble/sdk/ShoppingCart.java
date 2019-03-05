@@ -57,6 +57,8 @@ public class ShoppingCart {
         for (Item item : items) {
             item.cart = this;
         }
+
+        updatePrices(false);
     }
 
     public String getId() {
@@ -178,7 +180,7 @@ public class ShoppingCart {
         updatePrices(false);
     }
 
-    void removeLineItems() {
+    public void removeLineItems() {
         synchronized (lock) {
             // reverse-order because we are removing items
             for (int i = items.size() - 1; i >= 0; i--) {
@@ -195,8 +197,6 @@ public class ShoppingCart {
     }
 
     public void updatePrices(boolean debounce) {
-        removeLineItems(); // TODO call from outside
-
         if(debounce) {
             updater.dispatchUpdate();
         } else {
@@ -351,6 +351,7 @@ public class ShoppingCart {
                 }
 
                 cart.modCount++;
+                cart.removeLineItems();
                 cart.updatePrices(true);
             }
         }
@@ -459,9 +460,9 @@ public class ShoppingCart {
                 if (unit == Unit.PRICE) {
                     return " " + cart.priceFormatter.format(getTotalPrice());
                 } else if (getEffectiveQuantity() <= 1) {
-                    return " " + cart.priceFormatter.format(product) + "*";
+                    return " " + cart.priceFormatter.format(product) + "";
                 } else {
-                    return String.format(" * %s = %s*",
+                    return String.format(" * %s = %s",
                             cart.priceFormatter.format(product),
                             cart.priceFormatter.format(getTotalPrice()));
                 }
@@ -478,10 +479,8 @@ public class ShoppingCart {
     }
 
     public BackendCart toBackendCart() {
-        ShoppingCart shoppingCart = project.getShoppingCart();
-
         BackendCart backendCart = new BackendCart();
-        backendCart.session = shoppingCart.getId();
+        backendCart.session = getId();
         backendCart.shopId = "unknown";
 
         String loyaltyCardId = project.getCustomerCardId();
@@ -501,8 +500,8 @@ public class ShoppingCart {
         List<BackendCartItem> items = new ArrayList<>();
 
         synchronized (lock) {
-            for (int i = 0; i < shoppingCart.size(); i++) {
-                ShoppingCart.Item cartItem = shoppingCart.get(i);
+            for (int i = 0; i < size(); i++) {
+                ShoppingCart.Item cartItem = get(i);
                 if (cartItem.isLineItem()) continue;
 
                 BackendCartItem item = new BackendCartItem();
