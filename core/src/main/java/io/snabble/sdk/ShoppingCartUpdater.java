@@ -36,10 +36,17 @@ class ShoppingCartUpdater {
     };
 
     public void update() {
+        final int modCount = cart.getModCount();
         checkoutApi.createCheckoutInfo(project.getCheckedInShop(), cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
             public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
                 synchronized (lock) {
+                    // ignore when cart was modified mid request
+                    if (cart.getModCount() != modCount) {
+                        error();
+                        return;
+                    }
+
                     cart.removeLineItems();
 
                     try {
