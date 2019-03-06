@@ -28,6 +28,7 @@ public class ShoppingCart {
     private List<Item> items = new ArrayList<>();
     private int modCount = 0;
     private int addCount = 0;
+    private Integer onlineTotalPrice;
     private transient List<ShoppingCartListener> listeners;
     private transient Handler handler;
     private transient Project project;
@@ -149,6 +150,7 @@ public class ShoppingCart {
             items.clear();
             modCount = 0;
             addCount = 0;
+            onlineTotalPrice = null;
             notifyCleared(this);
         }
     }
@@ -180,8 +182,10 @@ public class ShoppingCart {
         updatePrices(false);
     }
 
-    public void removeLineItems() {
+    public void removeOnlinePrices() {
         synchronized (lock) {
+            onlineTotalPrice = null;
+
             // reverse-order because we are removing items
             for (int i = items.size() - 1; i >= 0; i--) {
                 Item item = items.get(i);
@@ -220,8 +224,16 @@ public class ShoppingCart {
         return modCount;
     }
 
+    void setOnlineTotalPrice(int totalPrice) {
+        onlineTotalPrice = totalPrice;
+    }
+
     public int getTotalPrice() {
         synchronized (lock) {
+            if (onlineTotalPrice != null) {
+                return onlineTotalPrice;
+            }
+
             int sum = 0;
 
             for (Item e : items) {
@@ -327,7 +339,9 @@ public class ShoppingCart {
         }
 
         public int getEffectiveQuantity() {
-            return scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : quantity;
+            return scannedCode != null
+                    && scannedCode.hasEmbeddedData()
+                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : quantity;
         }
 
         public int getQuantity() {
@@ -351,7 +365,7 @@ public class ShoppingCart {
                 }
 
                 cart.modCount++;
-                cart.removeLineItems();
+                cart.removeOnlinePrices();
                 cart.updatePrices(true);
             }
         }

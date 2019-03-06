@@ -47,7 +47,7 @@ class ShoppingCartUpdater {
                         return;
                     }
 
-                    cart.removeLineItems();
+                    cart.removeOnlinePrices();
 
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
@@ -90,6 +90,8 @@ class ShoppingCartUpdater {
                                 cart.insert(cart.newItem(lineItem), cart.size());
                             }
                         }
+
+                        cart.setOnlineTotalPrice(checkoutInfo.price.price);
                     } catch (Exception e) {
                         Logger.e("Could not update price: %s", e.getMessage());
                         error();
