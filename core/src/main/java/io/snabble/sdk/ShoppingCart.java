@@ -21,8 +21,6 @@ public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
     public static final long TIMEOUT = TimeUnit.HOURS.toMillis(4);
 
-    private final transient Object lock = new Object();
-
     private String id;
     private long lastModificationTime;
     private List<Item> items = new ArrayList<>();
@@ -79,23 +77,27 @@ public class ShoppingCart {
     }
 
     public void insert(Item item, int index) {
-        synchronized (lock) {
-            if (item.isMergeable()) {
-                Item existing = getByProduct(item.getProduct());
-                if (existing != null) {
-                    items.remove(existing);
-                    items.add(index, item);
-                    modCount++;
-                    notifyQuantityChanged(this, item);
-                    return;
-                }
-            }
+        if (item.isMergeable()) {
+            Item existing = getByProduct(item.getProduct());
+            if (existing != null) {
+                items.remove(existing);
+                items.add(index, item);
+                modCount++;
+                notifyQuantityChanged(this, item);
 
-            addCount++;
-            modCount++;
-            items.add(index, item);
-            notifyItemAdded(this, item);
+                invalidateOnlinePrices();
+                updatePrices(true);
+                return;
+            }
         }
+
+        addCount++;
+        modCount++;
+        items.add(index, item);
+        notifyItemAdded(this, item);
+
+        invalidateOnlinePrices();
+        updatePrices(true);
     }
 
     public Item get(int index) {
@@ -135,10 +137,10 @@ public class ShoppingCart {
     }
 
     public void remove(int index) {
-        synchronized (lock) {
-            modCount++;
-            notifyItemRemoved(this, items.remove(index), index);
-        }
+        modCount++;
+        notifyItemRemoved(this, items.remove(index), index);
+        invalidateOnlinePrices();
+        updatePrices(true);
     }
 
     public int size() {
@@ -146,56 +148,48 @@ public class ShoppingCart {
     }
 
     public void clear() {
-        synchronized (lock) {
-            items.clear();
-            modCount = 0;
-            addCount = 0;
-            onlineTotalPrice = null;
-            notifyCleared(this);
-        }
+        items.clear();
+        modCount = 0;
+        addCount = 0;
+        onlineTotalPrice = null;
+        notifyCleared(this);
     }
 
     public void invalidate() {
-        synchronized (lock) {
-            id = UUID.randomUUID().toString();
-            clear();
-        }
+        id = UUID.randomUUID().toString();
+        clear();
     }
 
     public void updateProducts() {
-        synchronized (lock) {
-            ProductDatabase productDatabase = project.getProductDatabase();
+        ProductDatabase productDatabase = project.getProductDatabase();
 
-            if (productDatabase.isUpToDate()) {
-                for (Item e : items) {
-                    Product product = productDatabase.findByCode(e.scannedCode);
+        if (productDatabase.isUpToDate()) {
+            for (Item e : items) {
+                Product product = productDatabase.findByCode(e.scannedCode);
 
-                    if (product != null) {
-                        e.product = product;
-                    }
+                if (product != null) {
+                    e.product = product;
                 }
-
-                notifyProductsUpdate(this);
             }
+
+            notifyProductsUpdate(this);
         }
 
         updatePrices(false);
     }
 
-    public void removeOnlinePrices() {
-        synchronized (lock) {
-            onlineTotalPrice = null;
+    public void invalidateOnlinePrices() {
+        onlineTotalPrice = null;
 
-            // reverse-order because we are removing items
-            for (int i = items.size() - 1; i >= 0; i--) {
-                Item item = items.get(i);
-                if (item.isLineItem()) {
-                    items.remove(i);
-                    notifyItemRemoved(ShoppingCart.this, item, i);
-                } else {
-                    item.lineItem = null;
-                    notifyQuantityChanged(ShoppingCart.this, item);
-                }
+        // reverse-order because we are removing items
+        for (int i = items.size() - 1; i >= 0; i--) {
+            Item item = items.get(i);
+            if (item.isLineItem()) {
+                items.remove(i);
+                notifyItemRemoved(ShoppingCart.this, item, i);
+            } else {
+                item.lineItem = null;
+                notifyQuantityChanged(ShoppingCart.this, item);
             }
         }
     }
@@ -229,57 +223,51 @@ public class ShoppingCart {
     }
 
     public int getTotalPrice() {
-        synchronized (lock) {
-            if (onlineTotalPrice != null) {
-                return onlineTotalPrice;
-            }
-
-            int sum = 0;
-
-            for (Item e : items) {
-                sum += e.getTotalPrice();
-            }
-
-            sum += getTotalDepositPrice();
-
-            return sum;
+        if (onlineTotalPrice != null) {
+            return onlineTotalPrice;
         }
+
+        int sum = 0;
+
+        for (Item e : items) {
+            sum += e.getTotalPrice();
+        }
+
+        sum += getTotalDepositPrice();
+
+        return sum;
     }
 
     public int getTotalDepositPrice() {
-        synchronized (lock) {
-            int sum = 0;
+        int sum = 0;
 
-            for (Item e : items) {
-                sum += e.getTotalDepositPrice();
-            }
-
-            return sum;
+        for (Item e : items) {
+            sum += e.getTotalDepositPrice();
         }
+
+        return sum;
     }
 
     public int getTotalQuantity() {
-        synchronized (lock) {
-            int sum = 0;
+        int sum = 0;
 
-            for (Item e : items) {
-                if (e.isLineItem()) {
-                    sum += e.lineItem.amount;
-                    continue;
-                }
-
-                Product product = e.product;
-                if (product.getType() == Product.Type.UserWeighed
-                        || product.getType() == Product.Type.PreWeighed
-                        || product.getReferenceUnit() == PIECE) {
-                    sum += 1;
-                } else {
-                    sum += e.quantity;
-                }
+        for (Item e : items) {
+            if (e.isLineItem()) {
+                sum += e.lineItem.amount;
+                continue;
             }
 
-            return sum;
+            Product product = e.product;
+            if (product.getType() == Product.Type.UserWeighed
+                    || product.getType() == Product.Type.PreWeighed
+                    || product.getReferenceUnit() == PIECE) {
+                sum += 1;
+            } else {
+                sum += e.quantity;
+            }
         }
+
+        return sum;
     }
 
     private void updateTimestamp() {
@@ -365,7 +353,7 @@ public class ShoppingCart {
                 }
 
                 cart.modCount++;
-                cart.removeOnlinePrices();
+                cart.invalidateOnlinePrices();
                 cart.updatePrices(true);
             }
         }
@@ -487,9 +475,7 @@ public class ShoppingCart {
     }
 
     public String toJson() {
-        synchronized (lock) {
-            return GsonHolder.get().toJson(this);
-        }
+        return GsonHolder.get().toJson(this);
     }
 
     public BackendCart toBackendCart() {
@@ -513,51 +499,49 @@ public class ShoppingCart {
 
         List<BackendCartItem> items = new ArrayList<>();
 
-        synchronized (lock) {
-            for (int i = 0; i < size(); i++) {
-                ShoppingCart.Item cartItem = get(i);
-                if (cartItem.isLineItem()) continue;
+        for (int i = 0; i < size(); i++) {
+            ShoppingCart.Item cartItem = get(i);
+            if (cartItem.isLineItem()) continue;
 
-                BackendCartItem item = new BackendCartItem();
+            BackendCartItem item = new BackendCartItem();
 
-                Product product = cartItem.getProduct();
-                int quantity = cartItem.getQuantity();
+            Product product = cartItem.getProduct();
+            int quantity = cartItem.getQuantity();
 
-                ScannedCode scannedCode = cartItem.getScannedCode();
-                Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+            ScannedCode scannedCode = cartItem.getScannedCode();
+            Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
 
-                if (scannedCode.getEmbeddedUnit() != null) {
-                    encodingUnit = scannedCode.getEmbeddedUnit();
-                }
-
-                item.id = cartItem.id;
-                item.sku = String.valueOf(product.getSku());
-                item.scannedCode = scannedCode.getCode();
-
-                if (encodingUnit != null) {
-                    item.weightUnit = encodingUnit.getId();
-                }
-
-                item.amount = 1;
-
-                if (cartItem.getUnit() == Unit.PIECE) {
-                    item.units = cartItem.getEffectiveQuantity();
-                } else if (cartItem.getUnit() == Unit.PRICE) {
-                    item.price = cartItem.getTotalPrice();
-                } else if (cartItem.getUnit() != null) {
-                    item.weight = cartItem.getEffectiveQuantity();
-                } else if (product.getType() == Product.Type.UserWeighed) {
-                    item.weight = quantity;
-                } else {
-                    item.amount = quantity;
-                }
-
-                if (item.price == null && item.units != null && scannedCode.hasPrice()) {
-                    item.price = item.units * scannedCode.getPrice();
-                }
-
-                items.add(item);
+            if (scannedCode.getEmbeddedUnit() != null) {
+                encodingUnit = scannedCode.getEmbeddedUnit();
             }
+
+            item.id = cartItem.id;
+            item.sku = String.valueOf(product.getSku());
+            item.scannedCode = scannedCode.getCode();
+
+            if (encodingUnit != null) {
+                item.weightUnit = encodingUnit.getId();
+            }
+
+            item.amount = 1;
+
+            if (cartItem.getUnit() == Unit.PIECE) {
+                item.units = cartItem.getEffectiveQuantity();
+            } else if (cartItem.getUnit() == Unit.PRICE) {
+                item.price = cartItem.getTotalPrice();
+            } else if (cartItem.getUnit() != null) {
+                item.weight = cartItem.getEffectiveQuantity();
+            } else if (product.getType() == Product.Type.UserWeighed) {
+                item.weight = quantity;
+            } else {
+                item.amount = quantity;
+            }
+
+            if (item.price == null && item.units != null && scannedCode.hasPrice()) {
+                item.price = item.units * scannedCode.getPrice();
+            }
+
+            items.add(item);
         }
 
         backendCart.items = items.toArray(new BackendCartItem[items.size()]);

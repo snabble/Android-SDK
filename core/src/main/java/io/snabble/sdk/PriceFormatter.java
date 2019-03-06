@@ -8,9 +8,18 @@ import io.snabble.sdk.codes.ScannedCode;
 
 public class PriceFormatter {
     private Project project;
+    private NumberFormat numberFormat;
 
     public PriceFormatter(Project project) {
         this.project = project;
+
+        numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
+        Currency currency = project.getCurrency();
+        numberFormat.setCurrency(currency);
+
+        int fractionDigits = project.getCurrencyFractionDigits();
+        numberFormat.setMinimumFractionDigits(fractionDigits);
+        numberFormat.setMaximumFractionDigits(fractionDigits);
     }
 
     public String format(int price) {
@@ -22,14 +31,7 @@ public class PriceFormatter {
             return "";
         }
 
-        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
-        Currency currency = project.getCurrency();
-        numberFormat.setCurrency(currency);
-
         int fractionDigits = project.getCurrencyFractionDigits();
-        numberFormat.setMinimumFractionDigits(fractionDigits);
-        numberFormat.setMaximumFractionDigits(fractionDigits);
-
         BigDecimal bigDecimal = new BigDecimal(price);
         BigDecimal divider = new BigDecimal(10).pow(fractionDigits);
         BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, project.getRoundingMode());
@@ -41,7 +43,7 @@ public class PriceFormatter {
         //
         // including the whole ICU library as a dependency increased APK size by 10MB
         // so we are overriding the result here instead for consistency
-        if (currency.getCurrencyCode().equals("HUF")) {
+        if (project.getCurrency().getCurrencyCode().equals("HUF")) {
             return formattedPrice.replace("HUF", "Ft");
         }
 

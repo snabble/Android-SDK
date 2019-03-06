@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -51,6 +52,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
@@ -66,18 +68,45 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
+    private ArrayList<Row> currentList;
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
         @Override
-        public void onChanged(ShoppingCart list) {
+        public void onProductsUpdated(ShoppingCart list) {
+            submitList();
+            update();
+        }
+
+        @Override
+        public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
+            submitList();
+            update();
+        }
+
+        @Override
+        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
+            int index = list.indexOf(item);
+            currentList.set(index, createProductRow(item));
+            recyclerViewAdapter.submitList(new ArrayList<>(currentList));
+            update();
+        }
+
+        @Override
+        public void onCleared(ShoppingCart list) {
+            submitList();
+            update();
+        }
+
+        @Override
+        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int pos) {
             submitList();
             update();
         }
 
         @Override
         public void onPricesUpdated(ShoppingCart list) {
-            super.onPricesUpdated(list);
             swipeRefreshLayout.setRefreshing(false);
+            submitList();
             update();
         }
     };
@@ -330,7 +359,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
 
         if (hasAnyImages != lastHasAnyImages) {
-            recyclerViewAdapter.notifyDataSetChanged();
+            submitList();
+            update();
         }
     }
 
@@ -372,7 +402,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
 
-        recyclerViewAdapter.notifyDataSetChanged();
+        submitList();
         update();
     }
 
@@ -383,7 +413,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     if (UIUtils.getHostActivity(getContext()) == activity) {
                         registerListeners();
 
-                        recyclerViewAdapter.notifyDataSetChanged();
+                        submitList();
                         update();
                     }
                 }
@@ -402,37 +432,47 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void submitList() {
-        List<Row> rows = new ArrayList<>();
+        long start = SystemClock.currentThreadTimeMillis();
 
-        for (int i=0; i<cart.size(); i++) {
-            final ProductRow row = new ProductRow();
-            final ShoppingCart.Item item = cart.get(i);
-            final Product product = item.getProduct();
-            final int quantity = item.getQuantity();
+        currentList = new ArrayList<>(cart.size() + 1);
 
-            if (product != null) {
-                row.subtitle = sanitize(product.getSubtitle());
-                row.imageUrl = sanitize(product.getImageUrl());
-            }
-
-            row.name = sanitize(item.getDisplayName());
-            row.encodingUnit = item.getUnit();
-            row.priceText = sanitize(item.getPriceText());
-            row.quantity = quantity;
-            row.quantityText = sanitize(item.getQuantityText());
-            row.editable = item.isEditable();
-            row.item = item;
-
-            rows.add(row);
+        for (int i = 0; i < cart.size(); i++) {
+            final ProductRow row = createProductRow(cart.get(i));
+            currentList.add(row);
         }
 
         if (cart.getTotalDepositPrice() > 0) {
             DepositRow row = new DepositRow();
             row.depositPrice = cart.getTotalDepositPrice();
-            rows.add(row);
+            currentList.add(row);
         }
 
-        recyclerViewAdapter.submitList(rows);
+        Logger.d("submitList creation took %dms", SystemClock.currentThreadTimeMillis() - start);
+
+        long start2 = SystemClock.currentThreadTimeMillis();
+        recyclerViewAdapter.submitList(new ArrayList<>(currentList));
+        Logger.d("submitList submit took %dms", SystemClock.currentThreadTimeMillis() - start2);
+    }
+
+    @NonNull
+    private ProductRow createProductRow(ShoppingCart.Item item) {
+        final ProductRow row = new ProductRow();
+        final Product product = item.getProduct();
+        final int quantity = item.getQuantity();
+
+        if (product != null) {
+            row.subtitle = sanitize(product.getSubtitle());
+            row.imageUrl = sanitize(product.getImageUrl());
+        }
+
+        row.name = sanitize(item.getDisplayName());
+        row.encodingUnit = item.getUnit();
+        row.priceText = sanitize(item.getPriceText());
+        row.quantity = quantity;
+        row.quantityText = sanitize(item.getQuantityText());
+        row.editable = item.isEditable();
+        row.item = item;
+        return row;
     }
 
     private void setTextOrHide(TextView textView, String text, int hideVisibility) {

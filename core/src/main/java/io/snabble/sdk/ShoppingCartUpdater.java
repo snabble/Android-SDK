@@ -35,6 +35,8 @@ class ShoppingCartUpdater {
     };
 
     public void update() {
+        Logger.d("Updating prices...");
+
         final int modCount = cart.getModCount();
         checkoutApi.createCheckoutInfo(project.getCheckedInShop(), cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
@@ -46,7 +48,7 @@ class ShoppingCartUpdater {
                         return;
                     }
 
-                    cart.removeOnlinePrices();
+                    cart.invalidateOnlinePrices();
 
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
@@ -91,6 +93,7 @@ class ShoppingCartUpdater {
                         }
 
                         cart.setOnlineTotalPrice(checkoutInfo.price.price);
+                        Logger.d("Successfully updated prices");
                     } catch (Exception e) {
                         Logger.e("Could not update price: %s", e.getMessage());
                         error();

@@ -3,6 +3,7 @@ package io.snabble.sdk;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -20,11 +21,14 @@ class ShoppingCartStorage {
     private Project project;
     private ShoppingCart shoppingCart;
     private File file;
+    private Handler mainThreadHandler;
     private Handler backgroundHandler;
 
     ShoppingCartStorage(final Project project) {
         this.project = project;
         file = new File(project.getInternalStorageDirectory(), "shoppingCart.json");
+
+        mainThreadHandler = new Handler(Looper.getMainLooper());
 
         HandlerThread handlerThread = new HandlerThread("ShoppingCartStorage");
         handlerThread.start();
@@ -57,19 +61,26 @@ class ShoppingCartStorage {
     }
 
     private void save() {
-        backgroundHandler.post(new Runnable() {
+        mainThreadHandler.removeCallbacksAndMessages(null);
+        mainThreadHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String json = shoppingCart.toJson();
-                try {
-                    FileUtils.forceMkdirParent(file);
-                    IOUtils.write(json, new FileOutputStream(file), Charset.forName("UTF-8"));
-                } catch (IOException e) {
-                    //could not save shopping cart, silently ignore
-                    Logger.e("Could not save shopping list for " + project.getId() + ": " + e.getMessage());
-                }
+                final String json = shoppingCart.toJson();
+
+                backgroundHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            FileUtils.forceMkdirParent(file);
+                            IOUtils.write(json, new FileOutputStream(file), Charset.forName("UTF-8"));
+                        } catch (IOException e) {
+                            //could not save shopping cart, silently ignore
+                            Logger.e("Could not save shopping list for " + project.getId() + ": " + e.getMessage());
+                        }
+                    }
+                });
             }
-        });
+        }, 1000);
     }
 
     public ShoppingCart getShoppingCart() {
