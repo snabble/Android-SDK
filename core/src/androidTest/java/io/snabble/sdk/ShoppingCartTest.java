@@ -176,6 +176,131 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         assertStrEquals(item.getFullPriceText(), "4 * 0,49 € = 1,96 €");
     }
 
+    @Test
+    public void testLineItems() {
+        ShoppingCart.Item item = simpleProduct1.cartItem();
+        CheckoutApi.LineItem lineItem = new CheckoutApi.LineItem();
+        lineItem.price = 100;
+        lineItem.totalPrice = 100;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "1");
+        assertStrEquals(item.getFullPriceText(), "1,00 €");
+
+        item = simpleProduct1.cartItem();
+        item.setQuantity(2);
+        lineItem = new CheckoutApi.LineItem();
+        lineItem.amount = 2;
+        lineItem.price = 100;
+        lineItem.totalPrice = 200;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "2");
+        assertStrEquals(item.getFullPriceText(), "2 * 1,00 € = 2,00 €");
+
+        item = preWeighedProduct.cartItem();
+        lineItem = new CheckoutApi.LineItem();
+        lineItem.amount = 1;
+        lineItem.price = 1000;
+        lineItem.totalPrice = 154;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "154g");
+        assertStrEquals(item.getFullPriceText(), "154g * 10,00 € / kg = 1,54 €");
+
+        item = preWeighedProduct.cartItem();
+        lineItem = new CheckoutApi.LineItem();
+        lineItem.amount = 1;
+        lineItem.price = 1000;
+        lineItem.totalPrice = 1000;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "154g");
+        assertStrEquals(item.getFullPriceText(), "154g * 10,00 € / kg = 10,00 €");
+
+        item = userWeighedProduct.cartItem();
+        item.setQuantity(500);
+        lineItem = new CheckoutApi.LineItem();
+        lineItem.amount = 1;
+        lineItem.price = 1000;
+        lineItem.totalPrice = 500;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "500g");
+        assertStrEquals(item.getFullPriceText(), "500g * 10,00 € / kg = 5,00 €");
+
+        item = pieceProduct.cartItem();
+        lineItem = new CheckoutApi.LineItem();
+        lineItem.amount = 1;
+        lineItem.price = 10;
+        lineItem.totalPrice = 60;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "6");
+        assertStrEquals(item.getFullPriceText(), "6 * 0,10 € = 0,60 €");
+
+        item = priceProduct.cartItem();
+        lineItem = new CheckoutApi.LineItem();
+        lineItem.amount = 1;
+        lineItem.price = 100;
+        lineItem.totalPrice = 100;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "1");
+        assertStrEquals(item.getFullPriceText(), "1,00 €");
+
+        item = zeroAmountProduct.cartItem();
+        item.setQuantity(4);
+        lineItem = new CheckoutApi.LineItem();
+        lineItem.amount = 1;
+        lineItem.price = 100;
+        lineItem.totalPrice = 400;
+        item.setLineItem(lineItem);
+        assertStrEquals(item.getQuantityText(), "4");
+        assertStrEquals(item.getFullPriceText(), "4 * 1,00 € = 4,00 €");
+    }
+
+    @Test
+    public void testBackendCart() {
+        ShoppingCart.Item item = simpleProduct1.cartItem();
+        item.setQuantity(2);
+        cart.add(item);
+
+        item = preWeighedProduct.cartItem();
+        cart.add(item);
+
+        item = userWeighedProduct.cartItem();
+        item.setQuantity(500);
+        cart.add(item);
+
+        item = pieceProduct.cartItem();
+        cart.add(item);
+
+        item = priceProduct.cartItem();
+        cart.add(item);
+
+        item = zeroAmountProduct.cartItem();
+        item.setQuantity(4);
+        cart.add(item);
+
+        ShoppingCart.BackendCart backendCart = cart.toBackendCart();
+        Assert.assertEquals(backendCart.items.length, cart.size());
+        Assert.assertEquals(backendCart.items[cart.size() - 1].amount, 2);
+
+        Assert.assertEquals(backendCart.items[cart.size() - 2].amount, 1);
+        Assert.assertEquals(backendCart.items[cart.size() - 2].weight.intValue(), 154);
+        Assert.assertEquals(backendCart.items[cart.size() - 2].weightUnit, Unit.GRAM.getId());
+
+        Assert.assertEquals(backendCart.items[cart.size() - 3].amount, 1);
+        Assert.assertEquals(backendCart.items[cart.size() - 3].weight.intValue(), 500);
+        Assert.assertEquals(backendCart.items[cart.size() - 3].weightUnit, Unit.GRAM.getId());
+
+        Assert.assertEquals(backendCart.items[cart.size() - 4].amount, 1);
+        Assert.assertEquals(backendCart.items[cart.size() - 4].units.intValue(), 6);
+        Assert.assertEquals(backendCart.items[cart.size() - 4].weightUnit, Unit.PIECE.getId());
+
+        Assert.assertEquals(backendCart.items[cart.size() - 5].amount, 1);
+        Assert.assertEquals(backendCart.items[cart.size() - 5].price.intValue(), 249);
+        Assert.assertEquals(backendCart.items[cart.size() - 5].weightUnit, Unit.PRICE.getId());
+
+        Assert.assertEquals(backendCart.items[cart.size() - 6].amount, 1);
+        Assert.assertEquals(backendCart.items[cart.size() - 6].units.intValue(), 4);
+        Assert.assertEquals(backendCart.items[cart.size() - 6].weightUnit, Unit.PIECE.getId());
+    }
+
     public void assertStrEquals(String a, String b) {
         Assert.assertEquals(replaceNoBreakSpace(a), replaceNoBreakSpace(b));
     }

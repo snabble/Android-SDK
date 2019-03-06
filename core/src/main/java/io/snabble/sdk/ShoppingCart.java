@@ -445,9 +445,9 @@ public class ShoppingCart {
 
         public String getPriceText() {
             if (lineItem != null) {
-                if (lineItem.amount > 1) {
+                if (lineItem.amount > 1 || (getUnit() != Unit.PRICE && getEffectiveQuantity() > 1)) {
                     return String.format(" * %s = %s",
-                            cart.priceFormatter.format(lineItem.price),
+                            cart.priceFormatter.format(product, lineItem.price),
                             cart.priceFormatter.format(getTotalPrice()));
                 } else {
                     return " " + cart.priceFormatter.format(getTotalPrice(), true);
@@ -524,7 +524,7 @@ public class ShoppingCart {
                     item.weightUnit = encodingUnit.getId();
                 }
 
-                item.amount = quantity;
+                item.amount = 1;
 
                 if (cartItem.getUnit() == Unit.PIECE) {
                     item.units = cartItem.getEffectiveQuantity();
@@ -532,16 +532,10 @@ public class ShoppingCart {
                     item.price = cartItem.getTotalPrice();
                 } else if (cartItem.getUnit() != null) {
                     item.weight = cartItem.getEffectiveQuantity();
-                }
-
-                if (product.getType() == Product.Type.UserWeighed) {
-                    item.amount = 1;
+                } else if (product.getType() == Product.Type.UserWeighed) {
                     item.weight = quantity;
-                }
-
-                if (item.units == null && product.getReferenceUnit() == Unit.PIECE) {
-                    item.amount = 1;
-                    item.units = quantity;
+                } else {
+                    item.amount = quantity;
                 }
 
                 if (item.price == null && item.units != null && scannedCode.hasPrice()) {
@@ -558,11 +552,11 @@ public class ShoppingCart {
     }
 
     public static class BackendCart implements Events.Payload {
-        private String session;
+        String session;
         @SerializedName("shopID")
-        private String shopId;
-        private BackendCartCustomer customer;
-        private BackendCartItem[] items;
+        String shopId;
+        BackendCartCustomer customer;
+        BackendCartItem[] items;
 
         @Override
         public Events.EventType getEventType() {
@@ -571,18 +565,18 @@ public class ShoppingCart {
     }
 
     public static class BackendCartCustomer {
-        private String loyaltyCard;
+        String loyaltyCard;
     }
 
     public static class BackendCartItem {
-        private String id;
-        private String sku;
-        private String scannedCode;
-        private int amount;
-        private String weightUnit;
-        private Integer price;
-        private Integer weight;
-        private Integer units;
+        String id;
+        String sku;
+        String scannedCode;
+        int amount;
+        String weightUnit;
+        Integer price;
+        Integer weight;
+        Integer units;
     }
 
     /**

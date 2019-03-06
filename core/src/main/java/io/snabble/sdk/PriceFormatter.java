@@ -56,17 +56,7 @@ public class PriceFormatter {
         return format(product, discountedPrice, null);
     }
 
-    public String format(Product product, boolean discountedPrice, ScannedCode scannedCode) {
-        int price = product.getPrice();
-
-        if (discountedPrice) {
-            price = product.getDiscountedPrice();
-        }
-
-        if (scannedCode != null && scannedCode.hasPrice()) {
-            price = scannedCode.getPrice();
-        }
-
+    public String format(Product product, int price) {
         String formattedString = format(price, false);
         Product.Type type = product.getType();
 
@@ -80,5 +70,19 @@ public class PriceFormatter {
         }
 
         return formattedString;
+    }
+
+    public String format(Product product, boolean discountedPrice, ScannedCode scannedCode) {
+        int price = product.getPrice();
+
+        if (discountedPrice) {
+            price = product.getDiscountedPrice();
+        }
+
+        if (scannedCode != null && scannedCode.hasPrice()) {
+            price = scannedCode.getPrice();
+        }
+
+        return format(product, price);
     }
 }
