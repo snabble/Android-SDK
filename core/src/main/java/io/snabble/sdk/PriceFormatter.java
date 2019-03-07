@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import android.util.LruCache;
+
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -9,6 +11,7 @@ import io.snabble.sdk.codes.ScannedCode;
 public class PriceFormatter {
     private Project project;
     private NumberFormat numberFormat;
+    private LruCache<Integer, String> cache;
 
     public PriceFormatter(Project project) {
         this.project = project;
@@ -20,6 +23,8 @@ public class PriceFormatter {
         int fractionDigits = project.getCurrencyFractionDigits();
         numberFormat.setMinimumFractionDigits(fractionDigits);
         numberFormat.setMaximumFractionDigits(fractionDigits);
+
+        cache = new LruCache<>(100);
     }
 
     public String format(int price) {
@@ -31,12 +36,17 @@ public class PriceFormatter {
             return "";
         }
 
+        String cachedValue = cache.get(price);
+        if (cachedValue != null) {
+            return cachedValue;
+        }
+
         int fractionDigits = project.getCurrencyFractionDigits();
         BigDecimal bigDecimal = new BigDecimal(price);
         BigDecimal divider = new BigDecimal(10).pow(fractionDigits);
         BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, project.getRoundingMode());
 
-        String formattedPrice = numberFormat.format(dividedPrice.doubleValue());
+        String formattedPrice = numberFormat.format(dividedPrice);
 
         // Android 4.x and 6 (but not 5 and 7+) are shipping with ICU versions
         // that have the currency symbol set to HUF instead of Ft for Locale hu_HU
@@ -46,6 +56,8 @@ public class PriceFormatter {
         if (project.getCurrency().getCurrencyCode().equals("HUF")) {
             return formattedPrice.replace("HUF", "Ft");
         }
+
+        cache.put(price, formattedPrice);
 
         return formattedPrice;
     }

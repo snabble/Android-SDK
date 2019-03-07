@@ -186,12 +186,12 @@ public class ShoppingCart {
             Item item = items.get(i);
             if (item.isLineItem()) {
                 items.remove(i);
-                notifyItemRemoved(ShoppingCart.this, item, i);
             } else {
                 item.lineItem = null;
-                notifyQuantityChanged(ShoppingCart.this, item);
             }
         }
+
+        notifyPriceUpdate(this);
     }
 
     public void updatePrices(boolean debounce) {
@@ -311,11 +311,6 @@ public class ShoppingCart {
 
         void setLineItem(CheckoutApi.LineItem lineItem) {
             this.lineItem = lineItem;
-            cart.notifyQuantityChanged(cart, this);
-        }
-
-        public CheckoutApi.LineItem getLineItem() {
-            return lineItem;
         }
 
         public Product getProduct() {

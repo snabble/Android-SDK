@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -27,16 +26,15 @@ import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.snabble.sdk.Checkout;
@@ -52,7 +50,6 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
@@ -68,43 +65,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
-    private ArrayList<Row> currentList;
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
+    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
-        public void onProductsUpdated(ShoppingCart list) {
-            submitList();
-            update();
-        }
-
-        @Override
-        public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
-            submitList();
-            update();
-        }
-
-        @Override
-        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
-            int index = list.indexOf(item);
-            currentList.set(index, createProductRow(item));
-            recyclerViewAdapter.submitList(new ArrayList<>(currentList));
-            update();
-        }
-
-        @Override
-        public void onCleared(ShoppingCart list) {
-            submitList();
-            update();
-        }
-
-        @Override
-        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int pos) {
-            submitList();
-            update();
-        }
-
-        @Override
-        public void onPricesUpdated(ShoppingCart list) {
+        public void onChanged(ShoppingCart list) {
             swipeRefreshLayout.setRefreshing(false);
             submitList();
             update();
@@ -432,47 +396,36 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void submitList() {
-        long start = SystemClock.currentThreadTimeMillis();
-
-        currentList = new ArrayList<>(cart.size() + 1);
+        List<Row> rows = new ArrayList<>(cart.size() + 1);
 
         for (int i = 0; i < cart.size(); i++) {
-            final ProductRow row = createProductRow(cart.get(i));
-            currentList.add(row);
+            ShoppingCart.Item item = cart.get(i);
+            final ProductRow row = new ProductRow();
+            final Product product = item.getProduct();
+            final int quantity = item.getQuantity();
+
+            if (product != null) {
+                row.subtitle = sanitize(product.getSubtitle());
+                row.imageUrl = sanitize(product.getImageUrl());
+            }
+
+            row.name = sanitize(item.getDisplayName());
+            row.encodingUnit = item.getUnit();
+            row.priceText = sanitize(item.getPriceText());
+            row.quantity = quantity;
+            row.quantityText = sanitize(item.getQuantityText());
+            row.editable = item.isEditable();
+            row.item = item;
+            rows.add(row);
         }
 
         if (cart.getTotalDepositPrice() > 0) {
             DepositRow row = new DepositRow();
             row.depositPrice = cart.getTotalDepositPrice();
-            currentList.add(row);
+            rows.add(row);
         }
 
-        Logger.d("submitList creation took %dms", SystemClock.currentThreadTimeMillis() - start);
-
-        long start2 = SystemClock.currentThreadTimeMillis();
-        recyclerViewAdapter.submitList(new ArrayList<>(currentList));
-        Logger.d("submitList submit took %dms", SystemClock.currentThreadTimeMillis() - start2);
-    }
-
-    @NonNull
-    private ProductRow createProductRow(ShoppingCart.Item item) {
-        final ProductRow row = new ProductRow();
-        final Product product = item.getProduct();
-        final int quantity = item.getQuantity();
-
-        if (product != null) {
-            row.subtitle = sanitize(product.getSubtitle());
-            row.imageUrl = sanitize(product.getImageUrl());
-        }
-
-        row.name = sanitize(item.getDisplayName());
-        row.encodingUnit = item.getUnit();
-        row.priceText = sanitize(item.getPriceText());
-        row.quantity = quantity;
-        row.quantityText = sanitize(item.getQuantityText());
-        row.editable = item.isEditable();
-        row.item = item;
-        return row;
+        recyclerViewAdapter.submitList(rows);
     }
 
     private void setTextOrHide(TextView textView, String text, int hideVisibility) {
@@ -740,35 +693,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     }
 
-    public static final DiffUtil.ItemCallback<Row> DIFF_CALLBACK = new DiffUtil.ItemCallback<Row>() {
-        @Override
-        public boolean areItemsTheSame(
-                @NonNull Row oldRow, @NonNull Row newRow) {
-            if (oldRow instanceof ProductRow && newRow instanceof ProductRow) {
-                ProductRow productOldRow = (ProductRow) oldRow;
-                ProductRow productNewRow = (ProductRow) newRow;
+    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private static final int TYPE_ITEM = 0;
+        private static final int TYPE_DEPOSIT = 1;
+        private List<Row> list = Collections.emptyList();
 
-                return productOldRow.item == productNewRow.item;
-            } else if (oldRow instanceof DepositRow && newRow instanceof DepositRow) {
-                return true;
-            }
-
-            return false;
-        }
-
-        @Override
-        public boolean areContentsTheSame(
-                @NonNull Row oldRow, @NonNull Row newRow) {
-            return oldRow.equals(newRow);
-        }
-    };
-
-    private class Adapter extends ListAdapter<Row, RecyclerView.ViewHolder> {
-        public static final int TYPE_ITEM = 0;
-        public static final int TYPE_DEPOSIT = 1;
-
-        public Adapter() {
-            super(DIFF_CALLBACK);
+        Adapter() {
+            super();
         }
 
         @Override
@@ -782,6 +713,57 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         public boolean isDismissable(int position) {
             return getItemViewType(position) != TYPE_DEPOSIT && !((ProductRow)getItem(position)).item.isLineItem();
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        public void submitList(final List<Row> newList) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return list.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return newList.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    Row oldRow = list.get(oldItemPosition);
+                    Row newRow = newList.get(newItemPosition);
+
+                    if (oldRow instanceof ProductRow && newRow instanceof ProductRow) {
+                        ProductRow productOldRow = (ProductRow) oldRow;
+                        ProductRow productNewRow = (ProductRow) newRow;
+
+                        return productOldRow.item == productNewRow.item;
+                    } else if (oldRow instanceof DepositRow && newRow instanceof DepositRow) {
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Row oldRow = list.get(oldItemPosition);
+                    Row newRow = newList.get(newItemPosition);
+
+                    return oldRow.equals(newRow);
+                }
+            });
+
+            list = newList;
+            diffResult.dispatchUpdatesTo(this);
+        }
+
+        public Row getItem(int position) {
+            return list.get(position);
         }
 
         @Override
