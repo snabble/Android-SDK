@@ -133,45 +133,45 @@ public class ShoppingCartTest extends SnabbleSdkTest {
     @Test
     public void testPriceText() {
         ShoppingCart.Item item = simpleProduct1.cartItem();
-        assertStrEquals(item.getPriceText(), " 3,99 €");
+        assertStrEquals(item.getPriceText(), "3,99 €");
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "3,99 €");
 
         item = simpleProduct1.cartItem();
         item.setQuantity(2);
-        assertStrEquals(item.getPriceText(), " * 3,99 € = 7,98 €");
+        assertStrEquals(item.getPriceText(), "* 3,99 € = 7,98 €");
         assertStrEquals(item.getQuantityText(), "2");
         assertStrEquals(item.getFullPriceText(), "2 * 3,99 € = 7,98 €");
 
         item = preWeighedProduct.cartItem();
-        assertStrEquals(item.getPriceText(), " * 2,99 € / kg = 0,47 €");
+        assertStrEquals(item.getPriceText(), "* 2,99 € / kg = 0,47 €");
         assertStrEquals(item.getQuantityText(), "154g");
         assertStrEquals(item.getFullPriceText(), "154g * 2,99 € / kg = 0,47 €");
 
         item = userWeighedProduct.cartItem();
         item.setQuantity(500);
-        assertStrEquals(item.getPriceText(), " * 2,99 € / kg = 1,50 €");
+        assertStrEquals(item.getPriceText(), "* 2,99 € / kg = 1,50 €");
         assertStrEquals(item.getQuantityText(), "500g");
         assertStrEquals(item.getFullPriceText(), "500g * 2,99 € / kg = 1,50 €");
 
         item = userWeighedProduct.cartItem();
         item.setQuantity(0);
-        assertStrEquals(item.getPriceText(), " 2,99 € / kg");
+        assertStrEquals(item.getPriceText(), "2,99 € / kg");
         assertStrEquals(item.getFullPriceText(), "2,99 € / kg");
 
         item = pieceProduct.cartItem();
-        assertStrEquals(item.getPriceText(), " * 0,49 € = 2,94 €");
+        assertStrEquals(item.getPriceText(), "* 0,49 € = 2,94 €");
         assertStrEquals(item.getQuantityText(), "6");
         assertStrEquals(item.getFullPriceText(), "6 * 0,49 € = 2,94 €");
 
         item = priceProduct.cartItem();
-        assertStrEquals(item.getPriceText(), " 2,49 €");
+        assertStrEquals(item.getPriceText(), "2,49 €");
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "2,49 €");
 
         item = zeroAmountProduct.cartItem();
         item.setQuantity(4);
-        assertStrEquals(item.getPriceText(), " * 0,49 € = 1,96 €");
+        assertStrEquals(item.getPriceText(), "* 0,49 € = 1,96 €");
         assertStrEquals(item.getQuantityText(), "4");
         assertStrEquals(item.getFullPriceText(), "4 * 0,49 € = 1,96 €");
     }

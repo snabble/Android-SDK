@@ -436,9 +436,9 @@ public class ShoppingCart {
             if (priceText != null) {
                 String quantityText = getQuantityText();
                 if (quantityText.equals("1")) {
-                    return getPriceText().trim();
+                    return getPriceText();
                 } else {
-                    return quantityText + getPriceText();
+                    return quantityText + " " + getPriceText();
                 }
             }
 
@@ -448,11 +448,11 @@ public class ShoppingCart {
         public String getPriceText() {
             if (lineItem != null) {
                 if (lineItem.amount > 1 || (getUnit() != Unit.PRICE && getEffectiveQuantity() > 1)) {
-                    return String.format(" * %s = %s",
+                    return String.format("* %s = %s",
                             cart.priceFormatter.format(product, lineItem.price),
                             cart.priceFormatter.format(getTotalPrice()));
                 } else {
-                    return " " + cart.priceFormatter.format(getTotalPrice(), true);
+                    return cart.priceFormatter.format(getTotalPrice(), true);
                 }
             }
 
@@ -460,11 +460,11 @@ public class ShoppingCart {
                 Unit unit = getUnit();
 
                 if (unit == Unit.PRICE) {
-                    return " " + cart.priceFormatter.format(getTotalPrice());
+                    return cart.priceFormatter.format(getTotalPrice());
                 } else if (getEffectiveQuantity() <= 1) {
-                    return " " + cart.priceFormatter.format(product) + "";
+                    return cart.priceFormatter.format(product);
                 } else {
-                    return String.format(" * %s = %s",
+                    return String.format("* %s = %s",
                             cart.priceFormatter.format(product),
                             cart.priceFormatter.format(getTotalPrice()));
                 }
@@ -476,6 +476,34 @@ public class ShoppingCart {
 
     public String toJson() {
         return GsonHolder.get().toJson(this);
+    }
+
+    public static class BackendCart implements Events.Payload {
+        String session;
+        @SerializedName("shopID")
+        String shopId;
+        BackendCartCustomer customer;
+        BackendCartItem[] items;
+
+        @Override
+        public Events.EventType getEventType() {
+            return Events.EventType.CART;
+        }
+    }
+
+    public static class BackendCartCustomer {
+        String loyaltyCard;
+    }
+
+    public static class BackendCartItem {
+        String id;
+        String sku;
+        String scannedCode;
+        int amount;
+        String weightUnit;
+        Integer price;
+        Integer weight;
+        Integer units;
     }
 
     public BackendCart toBackendCart() {
@@ -547,34 +575,6 @@ public class ShoppingCart {
         backendCart.items = items.toArray(new BackendCartItem[items.size()]);
 
         return backendCart;
-    }
-
-    public static class BackendCart implements Events.Payload {
-        String session;
-        @SerializedName("shopID")
-        String shopId;
-        BackendCartCustomer customer;
-        BackendCartItem[] items;
-
-        @Override
-        public Events.EventType getEventType() {
-            return Events.EventType.CART;
-        }
-    }
-
-    public static class BackendCartCustomer {
-        String loyaltyCard;
-    }
-
-    public static class BackendCartItem {
-        String id;
-        String sku;
-        String scannedCode;
-        int amount;
-        String weightUnit;
-        Integer price;
-        Integer weight;
-        Integer units;
     }
 
     /**
