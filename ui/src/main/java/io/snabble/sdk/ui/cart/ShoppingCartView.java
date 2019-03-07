@@ -65,6 +65,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
+    private Picasso picasso;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
@@ -92,7 +93,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
     private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.view_shopping_cart, this);
-
+        picasso = Picasso.with(getContext());
         Project project = SnabbleUI.getProject();
 
         if (cart != null) {
@@ -547,7 +548,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             if (row.imageUrl != null) {
                 image.setVisibility(View.VISIBLE);
-                Picasso.with(getContext()).load(row.imageUrl).into(image);
+                picasso.load(row.imageUrl).into(image);
             } else {
                 image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
                 image.setImageBitmap(null);
