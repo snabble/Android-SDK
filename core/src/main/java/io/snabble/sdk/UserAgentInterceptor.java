@@ -14,8 +14,9 @@ class UserAgentInterceptor implements Interceptor {
 
     public UserAgentInterceptor(Context context) {
         userAgent = context.getPackageManager().getApplicationLabel(context.getApplicationInfo())
-                + "/" + Snabble.getInstance().getVersionName() + " " +
-                "(Android " + Build.VERSION.RELEASE
+                + "/" + Snabble.getInstance().getVersionName()
+                + " snabble/" + Snabble.getVersion() +
+                " (Android " + Build.VERSION.RELEASE
                 + "; " + Build.BRAND + "; " + Build.MODEL + ")" +
                 " okhttp";
     }
