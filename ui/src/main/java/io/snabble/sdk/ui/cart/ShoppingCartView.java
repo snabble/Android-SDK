@@ -50,6 +50,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
@@ -194,9 +195,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 holder.hideInput();
 
                 final int pos = viewHolder.getAdapterPosition();
-
                 ShoppingCart.Item item = cart.get(pos);
-
                 removeAndShowUndoSnackbar(pos, item);
             }
         });
@@ -204,8 +203,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    private void removeAndShowUndoSnackbar(final int pos, final ShoppingCart.Item item) {
-        cart.remove(pos);
+    private void removeAndShowUndoSnackbar(final int adapterPosition, final ShoppingCart.Item item) {
+        if (adapterPosition == -1) {
+            Logger.d("Invalid adapter position, ignoring");
+            return;
+        }
+
+        cart.remove(adapterPosition);
         Telemetry.event(Telemetry.Event.DeletedFromCart, item.getProduct());
 
         snackbar = UIUtils.snackbar(coordinatorLayout,
@@ -213,7 +217,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
             @Override
             public void onClick(View v) {
-                cart.insert(item, pos);
+                cart.insert(item, adapterPosition);
                 Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
             }
         });
