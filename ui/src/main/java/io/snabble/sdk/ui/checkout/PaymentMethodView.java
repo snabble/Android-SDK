@@ -87,7 +87,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         TextView title = findViewById(R.id.choose_payment_title);
 
-        PriceFormatter priceFormatter = new PriceFormatter(project);
+        PriceFormatter priceFormatter = project.getPriceFormatter();
         String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
         String titleText = getResources().getString(R.string.Snabble_PaymentSelection_howToPay, totalPriceText);
         if (SnabbleUI.getActionBar() != null) {

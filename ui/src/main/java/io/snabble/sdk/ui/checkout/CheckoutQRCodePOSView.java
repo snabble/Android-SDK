@@ -51,7 +51,7 @@ class CheckoutQRCodePOSView extends FrameLayout {
         });
 
         TextView payAmount = findViewById(R.id.pay_amount);
-        PriceFormatter priceFormatter = new PriceFormatter(project);
+        PriceFormatter priceFormatter = project.getPriceFormatter();
 
         int priceToPay = project.getCheckout().getPriceToPay();
         if (priceToPay > 0) {

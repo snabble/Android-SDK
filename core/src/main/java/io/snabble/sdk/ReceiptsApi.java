@@ -81,7 +81,7 @@ class ReceiptsApi {
 
                         Project project = projectsById.get(apiOrder.project);
                         if (project != null) {
-                            PriceFormatter priceFormatter = new PriceFormatter(project);
+                            PriceFormatter priceFormatter = project.getPriceFormatter();
 
                             try {
                                 ReceiptInfo receiptInfo = new ReceiptInfo(

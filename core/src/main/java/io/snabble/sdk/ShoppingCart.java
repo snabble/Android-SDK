@@ -47,7 +47,7 @@ public class ShoppingCart {
     void initWithProject(Project project) {
         this.project = project;
         this.updater = new ShoppingCartUpdater(project, this);
-        this.priceFormatter = new PriceFormatter(project);
+        this.priceFormatter = project.getPriceFormatter();
         this.listeners = new CopyOnWriteArrayList<>();
         this.handler = new Handler(Looper.getMainLooper());
 

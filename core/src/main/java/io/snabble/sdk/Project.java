@@ -65,6 +65,7 @@ public class Project {
     private CodeTemplate[] codeTemplates;
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
+    private PriceFormatter priceFormatter;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
@@ -124,6 +125,8 @@ public class Project {
         }
 
         currencyFractionDigits = JsonUtils.getIntOpt(jsonObject, "decimalDigits", 2);
+        priceFormatter = new PriceFormatter(this);
+
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
         if (jsonObject.has("encodedCodes")) {
@@ -333,6 +336,10 @@ public class Project {
 
     public Currency getCurrency() {
         return currency;
+    }
+
+    public PriceFormatter getPriceFormatter() {
+        return priceFormatter;
     }
 
     public OkHttpClient getOkHttpClient() {

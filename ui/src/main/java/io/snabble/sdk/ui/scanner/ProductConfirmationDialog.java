@@ -59,7 +59,7 @@ class ProductConfirmationDialog {
                                      Project project) {
         this.context = context;
         this.shoppingCart = project.getShoppingCart();
-        priceFormatter = new PriceFormatter(project);
+        this.priceFormatter = project.getPriceFormatter();
     }
 
     public void show(Product product, ScannedCode scannedCode) {

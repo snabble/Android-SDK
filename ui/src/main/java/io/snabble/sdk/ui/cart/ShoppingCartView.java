@@ -137,7 +137,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         cart = project.getShoppingCart();
         checkout = project.getCheckout();
-        priceFormatter = new PriceFormatter(project);
+        priceFormatter = project.getPriceFormatter();
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerViewAdapter = new Adapter();
@@ -734,7 +734,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
 
         public void update(DepositRow row) {
-            PriceFormatter priceFormatter = new PriceFormatter(SnabbleUI.getProject());
+            PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
             String depositText = priceFormatter.format(row.depositPrice);
             deposit.setText(depositText);
         }
