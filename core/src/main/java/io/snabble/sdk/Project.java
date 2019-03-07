@@ -84,9 +84,6 @@ public class Project {
         shoppingCartStorage = new ShoppingCartStorage(this);
         checkout = new Checkout(this);
         events = new Events(this);
-
-        Application app = Snabble.getInstance().getApplication();
-        app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
 
     void parse(JsonObject jsonObject) {
@@ -431,13 +428,6 @@ public class Project {
     public CustomerCardInfo getRequiredCustomerCardInfo() {
         return requiredCustomerCardInfo;
     }
-
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
-        @Override
-        public void onActivityStarted(Activity activity) {
-            getShoppingCart().checkForTimeout();
-        }
-    };
 
     private void notifyUpdate() {
         for (OnProjectUpdatedListener l : updateListeners) {

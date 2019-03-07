@@ -357,6 +357,12 @@ public class Snabble {
         });
     }
 
+    private void checkCartTimeouts() {
+        for (Project project : projects) {
+            project.getShoppingCart().checkForTimeout();
+        }
+    }
+
     /**
      * Adds a listener that gets called every time the metadata updates
      */
@@ -379,6 +385,7 @@ public class Snabble {
         @Override
         public void onActivityStarted(Activity activity) {
             updateMetadata();
+            checkCartTimeouts();
         }
     };
 
