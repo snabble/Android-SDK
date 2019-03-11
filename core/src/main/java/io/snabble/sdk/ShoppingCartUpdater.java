@@ -53,17 +53,13 @@ class ShoppingCartUpdater {
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
 
-                        Set<String> depositSkus = new HashSet<>();
+                        Set<String> referentIds = new HashSet<>();
                         Set<String> requiredSkus = new HashSet<>();
 
                         for (int i=0; i<cart.size(); i++) {
                             ShoppingCart.Item item = cart.get(i);
                             requiredSkus.add(item.getProduct().getSku());
-
-                            Product depositProduct = item.getProduct().getDepositProduct();
-                            if (depositProduct != null) {
-                                depositSkus.add(depositProduct.getSku());
-                            }
+                            referentIds.add(item.getId());
                         }
 
                         for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
@@ -79,16 +75,16 @@ class ShoppingCartUpdater {
 
                         for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
                             // exclude deposit line items
-                            if (depositSkus.contains(lineItem.sku)) {
+                            if (referentIds.contains(lineItem.refersTo)) {
                                 continue;
                             }
 
-                            ShoppingCart.Item item = cart.getByItemId(lineItem.cartItemID);
+                            ShoppingCart.Item item = cart.getByItemId(lineItem.id);
 
                             if (item != null) {
                                 item.setLineItem(lineItem);
                             } else {
-                                cart.insert(cart.newItem(lineItem), cart.size());
+                                cart.insert(cart.newItem(lineItem), cart.size(), false);
                             }
                         }
 

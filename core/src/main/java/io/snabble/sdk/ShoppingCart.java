@@ -77,6 +77,10 @@ public class ShoppingCart {
     }
 
     public void insert(Item item, int index) {
+        insert(item, index, true);
+    }
+
+    void insert(Item item, int index, boolean update) {
         if (item.isMergeable()) {
             Item existing = getByProduct(item.getProduct());
             if (existing != null) {
@@ -85,8 +89,10 @@ public class ShoppingCart {
                 modCount++;
                 notifyQuantityChanged(this, item);
 
-                invalidateOnlinePrices();
-                updatePrices(true);
+                if (update) {
+                    invalidateOnlinePrices();
+                    updatePrices(true);
+                }
                 return;
             }
         }
@@ -96,8 +102,10 @@ public class ShoppingCart {
         items.add(index, item);
         notifyItemAdded(this, item);
 
-        invalidateOnlinePrices();
-        updatePrices(true);
+        if (update) {
+            invalidateOnlinePrices();
+            updatePrices(true);
+        }
     }
 
     public Item get(int index) {

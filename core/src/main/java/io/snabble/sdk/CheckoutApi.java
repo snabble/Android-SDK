@@ -83,7 +83,8 @@ class CheckoutApi {
     }
 
     public static class LineItem {
-        String cartItemID;
+        String id;
+        String refersTo;
         String sku;
         String name;
         int amount;
