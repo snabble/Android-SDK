@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - SearchableProductAdapter is now honoring searchable templates
+- Keyguard is now correctly preventing checkout 
 
 ## [0.12.4]
 
