@@ -1,6 +1,22 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.0-beta1]
+
+### Breaking Changes
+- Using new ShoppingCart implementation, breaking core SDK API.
+
+### Added
+- Support for automatic remote price updates and promotions
+
+### Changed
+- ShoppingCartView is now using insert/remove Animations
+- Improved ShoppingCart layouts
+- PriceFormatter is now reused across projects
+
+### Fixed
+- SearchableProductAdapter is now honoring searchable templates
+
 ## [0.12.4]
 
 ### Fixed
