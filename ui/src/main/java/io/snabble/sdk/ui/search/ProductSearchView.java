@@ -93,7 +93,7 @@ public class ProductSearchView extends FrameLayout {
         addCodeAsIs = findViewById(R.id.add_code_as_is);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        searchableProductAdapter = new SearchableProductAdapter(project.getProductDatabase());
+        searchableProductAdapter = new SearchableProductAdapter();
         searchableProductAdapter.setShowBarcode(true);
         searchableProductAdapter.setSearchType(SearchableProductAdapter.SearchType.BARCODE);
         searchableProductAdapter.setOnProductSelectedListener(new OnProductSelectedListener() {

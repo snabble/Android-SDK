@@ -16,8 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Arrays;
+import java.util.List;
+
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.utils.StringNormalizer;
@@ -39,13 +44,11 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     private int itemCount = 0;
     private boolean showBarcode = true;
     private String lastQuery = "";
+    private Project project;
 
     public SearchableProductAdapter() {
-        this(SnabbleUI.getProject().getProductDatabase());
-    }
-
-    public SearchableProductAdapter(ProductDatabase productDatabase) {
-        this.productDatabase = productDatabase;
+        this.project = SnabbleUI.getProject();
+        this.productDatabase = project.getProductDatabase();
 
         if (backgroundHandler == null) {
             HandlerThread thread = new HandlerThread("SearchableProductAdapter");
@@ -54,6 +57,11 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         }
 
         uiHandler = new Handler(Looper.getMainLooper());
+    }
+
+    @Deprecated
+    public SearchableProductAdapter(ProductDatabase unused) {
+        this();
     }
 
     private class ProductViewHolder extends RecyclerView.ViewHolder {
@@ -85,15 +93,23 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
 
         Product.Code[] scannableCodes = product.getScannableCodes();
 
+        List<String> searchableTemplates = Arrays.asList(project.getSearchableTemplates());
         String selectedCode = null;
-        if (scannableCodes.length > 0) {
+
+        for (Product.Code code : scannableCodes) {
+            if (searchableTemplates.contains(code.template)) {
+                selectedCode = code.lookupCode;
+            }
+        }
+
+        if (selectedCode == null && scannableCodes.length > 0) {
             selectedCode = scannableCodes[0].lookupCode;
         }
 
         if (showBarcode) {
-                for (Product.Code code : product.getScannableCodes()) {
+            for (Product.Code code : product.getScannableCodes()) {
                 String lookupCode = code.lookupCode;
-                if (lookupCode.contains(lastQuery)) {
+                if (lookupCode.contains(lastQuery) && searchableTemplates.contains(code.template)) {
                     if (lookupCode.startsWith("00000")) {
                         lookupCode = lookupCode.replace("00000", "");
                     }
