@@ -20,8 +20,11 @@ variants.all { variant ->
 
         classes = files("$project.buildDir/intermediates/javac/${variant.dirName}/compile${variant.dirName}JavaWithJavac/classes")
         excludeFilter = file("$rootProject.rootDir/findbugs-filter.xml")
-        source = variant.javaCompile.source
-        classpath = variant.javaCompile.classpath
+
+        def javaCompileTask = variant.javaCompileProvider.get()
+
+        source = javaCompileTask.source
+        classpath = javaCompileTask.classpath
 
         reports {
             // Only one of HTML or XML can be turned on at the same time
