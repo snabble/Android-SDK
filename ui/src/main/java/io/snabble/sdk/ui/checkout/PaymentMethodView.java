@@ -27,6 +27,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -207,8 +208,26 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 holder.itemView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        checkout.pay(e.paymentMethod, e.paymentCredentials);
-                        Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                        if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
+                                && e.paymentMethod.isRequiringCredentials()) {
+                            final SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                            if (callback != null) {
+                                callback.requestKeyguard(new KeyguardHandler() {
+                                    @Override
+                                    public void onKeyguardResult(int resultCode) {
+                                        if (resultCode == Activity.RESULT_OK) {
+                                            checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                            Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                                        } else {
+                                            callback.goBack();
+                                        }
+                                    }
+                                });
+                            }
+                        } else {
+                            checkout.pay(e.paymentMethod, e.paymentCredentials);
+                            Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                        }
                     }
                 });
             }

@@ -115,23 +115,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayView(new CheckoutStatusView(getContext()));
                 break;
             case TELECASH_DIRECT_DEBIT:
-                if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-                    final SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                    if (callback != null) {
-                        callback.requestKeyguard(new KeyguardHandler() {
-                            @Override
-                            public void onKeyguardResult(int resultCode) {
-                                if (resultCode == Activity.RESULT_OK) {
-                                    displayView(new CheckoutStatusView(getContext()));
-                                } else {
-                                    callback.goBack();
-                                }
-                            }
-                        });
-                    }
-                } else {
-                    displayView(new CheckoutStatusView(getContext()));
-                }
+                displayView(new CheckoutStatusView(getContext()));
                 break;
             case QRCODE_POS:
                 CheckoutQRCodePOSView checkoutQRCodePOSView = new CheckoutQRCodePOSView(getContext());
