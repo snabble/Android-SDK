@@ -1,7 +1,6 @@
 package io.snabble.sdk;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -16,10 +15,8 @@ import java.util.IllegalFormatException;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,7 +33,6 @@ class Events {
 
     private Handler handler = new Handler(Looper.getMainLooper());
     private SimpleDateFormat simpleDateFormat;
-    private boolean isResumed = false;
     private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
@@ -48,30 +44,22 @@ class Events {
 
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
-            public void onChanged(ShoppingCart list) {
-                if (cartId != null && !list.getId().equals(cartId)) {
+            public void onChanged(ShoppingCart cart) {
+                if (cartId != null && !cart.getId().equals(cartId)) {
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
                     post(payloadSessionEnd, false);
+                    hasSentSessionStart = false;
+                    return;
+                }
+
+                if (!hasSentSessionStart) {
+                    PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
+                    payloadSessionStart.session = cartId;
+                    post(payloadSessionStart, false);
                 }
 
                 post(Events.this.project.getShoppingCart().toBackendCart(), true);
-            }
-        });
-
-        Snabble.getInstance().getApplication().registerActivityLifecycleCallbacks(new SimpleActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityResumed(Activity activity) {
-                isResumed = true;
-
-                if (!hasSentSessionStart) {
-                    updateShop(shop);
-                }
-            }
-
-            @Override
-            public void onActivityPaused(Activity activity) {
-                isResumed = false;
             }
         });
     }
@@ -81,17 +69,9 @@ class Events {
             ShoppingCart cart = project.getShoppingCart();
             cartId = cart.getId();
             shop = newShop;
-
-            PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
-            payloadSessionStart.session = cartId;
-            post(payloadSessionStart, false);
-            post(cart.toBackendCart(), true);
         } else {
-            PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
-            payloadSessionEnd.session = cartId;
-            post(payloadSessionEnd, false);
-
             shop = null;
+            hasSentSessionStart = false;
         }
     }
 
@@ -114,11 +94,6 @@ class Events {
     }
 
     private <T extends Payload> void post(final T payload, boolean debounce) {
-        if (!isResumed && payload.getEventType() != EventType.ERROR) {
-            Logger.d("Could not send event, app is not active: " + payload.getEventType());
-            return;
-        }
-
         String url = project.getEventsUrl();
         if (url == null) {
             Logger.e("Could not post event: no events url");
@@ -179,6 +154,10 @@ class Events {
             @Override
             public void onFailure(Call call, IOException e) {
                 Logger.e("Could not post event: " + e.toString());
+
+                if (payload.getEventType() == EventType.SESSION_START) {
+                    hasSentSessionStart = false;
+                }
             }
         });
     }
