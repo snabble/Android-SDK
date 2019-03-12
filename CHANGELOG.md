@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.0-beta2]
+
+### Fixed
+- Shopping cart checkout button visible when cart is empty 
+
 ## [0.13.0-beta1]
 
 ### Breaking Changes

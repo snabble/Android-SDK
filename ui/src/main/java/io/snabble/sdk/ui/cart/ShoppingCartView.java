@@ -168,6 +168,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         createItemTouchHelper();
         submitList();
+        update();
     }
 
     private void createItemTouchHelper() {
