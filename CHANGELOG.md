@@ -3,16 +3,6 @@ All notable changes to this project will be documented in this file.
 
 ## [0.13.0]
 
-### Fixed
-- Prevent crash on older backend versions
-
-## [0.13.0-beta2]
-
-### Fixed
-- Shopping cart checkout button visible when cart is empty 
-
-## [0.13.0-beta1]
-
 ### Breaking Changes
 - Using new ShoppingCart implementation, breaking core SDK API.
 
@@ -25,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - PriceFormatter is now reused across projects
 
 ### Fixed
+- ShoppingCart checkout button visible when cart is empty 
 - SearchableProductAdapter is now honoring searchable templates
 - Keyguard is now correctly preventing checkout 
 

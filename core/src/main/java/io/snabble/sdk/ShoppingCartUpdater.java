@@ -40,64 +40,67 @@ class ShoppingCartUpdater {
         final int modCount = cart.getModCount();
         checkoutApi.createCheckoutInfo(project.getCheckedInShop(), cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
-            public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
-                synchronized (lock) {
-                    // ignore when cart was modified mid request
-                    if (cart.getModCount() != modCount) {
-                        error();
-                        return;
-                    }
-
-                    cart.invalidateOnlinePrices();
-
-                    try {
-                        CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
-
-                        Set<String> referrerIds = new HashSet<>();
-                        Set<String> requiredSkus = new HashSet<>();
-
-                        for (int i=0; i<cart.size(); i++) {
-                            ShoppingCart.Item item = cart.get(i);
-                            requiredSkus.add(item.getProduct().getSku());
-                            referrerIds.add(item.getId());
-                        }
-
-                        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                            requiredSkus.remove(lineItem.sku);
-                        }
-
-                        // error out when items are missing
-                        if (requiredSkus.size() > 0) {
-                            Logger.e("Missing products in price update: " + requiredSkus.toString());
+            public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // ignore when cart was modified mid request
+                        if (cart.getModCount() != modCount) {
                             error();
                             return;
                         }
 
-                        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                            // exclude deposit line items
-                            if (lineItem.type == CheckoutApi.LineItemType.DEPOSIT && referrerIds.contains(lineItem.refersTo)) {
-                                continue;
+                        cart.invalidateOnlinePrices();
+
+                        try {
+                            CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
+
+                            Set<String> referrerIds = new HashSet<>();
+                            Set<String> requiredSkus = new HashSet<>();
+
+                            for (int i=0; i<cart.size(); i++) {
+                                ShoppingCart.Item item = cart.get(i);
+                                requiredSkus.add(item.getProduct().getSku());
+                                referrerIds.add(item.getId());
                             }
 
-                            ShoppingCart.Item item = cart.getByItemId(lineItem.id);
-
-                            if (item != null) {
-                                item.setLineItem(lineItem);
-                            } else {
-                                cart.insert(cart.newItem(lineItem), cart.size(), false);
+                            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                                requiredSkus.remove(lineItem.sku);
                             }
+
+                            // error out when items are missing
+                            if (requiredSkus.size() > 0) {
+                                Logger.e("Missing products in price update: " + requiredSkus.toString());
+                                error();
+                                return;
+                            }
+
+                            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                                // exclude deposit line items
+                                if (lineItem.type == CheckoutApi.LineItemType.DEPOSIT && referrerIds.contains(lineItem.refersTo)) {
+                                    continue;
+                                }
+
+                                ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+
+                                if (item != null) {
+                                    item.setLineItem(lineItem);
+                                } else {
+                                    cart.insert(cart.newItem(lineItem), cart.size(), false);
+                                }
+                            }
+
+                            cart.setOnlineTotalPrice(checkoutInfo.price.price);
+                            Logger.d("Successfully updated prices");
+                        } catch (Exception e) {
+                            Logger.e("Could not update price: %s", e.getMessage());
+                            error();
+                            return;
                         }
 
-                        cart.setOnlineTotalPrice(checkoutInfo.price.price);
-                        Logger.d("Successfully updated prices");
-                    } catch (Exception e) {
-                        Logger.e("Could not update price: %s", e.getMessage());
-                        error();
-                        return;
+                        cart.notifyPriceUpdate(cart);
                     }
-                }
-
-                cart.notifyPriceUpdate(cart);
+                });
             }
 
             @Override
