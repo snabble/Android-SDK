@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - ShoppingCartView is now using insert/remove Animations
 - Improved ShoppingCart layouts
 - PriceFormatter is now reused across projects
+- Keep 4 starting digits of obfuscated iban 
 
 ### Fixed
 - ShoppingCart checkout button visible when cart is empty 
