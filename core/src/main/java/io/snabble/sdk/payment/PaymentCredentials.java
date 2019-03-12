@@ -37,7 +37,7 @@ public class PaymentCredentials {
         private String iban;
     }
 
-    private String obfuscatedIBAN;
+    private String obfuscatedId;
     private String encryptedData;
     private String signature;
 
@@ -64,7 +64,7 @@ public class PaymentCredentials {
             throw new IllegalArgumentException("Invalid IBAN");
         }
 
-        pc.obfuscatedIBAN = pc.obfuscate(iban);
+        pc.obfuscatedId = pc.obfuscate(iban);
 
         SepaData data = new SepaData();
         data.name = name;
@@ -75,7 +75,7 @@ public class PaymentCredentials {
         pc.encryptedData = pc.encrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
 
-        if(pc.encryptedData == null) {
+        if (pc.encryptedData == null) {
             return null;
         }
 
@@ -87,13 +87,15 @@ public class PaymentCredentials {
     }
 
     private String obfuscate(String s) {
-        int numChars = 4;
+        int numCharsStart = 4;
+        int numCharsEnd = 4;
 
         StringBuilder sb = new StringBuilder(s.length());
-        for(int i=0; i<s.length() - numChars; i++){
+        sb.append(s.substring(0, numCharsStart));
+        for (int i = numCharsStart; i < s.length() - numCharsEnd; i++) {
             sb.append('*');
         }
-        sb.append(s.substring(s.length() - numChars, s.length()));
+        sb.append(s.substring(s.length() - numCharsEnd));
 
         return sb.toString();
     }
@@ -103,7 +105,7 @@ public class PaymentCredentials {
             Snabble snabble = Snabble.getInstance();
             int caResId;
 
-            switch(snabble.getEnvironment()) {
+            switch (snabble.getEnvironment()) {
                 case PRODUCTION:
                     caResId = R.raw.ca_prod;
                     break;
@@ -147,7 +149,7 @@ public class PaymentCredentials {
 
     private String encrypt(X509Certificate certificate, byte[] data) {
         try {
-            if(validateCertificate(certificate)) {
+            if (validateCertificate(certificate)) {
                 Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
                 AlgorithmParameterSpec params = new OAEPParameterSpec("SHA-256", "MGF1",
                         new MGF1ParameterSpec("SHA-256"), PSource.PSpecified.DEFAULT);
@@ -178,7 +180,7 @@ public class PaymentCredentials {
     }
 
     public String getObfuscatedId() {
-        return obfuscatedIBAN;
+        return obfuscatedId;
     }
 
     public String getEncryptedData() {
