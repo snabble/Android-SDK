@@ -343,14 +343,14 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         barcodeScanner.removeBarcodeFormat(barcodeFormat);
     }
 
-    public void registerListeners() {
+    private void registerListeners() {
         isRunning = true;
 
         startBarcodeScanner();
         shoppingCart.addListener(shoppingCartListener);
     }
 
-    public void unregisterListeners() {
+    private void unregisterListeners() {
         isRunning = false;
 
         stopBarcodeScanner();

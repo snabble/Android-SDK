@@ -147,11 +147,11 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    public void registerListeners() {
+    private void registerListeners() {
         checkout.addOnCheckoutStateChangedListener(this);
     }
 
-    public void unregisterListeners() {
+    private void unregisterListeners() {
         checkout.removeOnCheckoutStateChangedListener(this);
         progressDialog.dismiss();
     }

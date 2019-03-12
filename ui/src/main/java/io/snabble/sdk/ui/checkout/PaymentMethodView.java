@@ -239,12 +239,12 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
     }
 
-    public void registerListeners() {
+    private void registerListeners() {
         paymentCredentialsStore.addCallback(this);
         update();
     }
 
-    public void unregisterListeners() {
+    private void unregisterListeners() {
         paymentCredentialsStore.removeCallback(this);
     }
 

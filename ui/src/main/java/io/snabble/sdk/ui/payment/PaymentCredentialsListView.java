@@ -191,12 +191,12 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
     }
 
-    public void registerListeners() {
+    private void registerListeners() {
         paymentCredentialsStore.addCallback(this);
         onChanged();
     }
 
-    public void unregisterListeners() {
+    private void unregisterListeners() {
         paymentCredentialsStore.removeCallback(this);
     }
 
