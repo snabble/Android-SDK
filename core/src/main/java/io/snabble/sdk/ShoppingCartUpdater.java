@@ -53,13 +53,13 @@ class ShoppingCartUpdater {
                     try {
                         CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
 
-                        Set<String> referentIds = new HashSet<>();
+                        Set<String> referrerIds = new HashSet<>();
                         Set<String> requiredSkus = new HashSet<>();
 
                         for (int i=0; i<cart.size(); i++) {
                             ShoppingCart.Item item = cart.get(i);
                             requiredSkus.add(item.getProduct().getSku());
-                            referentIds.add(item.getId());
+                            referrerIds.add(item.getId());
                         }
 
                         for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
@@ -75,7 +75,7 @@ class ShoppingCartUpdater {
 
                         for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
                             // exclude deposit line items
-                            if (referentIds.contains(lineItem.refersTo)) {
+                            if (lineItem.type == CheckoutApi.LineItemType.DEPOSIT && referrerIds.contains(lineItem.refersTo)) {
                                 continue;
                             }
 

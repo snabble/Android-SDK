@@ -90,6 +90,14 @@ class CheckoutApi {
         int amount;
         int price;
         int totalPrice;
+        LineItemType type;
+    }
+
+    public enum LineItemType {
+        @SerializedName("default")
+        DEFAULT,
+        @SerializedName("deposit")
+        DEPOSIT
     }
 
     public static class Price {
