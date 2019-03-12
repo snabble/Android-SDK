@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.0]
+
+### Fixed
+- Prevent crash on older backend versions
+
 ## [0.13.0-beta2]
 
 ### Fixed
