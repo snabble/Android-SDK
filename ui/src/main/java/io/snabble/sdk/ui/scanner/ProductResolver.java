@@ -36,7 +36,7 @@ public class ProductResolver {
     private OnNetworkErrorListener onNetworkErrorListener;
     private BarcodeFormat barcodeFormat;
 
-    public ProductResolver(Context context) {
+    private ProductResolver(Context context) {
         this.context = context;
 
         productConfirmationDialog = new ProductConfirmationDialog(context, SnabbleUI.getProject());
