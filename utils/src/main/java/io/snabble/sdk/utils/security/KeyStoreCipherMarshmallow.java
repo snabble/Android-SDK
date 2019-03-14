@@ -5,6 +5,7 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -14,7 +15,7 @@ import androidx.annotation.RequiresApi;
 import io.snabble.sdk.utils.Logger;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
-public class SecureStorageProviderMarshmallow implements SecureStorageProvider {
+public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     private static final String AES_MODE = "AES/GCM/NoPadding";
     private static final byte[] FIXED_IV = new byte[] { 30, 119, 28, 107, 29, -26, 62, 115, 40, 123, 35, 114 };
@@ -23,7 +24,7 @@ public class SecureStorageProviderMarshmallow implements SecureStorageProvider {
     private final String alias;
     private final boolean requireUserAuthentication;
 
-    SecureStorageProviderMarshmallow(String alias, boolean requireUserAuthentication) {
+    KeyStoreCipherMarshmallow(String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_M";
         this.requireUserAuthentication = requireUserAuthentication;
 
@@ -69,6 +70,15 @@ public class SecureStorageProviderMarshmallow implements SecureStorageProvider {
         }
 
         return true;
+    }
+
+    @Override
+    public int size() {
+        try {
+            return keyStore.size();
+        } catch (KeyStoreException e) {
+            return 0;
+        }
     }
 
     public void invalidate() {

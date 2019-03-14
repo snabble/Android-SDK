@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.payment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -95,7 +97,6 @@ public class SEPACardInputView extends FrameLayout {
             boolean isUpdating;
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                     if (isUpdating) {
                         return;
                     }
@@ -181,8 +182,8 @@ public class SEPACardInputView extends FrameLayout {
     private void saveCard() {
         boolean ok = true;
 
-        String name = nameInput.getText().toString();
-        String iban = ibanCountryCode.getText().toString() + ibanInput.getText().toString().replace(" ", "");
+        final String name = nameInput.getText().toString();
+        final String iban = ibanCountryCode.getText().toString() + ibanInput.getText().toString().replace(" ", "");
 
         if(name.length() > 0) {
             nameError.setVisibility(View.INVISIBLE);
@@ -203,20 +204,27 @@ public class SEPACardInputView extends FrameLayout {
         }
 
         if (ok) {
-            PaymentCredentials pc = PaymentCredentials.fromSEPA(name, iban);
-            if (pc == null) {
-                Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
-                        .show();
-            } else {
-                Snabble.getInstance().getPaymentCredentialsStore().add(pc);
-            }
+            SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
+                @Override
+                public void onKeyguardResult(int resultCode) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        final PaymentCredentials pc = PaymentCredentials.fromSEPA(name, iban);
+                        if (pc == null) {
+                            Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
+                                    .show();
+                        } else {
+                            Snabble.getInstance().getPaymentCredentialsStore().add(pc);
+                        }
+                    }
 
-            SnabbleUICallback callback = SnabbleUI.getUiCallback();
-            if(callback != null){
-                hideSoftKeyboard(ibanInput);
-                hideSoftKeyboard(nameInput);
-                callback.goBack();
-            }
+                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                    if(callback != null){
+                        hideSoftKeyboard(ibanInput);
+                        hideSoftKeyboard(nameInput);
+                        callback.goBack();
+                    }
+                }
+            });
         }
     }
 

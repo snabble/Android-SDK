@@ -126,7 +126,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         }
 
-        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getUserPaymentCredentials();
+        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
         for(PaymentCredentials p : paymentCredentials) {
             if (p.getType() == PaymentCredentials.Type.SEPA) {
                 for(Entry e : entries) {

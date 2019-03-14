@@ -1,79 +1,87 @@
 package io.snabble.sdk.payment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.Environment;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.Logger;
-import io.snabble.sdk.utils.security.SecureStorageProvider;
-import io.snabble.sdk.utils.security.SecureStorageProviderFactory;
+import io.snabble.sdk.utils.security.KeyStoreCipher;
 
 public class PaymentCredentialsStore {
-    private static final String SHARED_PREFERENCES_TAG = "snabble_payment";
-    private static final String SHARED_PREFERENCES_CREDENTIALS = "credentials";
-    private static final String ALIAS = "SnabblePaymentCredentialsStore";
-
     private SharedPreferences sharedPreferences;
     private List<PaymentCredentials> credentialsList = new ArrayList<>();
     private List<Callback> callbacks = new CopyOnWriteArrayList<>();
     private String credentialsKey;
+    private boolean hadUnrecoverableCredentials;
 
-    private SecureStorageProvider secureStorageProvider;
+    KeyStoreCipher keyStoreCipher;
 
+    @SuppressLint("NewApi")
     public PaymentCredentialsStore(Context context, Environment environment) {
-        sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
-        credentialsKey = SHARED_PREFERENCES_CREDENTIALS + "_" + (environment != null ? environment.name() : "_UNKNOWN");
+        sharedPreferences = context.getSharedPreferences("snabble_payment", Context.MODE_PRIVATE);
+        credentialsKey = "credentials_" + (environment != null ? environment.name() : "_UNKNOWN");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            secureStorageProvider = SecureStorageProviderFactory.create(context, ALIAS, true);
+        // KeyStore is not available on Android < 4.3
+        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+            keyStoreCipher = KeyStoreCipher.create(context, "SnabblePaymentCredentialsStore", true);
         }
 
-        loadFromLocalStore();
+        load();
+
+        hadUnrecoverableCredentials = credentialsList.size() > 0 && keyStoreCipher.size() == 0;
+        if (hadUnrecoverableCredentials) {
+            credentialsList.clear();
+        }
     }
 
-    public List<PaymentCredentials> getUserPaymentCredentials() {
-        return credentialsList;
+    public List<PaymentCredentials> getAll() {
+        return Collections.unmodifiableList(credentialsList);
+    }
+
+    public boolean hadUnrecoverableCredentials() {
+        return hadUnrecoverableCredentials;
+    }
+
+    public int size() {
+        return credentialsList.size();
     }
 
     public void add(PaymentCredentials credentials) {
         credentialsList.add(credentials);
-
-        saveToLocalStore();
+        save();
         notifyChanged();
     }
 
     public void remove(PaymentCredentials credentials) {
         credentialsList.remove(credentials);
-
-        saveToLocalStore();
+        save();
         notifyChanged();
     }
 
-    private void saveToLocalStore() {
+    public void invalidate() {
+        hadUnrecoverableCredentials = false;
+        credentialsList.clear();
+        save();
+        notifyChanged();
+    }
+
+    private void save() {
         Gson gson = new Gson();
         String json = gson.toJson(credentialsList);
-
-        if (secureStorageProvider != null) {
-            byte[] encrypted = secureStorageProvider.encrypt(json.getBytes());
-            if (encrypted != null) {
-                json = new String(encrypted);
-            } else {
-                throw new RuntimeException("WTF");
-            }
-        }
-
         sharedPreferences.edit().putString(credentialsKey, json).apply();
     }
 
-    private void loadFromLocalStore() {
+    private void load() {
         Gson gson = new Gson();
 
         String json = sharedPreferences.getString(credentialsKey, null);
@@ -81,10 +89,6 @@ public class PaymentCredentialsStore {
             credentialsList = new ArrayList<>();
 
             try {
-                if (secureStorageProvider != null) {
-                    json = new String(secureStorageProvider.decrypt(json.getBytes()));
-                }
-
                 List<PaymentCredentials> list = gson.fromJson(json, new TypeToken<List<PaymentCredentials>>() {}.getType());
                 for (PaymentCredentials credentials : list) {
                     if (credentials.validate()) {
@@ -95,11 +99,11 @@ public class PaymentCredentialsStore {
                 Logger.e("Could not read payment credentials: %s", e.getMessage());
             }
 
-            saveToLocalStore();
+            save();
         }
     }
 
-    public void notifyChanged() {
+    private void notifyChanged() {
         for(Callback cb : callbacks) {
             cb.onChanged();
         }

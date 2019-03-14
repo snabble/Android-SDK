@@ -3,6 +3,7 @@ package io.snabble.sdk.payment;
 import android.util.Base64;
 
 import java.io.InputStream;
+import java.security.KeyStore;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
 import java.security.cert.CertPathValidatorException;
@@ -26,6 +27,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
+import io.snabble.sdk.utils.security.KeyStoreCipher;
 
 public class PaymentCredentials {
     public enum Type {
@@ -38,6 +40,7 @@ public class PaymentCredentials {
     }
 
     private String obfuscatedId;
+    private boolean isKeyStoreEncrypted;
     private String encryptedData;
     private String signature;
 
@@ -72,7 +75,8 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(data, SepaData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.encrypt(certificate, json.getBytes());
+        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
 
         if (pc.encryptedData == null) {
@@ -98,6 +102,66 @@ public class PaymentCredentials {
         sb.append(s.substring(s.length() - numCharsEnd));
 
         return sb.toString();
+    }
+
+    /** Asynchronous encryption using the certificate the backend provided for us **/
+    private String rsaEncrypt(X509Certificate certificate, byte[] data) {
+        try {
+            if (validateCertificate(certificate)) {
+                Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
+                AlgorithmParameterSpec params = new OAEPParameterSpec("SHA-256", "MGF1",
+                        new MGF1ParameterSpec("SHA-256"), PSource.PSpecified.DEFAULT);
+                cipher.init(Cipher.ENCRYPT_MODE, certificate.getPublicKey(), params);
+                byte[] encrypted = cipher.doFinal(data);
+                return Base64.encodeToString(encrypted, Base64.NO_WRAP);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new AssertionError(e.getMessage());
+        }
+    }
+
+    /** Synchronous encryption using the user credentials **/
+    private void encrypt() {
+        PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
+
+        if (store.keyStoreCipher == null) {
+            return;
+        }
+
+        byte[] keyStoreEncrypted = store.keyStoreCipher.encrypt(encryptedData.getBytes());
+
+        if (keyStoreEncrypted != null) {
+            encryptedData = Base64.encodeToString(keyStoreEncrypted, Base64.NO_WRAP);
+            isKeyStoreEncrypted = true;
+        } else {
+            Logger.e("Could not rsaEncrypt payment credentials: KeyStore unavailable");
+        }
+    }
+
+    /** Synchronous decryption using the user credentials **/
+    private String decrypt() {
+        PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
+
+        if (store.keyStoreCipher == null) {
+            if (isKeyStoreEncrypted) {
+                Logger.e("Accessing encrypted data without providing KeyStoreCipher");
+            }
+
+            return encryptedData;
+        }
+
+        if (isKeyStoreEncrypted) {
+            byte[] decrypted = store.keyStoreCipher.decrypt(Base64.decode(encryptedData, Base64.NO_WRAP));
+            if (decrypted != null) {
+                return new String(decrypted);
+            } else {
+                Logger.e("Could not decrypt using KeyStoreCipher");
+            }
+        }
+
+        return encryptedData;
     }
 
     private boolean validateCertificate(X509Certificate certificate) {
@@ -147,23 +211,6 @@ public class PaymentCredentials {
         return false;
     }
 
-    private String encrypt(X509Certificate certificate, byte[] data) {
-        try {
-            if (validateCertificate(certificate)) {
-                Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
-                AlgorithmParameterSpec params = new OAEPParameterSpec("SHA-256", "MGF1",
-                        new MGF1ParameterSpec("SHA-256"), PSource.PSpecified.DEFAULT);
-                cipher.init(Cipher.ENCRYPT_MODE, certificate.getPublicKey(), params);
-                byte[] encrypted = cipher.doFinal(data);
-                return Base64.encodeToString(encrypted, Base64.NO_WRAP);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            throw new AssertionError(e.getMessage());
-        }
-    }
-
     private String sha256Signature(X509Certificate certificate) {
         return Utils.sha256Hex(Utils.hexString(certificate.getSignature()));
     }
@@ -184,6 +231,6 @@ public class PaymentCredentials {
     }
 
     public String getEncryptedData() {
-        return encryptedData;
+        return decrypt();
     }
 }

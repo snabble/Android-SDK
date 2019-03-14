@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.security.Key;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,7 +29,7 @@ import androidx.annotation.RequiresApi;
 import io.snabble.sdk.utils.Logger;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class SecureStorageProviderJellyBeanMR2 implements SecureStorageProvider {
+public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     private static final String RSA = "RSA";
     private static final String RSA_MODE =  "RSA/ECB/PKCS1Padding";
@@ -43,7 +44,7 @@ public class SecureStorageProviderJellyBeanMR2 implements SecureStorageProvider 
     private final boolean requireUserAuthentication;
     private final Context context;
 
-    SecureStorageProviderJellyBeanMR2(Context context, String alias, boolean requireUserAuthentication) {
+    KeyStoreCipherJellyBeanMR2(Context context, String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_JB_MR2";
         this.context = context;
         this.requireUserAuthentication = requireUserAuthentication;
@@ -103,6 +104,15 @@ public class SecureStorageProviderJellyBeanMR2 implements SecureStorageProvider 
         }
 
         return true;
+    }
+
+    @Override
+    public int size() {
+        try {
+            return keyStore.size();
+        } catch (KeyStoreException e) {
+            return 0;
+        }
     }
 
     @SuppressLint("ApplySharedPref")

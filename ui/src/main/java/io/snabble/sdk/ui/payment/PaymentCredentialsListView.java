@@ -28,6 +28,7 @@ import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -69,9 +70,19 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         fab.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.showSEPACardInput();
+                if (KeyguardUtils.isDeviceSecure()) {
+                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                    if (callback != null) {
+                        callback.showSEPACardInput();
+                    }
+                } else {
+                    // TODO i18n
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Attention")
+                            .setMessage("To add this payment method you need to secure your device using a screen lock (PIN, Fingerprint, ...) ")
+                            .setPositiveButton(R.string.Snabble_OK, null)
+                            .setCancelable(false)
+                            .show();
                 }
             }
         });
@@ -121,7 +132,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     public void onChanged() {
         entries.clear();
 
-        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getUserPaymentCredentials();
+        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
         for(PaymentCredentials pm : paymentCredentials) {
             if(pm.getType() == PaymentCredentials.Type.SEPA) {

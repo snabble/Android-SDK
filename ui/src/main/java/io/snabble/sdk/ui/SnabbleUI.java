@@ -60,7 +60,7 @@ public class SnabbleUI {
     }
 
     /**
-     * Unregisters a callback that was previously registered.
+     * Unregisters a ActionBar that was previously registered.
      */
     public static void unregisterActionBar(ActionBar bar) {
         if (actionBar == bar) {
