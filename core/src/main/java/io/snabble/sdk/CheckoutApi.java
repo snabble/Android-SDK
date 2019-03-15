@@ -336,7 +336,14 @@ class CheckoutApi {
 
         if (paymentCredentials != null) {
             checkoutProcessRequest.paymentInformation = new PaymentInformation();
-            checkoutProcessRequest.paymentInformation.encryptedOrigin = paymentCredentials.getEncryptedData();
+
+            String data = paymentCredentials.getEncryptedData();
+            if (data == null) {
+                paymentProcessResult.error();
+                return;
+            }
+
+            checkoutProcessRequest.paymentInformation.encryptedOrigin = data;
         }
 
         String url = signedCheckoutInfo.getCheckoutProcessLink();

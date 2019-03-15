@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -32,6 +33,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
@@ -77,7 +79,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         checkout = project.getCheckout();
         paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
 
-
         recyclerView = findViewById(R.id.payment_methods);
         recyclerView.setAdapter(new Adapter());
 
@@ -115,9 +116,25 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                     e.onClickListener = new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                            if(callback != null) {
-                                callback.showSEPACardInput();
+                            if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+                                final SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                                if (callback != null) {
+                                    callback.requestKeyguard(new KeyguardHandler() {
+                                        @Override
+                                        public void onKeyguardResult(int resultCode) {
+                                            if (KeyguardUtils.isDeviceSecure() && resultCode == Activity.RESULT_OK) {
+                                                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                                                if(callback != null) {
+                                                    callback.showSEPACardInput();
+                                                }
+                                            } else {
+                                                showPaymentNotPossibleDialog();
+                                            }
+                                        }
+                                    });
+                                }
+                            } else {
+                                showPaymentNotPossibleDialog();
                             }
                         }
                     };
@@ -149,6 +166,16 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    private void showPaymentNotPossibleDialog() {
+        // TODO i18n
+        new AlertDialog.Builder(getContext())
+                .setTitle("Attention")
+                .setMessage("To add this payment method you need to secure your device using a screen lock (PIN, Fingerprint, ...) ")
+                .setPositiveButton(R.string.Snabble_OK, null)
+                .setCancelable(false)
+                .show();
     }
 
     @Override

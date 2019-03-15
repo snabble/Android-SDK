@@ -21,7 +21,7 @@ public class KeyStoreCipherTest {
         KeyStoreCipher keyStoreCipher = KeyStoreCipher.create(context, "test", false);
         Assert.assertNotNull(keyStoreCipher);
 
-        keyStoreCipher.invalidate();
+        keyStoreCipher.purge();
 
         byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         byte[] encrypted = keyStoreCipher.encrypt(data);

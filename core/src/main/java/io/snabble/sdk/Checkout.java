@@ -273,6 +273,8 @@ public class Checkout {
             if (force || isRequestingPaymentMethod || ((state == State.CONNECTION_ERROR || state == State.NONE) && wasRequestingPaymentMethod)) {
                 this.paymentMethod = paymentMethod;
 
+                notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
+
                 checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
                         new CheckoutApi.PaymentProcessResult() {
                     @Override
@@ -301,8 +303,6 @@ public class Checkout {
                         notifyStateChanged(State.CONNECTION_ERROR);
                     }
                 });
-
-                notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
             }
         }
     }

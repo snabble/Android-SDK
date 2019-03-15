@@ -7,8 +7,9 @@ import androidx.annotation.RequiresApi;
 import io.snabble.sdk.utils.Logger;
 
 public abstract class KeyStoreCipher {
-    public abstract int size();
-    public abstract void invalidate();
+    public abstract String id();
+    public abstract void validate();
+    public abstract void purge();
     public abstract byte[] encrypt(byte[] data);
     public abstract byte[] decrypt(byte[] encrypted);
 
@@ -17,7 +18,7 @@ public abstract class KeyStoreCipher {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return new KeyStoreCipherMarshmallow(tag, requireUserAuthentication);
-            } else {
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
                 return new KeyStoreCipherJellyBeanMR2(context.getApplicationContext(), tag, requireUserAuthentication);
             }
         } catch (Exception e) {

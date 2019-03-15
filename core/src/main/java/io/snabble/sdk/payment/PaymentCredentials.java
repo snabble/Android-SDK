@@ -136,7 +136,7 @@ public class PaymentCredentials {
             encryptedData = Base64.encodeToString(keyStoreEncrypted, Base64.NO_WRAP);
             isKeyStoreEncrypted = true;
         } else {
-            Logger.e("Could not rsaEncrypt payment credentials: KeyStore unavailable");
+            Logger.e("Could not encrypt payment credentials: KeyStore unavailable");
         }
     }
 
@@ -158,6 +158,7 @@ public class PaymentCredentials {
                 return new String(decrypted);
             } else {
                 Logger.e("Could not decrypt using KeyStoreCipher");
+                return null;
             }
         }
 

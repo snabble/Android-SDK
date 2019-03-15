@@ -2,27 +2,31 @@ package io.snabble.sdk.utils.security;
 
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
+import android.security.keystore.UserNotAuthenticatedException;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 
 import androidx.annotation.RequiresApi;
 import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.Utils;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
-    private static final String AES_MODE = "AES/GCM/NoPadding";
-    private static final byte[] FIXED_IV = new byte[] { 30, 119, 28, 107, 29, -26, 62, 115, 40, 123, 35, 114 };
+    private static final String AES_MODE = "AES/CBC/PKCS7Padding";
+    private static final byte[] FIXED_IV = new byte[] { 30, 119, 28, 107, 29, -26, 62, 115, 40, 123, 35, 114, -75, -116, -41, 33 };
 
-    private final KeyStore keyStore;
-    private final String alias;
-    private final boolean requireUserAuthentication;
+    private KeyStore keyStore;
+    private String alias;
+    private boolean requireUserAuthentication;
 
     KeyStoreCipherMarshmallow(String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_M";
@@ -42,13 +46,15 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
 
     private boolean createKeys() {
         try {
-            if (!keyStore.containsAlias(alias)) {
+            if (!isKeyAccessible()) {
+                keyStore.deleteEntry(alias);
+
                 KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE);
                 KeyGenParameterSpec.Builder spec = new KeyGenParameterSpec.Builder(alias,
                         KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT);
 
-                spec.setBlockModes(KeyProperties.BLOCK_MODE_GCM);
-                spec.setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE);
+                spec.setBlockModes(KeyProperties.BLOCK_MODE_CBC);
+                spec.setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7);
                 spec.setRandomizedEncryptionRequired(false);
 
                 if (requireUserAuthentication) {
@@ -64,37 +70,70 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
 
                 keyGenerator.init(spec.build());
                 keyGenerator.generateKey();
+
+                Logger.d("New key generated for alias %s", alias);
+                Logger.d("KeyStore id = %s", id());
             }
         } catch (Exception e) {
+            Logger.d("Could not generate key %s", e.getMessage());
             return false;
         }
 
         return true;
     }
 
-    @Override
-    public int size() {
+    private boolean isKeyAccessible() {
         try {
-            return keyStore.size();
-        } catch (KeyStoreException e) {
-            return 0;
+            Cipher c = Cipher.getInstance(AES_MODE);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(FIXED_IV);
+            c.init(Cipher.ENCRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
+            return true;
+        } catch (KeyPermanentlyInvalidatedException e) {
+            return false;
+        } catch (UserNotAuthenticatedException e) {
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
-    public void invalidate() {
+    @Override
+    public String id() {
+        try {
+            Date date = keyStore.getCreationDate(alias);
+            if (date == null) {
+                return null;
+            }
+
+            return Utils.sha1Hex(Long.toString(date.getTime()));
+        } catch (KeyStoreException ignored) { }
+
+        return null;
+    }
+
+    @Override
+    public void validate() {
+        createKeys();
+    }
+
+    public void purge() {
         try {
             keyStore.deleteEntry(alias);
-            createKeys();
         } catch (Exception e) {
-            Logger.e("Could not invalidate key store: %s", e.getMessage());
+            Logger.e("Could not purge key store: %s", e.getMessage());
         }
+
+        createKeys();
     }
 
     public byte[] encrypt(byte[] input) {
         try {
             Cipher c = Cipher.getInstance(AES_MODE);
-            c.init(Cipher.ENCRYPT_MODE, keyStore.getKey(alias, null), new GCMParameterSpec(128, FIXED_IV));
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(FIXED_IV);
+            c.init(Cipher.ENCRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
             return c.doFinal(input);
+        } catch (KeyPermanentlyInvalidatedException e) {
+            Logger.e("Key permanently invalidated");
         } catch (Exception e) {
             Logger.e("Could not encrypt data: %s", e.getMessage());
         }
@@ -105,8 +144,11 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     public byte[] decrypt(byte[] encrypted) {
         try {
             Cipher c = Cipher.getInstance(AES_MODE);
-            c.init(Cipher.DECRYPT_MODE, keyStore.getKey(alias, null), new GCMParameterSpec(128, FIXED_IV));
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(FIXED_IV);
+            c.init(Cipher.DECRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
             return c.doFinal(encrypted);
+        } catch (KeyPermanentlyInvalidatedException e) {
+            Logger.e("Key permanently invalidated");
         } catch (Exception e) {
             Logger.e("Could not decrypt data: %s", e.getMessage());
         }

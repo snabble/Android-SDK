@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
+import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
@@ -17,6 +19,7 @@ import java.security.KeyStoreException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -27,6 +30,7 @@ import javax.security.auth.x500.X500Principal;
 
 import androidx.annotation.RequiresApi;
 import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.Utils;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
@@ -34,15 +38,15 @@ public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
     private static final String RSA = "RSA";
     private static final String RSA_MODE =  "RSA/ECB/PKCS1Padding";
     private static final String AES = "AES";
-    private static final String AES_MODE = "AES/CBC/PKCS5Padding";
-    private static final String SHARED_PREFERENCES_TAG = "snabble_SecureStorageProviderJellyBeanMR2";
+    private static final String AES_MODE = "AES/CBC/PKCS7Padding";
     private static final byte[] FIXED_IV = new byte[] { 30, 119, 28, 107, 29, -26, 62, 115, 40, 123, 35, 114, -75, -116, -41, 33 };
+    private static final String SHARED_PREFERENCES_TAG = "snabble_SecureStorageProviderJellyBeanMR2";
 
-    private final KeyStore keyStore;
-    private final String alias;
-    private final SharedPreferences sharedPreferences;
-    private final boolean requireUserAuthentication;
-    private final Context context;
+    private KeyStore keyStore;
+    private String alias;
+    private SharedPreferences sharedPreferences;
+    private boolean requireUserAuthentication;
+    private Context context;
 
     KeyStoreCipherJellyBeanMR2(Context context, String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_JB_MR2";
@@ -63,9 +67,13 @@ public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
         }
     }
 
+    @SuppressLint("ApplySharedPref")
     private boolean createKeys() {
         try {
-            if (!keyStore.containsAlias(alias)) {
+            if (!isKeyAccessible()) {
+                keyStore.deleteEntry(alias);
+                sharedPreferences.edit().remove(alias).commit();
+
                 Calendar start = Calendar.getInstance();
                 Calendar end = Calendar.getInstance();
                 end.add(Calendar.YEAR, 10);
@@ -106,24 +114,45 @@ public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
         return true;
     }
 
-    @Override
-    public int size() {
+    private boolean isKeyAccessible() {
         try {
-            return keyStore.size();
-        } catch (KeyStoreException e) {
-            return 0;
+            KeyStore.PrivateKeyEntry entry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias, null);
+            Cipher inputCipher = Cipher.getInstance(RSA_MODE);
+            inputCipher.init(Cipher.ENCRYPT_MODE, entry.getCertificate().getPublicKey());
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
+    @Override
+    public String id() {
+        try {
+            Date date = keyStore.getCreationDate(alias);
+            if (date == null) {
+                return null;
+            }
+
+            return Utils.sha1Hex(Long.toString(date.getTime()));
+        } catch (KeyStoreException ignored) { }
+
+        return null;
+    }
+
+    @Override
+    public void validate() {
+        createKeys();
+    }
+
     @SuppressLint("ApplySharedPref")
-    public void invalidate() {
+    public void purge() {
         try {
             keyStore.deleteEntry(alias);
             sharedPreferences.edit().remove(alias).commit();
 
             createKeys();
         } catch (Exception e) {
-            Logger.e("Could not invalidate key store: %s", e.getMessage());
+            Logger.e("Could not purge key store: %s", e.getMessage());
         }
     }
 
