@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 - Using new ShoppingCart implementation, breaking core SDK API.
 
 ### Added
+- Enhanced security of locally stored payment credentials by using the Android KeyStore API
+on Android 4.3+
 - Support for automatic remote price updates and promotions
 
 ### Changed
