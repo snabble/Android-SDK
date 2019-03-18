@@ -234,6 +234,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
+                public void onActivityResumed(Activity activity) {
+                    onChanged();
+                }
+
+                @Override
                 public void onActivityStarted(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
                         registerListeners();

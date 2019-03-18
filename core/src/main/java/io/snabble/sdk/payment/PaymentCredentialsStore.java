@@ -1,8 +1,10 @@
 package io.snabble.sdk.payment;
 
 import android.annotation.SuppressLint;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 
 import com.google.gson.Gson;
 
@@ -38,7 +40,7 @@ public class PaymentCredentialsStore {
         initializeKeyStore();
 
         if (data.id == null) {
-            data.id = Utils.sha1Hex(Long.toString(System.currentTimeMillis()));
+            generateRandomId();
         }
     }
 
@@ -83,15 +85,37 @@ public class PaymentCredentialsStore {
                 clear();
             }
         }
+
+        Context context = Snabble.getInstance().getApplication();
+        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+
+        boolean secure = false;
+
+        if (keyguardManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                secure = keyguardManager.isDeviceSecure(); // ignores SIM lock, API 23+
+            } else {
+                secure = keyguardManager.isKeyguardSecure();
+            }
+        }
+
+        if (!secure) {
+            generateRandomId();
+            clear();
+        }
+    }
+
+    private void generateRandomId() {
+        data.id = Utils.sha1Hex(Long.toString(System.currentTimeMillis()));
     }
 
     public List<PaymentCredentials> getAll() {
         ensureKeyStoreIsAccessible();
-
         return Collections.unmodifiableList(data.credentialsList);
     }
 
     public String id() {
+        ensureKeyStoreIsAccessible();
         return data.id;
     }
 
@@ -108,15 +132,18 @@ public class PaymentCredentialsStore {
     }
 
     public void remove(PaymentCredentials credentials) {
-        data.credentialsList.remove(credentials);
-        save();
-        notifyChanged();
+        if (data.credentialsList.remove(credentials)) {
+            save();
+            notifyChanged();
+        }
     }
 
     public void clear() {
-        data.credentialsList.clear();
-        save();
-        notifyChanged();
+        if (data.credentialsList.size() > 0) {
+            data.credentialsList.clear();
+            save();
+            notifyChanged();
+        }
     }
 
     private void save() {
