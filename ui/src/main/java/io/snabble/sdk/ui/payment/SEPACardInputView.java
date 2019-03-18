@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.payment;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -24,6 +25,8 @@ import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class SEPACardInputView extends FrameLayout {
     private Button save;
@@ -32,6 +35,7 @@ public class SEPACardInputView extends FrameLayout {
     private EditText ibanInput;
     private View nameError;
     private View ibanError;
+    private boolean acceptedKeyguard;
 
     public SEPACardInputView(Context context) {
         super(context);
@@ -215,16 +219,24 @@ public class SEPACardInputView extends FrameLayout {
                         } else {
                             Snabble.getInstance().getPaymentCredentialsStore().add(pc);
                         }
-                    }
 
-                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                    if(callback != null){
-                        hideSoftKeyboard(ibanInput);
-                        hideSoftKeyboard(nameInput);
-                        callback.goBack();
+                        if (isShown()) {
+                            finish();
+                        } else {
+                            acceptedKeyguard = true;
+                        }
                     }
                 }
             });
+        }
+    }
+
+    private void finish() {
+        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+        if (callback != null) {
+            hideSoftKeyboard(ibanInput);
+            hideSoftKeyboard(nameInput);
+            callback.goBack();
         }
     }
 
@@ -239,4 +251,32 @@ public class SEPACardInputView extends FrameLayout {
         shake.setInterpolator(new CycleInterpolator(5));
         view.startAnimation(shake);
     }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+    }
+
+    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+            new SimpleActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityStarted(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        if (acceptedKeyguard) {
+                            finish();
+                        }
+                    }
+                }
+            };
 }
