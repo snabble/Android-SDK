@@ -38,6 +38,10 @@ public class TokenRegistry {
     }
 
     private synchronized Token refreshToken(Project project, boolean isRetry) {
+        if (totp == null) {
+            return null;
+        }
+
         long time = getOffsetTime();
 
         Logger.d("Getting token for %s, t=%s, c=%s", project.getId(),
