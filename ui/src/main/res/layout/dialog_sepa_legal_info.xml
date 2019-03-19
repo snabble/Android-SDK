@@ -27,7 +27,7 @@
             android:gravity="center"
             android:textSize="17sp"
             android:textStyle="bold"
-            android:text="SEPA-Lastschriftmandat"/> <!-- TODO i18n -->
+            android:text="@string/Snabble.Payment.SEPA.legalInfo.title"/> <!-- TODO i18n -->
 
         <TextView
             android:id="@+id/message"
@@ -44,6 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:id="@+id/button"
-            android:text="Ich stimme zu" /> <!-- TODO i18n -->
+            android:text="@string/Snabble.Payment.SEPA.legalInfo.agree" /> <!-- TODO i18n -->
     </LinearLayout>
 </ScrollView>

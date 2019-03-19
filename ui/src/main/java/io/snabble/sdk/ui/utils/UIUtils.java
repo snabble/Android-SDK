@@ -24,8 +24,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class UIUtils {
-    public static final int INFO_WARNING = 0;
-    public static final int INFO_POSITIVE = 1;
+    public static final int INFO_NEUTRAL = 0;
+    public static final int INFO_WARNING = 1;
+    public static final int INFO_POSITIVE = 2;
 
     public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
 
@@ -60,16 +61,7 @@ public class UIUtils {
 
         return null;
     }
-
-    public static void setColoredText(TextView tv, String text, String subText, int color) {
-        SpannableString spannableString = new SpannableString(text);
-        ForegroundColorSpan foregroundSpan = new ForegroundColorSpan(color);
-        int start = text.lastIndexOf(subText);
-        int end = start + subText.length();
-        spannableString.setSpan(foregroundSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        tv.setText(spannableString);
-    }
-
+    
     public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, int type) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final TextView info = (TextView)inflater.inflate(R.layout.view_info, null);
@@ -90,9 +82,13 @@ public class UIUtils {
 
         Resources res = parent.getContext().getResources();
         switch (type) {
-            case INFO_WARNING:
+            case INFO_NEUTRAL:
                 info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_infoColor, null));
                 info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_infoTextColor, null));
+                break;
+            case INFO_WARNING:
+                info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_infoColorWarning, null));
+                info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_infoTextColorWarning, null));
                 break;
             case INFO_POSITIVE:
                 info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_infoColorPositive, null));

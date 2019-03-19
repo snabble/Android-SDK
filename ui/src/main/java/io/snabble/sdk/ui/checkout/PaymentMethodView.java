@@ -10,6 +10,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.res.Resources;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -188,15 +189,10 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         View ok = view.findViewById(R.id.button);
         View close = view.findViewById(R.id.close);
 
-        // TODO i18n
-        final String shortText = String.format("Ich ermächtige %s, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen. ", project.getCheckedInShop().getName());
-        final String longText = String.format("Ich ermächtige %s, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen. Bei Nichteinlösung der Lastschrift ermächtige ich das Unternehmen oder die First Data GmbH, Marienbader Platz 1, 61348 Bad Homburg (Gläubiger-ID DE97001000000030136) („First Data“) zum neuerlichen Einzug des Zahlungsbetrages zzgl. Kosten (z.B. Rücklastschriftentgelt meines Kreditinstituts). Zugleich weise ich mein Kreditinstitut an, die auf mein Konto gezogene Lastschrift einzulösen. Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen. Der Lastschrifteinzug erfolgt frühestens am nächsten Bankarbeitstag.\n" +
-                "\n" +
-                "Adressweitergabe: Ich weise mein Kreditinstitut unwiderruflich an, bei Nichteinlösung der Lastschrift dem Unternehmen oder der First Data auf Anforderung meinen Namen und meine Anschrift zur Geltendmachung der Forderung mitzuteilen.\n" +
-                "\n" +
-                "Datenschutz-Informationen für Karteninhaber mit weiteren Informationen zur Zahlungsabwicklung finden Sie auf Anfrage an der Kasse.", project.getCheckedInShop().getName());
-
-        String highlightedString = "Lastschrift";
+        Resources res = getResources();
+        final String shortText = res.getString(R.string.Snabble_Payment_SEPA_legalInfo_short, project.getCheckedInShop().getName());
+        final String longText = res.getString(R.string.Snabble_Payment_SEPA_legalInfo_long, project.getCheckedInShop().getName());
+        String highlightedString = res.getString(R.string.Snabble_Payment_SEPA_legalInfo_highlight);
 
         Spannable spannable = new SpannableString(shortText);
         int index = shortText.lastIndexOf(highlightedString);

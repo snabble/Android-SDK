@@ -21,6 +21,7 @@
 	<string name="Snabble.Payment.errorStarting">Error starting the payment process</string>
 	<string name="Snabble.PaymentSelection.title">Pay</string>
 	<string name="Snabble.PaymentSelection.howToPay">How would you like to pay %s?</string>
+	<string name="Snabble.PaymentSelection.payNow">Pay %s now</string>
 	<string name="Snabble.QRCode.didPay">I\'ve paid</string>
 	<string name="Snabble.QRCode.nextCode">Next Code</string>
 	<string name="Snabble.QRCode.priceMayDiffer">Total price is calculated at the register and may differ from the one shown here.</string>
@@ -55,6 +56,13 @@
 	<string name="Snabble.Shoppingcart.removeItem">Remove %s from the cart?</string>
 	<string name="Snabble.Shoppingcart.removeItems">Remove all products from shopping cart?</string>
 	<string name="Snabble.Shoppingcart.deposit">Deposit</string>
+	<string name="Snabble.saleStop.errorMsg.title">Sorry</string>
+	<string name="Snabble.saleStop.errorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier.</string>
+	<string name="Snabble.saleStop.errorMsg.one">This product cannot be paid for using the app, please pay for it at the cashier:</string>
+	<string name="Snabble.saleStop.errorMsg">These products cannot be paid for using the app, please pay for them at the cashier:</string>
+	<string name="Snabble.limitsAlert.title">Note</string>
+	<string name="Snabble.limitsAlert.notAllMethodsAvailable">With a total of %s, not all payment methods are available.</string>
+	<string name="Snabble.limitsAlert.checkoutNotAvailable">With a total of %s, checkout using the app is unfortunately no longer possible.</string>
 	<string name="Snabble.PaymentMethod.encodedCodes">Checkstand</string>
 	<string name="Snabble.PaymentMethod.qrCodePOS">Checkstand</string>
 	<string name="Snabble.Hints.title">Hint from %s</string>
@@ -66,9 +74,6 @@
 	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
 	<string name="Snabble.Receipt.title">Receipts</string>
 	<string name="Snabble.Receipt.noReceipt">No receipts found</string>
-	<string name="Snabble.saleStop.errorMsg.title">Sorry</string>
-	<string name="Snabble.saleStop.errorMsg.one">This product cannot be paid for using the app, please pay for it at the cashier.</string>
-	<string name="Snabble.saleStop.errorMsg">These products cannot be paid for using the app, please pay for them at the cashier.</string>
 	<string name="Snabble.Payment.SEPA.Name">Name</string>
 	<string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
 	<string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
@@ -86,6 +91,15 @@
 	<string name="Snabble.Payment.presentCode">Show this code at a snabble monitor or to a cashier to confirm your purchase.</string>
 	<string name="Snabble.Payment.waiting">Waiting for confirmation</string>
 	<string name="Snabble.networkError">Connection error</string>
+
+	<!-- TODO add to i18n -->
+	<string name="Snabble.Payment.SEPA.legalInfo.title">SEPA direct debit mandate</string>
+	<string name="Snabble.Payment.SEPA.legalInfo.agree">I agree</string>
+	<string name="Snabble.Payment.SEPA.legalInfo.short">I authorize %s to collect a single payment from my account by direct debit.</string>
+	<string name="Snabble.Payment.SEPA.legalInfo.long">I authorize %s to collect a single payment from my account by direct debit. In the event of non-payment of the direct debit, I authorize the company or First Data GmbH, Marienbader Platz 1, 61348 Bad Homburg (creditor ID DE97001000000030136) ("First Data") for the new collection of the payment amount plus costs (eg return debit note of my bank). At the same time, I instruct my bank to redeem the direct debit drawn on my account. Note: I can request reimbursement of the amount due within eight weeks of the debit date. Applicable in this regard by the contract with my bank conditions. The direct debit takes place at the earliest on the next bank working day.
+\n\nForwarding addresses: I irrevocably instruct my bank to notify the company or First Data of my name and address in order to assert the claim.
+\n\nData protection information for cardholders with further information on payment processing can be found on request at the cash desk.</string>
+	<string name="Snabble.Payment.SEPA.legalInfo.highlight">direct debit</string>
 
 	<!-- SECTION: Android -->
 	<string name="Snabble.askForPermission">Ask for permission</string>

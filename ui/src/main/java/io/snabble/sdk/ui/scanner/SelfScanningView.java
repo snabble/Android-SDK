@@ -139,6 +139,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
+        final int modCount = shoppingCart.getModCount();
+
         new ProductResolver.Builder(getContext())
                 .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
@@ -155,24 +157,35 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                             resumeBarcodeScanner();
                             delayNextScan();
                         }
+
+                        if (shoppingCart.getModCount() != modCount) {
+                            Project project = SnabbleUI.getProject();
+                            if (project.getMaxCheckoutLimit() > 0 && shoppingCart.getTotalPrice() >= project.getMaxCheckoutLimit()) {
+                                showInfo(getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+                                        project.getPriceFormatter().format(project.getMaxCheckoutLimit())));
+                            } else if (project.getMaxOnlinePaymentLimit() > 0 && shoppingCart.getTotalPrice() >= project.getMaxOnlinePaymentLimit()) {
+                                showInfo(getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
+                                        project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit())));
+                            }
+                        }
                     }
                 })
                 .setOnProductNotFoundListener(new ProductResolver.OnProductNotFoundListener() {
                     @Override
                     public void onProductNotFound() {
-                        showInfo(R.string.Snabble_Scanner_unknownBarcode);
+                        showWarning(getResources().getString(R.string.Snabble_Scanner_unknownBarcode));
                     }
                 })
                 .setOnNetworkErrorListener(new ProductResolver.OnNetworkErrorListener() {
                     @Override
                     public void onNetworkError() {
-                        showInfo(R.string.Snabble_Scanner_networkError);
+                        showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
                     }
                 })
                 .setOnShelfCodeScannedListener(new ProductResolver.OnShelfCodeScannedListener() {
                     @Override
                     public void onShelfCodeScanned() {
-                        showInfo(R.string.Snabble_Scanner_scannedShelfCode);
+                        showWarning(getResources().getString(R.string.Snabble_Scanner_scannedShelfCode));
                     }
                 })
                 .create()
@@ -200,12 +213,23 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         }
     }
 
-    private void showInfo(@StringRes final int resId) {
+    private void showInfo(final String text) {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {
-                UIUtils.showTopDownInfoBox(SelfScanningView.this, getResources().getString(resId),
+                UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_NEUTRAL);
+            }
+        });
+    }
+
+    private void showWarning(final String text) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
                         UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_WARNING);
             }
         });
