@@ -568,8 +568,8 @@ public class ShoppingCart {
                 item.amount = quantity;
             }
 
-            if (item.price == null && item.units != null && scannedCode.hasPrice()) {
-                item.price = item.units * scannedCode.getPrice();
+            if (item.price == null && scannedCode.hasPrice()) {
+                item.price = scannedCode.getPrice();
             }
 
             items.add(item);
