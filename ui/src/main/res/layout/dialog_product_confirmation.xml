@@ -46,10 +46,22 @@
         tools:text="Schraubendreher Top G 8,0x1,2" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/price"
+        android:id="@+id/originalPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:alpha="0.6"
+        android:layout_marginBottom="4dp"
+        tools:text="1,29 €" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/originalPrice"
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:textSize="17sp"
