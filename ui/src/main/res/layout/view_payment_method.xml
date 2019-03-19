@@ -20,6 +20,7 @@
         android:padding="24dp"
         android:clipToPadding="false"
         android:layout_below="@+id/choose_payment_title"
+        android:overScrollMode="never"
         android:id="@+id/payment_methods" />
 
 </RelativeLayout>

@@ -4,10 +4,19 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +43,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
@@ -106,7 +116,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         entries = new ArrayList<>();
 
         List<PaymentMethod> availablePaymentMethods = Arrays.asList(checkout.getAvailablePaymentMethods());
-        for (PaymentMethod paymentMethod : availablePaymentMethods) {
+        for (final PaymentMethod paymentMethod : availablePaymentMethods) {
             if (icons.containsKey(paymentMethod) || descriptions.containsKey(paymentMethod)) {
                 Entry e = new Entry();
                 e.text = descriptions.get(paymentMethod);
@@ -116,26 +126,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                     e.onClickListener = new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-                                final SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                                if (callback != null) {
-                                    callback.requestKeyguard(new KeyguardHandler() {
-                                        @Override
-                                        public void onKeyguardResult(int resultCode) {
-                                            if (KeyguardUtils.isDeviceSecure() && resultCode == Activity.RESULT_OK) {
-                                                SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                                                if(callback != null) {
-                                                    callback.showSEPACardInput();
-                                                }
-                                            } else {
-                                                showPaymentNotPossibleDialog();
-                                            }
-                                        }
-                                    });
-                                }
-                            } else {
-                                showPaymentNotPossibleDialog();
-                            }
+                            showSEPACardInput();
                         }
                     };
                 }
@@ -166,6 +157,81 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    private void showSEPACardInput() {
+        if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
+                && KeyguardUtils.isDeviceSecure()) {
+            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            if(callback != null) {
+                callback.showSEPACardInput();
+            }
+        } else {
+            showPaymentNotPossibleDialog();
+        }
+    }
+
+    private void showSEPALegalInfoIfNeeded(final PaymentMethod paymentMethod, final OnClickListener clickListener) {
+        if (paymentMethod != PaymentMethod.TELECASH_DIRECT_DEBIT) {
+            clickListener.onClick(null);
+            return;
+        }
+
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_sepa_legal_info, null);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                .setView(view)
+                .create();
+
+        final TextView message = view.findViewById(R.id.message);
+        View ok = view.findViewById(R.id.button);
+        View close = view.findViewById(R.id.close);
+
+        // TODO i18n
+        final String shortText = String.format("Ich ermächtige %s, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen. ", project.getCheckedInShop().getName());
+        final String longText = String.format("Ich ermächtige %s, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen. Bei Nichteinlösung der Lastschrift ermächtige ich das Unternehmen oder die First Data GmbH, Marienbader Platz 1, 61348 Bad Homburg (Gläubiger-ID DE97001000000030136) („First Data“) zum neuerlichen Einzug des Zahlungsbetrages zzgl. Kosten (z.B. Rücklastschriftentgelt meines Kreditinstituts). Zugleich weise ich mein Kreditinstitut an, die auf mein Konto gezogene Lastschrift einzulösen. Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen. Der Lastschrifteinzug erfolgt frühestens am nächsten Bankarbeitstag.\n" +
+                "\n" +
+                "Adressweitergabe: Ich weise mein Kreditinstitut unwiderruflich an, bei Nichteinlösung der Lastschrift dem Unternehmen oder der First Data auf Anforderung meinen Namen und meine Anschrift zur Geltendmachung der Forderung mitzuteilen.\n" +
+                "\n" +
+                "Datenschutz-Informationen für Karteninhaber mit weiteren Informationen zur Zahlungsabwicklung finden Sie auf Anfrage an der Kasse.", project.getCheckedInShop().getName());
+
+        String highlightedString = "Lastschrift";
+
+        Spannable spannable = new SpannableString(shortText);
+        int index = shortText.lastIndexOf(highlightedString);
+        int length = highlightedString.length();
+        int color = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
+
+        spannable.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                message.setText(longText);
+            }
+        }, index, index+length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        spannable.setSpan(new ForegroundColorSpan(color), index, index+length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        message.setText(spannable);
+        message.setMovementMethod(LinkMovementMethod.getInstance());
+
+        close.setOnClickListener(new OneShotClickListener() {
+            @Override
+            public void click() {
+                alertDialog.dismiss();
+            }
+        });
+
+        ok.setOnClickListener(new OneShotClickListener() {
+            @Override
+            public void click() {
+                alertDialog.dismiss();
+                clickListener.onClick(null);
+            }
+        });
+
+        alertDialog.show();
+        alertDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void showPaymentNotPossibleDialog() {
@@ -237,20 +303,25 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                     public void onClick(View v) {
                         if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
                                 && e.paymentMethod.isRequiringCredentials()) {
-                            final SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                            if (callback != null) {
-                                callback.requestKeyguard(new KeyguardHandler() {
-                                    @Override
-                                    public void onKeyguardResult(int resultCode) {
-                                        if (resultCode == Activity.RESULT_OK) {
-                                            checkout.pay(e.paymentMethod, e.paymentCredentials);
-                                            Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
-                                        } else {
-                                            callback.goBack();
-                                        }
+                            showSEPALegalInfoIfNeeded(e.paymentMethod, new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                                    if (callback != null) {
+                                        callback.requestKeyguard(new KeyguardHandler() {
+                                            @Override
+                                            public void onKeyguardResult(int resultCode) {
+                                                if (resultCode == Activity.RESULT_OK) {
+                                                    checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                                    Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                                                } else {
+                                                    callback.goBack();
+                                                }
+                                            }
+                                        });
                                     }
-                                });
-                            }
+                                }
+                            });
                         } else {
                             checkout.pay(e.paymentMethod, e.paymentCredentials);
                             Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);

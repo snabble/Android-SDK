@@ -67,6 +67,9 @@ public class Project {
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
 
+    private int maxOnlinePaymentLimit;
+    private int maxCheckoutLimit;
+
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
 
@@ -226,6 +229,12 @@ public class Project {
         this.priceOverrideTemplates = priceOverrideTemplates.toArray(new PriceOverrideTemplate[priceOverrideTemplates.size()]);
 
         searchableTemplates = JsonUtils.getStringArrayOpt(jsonObject, "searchableTemplates", new String[] { "default" });
+
+        if (jsonObject.has("checkoutLimits")) {
+            JsonObject checkoutLimits = jsonObject.getAsJsonObject("checkoutLimits");
+            maxCheckoutLimit = JsonUtils.getIntOpt(checkoutLimits, "checkoutNotAvailable", 0);
+            maxOnlinePaymentLimit = JsonUtils.getIntOpt(checkoutLimits, "notAllMethodsAvailable", 0);
+        }
 
         notifyUpdate();
     }
@@ -416,6 +425,16 @@ public class Project {
 
     public String[] getSearchableTemplates() {
         return searchableTemplates;
+    }
+
+    /** The limit of online payments, in cents (or other base currency values) **/
+    public int getMaxOnlinePaymentLimit() {
+        return maxOnlinePaymentLimit;
+    }
+
+    /** The limit of all checkout methods, in cents (or other base currency values) **/
+    public int getMaxCheckoutLimit() {
+        return maxCheckoutLimit;
     }
 
     /**

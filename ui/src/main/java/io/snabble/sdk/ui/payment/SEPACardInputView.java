@@ -275,6 +275,7 @@ public class SEPACardInputView extends FrameLayout {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
                         if (acceptedKeyguard) {
                             finish();
+                            acceptedKeyguard = false;
                         }
                     }
                 }
