@@ -16,6 +16,7 @@ on Android 4.3+
 - Improved ShoppingCart layouts
 - PriceFormatter is now reused across projects
 - Keep 4 starting digits of obfuscated iban 
+- Now showing original price when discounted prices are set in product confirmation dialog
 
 ### Fixed
 - Products with a overridden base price now get properly send over to the backend

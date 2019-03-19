@@ -9,7 +9,11 @@ import android.os.Looper;
 import androidx.appcompat.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.style.StrikethroughSpan;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -42,6 +46,7 @@ class ProductConfirmationDialog {
     private TextView subtitle;
     private TextView name;
     private TextView price;
+    private TextView originalPrice;
     private TextView depositPrice;
     private TextView quantityAnnotation;
     private AppCompatButton addToCart;
@@ -78,6 +83,7 @@ class ProductConfirmationDialog {
         subtitle = view.findViewById(R.id.subtitle);
         name = view.findViewById(R.id.name);
         price = view.findViewById(R.id.price);
+        originalPrice = view.findViewById(R.id.originalPrice);
         depositPrice = view.findViewById(R.id.depositPrice);
         quantityAnnotation = view.findViewById(R.id.quantity_annotation);
         addToCart = view.findViewById(R.id.addToCart);
@@ -240,10 +246,21 @@ class ProductConfirmationDialog {
     }
 
     private void updatePrice() {
+        Product product = cartItem.getProduct();
+
         String fullPriceText = cartItem.getFullPriceText();
         if (fullPriceText != null) {
             price.setText(cartItem.getFullPriceText());
             price.setVisibility(View.VISIBLE);
+
+            if (product.getPrice() > product.getDiscountedPrice()) {
+                Spannable originalPriceText = new SpannableString(priceFormatter.format(product.getPrice()));
+                originalPriceText.setSpan(new StrikethroughSpan(), 0, originalPriceText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                originalPrice.setVisibility(View.VISIBLE);
+                originalPrice.setText(originalPriceText);
+            } else {
+                originalPrice.setVisibility(View.GONE);
+            }
         } else {
             price.setVisibility(View.GONE);
         }
