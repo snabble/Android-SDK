@@ -18,6 +18,7 @@ on Android 4.3+
 - Keep 4 starting digits of obfuscated iban 
 
 ### Fixed
+- Products with a overridden base price now get properly send over to the backend
 - ShoppingCart checkout button visible when cart is empty 
 - SearchableProductAdapter is now honoring searchable templates
 - Keyguard is now correctly preventing checkout 
