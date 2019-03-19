@@ -11,26 +11,16 @@
             android:layout_height="wrap_content"
             android:paddingBottom="276dp"> <!-- helps when adjustPan is set -->
 
-        <ImageView
+        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_card_sepa"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_margin="24dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/Snabble.Payment.SEPA.hint"
                 android:id="@+id/imageView"/>
-
-        <!--<TextView-->
-            <!--android:text="@string/Snabble.Payment.SEPA.Name"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@+id/imageView"-->
-            <!--android:layout_marginTop="4dp"-->
-            <!--android:layout_alignLeft="@+id/input_name"-->
-            <!--android:textColor="@color/snabble_textColorDark"-->
-            <!--android:visibility="invisible"-->
-            <!--tools:visibility="visible"-->
-            <!--android:id="@+id/input_name_hint"/>-->
 
         <TextView
             android:text="@string/Snabble.Payment.SEPA.InvalidName"
@@ -55,20 +45,10 @@
             android:layout_marginRight="16dp"
             android:maxLines="1"
             android:hint="@string/Snabble.Payment.SEPA.Name"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
             android:autofillHints="name"
             android:id="@+id/input_name"/>
-
-        <!--<TextView-->
-            <!--android:text="@string/Snabble.Payment.SEPA.IBAN"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@+id/input_name"-->
-            <!--android:layout_marginTop="4dp"-->
-            <!--android:layout_alignLeft="@+id/prefix"-->
-            <!--android:textColor="@color/snabble_textColorDark"-->
-            <!--android:visibility="invisible"-->
-            <!--tools:visibility="visible"-->
-            <!--android:id="@+id/input_iban_hint"/>-->
 
         <TextView
             android:text="@string/Snabble.Payment.SEPA.InvalidIBAN"

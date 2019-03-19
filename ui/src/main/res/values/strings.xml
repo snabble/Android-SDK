@@ -100,6 +100,7 @@
 \n\nForwarding addresses: I irrevocably instruct my bank to notify the company or First Data of my name and address in order to assert the claim.
 \n\nData protection information for cardholders with further information on payment processing can be found on request at the cash desk.</string>
 	<string name="Snabble.Payment.SEPA.legalInfo.highlight">direct debit</string>
+	<string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
 
 	<!-- SECTION: Android -->
 	<string name="Snabble.askForPermission">Ask for permission</string>
