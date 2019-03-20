@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.Environment;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.UserPreferences;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 import io.snabble.sdk.utils.security.KeyStoreCipher;
@@ -23,18 +24,21 @@ public class PaymentCredentialsStore {
     private class Data {
         private List<PaymentCredentials> credentialsList;
         private String id;
+        private boolean isKeyguarded;
     }
 
     private SharedPreferences sharedPreferences;
     private Data data;
     private List<Callback> callbacks = new CopyOnWriteArrayList<>();
     private String credentialsKey;
+    private UserPreferences userPreferences;
 
     KeyStoreCipher keyStoreCipher;
 
     public PaymentCredentialsStore(Context context, Environment environment) {
         sharedPreferences = context.getSharedPreferences("snabble_payment", Context.MODE_PRIVATE);
         credentialsKey = "credentials_" + (environment != null ? environment.name() : "_UNKNOWN");
+        userPreferences = Snabble.getInstance().getUserPreferences();
 
         load();
         initializeKeyStore();
@@ -50,20 +54,8 @@ public class PaymentCredentialsStore {
             Snabble snabble = Snabble.getInstance();
 
             // KeyStore is not available on Android < 4.3
-            if (snabble.getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+            if (userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
                 keyStoreCipher = KeyStoreCipher.create(snabble.getApplication(), "SnabblePaymentCredentialsStore", true);
-            }
-
-            if (keyStoreCipher != null) {
-                String keyStoreId = keyStoreCipher.id();;
-                if (data.id != null) {
-                    if(!data.id.equals(keyStoreId)) {
-                        clear();
-                    }
-                }
-
-                save();
-                notifyChanged();
             }
         }
     }
@@ -82,6 +74,7 @@ public class PaymentCredentialsStore {
 
             if (!id.equals(data.id)) {
                 data.id = keyStoreCipher.id();
+                data.isKeyguarded = true;
                 clear();
             }
         }
@@ -99,7 +92,7 @@ public class PaymentCredentialsStore {
             }
         }
 
-        if (!secure) {
+        if (!secure || data.isKeyguarded != userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
             generateRandomId();
             clear();
         }
@@ -107,6 +100,7 @@ public class PaymentCredentialsStore {
 
     private void generateRandomId() {
         data.id = Utils.sha1Hex(Long.toString(System.currentTimeMillis()));
+        data.isKeyguarded = false;
     }
 
     public List<PaymentCredentials> getAll() {

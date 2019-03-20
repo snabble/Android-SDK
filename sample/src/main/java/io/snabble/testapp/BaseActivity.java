@@ -23,6 +23,7 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
+import io.snabble.sdk.ui.utils.KeyguardUtils;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUICallback {
     private static final int REQUEST_CODE_KEYGUARD = 0;
@@ -156,7 +157,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     public void requestKeyguard(KeyguardHandler keyguardHandler) {
         KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && km.isKeyguardSecure()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && KeyguardUtils.isDeviceSecure()) {
             this.keyguardHandler = keyguardHandler;
 
             Intent authIntent = km.createConfirmDeviceCredentialIntent(null, null);
