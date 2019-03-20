@@ -263,10 +263,12 @@ class ProductConfirmationDialog {
             }
         } else {
             price.setVisibility(View.GONE);
+            originalPrice.setVisibility(View.GONE);
         }
 
         if (cartItem.getUnit() == Unit.PRICE) {
             price.setVisibility(View.GONE);
+            originalPrice.setVisibility(View.GONE);
         }
 
         int cartItemDepositPrice = cartItem.getTotalDepositPrice();

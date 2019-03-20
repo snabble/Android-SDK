@@ -450,12 +450,14 @@ public class ShoppingCart {
 
         public String getPriceText() {
             if (lineItem != null) {
-                if (product != null && lineItem.amount > 1 || (getUnit() != Unit.PRICE && getEffectiveQuantity() > 1)) {
-                    return String.format("* %s = %s",
-                            cart.priceFormatter.format(product, lineItem.price),
-                            cart.priceFormatter.format(getTotalPrice()));
-                } else {
-                    return cart.priceFormatter.format(getTotalPrice(), true);
+                if (lineItem.price > 0) {
+                    if (product != null && lineItem.amount > 1 || (getUnit() != Unit.PRICE && getEffectiveQuantity() > 1)) {
+                        return String.format("* %s = %s",
+                                cart.priceFormatter.format(product, lineItem.price),
+                                cart.priceFormatter.format(getTotalPrice()));
+                    } else {
+                        return cart.priceFormatter.format(getTotalPrice(), true);
+                    }
                 }
             }
 
