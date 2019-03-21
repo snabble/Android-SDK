@@ -86,7 +86,7 @@
                 android:layout_toRightOf="@+id/prefix"
                 android:layout_below="@+id/input_invalid_iban"
                 android:layout_marginTop="2dp"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="8dp"
                 android:layout_marginRight="16dp"
                 android:inputType="textCapCharacters|textVisiblePassword"
                 android:textAllCaps="true"
