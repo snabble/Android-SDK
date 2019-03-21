@@ -20,24 +20,20 @@
         <item name="android:textColorPrimary">@color/snabble_textColorLight</item>
     </style>
 
-    <style name="SnabbleButton" parent="@style/Widget.AppCompat.Button.Borderless">
+    <style name="SnabbleButton" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/snabble_textColorLight</item>
-        <item name="android:background">@drawable/ic_button</item>
         <item name="backgroundTint">@color/snabble_primaryColorAction</item>
         <item name="android:elevation" tools:targetApi="lollipop">1dp</item>
     </style>
 
-    <style name="SnabbleButtonWhite" parent="@style/Widget.AppCompat.Button.Borderless">
+    <style name="SnabbleButtonWhite" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/snabble_textColorDark</item>
-        <item name="android:background">@drawable/ic_button</item>
         <item name="backgroundTint">#ffffff</item>
         <item name="android:elevation" tools:targetApi="lollipop">1dp</item>
     </style>
 
     <style name="SnabbleEditText" parent="@style/Widget.AppCompat.EditText">
-        <item name="android:textCursorDrawable">@null</item>
-        <item name="android:textColor">@color/snabble_textColorDark</item>
-        <item name="android:background">@drawable/ic_round_edittext</item>
+
     </style>
 
     <style name="SnabbleSearchEditText" parent="@style/Widget.AppCompat.EditText">

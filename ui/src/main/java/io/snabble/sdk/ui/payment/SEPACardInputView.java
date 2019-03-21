@@ -93,8 +93,8 @@ public class SEPACardInputView extends FrameLayout {
                 // update text of iban to adjust spacing
                 formatIBANInput();
 
-                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
-                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
+//                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
+//                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
             }
         });
 
@@ -146,8 +146,8 @@ public class SEPACardInputView extends FrameLayout {
 
             public void afterTextChanged(Editable s) {
                 ibanError.setVisibility(View.INVISIBLE);
-                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
-                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
+//                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
+//                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
             }
         });
 
@@ -162,7 +162,7 @@ public class SEPACardInputView extends FrameLayout {
 
             public void afterTextChanged(Editable s) {
                 nameError.setVisibility(View.INVISIBLE);
-                nameInput.setBackgroundResource(R.drawable.ic_round_edittext);
+//                nameInput.setBackgroundResource(R.drawable.ic_round_edittext);
             }
         });
 
@@ -221,7 +221,7 @@ public class SEPACardInputView extends FrameLayout {
         } else {
             nameError.setVisibility(View.VISIBLE);
             shake(nameInput);
-            nameInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
+//            nameInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
             ok = false;
         }
 
@@ -230,7 +230,7 @@ public class SEPACardInputView extends FrameLayout {
         } else {
             ibanError.setVisibility(View.VISIBLE);
             shake(ibanInput);
-            ibanInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
+//            ibanInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
             ok = false;
         }
 
