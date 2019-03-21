@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="120dp"
-    android:padding="16dp"
-    android:foreground="?android:attr/selectableItemBackground"
-    app:cardBackgroundColor="#f7f7f7"
-    app:cardCornerRadius="15dp"
-    app:cardElevation="2dp"
-    app:cardUseCompatPadding="true">
+    app:backgroundTint="#ffffff">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/button"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -25,7 +26,7 @@
             android:id="@+id/image"
             android:gravity="center"
             android:visibility="gone"
-            tools:src="@drawable/ic_sepa"
+            tools:src="@drawable/ic_pm_sepa"
             tools:visibility="visible" />
 
         <TextView
@@ -40,4 +41,4 @@
             tools:visibility="visible" />
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</FrameLayout>

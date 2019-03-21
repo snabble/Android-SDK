@@ -22,91 +22,82 @@
             android:layout_marginRight="16dp"
             android:text="@string/Snabble.Payment.SEPA.hint" />
 
-        <TextView
-            android:id="@+id/input_invalid_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/imageView"
-            android:layout_alignRight="@+id/input_name"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:text="@string/Snabble.Payment.SEPA.InvalidName"
-            android:textColor="@color/snabble_textColorError"
-            android:visibility="invisible"
-            tools:visibility="visible" />
-
-        <EditText
-            android:id="@+id/input_name"
-            style="@style/SnabbleEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:id="@+id/input_name_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/input_invalid_name"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
-            android:autofillHints="name"
             android:hint="@string/Snabble.Payment.SEPA.Name"
-            android:imeOptions="actionDone"
-            android:inputType="textNoSuggestions"
-            android:maxLines="1"
-            android:singleLine="true" />
+            android:layout_below="@+id/imageView">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="name"
+                android:imeOptions="actionDone"
+                android:inputType="textNoSuggestions"
+                android:maxLines="1"
+                android:singleLine="true" >
 
-        <TextView
-            android:id="@+id/input_invalid_iban"
+            </com.google.android.material.textfield.TextInputEditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:id="@+id/prefix_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/input_name"
-            android:layout_alignRight="@+id/input_iban"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:text="@string/Snabble.Payment.SEPA.InvalidIBAN"
-            android:textColor="@color/snabble_textColorError"
-            android:visibility="invisible"
-            tools:visibility="visible" />
+            android:layout_below="@+id/input_name_layout">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/prefix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:inputType="textCapCharacters|textNoSuggestions"
+                android:maxLength="2"
+                android:text="DE"
+                android:textAllCaps="true"
+                android:textColor="@color/snabble_textColorDark" />
 
-        <EditText
-            android:id="@+id/prefix"
-            style="@style/SnabbleEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/input_iban"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:gravity="center"
-            android:inputType="textCapCharacters|textNoSuggestions"
-            android:maxLength="2"
-            android:text="DE"
-            android:textAllCaps="true"
-            android:textColor="@color/snabble_textColorDark"
-            android:textSize="17sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/input_iban"
-            style="@style/SnabbleEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:id="@+id/input_iban_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/input_invalid_iban"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="2dp"
             android:layout_marginRight="16dp"
-            android:layout_toRightOf="@+id/prefix"
-            android:hint="@string/Snabble.Payment.SEPA.IBAN"
-            android:inputType="textCapCharacters|textVisiblePassword"
-            android:maxLines="1"
-            android:textAllCaps="true"
-            android:textColor="@color/snabble_textColorDark"
-            android:textSize="17sp" />
+            android:layout_toRightOf="@+id/prefix_layout"
+            android:layout_below="@+id/input_name_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_iban"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_name_layout"
+                android:layout_toRightOf="@+id/prefix"
+                android:hint="@string/Snabble.Payment.SEPA.IBAN"
+                android:inputType="textCapCharacters|textVisiblePassword"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:textColor="@color/snabble_textColorDark" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/save"
-            style="@style/SnabbleButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/input_iban"
+            android:layout_below="@+id/input_iban_layout"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:text="@string/Snabble.Save" />
     </RelativeLayout>
 </ScrollView>

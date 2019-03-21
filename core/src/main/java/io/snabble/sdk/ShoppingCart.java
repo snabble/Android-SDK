@@ -452,7 +452,7 @@ public class ShoppingCart {
             if (lineItem != null) {
                 if (lineItem.price > 0) {
                     if (product != null && lineItem.amount > 1 || (getUnit() != Unit.PRICE && getEffectiveQuantity() > 1)) {
-                        return String.format("* %s = %s",
+                        return String.format("\u00D7 %s = %s",
                                 cart.priceFormatter.format(product, lineItem.price),
                                 cart.priceFormatter.format(getTotalPrice()));
                     } else {
@@ -469,7 +469,7 @@ public class ShoppingCart {
                 } else if (getEffectiveQuantity() <= 1) {
                     return cart.priceFormatter.format(product);
                 } else {
-                    return String.format("* %s = %s",
+                    return String.format("\u00D7 %s = %s",
                             cart.priceFormatter.format(product),
                             cart.priceFormatter.format(getTotalPrice()));
                 }

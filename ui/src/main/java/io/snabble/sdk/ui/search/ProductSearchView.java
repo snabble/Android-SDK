@@ -13,6 +13,9 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -21,7 +24,8 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 
 public class ProductSearchView extends FrameLayout {
     private SearchableProductAdapter searchableProductAdapter;
-    private EditText searchBar;
+    private TextInputEditText searchBar;
+    private TextInputLayout searchBarTextInputLayout;
     private boolean searchBarEnabled;
     private TextView addCodeAsIs;
     private String lastSearchQuery;
@@ -46,12 +50,12 @@ public class ProductSearchView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.view_search_product, this);
 
-        Project project = SnabbleUI.getProject();
-
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         searchBarEnabled = true;
         allowAnyCode = true;
+
+        searchBarTextInputLayout = findViewById(R.id.search_bar_layout);
         searchBar = findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -89,6 +93,8 @@ public class ProductSearchView extends FrameLayout {
                 return false;
             }
         });
+
+        searchBarTextInputLayout.requestFocus();
 
         addCodeAsIs = findViewById(R.id.add_code_as_is);
 
@@ -161,9 +167,9 @@ public class ProductSearchView extends FrameLayout {
         this.searchBarEnabled = searchBarEnabled;
 
         if (searchBarEnabled) {
-            searchBar.setVisibility(View.VISIBLE);
+            searchBarTextInputLayout.setVisibility(View.VISIBLE);
         } else {
-            searchBar.setVisibility(View.GONE);
+            searchBarTextInputLayout.setVisibility(View.GONE);
         }
     }
 

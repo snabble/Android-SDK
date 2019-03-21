@@ -21,6 +21,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.core.content.res.ResourcesCompat;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -36,8 +39,9 @@ public class SEPACardInputView extends FrameLayout {
     private EditText nameInput;
     private EditText ibanCountryCode;
     private EditText ibanInput;
-    private View nameError;
-    private View ibanError;
+    private TextInputLayout nameTextInputLayout;
+    private TextInputLayout ibanCountryCodeTextInputLayout;
+    private TextInputLayout ibanTextInputLayout;
     private boolean acceptedKeyguard;
 
     public SEPACardInputView(Context context) {
@@ -59,11 +63,15 @@ public class SEPACardInputView extends FrameLayout {
         inflate(getContext(), R.layout.view_cardinput_sepa, this);
 
         nameInput = findViewById(R.id.input_name);
-        nameError = findViewById(R.id.input_invalid_name);
-
         ibanCountryCode = findViewById(R.id.prefix);
         ibanInput = findViewById(R.id.input_iban);
-        ibanError = findViewById(R.id.input_invalid_iban);
+
+        nameTextInputLayout = findViewById(R.id.input_name_layout);
+        ibanCountryCodeTextInputLayout = findViewById(R.id.prefix_layout);
+        ibanTextInputLayout = findViewById(R.id.input_iban_layout);
+
+        ibanTextInputLayout.setHelperText(" ");
+        nameTextInputLayout.setHelperText(" ");
 
         save = findViewById(R.id.save);
         save.setOnClickListener(new OnClickListener() {
@@ -92,9 +100,6 @@ public class SEPACardInputView extends FrameLayout {
             public void afterTextChanged(Editable s) {
                 // update text of iban to adjust spacing
                 formatIBANInput();
-
-//                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
-//                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
             }
         });
 
@@ -145,9 +150,7 @@ public class SEPACardInputView extends FrameLayout {
             }
 
             public void afterTextChanged(Editable s) {
-                ibanError.setVisibility(View.INVISIBLE);
-//                ibanInput.setBackgroundResource(R.drawable.ic_round_edittext);
-//                ibanCountryCode.setBackgroundResource(R.drawable.ic_round_edittext);
+                ibanTextInputLayout.setErrorEnabled(false);
             }
         });
 
@@ -161,8 +164,7 @@ public class SEPACardInputView extends FrameLayout {
             }
 
             public void afterTextChanged(Editable s) {
-                nameError.setVisibility(View.INVISIBLE);
-//                nameInput.setBackgroundResource(R.drawable.ic_round_edittext);
+                nameTextInputLayout.setErrorEnabled(false);
             }
         });
 
@@ -217,20 +219,18 @@ public class SEPACardInputView extends FrameLayout {
         final String iban = ibanCountryCode.getText().toString() + ibanInput.getText().toString().replace(" ", "");
 
         if(name.length() > 0) {
-            nameError.setVisibility(View.INVISIBLE);
+            nameTextInputLayout.setErrorEnabled(false);
         } else {
-            nameError.setVisibility(View.VISIBLE);
-            shake(nameInput);
-//            nameInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
+            nameTextInputLayout.setErrorEnabled(true);
+            nameTextInputLayout.setError(getResources().getString(R.string.Snabble_Payment_SEPA_InvalidName));
             ok = false;
         }
 
         if(IBAN.validate(iban)) {
-            ibanError.setVisibility(View.INVISIBLE);
+            ibanTextInputLayout.setErrorEnabled(false);
         } else {
-            ibanError.setVisibility(View.VISIBLE);
-            shake(ibanInput);
-//            ibanInput.setBackgroundResource(R.drawable.ic_round_edittext_error);
+            ibanTextInputLayout.setErrorEnabled(true);
+            ibanTextInputLayout.setError(getResources().getString(R.string.Snabble_Payment_SEPA_InvalidIBAN));
             ok = false;
         }
 
@@ -278,13 +278,6 @@ public class SEPACardInputView extends FrameLayout {
     private void hideSoftKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-    }
-
-    private void shake(View view) {
-        TranslateAnimation shake = new TranslateAnimation(0, 1.5f * getResources().getDisplayMetrics().density, 0, 0);
-        shake.setDuration(500);
-        shake.setInterpolator(new CycleInterpolator(5));
-        view.startAnimation(shake);
     }
 
     @Override

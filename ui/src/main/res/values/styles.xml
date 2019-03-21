@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="SnabbleTheme" parent="@style/Theme.AppCompat.Light">
+    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/snabble_primaryColor</item>
         <item name="colorPrimaryDark">@color/snabble_primaryColorDark</item>
+        <item name="colorSecondary">@color/snabble_primaryColor</item>
         <item name="colorAccent">@color/snabble_accentColor</item>
 
         <item name="android:textColorPrimary">@color/snabble_textColorDark</item>
@@ -20,28 +21,9 @@
         <item name="android:textColorPrimary">@color/snabble_textColorLight</item>
     </style>
 
-    <style name="SnabbleButton" parent="@style/Widget.AppCompat.Button.Colored">
-        <item name="android:textColor">@color/snabble_textColorLight</item>
-        <item name="backgroundTint">@color/snabble_primaryColorAction</item>
-        <item name="android:elevation" tools:targetApi="lollipop">1dp</item>
-    </style>
-
-    <style name="SnabbleButtonWhite" parent="@style/Widget.AppCompat.Button.Colored">
-        <item name="android:textColor">@color/snabble_textColorDark</item>
-        <item name="backgroundTint">#ffffff</item>
-        <item name="android:elevation" tools:targetApi="lollipop">1dp</item>
-    </style>
-
     <style name="SnabbleEditText" parent="@style/Widget.AppCompat.EditText">
         <item name="android:textCursorDrawable">@null</item>
         <item name="android:textColor">@color/snabble_textColorDark</item>
         <item name="android:background">@drawable/ic_round_edittext</item>
-    </style>
-
-    <style name="SnabbleSearchEditText" parent="@style/Widget.AppCompat.EditText">
-        <item name="android:textCursorDrawable">@null</item>
-        <item name="android:textColor">@color/snabble_textColorDark</item>
-        <item name="android:background">@drawable/ic_round_searchedittext</item>
-        <item name="android:elevation" tools:targetApi="lollipop">3dp</item>
     </style>
 </resources>

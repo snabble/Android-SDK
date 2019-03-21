@@ -31,24 +31,11 @@ public class UIUtils {
     public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
 
     public static Snackbar snackbar(View view, @StringRes int stringResId, int duration) {
-        Snackbar snackbar = Snackbar.make(view, stringResId, duration);
-        fixTextColor(snackbar);
-        return snackbar;
+        return Snackbar.make(view, stringResId, duration);
     }
 
     public static Snackbar snackbar(View view, String text, int duration) {
-        Snackbar snackbar = Snackbar.make(view, text, duration);
-        fixTextColor(snackbar);
-        return snackbar;
-    }
-
-    private static void fixTextColor(Snackbar snackbar) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            View v = snackbar.getView();
-
-            TextView textView = v.findViewById(com.google.android.material.R.id.snackbar_text);
-            textView.setTextColor(Color.parseColor("#ffffff"));
-        }
+        return Snackbar.make(view, text, duration);
     }
 
     public static Activity getHostActivity(Context context) {

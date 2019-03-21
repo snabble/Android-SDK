@@ -53,7 +53,20 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
             checkoutIdCode.setFormat(BarcodeFormat.QR_CODE);
         }
 
-        View cancel = findViewById(R.id.cancel);
+        final View cancel = findViewById(R.id.cancel);
+        cancel.setAlpha(0);
+        cancel.setEnabled(false);
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                cancel.setVisibility(View.VISIBLE);
+                cancel.animate().setDuration(150).alpha(1).start();
+                cancel.setEnabled(true);
+            }
+        }, 2000);
+
         cancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

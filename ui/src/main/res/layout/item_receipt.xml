@@ -7,7 +7,7 @@
     android:padding="16dp"
     android:background="?attr/selectableItemBackground">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/shop_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         android:textSize="17sp"
         tools:text="Snabble GmbH, Bonn"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         android:textSize="13sp"
         tools:text="10,00 €"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:textSize="13sp"
         tools:text="01.01.1970, 10:00 Uhr"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/chevron"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

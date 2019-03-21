@@ -47,15 +47,14 @@
             android:textSize="17sp" />
     </LinearLayout>
 
-    <TextView
+    <Button
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:id="@+id/cancel"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:padding="16dp"
-        android:text="@string/Snabble.Cancel"
-        android:textColor="@color/snabble_primaryColor"
-        android:textSize="17sp" />
+        android:layout_centerHorizontal="true"
+        android:text="@string/Snabble.Cancel"/>
 </RelativeLayout>

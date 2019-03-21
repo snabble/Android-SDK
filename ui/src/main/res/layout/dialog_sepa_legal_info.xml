@@ -39,7 +39,6 @@
             tools:text="Ich ermächtige Lebensmittelmärkte snabble GmbH, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen."/> <!-- TODO i18n -->
 
         <Button
-            style="@style/SnabbleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"

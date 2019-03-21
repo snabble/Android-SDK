@@ -88,21 +88,29 @@ public class ReceiptListView extends CoordinatorLayout {
 
                 receiptInfos = newReceiptInfos;
                 recyclerView.getAdapter().notifyDataSetChanged();
+
+                updateEmptyState();
             }
 
             @Override
             public void failure() {
                 swipeRefreshLayout.setRefreshing(false);
 
-                if (receiptInfos != null && receiptInfos.length == 0) {
-                    emptyState.setVisibility(View.VISIBLE);
-                } else {
-                    emptyState.setVisibility(View.GONE);
+                receiptInfos = null;
+                recyclerView.getAdapter().notifyDataSetChanged();
 
-                    UIUtils.snackbar(ReceiptListView.this, R.string.Snabble_networkError, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show();
-                }
+                updateEmptyState();
+                UIUtils.snackbar(ReceiptListView.this, R.string.Snabble_networkError, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show();
             }
         });
+    }
+
+    private void updateEmptyState() {
+        if (receiptInfos == null || receiptInfos.length == 0) {
+            emptyState.setVisibility(View.VISIBLE);
+        } else {
+            emptyState.setVisibility(View.GONE);
+        }
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {

@@ -24,9 +24,8 @@
                 android:clipToPadding="false"
                 android:id="@+id/recycler_view" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/pay"
-                style="@style/SnabbleButton"
                 android:layout_width="272dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
@@ -43,32 +42,24 @@
 
         <LinearLayout
             android:id="@+id/empty_state"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
             android:layout_gravity="center"
             android:clipChildren="false"
             android:gravity="center"
             android:orientation="vertical">
 
-            <io.snabble.sdk.ui.scanner.BarcodeView
-                android:layout_width="200dp"
-                android:layout_height="72dp"
-                android:layout_marginBottom="24dp"
-                android:background="?android:attr/windowBackground"
-                app:adjustBrightness="false"
-                app:format="EAN_13"
-                app:text="0000000000000" />
-
             <TextView
-                android:layout_width="288dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
                 android:gravity="center"
                 android:text="@string/Snabble.Shoppingcart.emptyState.description" />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:id="@+id/scan_products"
-                style="@style/SnabbleButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"

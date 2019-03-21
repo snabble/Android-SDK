@@ -25,13 +25,15 @@
             android:textSize="17sp"/>
     </FrameLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
+        style="@style/Widget.MaterialComponents.Button"
         android:id="@+id/back"
-        style="@style/SnabbleButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="12dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
         android:text="@string/Snabble.Payment.backToHome" />
 </RelativeLayout>
