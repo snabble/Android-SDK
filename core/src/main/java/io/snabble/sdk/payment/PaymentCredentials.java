@@ -92,14 +92,21 @@ public class PaymentCredentials {
 
     private String obfuscate(String s) {
         int numCharsStart = 4;
-        int numCharsEnd = 4;
+        int numCharsEnd = 2;
 
         StringBuilder sb = new StringBuilder(s.length());
         sb.append(s.substring(0, numCharsStart));
         for (int i = numCharsStart; i < s.length() - numCharsEnd; i++) {
-            sb.append('*');
+            sb.append('\u2022'); // Bullet
         }
         sb.append(s.substring(s.length() - numCharsEnd));
+
+        if (sb.toString().startsWith("DE")) {
+            for (int i=4; i<sb.length(); i+=4) {
+                sb.insert(i, ' ');
+                i++;
+            }
+        }
 
         return sb.toString();
     }

@@ -9,13 +9,16 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import io.snabble.sdk.Snabble;
@@ -163,6 +166,30 @@ public class SEPACardInputView extends FrameLayout {
             }
         });
 
+        nameInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    ibanInput.requestFocus();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
+        ibanInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    saveCard();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
         formatIBANInput();
     }
 
@@ -213,33 +240,29 @@ public class SEPACardInputView extends FrameLayout {
                     @Override
                     public void onKeyguardResult(int resultCode) {
                         if (resultCode == Activity.RESULT_OK) {
-                            final PaymentCredentials pc = PaymentCredentials.fromSEPA(name, iban);
-                            if (pc == null) {
-                                Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
-                                        .show();
-                            } else {
-                                Snabble.getInstance().getPaymentCredentialsStore().add(pc);
-                            }
-
-                            if (isShown()) {
-                                finish();
-                            } else {
-                                acceptedKeyguard = true;
-                            }
+                            add(name, iban);
                         }
                     }
                 });
             } else {
-                final PaymentCredentials pc = PaymentCredentials.fromSEPA(name, iban);
-                if (pc == null) {
-                    Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
-                            .show();
-                } else {
-                    Snabble.getInstance().getPaymentCredentialsStore().add(pc);
-                }
-
-                finish();
+                add(name, iban);
             }
+        }
+    }
+
+    private void add(String name, String iban) {
+        final PaymentCredentials pc = PaymentCredentials.fromSEPA(name, iban);
+        if (pc == null) {
+            Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            Snabble.getInstance().getPaymentCredentialsStore().add(pc);
+        }
+
+        if (isShown()) {
+            finish();
+        } else {
+            acceptedKeyguard = true;
         }
     }
 
