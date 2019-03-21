@@ -3,10 +3,10 @@
     <item>
         <shape android:shape="rectangle"
             xmlns:android="http://schemas.android.com/apk/res/android">
-            <corners android:radius="6.25dp" />
+            <corners android:radius="2dp" />
             <size
-                android:height="32dp"
-                android:width="32dp" />
+                android:height="36dp"
+                android:width="36dp" />
             <solid android:color="@color/snabble_primaryColor" />
             <stroke
                 android:color="@color/snabble_primaryColorDark"

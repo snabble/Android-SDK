@@ -1,112 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:ignore="RtlHardcoded">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="RtlHardcoded">
 
     <RelativeLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="276dp"> <!-- helps when adjustPan is set -->
+
+        <TextView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="276dp"> <!-- helps when adjustPan is set -->
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@string/Snabble.Payment.SEPA.hint" />
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                android:padding="4dp"
-                android:text="@string/Snabble.Payment.SEPA.hint"
-                android:id="@+id/imageView"/>
-
-        <TextView
-            android:text="@string/Snabble.Payment.SEPA.InvalidName"
+            android:id="@+id/input_invalid_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/imageView"
+            android:layout_alignRight="@+id/input_name"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_alignRight="@+id/input_name"
+            android:text="@string/Snabble.Payment.SEPA.InvalidName"
             android:textColor="@color/snabble_textColorError"
             android:visibility="invisible"
-            tools:visibility="visible"
-            android:id="@+id/input_invalid_name"/>
+            tools:visibility="visible" />
 
         <EditText
+            android:id="@+id/input_name"
             style="@style/SnabbleEditText"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="2dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/input_invalid_name"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="2dp"
             android:layout_marginRight="16dp"
-            android:maxLines="1"
-            android:hint="@string/Snabble.Payment.SEPA.Name"
-            android:singleLine="true"
-            android:imeOptions="actionDone"
             android:autofillHints="name"
-            android:id="@+id/input_name"/>
+            android:hint="@string/Snabble.Payment.SEPA.Name"
+            android:imeOptions="actionDone"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1"
+            android:singleLine="true" />
 
         <TextView
-            android:text="@string/Snabble.Payment.SEPA.InvalidIBAN"
+            android:id="@+id/input_invalid_iban"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/input_name"
-            android:layout_marginTop="4dp"
+            android:layout_alignRight="@+id/input_iban"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_alignRight="@+id/input_iban"
+            android:text="@string/Snabble.Payment.SEPA.InvalidIBAN"
             android:textColor="@color/snabble_textColorError"
             android:visibility="invisible"
-            tools:visibility="visible"
-            android:id="@+id/input_invalid_iban"/>
-
-        <EditText style="@style/SnabbleEditText"
-            android:layout_width="53dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_alignBaseline="@+id/input_iban"
-            android:gravity="center"
-            android:textAllCaps="true"
-            android:inputType="textCapCharacters|textNoSuggestions"
-            android:text="DE"
-            android:maxLength="2"
-            android:textColor="@color/snabble_textColorDark"
-            android:textSize="17sp"
-            android:id="@+id/prefix"/>
+            tools:visibility="visible" />
 
         <EditText
-                style="@style/SnabbleEditText"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_toRightOf="@+id/prefix"
-                android:layout_below="@+id/input_invalid_iban"
-                android:layout_marginTop="2dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="16dp"
-                android:inputType="textCapCharacters|textVisiblePassword"
-                android:textAllCaps="true"
-                android:textSize="17sp"
-                android:maxLines="1"
-                android:textColor="@color/snabble_textColorDark"
-                android:hint="@string/Snabble.Payment.SEPA.IBAN"
-                android:id="@+id/input_iban" />
+            android:id="@+id/prefix"
+            style="@style/SnabbleEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/input_iban"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:inputType="textCapCharacters|textNoSuggestions"
+            android:maxLength="2"
+            android:text="DE"
+            android:textAllCaps="true"
+            android:textColor="@color/snabble_textColorDark"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/input_iban"
+            style="@style/SnabbleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/input_invalid_iban"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="16dp"
+            android:layout_toRightOf="@+id/prefix"
+            android:hint="@string/Snabble.Payment.SEPA.IBAN"
+            android:inputType="textCapCharacters|textVisiblePassword"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textColor="@color/snabble_textColorDark"
+            android:textSize="17sp" />
 
         <Button
-                style="@style/SnabbleButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/input_iban"
-                android:layout_marginTop="24dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/save"
-                android:text="@string/Snabble.Save"/>
+            android:id="@+id/save"
+            style="@style/SnabbleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/input_iban"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="12dp"
+            android:text="@string/Snabble.Save" />
     </RelativeLayout>
 </ScrollView>

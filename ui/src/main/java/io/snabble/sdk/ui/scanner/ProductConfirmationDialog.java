@@ -20,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
@@ -35,6 +36,7 @@ import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
+import io.snabble.sdk.ui.utils.UIUtils;
 
 class ProductConfirmationDialog {
     private Context context;
@@ -218,7 +220,13 @@ class ProductConfirmationDialog {
             return;
         }
 
-        window.setGravity(Gravity.BOTTOM);
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        int marginBottom = Math.round(70 * dm.density);
+
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.y = marginBottom;
+        window.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        window.setAttributes(layoutParams);
         alertDialog.show();
 
         if (product.getType() == Product.Type.UserWeighed) {
@@ -234,15 +242,6 @@ class ProductConfirmationDialog {
                 }
             });
         }
-
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        int availableWidth = Math.round(dm.widthPixels / dm.density);
-        int width = Math.round(320 * dm.density);
-        if(availableWidth >= 336) {
-            width = Math.round(336 * dm.density);
-        }
-
-        window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void updatePrice() {
