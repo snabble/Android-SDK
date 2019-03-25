@@ -16,6 +16,7 @@ import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.BarcodeFormat;
+import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 
 class CheckoutQRCodePOSView extends FrameLayout {
@@ -46,7 +47,12 @@ class CheckoutQRCodePOSView extends FrameLayout {
         findViewById(R.id.abort).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SnabbleUI.getProject().getCheckout().cancel();
+                SnabbleUI.getProject().getCheckout().cancelSilently();
+
+                SnabbleUICallback uiCallback = SnabbleUI.getUiCallback();
+                if (uiCallback != null) {
+                    uiCallback.goBack();
+                }
             }
         });
 
