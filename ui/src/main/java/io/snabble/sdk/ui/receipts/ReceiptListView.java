@@ -133,7 +133,7 @@ public class ReceiptListView extends CoordinatorLayout {
             shopName.setText(receiptInfo.getShopName());
             price.setText(receiptInfo.getPrice());
 
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
             date.setText(dateFormat.format(receiptInfo.getDate()));
 
             rootView.setOnClickListener(new OnClickListener() {
