@@ -31,6 +31,7 @@ public class ProductResolver {
     private Context context;
     private OnShowListener onShowListener;
     private OnDismissListener onDismissListener;
+    private OnSaleStopListener onSaleStopListener;
     private OnShelfCodeScannedListener onShelfCodeScannedListener;
     private OnProductNotFoundListener onProductNotFoundListener;
     private OnNetworkErrorListener onNetworkErrorListener;
@@ -196,7 +197,17 @@ public class ProductResolver {
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product);
         } else {
-            if (product.getType() == Product.Type.PreWeighed
+            if (product.getSaleStop()) {
+                if (onSaleStopListener != null) {
+                    onSaleStopListener.onSaleStop();
+                }
+
+                progressDialog.dismiss();
+
+                if (onDismissListener != null) {
+                    onDismissListener.onDismiss();
+                }
+            } else if (product.getType() == Product.Type.PreWeighed
                     && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
                 if (onShelfCodeScannedListener != null) {
                     onShelfCodeScannedListener.onShelfCodeScanned();
@@ -296,6 +307,10 @@ public class ProductResolver {
         void onDismiss();
     }
 
+    public interface OnSaleStopListener {
+        void onSaleStop();
+    }
+
     public interface OnShelfCodeScannedListener {
         void onShelfCodeScanned();
     }
@@ -341,14 +356,20 @@ public class ProductResolver {
         }
 
         public Builder setOnNetworkErrorListener(OnNetworkErrorListener listener) {
-            productResolver.onNetworkErrorListener  = listener;
+            productResolver.onNetworkErrorListener = listener;
+            return this;
+        }
+
+        public Builder setOnSaleStopListener(OnSaleStopListener listener) {
+            productResolver.onSaleStopListener = listener;
             return this;
         }
 
         public Builder setOnShelfCodeScannedListener(OnShelfCodeScannedListener listener) {
-            productResolver.onShelfCodeScannedListener  = listener;
+            productResolver.onShelfCodeScannedListener = listener;
             return this;
         }
+
 
         public ProductResolver create() {
             return productResolver;

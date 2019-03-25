@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import androidx.annotation.StringRes;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -207,6 +206,24 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                     @Override
                     public void onShelfCodeScanned() {
                         showWarning(getResources().getString(R.string.Snabble_Scanner_scannedShelfCode));
+                    }
+                })
+                .setOnSaleStopListener(new ProductResolver.OnSaleStopListener() {
+                    @Override
+                    public void onSaleStop() {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle(R.string.Snabble_saleStop_errorMsg_title)
+                                .setMessage(R.string.Snabble_saleStop_errorMsg_scan)
+                                .setPositiveButton(R.string.Snabble_OK, null)
+                                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                        resumeBarcodeScanner();
+                                    }
+                                })
+                                .setCancelable(false)
+                                .create()
+                                .show();
                     }
                 })
                 .create()
