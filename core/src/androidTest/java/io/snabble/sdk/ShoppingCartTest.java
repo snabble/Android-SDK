@@ -160,9 +160,9 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         assertStrEquals(item.getFullPriceText(), "2,99 € / kg");
 
         item = pieceProduct.cartItem();
-        assertStrEquals(item.getPriceText(), "\u00D7 0,49 € = 2,94 €");
-        assertStrEquals(item.getQuantityText(), "6");
-        assertStrEquals(item.getFullPriceText(), "6 \u00D7 0,49 € = 2,94 €");
+        assertStrEquals(item.getPriceText(), "2,94 €");
+        assertStrEquals(item.getQuantityText(), "1");
+        assertStrEquals(item.getFullPriceText(), "2,94 €");
 
         item = priceProduct.cartItem();
         assertStrEquals(item.getPriceText(), "2,49 €");
@@ -230,8 +230,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         lineItem.price = 10;
         lineItem.totalPrice = 60;
         item.setLineItem(lineItem);
-        assertStrEquals(item.getQuantityText(), "6");
-        assertStrEquals(item.getFullPriceText(), "6 \u00D7 0,10 € = 0,60 €");
+        assertStrEquals(item.getQuantityText(), "1");
+        assertStrEquals(item.getFullPriceText(), "0,60 €");
 
         item = priceProduct.cartItem();
         lineItem = new CheckoutApi.LineItem();

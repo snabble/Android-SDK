@@ -5,8 +5,8 @@
             xmlns:android="http://schemas.android.com/apk/res/android">
             <corners android:radius="4dp" />
             <size
-                android:height="40dp"
-                android:width="40dp" />
+                android:height="48dp"
+                android:width="48dp" />
             <solid android:color="@color/snabble_primaryColor" />
             <stroke
                 android:color="@color/snabble_primaryColorDark"

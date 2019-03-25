@@ -110,19 +110,19 @@ class ProductConfirmationDialog {
 
         cartItem = shoppingCart.newItem(product, scannedCode);
 
-        ShoppingCart.Item existingItem = shoppingCart.getByProduct(product);
-        if (existingItem != null && existingItem.isMergeable()) {
-            setQuantity(existingItem.getEffectiveQuantity() + 1);
-        } else {
-            setQuantity(cartItem.getEffectiveQuantity());
-        }
-
         Unit unit = cartItem.getUnit();
         if (unit != null) {
             quantityAnnotation.setText(unit.getDisplayValue());
             quantityAnnotation.setVisibility(View.VISIBLE);
         } else {
             quantityAnnotation.setVisibility(View.GONE);
+        }
+
+        ShoppingCart.Item existingItem = shoppingCart.getByProduct(product);
+        if (existingItem != null && existingItem.isMergeable()) {
+            setQuantity(existingItem.getEffectiveQuantity() + 1);
+        } else {
+            setQuantity(cartItem.getEffectiveQuantity());
         }
 
         if (existingItem != null && existingItem.isMergeable()) {
@@ -265,11 +265,6 @@ class ProductConfirmationDialog {
             originalPrice.setVisibility(View.GONE);
         }
 
-        if (cartItem.getUnit() == Unit.PRICE) {
-            price.setVisibility(View.GONE);
-            originalPrice.setVisibility(View.GONE);
-        }
-
         int cartItemDepositPrice = cartItem.getTotalDepositPrice();
         if (cartItemDepositPrice == 0 && cartItem.getProduct().getDepositProduct() != null) {
             cartItemDepositPrice = cartItem.getProduct().getDepositProduct().getDiscountedPrice();
@@ -346,11 +341,14 @@ class ProductConfirmationDialog {
             } else {
                 plus.setVisibility(View.VISIBLE);
                 minus.setVisibility(View.VISIBLE);
+                quantity.setVisibility(View.VISIBLE);
             }
         } else {
             quantity.setEnabled(false);
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
+            quantity.setVisibility(View.GONE);
+            quantityAnnotation.setVisibility(View.GONE);
         }
 
         if (cartItem.getProduct().getType() != Product.Type.UserWeighed) {

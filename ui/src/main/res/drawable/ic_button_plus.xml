@@ -5,8 +5,8 @@
             xmlns:android="http://schemas.android.com/apk/res/android">
             <corners android:radius="4dp" />
             <size
-                android:height="40dp"
-                android:width="40dp" />
+                android:height="48dp"
+                android:width="48dp" />
             <solid android:color="#F8F8F8" />
             <stroke
                 android:color="#1A000000"
@@ -15,8 +15,8 @@
     </item>
     <item
         android:drawable="@drawable/ic_plus_content"
-        android:left="8dp"
-        android:top="8dp"
-        android:right="8dp"
-        android:bottom="8dp" />
+        android:left="12dp"
+        android:top="12dp"
+        android:right="12dp"
+        android:bottom="12dp" />
 </layer-list>

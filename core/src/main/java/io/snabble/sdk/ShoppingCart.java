@@ -422,7 +422,7 @@ public class ShoppingCart {
             }
 
             Unit unit = getUnit();
-            if (unit == PRICE) {
+            if (unit == PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
                 return "1";
             }
 
@@ -451,7 +451,10 @@ public class ShoppingCart {
         public String getPriceText() {
             if (lineItem != null) {
                 if (lineItem.price > 0) {
-                    if (product != null && lineItem.amount > 1 || (getUnit() != Unit.PRICE && getEffectiveQuantity() > 1)) {
+                    if (product != null && lineItem.amount > 1
+                            || (getUnit() != Unit.PRICE
+                            && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
+                            && getEffectiveQuantity() > 1)) {
                         return String.format("\u00D7 %s = %s",
                                 cart.priceFormatter.format(product, lineItem.price),
                                 cart.priceFormatter.format(getTotalPrice()));
@@ -464,7 +467,7 @@ public class ShoppingCart {
             if (product.getDiscountedPrice() > 0 || (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0)) {
                 Unit unit = getUnit();
 
-                if (unit == Unit.PRICE) {
+                if (unit == Unit.PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
                     return cart.priceFormatter.format(getTotalPrice());
                 } else if (getEffectiveQuantity() <= 1) {
                     return cart.priceFormatter.format(product);
