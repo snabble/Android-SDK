@@ -26,6 +26,7 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
     private View scrollContainer;
@@ -60,10 +61,23 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
         encodedCodesGenerator = new EncodedCodesGenerator(options);
 
-        Button paidButton = findViewById(R.id.paid);
-        paidButton.setOnClickListener(new OnClickListener() {
+        final Button paidButton = findViewById(R.id.paid);
+
+        paidButton.setVisibility(View.INVISIBLE);
+        paidButton.setAlpha(0);
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
+                paidButton.setVisibility(View.VISIBLE);
+                paidButton.animate().setDuration(150).alpha(1).start();
+                paidButton.setEnabled(true);
+            }
+        }, 5000);
+
+        paidButton.setOnClickListener(new OneShotClickListener() {
+            @Override
+            public void click() {
                 Project project = SnabbleUI.getProject();
                 project.getCheckout().approveOfflineMethod();
 
@@ -75,7 +89,6 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
             }
         });
-
 
         TextView payAmount = findViewById(R.id.pay_amount);
 

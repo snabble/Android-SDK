@@ -18,6 +18,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeView;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 class CheckoutQRCodePOSView extends FrameLayout {
     private BarcodeView barcodeView;
@@ -44,9 +45,22 @@ class CheckoutQRCodePOSView extends FrameLayout {
 
         barcodeView = findViewById(R.id.qr_code);
 
-        findViewById(R.id.abort).setOnClickListener(new OnClickListener() {
+        final View abort = findViewById(R.id.abort);
+        abort.setVisibility(View.INVISIBLE);
+        abort.setAlpha(0);
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
+                abort.setVisibility(View.VISIBLE);
+                abort.animate().setDuration(150).alpha(1).start();
+                abort.setEnabled(true);
+            }
+        }, 5000);
+
+        abort.setOnClickListener(new OneShotClickListener() {
+            @Override
+            public void click() {
                 SnabbleUI.getProject().getCheckout().cancelSilently();
 
                 SnabbleUICallback uiCallback = SnabbleUI.getUiCallback();

@@ -435,7 +435,7 @@ public class Checkout {
     }
 
     public void approveOfflineMethod() {
-        if (paymentMethod.isOfflineMethod()) {
+        if (paymentMethod != null && paymentMethod.isOfflineMethod()) {
             approve();
         }
     }
