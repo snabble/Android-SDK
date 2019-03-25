@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ### Breaking Changes
 - Using new ShoppingCart implementation, breaking core SDK API.
+- Now using material components theme as the base for designing ui components, this may
+result in odd behaviour when not using a material components theme as your base
 
 ### Added
 - Enhanced security of locally stored payment credentials by using the Android KeyStore API
@@ -12,11 +14,12 @@ on Android 4.3+
 - Support for automatic remote price updates and promotions
 
 ### Changed
+- Lots and lots of small ui changes on almost every part in the ui components
 - ShoppingCartView is now using insert/remove Animations
-- Improved ShoppingCart layouts
 - PriceFormatter is now reused across projects
 - Keep 4 starting digits of obfuscated iban 
 - Now showing original price when discounted prices are set in product confirmation dialog
+- Now showing sale stops directly after scanning
 
 ### Fixed
 - Products with a overridden base price now get properly send over to the backend
