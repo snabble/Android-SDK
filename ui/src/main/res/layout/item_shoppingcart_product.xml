@@ -23,67 +23,68 @@
         android:visibility="gone"
         android:id="@+id/image" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:textSize="12dp"
-        android:layout_toRightOf="@+id/image"
-        android:layout_toLeftOf="@+id/controls"
-        android:textColor="@color/snabble_textColorDark"
-        android:id="@+id/subtitle"
-        tools:text="Wiha"
-        tools:visibility="visible" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_toRightOf="@+id/image"
-        android:layout_toLeftOf="@+id/controls"
-        android:layout_below="@+id/subtitle"
-        android:textSize="17dp"
-        android:textColor="@color/snabble_textColorDark"
-        android:id="@+id/name"
-        tools:text="Schraubendreher Top G" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
         android:layout_toRightOf="@+id/image"
-        android:layout_toLeftOf="@+id/controls"
-        android:layout_below="@+id/name"
-        android:id="@+id/price_container"
-        android:orientation="horizontal">
-
+        android:orientation="vertical"
+        android:layout_toLeftOf="@+id/controls">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/quantity"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/ic_round_textview"
-            app:backgroundTint="@color/snabble_primaryColor"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:textSize="12dp"
-            android:textColor="@color/snabble_textColorLight"
-            android:textStyle="bold"
-            tools:text="2" />
-
-        <TextView
-            android:id="@+id/price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:textColor="@color/snabble_textColorDark"
-            android:textSize="12dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginLeft="4dp"
-            tools:text="* 13,99 € = 26,98 €" />
+            android:id="@+id/subtitle"
+            tools:text="Wiha"
+            tools:visibility="visible" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textSize="17dp"
+            android:textColor="@color/snabble_textColorDark"
+            android:id="@+id/name"
+            tools:text="Schraubendreher Top G" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="4dp"
+            android:id="@+id/price_container"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/quantity"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/ic_round_textview"
+                app:backgroundTint="@color/snabble_primaryColor"
+                android:textSize="12dp"
+                android:textColor="@color/snabble_textColorLight"
+                android:textStyle="bold"
+                tools:text="2" />
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/snabble_textColorDark"
+                android:textSize="12dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                tools:text="* 13,99 € = 26,98 €" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <FrameLayout
@@ -102,15 +103,15 @@
 
             <ImageView
                 android:id="@+id/minus"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginRight="16dp"
                 android:src="@drawable/ic_button_minus" />
 
             <ImageView
                 android:id="@+id/plus"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginRight="16dp"
                 android:src="@drawable/ic_button_plus" />
         </LinearLayout>
@@ -125,8 +126,8 @@
             <EditText
                 style="@style/SnabbleEditText"
                 android:id="@+id/quantity_edit"
-                android:layout_width="60dp"
-                android:layout_height="32dp"
+                android:layout_width="64dp"
+                android:layout_height="36dp"
                 android:layout_marginRight="4dp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
@@ -149,8 +150,8 @@
 
             <ImageView
                 android:id="@+id/quantity_edit_apply"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginRight="16dp"
                 android:src="@drawable/ic_button_check"
                 tools:visibility="gone" />

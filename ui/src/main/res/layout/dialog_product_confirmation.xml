@@ -79,22 +79,23 @@
 
     <ImageView
         android:id="@+id/minus"
-        android:layout_width="wrap_content"
-        android:layout_height="44dp"
-        android:padding="4dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_below="@+id/depositPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="4dp"
         android:layout_toStartOf="@+id/quantity"
         android:layout_toLeftOf="@+id/quantity"
-        app:srcCompat="@drawable/ic_button_minus" />
+        app:srcCompat="@drawable/ic_button_minus"
+        android:layout_marginEnd="4dp" />
 
     <EditText
         style="@style/SnabbleEditText"
         android:id="@+id/quantity"
         android:layout_width="96dp"
-        android:layout_height="36dp"
+        android:layout_height="40dp"
         android:layout_below="@+id/depositPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="14dp"
@@ -107,16 +108,17 @@
 
     <ImageView
         android:id="@+id/plus"
-        android:layout_width="wrap_content"
-        android:layout_height="44dp"
-        android:padding="4dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_below="@+id/depositPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
         android:layout_toEndOf="@+id/quantity"
         android:layout_toRightOf="@+id/quantity"
-        app:srcCompat="@drawable/ic_button_plus" />
+        app:srcCompat="@drawable/ic_button_plus"
+        android:layout_marginStart="4dp" />
 
     <TextView
         android:id="@+id/quantity_annotation"
@@ -125,6 +127,8 @@
         android:layout_alignBaseline="@+id/quantity"
         android:layout_below="@+id/price"
         android:layout_marginBottom="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:layout_toEndOf="@+id/quantity"
         android:layout_toRightOf="@+id/quantity"
         android:textSize="17sp"

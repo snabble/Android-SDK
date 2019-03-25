@@ -5,10 +5,10 @@
         <layer-list>
             <item>
                 <shape android:shape="rectangle">
-                    <corners android:radius="2dp" />
+                    <corners android:radius="4dp" />
                     <size
-                        android:width="36dp"
-                        android:height="36dp" />
+                        android:width="40dp"
+                        android:height="40dp" />
                     <solid android:color="#000000" />
                     <padding
                         android:bottom="8dp"
@@ -23,19 +23,19 @@
         <layer-list>
             <item>
                 <shape android:shape="rectangle">
-                    <corners android:radius="2dp" />
+                    <corners android:radius="4dp" />
                     <size
-                        android:width="36dp"
-                        android:height="36dp" />
+                        android:width="40dp"
+                        android:height="40dp" />
                     <solid android:color="@color/snabble_primaryColor" />
                     <stroke
-                        android:width="1.25dp"
+                        android:width="1dp"
                         android:color="#1A000000" />
                     <padding
-                        android:bottom="4dp"
-                        android:left="4dp"
-                        android:right="4dp"
-                        android:top="4dp" />
+                        android:bottom="8dp"
+                        android:left="8dp"
+                        android:right="8dp"
+                        android:top="8dp" />
                 </shape>
             </item>
             <item android:drawable="@drawable/ic_check_white" />
