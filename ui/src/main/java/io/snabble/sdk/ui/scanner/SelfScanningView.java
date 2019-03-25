@@ -9,6 +9,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -28,6 +30,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ProductDatabase;
@@ -48,7 +52,8 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
-    private View enterBarcode;
+    private TextView enterBarcode;
+    private TextView light;
     private View noPermission;
     private boolean isRunning;
 
@@ -84,15 +89,17 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         noPermission = findViewById(R.id.no_permission);
 
         enterBarcode = findViewById(R.id.enter_barcode);
-        TextView light = findViewById(R.id.light);
-
+        light = findViewById(R.id.light);
         light.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 barcodeScanner.setTorchEnabled(!barcodeScanner.isTorchEnabled());
+                updateTorchIcon();
                 Telemetry.event(Telemetry.Event.ToggleTorch);
             }
         });
+
+        updateTorchIcon();
 
         enterBarcode.setOnClickListener(new OnClickListener() {
             @Override
@@ -136,6 +143,20 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         isInitialized = true;
         startBarcodeScanner();
+    }
+
+    private void updateTorchIcon() {
+        Drawable icon;
+        if (barcodeScanner.isTorchEnabled()) {
+            icon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_torch_active, null);
+            int tint = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
+            DrawableCompat.setTint(icon, tint);
+        } else {
+            icon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_torch, null);
+            DrawableCompat.setTint(icon, Color.WHITE);
+        }
+
+        light.setCompoundDrawablesWithIntrinsicBounds(null, icon, null, null);
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {

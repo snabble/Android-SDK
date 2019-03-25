@@ -11,8 +11,6 @@ import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-import androidx.core.content.res.ResourcesCompat;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -31,6 +28,7 @@ import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
@@ -74,9 +72,9 @@ public class SEPACardInputView extends FrameLayout {
         nameTextInputLayout.setHelperText(" ");
 
         save = findViewById(R.id.save);
-        save.setOnClickListener(new OnClickListener() {
+        save.setOnClickListener(new OneShotClickListener() {
             @Override
-            public void onClick(View view) {
+            public void click() {
                 saveCard();
             }
         });
@@ -142,7 +140,6 @@ public class SEPACardInputView extends FrameLayout {
                     ibanInput.setSelection(Math.min(ibanInput.length(), selection));
 
                     isUpdating = false;
-
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

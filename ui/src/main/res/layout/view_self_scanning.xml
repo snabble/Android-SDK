@@ -65,7 +65,7 @@
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
                 android:drawablePadding="5dp"
-                android:drawableTop="@drawable/ic_light"
+                android:drawableTop="@drawable/ic_torch"
                 android:gravity="center"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"

@@ -15,8 +15,8 @@
     </item>
     <item
         android:drawable="@drawable/ic_minus_content"
-        android:left="12dp"
-        android:top="12dp"
-        android:right="12dp"
-        android:bottom="12dp" />
+        android:left="10dp"
+        android:top="10dp"
+        android:right="10dp"
+        android:bottom="10dp" />
 </layer-list>
