@@ -24,10 +24,10 @@
                 android:clipToPadding="false"
                 android:id="@+id/recycler_view" />
 
-            <Button
+            <Button style="@style/SnabbleButton"
                 android:id="@+id/pay"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
@@ -59,8 +59,7 @@
                 android:gravity="center"
                 android:text="@string/Snabble.Shoppingcart.emptyState.description" />
 
-            <Button
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+            <Button style="@style/SnabbleButton.TextButton"
                 android:id="@+id/scan_products"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

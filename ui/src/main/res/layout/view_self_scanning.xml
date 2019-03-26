@@ -27,51 +27,48 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="24dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="12dp"
         android:id="@+id/bottom_bar"
-        app:layout_behavior="io.snabble.sdk.ui.utils.SnackbarPushUpBehavior"
-        android:weightSum="2"
-        android:baselineAligned="false">
+        app:layout_behavior="io.snabble.sdk.ui.utils.SnackbarPushUpBehavior">
 
-        <FrameLayout
-            android:layout_width="0px"
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_gravity="center"
+            android:src="@drawable/ic_button_search"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:gravity="center"
+            android:id="@+id/enter_barcode" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:drawablePadding="5dp"
-                android:drawableTop="@drawable/ic_entercode"
-                android:gravity="center"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:text="@string/Snabble.Scanner.enterCodeButton"
-                android:id="@+id/enter_barcode"
-                android:textColor="@color/snabble_textColorLight" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="0px"
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_gravity="center"
+            android:src="@drawable/ic_button_torch"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:gravity="center"
+            android:id="@+id/light" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:drawablePadding="5dp"
-                android:drawableTop="@drawable/ic_torch"
-                android:gravity="center"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:id="@+id/light"
-                android:text="@string/Snabble.Scanner.torchButton"
-                android:textColor="@color/snabble_textColorLight" />
-        </FrameLayout>
+        <Button style="@style/SnabbleButton"
+            android:id="@+id/goto_cart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeMaxTextSize="14sp"
+
+            android:text="@string/Snabble.Scanner.goToCart.empty"
+            tools:text="Warenkorb: 99,99 €"/>
     </LinearLayout>
 </merge>

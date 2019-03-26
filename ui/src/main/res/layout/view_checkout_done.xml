@@ -25,8 +25,7 @@
             android:textSize="17sp"/>
     </FrameLayout>
 
-    <Button
-        style="@style/Widget.MaterialComponents.Button"
+    <Button style="@style/SnabbleButton"
         android:id="@+id/back"
         android:layout_width="match_parent"
         android:layout_marginLeft="16dp"

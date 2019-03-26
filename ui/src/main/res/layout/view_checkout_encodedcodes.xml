@@ -64,8 +64,7 @@
         android:layout_marginBottom="16dp"
         android:textSize="14sp" />
 
-    <Button
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+    <Button style="@style/SnabbleButton.TextButton"
         android:id="@+id/paid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

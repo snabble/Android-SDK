@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [0.13.0]
 
 ### Breaking Changes
+- SnabbleUICallback now needs showShoppingCart() to be implemented 
 - Using new ShoppingCart implementation, breaking core SDK API.
 - Now using material components theme as the base for designing ui components, this may
 result in odd behaviour when not using a material components theme as your base

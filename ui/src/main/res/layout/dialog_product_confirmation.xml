@@ -134,7 +134,7 @@
         android:visibility="gone"
         tools:text="g" />
 
-    <Button
+    <Button style="@style/SnabbleButton"
         android:id="@+id/addToCart"
         android:layout_width="match_parent"
         android:layout_height="56dp"

@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -23,7 +24,9 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,16 +36,19 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
@@ -51,8 +57,9 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
-    private TextView enterBarcode;
-    private TextView light;
+    private ImageView enterBarcode;
+    private ImageView light;
+    private Button goToCart;
     private View noPermission;
     private boolean isRunning;
 
@@ -98,7 +105,19 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             }
         });
 
+        goToCart = findViewById(R.id.goto_cart);
+        goToCart.setOnClickListener(new OneShotClickListener() {
+            @Override
+            public void click() {
+                SnabbleUICallback snabbleUICallback = SnabbleUI.getUiCallback();
+                if (snabbleUICallback != null) {
+                    snabbleUICallback.showShoppingCart();
+                }
+            }
+        });
+
         updateTorchIcon();
+        updateCartButton();
 
         enterBarcode.setOnClickListener(new OnClickListener() {
             @Override
@@ -145,17 +164,21 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void updateTorchIcon() {
-        Drawable icon;
         if (barcodeScanner.isTorchEnabled()) {
-            icon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_torch_active, null);
-            int tint = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
-            DrawableCompat.setTint(icon, tint);
+            light.setImageResource(R.drawable.ic_button_torch_active);
         } else {
-            icon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_torch, null);
-            DrawableCompat.setTint(icon, Color.WHITE);
+            light.setImageResource(R.drawable.ic_button_torch);
         }
+    }
 
-        light.setCompoundDrawablesWithIntrinsicBounds(null, icon, null, null);
+    private void updateCartButton() {
+        PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
+
+        if (shoppingCart.getTotalPrice() > 0) {
+            goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart, priceFormatter.format(shoppingCart.getTotalPrice())));
+        } else {
+            goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart_empty));
+        }
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
@@ -441,37 +464,19 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         unregisterListeners();
     }
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.ShoppingCartListener() {
+    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
+            super.onItemAdded(list, item);
+
             if (list.getAddCount() == 1) {
                 showHints();
             }
         }
 
         @Override
-        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
-
-        }
-
-        @Override
-        public void onCleared(ShoppingCart list) {
-
-        }
-
-        @Override
-        public void onItemRemoved(ShoppingCart list, ShoppingCart.Item item, int index) {
-
-        }
-
-        @Override
-        public void onProductsUpdated(ShoppingCart list) {
-
-        }
-
-        @Override
-        public void onPricesUpdated(ShoppingCart list) {
-
+        public void onChanged(ShoppingCart list) {
+            updateCartButton();
         }
     };
 

@@ -41,6 +41,8 @@
 	<string name="Snabble.Scanner.unknownBarcode">Price information is not available for this product</string>
 	<string name="Snabble.Scanner.updateCart">Update Cart</string>
 	<string name="Snabble.Scanner.addToCart">Add to Cart</string>
+	<string name="Snabble.Scanner.goToCart">Cart: %s</string>
+	<string name="Snabble.Scanner.goToCart.empty">Cart</string>
 	<string name="Snabble.Scanner.BundleDialog.headline">Please select an item</string>
 	<string name="Snabble.Scanner.plusDeposit">+ %s deposit</string>
 	<string name="Snabble.Scanner.introText">Scan barcodes on products and place them in your shopping cart.</string>
@@ -101,4 +103,5 @@
 	<string name="Snabble.Shoppingcart.articleRemoved">Article removed</string>
 	<string name="Snabble.loadingProductInformation">Loading product information...</string>
 	<string name="Snabble.Receipt.pdfReaderUnavailable">No suitable PDF reader application found</string>
+	<string name="Snabble.Keyguard.requireScreenLock">You need to secure your smartphone with a screen lock to add this payment method.</string>
 </resources>

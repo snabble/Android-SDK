@@ -76,10 +76,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         callback.showSEPACardInput();
                     }
                 } else {
-                    // TODO i18n
                     new AlertDialog.Builder(getContext())
-                            .setTitle("Attention")
-                            .setMessage("To add this payment method you need to secure your device using a screen lock (PIN, Fingerprint, ...) ")
+                            .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
                             .setPositiveButton(R.string.Snabble_OK, null)
                             .setCancelable(false)
                             .show();
