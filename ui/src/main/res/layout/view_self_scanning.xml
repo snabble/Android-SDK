@@ -28,9 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="12dp"
-        android:id="@+id/bottom_bar"
-        app:layout_behavior="io.snabble.sdk.ui.utils.SnackbarPushUpBehavior">
+        android:layout_marginBottom="16dp"
+        android:id="@+id/bottom_bar">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -67,7 +66,6 @@
             app:autoSizeTextType="uniform"
             app:autoSizeMinTextSize="8sp"
             app:autoSizeMaxTextSize="14sp"
-
             android:text="@string/Snabble.Scanner.goToCart.empty"
             tools:text="Warenkorb: 99,99 €"/>
     </LinearLayout>

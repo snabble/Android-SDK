@@ -527,10 +527,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
             case CONNECTION_ERROR:
                 progressDialog.dismiss();
 
-                UIUtils.snackbar(SelfScanningView.this,
-                        R.string.Snabble_Payment_errorStarting,
-                        UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .show();
+                showWarning(getResources().getString(R.string.Snabble_Payment_errorStarting));
                 break;
             default:
                 progressDialog.dismiss();
