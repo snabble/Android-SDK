@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-
+<resources>
     <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/snabble_primaryColor</item>
         <item name="colorPrimaryDark">@color/snabble_primaryColorDark</item>
