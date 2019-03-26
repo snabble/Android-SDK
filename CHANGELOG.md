@@ -35,6 +35,7 @@ on Android 4.3+
 - Snabble.limitsAlert.notAllMethodsAvailable
 - Snabble.limitsAlert.checkoutNotAvailable
 - Snabble.Payment.SEPA.hint
+- Snabble.Keyguard.requireScreenLock
 
 ## [0.12.4]
 
