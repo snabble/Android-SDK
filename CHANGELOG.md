@@ -27,6 +27,13 @@ on Android 4.3+
 - SearchableProductAdapter is now honoring searchable templates
 - Keyguard is now correctly preventing checkout 
 
+### New string keys
+- Snabble.saleStop.errorMsg.scan
+- Snabble.limitsAlert.title 
+- Snabble.limitsAlert.notAllMethodsAvailable
+- Snabble.limitsAlert.checkoutNotAvailable
+- Snabble.Payment.SEPA.hint
+
 ## [0.12.4]
 
 ### Fixed
