@@ -27,7 +27,7 @@
             android:gravity="center"
             android:textSize="17sp"
             android:textStyle="bold"
-            android:text="@string/Snabble.Payment.SEPA.legalInfo.title"/> <!-- TODO i18n -->
+            android:text="@string/Snabble.Payment.SEPA.legalInfo.title"/>
 
         <TextView
             android:id="@+id/message"
@@ -36,13 +36,13 @@
             android:gravity="center"
             android:layout_marginTop="8dp"
             android:textSize="13sp"
-            tools:text="Ich ermächtige Lebensmittelmärkte snabble GmbH, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen."/> <!-- TODO i18n -->
+            tools:text="Ich ermächtige Lebensmittelmärkte snabble GmbH, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen."/>
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:id="@+id/button"
-            android:text="@string/Snabble.Payment.SEPA.legalInfo.agree" /> <!-- TODO i18n -->
+            android:text="@string/Snabble.Payment.SEPA.legalInfo.agree" />
     </LinearLayout>
 </ScrollView>
