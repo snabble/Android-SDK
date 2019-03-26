@@ -20,6 +20,7 @@ on Android 4.3+
 - Keep 4 starting digits of obfuscated iban 
 - Now showing original price when discounted prices are set in product confirmation dialog
 - Now showing sale stops directly after scanning
+- Now showing a message if a checkout limit is reached
 
 ### Fixed
 - Products with a overridden base price now get properly send over to the backend
