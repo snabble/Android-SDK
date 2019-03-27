@@ -94,8 +94,6 @@ public class ProductSearchView extends FrameLayout {
             }
         });
 
-        searchBarTextInputLayout.requestFocus();
-
         addCodeAsIs = findViewById(R.id.add_code_as_is);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -161,6 +159,10 @@ public class ProductSearchView extends FrameLayout {
         } else {
             addCodeAsIs.setVisibility(View.GONE);
         }
+    }
+
+    public void focusTextInput() {
+        searchBarTextInputLayout.requestFocus();
     }
 
     public void setSearchBarEnabled(boolean searchBarEnabled) {
