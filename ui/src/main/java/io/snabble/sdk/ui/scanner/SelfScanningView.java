@@ -160,20 +160,10 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     }
 
     private void showShoppingCart() {
-        // this is to prevent flickering issues on some devices (like the Nokia 8) when showing
-        // a ripple effect + a texture view (our camera)
-        barcodeScanner.setVisibility(View.GONE);
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                SnabbleUICallback snabbleUICallback = SnabbleUI.getUiCallback();
-                if (snabbleUICallback != null) {
-                    snabbleUICallback.showShoppingCart();
-                }
-            }
-        });
+        SnabbleUICallback snabbleUICallback = SnabbleUI.getUiCallback();
+        if (snabbleUICallback != null) {
+            snabbleUICallback.showShoppingCart();
+        }
     }
 
     private void updateTorchIcon() {
