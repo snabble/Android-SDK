@@ -258,13 +258,14 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
-        View button;
+        View card;
         TextView text;
         ImageView image;
 
         ViewHolder(View itemView) {
             super(itemView);
-            button = itemView.findViewById(R.id.button);
+
+            card = itemView.findViewById(R.id.card);
             text = itemView.findViewById(R.id.text);
             image = itemView.findViewById(R.id.image);
         }
@@ -299,9 +300,9 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
 
             if(e.onClickListener != null){
-                holder.button.setOnClickListener(e.onClickListener);
+                holder.card.setOnClickListener(e.onClickListener);
             } else {
-                holder.button.setOnClickListener(new OnClickListener() {
+                holder.card.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()

@@ -5,14 +5,8 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="120dp"
-    app:backgroundTint="#ffffff">
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/button"
-        app:rippleColor="?attr/colorControlHighlight"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+    android:layout_margin="8dp"
+    android:background="@drawable/ic_button_outlined">
 
     <LinearLayout
         android:layout_width="wrap_content"
