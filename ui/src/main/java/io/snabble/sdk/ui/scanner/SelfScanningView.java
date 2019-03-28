@@ -41,7 +41,6 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -109,10 +108,7 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
         goToCart.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
-                SnabbleUICallback snabbleUICallback = SnabbleUI.getUiCallback();
-                if (snabbleUICallback != null) {
-                    snabbleUICallback.showShoppingCart();
-                }
+                showShoppingCart();
             }
         });
 
@@ -161,6 +157,23 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
 
         isInitialized = true;
         startBarcodeScanner();
+    }
+
+    private void showShoppingCart() {
+        // this is to prevent flickering issues on some devices (like the Nokia 8) when showing
+        // a ripple effect + a texture view (our camera)
+        barcodeScanner.setVisibility(View.GONE);
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                SnabbleUICallback snabbleUICallback = SnabbleUI.getUiCallback();
+                if (snabbleUICallback != null) {
+                    snabbleUICallback.showShoppingCart();
+                }
+            }
+        });
     }
 
     private void updateTorchIcon() {
