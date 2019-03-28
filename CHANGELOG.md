@@ -30,6 +30,8 @@ on Android 4.3+
 - Keyguard is now correctly preventing checkout 
 
 ### New string keys
+- Snabble.Scanner.goToCart
+- Snabble.Scanner.goToCart.empty
 - Snabble.saleStop.errorMsg.scan
 - Snabble.limitsAlert.title 
 - Snabble.limitsAlert.notAllMethodsAvailable
