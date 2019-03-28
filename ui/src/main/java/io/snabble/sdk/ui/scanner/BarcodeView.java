@@ -205,7 +205,9 @@ public class BarcodeView extends AppCompatImageView {
                             uiHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
+                                    setAlpha(0.0f);
                                     setImageBitmap(finalBitmap);
+                                    animate().alpha(1).setDuration(200).start();
                                 }
                             });
                         } catch (WriterException e) {
