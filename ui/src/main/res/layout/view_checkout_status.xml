@@ -5,47 +5,53 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
-        <io.snabble.sdk.ui.scanner.BarcodeView
-            android:id="@+id/checkout_id_code"
-            android:layout_width="match_parent"
-            android:layout_height="168dp"
-            android:background="?android:attr/windowBackground"
-            app:format="DATA_MATRIX"
-            tools:ignore="RtlHardcoded" />
-
-        <TextView
-            android:id="@+id/message"
+        android:layout_above="@+id/cancel"
+        android:fillViewport="true">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="16dp"
-            android:text="@string/Snabble.Payment.presentCode"
-            android:textSize="17sp" />
+            android:orientation="vertical"
+            android:gravity="center">
+            <io.snabble.sdk.ui.scanner.BarcodeView
+                android:id="@+id/checkout_id_code"
+                android:layout_width="match_parent"
+                android:layout_height="168dp"
+                android:background="?android:attr/windowBackground"
+                app:format="DATA_MATRIX"
+                tools:ignore="RtlHardcoded" />
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:indeterminate="true"/>
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/Snabble.Payment.presentCode"
+                android:textSize="17sp" />
 
-        <TextView
-            android:id="@+id/waiting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:text="@string/Snabble.Payment.waiting"
-            android:textSize="17sp" />
-    </LinearLayout>
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:indeterminate="true"/>
+
+            <TextView
+                android:id="@+id/waiting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingTop="4dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/Snabble.Payment.waiting"
+                android:textSize="17sp" />
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         style="@style/Widget.MaterialComponents.Button.TextButton"
