@@ -27,7 +27,6 @@ import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
 
 public class Project {
@@ -66,6 +65,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
+    private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
     private int maxCheckoutLimit;
@@ -236,6 +236,18 @@ public class Project {
             maxOnlinePaymentLimit = JsonUtils.getIntOpt(checkoutLimits, "notAllMethodsAvailable", 0);
         }
 
+        texts = new HashMap<>();
+
+        if (jsonObject.has("texts")) {
+            JsonElement textsElement = jsonObject.get("texts");
+            if (!textsElement.isJsonNull()) {
+                JsonObject textsJsonObject = jsonObject.get("texts").getAsJsonObject();
+                for (Map.Entry<String, JsonElement> entry : textsJsonObject.entrySet()) {
+                    texts.put(entry.getKey(), entry.getValue().getAsString());
+                }
+            }
+        }
+
         notifyUpdate();
     }
 
@@ -314,6 +326,19 @@ public class Project {
      */
     public Map<String, String> getUrls() {
         return urls;
+    }
+
+    public String getText(String key) {
+        return getText(key, null);
+    }
+
+    public String getText(String key, String defaultValue) {
+        String text = texts.get(key);
+        if (text == null) {
+            return defaultValue;
+        }
+
+        return text;
     }
 
     /**

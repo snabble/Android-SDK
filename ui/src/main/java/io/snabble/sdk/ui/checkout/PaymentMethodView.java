@@ -178,6 +178,14 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             return;
         }
 
+        String shortText = project.getText("sepaMandateShort");
+        final String longText = project.getText("sepaMandate");
+
+        if (shortText == null || longText == null) {
+            clickListener.onClick(null);
+            return;
+        }
+
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_sepa_legal_info, null);
 
@@ -189,24 +197,23 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         View ok = view.findViewById(R.id.button);
         View close = view.findViewById(R.id.close);
 
-        Resources res = getResources();
-        final String shortText = res.getString(R.string.Snabble_Payment_SEPA_legalInfo_short, project.getCheckedInShop().getName());
-        final String longText = res.getString(R.string.Snabble_Payment_SEPA_legalInfo_long, project.getCheckedInShop().getName());
-        String highlightedString = res.getString(R.string.Snabble_Payment_SEPA_legalInfo_highlight);
-
+        int startIndex = shortText.indexOf('*');
+        int endIndex = shortText.lastIndexOf('*') - 1;
+        shortText = shortText.replace("*", "");
         Spannable spannable = new SpannableString(shortText);
-        int index = shortText.lastIndexOf(highlightedString);
-        int length = highlightedString.length();
-        int color = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
 
-        spannable.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(@NonNull View widget) {
-                message.setText(longText);
-            }
-        }, index, index+length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (startIndex != -1 && endIndex != -1) {
+            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
 
-        spannable.setSpan(new ForegroundColorSpan(color), index, index+length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View widget) {
+                    message.setText(longText);
+                }
+            }, startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannable.setSpan(new ForegroundColorSpan(color), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
 
         message.setText(spannable);
         message.setMovementMethod(LinkMovementMethod.getInstance());
