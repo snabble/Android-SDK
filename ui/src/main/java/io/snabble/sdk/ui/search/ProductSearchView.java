@@ -9,14 +9,13 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -93,6 +92,8 @@ public class ProductSearchView extends FrameLayout {
                 return false;
             }
         });
+
+        searchBarTextInputLayout.requestFocus();
 
         addCodeAsIs = findViewById(R.id.add_code_as_is);
 
@@ -172,6 +173,10 @@ public class ProductSearchView extends FrameLayout {
             searchBarTextInputLayout.setVisibility(View.VISIBLE);
         } else {
             searchBarTextInputLayout.setVisibility(View.GONE);
+
+            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchBarTextInputLayout.getWindowToken(), 0);
+            searchBarTextInputLayout.clearFocus();
         }
     }
 
