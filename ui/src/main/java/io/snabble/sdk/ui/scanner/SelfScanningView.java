@@ -9,14 +9,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
@@ -26,16 +22,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.List;
 
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
@@ -52,7 +45,7 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
-public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCheckoutStateChangedListener {
+public class SelfScanningView extends FrameLayout {
     private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
@@ -512,34 +505,4 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
                     }
                 }
             };
-
-
-    @Override
-    public void onStateChanged(Checkout.State state) {
-        if (!isShown()) {
-            return;
-        }
-
-        switch (state) {
-            case HANDSHAKING:
-                progressDialog.showAfterDelay(500);
-                break;
-            case REQUEST_PAYMENT_METHOD:
-            case WAIT_FOR_APPROVAL:
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.showCheckout();
-                }
-
-                progressDialog.dismiss();
-                break;
-            case CONNECTION_ERROR:
-                progressDialog.dismiss();
-
-                showWarning(getResources().getString(R.string.Snabble_Payment_errorStarting));
-                break;
-            default:
-                progressDialog.dismiss();
-        }
-    }
 }
