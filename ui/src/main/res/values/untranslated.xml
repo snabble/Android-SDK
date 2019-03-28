@@ -2,9 +2,4 @@
 <resources>
     <string name="Snabble.Payment.SEPA.legalInfo.title" translatable="false">SEPA-Lastschriftmandat</string>
     <string name="Snabble.Payment.SEPA.legalInfo.agree" translatable="false">Ich stimme zu</string>
-    <string name="Snabble.Payment.SEPA.legalInfo.short" translatable="false">Ich ermächtige %s einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen.</string>
-    <string name="Snabble.Payment.SEPA.legalInfo.long" translatable="false">Ich ermächtige %s, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen. Bei Nichteinlösung der Lastschrift ermächtige ich das Unternehmen oder die First Data GmbH, Marienbader Platz 1, 61348 Bad Homburg (Gläubiger-ID DE97001000000030136) („First Data“) zum neuerlichen Einzug des Zahlungsbetrages zzgl. Kosten (z.B. Rücklastschriftentgelt meines Kreditinstituts). Zugleich weise ich mein Kreditinstitut an, die auf mein Konto gezogene Lastschrift einzulösen. Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen. Der Lastschrifteinzug erfolgt frühestens am nächsten Bankarbeitstag.
-\n\nAdressweitergabe: Ich weise mein Kreditinstitut unwiderruflich an, bei Nichteinlösung der Lastschrift dem Unternehmen oder der First Data auf Anforderung meinen Namen und meine Anschrift zur Geltendmachung der Forderung mitzuteilen.
-\n\nDatenschutz-Informationen für Karteninhaber mit weiteren Informationen zur Zahlungsabwicklung finden Sie auf Anfrage an der Kasse.</string>
-    <string name="Snabble.Payment.SEPA.legalInfo.highlight">Lastschrift</string>
 </resources>
