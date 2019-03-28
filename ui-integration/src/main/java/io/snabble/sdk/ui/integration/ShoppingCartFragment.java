@@ -1,7 +1,11 @@
 package io.snabble.sdk.ui.integration;
 
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
 
@@ -17,7 +21,6 @@ import io.snabble.sdk.ui.cart.ShoppingCartView;
 
 public class ShoppingCartFragment extends Fragment {
     private ShoppingCartView shoppingCartView;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +39,12 @@ public class ShoppingCartFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_shopping_cart, menu);
+
+        for (int i=0; i<menu.size(); i++) {
+            MenuItem menuItem = menu.getItem(i);
+            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_menuIconTint, null);
+            MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(color));
+        }
     }
 
     @Override
