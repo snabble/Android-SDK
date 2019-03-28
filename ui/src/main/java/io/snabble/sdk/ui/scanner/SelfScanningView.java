@@ -187,10 +187,16 @@ public class SelfScanningView extends CoordinatorLayout implements Checkout.OnCh
     private void updateCartButton() {
         PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
 
-        if (shoppingCart.getTotalPrice() > 0) {
-            goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart, priceFormatter.format(shoppingCart.getTotalPrice())));
+        if (shoppingCart.size() > 0) {
+            goToCart.setVisibility(View.VISIBLE);
+
+            if (shoppingCart.getTotalPrice() > 0) {
+                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart, priceFormatter.format(shoppingCart.getTotalPrice())));
+            } else {
+                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart_empty));
+            }
         } else {
-            goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart_empty));
+            goToCart.setVisibility(View.INVISIBLE);
         }
     }
 
