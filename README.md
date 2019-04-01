@@ -107,7 +107,16 @@ snabble.setup(this, config, new Snabble.SetupCompletionListener() {
         // available offline
         project.getProductDatabase().loadDatabaseBundle("db.sqlite3", revision, major, minor);
         
-        // optional: download the latest product database for offline availability
+        // recommended: download the latest product database for offline availability
+        // it is highly recommended to call this in shorter time frames than config.maxProductDatabaseAge is set at
+        // since the local database is only used if the time since the last update is smaller than 
+        // config.maxProductDatabaseAge, which defaults to 1 hour
+        //
+        // a good place for this is the onStart() method of your activity
+        // database updates are usually very small since we are using delta updates for updating the database
+        //
+        // also a good place for database updates are background schedulers like 
+        // https://developer.android.com/topic/libraries/architecture/workmanager
         project.getProductDatabase().update();
     }
 
