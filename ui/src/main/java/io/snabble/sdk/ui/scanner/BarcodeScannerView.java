@@ -702,6 +702,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         updateTransform();
     }
 
+    public void setIndicatorStyle(ScanIndicatorView.Style style) {
+        scanIndicatorView.setStyle(style);
+    }
+
     private void setScanIndicatorVisible(boolean visible) {
         if (indicatorEnabled && visible) {
             scanIndicatorView.setVisibility(View.VISIBLE);

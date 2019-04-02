@@ -3,8 +3,9 @@ package io.snabble.sdk.ui.scanner;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,21 +13,27 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class ScanIndicatorView extends View {
-    private Paint rectPaint = new Paint();
+    public enum Style {
+        RECT,
+        QUAD
+    }
 
     private float scale = 1.0f;
 
-    private Rect rect = new Rect();
-    private Rect borderRect = new Rect();
+    private RectF rect = new RectF();
+    private Path path = new Path();
 
     private int offsetX;
     private int offsetY;
-    private int borderColor;
+    private int backgroundColor;
 
     private int minPaddingLeft;
     private int minPaddingTop;
     private int minPaddingRight;
     private int minPaddingBottom;
+
+    private Style style = Style.RECT;
+
 
     public ScanIndicatorView(@NonNull Context context) {
         super(context);
@@ -44,14 +51,10 @@ public class ScanIndicatorView extends View {
     }
 
     private void init() {
-        rectPaint.setColor(Color.WHITE);
-        rectPaint.setStyle(Paint.Style.STROKE);
-        rectPaint.setStrokeWidth(dp2px(1));
-        rectPaint.setAlpha(51);
+        backgroundColor = Color.parseColor("#99222222");
 
-        borderColor = Color.parseColor("#99222222");
-
-        setMinPadding(dp2px(8), dp2px(80), dp2px(8), dp2px(80));
+        setMinPadding(dp2px(24), dp2px(80), dp2px(24), dp2px(80));
+        setStyle(Style.RECT);
     }
 
     @Override
@@ -67,8 +70,16 @@ public class ScanIndicatorView extends View {
         int maxWidth = w - minPaddingLeft - minPaddingRight;
         int maxHeight = h - minPaddingTop - minPaddingBottom;
 
-        int rectWidth = dp2px(360) - minPaddingLeft - minPaddingRight;
-        int rectHeight = dp2px(170);
+        int rectWidth;
+        int rectHeight;
+
+        if (style == Style.RECT) {
+            rectWidth = getWidth() - minPaddingLeft - minPaddingRight;
+            rectHeight = Math.round(rectWidth * 0.55f);
+        } else {
+            rectWidth = dp2px(360) - minPaddingLeft - minPaddingRight;
+            rectHeight = Math.round(rectWidth * 0.85f);
+        }
 
         if (rectHeight > maxHeight) {
             float scaleFactor = ((float) maxHeight / (float) rectHeight);
@@ -84,21 +95,21 @@ public class ScanIndicatorView extends View {
             rectHeight = Math.round((float) rectHeight * scaleFactor);
         }
 
-        rect.left = w / 2 - rectWidth / 2;
-        rect.right = w / 2 + rectWidth / 2;
-        rect.top = (h / 2 - rectHeight / 2);
-        rect.bottom = (h / 2 + rectHeight / 2);
+        rect.left = w / 2.0f - rectWidth / 2.0f;
+        rect.right = w / 2.0f + rectWidth / 2.0f;
+        rect.top = h / 2.0f - rectHeight / 2.0f;
+        rect.bottom = h / 2.0f + rectHeight / 2.0f;
 
-        int rw = rect.width();
-        int rh = rect.height();
+        float rw = rect.width();
+        float rh = rect.height();
 
-        rect.left = offsetX + w / 2 - Math.round(rw / 2 * scale);
-        rect.right = offsetX + w / 2 + Math.round(rw / 2 * scale);
-        rect.top = offsetY + h / 2 - Math.round(rh / 2 * scale);
-        rect.bottom = offsetY + h / 2 + Math.round(rh / 2 * scale);
+        rect.left = offsetX + w / 2.0f - Math.round(rw / 2.0f * scale);
+        rect.right = offsetX + w / 2.0f + Math.round(rw / 2.0f * scale);
+        rect.top = offsetY + h / 2.0f - Math.round(rh / 2.0f * scale);
+        rect.bottom = offsetY + h / 2.0f + Math.round(rh / 2.0f * scale);
 
-        borderRect.set(rect);
-        borderRect.inset(dp2px(1), dp2px(1));
+        path.reset();
+        path.addRoundRect(rect, dp2px(10), dp2px(10), Path.Direction.CCW);
     }
 
     public void setMinPadding(int left, int top, int right, int bottom) {
@@ -111,21 +122,26 @@ public class ScanIndicatorView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
-        canvas.clipRect(rect, Region.Op.DIFFERENCE);
-        canvas.drawColor(borderColor);
+        canvas.clipPath(path, Region.Op.DIFFERENCE);
+        canvas.drawColor(backgroundColor);
         canvas.restore();
-
-        canvas.drawRect(borderRect, rectPaint);
     }
 
     public Rect getIndicatorRect() {
-        return new Rect(rect);
+        return new Rect(Math.round(rect.left),
+                Math.round(rect.top),
+                Math.round(rect.right),
+                Math.round(rect.bottom));
+    }
+
+    public void setStyle(Style style) {
+        this.style = style;
+        update();
     }
 
     public void setOffset(int offsetX, int offsetY) {
         this.offsetX = offsetX;
         this.offsetY = offsetY;
-
         update();
     }
 
