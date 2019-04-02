@@ -9,8 +9,8 @@ public enum PaymentMethod {
     ENCODED_CODES(true, false),
     @SerializedName("encodedCodesCSV")
     ENCODED_CODES_CSV(true, false),
-    @SerializedName("teleCashDeDirectDebit")
-    TELECASH_DIRECT_DEBIT(false, true);
+    @SerializedName("deDirectDebit")
+    DE_DIRECT_DEBIT(false, true);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;

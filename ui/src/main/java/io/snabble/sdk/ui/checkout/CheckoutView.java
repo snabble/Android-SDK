@@ -5,8 +5,7 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
-import android.os.Looper;
+
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -16,12 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
-import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -111,7 +107,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     private void displayPaymentView() {
         switch (checkout.getSelectedPaymentMethod()) {
-            case TELECASH_DIRECT_DEBIT:
+            case DE_DIRECT_DEBIT:
                 displayView(new CheckoutStatusView(getContext()));
                 break;
             case QRCODE_POS:

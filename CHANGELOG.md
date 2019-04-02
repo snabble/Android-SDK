@@ -1,6 +1,18 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.1]
+
+### Added
+- ScanIndicator has now Rectangle and Quadratic styles, via BarcodeScannerView.setIndicatorStyle
+
+### Changed
+- Improved BarcodeScannerView ScanIndicator
+- Removed support for 'teleCashDeDirectDebit' in favor of 'deDirectDebit' payment method
+
+### Fixed
+- Show error message when no payment method is available
+
 ## [0.13.0]
 
 ### Breaking Changes

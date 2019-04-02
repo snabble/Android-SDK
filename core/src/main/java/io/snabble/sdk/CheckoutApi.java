@@ -57,19 +57,19 @@ class CheckoutApi {
                             new TypeToken<List<PaymentMethod>>() {
                             }.getType());
 
-                    if (clientAcceptedPaymentMethods != null) {
-                        List<PaymentMethod> result = new ArrayList<>();
-
-                        for (PaymentMethod clientPaymentMethod : clientAcceptedPaymentMethods) {
-                            if (paymentMethods.contains(clientPaymentMethod)) {
-                                result.add(clientPaymentMethod);
-                            }
-                        }
-
-                        return result.toArray(new PaymentMethod[result.size()]);
-                    } else {
-                        return paymentMethods.toArray(new PaymentMethod[paymentMethods.size()]);
+                    if (clientAcceptedPaymentMethods == null) {
+                        clientAcceptedPaymentMethods = PaymentMethod.values();
                     }
+
+                    List<PaymentMethod> result = new ArrayList<>();
+
+                    for (PaymentMethod clientPaymentMethod : clientAcceptedPaymentMethods) {
+                        if (paymentMethods.contains(clientPaymentMethod)) {
+                            result.add(clientPaymentMethod);
+                        }
+                    }
+
+                    return result.toArray(new PaymentMethod[result.size()]);
                 }
             }
 

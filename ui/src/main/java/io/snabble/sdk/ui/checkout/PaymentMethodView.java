@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.res.Resources;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -53,7 +52,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
-        icons.put(PaymentMethod.TELECASH_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
+        icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES_CSV, R.drawable.ic_pm_checkstand);
@@ -122,7 +121,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 e.text = descriptions.get(paymentMethod);
                 e.paymentMethod = paymentMethod;
 
-                if(paymentMethod == PaymentMethod.TELECASH_DIRECT_DEBIT) {
+                if(paymentMethod == PaymentMethod.DE_DIRECT_DEBIT) {
                     e.onClickListener = new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -138,7 +137,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         for(PaymentCredentials p : paymentCredentials) {
             if (p.getType() == PaymentCredentials.Type.SEPA) {
                 for(Entry e : entries) {
-                    if (e.paymentMethod == PaymentMethod.TELECASH_DIRECT_DEBIT) {
+                    if (e.paymentMethod == PaymentMethod.DE_DIRECT_DEBIT) {
                         entries.remove(e);
                         break;
                     }
@@ -147,9 +146,9 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
 
         for(PaymentCredentials p : paymentCredentials) {
-            if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.TELECASH_DIRECT_DEBIT)) {
+            if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
                 Entry e = new Entry();
-                e.paymentMethod = PaymentMethod.TELECASH_DIRECT_DEBIT;
+                e.paymentMethod = PaymentMethod.DE_DIRECT_DEBIT;
                 e.paymentCredentials = p;
                 e.text = p.getObfuscatedId();
                 entries.add(e);
@@ -172,7 +171,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     }
 
     private void showSEPALegalInfoIfNeeded(final PaymentMethod paymentMethod, final OnClickListener clickListener) {
-        if (paymentMethod != PaymentMethod.TELECASH_DIRECT_DEBIT) {
+        if (paymentMethod != PaymentMethod.DE_DIRECT_DEBIT) {
             clickListener.onClick(null);
             return;
         }
