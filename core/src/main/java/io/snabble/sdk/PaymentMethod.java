@@ -3,8 +3,6 @@ package io.snabble.sdk;
 import com.google.gson.annotations.SerializedName;
 
 public enum PaymentMethod {
-    @SerializedName("cash")
-    CASH(false, false),
     @SerializedName("qrCodePOS")
     QRCODE_POS(false, false),
     @SerializedName("encodedCodes")

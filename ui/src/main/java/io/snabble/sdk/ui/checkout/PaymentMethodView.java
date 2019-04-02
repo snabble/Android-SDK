@@ -53,7 +53,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
-        icons.put(PaymentMethod.CASH, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.TELECASH_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);

@@ -111,9 +111,6 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     private void displayPaymentView() {
         switch (checkout.getSelectedPaymentMethod()) {
-            case CASH:
-                displayView(new CheckoutStatusView(getContext()));
-                break;
             case TELECASH_DIRECT_DEBIT:
                 displayView(new CheckoutStatusView(getContext()));
                 break;
