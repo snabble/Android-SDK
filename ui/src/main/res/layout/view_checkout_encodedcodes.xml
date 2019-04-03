@@ -28,12 +28,6 @@
         android:minHeight="200dp"
         android:id="@+id/scroll_container">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/scroll_view">
-
-        </ScrollView>
     </FrameLayout>
 
     <TextView

@@ -9,12 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
@@ -29,8 +29,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
-    private View scrollContainer;
-    private ScrollView scrollView;
+    private ViewGroup scrollContainer;
     private TextView explanationText;
     private TextView explanationText2;
     private Project project;
@@ -54,7 +53,6 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         inflate(getContext(), R.layout.view_checkout_encodedcodes, this);
 
         scrollContainer = findViewById(R.id.scroll_container);
-        scrollView = findViewById(R.id.scroll_view);
 
         explanationText = findViewById(R.id.explanation1);
         explanationText2 = findViewById(R.id.explanation2);
@@ -146,11 +144,9 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 @Override
                 public void run() {
                     if (scrollContainer.getWidth() > 0 && scrollContainer.getHeight() > 0) {
-                        scrollView.removeAllViews();
-                        CodeListView codeListView = new CodeListView(getContext());
-                        scrollView.addView(codeListView, new ViewGroup.LayoutParams(
+                        scrollContainer.addView(new CodeListView(getContext()), new ViewGroup.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT));
+                                ViewGroup.LayoutParams.MATCH_PARENT));
                     }
 
                     DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -164,20 +160,25 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         }
     }
 
-    public class CodeListView extends LinearLayout {
-        private int barcodeHeight;
-
+    private class CodeListView extends RecyclerView {
         public CodeListView(@NonNull Context context) {
             super(context);
 
-            setOrientation(VERTICAL);
-
-            addCodes();
-            generateView();
-            updateExplanationText(getChildCount());
+            setLayoutManager(new LinearLayoutManager(getContext()));
+            setAdapter(new CodeListViewAdapter());
         }
+    }
 
-        private void addCodes() {
+    private class ViewHolder extends RecyclerView.ViewHolder {
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+
+    private class CodeListViewAdapter extends RecyclerView.Adapter {
+        private ArrayList<String> codes;
+
+        CodeListViewAdapter() {
             Checkout checkout = project.getCheckout();
 
             for (String code : checkout.getCodes()) {
@@ -185,27 +186,37 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             }
 
             encodedCodesGenerator.add(project.getShoppingCart());
+            codes = encodedCodesGenerator.generate();
+            updateExplanationText(codes.size());
         }
 
-        private void generateView() {
-            ArrayList<String> codes = encodedCodesGenerator.generate();
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new ViewHolder(new BarcodeView(getContext()));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            BarcodeView barcodeView = (BarcodeView)holder.itemView;
 
             int h = scrollContainer.getHeight();
-            barcodeHeight = codes.size() == 1 ? h : h - h / 5;
+            int barcodeHeight = codes.size() == 1 ? h : h - h / 5;
+            barcodeView.setLayoutParams(new RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    barcodeHeight));
 
-            for (String code : codes) {
-                BarcodeView barcodeView = new BarcodeView(getContext());
-                barcodeView.setFormat(BarcodeFormat.QR_CODE);
+            barcodeView.setFormat(BarcodeFormat.QR_CODE);
 
-                int padding = Math.round(12.0f * getResources().getDisplayMetrics().density);
-                barcodeView.setPadding(padding, padding, padding, padding);
+            int padding = Math.round(12.0f * getResources().getDisplayMetrics().density);
+            barcodeView.setPadding(padding, padding, padding, padding);
 
-                barcodeView.setText(code);
+            barcodeView.setText(codes.get(position));
+        }
 
-                addView(barcodeView, new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        barcodeHeight));
-            }
+        @Override
+        public int getItemCount() {
+            return codes.size();
         }
     }
 }

@@ -28,6 +28,8 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.UIUtils;
 
 public class BarcodeView extends AppCompatImageView {
+    private static int attachCount = 0;
+
     private String text;
     private String generatedText;
     private BarcodeFormat format;
@@ -175,7 +177,7 @@ public class BarcodeView extends AppCompatImageView {
 
                                 for (int y = 0; y < th; y++) {
                                     final int stride = y * tw;
-                                    int ay = (int)((float)y/dh);
+                                    final int ay = (int)((float)y/dh);
 
                                     for (int x = 0; x < tw; x++) {
                                         int ax = (int)((float)x/dw);
@@ -313,6 +315,8 @@ public class BarcodeView extends AppCompatImageView {
                 WindowManager.LayoutParams localLayoutParams = activity.getWindow().getAttributes();
                 localLayoutParams.screenBrightness = 0.99f; // value of 1.0 is not accepted
                 activity.getWindow().setAttributes(localLayoutParams);
+
+                attachCount++;
             }
         }
     }
@@ -324,9 +328,13 @@ public class BarcodeView extends AppCompatImageView {
         if (!isInEditMode() && adjustBrightness) {
             Activity activity = UIUtils.getHostActivity(getContext());
             if (activity != null) {
-                WindowManager.LayoutParams localLayoutParams = activity.getWindow().getAttributes();
-                localLayoutParams.screenBrightness = -1f;
-                activity.getWindow().setAttributes(localLayoutParams);
+                attachCount--;
+
+                if (attachCount == 0) {
+                    WindowManager.LayoutParams localLayoutParams = activity.getWindow().getAttributes();
+                    localLayoutParams.screenBrightness = -1f;
+                    activity.getWindow().setAttributes(localLayoutParams);
+                }
             }
         }
     }

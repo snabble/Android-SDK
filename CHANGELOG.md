@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.3]
+
+### Changed
+- Improved memory usage of encoded codes view
+
 ## [0.13.2]
 
 ### Fixed
