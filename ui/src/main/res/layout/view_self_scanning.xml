@@ -32,11 +32,12 @@
         android:id="@+id/bottom_bar">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_button_search"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/ic_button_outlined_48dp"
+            android:src="@drawable/ic_search"
+            android:padding="12dp"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="6dp"
@@ -45,11 +46,12 @@
             android:id="@+id/enter_barcode" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_button_torch"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/ic_button_outlined_48dp"
+            android:src="@drawable/ic_torch"
+            android:padding="12dp"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="6dp"

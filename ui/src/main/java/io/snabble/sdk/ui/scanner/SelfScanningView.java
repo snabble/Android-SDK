@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -28,6 +29,8 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.ImageViewCompat;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ProductDatabase;
@@ -105,6 +108,7 @@ public class SelfScanningView extends FrameLayout {
             }
         });
 
+        updateBarcodeSearchIcon();
         updateTorchIcon();
         updateCartButton();
 
@@ -159,12 +163,32 @@ public class SelfScanningView extends FrameLayout {
         }
     }
 
+    private void updateBarcodeSearchIcon() {
+        enterBarcode.setImageResource(R.drawable.ic_search);
+        int color = ResourcesCompat.getColor(getResources(), R.color.snabble_lightElementColor, null);
+        ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(color));
+    }
+
+    private int dp2px(float dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
     private void updateTorchIcon() {
         if (barcodeScanner.isTorchEnabled()) {
-            light.setImageResource(R.drawable.ic_button_torch_active);
+            light.setImageResource(R.drawable.ic_torch_active);
+            light.setBackgroundResource(R.drawable.ic_button_filled_48dp);
+            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
+            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
         } else {
-            light.setImageResource(R.drawable.ic_button_torch);
+            light.setImageResource(R.drawable.ic_torch);
+            light.setBackgroundResource(R.drawable.ic_button_outlined_48dp);
+            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_lightElementColor, null);
+            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
         }
+
+        int dp = dp2px(12);
+        light.setPadding(dp, dp, dp, dp);
     }
 
     private void updateCartButton() {
