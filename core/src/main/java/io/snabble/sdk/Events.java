@@ -49,6 +49,7 @@ class Events {
                     PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
                     payloadSessionEnd.session = cartId;
                     post(payloadSessionEnd, false);
+                    cartId = cart.getId();
                     hasSentSessionStart = false;
                     return;
                 }
