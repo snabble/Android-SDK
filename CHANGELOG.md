@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.2]
+
+### Fixed
+- Fixed a crash when generating price overrides, due to an api incompatibility
+
 ## [0.13.1]
 
 ### Added
