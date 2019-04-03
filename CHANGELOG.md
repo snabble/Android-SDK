@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed a crash when generating price overrides, due to an api incompatibility
+- Fixed parsing of price override codes when no transmission template or code is set
 
 ## [0.13.1]
 

@@ -215,7 +215,11 @@ public class Project {
                     CodeTemplate codeTemplate = new CodeTemplate(priceOverride.get("id").getAsString(),
                             priceOverride.get("template").getAsString());
 
-                    CodeTemplate matchingTemplate = getCodeTemplate(priceOverride.get("transmissionTemplate").getAsString());
+                    CodeTemplate matchingTemplate = null;
+                    if (priceOverride.has("transmissionTemplate")) {
+                        matchingTemplate = getCodeTemplate(priceOverride.get("transmissionTemplate").getAsString());
+                    }
+
                     PriceOverrideTemplate priceOverrideTemplate = new PriceOverrideTemplate(codeTemplate,
                             matchingTemplate, JsonUtils.getStringOpt(priceOverride, "transmissionCode", null));
 
