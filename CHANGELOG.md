@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Improved memory usage of encoded codes view
 
+### Fixed 
+- Scanner buttons tint color on API <= 19
+- Cart events are now sending correctly after a successful checkout
+
 ## [0.13.2]
 
 ### Fixed
