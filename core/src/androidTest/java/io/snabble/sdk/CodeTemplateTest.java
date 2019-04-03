@@ -177,7 +177,7 @@ public class CodeTemplateTest {
         Assert.assertEquals("2123457987651", code.getCode());
 
         code = newCodeTemplate("2{code:5}{_}{embed:5}{ec}")
-                .override("2417000")
+                .override("41700")
                 .embed(12345)
                 .buildCode();
 
@@ -185,13 +185,32 @@ public class CodeTemplateTest {
         Assert.assertEquals("2417000123451", code.getCode());
 
         code = newCodeTemplate("2{code:5}{_}{embed:5}{ec}")
-                .override("2417000")
+                .override("41700")
                 .code("55555")
                 .embed(12345)
                 .buildCode();
 
         Assert.assertEquals(12345, code.getEmbeddedData());
         Assert.assertEquals("2417000123451", code.getCode());
+
+        code = newCodeTemplate("2{code:5}{i}{embed:5}{ec}")
+                .override("41700")
+                .code("55555")
+                .embed(12345)
+                .buildCode();
+
+        Assert.assertEquals(12345, code.getEmbeddedData());
+
+        Assert.assertEquals("2417008123453", code.getCode());
+
+        code = newCodeTemplate("2{code:5}{_}{embed:5}{ec}")
+                .override("4170")
+                .code("55555")
+                .embed(12345)
+                .buildCode();
+
+        Assert.assertEquals(12345, code.getEmbeddedData());
+        Assert.assertEquals("2555550123450", code.getCode());
     }
 
     private CodeTemplate newCodeTemplate(String pattern) {

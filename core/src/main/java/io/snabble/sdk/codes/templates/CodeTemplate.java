@@ -296,15 +296,9 @@ public class CodeTemplate {
             matchedCode = null;
         } else {
             if (overrideCode != null) {
-                int i = 0;
-                int p = 0;
-                while (p < overrideCode.length()) {
-                    Group group = groups.get(i);
-                    int len = group.length();
-                    String part = overrideCode.substring(p, p+len);
-                    group.apply(part);
-                    p += len;
-                    i++;
+                CodeGroup codeGroup = getGroup(CodeGroup.class);
+                if (codeGroup != null) {
+                    codeGroup.apply(overrideCode);
                 }
             }
 
