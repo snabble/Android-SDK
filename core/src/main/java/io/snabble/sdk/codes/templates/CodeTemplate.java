@@ -1,5 +1,7 @@
 package io.snabble.sdk.codes.templates;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -227,14 +229,6 @@ public class CodeTemplate {
     }
 
     /**
-     * Overrides the code (or part of). Can be used to provide static prefixes.
-     */
-    public CodeTemplate override(String override) {
-        overrideCode = override;
-        return this;
-    }
-
-    /**
      * Sets the code of the code group
      */
     public CodeTemplate code(String code) {
@@ -242,6 +236,11 @@ public class CodeTemplate {
 
         if (codeGroup != null) {
             codeGroup.apply(code);
+        } else {
+            WildcardGroup wildcardGroup = getGroup(WildcardGroup.class);
+            if (wildcardGroup != null) {
+                wildcardGroup.apply(code);
+            }
         }
 
         return this;
@@ -295,13 +294,6 @@ public class CodeTemplate {
             builder.setScannedCode(matchedCode);
             matchedCode = null;
         } else {
-            if (overrideCode != null) {
-                CodeGroup codeGroup = getGroup(CodeGroup.class);
-                if (codeGroup != null) {
-                    codeGroup.apply(overrideCode);
-                }
-            }
-
             EAN13InternalChecksumGroup ean13InternalChecksumGroup = getGroup(EAN13InternalChecksumGroup.class);
             EANChecksumGroup eanChecksumGroup = getGroup(EANChecksumGroup.class);
             if (ean13InternalChecksumGroup != null) {
@@ -310,6 +302,11 @@ public class CodeTemplate {
 
             if (eanChecksumGroup != null) {
                 eanChecksumGroup.recalculate();
+            }
+
+            IgnoreGroup ignoreGroup = getGroup(IgnoreGroup.class);
+            if (ignoreGroup != null) {
+                ignoreGroup.apply(StringUtils.repeat('0', ignoreGroup.length()));
             }
 
             builder.setScannedCode(string());

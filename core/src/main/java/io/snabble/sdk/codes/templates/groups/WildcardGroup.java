@@ -10,4 +10,10 @@ public class WildcardGroup extends CodeGroup {
     public void setLength(int length) {
         this.length = length;
     }
+
+    @Override
+    public boolean apply(String input) {
+        setLength(input.length());
+        return super.apply(input);
+    }
 }

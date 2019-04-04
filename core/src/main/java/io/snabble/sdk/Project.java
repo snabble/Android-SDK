@@ -204,6 +204,18 @@ public class Project {
             }
         }
 
+        boolean hasDefaultTemplate = false;
+        for (CodeTemplate codeTemplate : codeTemplates) {
+            if ("default".equals(codeTemplate.getName())) {
+                hasDefaultTemplate = true;
+                break;
+            }
+        }
+
+        if (!hasDefaultTemplate) {
+            codeTemplates.add(new CodeTemplate("default", "{code:*}"));
+        }
+
         this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
 
         List<PriceOverrideTemplate> priceOverrideTemplates = new ArrayList<>();
@@ -421,6 +433,10 @@ public class Project {
 
     public String getCustomerCardId() {
         return loyaltyCardId;
+    }
+
+    public CodeTemplate getDefaultCodeTemplate() {
+        return getCodeTemplate("default");
     }
 
     public CodeTemplate getCodeTemplate(String name) {

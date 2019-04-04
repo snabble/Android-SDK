@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.groups.EmbedGroup;
@@ -166,11 +167,30 @@ public class EncodedCodesGenerator {
                 CodeTemplate codeTemplate = options.project.getTransformationTemplate(productInfo.scannedCode.getTransformationTemplateName());
                 if (codeTemplate != null) {
                     ScannedCode scannedCode = codeTemplate
-                            .override(productInfo.scannedCode.getTransformationCode())
-                            .code(productInfo.scannedCode.getLookupCode())
+                            .code(productInfo.scannedCode.getTransformationCode())
                             .embed(productInfo.scannedCode.getEmbeddedData())
                             .buildCode();
                     transmissionCode = scannedCode.getCode();
+                }
+
+                // zero amount products
+                Unit unit = productInfo.product.getEncodingUnit(productInfo.scannedCode.getTemplateName(), productInfo.scannedCode.getLookupCode());
+                CodeTemplate template = options.project.getCodeTemplate(productInfo.scannedCode.getTemplateName());
+                if (unit == Unit.PIECE) {
+                    ScannedCode scannedCode = template.match(productInfo.scannedCode.getCode()).buildCode();
+                    if (scannedCode != null) {
+                        if (scannedCode.getEmbeddedData() == 0) {
+                            ScannedCode code = template
+                                    .code(scannedCode.getLookupCode())
+                                    .embed(q)
+                                    .buildCode();
+
+                            if (code != null) {
+                                transmissionCode = code.getCode();
+                                q = 1;
+                            }
+                        }
+                    }
                 }
 
                 if (options.repeatCodes) {

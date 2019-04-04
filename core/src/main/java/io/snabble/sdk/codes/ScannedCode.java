@@ -148,7 +148,7 @@ public class ScannedCode implements Serializable {
 
     public static List<ScannedCode> parse(Project project, String code) {
         List<ScannedCode> matches = new ArrayList<>();
-        CodeTemplate defaultTemplate = project.getCodeTemplate("default");
+        CodeTemplate defaultTemplate = project.getDefaultCodeTemplate();
 
         for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
             ScannedCode scannedCode = codeTemplate.match(code).buildCode();

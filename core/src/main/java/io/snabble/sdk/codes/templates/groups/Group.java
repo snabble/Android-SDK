@@ -46,6 +46,6 @@ public abstract class Group {
     }
 
     public boolean validate() {
-        return true;
+        return data != null && data.length() == length;
     }
 }

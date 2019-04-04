@@ -22,9 +22,11 @@ import java.util.List;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.Snabble;
+import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringNormalizer;
 
 public class SearchableProductAdapter extends RecyclerView.Adapter {
@@ -94,16 +96,16 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         Product.Code[] scannableCodes = product.getScannableCodes();
 
         List<String> searchableTemplates = Arrays.asList(project.getSearchableTemplates());
-        String selectedCode = null;
+        Product.Code selectedCode = null;
 
         for (Product.Code code : scannableCodes) {
             if (searchableTemplates.contains(code.template)) {
-                selectedCode = code.lookupCode;
+                selectedCode = code;
             }
         }
 
         if (selectedCode == null && scannableCodes.length > 0) {
-            selectedCode = scannableCodes[0].lookupCode;
+            selectedCode = scannableCodes[0];
         }
 
         if (showBarcode) {
@@ -116,7 +118,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
 
                     Spannable spannable = highlight(lastQuery, lookupCode);
                     holder.code.setText(spannable);
-                    selectedCode = lookupCode;
+                    selectedCode = code;
                     break;
                 }
             }
@@ -124,13 +126,25 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
             holder.code.setVisibility(View.GONE);
         }
 
-        if (productSelectedListener != null) {
-            final String finalCode = selectedCode;
+        if (productSelectedListener != null && selectedCode != null) {
+            Project project = SnabbleUI.getProject();
+            CodeTemplate codeTemplate = project.getCodeTemplate(selectedCode.template);
+            if (codeTemplate == null) {
+                codeTemplate = project.getDefaultCodeTemplate();
+            }
+
+            final ScannedCode finalCode = codeTemplate
+                    .code(selectedCode.lookupCode)
+                    .buildCode();
+
+            if (finalCode == null) {
+                Logger.d("wtf");
+            }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productSelectedListener.onProductSelected(finalCode);
+                    productSelectedListener.onProductSelected(finalCode.getCode());
                 }
             });
         }

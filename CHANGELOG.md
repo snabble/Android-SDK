@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed 
 - Scanner buttons tint color on API <= 19
 - Cart events are now sending correctly after a successful checkout
+- Encoding of zero amount products in encoded codes
+- Searches in non-default templates are now using the template for generating the selected code
 
 ## [0.13.2]
 
