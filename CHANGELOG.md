@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.4]
+
+### Fixed 
+- Additional codes now also get prefixed with count in encoded codes csv generation
+
 ## [0.13.3]
 
 ### Changed

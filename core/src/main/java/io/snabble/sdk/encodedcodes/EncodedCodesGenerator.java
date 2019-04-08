@@ -26,7 +26,11 @@ public class EncodedCodesGenerator {
     }
 
     public void add(String code) {
-        addScannableCode(code, false);
+        if (options.repeatCodes) {
+            addScannableCode(code, false);
+        } else {
+            addScannableCode("1" + options.countSeparator + code, false);
+        }
     }
 
     public void add(ShoppingCart shoppingCart) {

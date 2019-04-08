@@ -352,11 +352,12 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
         Product heinz = project.getProductDatabase().findBySku("42");
         addToCart(heinz, 1000, ScannedCode.parseDefault(project, "8715700421698"));
+        generator.add("asdf123");
         generator.add(project.getShoppingCart());
 
         ArrayList<String> codes = generator.generate();
         Assert.assertEquals(1, codes.size());
-        Assert.assertEquals("snabble;\n1000;8715700421698\n7;4008400301020", codes.get(0));
+        Assert.assertEquals("snabble;\n1;asdf123\n1000;8715700421698\n7;4008400301020", codes.get(0));
     }
 
     private void addToCart(Product product, int quantity, ScannedCode scannedCode) {
