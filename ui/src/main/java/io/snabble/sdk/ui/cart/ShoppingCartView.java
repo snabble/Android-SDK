@@ -72,10 +72,36 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
-        public void onChanged(ShoppingCart list) {
+        public void onChanged(ShoppingCart cart) {
             swipeRefreshLayout.setRefreshing(false);
             submitList();
             update();
+        }
+
+        @Override
+        public void onCheckoutLimitReached(ShoppingCart list) {
+            if (snackbar != null) {
+                snackbar.dismiss();
+            }
+
+            Project project = SnabbleUI.getProject();
+            String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+                    project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
+            snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+            snackbar.show();
+        }
+
+        @Override
+        public void onOnlinePaymentLimitReached(ShoppingCart list) {
+            if (snackbar != null) {
+                snackbar.dismiss();
+            }
+
+            Project project = SnabbleUI.getProject();
+            String message = getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
+                    project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit()));
+            snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+            snackbar.show();
         }
     };
 
@@ -273,8 +299,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             }
 
             progressDialog.dismiss();
-        } else if (state == Checkout.State.CONNECTION_ERROR) {
+        } else if (state == Checkout.State.CONNECTION_ERROR || state == Checkout.State.NO_SHOP) {
             UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                    .show();
+            progressDialog.dismiss();
+        } else if (state == Checkout.State.NO_PAYMENT_METHOD_AVAILABLE) {
+            new AlertDialog.Builder(getContext())
+                    .setCancelable(false)
+                    .setTitle(R.string.Snabble_saleStop_errorMsg_title)
+                    .setMessage(R.string.Snabble_Payment_noMethodAvailable)
+                    .setPositiveButton(R.string.Snabble_OK, null)
                     .show();
             progressDialog.dismiss();
         } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {

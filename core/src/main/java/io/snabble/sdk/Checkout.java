@@ -64,6 +64,10 @@ public class Checkout {
          */
         INVALID_PRODUCTS,
         /**
+         * No payment method available.
+         */
+        NO_PAYMENT_METHOD_AVAILABLE,
+        /**
          * No shop was selected.
          */
         NO_SHOP,
@@ -229,7 +233,12 @@ public class Checkout {
                 notifyStateChanged(State.INVALID_PRODUCTS);
             }
 
-                    @Override
+            @Override
+            public void noAvailablePaymentMethod() {
+                notifyStateChanged(State.NO_PAYMENT_METHOD_AVAILABLE);
+            }
+
+            @Override
             public void error() {
                 PaymentMethod fallback = getFallbackPaymentMethod();
                 if(fallback != null) {
@@ -418,7 +427,12 @@ public class Checkout {
 
                     }
 
-                            @Override
+                    @Override
+                    public void noAvailablePaymentMethod() {
+
+                    }
+
+                    @Override
                     public void error() {
 
                     }

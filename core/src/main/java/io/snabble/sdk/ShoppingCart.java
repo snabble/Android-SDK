@@ -27,6 +27,10 @@ public class ShoppingCart {
     private int modCount = 0;
     private int addCount = 0;
     private Integer onlineTotalPrice;
+
+    private boolean hasRaisedMaxCheckoutLimit;
+    private boolean hasRaisedMaxOnlinePaymentLimit;
+
     private transient List<ShoppingCartListener> listeners;
     private transient Handler handler;
     private transient Project project;
@@ -87,6 +91,7 @@ public class ShoppingCart {
                 items.remove(existing);
                 items.add(index, item);
                 modCount++;
+                checkLimits();
                 notifyQuantityChanged(this, item);
 
                 if (update) {
@@ -100,6 +105,7 @@ public class ShoppingCart {
         addCount++;
         modCount++;
         items.add(index, item);
+        checkLimits();
         notifyItemAdded(this, item);
 
         if (update) {
@@ -146,7 +152,9 @@ public class ShoppingCart {
 
     public void remove(int index) {
         modCount++;
-        notifyItemRemoved(this, items.remove(index), index);
+        Item item = items.remove(index);
+        checkLimits();
+        notifyItemRemoved(this, item, index);
         invalidateOnlinePrices();
         updatePrices(true);
     }
@@ -160,6 +168,7 @@ public class ShoppingCart {
         modCount = 0;
         addCount = 0;
         onlineTotalPrice = null;
+        checkLimits();
         notifyCleared(this);
     }
 
@@ -199,6 +208,7 @@ public class ShoppingCart {
             }
         }
 
+        checkLimits();
         notifyPriceUpdate(this);
     }
 
@@ -280,6 +290,27 @@ public class ShoppingCart {
 
     private void updateTimestamp() {
         lastModificationTime = System.currentTimeMillis();
+    }
+
+    void checkLimits() {
+        int totalPrice = getTotalPrice();
+        if (totalPrice < project.getMaxCheckoutLimit()) {
+            hasRaisedMaxCheckoutLimit = false;
+        }
+
+        if (totalPrice < project.getMaxOnlinePaymentLimit()) {
+            hasRaisedMaxOnlinePaymentLimit = false;
+        }
+
+        if (!hasRaisedMaxCheckoutLimit && project.getMaxCheckoutLimit() > 0
+                && totalPrice >= project.getMaxCheckoutLimit()) {
+            hasRaisedMaxCheckoutLimit = true;
+            notifyCheckoutLimitReached(this);
+        } else if (!hasRaisedMaxOnlinePaymentLimit && project.getMaxOnlinePaymentLimit() > 0
+                && totalPrice >= project.getMaxOnlinePaymentLimit()) {
+            hasRaisedMaxOnlinePaymentLimit = true;
+            notifyOnlinePaymentLimitReached(this);
+        }
     }
 
     public static class Item {
@@ -620,6 +651,10 @@ public class ShoppingCart {
         void onProductsUpdated(ShoppingCart list);
 
         void onPricesUpdated(ShoppingCart list);
+
+        void onCheckoutLimitReached(ShoppingCart list);
+
+        void onOnlinePaymentLimitReached(ShoppingCart list);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -653,6 +688,16 @@ public class ShoppingCart {
         @Override
         public void onPricesUpdated(ShoppingCart list) {
             onChanged(list);
+        }
+
+        @Override
+        public void onCheckoutLimitReached(ShoppingCart list) {
+
+        }
+
+        @Override
+        public void onOnlinePaymentLimitReached(ShoppingCart list) {
+
         }
     }
 
@@ -717,6 +762,27 @@ public class ShoppingCart {
         });
     }
 
+    void notifyCheckoutLimitReached(final ShoppingCart list) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (ShoppingCartListener listener : listeners) {
+                    listener.onCheckoutLimitReached(list);
+                }
+            }
+        });
+    }
+
+    void notifyOnlinePaymentLimitReached(final ShoppingCart list) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (ShoppingCartListener listener : listeners) {
+                    listener.onOnlinePaymentLimitReached(list);
+                }
+            }
+        });
+    }
     /**
      * Notifies all {@link #listeners} that the shopping list was cleared of all entries.
      *

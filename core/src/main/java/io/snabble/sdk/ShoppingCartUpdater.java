@@ -98,6 +98,7 @@ class ShoppingCartUpdater {
                             return;
                         }
 
+                        cart.checkLimits();
                         cart.notifyPriceUpdate(cart);
                     }
                 });
@@ -110,6 +111,11 @@ class ShoppingCartUpdater {
 
             @Override
             public void invalidProducts(List<Product> products) {
+                cart.notifyPriceUpdate(cart);
+            }
+
+            @Override
+            public void noAvailablePaymentMethod() {
                 cart.notifyPriceUpdate(cart);
             }
 

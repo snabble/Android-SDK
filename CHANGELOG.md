@@ -1,6 +1,22 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.5]
+
+### Added 
+- Added new onCheckoutLimitReached and onOnlinePaymentLimitReached callbacks to ShoppingCartListener. 
+
+This is a minor breaking change if you use the verbose listener because of additional interface methods.
+
+- Checkout has now an additional state: NO_PAYMENT_METHOD_AVAILABLE
+
+### Changed 
+- Added limit messages to shopping cart in addition to limit warnings in self scanning.
+- Added new message when no payment methods are available
+
+### New string keys
+- Snabble.Payment.noMethodAvailable
+
 ## [0.13.4]
 
 ### Fixed 

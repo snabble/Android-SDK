@@ -156,6 +156,7 @@ class CheckoutApi {
         void success(SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods);
         void noShop();
         void invalidProducts(List<Product> products);
+        void noAvailablePaymentMethod();
         void error();
     }
 
@@ -261,27 +262,38 @@ class CheckoutApi {
             @Override
             public void failure(JsonObject obj) {
                 try {
-                    List<String> invalidSkus = new ArrayList<>();
-                    JsonArray arr = obj
-                            .get("error").getAsJsonObject()
-                            .get("details").getAsJsonArray();
+                    switch (obj.get("error").getAsJsonObject().get("type").getAsString()) {
+                        case "invalid_cart_item":
+                            List<String> invalidSkus = new ArrayList<>();
+                            JsonArray arr = obj
+                                    .get("error").getAsJsonObject()
+                                    .get("details").getAsJsonArray();
 
-                    for (int i=0; i<arr.size(); i++) {
-                        String sku = arr.get(0).getAsJsonObject().get("sku").getAsString();
-                        invalidSkus.add(sku);
+                            for (int i=0; i<arr.size(); i++) {
+                                String sku = arr.get(0).getAsJsonObject().get("sku").getAsString();
+                                invalidSkus.add(sku);
+                            }
+
+                            List<Product> invalidProducts = new ArrayList<>();
+                            ShoppingCart cart = project.getShoppingCart();
+                            for (int i=0; i<cart.size(); i++) {
+                                Product product = cart.get(i).getProduct();
+                                if (invalidSkus.contains(product.getSku())) {
+                                    invalidProducts.add(product);
+                                }
+                            }
+
+                            Logger.e("Invalid products");
+                            checkoutInfoResult.invalidProducts(invalidProducts);
+                            break;
+                        case "no_available_method":
+                            checkoutInfoResult.noAvailablePaymentMethod();
+                            break;
+                        case "bad_shop_id":
+                        case "shop_not_found":
+                            checkoutInfoResult.noShop();
+                            break;
                     }
-
-                    List<Product> invalidProducts = new ArrayList<>();
-                    ShoppingCart cart = project.getShoppingCart();
-                    for (int i=0; i<cart.size(); i++) {
-                        Product product = cart.get(i).getProduct();
-                        if (invalidSkus.contains(product.getSku())) {
-                            invalidProducts.add(product);
-                        }
-                    }
-
-                    Logger.e("Invalid products");
-                    checkoutInfoResult.invalidProducts(invalidProducts);
                 } catch (Exception e) {
                     error(e);
                 }
