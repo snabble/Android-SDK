@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Race condition when updating product database and shopping cart prices at the same time
+- Fixed a bug with BarcodeView not properly fading in when outside bounds
 
 ## [0.13.5]
 
