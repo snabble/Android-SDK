@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.7]
+
+### Fixed
+- Handle missing customer card id in encodedCodesIKEA
+
 ## [0.13.6]
 
 ### Added
