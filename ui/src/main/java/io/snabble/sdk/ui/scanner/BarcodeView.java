@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.scanner;
 
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -209,7 +210,34 @@ public class BarcodeView extends AppCompatImageView {
                                 public void run() {
                                     setAlpha(0.0f);
                                     setImageBitmap(finalBitmap);
-                                    animate().alpha(1).setDuration(200).start();
+                                    animate().alpha(1)
+                                            .setDuration(200)
+                                            // strange behaviour:
+                                            // if the view is out of bounds, we need to set
+                                            // the alpha directly after the animation, or else
+                                            // the alpha value stays at 0
+                                            .setListener(new Animator.AnimatorListener() {
+                                                @Override
+                                                public void onAnimationStart(Animator animation) {
+
+                                                }
+
+                                                @Override
+                                                public void onAnimationEnd(Animator animation) {
+                                                    setAlpha(1.0f);
+                                                }
+
+                                                @Override
+                                                public void onAnimationCancel(Animator animation) {
+
+                                                }
+
+                                                @Override
+                                                public void onAnimationRepeat(Animator animation) {
+
+                                                }
+                                            })
+                                            .start();
                                 }
                             });
                         } catch (WriterException e) {

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,11 +30,12 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
-    private ViewGroup scrollContainer;
+    private FrameLayout scrollContainer;
     private TextView explanationText;
     private TextView explanationText2;
     private Project project;
     private EncodedCodesGenerator encodedCodesGenerator;
+    private int maxSizeMm;
 
     public CheckoutEncodedCodesView(Context context) {
         super(context);
@@ -57,6 +59,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         explanationText = findViewById(R.id.explanation1);
         explanationText2 = findViewById(R.id.explanation2);
 
+        maxSizeMm = options.maxSizeMm;
         encodedCodesGenerator = new EncodedCodesGenerator(options);
 
         final Button paidButton = findViewById(R.id.paid);
@@ -144,9 +147,11 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 @Override
                 public void run() {
                     if (scrollContainer.getWidth() > 0 && scrollContainer.getHeight() > 0) {
-                        scrollContainer.addView(new CodeListView(getContext()), new ViewGroup.LayoutParams(
+                        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT));
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                        lp.gravity = Gravity.CENTER;
+                        scrollContainer.addView(new CodeListView(getContext()), lp);
                     }
 
                     DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -202,9 +207,19 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
             int h = scrollContainer.getHeight();
             int barcodeHeight = codes.size() == 1 ? h : h - h / 5;
-            barcodeView.setLayoutParams(new RecyclerView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    barcodeHeight));
+
+            if (maxSizeMm > 0) {
+                DisplayMetrics dm = getResources().getDisplayMetrics();
+                float pixelsPerMmX = dm.xdpi / 25.4f;
+                int size = (int) (pixelsPerMmX * maxSizeMm);
+                size = Math.min(barcodeHeight, size);
+
+                barcodeView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, size));
+            } else {
+                barcodeView.setLayoutParams(new RecyclerView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        barcodeHeight));
+            }
 
             barcodeView.setFormat(BarcodeFormat.QR_CODE);
 
