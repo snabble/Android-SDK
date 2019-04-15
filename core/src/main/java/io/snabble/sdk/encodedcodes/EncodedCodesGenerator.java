@@ -49,7 +49,14 @@ public class EncodedCodesGenerator {
         }
 
         finishCode();
-        ArrayList<String> ret = encodedCodes;
+
+        ArrayList<String> ret = new ArrayList<>();
+        for (int i=0; i<encodedCodes.size(); i++) {
+            String code = encodedCodes.get(i);
+            code = code.replace("{qrCodeCount}", String.valueOf(encodedCodes.size()));
+            ret.add(code);
+        }
+
         clear();
         return ret;
     }
@@ -211,6 +218,7 @@ public class EncodedCodesGenerator {
     private void finishCode() {
         stringBuilder.append(options.suffix);
         String code = stringBuilder.toString();
+        code = code.replace("{count}", String.valueOf(codeCount));
         encodedCodes.add(code);
         stringBuilder = new StringBuilder();
         codeCount = 0;

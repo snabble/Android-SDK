@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Support for maximum size of encoded code qr code display
+- Support for encodedCodesIKEA payment method
 
 ### Fixed
 - Race condition when updating product database and shopping cart prices at the same time

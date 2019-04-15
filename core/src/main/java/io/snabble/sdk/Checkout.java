@@ -176,7 +176,10 @@ public class Checkout {
     }
 
     private PaymentMethod getFallbackPaymentMethod() {
-        if(project.getEncodedCodesOptions() != null) {
+        // TODO remove project id hack when metadata contains explicit fallback method
+        if(project.getEncodedCodesOptions() != null
+                && !project.getId().contains("ikea")
+                && !project.getId().contains("globus")) {
             return PaymentMethod.ENCODED_CODES;
         }
 

@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -106,6 +107,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     }
 
     private void displayPaymentView() {
+        Project project = SnabbleUI.getProject();
         switch (checkout.getSelectedPaymentMethod()) {
             case DE_DIRECT_DEBIT:
                 displayView(new CheckoutStatusView(getContext()));
@@ -119,16 +121,29 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayView(new CheckoutEncodedCodesView(getContext()));
                 break;
             case ENCODED_CODES_CSV:
-                EncodedCodesOptions options = new EncodedCodesOptions.Builder(SnabbleUI.getProject())
+                displayView(new CheckoutEncodedCodesView(getContext(),
+                        new EncodedCodesOptions.Builder(project)
                         .prefix("snabble;\n")
                         .separator("\n")
                         .suffix("")
                         .repeatCodes(false)
                         .countSeparator(";")
                         .maxCodes(100)
-                        .build();
-
-                displayView(new CheckoutEncodedCodesView(getContext(), options));
+                        .build()));
+                break;
+            case ENCODED_CODES_IKEA:
+                EncodedCodesOptions options = project.getEncodedCodesOptions();
+                int maxCodes = 45;
+                if (options != null) {
+                    maxCodes = options.maxCodes;
+                }
+                displayView(new CheckoutEncodedCodesView(getContext(),
+                        new EncodedCodesOptions.Builder(project)
+                        .prefix("9100003\u001d100{qrCodeCount}\u001d92" + project.getCustomerCardId() + "\u001d240")
+                        .separator("\u001d240")
+                        .suffix("")
+                        .maxCodes(maxCodes)
+                        .build()));
                 break;
         }
     }
