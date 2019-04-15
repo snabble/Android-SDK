@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.6]
+
+### Fixed
+- Race condition when updating product database and shopping cart prices at the same time
+
 ## [0.13.5]
 
 ### Added 

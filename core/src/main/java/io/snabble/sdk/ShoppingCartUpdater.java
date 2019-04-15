@@ -18,7 +18,6 @@ class ShoppingCartUpdater {
     private ShoppingCart cart;
     private CheckoutApi checkoutApi;
     private Handler handler;
-    private final Object lock = new Object();
 
     ShoppingCartUpdater(Project project, ShoppingCart shoppingCart) {
         this.project = project;
@@ -38,90 +37,95 @@ class ShoppingCartUpdater {
         Logger.d("Updating prices...");
 
         final int modCount = cart.getModCount();
-        checkoutApi.createCheckoutInfo(project.getCheckedInShop(), cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
+        handler.post(new Runnable() {
             @Override
-            public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
-                handler.post(new Runnable() {
+            public void run() {
+                checkoutApi.createCheckoutInfo(project.getCheckedInShop(), cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
                     @Override
-                    public void run() {
-                        // ignore when cart was modified mid request
-                        if (cart.getModCount() != modCount) {
-                            error();
-                            return;
-                        }
-
-                        cart.invalidateOnlinePrices();
-
-                        try {
-                            CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
-
-                            Set<String> referrerIds = new HashSet<>();
-                            Set<String> requiredSkus = new HashSet<>();
-
-                            for (int i=0; i<cart.size(); i++) {
-                                ShoppingCart.Item item = cart.get(i);
-                                requiredSkus.add(item.getProduct().getSku());
-                                referrerIds.add(item.getId());
-                            }
-
-                            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                                requiredSkus.remove(lineItem.sku);
-                            }
-
-                            // error out when items are missing
-                            if (requiredSkus.size() > 0) {
-                                Logger.e("Missing products in price update: " + requiredSkus.toString());
-                                error();
-                                return;
-                            }
-
-                            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                                // exclude deposit line items
-                                if (lineItem.type == CheckoutApi.LineItemType.DEPOSIT && referrerIds.contains(lineItem.refersTo)) {
-                                    continue;
+                    public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // ignore when cart was modified mid request
+                                if (cart.getModCount() != modCount) {
+                                    error();
+                                    return;
                                 }
 
-                                ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+                                cart.invalidateOnlinePrices();
 
-                                if (item != null) {
-                                    item.setLineItem(lineItem);
-                                } else {
-                                    cart.insert(cart.newItem(lineItem), cart.size(), false);
+                                try {
+                                    CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
+
+                                    Set<String> referrerIds = new HashSet<>();
+                                    Set<String> requiredSkus = new HashSet<>();
+
+                                    for (int i=0; i<cart.size(); i++) {
+                                        ShoppingCart.Item item = cart.get(i);
+                                        requiredSkus.add(item.getProduct().getSku());
+                                        referrerIds.add(item.getId());
+                                    }
+
+                                    for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                                        requiredSkus.remove(lineItem.sku);
+                                    }
+
+                                    // error out when items are missing
+                                    if (requiredSkus.size() > 0) {
+                                        Logger.e("Missing products in price update: " + requiredSkus.toString());
+                                        error();
+                                        return;
+                                    }
+
+                                    for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                                        // exclude deposit line items
+                                        if (lineItem.type == CheckoutApi.LineItemType.DEPOSIT && referrerIds.contains(lineItem.refersTo)) {
+                                            continue;
+                                        }
+
+                                        ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+
+                                        if (item != null) {
+                                            item.setLineItem(lineItem);
+                                        } else {
+                                            cart.insert(cart.newItem(lineItem), cart.size(), false);
+                                        }
+                                    }
+
+                                    cart.setOnlineTotalPrice(checkoutInfo.price.price);
+                                    Logger.d("Successfully updated prices");
+                                } catch (Exception e) {
+                                    Logger.e("Could not update price: %s", e.getMessage());
+                                    error();
+                                    return;
                                 }
+
+                                cart.checkLimits();
+                                cart.notifyPriceUpdate(cart);
                             }
+                        });
+                    }
 
-                            cart.setOnlineTotalPrice(checkoutInfo.price.price);
-                            Logger.d("Successfully updated prices");
-                        } catch (Exception e) {
-                            Logger.e("Could not update price: %s", e.getMessage());
-                            error();
-                            return;
-                        }
+                    @Override
+                    public void noShop() {
+                        cart.notifyPriceUpdate(cart);
+                    }
 
-                        cart.checkLimits();
+                    @Override
+                    public void invalidProducts(List<Product> products) {
+                        cart.notifyPriceUpdate(cart);
+                    }
+
+                    @Override
+                    public void noAvailablePaymentMethod() {
+                        cart.notifyPriceUpdate(cart);
+                    }
+
+                    @Override
+                    public void error() {
                         cart.notifyPriceUpdate(cart);
                     }
                 });
-            }
-
-            @Override
-            public void noShop() {
-                cart.notifyPriceUpdate(cart);
-            }
-
-            @Override
-            public void invalidProducts(List<Product> products) {
-                cart.notifyPriceUpdate(cart);
-            }
-
-            @Override
-            public void noAvailablePaymentMethod() {
-                cart.notifyPriceUpdate(cart);
-            }
-
-            @Override
-            public void error() {
-                cart.notifyPriceUpdate(cart);
             }
         });
     }
