@@ -47,12 +47,6 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
 
-        // zxing uses StandardCharsets class for DATA_MATRIX codes, which is not available
-        // before Android 4.4
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            checkoutIdCode.setFormat(BarcodeFormat.QR_CODE);
-        }
-
         final View cancel = findViewById(R.id.cancel);
         cancel.setAlpha(0);
         cancel.setEnabled(false);

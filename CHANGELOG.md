@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.8]
+
+### Changed
+- Payment status view now shows a qr code instead of a data matrix code 
+
 ## [0.13.7]
 
 ### Fixed
