@@ -276,6 +276,10 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         item.setQuantity(4);
         cart.add(item);
 
+        item = zeroAmountProduct.cartItem();
+        item.setQuantity(4);
+        cart.add(item);
+
         ShoppingCart.BackendCart backendCart = cart.toBackendCart();
         Assert.assertEquals(backendCart.items.length, cart.size());
         Assert.assertEquals(backendCart.items[cart.size() - 1].amount, 2);
@@ -298,6 +302,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
 
         Assert.assertEquals(backendCart.items[cart.size() - 6].amount, 1);
         Assert.assertEquals(backendCart.items[cart.size() - 6].units.intValue(), 4);
+        Assert.assertEquals(backendCart.items[cart.size() - 6].scannedCode, "2523237000042");
         Assert.assertEquals(backendCart.items[cart.size() - 6].weightUnit, Unit.PIECE.getId());
     }
 

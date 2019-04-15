@@ -12,6 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.GsonHolder;
 
 import static io.snabble.sdk.Unit.PIECE;
@@ -606,6 +607,21 @@ public class ShoppingCart {
 
             if (item.price == null && scannedCode.hasPrice()) {
                 item.price = scannedCode.getPrice();
+            }
+
+            // reencode user input from scanned code with 0 amount
+            if (cartItem.getUnit() == Unit.PIECE && scannedCode.getEmbeddedData() == 0) {
+                CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
+
+                if (codeTemplate != null) {
+                    ScannedCode newCode = codeTemplate.code(scannedCode.getLookupCode())
+                            .embed(cartItem.getEffectiveQuantity())
+                            .buildCode();
+
+                    if (newCode != null) {
+                        item.scannedCode = newCode.getCode();
+                    }
+                }
             }
 
             items.add(item);
