@@ -151,6 +151,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT);
                         lp.gravity = Gravity.CENTER;
+                        scrollContainer.removeAllViews();
                         scrollContainer.addView(new CodeListView(getContext()), lp);
                     }
 

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.9]
+
+### Fixed
+- Fixed encoded codes generating multiple times per layout pass
+
 ## [0.13.8]
 
 ### Changed
