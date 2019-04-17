@@ -1,9 +1,12 @@
 package io.snabble.sdk.encodedcodes;
 
+import android.util.SparseArray;
+
 import io.snabble.sdk.Project;
 
 public class EncodedCodesOptions {
     public final String prefix;
+    public final SparseArray<String> prefixMap;
     public final String separator;
     public final String suffix;
     public final int maxChars;
@@ -16,12 +19,13 @@ public class EncodedCodesOptions {
     public final int maxSizeMm;
     public final Project project;
 
-    private EncodedCodesOptions(String prefix, String separator, String suffix, int maxChars,
+    private EncodedCodesOptions(String prefix, SparseArray<String> prefixMap, String separator, String suffix, int maxChars,
                                 int maxCodes, String finalCode, String nextCode,
                                 String nextCodeWithCheck, boolean repeatCodes, String countSeparator,
                                 int maxSizeMm,
                                 Project project) {
         this.prefix = prefix;
+        this.prefixMap = prefixMap;
         this.separator = separator;
         this.suffix = suffix;
         this.maxChars = maxChars;
@@ -38,6 +42,7 @@ public class EncodedCodesOptions {
     public static class Builder {
         private Project project;
         private String prefix = "";
+        private SparseArray<String> prefixMap = new SparseArray<>();
         private String separator = "\n";
         private String suffix = "";
         private int maxChars = 2953;
@@ -55,6 +60,11 @@ public class EncodedCodesOptions {
 
         public Builder prefix(String prefix) {
             this.prefix = prefix;
+            return this;
+        }
+
+        public Builder prefix(int index, String prefix) {
+            prefixMap.put(index, prefix);
             return this;
         }
 
@@ -109,7 +119,7 @@ public class EncodedCodesOptions {
         }
 
         public EncodedCodesOptions build() {
-            return new EncodedCodesOptions(prefix, separator, suffix, maxChars, maxCodes,
+            return new EncodedCodesOptions(prefix, prefixMap, separator, suffix, maxChars, maxCodes,
                     finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator, maxSizeMm, project);
         }
     }

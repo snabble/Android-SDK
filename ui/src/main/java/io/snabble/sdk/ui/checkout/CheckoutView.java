@@ -138,15 +138,18 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                     maxCodes = options.maxCodes;
                 }
 
-                String prefix = "9100003\u001d100{qrCodeCount}";
+                String prefix = "9100003\u001d100{qrCodeCount}\u001d240";
+
+                String prefixWithCustomerCard = "9100003\u001d100{qrCodeCount}";
                 if (project.getCustomerCardId() != null) {
-                    prefix += "\u001d92" + project.getCustomerCardId();
+                    prefixWithCustomerCard += "\u001d92" + project.getCustomerCardId();
                 }
-                prefix += "\u001d240";
+                prefixWithCustomerCard += "\u001d240";
 
                 displayView(new CheckoutEncodedCodesView(getContext(),
                         new EncodedCodesOptions.Builder(project)
                         .prefix(prefix)
+                        .prefix(0, prefixWithCustomerCard)
                         .separator("\u001d240")
                         .suffix("")
                         .maxCodes(maxCodes)

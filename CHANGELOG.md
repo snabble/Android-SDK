@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.10]
+
+### Fixed
+- Prevent repeating of customer card ids in encoded codes
+
 ## [0.13.9]
 
 ### Fixed
@@ -14,13 +19,13 @@ All notable changes to this project will be documented in this file.
 ## [0.13.7]
 
 ### Fixed
-- Handle missing customer card id in encodedCodesIKEA
+- Handle missing customer card id in encodedCodes
 
 ## [0.13.6]
 
 ### Added
 - Support for maximum size of encoded code qr code display
-- Support for encodedCodesIKEA payment method
+- Support for additional payment methods
 
 ### Fixed
 - Race condition when updating product database and shopping cart prices at the same time

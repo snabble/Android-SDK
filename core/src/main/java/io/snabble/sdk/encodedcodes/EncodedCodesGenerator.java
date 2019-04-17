@@ -258,7 +258,7 @@ public class EncodedCodesGenerator {
         }
 
         if (stringBuilder.length() == 0) {
-            stringBuilder.append(options.prefix);
+            stringBuilder.append(options.prefixMap.get(encodedCodes.size(), options.prefix));
         } else {
             stringBuilder.append(options.separator);
         }
