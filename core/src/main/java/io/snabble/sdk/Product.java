@@ -97,7 +97,7 @@ public class Product implements Serializable, Parcelable {
         }
     }
 
-    public static class Code {
+    public static class Code implements Serializable {
         public final String lookupCode;
         public final String transmissionCode;
         public final String template;
