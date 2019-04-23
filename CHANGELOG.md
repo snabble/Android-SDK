@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.11]
+
+### Fixed
+- Now tinting payment success image with snabble_primaryColor 
+- Keyguard authentication on Android < 4.3
+
 ## [0.13.10]
 
 ### Fixed

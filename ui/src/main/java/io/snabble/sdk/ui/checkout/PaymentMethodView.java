@@ -159,14 +159,20 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     }
 
     private void showSEPACardInput() {
-        if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
-                && KeyguardUtils.isDeviceSecure()) {
+        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+            if(KeyguardUtils.isDeviceSecure()) {
+                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                if(callback != null) {
+                    callback.showSEPACardInput();
+                }
+            } else {
+                showPaymentNotPossibleDialog();
+            }
+        } else {
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null) {
                 callback.showSEPACardInput();
             }
-        } else {
-            showPaymentNotPossibleDialog();
         }
     }
 
