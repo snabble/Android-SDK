@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -82,12 +83,21 @@ class ProductApi {
 
         url = url.replace("{sku}", sku);
 
-        Shop shop = project.getCheckedInShop();
-        if(shop != null) {
-            url += "?shopID=" + shop.getId();
+        HttpUrl baseUrl = HttpUrl.parse(url);
+        if (baseUrl == null) {
+            Logger.e("Could not check product online, malformed url provided in metadata");
+            productAvailableListener.onError();
+            return;
         }
 
-        get(url, productAvailableListener);
+        HttpUrl.Builder builder = baseUrl.newBuilder();
+
+        Shop shop = project.getCheckedInShop();
+        if(shop != null) {
+            builder.addQueryParameter("shopID", shop.getId());
+        }
+
+        get(builder.build(), productAvailableListener);
     }
 
     public void findByCode(final ScannedCode code, final OnProductAvailableListener productAvailableListener) {
@@ -107,20 +117,28 @@ class ProductApi {
             return;
         }
 
-        url += "?code=" + code.getLookupCode();
-        url += "&template=" + code.getTemplateName();
+        HttpUrl baseUrl = HttpUrl.parse(url);
+        if (baseUrl == null) {
+            Logger.e("Could not check product online, malformed url provided in metadata");
+            productAvailableListener.onError();
+            return;
+        }
+
+        HttpUrl.Builder builder = baseUrl.newBuilder()
+                .addQueryParameter("code", code.getLookupCode())
+                .addQueryParameter("template", code.getTemplateName());
 
         Shop shop = project.getCheckedInShop();
         if(shop != null) {
-            url += "&shopID=" + shop.getId();
+            builder.addQueryParameter("shopID", shop.getId());
         }
 
-        get(url, productAvailableListener);
+        get(builder.build(), productAvailableListener);
     }
 
-    private void get(final String url, final OnProductAvailableListener productAvailableListener) {
+    private void get(final HttpUrl url, final OnProductAvailableListener productAvailableListener) {
         final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
+                .url(url)
                 .get()
                 .build();
 

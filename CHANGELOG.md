@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.12]
+
+### Fixed
+- Now correctly escaping line feeds in product queries 
+
 ## [0.13.11]
 
 ### Fixed
