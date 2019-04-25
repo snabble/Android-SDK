@@ -309,13 +309,13 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 holder.card.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
-                                && e.paymentMethod.isRequiringCredentials()) {
-                            showSEPALegalInfoIfNeeded(e.paymentMethod, new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                                    if (callback != null) {
+                        showSEPALegalInfoIfNeeded(e.paymentMethod, new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                final SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                                if (callback != null) {
+                                    if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
+                                            && e.paymentMethod.isRequiringCredentials()) {
                                         callback.requestKeyguard(new KeyguardHandler() {
                                             @Override
                                             public void onKeyguardResult(int resultCode) {
@@ -327,13 +327,13 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                                                 }
                                             }
                                         });
+                                    } else {
+                                        checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                        Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
                                     }
                                 }
-                            });
-                        } else {
-                            checkout.pay(e.paymentMethod, e.paymentCredentials);
-                            Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
-                        }
+                            }
+                        });
                     }
                 });
             }

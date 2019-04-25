@@ -3,8 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [0.13.12]
 
+### Changed
+- Improved SEPA mandate info dialog
+
 ### Fixed
 - Now correctly escaping line feeds in product queries 
+- Fixed SEPA mandate dialog not showing when credentials were not encrypted using a keyguard
 
 ## [0.13.11]
 
