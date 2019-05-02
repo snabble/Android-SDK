@@ -27,6 +27,7 @@ public class CodeTemplateTest {
         newCodeTemplate("241700{i}{embed:5}{ec}", true);
         newCodeTemplate("241700000000{ec}", true);
         newCodeTemplate("2417000{ec}", true);
+        newCodeTemplate("{code=21}{_:10}{ec}", true);
 
         // invalid templates
         newCodeTemplate("96{prize:5}", false);
@@ -98,7 +99,8 @@ public class CodeTemplateTest {
         Assert.assertNotNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("960000000000000111111222223").buildCode());
         Assert.assertNotNull(newCodeTemplate("123{_:5}").match("12345678").buildCode());
 
-        Assert.assertEquals("123", newCodeTemplate("123{_:5}{code:3}").match("12345678123").buildCode().getLookupCode());
+        Assert.assertEquals("999", newCodeTemplate("123{_:5}{code:3}").match("12345678999").buildCode().getLookupCode());
+        Assert.assertEquals("21", newCodeTemplate("{code=21}{_:10}{ec}").match("2134743747736").buildCode().getLookupCode());
 
         // invalid matches
         Assert.assertNull(newCodeTemplate("{code:ean13}").match("0000000000001").buildCode());

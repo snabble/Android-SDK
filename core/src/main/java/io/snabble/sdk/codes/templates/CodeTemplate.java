@@ -76,40 +76,58 @@ public class CodeTemplate {
                 int length = 0;
                 String subType = null;
                 String[] parts = templateGroup.split(":");
+                boolean isConstantCode = false;
                 if (parts.length > 0) {
                     type = parts[0];
-                }
 
-                if (parts.length == 2) {
-                    try {
-                        length = Integer.parseInt(parts[1]);
-                    } catch (NumberFormatException ignored) {
-                        subType = parts[1];
-                    }
+                    if (parts.length == 1) {
+                        parts = templateGroup.split("=");
 
-                    if (subType == null && length < 1) {
-                        throw new IllegalArgumentException("Invalid group length: " + length);
+                        if (parts.length == 2) {
+                            type = parts[0];
+                            isConstantCode = true;
+                            subType = parts[1];
+                        }
                     }
                 }
 
-                if (templateGroup.endsWith(":")) {
-                    throw new IllegalArgumentException("Missing group length in " + templateGroup);
+                if (!isConstantCode) {
+                    if (parts.length == 2) {
+                        try {
+                            length = Integer.parseInt(parts[1]);
+                        } catch (NumberFormatException ignored) {
+                            subType = parts[1];
+                        }
+
+                        if (subType == null && length < 1) {
+                            throw new IllegalArgumentException("Invalid group length: " + length);
+                        }
+                    }
+
+                    if (templateGroup.endsWith(":")) {
+                        throw new IllegalArgumentException("Missing group length in " + templateGroup);
+                    }
                 }
 
                 Group group;
 
                 switch (type) {
                     case "code":
-                        if (subType != null) {
-                            switch (subType) {
-                                case "ean8": group = new EAN8Group(this); break;
-                                case "ean13": group = new EAN13Group(this); break;
-                                case "ean14": group = new EAN14Group(this); break;
-                                case "*": group = new WildcardGroup(this, 0); break;
-                                default: throw new IllegalArgumentException("Unknown code type: " + subType);
-                            }
+                        if (subType != null && isConstantCode) {
+                            group = new ConstantCodeGroup(this, subType);
+                            group.apply(subType);
                         } else {
-                            group = new CodeGroup(this, length);
+                            if (subType != null) {
+                                switch (subType) {
+                                    case "ean8": group = new EAN8Group(this); break;
+                                    case "ean13": group = new EAN13Group(this); break;
+                                    case "ean14": group = new EAN14Group(this); break;
+                                    case "*": group = new WildcardGroup(this, 0); break;
+                                    default: throw new IllegalArgumentException("Unknown code type: " + subType);
+                                }
+                            } else {
+                                group = new CodeGroup(this, length);
+                            }
                         }
                         break;
                     case "embed":

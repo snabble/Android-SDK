@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.13]
+
+### Added
+- Added support for constant code groups on code templates
+
+### Changes
+- Updated outdated product database mime types
+
 ## [0.13.12]
 
 ### Changed
