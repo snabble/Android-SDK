@@ -67,7 +67,7 @@ public class SnabbleSdkTest {
                             .setBody(metadataJson);
                 } else if (request.getPath().contains("appdb")) {
                     return new MockResponse()
-                            .addHeader("Content-Type", "application/vnd+sellfio.appdb+sqlite3")
+                            .addHeader("Content-Type", "application/vnd+snabble.appdb+sqlite3")
                             .addHeader("Cache-Control", "no-cache")
                             .setBody(productDbBuffer);
                 } else if (request.getPath().contains("/resolvedProducts/sku/1?shopID=1774")) {
