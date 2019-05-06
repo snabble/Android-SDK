@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.14]
+
+
+### Changes
+- Add keepScreenOn flag on checkout view
+
+### Fixed
+- Null pointer in very rare circumstances using ZXing Barcode Detector 
+
 ## [0.13.13]
 
 ### Added
