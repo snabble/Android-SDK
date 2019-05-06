@@ -127,9 +127,12 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
                     rawValue = sb.toString();
                 }
 
-                Barcode barcode = new Barcode(FirebaseBarcodeHelper.fromFirebaseFormat(firebaseVisionBarcode.getFormat()),
-                        rawValue,
-                        System.currentTimeMillis());
+                BarcodeFormat format = FirebaseBarcodeHelper.fromFirebaseFormat(firebaseVisionBarcode.getFormat());
+                if (format == null) {
+                    return null;
+                }
+
+                Barcode barcode = new Barcode(format, rawValue, System.currentTimeMillis());
 
                 Barcode filtered = falsePositiveFilter.filter(barcode);
                 if (filtered != null) {

@@ -53,6 +53,10 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
         }
 
         if (result != null) {
+            if (result.getText() == null) {
+                return null;
+            }
+
             // ZXing decodes all ITF lengths, but we only care about ITF14.
             if (result.getBarcodeFormat() == com.google.zxing.BarcodeFormat.ITF) {
                 if (result.getText().length() != 14) {
@@ -60,10 +64,12 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
                 }
             }
 
-            Barcode barcode = new Barcode(
-                    ZXingHelper.fromZXingFormat(result.getBarcodeFormat()),
-                    result.getText(),
-                    result.getTimestamp());
+            BarcodeFormat format = ZXingHelper.fromZXingFormat(result.getBarcodeFormat());
+            if (format == null) {
+                return null;
+            }
+
+            Barcode barcode = new Barcode(format, result.getText(), result.getTimestamp());
 
             Barcode filtered = falsePositiveFilter.filter(barcode);
             if (filtered != null) {
