@@ -66,6 +66,8 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
             }
         });
 
+        setKeepScreenOn(true);
+
         checkout = SnabbleUI.getProject().getCheckout();
         onStateChanged(checkout.getState());
     }
