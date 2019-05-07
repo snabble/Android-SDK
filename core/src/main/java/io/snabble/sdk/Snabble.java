@@ -532,10 +532,13 @@ public class Snabble {
         public long maxProductDatabaseAge = TimeUnit.HOURS.toMillis(1);
 
         /**
-         * If set to true, downloads receipts automatically and stores them in the projects
-         * internal storage folder.
+         * The time that the shopping cart is allowed to be alive after the last modification.
+         *
+         * The time is specified in milliseconds.
+         *
+         * The default value is 4 hours.
          */
-        public boolean enableReceiptAutoDownload;
+        public long maxShoppingCartAge = TimeUnit.HOURS.toMillis(4);
 
         /** If set to true, disables certificate pinning **/
         public boolean disableCertificatePinning;

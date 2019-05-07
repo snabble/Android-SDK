@@ -20,7 +20,6 @@ import static io.snabble.sdk.Unit.PRICE;
 
 public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
-    public static final long TIMEOUT = TimeUnit.HOURS.toMillis(4);
 
     private String id;
     private long lastModificationTime;
@@ -224,7 +223,8 @@ public class ShoppingCart {
     public void checkForTimeout() {
         long currentTime = System.currentTimeMillis();
 
-        if (lastModificationTime + TIMEOUT < currentTime) {
+        long timeout = Snabble.getInstance().getConfig().maxShoppingCartAge;
+        if (lastModificationTime + timeout < currentTime) {
             invalidate();
         }
     }

@@ -19,6 +19,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -91,6 +92,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
             case PAYMENT_APPROVED:
                 if (!checkout.getSelectedPaymentMethod().isOfflineMethod()) {
                     displayView(new CheckoutDoneView(getContext()));
+                    Telemetry.event(Telemetry.Event.CheckoutSuccessful);
                 }
                 break;
             case PAYMENT_ABORTED:

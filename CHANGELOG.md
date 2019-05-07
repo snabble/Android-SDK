@@ -3,12 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [0.13.14]
 
+### Added
+- Added Config parameter maxShoppingCartAge
+
+### Removed
+- Removed config parameter enableReceiptAutoDownload as it is no longer used
 
 ### Changes
 - Add keepScreenOn flag on checkout view
 
 ### Fixed
 - Null pointer in very rare circumstances using ZXing Barcode Detector 
+- CheckoutSuccessful Telemetry Event was not firing
 
 ## [0.13.13]
 
