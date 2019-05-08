@@ -45,11 +45,12 @@ class OkHttpClientFactory {
         builder.addInterceptor(new UserAgentInterceptor(application));
 
         if (!Snabble.getInstance().getConfig().disableCertificatePinning) {
+            Environment[] environments = Environment.values();
             CertificatePinner.Builder certificatePinnerBuilder = new CertificatePinner.Builder();
             for (String pin : PINS) {
-                certificatePinnerBuilder.add("*.snabble.io", pin);
-                certificatePinnerBuilder.add("*.snabble-staging.io", pin);
-                certificatePinnerBuilder.add("*.snabble-testing.io", pin);
+                for (Environment env : environments) {
+                    certificatePinnerBuilder.add(env.getWildcardUrl(), pin);
+                }
             }
             builder.certificatePinner(certificatePinnerBuilder.build());
         }
