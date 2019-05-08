@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.15]
+
+### Added
+- Now warming up the image cache when adding items to the shopping cart
+
 ## [0.13.14]
 
 ### Added

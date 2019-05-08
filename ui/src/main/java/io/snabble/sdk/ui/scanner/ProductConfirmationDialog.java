@@ -27,9 +27,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.PriceFormatter;
@@ -304,6 +308,14 @@ class ProductConfirmationDialog {
         cartItem.setQuantity(q);
 
         shoppingCart.updatePrices(false);
+
+        // warm up the image cache
+        String imageUrl = cartItem.getProduct().getImageUrl();
+        if (imageUrl != null && imageUrl.length() > 0) {
+            Picasso.with(Snabble.getInstance().getApplication())
+                    .load(cartItem.getProduct().getImageUrl())
+                    .fetch();
+        }
 
         dismiss();
     }
