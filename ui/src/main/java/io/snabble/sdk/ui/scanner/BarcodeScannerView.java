@@ -81,6 +81,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     private TextView cameraUnavailableView;
     private int displayOrientation;
     private boolean restrictScanningToIndicator = true;
+    private float restrictionOvershoot = 1.0f;
     private int bitsPerPixel;
     private boolean indicatorEnabled = true;
     private FrameLayout splashView;
@@ -725,6 +726,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
      */
     public void setRestrictScanningToIndicator(boolean restrictScanningToIndicator) {
         this.restrictScanningToIndicator = restrictScanningToIndicator;
+        updateTransform();
+    }
+
+    /**
+     * Sets the multiplicaton value that is used to allow scanning outside of the indicator if
+     * {@link #setRestrictScanningToIndicator(boolean)} is set
+     *
+     * Default is 1.0
+     */
+    public void setRestrictionOvershoot(float val) {
+        if (val == 0.0f) {
+            val = 1.0f;
+        }
+
+        restrictionOvershoot = val;
+        updateTransform();
     }
 
     private void updateTransform() {
@@ -800,6 +817,14 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         } else {
             rect = new Rect(0, 0, getWidth(), getHeight());
         }
+
+        rect.inset(Math.round(rect.width() * (1.0f - restrictionOvershoot)),
+                    Math.round(rect.height() * (1.0f - restrictionOvershoot)));
+
+        rect.left = Math.max(0, rect.left);
+        rect.top = Math.max(0, rect.top);
+        rect.right = Math.min(getWidth(), rect.right);
+        rect.bottom = Math.min(getHeight(), rect.bottom);
 
         float left = offsetX + surfaceWidth * ((float) rect.left / surfaceWidth);
         float top = offsetY + surfaceHeight * ((float) rect.top / surfaceHeight);
