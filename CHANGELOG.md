@@ -9,9 +9,6 @@ All notable changes to this project will be documented in this file.
 - Added setRestrictionOvershoot to BarcodeScannerView to increase the detection area by a 
 multiplier based on the indicator
 
-### Changed
-- The default scan area is now 15% bigger as the indicator indicates
-
 ### Fixed
 - Fixed payment status screen not updating when in a stopped activity 
 - Fixed scanner shopping cart button not updating when in a stopped activity
