@@ -1,31 +1,21 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.13.17]
-
-### Fixed
-- Fixed payment status screen not updating when in a stopped activity 
-- Fixed scanner shopping cart button not updating when in a stopped activity
-- Fixed barcode search crashing when multiple templates were matching on a single product with the same input
-
-## [0.13.16]
+## [0.13.15]
 
 ### Changed
 - The default scan area is now 20% bigger as the indicator indicates
-
-### Added
-- Added setRestrictionOvershoot to BarcodeScannerView to increase the detection area by a 
-multiplier based on the indicator
-
-## [0.13.15]
-
-### Added
 - Now warming up the image cache when adding items to the shopping cart
 - Added setRestrictionOvershoot to BarcodeScannerView to increase the detection area by a 
 multiplier based on the indicator
 
 ### Changed
 - The default scan area is now 15% bigger as the indicator indicates
+
+### Fixed
+- Fixed payment status screen not updating when in a stopped activity 
+- Fixed scanner shopping cart button not updating when in a stopped activity
+- Fixed barcode search crashing when multiple templates were matching on a single product with the same input
 
 ## [0.13.14]
 
