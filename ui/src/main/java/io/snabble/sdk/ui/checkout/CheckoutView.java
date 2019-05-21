@@ -29,6 +29,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     private ViewAnimator viewAnimator;
     private Checkout checkout;
     private DelayedProgressDialog progressDialog;
+    private Checkout.State currentState;
 
     public CheckoutView(Context context) {
         super(context);
@@ -75,6 +76,10 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     @Override
     public void onStateChanged(Checkout.State state) {
+        if (state == currentState) {
+            return;
+        }
+
         if (state == Checkout.State.VERIFYING_PAYMENT_METHOD) {
             progressDialog.showAfterDelay(500);
         } else {
@@ -105,9 +110,10 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                         .show();
                 break;
             case NONE:
-
                 break;
         }
+
+        currentState = state;
     }
 
     private void displayPaymentView() {
@@ -171,6 +177,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     private void registerListeners() {
         checkout.addOnCheckoutStateChangedListener(this);
+        onStateChanged(checkout.getState());
     }
 
     private void unregisterListeners() {

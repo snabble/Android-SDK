@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.17]
+
+### Fixed
+- Fixed payment status screen not updating when in a stopped activity 
+- Fixed scanner shopping cart button not updating when in a stopped activity
+
 ## [0.13.16]
 
 ### Changed

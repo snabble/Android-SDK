@@ -460,6 +460,7 @@ public class SelfScanningView extends FrameLayout {
 
         startBarcodeScanner();
         shoppingCart.addListener(shoppingCartListener);
+        updateCartButton();
     }
 
     private void unregisterListeners() {
