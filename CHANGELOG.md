@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed payment status screen not updating when in a stopped activity 
 - Fixed scanner shopping cart button not updating when in a stopped activity
+- Fixed barcode search crashing when multiple templates were matching on a single product with the same input
 
 ## [0.13.16]
 

@@ -138,7 +138,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
                     .buildCode();
 
             if (finalCode == null) {
-                Logger.d("wtf");
+                return;
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
