@@ -4,10 +4,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
+
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,8 +26,6 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
@@ -71,9 +69,12 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             @Override
             public void click() {
                 if (KeyguardUtils.isDeviceSecure()) {
-                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                    if (callback != null) {
-                        callback.showSEPACardInput();
+                    Activity activity = UIUtils.getHostActivity(getContext());
+                    if (activity instanceof FragmentActivity) {
+                        SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
+                        dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
+                    } else {
+                        throw new RuntimeException("Host activity needs to be a Fragment Activity");
                     }
                 } else {
                     new AlertDialog.Builder(getContext())
@@ -114,6 +115,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
     private class EntryViewHolder extends RecyclerView.ViewHolder {
         TextView text;
+        TextView validTo;
         ImageView icon;
         View delete;
 
@@ -121,6 +123,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             super(itemView);
 
             text = itemView.findViewById(R.id.text);
+            validTo = itemView.findViewById(R.id.valid_to);
             icon = itemView.findViewById(R.id.icon);
             delete = itemView.findViewById(R.id.delete);
         }
@@ -135,6 +138,22 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         for(PaymentCredentials pm : paymentCredentials) {
             if(pm.getType() == PaymentCredentials.Type.SEPA) {
                 entries.add(new Entry(pm, R.drawable.ic_sepa_small, pm.getObfuscatedId()));
+            } else if (pm.getType() == PaymentCredentials.Type.CREDIT_CARD) {
+                PaymentCredentials.Brand ccBrand = pm.getBrand();
+
+                int drawableResId = 0;
+                if (ccBrand != null) {
+                    switch (ccBrand) {
+                        case VISA:
+                            drawableResId = R.drawable.ic_visa;
+                            break;
+                        case MASTERCARD:
+                            drawableResId = R.drawable.ic_mastercard;
+                            break;
+                    }
+                }
+
+                entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
             }
         }
 
@@ -173,7 +192,23 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 EntryViewHolder vh = (EntryViewHolder)holder;
                 final Entry e = entries.get(position);
 
-                vh.icon.setImageResource(e.drawableRes);
+                if (e.drawableRes != 0) {
+                    vh.icon.setImageResource(e.drawableRes);
+                    vh.icon.setVisibility(View.VISIBLE);
+                } else {
+                    vh.icon.setVisibility(View.INVISIBLE);
+                }
+
+                String validTo = e.paymentCredentials.getValidTo();
+
+                if (e.paymentCredentials.getValidTo() != null) {
+                    // TODO i18n
+                    vh.validTo.setText("Expiration date: " + validTo);
+                    vh.validTo.setVisibility(View.VISIBLE);
+                } else {
+                    vh.validTo.setVisibility(View.GONE);
+                }
+
                 vh.text.setText(e.text);
                 vh.delete.setOnClickListener(new OnClickListener() {
                     @Override

@@ -53,6 +53,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
     static {
         icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
+        icons.put(PaymentMethod.CREDIT_CARD, R.drawable.ic_pm_creditcard);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES_CSV, R.drawable.ic_pm_checkstand);
@@ -128,7 +129,15 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                             showSEPACardInput();
                         }
                     };
+                } else if(paymentMethod == PaymentMethod.CREDIT_CARD) {
+                    e.onClickListener = new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showCreditCardInput();
+                        }
+                    };
                 }
+
                 entries.add(e);
             }
         }
@@ -142,6 +151,13 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                         break;
                     }
                 }
+            } else if (p.getType() == PaymentCredentials.Type.CREDIT_CARD) {
+                for(Entry e : entries) {
+                    if (e.paymentMethod == PaymentMethod.CREDIT_CARD) {
+                        entries.remove(e);
+                        break;
+                    }
+                }
             }
         }
 
@@ -149,6 +165,12 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
                 Entry e = new Entry();
                 e.paymentMethod = PaymentMethod.DE_DIRECT_DEBIT;
+                e.paymentCredentials = p;
+                e.text = p.getObfuscatedId();
+                entries.add(e);
+            } else if (p.getType() == PaymentCredentials.Type.CREDIT_CARD && availablePaymentMethods.contains(PaymentMethod.CREDIT_CARD)) {
+                Entry e = new Entry();
+                e.paymentMethod = PaymentMethod.CREDIT_CARD;
                 e.paymentCredentials = p;
                 e.text = p.getObfuscatedId();
                 entries.add(e);
@@ -172,6 +194,24 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null) {
                 callback.showSEPACardInput();
+            }
+        }
+    }
+
+    private void showCreditCardInput() {
+        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+            if(KeyguardUtils.isDeviceSecure()) {
+                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                if(callback != null) {
+                    callback.showCreditCardCardInput();
+                }
+            } else {
+                showPaymentNotPossibleDialog();
+            }
+        } else {
+            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            if(callback != null) {
+                callback.showCreditCardCardInput();
             }
         }
     }

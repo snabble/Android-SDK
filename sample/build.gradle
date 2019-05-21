@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "io.snabble.testapp"
-        minSdkVersion project.minSdkVersion
+        minSdkVersion 16
         targetSdkVersion project.targetSdkVersion
         versionCode 2
         versionName "1.0"
@@ -42,6 +42,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
 }
 

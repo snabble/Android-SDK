@@ -12,7 +12,9 @@ public enum PaymentMethod {
     @SerializedName("encodedCodesIKEA")
     ENCODED_CODES_IKEA(true, false),
     @SerializedName("deDirectDebit")
-    DE_DIRECT_DEBIT(false, true);
+    DE_DIRECT_DEBIT(false, true),
+    @SerializedName("creditCard")
+    CREDIT_CARD(false, true);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;

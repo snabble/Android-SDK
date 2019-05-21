@@ -43,7 +43,6 @@ public class Utils {
         return (float) px / context.getResources().getDisplayMetrics().density;
     }
 
-
     public static byte[] sha1(String input) {
         MessageDigest messageDigest;
         try {

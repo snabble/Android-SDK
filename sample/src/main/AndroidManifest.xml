@@ -28,6 +28,7 @@
         <activity android:name=".ShoppingCartActivity" />
         <activity android:name=".ReceiptListActivity" />
         <activity android:name=".SEPACardInputActivity" />
+        <activity android:name=".CreditCardInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />
         <activity android:name=".PaymentCredentialsSelectActivity" />
     </application>

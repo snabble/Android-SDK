@@ -11,6 +11,8 @@ public interface SnabbleUICallback {
 
     void showSEPACardInput();
 
+    void showCreditCardCardInput();
+
     void showShoppingCart();
 
     void showPaymentCredentialsList();

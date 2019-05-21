@@ -51,9 +51,9 @@ public class SnabbleUI {
      * Registers a ActionBar for suggested changes on the action bar.
      * <p>
      * Remember to unregister the ActionBar when not used anymore, for example if you set
-     * this ActionBar in an Activity onCreate, remember to call unregisterActionBarListener in onDestroy()
+     * this ActionBar in an Activity onCreate, remember to call unregisterActionBar in onDestroy()
      * <p>
-     * Calling this multiple times overwrites the old callback
+     * Calling this multiple times overwrites the old action bar
      */
     public static void registerActionBar(ActionBar bar) {
         actionBar = bar;

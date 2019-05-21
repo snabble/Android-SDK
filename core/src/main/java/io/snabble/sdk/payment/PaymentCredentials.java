@@ -3,7 +3,6 @@ package io.snabble.sdk.payment;
 import android.util.Base64;
 
 import java.io.InputStream;
-import java.security.KeyStore;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
 import java.security.cert.CertPathValidatorException;
@@ -15,6 +14,9 @@ import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -27,11 +29,17 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
-import io.snabble.sdk.utils.security.KeyStoreCipher;
 
 public class PaymentCredentials {
     public enum Type {
-        SEPA
+        SEPA,
+        CREDIT_CARD
+    }
+
+    public enum Brand {
+        UNKNOWN,
+        VISA,
+        MASTERCARD
     }
 
     private static class SepaData {
@@ -39,12 +47,18 @@ public class PaymentCredentials {
         private String iban;
     }
 
+    private static class CreditCardData {
+        private String name;
+        private String hostedDataId;
+    }
+
     private String obfuscatedId;
     private boolean isKeyStoreEncrypted;
     private String encryptedData;
     private String signature;
-
+    private String validTo;
     private Type type;
+    private Brand brand;
 
     private PaymentCredentials() {
 
@@ -78,6 +92,48 @@ public class PaymentCredentials {
         pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
+        pc.brand = Brand.UNKNOWN;
+
+        if (pc.encryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
+    public static PaymentCredentials fromCreditCardData(String name, Brand brand, String obfuscatedId,
+                                                        String expirationMonth, String expirationYear, String hostedDataId) {
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.type = Type.CREDIT_CARD;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Invalid Name");
+        }
+
+        pc.obfuscatedId = obfuscatedId;
+
+        CreditCardData creditCardData = new CreditCardData();
+        creditCardData.name = name;
+        creditCardData.hostedDataId = hostedDataId;
+
+        String json = GsonHolder.get().toJson(creditCardData, CreditCardData.class);
+
+        X509Certificate certificate = certificates.get(0);
+        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.encrypt();
+        pc.signature = pc.sha256Signature(certificate);
+        pc.brand = brand;
+
+        try {
+            pc.validTo = expirationMonth + "/" + expirationYear;
+        } catch (NumberFormatException e) {
+            return null;
+        }
 
         if (pc.encryptedData == null) {
             return null;
@@ -88,6 +144,10 @@ public class PaymentCredentials {
 
     public Type getType() {
         return type;
+    }
+
+    public Brand getBrand() {
+        return brand;
     }
 
     private String obfuscate(String s) {
@@ -232,6 +292,10 @@ public class PaymentCredentials {
         }
 
         return false;
+    }
+
+    public String getValidTo() {
+        return validTo;
     }
 
     public String getObfuscatedId() {

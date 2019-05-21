@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import android.os.Build;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -67,6 +69,13 @@ class CheckoutApi {
                         if (paymentMethods.contains(clientPaymentMethod)) {
                             result.add(clientPaymentMethod);
                         }
+                    }
+
+                    // TODO remove
+                    result.add(PaymentMethod.CREDIT_CARD);
+
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                        result.remove(PaymentMethod.CREDIT_CARD);
                     }
 
                     return result.toArray(new PaymentMethod[result.size()]);

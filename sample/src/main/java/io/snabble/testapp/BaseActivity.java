@@ -148,6 +148,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     @Override
+    public void showCreditCardCardInput() {
+        Intent intent = new Intent(this, CreditCardInputActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
     public void showPaymentCredentialsList() {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
         startActivity(intent);
