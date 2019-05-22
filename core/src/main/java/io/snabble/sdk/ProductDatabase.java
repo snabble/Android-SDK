@@ -515,6 +515,9 @@ public class ProductDatabase {
      *
      * Note that database updates are usually very cheap and do not transmit data that is already on your device.
      *
+     * If a full update gets interrupted during transfer, additional calls to update are resuming where they left of,
+     * so it makes sense to call update when the connectivity state changed.
+     *
      * If the database is not present or schematic changes are done that can not be resolved via a delta update
      * a full update is needed.
      */
@@ -532,6 +535,9 @@ public class ProductDatabase {
      * return the updated data.
      *
      * Note that database updates are usually very cheap and do not transmit data that is already on your device.
+     *
+     * If a full update gets interrupted during transfer, additional calls to update are resuming where they left of,
+     * so it makes sense to call update when the connectivity state changed.
      *
      * If the database is not present or schematic changes are done that can not be resolved via a delta update
      * a full update is needed.
