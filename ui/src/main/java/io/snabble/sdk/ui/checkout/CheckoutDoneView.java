@@ -2,16 +2,21 @@ package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Random;
 
@@ -48,7 +53,7 @@ public class CheckoutDoneView extends FrameLayout {
         View rating1 = findViewById(R.id.rating_1);
         View rating2 = findViewById(R.id.rating_2);
         View rating3 = findViewById(R.id.rating_3);
-        final View inputBadRatingLayout = findViewById(R.id.input_bad_rating_layout);
+        final TextInputLayout inputBadRatingLayout = findViewById(R.id.input_bad_rating_layout);
         final View ratingContainer = findViewById(R.id.rating_container);
         final TextView ratingTitle = findViewById(R.id.rating_title);
 
@@ -107,6 +112,21 @@ public class CheckoutDoneView extends FrameLayout {
                 animateStars(vg);
             }
         });
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(View.FOCUS_DOWN);
+
+                getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        }, 2000);
     }
 
     public void sendRating(int rating) {
@@ -183,8 +203,8 @@ public class CheckoutDoneView extends FrameLayout {
                         }
                     })
                     .start();
-        }
 
-        successImage.bringToFront();
+            successImage.bringToFront();
+        }
     }
 }
