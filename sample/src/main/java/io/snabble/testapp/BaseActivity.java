@@ -20,6 +20,7 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.checkout.CheckoutDoneView;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
@@ -40,41 +41,42 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         }
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        progressIndicator = findViewById(R.id.progress_indicator);
-        content = findViewById(R.id.content);
-        sdkError = findViewById(R.id.sdk_error);
-
-        App.get().init(new App.InitCallback() {
-            @Override
-            public void done() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressIndicator.setVisibility(View.GONE);
-                        content.setVisibility(View.VISIBLE);
-
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content, onCreateFragment())
-                                .commitAllowingStateLoss();
-                    }
-                });
-            }
-
-            @Override
-            public void error(final String text) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressIndicator.setVisibility(View.GONE);
-                        sdkError.setVisibility(View.VISIBLE);
-                        sdkError.setText(text);
-                    }
-                });
-            }
-        });
+        //setContentView(R.layout.activity_main);
+        setContentView(new CheckoutDoneView(this));
+//
+//        progressIndicator = findViewById(R.id.progress_indicator);
+//        content = findViewById(R.id.content);
+//        sdkError = findViewById(R.id.sdk_error);
+//
+//        App.get().init(new App.InitCallback() {
+//            @Override
+//            public void done() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        progressIndicator.setVisibility(View.GONE);
+//                        content.setVisibility(View.VISIBLE);
+//
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.content, onCreateFragment())
+//                                .commitAllowingStateLoss();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void error(final String text) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        progressIndicator.setVisibility(View.GONE);
+//                        sdkError.setVisibility(View.VISIBLE);
+//                        sdkError.setText(text);
+//                    }
+//                });
+//            }
+//        });
     }
 
 
@@ -150,6 +152,18 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     @Override
     public void showPaymentCredentialsList() {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void showHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void showReceipts() {
+        Intent intent = new Intent(this, ReceiptListActivity.class);
         startActivity(intent);
     }
 

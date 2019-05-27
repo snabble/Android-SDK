@@ -4,16 +4,13 @@ import android.content.Intent;
 
 public interface SnabbleUICallback {
     void showCheckout();
-
     void showScannerWithCode(String scannableCode);
-
     void showBarcodeSearch();
-
     void showSEPACardInput();
-
     void showShoppingCart();
-
     void showPaymentCredentialsList();
+    void showHome();
+    void showReceipts();
 
     /**
      * Request a keyguard for user authentication. This will only be called if
@@ -27,6 +24,5 @@ public interface SnabbleUICallback {
      *                        {@link android.app.Activity#onActivityResult(int, int, Intent)}.
      */
     void requestKeyguard(KeyguardHandler keyguardHandler);
-
     void goBack();
 }

@@ -32,7 +32,7 @@ class CheckoutAbortedView extends FrameLayout {
             SnabbleUI.getActionBar().setTitle(R.string.Snabble_Checkout_error);
         }
 
-        findViewById(R.id.back).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.goto_home).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();

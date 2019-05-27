@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<ScrollView android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:parentTag="android.widget.FrameLayout">
+    android:fillViewport="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+<RelativeLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:animateLayoutChanges="true"
+    tools:parentTag="android.widget.RelativeLayout">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/back">
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/rating_title">
+        <FrameLayout
+            android:id="@+id/stars_container"
+            android:clipChildren="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/success_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="40dp"
+                android:src="@drawable/ic_success" />
+        </FrameLayout>
+
         <TextView
-            android:drawableTop="@drawable/ic_success"
-            android:drawablePadding="24dp"
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,10 +46,76 @@
             android:layout_marginEnd="24dp"
             android:gravity="center"
             android:textSize="17sp"/>
-    </FrameLayout>
+
+        <Button style="@style/SnabbleButton.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/goto_checkout_overview"
+            android:text="Einkaufsübersicht ansehen"/> <!-- TODO i18n -->
+    </LinearLayout>
+
+    <TextView android:id="@+id/rating_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hat dir der Einkauf mit snabble gefallen?"
+        android:textSize="17sp"
+        android:layout_above="@+id/rating_container"
+        android:layout_centerHorizontal="true"/> <!-- TODO i18n -->
+
+    <LinearLayout
+        android:id="@+id/rating_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/input_bad_rating_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/rating_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_rating_1"/>
+        <ImageView android:id="@+id/rating_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_rating_2" />
+        <ImageView android:id="@+id/rating_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_rating_3" />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/input_bad_rating_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:visibility="gone"
+        android:layout_above="@+id/goto_home">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_bad_rating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:gravity="top|left"
+            android:minLines="5">
+
+        </com.google.android.material.textfield.TextInputEditText>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button style="@style/SnabbleButton"
-        android:id="@+id/back"
+        android:id="@+id/goto_home"
         android:layout_width="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -36,3 +125,4 @@
         android:layout_centerHorizontal="true"
         android:text="@string/Snabble.Payment.backToHome" />
 </RelativeLayout>
+</ScrollView>

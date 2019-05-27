@@ -9,7 +9,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/back">
+        android:layout_above="@+id/goto_home">
         <TextView
             android:drawableTop="@drawable/ic_fail"
             android:drawablePadding="24dp"
@@ -27,7 +27,7 @@
     </FrameLayout>
 
     <Button style="@style/SnabbleButton"
-        android:id="@+id/back"
+        android:id="@+id/goto_home"
         android:layout_width="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
