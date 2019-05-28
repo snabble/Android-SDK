@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.16]
+
+## Added
+- Project now contains getName() for a user presentable name
+
 ## [0.13.15]
 
 ### Changed
