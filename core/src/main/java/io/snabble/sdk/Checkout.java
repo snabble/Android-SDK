@@ -44,6 +44,10 @@ public class Checkout {
          */
         PAYMENT_APPROVED,
         /**
+         * After payment approval, when the receipt is available.
+         */
+        RECEIPT_AVAILABLE,
+        /**
          * The payment was denied by the payment provider.
          */
         DENIED_BY_PAYMENT_PROVIDER,
@@ -121,6 +125,7 @@ public class Checkout {
         cancelOutstandingCalls();
 
         if (state != State.PAYMENT_APPROVED
+                && state != State.RECEIPT_AVAILABLE
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
@@ -142,6 +147,7 @@ public class Checkout {
      */
     public void cancelSilently() {
         if (state != State.PAYMENT_APPROVED
+                && state != State.RECEIPT_AVAILABLE
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
@@ -352,7 +358,7 @@ public class Checkout {
             }
         });
 
-        if (state == State.WAIT_FOR_APPROVAL) {
+        if (state == State.WAIT_FOR_APPROVAL || state == State.PAYMENT_APPROVED) {
             scheduleNextPoll();
         }
     }
@@ -366,7 +372,13 @@ public class Checkout {
 
         if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL) {
             approve();
-            return true;
+
+            if (checkoutProcess.getReceiptLink() != null) {
+                notifyStateChanged(State.RECEIPT_AVAILABLE);
+                return true;
+            } else {
+                return false;
+            }
         } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.PENDING) {
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
@@ -445,10 +457,12 @@ public class Checkout {
     }
 
     private void approve() {
-        Logger.d("Payment approved");
-        shoppingCart.invalidate();
-        clearCodes();
-        notifyStateChanged(State.PAYMENT_APPROVED);
+        if (state != State.PAYMENT_APPROVED) {
+            Logger.d("Payment approved");
+            shoppingCart.invalidate();
+            clearCodes();
+            notifyStateChanged(State.PAYMENT_APPROVED);
+        }
     }
 
     public void approveOfflineMethod() {
@@ -562,7 +576,6 @@ public class Checkout {
         return state;
     }
 
-
     public interface OnCheckoutStateChangedListener {
         void onStateChanged(State state);
     }
@@ -578,16 +591,18 @@ public class Checkout {
     }
 
     private void notifyStateChanged(final State state) {
-        this.lastState = this.state;
-        this.state = state;
+        if (this.state != state) {
+            this.lastState = this.state;
+            this.state = state;
 
-        uiHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
-                    checkoutStateListener.onStateChanged(state);
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
+                        checkoutStateListener.onStateChanged(state);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }

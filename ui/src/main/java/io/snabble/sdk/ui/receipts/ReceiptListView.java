@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.receipts;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,17 +26,25 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ReceiptInfo;
 import io.snabble.sdk.Receipts;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.ShoppingCartView;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
-public class ReceiptListView extends CoordinatorLayout {
+public class ReceiptListView extends CoordinatorLayout implements Checkout.OnCheckoutStateChangedListener {
     private ReceiptInfo[] receiptInfos;
     private RecyclerView recyclerView;
     private View emptyState;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Receipts receipts;
+    private Checkout checkout;
+    private boolean showProgressBar;
 
     public ReceiptListView(@NonNull Context context) {
         super(context);
@@ -57,6 +66,14 @@ public class ReceiptListView extends CoordinatorLayout {
 
     private void init() {
         View v = View.inflate(getContext(), R.layout.view_receipt_list, this);
+
+        receipts = Snabble.getInstance().getReceipts();
+
+        try {
+            checkout = SnabbleUI.getProject().getCheckout();
+        } catch (RuntimeException ignored) {
+            // TODO better way to handle missing project
+        }
 
         recyclerView = v.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -81,12 +98,17 @@ public class ReceiptListView extends CoordinatorLayout {
     private void update() {
         swipeRefreshLayout.setRefreshing(true);
 
-        Snabble.getInstance().getReceipts().getReceiptInfos(new Receipts.ReceiptInfoCallback() {
+        receipts.getReceiptInfos(new Receipts.ReceiptInfoCallback() {
             @Override
             public void success(ReceiptInfo[] newReceiptInfos) {
                 swipeRefreshLayout.setRefreshing(false);
 
                 receiptInfos = newReceiptInfos;
+
+                if (checkout != null && checkout.getState() == Checkout.State.PAYMENT_APPROVED) {
+                    showProgressBar = true;
+                }
+
                 recyclerView.getAdapter().notifyDataSetChanged();
 
                 updateEmptyState();
@@ -113,13 +135,77 @@ public class ReceiptListView extends CoordinatorLayout {
         }
     }
 
-    private class ViewHolder extends RecyclerView.ViewHolder {
+    private void registerListeners() {
+        checkout.addOnCheckoutStateChangedListener(this);
+    }
+
+    private void unregisterListeners() {
+        checkout.removeOnCheckoutStateChangedListener(this);
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        registerListeners();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        unregisterListeners();
+    }
+
+    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+            new SimpleActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityStarted(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        registerListeners();
+                    }
+                }
+
+                @Override
+                public void onActivityStopped(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        unregisterListeners();
+                    }
+                }
+            };
+
+    @Override
+    public void onStateChanged(Checkout.State state) {
+        if (state == Checkout.State.RECEIPT_AVAILABLE) {
+            showProgressBar = false;
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    private class GeneratingViewHolder extends RecyclerView.ViewHolder {
+        TextView shopName;
+
+        public GeneratingViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            shopName = itemView.findViewById(R.id.shop_name);
+            shopName.setText(checkout.getShop().getName());
+        }
+    }
+
+    private class ReceiptViewHolder extends RecyclerView.ViewHolder {
         TextView shopName;
         TextView price;
         TextView date;
         View rootView;
 
-        public ViewHolder(View itemView) {
+        public ReceiptViewHolder(View itemView) {
             super(itemView);
 
             shopName = itemView.findViewById(R.id.shop_name);
@@ -196,22 +282,41 @@ public class ReceiptListView extends CoordinatorLayout {
         }
     }
 
-    private class Adapter extends RecyclerView.Adapter<ViewHolder> {
+    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private static final int TYPE_PROGRESS_BAR = 0;
+        private static final int TYPE_RECEIPT = 1;
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            return new ViewHolder(inflater.inflate(R.layout.item_receipt, parent, false));
+
+            if (viewType == TYPE_PROGRESS_BAR) {
+                return new GeneratingViewHolder(inflater.inflate(R.layout.item_receipt_generating, parent, false));
+            }
+
+            return new ReceiptViewHolder(inflater.inflate(R.layout.item_receipt, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.bindTo(receiptInfos[position]);
+        public int getItemViewType(int position) {
+            if (showProgressBar && position == 0) {
+                return TYPE_PROGRESS_BAR;
+            }
+
+            return TYPE_RECEIPT;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            if (getItemViewType(position) == TYPE_RECEIPT) {
+                int pos = showProgressBar ? position - 1 : position;
+                ((ReceiptViewHolder) holder).bindTo(receiptInfos[pos]);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return receiptInfos != null ? receiptInfos.length : 0;
+            return (showProgressBar ? 1 : 0) + (receiptInfos != null ? receiptInfos.length : 0);
         }
     }
 }

@@ -2,7 +2,14 @@ package io.snabble.testapp;
 
 import android.app.Application;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -13,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -39,6 +47,7 @@ public class App extends Application {
             return;
         }
         LeakCanary.install(this);
+        createNotificationChannel();
 
         instance = this;
     }
@@ -103,6 +112,29 @@ public class App extends Application {
                 // if you want to force keyguard authentication before online payment
                 snabble.getUserPreferences().setRequireKeyguardAuthenticationForPayment(true);
 
+                for (final Project project : snabble.getProjects()) {
+                    project.getCheckout().addOnCheckoutStateChangedListener(new Checkout.OnCheckoutStateChangedListener() {
+                        @Override
+                        public void onStateChanged(Checkout.State state) {
+                            if (state == Checkout.State.RECEIPT_AVAILABLE) {
+                                Intent intent = new Intent(getApplicationContext(), ReceiptListActivity.class);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+                                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "0")
+                                        .setSmallIcon(R.mipmap.ic_launcher)
+                                        .setContentTitle(project.getCheckout().getShop().getName())
+                                        .setContentText("Your Receipt is ready.")
+                                        .setContentIntent(pendingIntent)
+                                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+
+                                notificationManager.notify(0, builder.build());
+                            }
+                        }
+                    });
+                }
+
                 callback.done();
             }
 
@@ -126,6 +158,22 @@ public class App extends Application {
                 Log.d("Telemetry", String.format("Event: %s [%s]", event.toString(), dataStr));
             }
         });
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "name";
+            String description = "desc";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("0", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     public Project getProject() {

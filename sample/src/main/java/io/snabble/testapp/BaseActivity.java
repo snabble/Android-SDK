@@ -41,42 +41,41 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         }
 
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-        setContentView(new CheckoutDoneView(this));
-//
-//        progressIndicator = findViewById(R.id.progress_indicator);
-//        content = findViewById(R.id.content);
-//        sdkError = findViewById(R.id.sdk_error);
-//
-//        App.get().init(new App.InitCallback() {
-//            @Override
-//            public void done() {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        progressIndicator.setVisibility(View.GONE);
-//                        content.setVisibility(View.VISIBLE);
-//
-//                        getSupportFragmentManager()
-//                                .beginTransaction()
-//                                .replace(R.id.content, onCreateFragment())
-//                                .commitAllowingStateLoss();
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void error(final String text) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        progressIndicator.setVisibility(View.GONE);
-//                        sdkError.setVisibility(View.VISIBLE);
-//                        sdkError.setText(text);
-//                    }
-//                });
-//            }
-//        });
+        setContentView(R.layout.activity_main);
+
+        progressIndicator = findViewById(R.id.progress_indicator);
+        content = findViewById(R.id.content);
+        sdkError = findViewById(R.id.sdk_error);
+
+        App.get().init(new App.InitCallback() {
+            @Override
+            public void done() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressIndicator.setVisibility(View.GONE);
+                        content.setVisibility(View.VISIBLE);
+
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.content, onCreateFragment())
+                                .commitAllowingStateLoss();
+                    }
+                });
+            }
+
+            @Override
+            public void error(final String text) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressIndicator.setVisibility(View.GONE);
+                        sdkError.setVisibility(View.VISIBLE);
+                        sdkError.setText(text);
+                    }
+                });
+            }
+        });
     }
 
 

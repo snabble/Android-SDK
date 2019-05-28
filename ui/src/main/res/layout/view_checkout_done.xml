@@ -21,7 +21,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipChildren="false"
-                    app:layout_maxHeight="310dp"
+                    android:clipToPadding="false"
+                    app:layout_maxHeight="290dp"
                     app:flexDirection="column"
                     app:flexWrap="wrap"
                     app:layout_flexGrow="1"
@@ -29,6 +30,7 @@
                         <FrameLayout
                             android:id="@+id/stars_container"
                             android:clipChildren="false"
+                            android:clipToPadding="false"
                             android:padding="24dp"
                             app:layout_minHeight="40dp"
                             app:layout_maxHeight="203dp"
@@ -58,6 +60,8 @@
                         <Button style="@style/SnabbleButton.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
                             android:id="@+id/goto_checkout_overview"
                             android:text="Einkaufsübersicht ansehen"/> <!-- TODO i18n -->
                 </com.google.android.flexbox.FlexboxLayout>

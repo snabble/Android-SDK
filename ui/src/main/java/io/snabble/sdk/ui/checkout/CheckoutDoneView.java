@@ -1,9 +1,13 @@
 package io.snabble.sdk.ui.checkout;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -16,15 +20,26 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Random;
 
+import io.snabble.sdk.Events;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.cart.ShoppingCartView;
+import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class CheckoutDoneView extends FrameLayout {
+    private String rating;
+    private String ratingMessage;
+
     public CheckoutDoneView(Context context) {
         super(context);
         inflateView();
@@ -84,6 +99,24 @@ public class CheckoutDoneView extends FrameLayout {
                 ratingContainer.setVisibility(View.GONE);
                 ratingTitle.setText("Was war nicht gut?");
                 scrollView.fullScroll(View.FOCUS_DOWN);
+
+                rating = "1";
+                inputBadRatingLayout.getEditText().addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        ratingMessage = s.toString();
+                    }
+                });
             }
         });
 
@@ -92,6 +125,8 @@ public class CheckoutDoneView extends FrameLayout {
             public void onClick(View v) {
                 ratingContainer.setVisibility(View.INVISIBLE);
                 ratingTitle.setText("Danke!");
+
+                rating = "2";
             }
         });
 
@@ -100,6 +135,8 @@ public class CheckoutDoneView extends FrameLayout {
             public void onClick(View v) {
                 ratingContainer.setVisibility(View.INVISIBLE);
                 ratingTitle.setText("Danke!");
+
+                rating = "3";
             }
         });
 
@@ -129,8 +166,15 @@ public class CheckoutDoneView extends FrameLayout {
         }, 2000);
     }
 
-    public void sendRating(int rating) {
+    public void sendRating() {
+        Events events = SnabbleUI.getProject().getEvents();
 
+        if (rating != null) {
+            events.analytics("rating", rating, ratingMessage);
+
+            ratingMessage = null;
+            rating = null;
+        }
     }
 
     private int dp2px(float dp) {
@@ -203,8 +247,37 @@ public class CheckoutDoneView extends FrameLayout {
                         }
                     })
                     .start();
+        }
 
-            successImage.bringToFront();
+        successImage.bringToFront();
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+
+        if (visibility != View.VISIBLE) {
+            sendRating();
         }
     }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Application application = (Application) getContext().getApplicationContext();
+        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        sendRating();
+    }
+
+    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+            new SimpleActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityStopped(Activity activity) {
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        sendRating();
+                    }
+                }
+            };
 }
