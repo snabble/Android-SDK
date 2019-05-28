@@ -17,44 +17,50 @@
                 app:flexDirection="column"
                 app:flexWrap="wrap"
                 app:justifyContent="space_between">
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <com.google.android.flexbox.FlexboxLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipChildren="false"
-                    android:orientation="vertical"
-                    android:gravity="center">
-                    <FrameLayout
-                        android:id="@+id/stars_container"
-                        android:clipChildren="false"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/success_image"
+                    app:layout_maxHeight="310dp"
+                    app:flexDirection="column"
+                    app:flexWrap="wrap"
+                    app:layout_flexGrow="1"
+                    app:justifyContent="space_between">
+                        <FrameLayout
+                            android:id="@+id/stars_container"
+                            android:clipChildren="false"
+                            android:padding="24dp"
+                            app:layout_minHeight="40dp"
+                            app:layout_maxHeight="203dp"
+                            app:layout_flexGrow="1"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content">
+                            <ImageView
+                                android:id="@+id/success_image"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_success" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:id="@+id/text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="@string/Snabble.Payment.success"
+                            android:textColor="@color/snabble_textColorDark"
                             android:layout_gravity="center"
-                            android:padding="40dp"
-                            android:src="@drawable/ic_success" />
-                    </FrameLayout>
+                            android:layout_marginStart="24dp"
+                            android:layout_marginEnd="24dp"
+                            android:gravity="center"
+                            android:textSize="17sp"/>
 
-                    <TextView
-                        android:id="@+id/text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Snabble.Payment.success"
-                        android:textColor="@color/snabble_textColorDark"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginEnd="24dp"
-                        android:gravity="center"
-                        android:textSize="17sp"/>
-
-                    <Button style="@style/SnabbleButton.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/goto_checkout_overview"
-                        android:text="Einkaufsübersicht ansehen"/> <!-- TODO i18n -->
-                </LinearLayout>
+                        <Button style="@style/SnabbleButton.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/goto_checkout_overview"
+                            android:text="Einkaufsübersicht ansehen"/> <!-- TODO i18n -->
+                </com.google.android.flexbox.FlexboxLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
