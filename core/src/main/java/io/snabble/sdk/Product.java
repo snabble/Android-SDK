@@ -36,7 +36,7 @@ public class Product implements Serializable, Parcelable {
         PreWeighed(1),
 
         /**
-         * A product that needs to be user weighed. The price from {@link Product#getPrice()}
+         * A product that needs to be user weighed. The price from {@link Product#getListPrice()}
          * is a base price of 1000g
          */
         UserWeighed(2);
@@ -127,6 +127,7 @@ public class Product implements Serializable, Parcelable {
     private Code[] scannableCodes;
     private int price;
     private int discountedPrice;
+    private int customerCardPrice;
     private String imageUrl;
     private Product depositProduct;
     private Product[] bundleProducts;
@@ -134,6 +135,7 @@ public class Product implements Serializable, Parcelable {
     private boolean isDeposit;
     private String subtitle;
     private String basePrice;
+    private String scanMessage;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
     private Unit referenceUnit;
     private Unit encodingUnit;
@@ -163,7 +165,12 @@ public class Product implements Serializable, Parcelable {
         return scannableCodes;
     }
 
+    @Deprecated // use getListPrice instead
     public int getPrice() {
+        return getListPrice();
+    }
+
+    public int getListPrice() {
         return price;
     }
 
@@ -175,9 +182,19 @@ public class Product implements Serializable, Parcelable {
      * Gets the discounted price, or the default price if this product has no discounted price,
      */
     public int getDiscountedPrice() {
-        return discountedPrice == 0 ? getPrice() : discountedPrice;
+        return discountedPrice == 0 ? getListPrice() : discountedPrice;
     }
 
+    public int getPrice(String customerCard) {
+        return customerCard != null ? getCustomerCardPrice() : getDiscountedPrice();
+    }
+
+    public int getCustomerCardPrice() {
+        return customerCardPrice == 0 ? getDiscountedPrice() : customerCardPrice;
+    }
+
+
+    @Deprecated // will be removed in a future version
     public boolean isDiscounted() {
         return discountedPrice > 0;
     }
@@ -277,7 +294,16 @@ public class Product implements Serializable, Parcelable {
         return saleStop;
     }
 
+    /** Returns the identifier of the scan message to look up in i18n resources **/
+    public String getScanMessage() {
+        return scanMessage;
+    }
+
     public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode) {
+        return getPriceForQuantity(quantity, scannedCode, roundingMode, null);
+    }
+
+    public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode, String customerCardId) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             String lookupCode = scannedCode != null ? scannedCode.getLookupCode() : null;
 
@@ -300,7 +326,7 @@ public class Product implements Serializable, Parcelable {
                 encodingUnit = Unit.GRAM;
             }
 
-            int price = getDiscountedPrice();
+            int price = getPrice(customerCardId);
             if (scannedCode != null && scannedCode.hasPrice()) {
                 price = scannedCode.getPrice();
             }
@@ -312,7 +338,7 @@ public class Product implements Serializable, Parcelable {
                     .setScale(0, roundingMode)
                     .intValue();
         } else {
-            return quantity * getDiscountedPrice();
+            return quantity * getPrice(customerCardId);
         }
     }
 
@@ -423,6 +449,11 @@ public class Product implements Serializable, Parcelable {
             return this;
         }
 
+        public Builder setCustomerCardPrice(int customerCardPrice) {
+            product.customerCardPrice = customerCardPrice;
+            return this;
+        }
+
         public Builder setImageUrl(String imageUrl) {
             product.imageUrl = imageUrl;
             return this;
@@ -465,6 +496,11 @@ public class Product implements Serializable, Parcelable {
 
         public Builder setSaleStop(boolean saleStop) {
             product.saleStop = saleStop;
+            return this;
+        }
+
+        public Builder setScanMessage(String scanMessage) {
+            product.scanMessage = scanMessage;
             return this;
         }
 

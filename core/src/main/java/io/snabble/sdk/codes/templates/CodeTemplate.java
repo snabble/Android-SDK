@@ -44,7 +44,6 @@ public class CodeTemplate {
     private List<Group> groups;
     private String name;
     private String matchedCode;
-    private String overrideCode;
 
     public CodeTemplate(String name, String pattern) {
         this.name = name;

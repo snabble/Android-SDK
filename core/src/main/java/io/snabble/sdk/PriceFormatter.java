@@ -87,10 +87,10 @@ public class PriceFormatter {
     }
 
     public String format(Product product, boolean discountedPrice, ScannedCode scannedCode) {
-        int price = product.getPrice();
+        int price = product.getListPrice();
 
         if (discountedPrice) {
-            price = product.getDiscountedPrice();
+            price = product.getPrice(project.getCustomerCardId());
         }
 
         if (scannedCode != null && scannedCode.hasPrice()) {

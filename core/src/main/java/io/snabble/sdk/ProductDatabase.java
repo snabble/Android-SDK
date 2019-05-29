@@ -110,8 +110,8 @@ public class ProductDatabase {
                 schemaVersionMajor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MAJOR));
                 schemaVersionMinor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MINOR));
 
-                if (schemaVersionMajor == 1 && schemaVersionMinor < 18) {
-                    Logger.d("Database is too old, deleting local database");
+                if (schemaVersionMajor == 1 && schemaVersionMinor < 19) {
+                    Logger.d("Database has incompatible schema, deleting local database");
                     delete();
                     return false;
                 }
@@ -815,6 +815,11 @@ public class ProductDatabase {
             }
         }
 
+        String scanMessage = cursor.getString(16);
+        if (scanMessage != null) {
+            builder.setScanMessage(scanMessage);
+        }
+
         if (lookupCodes != null) {
             Product.Code[] productCodes = new Product.Code[lookupCodes.length];
             for (int i = 0; i < productCodes.length; i++) {
@@ -861,7 +866,7 @@ public class ProductDatabase {
 
     private boolean queryPrice(Product.Builder builder, String sku, Shop shop) {
         String id = shop != null ? shop.getId() : "";
-        String priceQuery = "SELECT listPrice, discountedPrice, basePrice FROM prices " +
+        String priceQuery = "SELECT listPrice, discountedPrice, customerCardPrice, basePrice FROM prices " +
                 "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
 
         Cursor priceCursor = rawQuery(priceQuery, new String[]{id, sku}, null);
@@ -870,7 +875,8 @@ public class ProductDatabase {
             priceCursor.moveToFirst();
             builder.setPrice(priceCursor.getInt(0));
             builder.setDiscountedPrice(priceCursor.getInt(1));
-            builder.setBasePrice(priceCursor.getString(2));
+            builder.setCustomerCardPrice(priceCursor.getInt(2));
+            builder.setBasePrice(priceCursor.getString(3));
             priceCursor.close();
             return true;
         }
@@ -924,6 +930,7 @@ public class ProductDatabase {
                 ",p.encodingUnit" +
                 ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
+                ",p.scanMessage" +
                 " FROM products p "
                 + appendSql;
 

@@ -95,7 +95,7 @@ public class EncodedCodesGenerator {
         }
     }
 
-    private void addProducts(ShoppingCart shoppingCart, boolean ageRestricted) {
+    private void addProducts(final ShoppingCart shoppingCart, boolean ageRestricted) {
         hasAgeRestrictedCode = hasAgeRestrictedCode(shoppingCart);
 
         List<ProductInfo> productInfos = new ArrayList<>();
@@ -114,12 +114,12 @@ public class EncodedCodesGenerator {
         Collections.sort(productInfos, new Comparator<ProductInfo>() {
             @Override
             public int compare(ProductInfo p1, ProductInfo p2) {
-                int price1 = p1.product.getDiscountedPrice();
+                int price1 = p1.product.getPrice(options.project.getCustomerCardId());
                 if (p1.scannedCode.hasPrice()) {
                     price1 = p1.scannedCode.getPrice();
                 }
 
-                int price2 = p2.product.getDiscountedPrice();
+                int price2 = p2.product.getPrice(options.project.getCustomerCardId());
                 if (p2.scannedCode.hasPrice()) {
                     price2 = p2.scannedCode.getPrice();
                 }
