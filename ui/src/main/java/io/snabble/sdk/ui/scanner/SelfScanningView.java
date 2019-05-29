@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -33,6 +34,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
@@ -405,6 +407,20 @@ public class SelfScanningView extends FrameLayout {
         }
     }
 
+    private void showScanMessage(Product product) {
+        Resources res = getResources();
+
+        String identifier = product.getScanMessage();
+        if (identifier != null) {
+            identifier = identifier.replace("-", "_");
+            int id = res.getIdentifier(identifier, "string", getContext().getPackageName());
+            if (id != 0) {
+                String str = res.getString(id);
+                showInfo(str);
+            }
+        }
+    }
+
     public void resume() {
         resumeBarcodeScanner();
     }
@@ -500,6 +516,8 @@ public class SelfScanningView extends FrameLayout {
             if (list.getAddCount() == 1) {
                 showHints();
             }
+
+            showScanMessage(item.getProduct());
         }
 
         @Override

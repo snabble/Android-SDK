@@ -217,7 +217,8 @@ class ProductApi {
                 .setIsDeposit(apiProduct.productType == ApiProductType.DEPOSIT)
                 .setImageUrl(apiProduct.imageUrl)
                 .setSaleRestriction(apiProduct.saleRestriction)
-                .setSaleStop(apiProduct.saleStop);
+                .setSaleStop(apiProduct.saleStop)
+                .setScanMessage(apiProduct.scanMessage);
 
         if (apiProduct.codes != null) {
             Product.Code[] codes = new Product.Code[apiProduct.codes.length];
