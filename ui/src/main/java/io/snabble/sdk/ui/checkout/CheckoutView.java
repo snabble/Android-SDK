@@ -95,6 +95,12 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayPaymentView();
                 break;
             case PAYMENT_APPROVED:
+            case RECEIPT_AVAILABLE:
+                if (currentState == Checkout.State.PAYMENT_APPROVED
+                 || currentState == Checkout.State.RECEIPT_AVAILABLE) {
+                    break;
+                }
+
                 if (!checkout.getSelectedPaymentMethod().isOfflineMethod()) {
                     displayView(new CheckoutDoneView(getContext()));
                     Telemetry.event(Telemetry.Event.CheckoutSuccessful);
