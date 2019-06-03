@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -33,6 +34,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
@@ -405,6 +407,30 @@ public class SelfScanningView extends FrameLayout {
         }
     }
 
+    private void showScanMessage(Product product) {
+        Project project = SnabbleUI.getProject();
+        Resources res = getResources();
+
+        String identifier = product.getScanMessage();
+        if (identifier != null) {
+            // replace occurences of "-" in scan message, as android resource identifiers are not
+            // supporting "-" in identifiers
+            String idWithoutProjectId = identifier.replace("-", ".");
+            String idWithProjectId = project.getId().replace("-", ".") + "." + idWithoutProjectId;
+
+            int resId = res.getIdentifier(idWithProjectId, "string", getContext().getPackageName());
+
+            if (resId == 0) {
+                resId = res.getIdentifier(idWithoutProjectId, "string", getContext().getPackageName());
+            }
+
+            if (resId != 0) {
+                String str = res.getString(resId);
+                showInfo(str);
+            }
+        }
+    }
+
     public void resume() {
         resumeBarcodeScanner();
     }
@@ -500,6 +526,11 @@ public class SelfScanningView extends FrameLayout {
             if (list.getAddCount() == 1) {
                 showHints();
             }
+        }
+
+        @Override
+        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
+            showScanMessage(item.getProduct());
         }
 
         @Override

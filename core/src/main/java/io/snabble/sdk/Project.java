@@ -1,8 +1,5 @@
 package io.snabble.sdk;
 
-import android.app.Activity;
-import android.app.Application;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
