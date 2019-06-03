@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.13.17]
+
+### Added
+- Added support for customer card prices
+- Added support for scan messages
+
 ## [0.13.16]
 
 ## Added
