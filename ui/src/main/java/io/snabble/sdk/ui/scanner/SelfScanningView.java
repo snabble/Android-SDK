@@ -408,14 +408,24 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showScanMessage(Product product) {
+        Project project = SnabbleUI.getProject();
         Resources res = getResources();
 
         String identifier = product.getScanMessage();
         if (identifier != null) {
-            identifier = identifier.replace("-", "_");
-            int id = res.getIdentifier(identifier, "string", getContext().getPackageName());
-            if (id != 0) {
-                String str = res.getString(id);
+            // replace occurences of "-" in scan message, as android resource identifiers are not
+            // supporting "-" in identifiers
+            String idWithoutProjectId = identifier.replace("-", ".");
+            String idWithProjectId = project.getId().replace("-", ".") + "." + idWithoutProjectId;
+
+            int resId = res.getIdentifier(idWithProjectId, "string", getContext().getPackageName());
+
+            if (resId == 0) {
+                resId = res.getIdentifier(idWithoutProjectId, "string", getContext().getPackageName());
+            }
+
+            if (resId != 0) {
+                String str = res.getString(resId);
                 showInfo(str);
             }
         }
@@ -516,7 +526,10 @@ public class SelfScanningView extends FrameLayout {
             if (list.getAddCount() == 1) {
                 showHints();
             }
+        }
 
+        @Override
+        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
             showScanMessage(item.getProduct());
         }
 
