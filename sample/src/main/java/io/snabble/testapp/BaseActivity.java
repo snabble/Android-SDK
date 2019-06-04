@@ -154,18 +154,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     @Override
-    public void showHome() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void showReceipts() {
-        Intent intent = new Intent(this, ReceiptListActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
     public void requestKeyguard(KeyguardHandler keyguardHandler) {
         KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
