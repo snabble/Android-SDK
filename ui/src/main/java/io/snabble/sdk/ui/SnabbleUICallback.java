@@ -9,8 +9,6 @@ public interface SnabbleUICallback {
     void showSEPACardInput();
     void showShoppingCart();
     void showPaymentCredentialsList();
-    void showHome();
-    void showReceipts();
 
     /**
      * Request a keyguard for user authentication. This will only be called if
