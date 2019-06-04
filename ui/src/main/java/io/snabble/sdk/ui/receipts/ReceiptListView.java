@@ -33,7 +33,6 @@ import io.snabble.sdk.Receipts;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.cart.ShoppingCartView;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
@@ -65,7 +64,7 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
     }
 
     private void init() {
-        View v = View.inflate(getContext(), R.layout.view_receipt_list, this);
+        View v = View.inflate(getContext(), R.layout.snabble_view_receipt_list, this);
 
         receipts = Snabble.getInstance().getReceipts();
 
@@ -86,17 +85,17 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                update();
+                update(true);
             }
         });
 
         emptyState = v.findViewById(R.id.empty_state);
 
-        update();
+        update(true);
     }
 
-    private void update() {
-        swipeRefreshLayout.setRefreshing(true);
+    private void update(boolean showRefresh) {
+        swipeRefreshLayout.setRefreshing(showRefresh);
 
         receipts.getReceiptInfos(new Receipts.ReceiptInfoCallback() {
             @Override
@@ -128,7 +127,7 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
     }
 
     private void updateEmptyState() {
-        if (receiptInfos == null || receiptInfos.length == 0) {
+        if ((receiptInfos == null || receiptInfos.length == 0 && !showProgressBar)) {
             emptyState.setVisibility(View.VISIBLE);
         } else {
             emptyState.setVisibility(View.GONE);
@@ -184,7 +183,7 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
     public void onStateChanged(Checkout.State state) {
         if (state == Checkout.State.RECEIPT_AVAILABLE) {
             showProgressBar = false;
-            recyclerView.getAdapter().notifyDataSetChanged();
+            update(false);
         }
     }
 
@@ -291,10 +290,10 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
             if (viewType == TYPE_PROGRESS_BAR) {
-                return new GeneratingViewHolder(inflater.inflate(R.layout.item_receipt_generating, parent, false));
+                return new GeneratingViewHolder(inflater.inflate(R.layout.snabble_item_receipt_generating, parent, false));
             }
 
-            return new ReceiptViewHolder(inflater.inflate(R.layout.item_receipt, parent, false));
+            return new ReceiptViewHolder(inflater.inflate(R.layout.snabble_item_receipt, parent, false));
         }
 
         @Override

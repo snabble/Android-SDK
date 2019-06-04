@@ -76,7 +76,7 @@ class ProductConfirmationDialog {
     public void show(Product product, ScannedCode scannedCode) {
         dismiss();
 
-        View view = View.inflate(context, R.layout.dialog_product_confirmation, null);
+        View view = View.inflate(context, R.layout.snabble_dialog_product_confirmation, null);
 
         alertDialog = new AlertDialog.Builder(context)
                 .setView(view)

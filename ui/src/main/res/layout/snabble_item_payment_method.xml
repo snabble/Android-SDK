@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:layout_margin="8dp"
-    android:background="@drawable/ic_button_outlined">
+    android:background="@drawable/snabble_ic_button_outlined">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
             android:id="@+id/image"
             android:gravity="center"
             android:visibility="gone"
-            tools:src="@drawable/ic_pm_sepa"
+            tools:src="@drawable/snabble_ic_pm_sepa"
             tools:visibility="visible" />
 
         <TextView

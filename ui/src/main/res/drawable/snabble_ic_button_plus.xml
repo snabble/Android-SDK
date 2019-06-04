@@ -14,7 +14,7 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_minus_content"
+        android:drawable="@drawable/snabble_ic_plus_content"
         android:left="10dp"
         android:top="10dp"
         android:right="10dp"

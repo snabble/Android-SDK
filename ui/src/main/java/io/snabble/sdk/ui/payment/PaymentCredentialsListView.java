@@ -4,10 +4,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
+
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +53,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_payment_credentials_list, this);
+        inflate(getContext(), R.layout.snabble_view_payment_credentials_list, this);
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setAdapter(new PaymentCredentialsListView.Adapter());
@@ -134,7 +133,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         for(PaymentCredentials pm : paymentCredentials) {
             if(pm.getType() == PaymentCredentials.Type.SEPA) {
-                entries.add(new Entry(pm, R.drawable.ic_sepa_small, pm.getObfuscatedId()));
+                entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));
             }
         }
 
@@ -148,10 +147,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if(viewType == TYPE_EMPTYSTATE) {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_emptystate, parent, false);
+                View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_emptystate, parent, false);
                 return new EmptyStateViewHolder(v);
             }  else {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_list_entry, parent, false);
+                View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
                 return new EntryViewHolder(v);
             }
         }

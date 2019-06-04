@@ -52,7 +52,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     }
 
     private void inflateView(EncodedCodesOptions options) {
-        inflate(getContext(), R.layout.view_checkout_encodedcodes, this);
+        inflate(getContext(), R.layout.snabble_view_checkout_encodedcodes, this);
 
         scrollContainer = findViewById(R.id.scroll_container);
 

@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.os.Build;
 
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
@@ -15,9 +13,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +46,7 @@ public class UIUtils {
     
     public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, int type) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final TextView info = (TextView)inflater.inflate(R.layout.view_info, null);
+        final TextView info = (TextView)inflater.inflate(R.layout.snabble_view_info, null);
 
         parent.addView(info, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         info.setVisibility(View.INVISIBLE);

@@ -33,7 +33,7 @@ public class SelfScanningFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = (ViewGroup)inflater.inflate(R.layout.fragment_selfscanning, container, false);
+        rootView = (ViewGroup)inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false);
         permissionContainer = rootView.findViewById(R.id.permission_denied_container);
         askForPermission = rootView.findViewById(R.id.open_settings);
 

@@ -26,7 +26,7 @@ class CheckoutAbortedView extends FrameLayout {
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_checkout_aborted, this);
+        inflate(getContext(), R.layout.snabble_view_checkout_aborted, this);
 
         if (SnabbleUI.getActionBar() != null) {
             SnabbleUI.getActionBar().setTitle(R.string.Snabble_Checkout_error);

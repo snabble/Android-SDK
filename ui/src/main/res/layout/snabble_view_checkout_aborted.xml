@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/goto_home">
         <TextView
-            android:drawableTop="@drawable/ic_fail"
+            android:drawableTop="@drawable/snabble_ic_fail"
             android:drawablePadding="24dp"
             android:id="@+id/text"
             android:layout_width="wrap_content"

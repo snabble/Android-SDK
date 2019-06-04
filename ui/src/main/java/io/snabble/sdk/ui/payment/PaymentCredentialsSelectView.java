@@ -3,8 +3,6 @@ package io.snabble.sdk.ui.payment;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import androidx.core.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,10 +45,10 @@ public class PaymentCredentialsSelectView extends FrameLayout {
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_payment_credentials_select, this);
+        inflate(getContext(), R.layout.snabble_view_payment_credentials_select, this);
 
         entries = new ArrayList<>();
-        entries.add(new Entry(R.drawable.ic_sepa_small, "SEPA", new OneShotClickListener() {
+        entries.add(new Entry(R.drawable.snabble_ic_sepa_small, "SEPA", new OneShotClickListener() {
             @Override
             public void click() {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
@@ -99,7 +97,7 @@ public class PaymentCredentialsSelectView extends FrameLayout {
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_select, parent, false);
+            View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_select, parent, false);
             return new ViewHolder(v);
         }
 

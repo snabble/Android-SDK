@@ -58,7 +58,7 @@ public class SEPACardInputView extends FrameLayout {
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_cardinput_sepa, this);
+        inflate(getContext(), R.layout.snabble_view_cardinput_sepa, this);
 
         nameInput = findViewById(R.id.input_name);
         ibanCountryCode = findViewById(R.id.prefix);

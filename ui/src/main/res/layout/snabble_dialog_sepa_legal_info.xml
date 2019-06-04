@@ -19,7 +19,7 @@
             android:id="@+id/close"
             android:padding="12dp"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_close" />
+            android:src="@drawable/snabble_ic_close" />
 
         <TextView
             android:layout_width="wrap_content"

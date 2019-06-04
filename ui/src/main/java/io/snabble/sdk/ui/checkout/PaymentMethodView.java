@@ -52,10 +52,10 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
-        icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.ic_pm_sepa);
-        icons.put(PaymentMethod.QRCODE_POS, R.drawable.ic_pm_checkstand);
-        icons.put(PaymentMethod.ENCODED_CODES, R.drawable.ic_pm_checkstand);
-        icons.put(PaymentMethod.ENCODED_CODES_CSV, R.drawable.ic_pm_checkstand);
+        icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.snabble_ic_pm_sepa);
+        icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_pm_checkstand);
+        icons.put(PaymentMethod.ENCODED_CODES, R.drawable.snabble_ic_pm_checkstand);
+        icons.put(PaymentMethod.ENCODED_CODES_CSV, R.drawable.snabble_ic_pm_checkstand);
     }
 
     private Checkout checkout;
@@ -80,7 +80,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_payment_method, this);
+        inflate(getContext(), R.layout.snabble_view_payment_method, this);
 
         descriptions.clear();
 
@@ -191,7 +191,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
 
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.dialog_sepa_legal_info, null);
+        View view = inflater.inflate(R.layout.snabble_dialog_sepa_legal_info, null);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                 .setView(view)
@@ -278,7 +278,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private class Adapter extends RecyclerView.Adapter<PaymentMethodView.ViewHolder> {
         @Override
         public PaymentMethodView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_method, parent, false);
+            View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_method, parent, false);
             return new PaymentMethodView.ViewHolder(v);
         }
 

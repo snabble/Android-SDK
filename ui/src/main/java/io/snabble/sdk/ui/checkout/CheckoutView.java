@@ -30,6 +30,8 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     private Checkout checkout;
     private DelayedProgressDialog progressDialog;
     private Checkout.State currentState;
+    private View successView;
+    private View failureView;
 
     public CheckoutView(Context context) {
         super(context);
@@ -47,7 +49,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_checkout, this);
+        inflate(getContext(), R.layout.snabble_view_checkout, this);
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         viewAnimator = findViewById(R.id.view_animator);
@@ -102,14 +104,23 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 }
 
                 if (!checkout.getSelectedPaymentMethod().isOfflineMethod()) {
-                    displayView(new CheckoutDoneView(getContext()));
+                    if (successView != null) {
+                        displayView(successView);
+                    } else {
+                        displayView(new CheckoutDoneView(getContext()));
+                    }
+
                     Telemetry.event(Telemetry.Event.CheckoutSuccessful);
                 }
                 break;
             case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:
             case DENIED_BY_SUPERVISOR:
-                displayView(new CheckoutAbortedView(getContext()));
+                if (failureView != null) {
+                    displayView(failureView);
+                } else {
+                    displayView(new CheckoutAbortedView(getContext()));
+                }
                 break;
             case CONNECTION_ERROR:
                 UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
@@ -179,6 +190,26 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         viewAnimator.addView(view, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    /** Sets the view to be shown after a successful checkout (for online methods) **/
+    public void setSuccessView(View view) {
+        this.successView = view;
+
+        View v = viewAnimator.getCurrentView();
+        if (v instanceof CheckoutDoneView) {
+            displayView(successView);
+        }
+    }
+
+    /** Sets the view to be shown after a failed checkout (for online methods) **/
+    public void setFailureView(View view) {
+        this.failureView = view;
+
+        View v = viewAnimator.getCurrentView();
+        if (v instanceof CheckoutAbortedView) {
+            displayView(failureView);
+        }
     }
 
     private void registerListeners() {

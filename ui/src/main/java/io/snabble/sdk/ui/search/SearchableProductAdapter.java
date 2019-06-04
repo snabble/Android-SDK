@@ -26,7 +26,6 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringNormalizer;
 
 public class SearchableProductAdapter extends RecyclerView.Adapter {
@@ -81,7 +80,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ProductViewHolder(inflater.inflate(R.layout.item_searchable_product, parent, false));
+        return new ProductViewHolder(inflater.inflate(R.layout.snabble_item_searchable_product, parent, false));
     }
 
     @Override

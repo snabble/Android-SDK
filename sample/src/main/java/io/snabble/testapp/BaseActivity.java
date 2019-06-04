@@ -20,7 +20,6 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
-import io.snabble.sdk.ui.checkout.CheckoutDoneView;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;

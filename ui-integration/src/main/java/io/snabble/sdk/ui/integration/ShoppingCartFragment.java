@@ -29,7 +29,7 @@ public class ShoppingCartFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_shoppingcart, container, false);
+        View v = inflater.inflate(R.layout.snabble_fragment_shoppingcart, container, false);
 
         shoppingCartView = v.findViewById(R.id.shopping_cart_view);
 
@@ -38,7 +38,7 @@ public class ShoppingCartFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_shopping_cart, menu);
+        inflater.inflate(R.menu.snabble_menu_shopping_cart, menu);
 
         for (int i=0; i<menu.size(); i++) {
             MenuItem menuItem = menu.getItem(i);
