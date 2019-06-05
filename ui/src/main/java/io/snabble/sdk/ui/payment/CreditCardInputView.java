@@ -48,6 +48,11 @@ public class CreditCardInputView extends FrameLayout {
 
     private class HashResponse {
         String hash;
+        String storeId;
+        String date;
+        String chargeTotal;
+        String url;
+        String currency;
     }
 
     private boolean acceptedKeyguard;
@@ -108,21 +113,13 @@ public class CreditCardInputView extends FrameLayout {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss", Locale.US);
-
-                        // TODO generate this on backend
-                        String storeId = "12022224362"; // TODO prod id
-                        String formattedDate = simpleDateFormat.format(new Date());
-                        final String chargeTotal = "1.00";
-                        String currency = "978"; // EUR
-
                         try {
                             String data = IOUtils.toString(resources.openRawResource(R.raw.creditcardform), Charset.forName("UTF-8"));
-                            data = data.replace("{{url}}", "https://test.ipg-online.com/connect/gateway/processing"); // TODO url from backend
-                            data = data.replace("{{storeId}}", storeId);
-                            data = data.replace("{{date}}", formattedDate);
-                            data = data.replace("{{currency}}", currency);
-                            data = data.replace("{{chargeTotal}}", chargeTotal);
+                            data = data.replace("{{url}}", hashResponse.url);
+                            data = data.replace("{{storeId}}", hashResponse.storeId);
+                            data = data.replace("{{date}}", hashResponse.date);
+                            data = data.replace("{{currency}}", hashResponse.currency);
+                            data = data.replace("{{chargeTotal}}", hashResponse.chargeTotal);
                             data = data.replace("{{hash}}", hashResponse.hash);
 
                             webView.loadData(data, null, null);
