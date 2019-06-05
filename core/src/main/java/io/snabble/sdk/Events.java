@@ -26,7 +26,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-class Events {
+public class Events {
     private Project project;
     private String cartId;
     private Shop shop;
@@ -92,6 +92,36 @@ class Events {
         error.session = cartId;
 
         post(error, false);
+    }
+
+    public void log(String format, Object... args) {
+        PayloadLog log = new PayloadLog();
+
+        try {
+            log.message = String.format(format, args);
+        } catch (IllegalFormatException e) {
+            Logger.e("Could not post event error: invalid format");
+        }
+
+        log.session = cartId;
+
+        post(log, false);
+    }
+
+    public void analytics(String key, String value, String comment) {
+        PayloadAnalytics analytics = new PayloadAnalytics();
+
+        try {
+            analytics.key = key;
+            analytics.value = value;
+            analytics.comment = comment;
+        } catch (IllegalFormatException e) {
+            Logger.e("Could not post event error: invalid format");
+        }
+
+        analytics.session = cartId;
+
+        post(analytics, false);
     }
 
     private <T extends Payload> void post(final T payload, boolean debounce) {
@@ -171,7 +201,11 @@ class Events {
         @SerializedName("cart")
         CART,
         @SerializedName("error")
-        ERROR
+        ERROR,
+        @SerializedName("log")
+        LOG,
+        @SerializedName("analytics")
+        ANALYTICS
     }
 
     public interface Payload {
@@ -186,6 +220,28 @@ class Events {
         public String project;
         public String timestamp;
         public JsonElement payload;
+    }
+
+    private static class PayloadAnalytics implements Payload {
+        public String key;
+        public String value;
+        public String comment;
+        public String session;
+
+        @Override
+        public EventType getEventType() {
+            return EventType.ANALYTICS;
+        }
+    }
+
+    private static class PayloadLog implements Payload {
+        public String message;
+        public String session;
+
+        @Override
+        public EventType getEventType() {
+            return EventType.LOG;
+        }
     }
 
     private static class PayloadError implements Payload {

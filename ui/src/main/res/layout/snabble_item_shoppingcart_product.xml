@@ -67,7 +67,7 @@
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/ic_round_textview"
+                android:background="@drawable/snabble_ic_round_textview"
                 app:backgroundTint="@color/snabble_primaryColor"
                 android:textSize="12dp"
                 android:textColor="@color/snabble_textColorLight"
@@ -106,14 +106,14 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="16dp"
-                android:src="@drawable/ic_button_minus" />
+                android:src="@drawable/snabble_ic_button_minus" />
 
             <ImageView
                 android:id="@+id/plus"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="16dp"
-                android:src="@drawable/ic_button_plus" />
+                android:src="@drawable/snabble_ic_button_plus" />
         </LinearLayout>
 
         <LinearLayout
@@ -153,7 +153,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginRight="16dp"
-                android:src="@drawable/ic_button_check"
+                android:src="@drawable/snabble_ic_button_check"
                 tools:visibility="gone" />
         </LinearLayout>
     </FrameLayout>

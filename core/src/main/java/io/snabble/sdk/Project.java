@@ -1,8 +1,5 @@
 package io.snabble.sdk;
 
-import android.app.Activity;
-import android.app.Application;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,6 +28,7 @@ import okhttp3.OkHttpClient;
 
 public class Project {
     private String id;
+    private String name;
 
     private ProductDatabase productDatabase;
     private Shop[] shops;
@@ -99,6 +97,8 @@ public class Project {
         } else {
             throw new IllegalArgumentException("Project has no id");
         }
+
+        name = JsonUtils.getStringOpt(jsonObject, "name", id);
 
         JsonObject links = jsonObject.get("links").getAsJsonObject();
         Set<String> linkKeys = links.keySet();
@@ -292,6 +292,10 @@ public class Project {
 
     public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getTokensUrl() {

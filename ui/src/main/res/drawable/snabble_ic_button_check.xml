@@ -14,7 +14,7 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_check_white"
+        android:drawable="@drawable/snabble_ic_check_white"
         android:left="8dp"
         android:top="8dp"
         android:right="8dp"

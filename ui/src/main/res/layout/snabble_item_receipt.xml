@@ -46,7 +46,7 @@
         android:id="@+id/chevron"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_chevron_right"
+        android:src="@drawable/snabble_ic_chevron_right"
         android:layout_centerVertical="true"
         app:tint="@color/snabble_textColorDark"
         android:layout_alignParentRight="true"

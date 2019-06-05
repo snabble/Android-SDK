@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
@@ -408,7 +407,7 @@ public class ShoppingCart {
 
             return product.getType() == Product.Type.Article
                     && getUnit() != PIECE
-                    && product.getDiscountedPrice() != 0;
+                    && product.getPrice(cart.project.getCustomerCardId()) != 0;
         }
 
         public Unit getUnit() {
@@ -427,14 +426,14 @@ public class ShoppingCart {
                 return scannedCode.getEmbeddedData();
             }
 
-            return product.getPriceForQuantity(getEffectiveQuantity(), scannedCode, cart.project.getRoundingMode());
+            return product.getPriceForQuantity(getEffectiveQuantity(), scannedCode, cart.project.getRoundingMode(), cart.project.getCustomerCardId());
         }
 
         public int getTotalDepositPrice() {
             if (isLineItem()) return 0;
 
             if (product.getDepositProduct() != null) {
-                return quantity * product.getDepositProduct().getDiscountedPrice();
+                return quantity * product.getDepositProduct().getPrice(cart.project.getCustomerCardId());
             }
 
             return 0;
@@ -496,7 +495,7 @@ public class ShoppingCart {
                 }
             }
 
-            if (product.getDiscountedPrice() > 0 || (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0)) {
+            if (product.getPrice(cart.project.getCustomerCardId()) > 0 || (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0)) {
                 Unit unit = getUnit();
 
                 if (unit == Unit.PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
@@ -546,7 +545,7 @@ public class ShoppingCart {
         Integer units;
     }
 
-    public BackendCart toBackendCart() {
+    BackendCart toBackendCart() {
         BackendCart backendCart = new BackendCart();
         backendCart.session = getId();
         backendCart.shopId = "unknown";

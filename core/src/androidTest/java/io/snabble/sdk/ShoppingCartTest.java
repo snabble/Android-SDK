@@ -103,16 +103,16 @@ public class ShoppingCartTest extends SnabbleSdkTest {
     @Test
     public void testTotalPrice() {
         add(simpleProduct1);
-        Assert.assertEquals(cart.get(0).getTotalPrice(), simpleProduct1.product.getDiscountedPrice());
+        Assert.assertEquals(cart.get(0).getTotalPrice(), simpleProduct1.product.getListPrice());
 
         cart.get(0).setQuantity(2);
-        Assert.assertEquals(cart.get(0).getTotalPrice(), simpleProduct1.product.getDiscountedPrice() * 2);
+        Assert.assertEquals(cart.get(0).getTotalPrice(), simpleProduct1.product.getListPrice() * 2);
 
         add(preWeighedProduct);
         Assert.assertEquals(cart.get(0).getTotalPrice(), 47);
 
         add(pieceProduct);
-        Assert.assertEquals(cart.get(0).getTotalPrice(), pieceProduct.product.getDiscountedPrice() * 6);
+        Assert.assertEquals(cart.get(0).getTotalPrice(), pieceProduct.product.getListPrice() * 6);
 
         add(priceProduct);
         Assert.assertEquals(cart.get(0).getTotalPrice(), priceProduct.scannedCode.getEmbeddedData());

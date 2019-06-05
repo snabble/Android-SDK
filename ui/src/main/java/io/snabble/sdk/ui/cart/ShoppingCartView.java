@@ -121,7 +121,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void inflateView(Context context, AttributeSet attrs) {
-        inflate(getContext(), R.layout.view_shopping_cart, this);
+        inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
         picasso = Picasso.with(getContext());
         Project project = SnabbleUI.getProject();
 
@@ -813,10 +813,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (viewType == TYPE_DEPOSIT) {
-                View v = View.inflate(getContext(), R.layout.item_shoppingcart_deposit, null);
+                View v = View.inflate(getContext(), R.layout.snabble_item_shoppingcart_deposit, null);
                 return new DepositViewHolder(v);
             } else {
-                View v = View.inflate(getContext(), R.layout.item_shoppingcart_product, null);
+                View v = View.inflate(getContext(), R.layout.snabble_item_shoppingcart_product, null);
                 return new ViewHolder(v);
             }
         }

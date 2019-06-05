@@ -47,7 +47,7 @@ public class ProductSearchView extends FrameLayout {
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_search_product, this);
+        inflate(getContext(), R.layout.snabble_view_search_product, this);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 

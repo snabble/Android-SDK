@@ -23,6 +23,7 @@ class ProductApi {
         String referenceUnit;
         String encodingUnit;
         String imageUrl;
+        String scanMessage;
         ApiPrice price;
         boolean saleStop;
         ApiScannableCode[] codes;
@@ -35,6 +36,7 @@ class ProductApi {
     private static class ApiPrice {
         int listPrice;
         int discountedPrice;
+        int customerCardPrice;
         String basePrice;
     }
 
@@ -215,7 +217,8 @@ class ProductApi {
                 .setIsDeposit(apiProduct.productType == ApiProductType.DEPOSIT)
                 .setImageUrl(apiProduct.imageUrl)
                 .setSaleRestriction(apiProduct.saleRestriction)
-                .setSaleStop(apiProduct.saleStop);
+                .setSaleStop(apiProduct.saleStop)
+                .setScanMessage(apiProduct.scanMessage);
 
         if (apiProduct.codes != null) {
             Product.Code[] codes = new Product.Code[apiProduct.codes.length];
@@ -237,6 +240,7 @@ class ProductApi {
         if (apiProduct.price != null) {
             builder.setPrice(apiProduct.price.listPrice);
             builder.setDiscountedPrice(apiProduct.price.discountedPrice);
+            builder.setCustomerCardPrice(apiProduct.price.customerCardPrice);
             builder.setBasePrice(apiProduct.price.basePrice);
         }
 

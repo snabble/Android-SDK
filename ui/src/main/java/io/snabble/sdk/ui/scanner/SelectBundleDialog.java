@@ -21,7 +21,7 @@ class SelectBundleDialog {
             return;
         }
 
-        View view = View.inflate(context, R.layout.dialog_bundle_select, null);
+        View view = View.inflate(context, R.layout.snabble_dialog_bundle_select, null);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(context)
                 .setView(view)
@@ -55,7 +55,7 @@ class SelectBundleDialog {
         }
 
         for (final Product p : products) {
-            View itemView = View.inflate(context, R.layout.item_bundle_select, null);
+            View itemView = View.inflate(context, R.layout.snabble_item_bundle_select, null);
             TextView name = itemView.findViewById(R.id.name);
             name.setText(p.getName());
             itemView.setOnClickListener(new OneShotClickListener() {

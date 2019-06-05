@@ -1,25 +1,15 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
-import androidx.core.widget.ImageViewCompat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
@@ -43,7 +33,7 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_checkout_status, this);
+        inflate(getContext(), R.layout.snabble_view_checkout_status, this);
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
 

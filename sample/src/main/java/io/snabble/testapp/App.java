@@ -2,7 +2,6 @@ package io.snabble.testapp;
 
 import android.app.Application;
 import androidx.annotation.Nullable;
-
 import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;

@@ -44,7 +44,6 @@ public class CodeTemplate {
     private List<Group> groups;
     private String name;
     private String matchedCode;
-    private String overrideCode;
 
     public CodeTemplate(String name, String pattern) {
         this.name = name;
@@ -224,9 +223,10 @@ public class CodeTemplate {
 
     public <T extends Group> T getGroup(Class<? extends Group> clazz) {
         for (Group group : groups) {
-            if (group.getClass() == clazz) {
+            try {
+                group.getClass().asSubclass(clazz);
                 return (T) group;
-            }
+            } catch (ClassCastException ignored) { }
         }
 
         return null;

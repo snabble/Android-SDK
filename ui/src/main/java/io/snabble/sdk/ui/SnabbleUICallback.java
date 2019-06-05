@@ -4,17 +4,11 @@ import android.content.Intent;
 
 public interface SnabbleUICallback {
     void showCheckout();
-
     void showScannerWithCode(String scannableCode);
-
     void showBarcodeSearch();
-
     void showSEPACardInput();
-
     void showCreditCardCardInput();
-
     void showShoppingCart();
-
     void showPaymentCredentialsList();
 
     /**
@@ -29,6 +23,5 @@ public interface SnabbleUICallback {
      *                        {@link android.app.Activity#onActivityResult(int, int, Intent)}.
      */
     void requestKeyguard(KeyguardHandler keyguardHandler);
-
     void goBack();
 }

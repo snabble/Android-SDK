@@ -38,7 +38,7 @@
                         android:top="10dp" />
                 </shape>
             </item>
-            <item android:drawable="@drawable/ic_minus_content" />
+            <item android:drawable="@drawable/snabble_ic_minus_content" />
         </layer-list>
     </item>
 </ripple>

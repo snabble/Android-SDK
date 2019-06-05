@@ -18,7 +18,6 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.CycleInterpolator;
@@ -40,10 +39,10 @@ import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
-import io.snabble.sdk.ui.utils.UIUtils;
 
 class ProductConfirmationDialog {
     private Context context;
+    private Project project;
     private AlertDialog alertDialog;
     private ShoppingCart shoppingCart;
     private PriceFormatter priceFormatter;
@@ -70,13 +69,14 @@ class ProductConfirmationDialog {
                                      Project project) {
         this.context = context;
         this.shoppingCart = project.getShoppingCart();
+        this.project = project;
         this.priceFormatter = project.getPriceFormatter();
     }
 
     public void show(Product product, ScannedCode scannedCode) {
         dismiss();
 
-        View view = View.inflate(context, R.layout.dialog_product_confirmation, null);
+        View view = View.inflate(context, R.layout.snabble_dialog_product_confirmation, null);
 
         alertDialog = new AlertDialog.Builder(context)
                 .setView(view)
@@ -256,8 +256,8 @@ class ProductConfirmationDialog {
             price.setText(cartItem.getFullPriceText());
             price.setVisibility(View.VISIBLE);
 
-            if (product.getPrice() > product.getDiscountedPrice()) {
-                Spannable originalPriceText = new SpannableString(priceFormatter.format(product.getPrice()));
+            if (product.getListPrice() > product.getPrice(project.getCustomerCardId())) {
+                Spannable originalPriceText = new SpannableString(priceFormatter.format(product.getListPrice()));
                 originalPriceText.setSpan(new StrikethroughSpan(), 0, originalPriceText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 originalPrice.setVisibility(View.VISIBLE);
                 originalPrice.setText(originalPriceText);
@@ -271,7 +271,7 @@ class ProductConfirmationDialog {
 
         int cartItemDepositPrice = cartItem.getTotalDepositPrice();
         if (cartItemDepositPrice == 0 && cartItem.getProduct().getDepositProduct() != null) {
-            cartItemDepositPrice = cartItem.getProduct().getDepositProduct().getDiscountedPrice();
+            cartItemDepositPrice = cartItem.getProduct().getDepositProduct().getPrice(project.getCustomerCardId());
         }
 
         if (cartItemDepositPrice > 0) {

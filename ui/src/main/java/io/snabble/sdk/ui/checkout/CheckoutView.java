@@ -29,6 +29,9 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     private ViewAnimator viewAnimator;
     private Checkout checkout;
     private DelayedProgressDialog progressDialog;
+    private Checkout.State currentState;
+    private View successView;
+    private View failureView;
 
     public CheckoutView(Context context) {
         super(context);
@@ -46,7 +49,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_checkout, this);
+        inflate(getContext(), R.layout.snabble_view_checkout, this);
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         viewAnimator = findViewById(R.id.view_animator);
@@ -75,6 +78,10 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     @Override
     public void onStateChanged(Checkout.State state) {
+        if (state == currentState) {
+            return;
+        }
+
         if (state == Checkout.State.VERIFYING_PAYMENT_METHOD) {
             progressDialog.showAfterDelay(500);
         } else {
@@ -90,24 +97,40 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayPaymentView();
                 break;
             case PAYMENT_APPROVED:
+            case RECEIPT_AVAILABLE:
+                if (currentState == Checkout.State.PAYMENT_APPROVED
+                 || currentState == Checkout.State.RECEIPT_AVAILABLE) {
+                    break;
+                }
+
                 if (!checkout.getSelectedPaymentMethod().isOfflineMethod()) {
-                    displayView(new CheckoutDoneView(getContext()));
+                    if (successView != null) {
+                        displayView(successView);
+                    } else {
+                        displayView(new CheckoutDoneView(getContext()));
+                    }
+
                     Telemetry.event(Telemetry.Event.CheckoutSuccessful);
                 }
                 break;
             case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:
             case DENIED_BY_SUPERVISOR:
-                displayView(new CheckoutAbortedView(getContext()));
+                if (failureView != null) {
+                    displayView(failureView);
+                } else {
+                    displayView(new CheckoutAbortedView(getContext()));
+                }
                 break;
             case CONNECTION_ERROR:
                 UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show();
                 break;
             case NONE:
-
                 break;
         }
+
+        currentState = state;
     }
 
     private void displayPaymentView() {
@@ -169,8 +192,29 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
+    /** Sets the view to be shown after a successful checkout (for online methods) **/
+    public void setSuccessView(View view) {
+        this.successView = view;
+
+        View v = viewAnimator.getCurrentView();
+        if (v instanceof CheckoutDoneView) {
+            displayView(successView);
+        }
+    }
+
+    /** Sets the view to be shown after a failed checkout (for online methods) **/
+    public void setFailureView(View view) {
+        this.failureView = view;
+
+        View v = viewAnimator.getCurrentView();
+        if (v instanceof CheckoutAbortedView) {
+            displayView(failureView);
+        }
+    }
+
     private void registerListeners() {
         checkout.addOnCheckoutStateChangedListener(this);
+        onStateChanged(checkout.getState());
     }
 
     private void unregisterListeners() {

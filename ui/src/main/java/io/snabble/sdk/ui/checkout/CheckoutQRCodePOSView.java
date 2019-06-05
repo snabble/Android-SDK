@@ -1,13 +1,11 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -39,7 +37,7 @@ class CheckoutQRCodePOSView extends FrameLayout {
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.view_checkout_qrcode, this);
+        inflate(getContext(), R.layout.snabble_view_checkout_qrcode, this);
 
         Project project = SnabbleUI.getProject();
 
