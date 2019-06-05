@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -43,7 +44,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         // Credit card payments are only supported on API 21+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa, "Kreditkarte", new OneShotClickListener() {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa, "VISA", new OneShotClickListener() {
                 @Override
                 public void click() {
                     SnabbleUICallback callback = SnabbleUI.getUiCallback();

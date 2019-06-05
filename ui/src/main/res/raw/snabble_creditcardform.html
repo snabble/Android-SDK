@@ -6,6 +6,11 @@
             window.addEventListener("DOMContentLoaded", init, false);
             window.addEventListener("message", receiveMessage, false);
 
+            function init() {
+                var form1 = document.getElementById("form1");
+                form1.submit();
+            }
+
             function receiveMessage(event) {
                 var arr = event.data.elementArr;
 
@@ -49,11 +54,6 @@
                     }
                 }
             }
-
-            function init() {
-                var form1 = document.getElementById("form1");
-                form1.submit();
-            }
         </script>
     </head>
     <body>
@@ -69,6 +69,7 @@
             <input type="hidden" name="storename" value="{{storeId}}"/>
             <input type="hidden" name="currency" value="{{currency}}"/>
             <input type="hidden" name="chargetotal" value="{{chargeTotal}}" />
+            <input type="hidden" name="paymentMethod" value="{{paymentMethod}}" />
             <input type="hidden" name="mode" value="payonly"/>
             <input type="hidden" name="responseFailURL" value="about:blank"/>
             <input type="hidden" name="responseSuccessURL" value="about:blank"/>

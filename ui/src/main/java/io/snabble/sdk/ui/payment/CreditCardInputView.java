@@ -25,12 +25,8 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
@@ -40,12 +36,10 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
-import io.snabble.sdk.utils.Utils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class CreditCardInputView extends FrameLayout {
-
     private class HashResponse {
         String hash;
         String storeId;
@@ -77,32 +71,34 @@ public class CreditCardInputView extends FrameLayout {
 
     @SuppressLint({"InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void inflateView() {
-        okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
-
-        resources = getContext().getResources();
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             throw new RuntimeException("CreditCardInputView is only supported on API 21+");
         }
 
         inflate(getContext(), R.layout.snabble_view_cardinput_creditcard, this);
-        webView = findViewById(R.id.web_view);
 
+        okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
+        resources = getContext().getResources();
+
+        webView = findViewById(R.id.web_view);
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
-
-        // this disables credit card storage prompt for google pay
-        ViewCompat.setImportantForAutofill(webView, View.IMPORTANT_FOR_AUTOFILL_NO);
-
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsInterface(), "snabble");
 
+        // this disables credit card storage prompt for google pay
+        ViewCompat.setImportantForAutofill(webView, View.IMPORTANT_FOR_AUTOFILL_NO);
+
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
+        requestHash();
+    }
+
+    private void requestHash() {
         Request request = new Request.Builder()
-                .url("https://api.snabble-testing.io/payment/telecash/global/secret")
+                .url("https://api.snabble-testing.io/payment/telecash/global/secret") // TODO get url from metadata
                 .get()
                 .build();
 
@@ -113,28 +109,48 @@ public class CreditCardInputView extends FrameLayout {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            String data = IOUtils.toString(resources.openRawResource(R.raw.creditcardform), Charset.forName("UTF-8"));
-                            data = data.replace("{{url}}", hashResponse.url);
-                            data = data.replace("{{storeId}}", hashResponse.storeId);
-                            data = data.replace("{{date}}", hashResponse.date);
-                            data = data.replace("{{currency}}", hashResponse.currency);
-                            data = data.replace("{{chargeTotal}}", hashResponse.chargeTotal);
-                            data = data.replace("{{hash}}", hashResponse.hash);
-
-                            webView.loadData(data, null, null);
-                        } catch (IOException e) {
-                            Logger.e(e.getMessage());
-                        }
+                        loadCreditCardForm(hashResponse);
                     }
                 });
             }
 
             @Override
             public void error(Throwable t) {
-
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        showConnectionError();
+                    }
+                });
             }
         });
+    }
+
+    private void loadCreditCardForm(HashResponse hashResponse) {
+        try {
+            String data = IOUtils.toString(resources.openRawResource(R.raw.snabble_creditcardform), Charset.forName("UTF-8"));
+            data = data.replace("{{url}}", hashResponse.url);
+            data = data.replace("{{storeId}}", hashResponse.storeId);
+            data = data.replace("{{date}}", hashResponse.date);
+            data = data.replace("{{currency}}", hashResponse.currency);
+            data = data.replace("{{chargeTotal}}", hashResponse.chargeTotal);
+            data = data.replace("{{hash}}", hashResponse.hash);
+            data = data.replace("{{paymentMethod}}", "V"); // VISA
+
+            webView.loadData(data, null, null);
+        } catch (IOException e) {
+            Logger.e(e.getMessage());
+        }
+    }
+
+    private void showConnectionError() {
+        UIUtils.snackbar(CreditCardInputView.this,
+                R.string.Snabble_networkError,
+                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                .show();
+
+        finish();
     }
 
     private void authenticateAndSave(final String cardHolder, final String obfuscatedCardNumber, final String creditCardBrand,
@@ -232,8 +248,8 @@ public class CreditCardInputView extends FrameLayout {
     @Keep
     public class JsInterface {
         @JavascriptInterface
-        public void saveCard(String cardHolder, String obfuscatedCardNumber, String creditCardBrand,
-                                            String expirationYear, String expirationMonth, String hostedDataId) {
+        public void saveCard(final String cardHolder, final String obfuscatedCardNumber, final String creditCardBrand,
+                             final String expirationYear, final String expirationMonth, final String hostedDataId) {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
@@ -250,7 +266,11 @@ public class CreditCardInputView extends FrameLayout {
                 @Override
                 public void run() {
                     // TODO i18n
-                    Toast.makeText(getContext(), "Ihre Kreditkarte konnte nicht hinterlegt werden.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),
+                            "Ihre Kreditkarte konnte nicht hinterlegt werden.",
+                            Toast.LENGTH_SHORT)
+                            .show();
+
                     finish();
                 }
             });
