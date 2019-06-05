@@ -145,10 +145,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 if (ccBrand != null) {
                     switch (ccBrand) {
                         case VISA:
-                            drawableResId = R.drawable.ic_visa;
+                            drawableResId = R.drawable.snabble_ic_visa;
                             break;
                         case MASTERCARD:
-                            drawableResId = R.drawable.ic_mastercard;
+                            drawableResId = R.drawable.snabble_ic_mastercard;
                             break;
                     }
                 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
@@ -37,11 +39,21 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import io.snabble.sdk.utils.SimpleJsonCallback;
 import io.snabble.sdk.utils.Utils;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public class CreditCardInputView extends FrameLayout {
+
+    private class HashResponse {
+        String hash;
+    }
+
     private boolean acceptedKeyguard;
     private WebView webView;
+    private OkHttpClient okHttpClient;
+    private Resources resources;
 
     public CreditCardInputView(Context context) {
         super(context);
@@ -60,11 +72,15 @@ public class CreditCardInputView extends FrameLayout {
 
     @SuppressLint({"InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void inflateView() {
+        okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
+
+        resources = getContext().getResources();
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             throw new RuntimeException("CreditCardInputView is only supported on API 21+");
         }
 
-        inflate(getContext(), R.layout.view_cardinput_creditcard, this);
+        inflate(getContext(), R.layout.snabble_view_cardinput_creditcard, this);
         webView = findViewById(R.id.web_view);
 
         webView.setWebViewClient(new WebViewClient());
@@ -80,35 +96,52 @@ public class CreditCardInputView extends FrameLayout {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss", Locale.US);
+        Request request = new Request.Builder()
+                .url("https://api.snabble-testing.io/payment/telecash/global/secret")
+                .get()
+                .build();
 
-        // TODO generate this on backend
-        String storeId = "12022224362"; // TODO prod id
-        String formattedDate = simpleDateFormat.format(new Date());
-        final String chargeTotal = "1.00";
-        String currency = "978"; // EUR
-        String sharedSecret = "a66KgY>\"aN"; // this should not be in the app code
+        okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
+            @Override
+            public void success(final HashResponse hashResponse) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss", Locale.US);
 
-        String stringToHash = storeId + formattedDate + chargeTotal + currency + sharedSecret;
-        String hash = Utils.sha256Hex(Utils.hexString(stringToHash.getBytes(Charset.forName("US-ASCII"))));
+                        // TODO generate this on backend
+                        String storeId = "12022224362"; // TODO prod id
+                        String formattedDate = simpleDateFormat.format(new Date());
+                        final String chargeTotal = "1.00";
+                        String currency = "978"; // EUR
 
-        try {
-            String data = IOUtils.toString(getContext().getResources().openRawResource(R.raw.creditcardform), Charset.forName("UTF-8"));
-            data = data.replace("{{url}}", "https://test.ipg-online.com/connect/gateway/processing"); // TODO url from backend
-            data = data.replace("{{storeId}}", storeId);
-            data = data.replace("{{date}}", formattedDate);
-            data = data.replace("{{currency}}", currency);
-            data = data.replace("{{chargeTotal}}", chargeTotal);
-            data = data.replace("{{hash}}", hash);
+                        try {
+                            String data = IOUtils.toString(resources.openRawResource(R.raw.creditcardform), Charset.forName("UTF-8"));
+                            data = data.replace("{{url}}", "https://test.ipg-online.com/connect/gateway/processing"); // TODO url from backend
+                            data = data.replace("{{storeId}}", storeId);
+                            data = data.replace("{{date}}", formattedDate);
+                            data = data.replace("{{currency}}", currency);
+                            data = data.replace("{{chargeTotal}}", chargeTotal);
+                            data = data.replace("{{hash}}", hashResponse.hash);
 
-            webView.loadData(data, null, null);
-        } catch (IOException e) {
-            Logger.e(e.getMessage());
-        }
+                            webView.loadData(data, null, null);
+                        } catch (IOException e) {
+                            Logger.e(e.getMessage());
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void error(Throwable t) {
+
+            }
+        });
     }
 
-    private void authenticateAndSave(String cardHolder, String obfuscatedCardNumber, String creditCardBrand,
-                          String expirationYear, String expirationMonth, String hostedDataId) {
+    private void authenticateAndSave(final String cardHolder, final String obfuscatedCardNumber, final String creditCardBrand,
+                                     final String expirationYear, final String expirationMonth, final String hostedDataId) {
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
             SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
                 @Override

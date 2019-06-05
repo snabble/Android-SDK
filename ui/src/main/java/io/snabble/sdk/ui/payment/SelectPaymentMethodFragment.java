@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -27,10 +26,10 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.view_payment_credentials_select, container, false);
+        View v = inflater.inflate(R.layout.snabble_view_payment_credentials_select, container, false);
 
         entries = new ArrayList<>();
-        entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.ic_sepa_small, "SEPA", new OneShotClickListener() {
+        entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_sepa_small, "SEPA", new OneShotClickListener() {
             @Override
             public void click() {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
@@ -44,7 +43,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         // Credit card payments are only supported on API 21+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.ic_visa, "Kreditkarte", new OneShotClickListener() {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa, "Kreditkarte", new OneShotClickListener() {
                 @Override
                 public void click() {
                     SnabbleUICallback callback = SnabbleUI.getUiCallback();
@@ -95,7 +94,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     private class Adapter extends RecyclerView.Adapter<SelectPaymentMethodFragment.ViewHolder> {
         @Override
         public SelectPaymentMethodFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(getContext()).inflate(R.layout.item_payment_credentials_select, parent, false);
+            View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_select, parent, false);
             return new SelectPaymentMethodFragment.ViewHolder(v);
         }
 
