@@ -29,6 +29,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {
@@ -131,6 +132,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
     @Override
     public void onChanged() {
+        Logger.d("onChanged WTF");
         entries.clear();
 
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();

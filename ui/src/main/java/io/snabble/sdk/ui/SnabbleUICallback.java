@@ -7,7 +7,7 @@ public interface SnabbleUICallback {
     void showScannerWithCode(String scannableCode);
     void showBarcodeSearch();
     void showSEPACardInput();
-    void showCreditCardCardInput();
+    void showCreditCardInput();
     void showShoppingCart();
     void showPaymentCredentialsList();
 

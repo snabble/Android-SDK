@@ -203,7 +203,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             if(KeyguardUtils.isDeviceSecure()) {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
                 if(callback != null) {
-                    callback.showCreditCardCardInput();
+                    callback.showCreditCardInput();
                 }
             } else {
                 showPaymentNotPossibleDialog();
@@ -211,7 +211,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         } else {
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
             if(callback != null) {
-                callback.showCreditCardCardInput();
+                callback.showCreditCardInput();
             }
         }
     }

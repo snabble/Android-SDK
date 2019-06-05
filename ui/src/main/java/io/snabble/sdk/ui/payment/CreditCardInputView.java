@@ -40,15 +40,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class CreditCardInputView extends FrameLayout {
-    private class HashResponse {
-        String hash;
-        String storeId;
-        String date;
-        String chargeTotal;
-        String url;
-        String currency;
-    }
-
     private boolean acceptedKeyguard;
     private WebView webView;
     private OkHttpClient okHttpClient;
@@ -153,15 +144,13 @@ public class CreditCardInputView extends FrameLayout {
         finish();
     }
 
-    private void authenticateAndSave(final String cardHolder, final String obfuscatedCardNumber, final String creditCardBrand,
-                                     final String expirationYear, final String expirationMonth, final String hostedDataId) {
+    private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
             SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
                 @Override
                 public void onKeyguardResult(int resultCode) {
                     if (resultCode == Activity.RESULT_OK) {
-                        save(cardHolder, obfuscatedCardNumber, creditCardBrand,
-                                expirationYear, expirationMonth, hostedDataId);
+                        save(creditCardInfo);
                     } else {
                         if (isShown()) {
                             finish();
@@ -172,16 +161,14 @@ public class CreditCardInputView extends FrameLayout {
                 }
             });
         } else {
-            save(cardHolder, obfuscatedCardNumber, creditCardBrand,
-                    expirationYear, expirationMonth, hostedDataId);
+            save(creditCardInfo);
         }
     }
 
-    private void save(String cardHolder, String obfuscatedCardNumber, String creditCardBrand,
-                     String expirationYear, String expirationMonth, String hostedDataId) {
+    private void save(CreditCardInfo info) {
         PaymentCredentials.Brand ccBrand;
 
-        switch (creditCardBrand) {
+        switch (info.brand) {
             case "VISA":
                 ccBrand = PaymentCredentials.Brand.VISA;
                 break;
@@ -193,8 +180,10 @@ public class CreditCardInputView extends FrameLayout {
                 break;
         }
 
-        final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(cardHolder, ccBrand, obfuscatedCardNumber,
-                expirationYear, expirationMonth, hostedDataId);
+        final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(info.cardHolder, ccBrand,
+                info.obfuscatedCardNumber, info.expirationYear,
+                info.expirationMonth, info.hostedDataId);
+
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
                     .show();
@@ -245,16 +234,49 @@ public class CreditCardInputView extends FrameLayout {
                 }
             };
 
+    private class CreditCardInfo {
+        String cardHolder;
+        String obfuscatedCardNumber;
+        String brand;
+        String expirationYear;
+        String expirationMonth;
+        String hostedDataId;
+
+        public CreditCardInfo(String cardHolder, String obfuscatedCardNumber,
+                              String brand, String expirationYear,
+                              String expirationMonth, String hostedDataId) {
+            this.cardHolder = cardHolder;
+            this.obfuscatedCardNumber = obfuscatedCardNumber;
+            this.brand = brand;
+            this.expirationYear = expirationYear;
+            this.expirationMonth = expirationMonth;
+            this.hostedDataId = hostedDataId;
+        }
+    }
+
     @Keep
-    public class JsInterface {
+    private class HashResponse {
+        String hash;
+        String storeId;
+        String date;
+        String chargeTotal;
+        String url;
+        String currency;
+    }
+
+    @Keep
+    private class JsInterface {
         @JavascriptInterface
-        public void saveCard(final String cardHolder, final String obfuscatedCardNumber, final String creditCardBrand,
-                             final String expirationYear, final String expirationMonth, final String hostedDataId) {
+        public void saveCard(final String cardHolder, final String obfuscatedCardNumber,
+                             final String brand, final String expirationYear,
+                             final String expirationMonth, final String hostedDataId) {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    authenticateAndSave(cardHolder, obfuscatedCardNumber, creditCardBrand, expirationYear, expirationMonth, hostedDataId);
+                    authenticateAndSave(new CreditCardInfo(cardHolder, obfuscatedCardNumber,
+                            brand, expirationYear,
+                            expirationMonth, hostedDataId));
                 }
             });
         }

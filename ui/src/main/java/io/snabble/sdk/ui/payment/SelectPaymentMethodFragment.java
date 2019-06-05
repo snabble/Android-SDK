@@ -16,7 +16,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -49,7 +48,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                 public void click() {
                     SnabbleUICallback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
-                        callback.showCreditCardCardInput();
+                        callback.showCreditCardInput();
                     }
 
                     dismissAllowingStateLoss();
