@@ -545,7 +545,7 @@ public class ShoppingCart {
         Integer units;
     }
 
-    public BackendCart toBackendCart() {
+    BackendCart toBackendCart() {
         BackendCart backendCart = new BackendCart();
         backendCart.session = getId();
         backendCart.shopId = "unknown";
