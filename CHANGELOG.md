@@ -23,7 +23,7 @@ this change is non-breaking.
 
 ## [0.13.16]
 
-## Added
+### Added
 - Project now contains getName() for a user presentable name
 
 ## [0.13.15]
