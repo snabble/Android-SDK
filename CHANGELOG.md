@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.1]
+
+### Fixed
+- Fixed a bug that caused transmissionCodes not to be applied in encodedCodes when not in the
+default code template
+
 ## [0.14.0]
 
 ### Breaking Changes
