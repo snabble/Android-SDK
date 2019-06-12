@@ -169,7 +169,9 @@ public class EncodedCodesGenerator {
                 }
             } else {
                 int q = productInfo.quantity;
-                String transmissionCode = productInfo.product.getTransmissionCode(productInfo.scannedCode.getLookupCode());
+                String transmissionCode = productInfo.product.getTransmissionCode(
+                        productInfo.scannedCode.getTemplateName(),
+                        productInfo.scannedCode.getLookupCode());
 
                 if (transmissionCode == null) {
                     transmissionCode = productInfo.scannedCode.getCode();
