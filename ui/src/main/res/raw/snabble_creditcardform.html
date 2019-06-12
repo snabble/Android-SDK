@@ -22,6 +22,7 @@
                 var ccBrand;
                 var expMonth;
                 var expYear;
+                var transactionId;
                 var responseCode;
                 var failReason;
 
@@ -37,14 +38,15 @@
                         case "expmonth": expMonth = item.value; break;
                         case "expyear": expYear = item.value; break;
                         case "processor_response_code": responseCode = item.value; break;
+                        case "oid": transactionId = item.value; break;
                         case "fail_reason": failReason = item.value; break;
                     }
                 }
 
                 if (responseCode == "00") {
                     if (hostedDataId != null && cardNumber != null && cardHolder != null
-                    && ccBrand != null && expMonth != null && expYear != null) {
-                        snabble.saveCard(cardHolder, cardNumber, ccBrand, expMonth, expYear, hostedDataId);
+                    && ccBrand != null && expMonth != null && expYear != null && transactionId != null) {
+                        snabble.saveCard(cardHolder, cardNumber, ccBrand, expMonth, expYear, hostedDataId, transactionId);
                     } else {
                         snabble.fail();
                     }

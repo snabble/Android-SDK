@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -44,6 +45,7 @@ public class CreditCardInputView extends FrameLayout {
     private WebView webView;
     private OkHttpClient okHttpClient;
     private Resources resources;
+    private HashResponse lastHashResponse;
 
     public CreditCardInputView(Context context) {
         super(context);
@@ -73,7 +75,13 @@ public class CreditCardInputView extends FrameLayout {
 
         webView = findViewById(R.id.web_view);
         webView.setWebViewClient(new WebViewClient());
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                Logger.d(consoleMessage.message());
+                return true;
+            }
+        });
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsInterface(), "snabble");
@@ -96,6 +104,7 @@ public class CreditCardInputView extends FrameLayout {
         okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
             @Override
             public void success(final HashResponse hashResponse) {
+                lastHashResponse = hashResponse;
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(new Runnable() {
                     @Override
@@ -182,7 +191,7 @@ public class CreditCardInputView extends FrameLayout {
 
         final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(info.cardHolder, ccBrand,
                 info.obfuscatedCardNumber, info.expirationYear,
-                info.expirationMonth, info.hostedDataId);
+                info.expirationMonth, info.hostedDataId, lastHashResponse.storeId);
 
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
@@ -241,16 +250,19 @@ public class CreditCardInputView extends FrameLayout {
         String expirationYear;
         String expirationMonth;
         String hostedDataId;
+        String transactionId;
 
         public CreditCardInfo(String cardHolder, String obfuscatedCardNumber,
                               String brand, String expirationYear,
-                              String expirationMonth, String hostedDataId) {
+                              String expirationMonth, String hostedDataId,
+                              String transactionId) {
             this.cardHolder = cardHolder;
             this.obfuscatedCardNumber = obfuscatedCardNumber;
             this.brand = brand;
             this.expirationYear = expirationYear;
             this.expirationMonth = expirationMonth;
             this.hostedDataId = hostedDataId;
+            this.transactionId = transactionId;
         }
     }
 
@@ -269,14 +281,15 @@ public class CreditCardInputView extends FrameLayout {
         @JavascriptInterface
         public void saveCard(final String cardHolder, final String obfuscatedCardNumber,
                              final String brand, final String expirationYear,
-                             final String expirationMonth, final String hostedDataId) {
+                             final String expirationMonth, final String hostedDataId,
+                             final String transactionId) {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     authenticateAndSave(new CreditCardInfo(cardHolder, obfuscatedCardNumber,
                             brand, expirationYear,
-                            expirationMonth, hostedDataId));
+                            expirationMonth, hostedDataId, transactionId));
                 }
             });
         }

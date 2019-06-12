@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
-
-import androidx.appcompat.app.AlertDialog;
-
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,16 +12,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -137,8 +136,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
-        for(PaymentCredentials pm : paymentCredentials) {
-            if(pm.getType() == PaymentCredentials.Type.SEPA) {
+        for (PaymentCredentials pm : paymentCredentials) {
+            if (pm.getType() == PaymentCredentials.Type.SEPA) {
                 entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));
             } else if (pm.getType() == PaymentCredentials.Type.CREDIT_CARD) {
                 PaymentCredentials.Brand ccBrand = pm.getBrand();
@@ -168,10 +167,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if(viewType == TYPE_EMPTYSTATE) {
+            if (viewType == TYPE_EMPTYSTATE) {
                 View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_emptystate, parent, false);
                 return new EmptyStateViewHolder(v);
-            }  else {
+            } else {
                 View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
                 return new EntryViewHolder(v);
             }
@@ -179,7 +178,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         @Override
         public int getItemViewType(int position) {
-            if(entries.size() == 0){
+            if (entries.size() == 0) {
                 return TYPE_EMPTYSTATE;
             }
 
@@ -190,8 +189,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             int type = getItemViewType(position);
 
-            if(type == TYPE_ENTRY){
-                EntryViewHolder vh = (EntryViewHolder)holder;
+            if (type == TYPE_ENTRY) {
+                EntryViewHolder vh = (EntryViewHolder) holder;
                 final Entry e = entries.get(position);
 
                 if (e.drawableRes != 0) {
@@ -205,7 +204,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
                 if (e.paymentCredentials.getValidTo() != null) {
                     // TODO i18n
-                    vh.validTo.setText("Expiration date: " + validTo);
+                    vh.validTo.setText("Expires: " + validTo);
                     vh.validTo.setVisibility(View.VISIBLE);
                 } else {
                     vh.validTo.setVisibility(View.GONE);

@@ -2,6 +2,7 @@ package io.snabble.sdk.payment;
 
 import android.util.Base64;
 
+
 import java.io.InputStream;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -14,9 +15,6 @@ import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -48,8 +46,9 @@ public class PaymentCredentials {
     }
 
     private static class CreditCardData {
-        private String name;
-        private String hostedDataId;
+        private String hostedDataID;
+        private String hostedDataStoreID;
+        private String cardType;
     }
 
     private String obfuscatedId;
@@ -102,7 +101,8 @@ public class PaymentCredentials {
     }
 
     public static PaymentCredentials fromCreditCardData(String name, Brand brand, String obfuscatedId,
-                                                        String expirationMonth, String expirationYear, String hostedDataId) {
+                                                        String expirationMonth, String expirationYear,
+                                                        String hostedDataId, String storeId) {
         PaymentCredentials pc = new PaymentCredentials();
         pc.type = Type.CREDIT_CARD;
 
@@ -118,8 +118,19 @@ public class PaymentCredentials {
         pc.obfuscatedId = obfuscatedId;
 
         CreditCardData creditCardData = new CreditCardData();
-        creditCardData.name = name;
-        creditCardData.hostedDataId = hostedDataId;
+        creditCardData.hostedDataID = hostedDataId;
+        creditCardData.hostedDataStoreID = storeId;
+
+        switch (brand) {
+            case VISA:
+                creditCardData.cardType = "creditCardVisa";
+                break;
+            case MASTERCARD:
+                creditCardData.cardType = "creditCardMastercard";
+                break;
+            default:
+                return null;
+        }
 
         String json = GsonHolder.get().toJson(creditCardData, CreditCardData.class);
 
@@ -143,10 +154,18 @@ public class PaymentCredentials {
     }
 
     public Type getType() {
+        if (type == null) { // backwards compatibility
+            return Type.SEPA;
+        }
+
         return type;
     }
 
     public Brand getBrand() {
+        if (brand == null) { // backwards compatibility
+            return Brand.UNKNOWN;
+        }
+
         return brand;
     }
 

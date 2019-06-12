@@ -137,6 +137,8 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         Project project = SnabbleUI.getProject();
         switch (checkout.getSelectedPaymentMethod()) {
             case DE_DIRECT_DEBIT:
+            case VISA:
+            case MASTERCARD:
                 displayView(new CheckoutStatusView(getContext()));
                 break;
             case QRCODE_POS:

@@ -71,11 +71,9 @@ class CheckoutApi {
                         }
                     }
 
-                    // TODO remove
-                    result.add(PaymentMethod.CREDIT_CARD);
-
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                        result.remove(PaymentMethod.CREDIT_CARD);
+                        result.remove(PaymentMethod.VISA);
+                        result.remove(PaymentMethod.MASTERCARD);
                     }
 
                     return result.toArray(new PaymentMethod[result.size()]);

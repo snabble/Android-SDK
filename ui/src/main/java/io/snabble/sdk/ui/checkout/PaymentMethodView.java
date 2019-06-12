@@ -3,13 +3,6 @@ package io.snabble.sdk.ui.checkout;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -24,6 +17,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,11 +31,11 @@ import java.util.Map;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
-import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -53,7 +52,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
     static {
         icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.snabble_ic_pm_sepa);
-        icons.put(PaymentMethod.CREDIT_CARD, R.drawable.snabble_ic_pm_creditcard);
+        icons.put(PaymentMethod.VISA, R.drawable.snabble_ic_pm_visa);
+        icons.put(PaymentMethod.MASTERCARD, R.drawable.snabble_ic_pm_mastercard);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.ENCODED_CODES_CSV, R.drawable.snabble_ic_pm_checkstand);
@@ -102,6 +102,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         PriceFormatter priceFormatter = project.getPriceFormatter();
         String totalPriceText = priceFormatter.format(project.getCheckout().getPriceToPay());
         String titleText = getResources().getString(R.string.Snabble_PaymentSelection_payNow, totalPriceText);
+
         if (SnabbleUI.getActionBar() != null) {
             title.setVisibility(View.GONE);
             SnabbleUI.getActionBar().setTitle(titleText);
@@ -122,57 +123,35 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 e.text = descriptions.get(paymentMethod);
                 e.paymentMethod = paymentMethod;
 
-                if(paymentMethod == PaymentMethod.DE_DIRECT_DEBIT) {
-                    e.onClickListener = new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showSEPACardInput();
-                        }
-                    };
-                } else if(paymentMethod == PaymentMethod.CREDIT_CARD) {
-                    e.onClickListener = new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showCreditCardInput();
-                        }
-                    };
-                }
-
-                entries.add(e);
-            }
-        }
-
-        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
-        for(PaymentCredentials p : paymentCredentials) {
-            if (p.getType() == PaymentCredentials.Type.SEPA) {
-                for(Entry e : entries) {
-                    if (e.paymentMethod == PaymentMethod.DE_DIRECT_DEBIT) {
-                        entries.remove(e);
-                        break;
+                PaymentCredentials pc = getPaymentCredentials(paymentMethod);
+                if (pc != null) {
+                    e.paymentCredentials = pc;
+                    e.text = pc.getObfuscatedId();
+                } else {
+                    if (paymentMethod == PaymentMethod.DE_DIRECT_DEBIT) {
+                        e.onClickListener = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showSEPACardInput();
+                            }
+                        };
+                    } else if (paymentMethod == PaymentMethod.VISA) {
+                        e.onClickListener = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showCreditCardInput();
+                            }
+                        };
+                    } else if (paymentMethod == PaymentMethod.MASTERCARD) {
+                        e.onClickListener = new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showCreditCardInput();
+                            }
+                        };
                     }
                 }
-            } else if (p.getType() == PaymentCredentials.Type.CREDIT_CARD) {
-                for(Entry e : entries) {
-                    if (e.paymentMethod == PaymentMethod.CREDIT_CARD) {
-                        entries.remove(e);
-                        break;
-                    }
-                }
-            }
-        }
 
-        for(PaymentCredentials p : paymentCredentials) {
-            if (p.getType() == PaymentCredentials.Type.SEPA && availablePaymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
-                Entry e = new Entry();
-                e.paymentMethod = PaymentMethod.DE_DIRECT_DEBIT;
-                e.paymentCredentials = p;
-                e.text = p.getObfuscatedId();
-                entries.add(e);
-            } else if (p.getType() == PaymentCredentials.Type.CREDIT_CARD && availablePaymentMethods.contains(PaymentMethod.CREDIT_CARD)) {
-                Entry e = new Entry();
-                e.paymentMethod = PaymentMethod.CREDIT_CARD;
-                e.paymentCredentials = p;
-                e.text = p.getObfuscatedId();
                 entries.add(e);
             }
         }
@@ -180,11 +159,45 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
+    private PaymentCredentials getPaymentCredentials(PaymentMethod pm) {
+        List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
+        for (PaymentCredentials pc : paymentCredentials) {
+            if (pc.getType() == getType(pm) && pc.getBrand() == getBrand(pm)) {
+                return pc;
+            }
+        }
+
+        return null;
+    }
+
+    private PaymentCredentials.Type getType(PaymentMethod pm) {
+        switch (pm) {
+            case VISA:
+            case MASTERCARD:
+                return PaymentCredentials.Type.CREDIT_CARD;
+            case DE_DIRECT_DEBIT:
+                return PaymentCredentials.Type.SEPA;
+            default:
+                return null;
+        }
+    }
+
+    private PaymentCredentials.Brand getBrand(PaymentMethod pm) {
+        switch (pm) {
+            case VISA:
+                return PaymentCredentials.Brand.VISA;
+            case MASTERCARD:
+                return PaymentCredentials.Brand.MASTERCARD;
+            default:
+                return PaymentCredentials.Brand.UNKNOWN;
+        }
+    }
+
     private void showSEPACardInput() {
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-            if(KeyguardUtils.isDeviceSecure()) {
+            if (KeyguardUtils.isDeviceSecure()) {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                if(callback != null) {
+                if (callback != null) {
                     callback.showSEPACardInput();
                 }
             } else {
@@ -192,7 +205,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         } else {
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
-            if(callback != null) {
+            if (callback != null) {
                 callback.showSEPACardInput();
             }
         }
@@ -200,9 +213,9 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
     private void showCreditCardInput() {
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-            if(KeyguardUtils.isDeviceSecure()) {
+            if (KeyguardUtils.isDeviceSecure()) {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                if(callback != null) {
+                if (callback != null) {
                     callback.showCreditCardInput();
                 }
             } else {
@@ -210,7 +223,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         } else {
             SnabbleUICallback callback = SnabbleUI.getUiCallback();
-            if(callback != null) {
+            if (callback != null) {
                 callback.showCreditCardInput();
             }
         }
@@ -343,7 +356,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 textView.setVisibility(View.GONE);
             }
 
-            if(e.onClickListener != null){
+            if (e.onClickListener != null) {
                 holder.card.setOnClickListener(e.onClickListener);
             } else {
                 holder.card.setOnClickListener(new OnClickListener() {
@@ -354,7 +367,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                             public void onClick(View v) {
                                 final SnabbleUICallback callback = SnabbleUI.getUiCallback();
                                 if (callback != null) {
-                                    if(Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
+                                    if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()
                                             && e.paymentMethod.isRequiringCredentials()) {
                                         callback.requestKeyguard(new KeyguardHandler() {
                                             @Override
