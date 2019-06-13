@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -200,9 +202,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     vh.icon.setVisibility(View.INVISIBLE);
                 }
 
-                String validTo = e.paymentCredentials.getValidTo();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
+                String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
 
-                if (e.paymentCredentials.getValidTo() != null) {
+                if (e.paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD) {
                     // TODO i18n
                     vh.validTo.setText("Expires: " + validTo);
                     vh.validTo.setVisibility(View.VISIBLE);

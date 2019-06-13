@@ -104,6 +104,7 @@ public class PaymentCredentialsStore {
     }
 
     public List<PaymentCredentials> getAll() {
+        validate();
         ensureKeyStoreIsAccessible();
         return Collections.unmodifiableList(data.credentialsList);
     }
@@ -111,10 +112,6 @@ public class PaymentCredentialsStore {
     public String id() {
         ensureKeyStoreIsAccessible();
         return data.id;
-    }
-
-    public int size() {
-        return data.credentialsList.size();
     }
 
     public void add(PaymentCredentials credentials) {
@@ -163,14 +160,23 @@ public class PaymentCredentialsStore {
                 data.credentialsList = new ArrayList<>();
             }
 
-            for (int i = data.credentialsList.size() - 1; i >= 0; i--) {
-                PaymentCredentials credentials = data.credentialsList.get(i);
+            validate();
+        }
+    }
 
-                if (!credentials.validate()) {
-                    data.credentialsList.remove(credentials);
-                }
+    private void validate() {
+        boolean changed = false;
+
+        for (int i = data.credentialsList.size() - 1; i >= 0; i--) {
+            PaymentCredentials credentials = data.credentialsList.get(i);
+
+            if (!credentials.validate()) {
+                data.credentialsList.remove(credentials);
+                changed = true;
             }
+        }
 
+        if (changed) {
             save();
         }
     }

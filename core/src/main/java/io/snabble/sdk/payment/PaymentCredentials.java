@@ -1,5 +1,6 @@
 package io.snabble.sdk.payment;
 
+import android.annotation.SuppressLint;
 import android.util.Base64;
 
 
@@ -14,7 +15,11 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -55,7 +60,7 @@ public class PaymentCredentials {
     private boolean isKeyStoreEncrypted;
     private String encryptedData;
     private String signature;
-    private String validTo;
+    private long validTo;
     private Type type;
     private Brand brand;
 
@@ -141,8 +146,15 @@ public class PaymentCredentials {
         pc.brand = brand;
 
         try {
-            pc.validTo = expirationMonth + "/" + expirationYear;
-        } catch (NumberFormatException e) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
+            Date date = simpleDateFormat.parse(expirationMonth + "/" + expirationYear);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+            pc.validTo = calendar.getTimeInMillis();
+        } catch (NumberFormatException | ParseException e) {
             return null;
         }
 
@@ -303,6 +315,13 @@ public class PaymentCredentials {
     }
 
     public boolean validate() {
+        if (type == Type.CREDIT_CARD) {
+            Date date = new Date(validTo);
+            if (date.getTime() < System.currentTimeMillis()) {
+                return false;
+            }
+        }
+
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
         for (X509Certificate cert : certificates) {
             if (sha256Signature(cert).equals(signature)) {
@@ -313,7 +332,7 @@ public class PaymentCredentials {
         return false;
     }
 
-    public String getValidTo() {
+    public long getValidTo() {
         return validTo;
     }
 

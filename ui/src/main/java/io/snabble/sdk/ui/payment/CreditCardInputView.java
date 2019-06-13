@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.Executors;
 
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -75,13 +76,7 @@ public class CreditCardInputView extends FrameLayout {
 
         webView = findViewById(R.id.web_view);
         webView.setWebViewClient(new WebViewClient());
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Logger.d(consoleMessage.message());
-                return true;
-            }
-        });
+        webView.setWebChromeClient(new WebChromeClient());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsInterface(), "snabble");
