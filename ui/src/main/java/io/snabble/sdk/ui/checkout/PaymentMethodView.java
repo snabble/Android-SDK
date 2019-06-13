@@ -94,8 +94,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         userPreferences = Snabble.getInstance().getUserPreferences();
 
         recyclerView = findViewById(R.id.payment_methods);
-        recyclerView.setAdapter(new Adapter());
         recyclerViewAdapter = new Adapter();
+        recyclerView.setAdapter(recyclerViewAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setStackFromEnd(true);
