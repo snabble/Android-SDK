@@ -135,11 +135,15 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
     }
 
     private void registerListeners() {
-        checkout.addOnCheckoutStateChangedListener(this);
+        if (checkout != null) {
+            checkout.addOnCheckoutStateChangedListener(this);
+        }
     }
 
     private void unregisterListeners() {
-        checkout.removeOnCheckoutStateChangedListener(this);
+        if (checkout != null) {
+            checkout.removeOnCheckoutStateChangedListener(this);
+        }
     }
 
     @Override

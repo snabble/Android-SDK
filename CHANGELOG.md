@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.2]
+
+### Fixed
+- Fixed a crash when opening ReceiptListView without setting a Project first
+
 ## [0.14.1]
 
 ### Fixed
