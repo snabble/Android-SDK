@@ -9,7 +9,6 @@ import android.util.Base64;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -19,10 +18,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -30,9 +27,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.auth.TokenRegistry;
-import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.JsonUtils;
@@ -58,6 +53,8 @@ public class Snabble {
     private Environment environment;
     private List<X509Certificate> paymentCertificates;
     private String receiptsUrl;
+    private String telecashSecretUrl;
+    private String telecashPreAuthUrl;
     private OkHttpClient okHttpClient;
 
     private Snabble() {
@@ -168,6 +165,9 @@ public class Snabble {
             if (receiptsUrl != null) {
                 receiptsUrl = receiptsUrl.replace("{clientID}", getClientId());
             }
+
+            telecashSecretUrl = getUrl(jsonObject, "telecashSecret");
+            telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth");
         }
 
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
@@ -268,6 +268,14 @@ public class Snabble {
 
     public String getReceiptsUrl() {
         return receiptsUrl;
+    }
+
+    public String getTelecashSecretUrl() {
+        return telecashSecretUrl;
+    }
+
+    public String getTelecashPreAuthUrl() {
+        return telecashPreAuthUrl;
     }
 
     public File getInternalStorageDirectory() {

@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
-import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -26,7 +25,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
 
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -38,8 +36,11 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 public class CreditCardInputView extends FrameLayout {
     private boolean acceptedKeyguard;
@@ -91,8 +92,14 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void requestHash() {
+        String url = Snabble.getInstance().getTelecashSecretUrl();
+        if (url == null) {
+            finishWithError();
+            return;
+        }
+
         Request request = new Request.Builder()
-                .url("https://api.snabble-testing.io/payment/telecash/global/secret") // TODO get url from metadata
+                .url(Snabble.getInstance().getTelecashSecretUrl())
                 .get()
                 .build();
 
@@ -133,7 +140,7 @@ public class CreditCardInputView extends FrameLayout {
             data = data.replace("{{hash}}", hashResponse.hash);
 
             // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
-            data = data.replace("{{paymentMethod}}", "V"); 
+            data = data.replace("{{paymentMethod}}", "V");
 
             webView.loadData(data, null, null);
         } catch (IOException e) {
@@ -151,6 +158,8 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
+        cancelPreAuth();
+
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
             SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
                 @Override
@@ -204,11 +213,41 @@ public class CreditCardInputView extends FrameLayout {
         }
     }
 
+    private void cancelPreAuth() {
+        Request request = new Request.Builder()
+                .url(Snabble.getInstance().getTelecashPreAuthUrl())
+                .delete()
+                .build();
+
+        // fire and forget
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // ignore
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                // ignore
+            }
+        });
+    }
+
     private void finish() {
         SnabbleUICallback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             callback.goBack();
         }
+    }
+
+    private void finishWithError() {
+        // TODO i18n
+        Toast.makeText(getContext(),
+                "Ihre Kreditkarte konnte nicht hinterlegt werden.",
+                Toast.LENGTH_SHORT)
+                .show();
+
+        finish();
     }
 
     @Override
@@ -297,13 +336,7 @@ public class CreditCardInputView extends FrameLayout {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    // TODO i18n
-                    Toast.makeText(getContext(),
-                            "Ihre Kreditkarte konnte nicht hinterlegt werden.",
-                            Toast.LENGTH_SHORT)
-                            .show();
-
-                    finish();
+                    finishWithError();
                 }
             });
         }
