@@ -131,7 +131,9 @@ public class CreditCardInputView extends FrameLayout {
             data = data.replace("{{currency}}", hashResponse.currency);
             data = data.replace("{{chargeTotal}}", hashResponse.chargeTotal);
             data = data.replace("{{hash}}", hashResponse.hash);
-            data = data.replace("{{paymentMethod}}", "V"); // VISA
+
+            // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
+            data = data.replace("{{paymentMethod}}", "V"); 
 
             webView.loadData(data, null, null);
         } catch (IOException e) {
