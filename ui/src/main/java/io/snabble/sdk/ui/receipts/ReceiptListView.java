@@ -105,7 +105,17 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
                 receiptInfos = newReceiptInfos;
 
                 if (checkout != null && checkout.getState() == Checkout.State.PAYMENT_APPROVED) {
-                    showProgressBar = true;
+                    boolean containsOrder = false;
+                    for (ReceiptInfo receiptInfo : newReceiptInfos) {
+                        if (receiptInfo.getId().equals(checkout.getOrderId())) {
+                            containsOrder = true;
+                            break;
+                        }
+                    }
+
+                    if (!containsOrder) {
+                        showProgressBar = true;
+                    }
                 }
 
                 recyclerView.getAdapter().notifyDataSetChanged();

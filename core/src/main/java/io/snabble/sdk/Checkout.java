@@ -471,6 +471,10 @@ public class Checkout {
         }
     }
 
+    public String getOrderId() {
+        return checkoutProcess != null ? checkoutProcess.orderId : null;
+    }
+
     public void setClientAcceptedPaymentMethods(PaymentMethod[] acceptedPaymentMethods) {
         clientAcceptedPaymentMethods = acceptedPaymentMethods;
     }

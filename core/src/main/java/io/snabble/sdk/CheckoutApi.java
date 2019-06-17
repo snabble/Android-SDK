@@ -128,6 +128,8 @@ class CheckoutApi {
         public Map<String, Href> links;
         public Boolean supervisorApproval;
         public Boolean paymentApproval;
+        @SerializedName("orderID")
+        public String orderId;
         public boolean aborted;
         public JsonObject checkoutInfo;
         public PaymentMethod paymentMethod;

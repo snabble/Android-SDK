@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.3]
+
+### Changes
+- Now exposing orderId in Checkout
+- ReceiptListView is now checking for orderId while fetching
+ 
 ## [0.14.2]
 
 ### Fixed
