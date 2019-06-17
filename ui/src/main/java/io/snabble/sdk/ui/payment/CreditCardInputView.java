@@ -158,7 +158,7 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
-        cancelPreAuth();
+        cancelPreAuth(creditCardInfo);
 
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
             SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
@@ -213,9 +213,17 @@ public class CreditCardInputView extends FrameLayout {
         }
     }
 
-    private void cancelPreAuth() {
+    private void cancelPreAuth(CreditCardInfo creditCardInfo) {
+        String url = Snabble.getInstance().getTelecashPreAuthUrl();
+        if (url == null) {
+            Logger.e("Could not cancel pre authorization, no url provided");
+            return;
+        }
+
+        url = url.replace("{orderID}", creditCardInfo.transactionId);
+
         Request request = new Request.Builder()
-                .url(Snabble.getInstance().getTelecashPreAuthUrl())
+                .url(url)
                 .delete()
                 .build();
 
