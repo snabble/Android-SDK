@@ -123,7 +123,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
         picasso = Picasso.with(getContext());
-        Project project = SnabbleUI.getProject();
+        final Project project = SnabbleUI.getProject();
 
         if (cart != null) {
             cart.removeListener(shoppingCartListener);
@@ -178,8 +178,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         pay.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
-                checkout.checkout();
-                Telemetry.event(Telemetry.Event.ClickCheckout);
+                if (cart.hasReachedMaxCheckoutLimit()) {
+                    Project project = SnabbleUI.getProject();
+                    String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+                            project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
+                    snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+                    snackbar.show();
+                } else {
+                    checkout.checkout();
+                    Telemetry.event(Telemetry.Event.ClickCheckout);
+                }
             }
         });
 

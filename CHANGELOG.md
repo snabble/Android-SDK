@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.4]
+
+### Fixed 
+- Fixed a bug that caused the checkout limit message to not appear when checking out im some cases
+
 ## [0.14.3]
 
 ### Changes

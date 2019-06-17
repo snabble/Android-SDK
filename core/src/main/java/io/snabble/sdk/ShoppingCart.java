@@ -288,6 +288,14 @@ public class ShoppingCart {
         return sum;
     }
 
+    public boolean hasReachedMaxCheckoutLimit() {
+        return hasRaisedMaxCheckoutLimit;
+    }
+
+    public boolean hasReachedMaxOnlinePaymentLimit() {
+        return hasRaisedMaxOnlinePaymentLimit;
+    }
+
     private void updateTimestamp() {
         lastModificationTime = System.currentTimeMillis();
     }
