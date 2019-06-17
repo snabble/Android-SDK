@@ -206,8 +206,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
 
                 if (e.paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD) {
-                    // TODO i18n
-                    vh.validTo.setText("Expires: " + validTo);
+                    vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
                     vh.validTo.setVisibility(View.VISIBLE);
                 } else {
                     vh.validTo.setVisibility(View.GONE);

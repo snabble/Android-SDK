@@ -249,9 +249,8 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void finishWithError() {
-        // TODO i18n
         Toast.makeText(getContext(),
-                "Ihre Kreditkarte konnte nicht hinterlegt werden.",
+                R.string.Snabble_Payment_CreditCard_error,
                 Toast.LENGTH_SHORT)
                 .show();
 
