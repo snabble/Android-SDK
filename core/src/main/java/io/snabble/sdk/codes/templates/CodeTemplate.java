@@ -9,35 +9,48 @@ import java.util.List;
 import java.util.Set;
 
 import io.snabble.sdk.codes.ScannedCode;
-import io.snabble.sdk.codes.templates.groups.*;
+import io.snabble.sdk.codes.templates.groups.CodeGroup;
+import io.snabble.sdk.codes.templates.groups.ConstantCodeGroup;
+import io.snabble.sdk.codes.templates.groups.EAN13Group;
+import io.snabble.sdk.codes.templates.groups.EAN13InternalChecksumGroup;
+import io.snabble.sdk.codes.templates.groups.EAN14Group;
+import io.snabble.sdk.codes.templates.groups.EAN8Group;
+import io.snabble.sdk.codes.templates.groups.EANChecksumGroup;
+import io.snabble.sdk.codes.templates.groups.EmbedDecimalGroup;
+import io.snabble.sdk.codes.templates.groups.EmbedGroup;
+import io.snabble.sdk.codes.templates.groups.Group;
+import io.snabble.sdk.codes.templates.groups.IgnoreGroup;
+import io.snabble.sdk.codes.templates.groups.PlainTextGroup;
+import io.snabble.sdk.codes.templates.groups.PriceGroup;
+import io.snabble.sdk.codes.templates.groups.WildcardGroup;
 
 /**
  * Class for parsing of code templates.
- *
+ * <p>
  * Example: "2{code:5}{i}{code:5}{ec}", resembling a standard EAN13 containing embedded weight or prices
- *
+ * <p>
  * Valid groups
- *
+ * <p>
  * code         | either a known format (ean8, ean13 or ean14), or a length
- *
+ * <p>
  * embed        | embedded data in the code. This may be a weight, amount or price,
- *                depending on the encodingUnit of the scanned code
- *
- *                Supports decimal lengths such as "4.3",
- *                which tells the parser that there are 4 decimal and 3 fractional digits encoded.
- *
+ * depending on the encodingUnit of the scanned code
+ * <p>
+ * Supports decimal lengths such as "4.3",
+ * which tells the parser that there are 4 decimal and 3 fractional digits encoded.
+ * <p>
  * embed100     | embedded data in the code that must be multiplied by 100 (e.g. for an embedded price in Euros)
- *
+ * <p>
  * price        | price of one referenceUnit of the product
- *
+ * <p>
  * _            | ignore length character(s)
- *
+ * <p>
  * i            | length is always 1, other values will be ignored.
- *                Represents the internal 5-digit checksum of an EAN-13.
- *                Presence of this property requires that the embed property is also present and has a length of 5.
- *
+ * Represents the internal 5-digit checksum of an EAN-13.
+ * Presence of this property requires that the embed property is also present and has a length of 5.
+ * <p>
  * ec           | length is always 1, other values will be ignored, and must be the last component of a template.
- *                Represents the check digit of an EAN-8, EAN-13 or EAN-14 code.
+ * Represents the check digit of an EAN-8, EAN-13 or EAN-14 code.
  */
 public class CodeTemplate {
     private String pattern;
@@ -118,11 +131,20 @@ public class CodeTemplate {
                         } else {
                             if (subType != null) {
                                 switch (subType) {
-                                    case "ean8": group = new EAN8Group(this); break;
-                                    case "ean13": group = new EAN13Group(this); break;
-                                    case "ean14": group = new EAN14Group(this); break;
-                                    case "*": group = new WildcardGroup(this, 0); break;
-                                    default: throw new IllegalArgumentException("Unknown code type: " + subType);
+                                    case "ean8":
+                                        group = new EAN8Group(this);
+                                        break;
+                                    case "ean13":
+                                        group = new EAN13Group(this);
+                                        break;
+                                    case "ean14":
+                                        group = new EAN14Group(this);
+                                        break;
+                                    case "*":
+                                        group = new WildcardGroup(this, 0);
+                                        break;
+                                    default:
+                                        throw new IllegalArgumentException("Unknown code type: " + subType);
                                 }
                             } else {
                                 group = new CodeGroup(this, length);
@@ -226,7 +248,8 @@ public class CodeTemplate {
             try {
                 group.getClass().asSubclass(clazz);
                 return (T) group;
-            } catch (ClassCastException ignored) { }
+            } catch (ClassCastException ignored) {
+            }
         }
 
         return null;
@@ -287,7 +310,12 @@ public class CodeTemplate {
             reset();
 
             int start = 0;
-            for (Group group : groups) {
+            for (int i = 0; i < groups.size(); i++) {
+                Group group = groups.get(i);
+                if (i == groups.size() - 1 && group instanceof IgnoreGroup) {
+                    break;
+                }
+
                 if (group instanceof WildcardGroup) {
                     ((WildcardGroup) group).setLength(matchedCode.length() - start);
                 }
@@ -330,7 +358,12 @@ public class CodeTemplate {
             builder.setScannedCode(string());
         }
 
-        for (Group group : groups) {
+        for (int i = 0; i < groups.size(); i++) {
+            Group group = groups.get(i);
+            if (i == groups.size() - 1 && group instanceof IgnoreGroup) {
+                break;
+            }
+
             if (!group.validate()) {
                 reset();
                 return null;

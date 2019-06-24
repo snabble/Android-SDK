@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.5]
+
+### Changes 
+- Allow shorter codes to be matched if the last code template group is a ignore group
+- Embed lookup code instead of zero-filled scanned code when searching by code
+
 ## [0.14.4]
 
 ### Fixed 

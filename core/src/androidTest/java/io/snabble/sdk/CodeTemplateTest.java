@@ -108,7 +108,6 @@ public class CodeTemplateTest {
         Assert.assertNull(newCodeTemplate("{code:ean13}").match("4029764001800").buildCode());
         Assert.assertNull(newCodeTemplate("{code:ean8}").match("87654320").buildCode());
         Assert.assertNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("970000000000000111111222223").buildCode());
-        Assert.assertNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("96000000000000011111122222").buildCode());
         Assert.assertNull(newCodeTemplate("123{_:5}").match("55545678").buildCode());
     }
 
