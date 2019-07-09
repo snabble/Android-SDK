@@ -180,6 +180,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                         .separator("\u001d240")
                         .suffix("")
                         .maxCodes(maxCodes)
+                        .maxChars(options.maxChars)
                         .build()));
                 break;
         }
