@@ -161,8 +161,10 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
             case ENCODED_CODES_IKEA:
                 EncodedCodesOptions options = project.getEncodedCodesOptions();
                 int maxCodes = 45;
+                int maxChars = EncodedCodesOptions.DEFAULT_MAX_CHARS;
                 if (options != null) {
                     maxCodes = options.maxCodes;
+                    maxChars = options.maxChars;
                 }
 
                 String prefix = "9100003\u001d100{qrCodeCount}\u001d240";
@@ -180,7 +182,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                         .separator("\u001d240")
                         .suffix("")
                         .maxCodes(maxCodes)
-                        .maxChars(options.maxChars)
+                        .maxChars(maxChars)
                         .build()));
                 break;
         }
