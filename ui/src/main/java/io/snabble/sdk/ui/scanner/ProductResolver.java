@@ -185,17 +185,23 @@ public class ProductResolver {
                 } else {
                     int scale = decimal.scale();
                     Unit fractionalUnit = unit.getFractionalUnit(scale);
-                    if (fractionalUnit != null) {
-                        BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit);
-                        scannedCode.setEmbeddedData(converted.intValue());
-                        scannedCode.setEmbeddedUnit(fractionalUnit);
+                    if (fractionalUnit == null) {
+                        fractionalUnit = unit;
+
+                        if (scale > 0) {
+                            decimal = decimal.multiply(new BigDecimal(Math.pow(10, scale)));
+                        }
                     }
+
+                    BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit);
+                    scannedCode.setEmbeddedData(converted.intValue());
+                    scannedCode.setEmbeddedUnit(fractionalUnit);
                 }
             }
         }
 
         if(product.getBundleProducts().length > 0){
-            showBundleDialog(product);
+            showBundleDialog(product, scannedCode);
         } else {
             if (product.getSaleStop()) {
                 if (onSaleStopListener != null) {
@@ -230,18 +236,15 @@ public class ProductResolver {
         }
     }
 
-    private void showBundleDialog(Product product) {
+    private void showBundleDialog(Product product, final ScannedCode scannedCode) {
         SelectBundleDialog.show(context, product, new SelectBundleDialog.Callback() {
             @Override
             public void onProductSelected(Product product) {
                 Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
 
                 Product.Code[] codes = product.getScannableCodes();
-                if(codes.length > 0) {
-                    List<ScannedCode> scannedCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].lookupCode);
-                    if (scannedCodes != null && scannedCodes.size() > 0) {
-                        showProduct(product, scannedCodes.get(0));
-                    }
+                if (codes.length > 0) {
+                    showProduct(product, scannedCode);
                 }
             }
 

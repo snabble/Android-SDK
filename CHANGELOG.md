@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.6]
+
+### Fixed
+- Assume fractional unit is 0 when no conversion is possible of encoded unit
+- Use scanned code when selecting bundle product
+
 ## [0.14.5]
 
 ### Changes 
