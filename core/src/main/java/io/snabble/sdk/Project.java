@@ -143,6 +143,7 @@ public class Project {
                         .nextCode(JsonUtils.getStringOpt(object, "nextCode", ""))
                         .nextCodeWithCheck(JsonUtils.getStringOpt(object, "nextCodeWithCheck", ""))
                         .maxSizeMm(JsonUtils.getIntOpt(object, "maxSizeMM", -1))
+                        .maxChars(JsonUtils.getIntOpt(object, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS))
                         .build();
             }
         }

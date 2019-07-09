@@ -5,6 +5,8 @@ import android.util.SparseArray;
 import io.snabble.sdk.Project;
 
 public class EncodedCodesOptions {
+    public static final int DEFAULT_MAX_CHARS = 2953;
+
     public final String prefix;
     public final SparseArray<String> prefixMap;
     public final String separator;
@@ -45,7 +47,7 @@ public class EncodedCodesOptions {
         private SparseArray<String> prefixMap = new SparseArray<>();
         private String separator = "\n";
         private String suffix = "";
-        private int maxChars = 2953;
+        private int maxChars = DEFAULT_MAX_CHARS;
         private String finalCode = "";
         private String nextCode = "";
         private String nextCodeWithCheck = "";
