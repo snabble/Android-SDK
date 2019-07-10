@@ -111,29 +111,6 @@ public class EncodedCodesGenerator {
                     item.getScannedCode()));
         }
 
-        Collections.sort(productInfos, new Comparator<ProductInfo>() {
-            @Override
-            public int compare(ProductInfo p1, ProductInfo p2) {
-                int price1 = p1.product.getPrice(options.project.getCustomerCardId());
-                if (p1.scannedCode.hasPrice()) {
-                    price1 = p1.scannedCode.getPrice();
-                }
-
-                int price2 = p2.product.getPrice(options.project.getCustomerCardId());
-                if (p2.scannedCode.hasPrice()) {
-                    price2 = p2.scannedCode.getPrice();
-                }
-
-                if (price1 < price2) {
-                    return -1;
-                } else if (price1 > price2) {
-                    return 1;
-                }
-
-                return 0;
-            }
-        });
-
         for (ProductInfo productInfo : productInfos) {
             if (ageRestricted != isAgeRestricted(productInfo.product)) {
                 continue;

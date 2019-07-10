@@ -1,6 +1,9 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.8]
+- Removed sorting by price in encodedCodes
+
 ## [0.14.7]
 
 ### Changes
