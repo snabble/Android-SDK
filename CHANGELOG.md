@@ -1,6 +1,17 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.7]
+
+### Changes
+- Added support for encodedCodes 'maxChars' property
+- Layout and Behaviour improvements to the encodedCodes screen
+- Renamed key Snabble.Receipt.noReceipt to Snabble.Receipts.noReceipt 
+
+### New String Keys
+- Snabble.QRCode.entry.title
+- Snabble.Receipts.noReceipt
+
 ## [0.14.6]
 
 ### Fixed
