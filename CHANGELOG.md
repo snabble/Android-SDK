@@ -1,7 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.9]
+
+### Fixed
+- Fixed a race condition in shopping cart product updates
+
 ## [0.14.8]
+
+### Changes
 - Removed sorting by price in encodedCodes
 
 ## [0.14.7]
