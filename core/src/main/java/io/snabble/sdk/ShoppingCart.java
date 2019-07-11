@@ -503,6 +503,10 @@ public class ShoppingCart {
                 }
             }
 
+            if (product == null) {
+                return null;
+            }
+
             if (product.getPrice(cart.project.getCustomerCardId()) > 0 || (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0)) {
                 Unit unit = getUnit();
 
