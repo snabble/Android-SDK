@@ -253,7 +253,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 }
             }
 
-            int offsetH = holder.title.getVisibility() != View.GONE ? (int) (48 * dm.density) : 0;
+            int offsetH = holder.title.getVisibility() != View.GONE ? (int) (60 * dm.density) : 0;
             int h = scrollContainer.getHeight() - offsetH;
             int barcodeHeight = codes.size() == 1 ? h : h - (smallScreen ? 0 : h / 4);
 
@@ -267,11 +267,6 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 holder.barcodeView.setLayoutParams(new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         barcodeHeight));
-            }
-
-            if (!smallScreen) {
-                int padding = Math.round(12.0f * getResources().getDisplayMetrics().density);
-                holder.barcodeView.setPadding(padding, padding, padding, padding);
             }
 
             holder.barcodeView.setFormat(BarcodeFormat.QR_CODE);
