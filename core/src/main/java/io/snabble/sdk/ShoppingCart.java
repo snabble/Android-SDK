@@ -176,7 +176,7 @@ public class ShoppingCart {
         clear();
     }
 
-    public void updateProducts() {
+    void updateProducts() {
         ProductDatabase productDatabase = project.getProductDatabase();
 
         if (productDatabase.isUpToDate()) {

@@ -592,7 +592,12 @@ public class ProductDatabase {
                     callback.success();
                 }
 
-                project.getShoppingCart().updateProducts();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        project.getShoppingCart().updateProducts();
+                    }
+                });
             }
         }, deltaUpdateOnly);
     }
