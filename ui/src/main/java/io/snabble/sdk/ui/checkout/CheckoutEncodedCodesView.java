@@ -1,10 +1,13 @@
 package io.snabble.sdk.ui.checkout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,6 +32,7 @@ import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.utils.Logger;
 
 class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
     private FrameLayout scrollContainer;
@@ -38,6 +42,9 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     private CodeListView codeListView;
     private int maxSizeMm;
     private Button paidButton;
+    private boolean isTouchReleased;
+    private boolean isScrollingDown;
+    private boolean handleScrollIdleState;
 
     public CheckoutEncodedCodesView(Context context) {
         super(context);
@@ -78,17 +85,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
                     Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
                 } else {
-                    final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) codeListView.getLayoutManager();
-                    RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
-                        @Override
-                        protected int getVerticalSnapPreference() {
-                            return SNAP_TO_START;
-                        }
-                    };
-
-                    int scrollTo = getNextBarcodeIndex();
-                    smoothScroller.setTargetPosition(scrollTo);
-                    linearLayoutManager.startSmoothScroll(smoothScroller);
+                    scrollTo(getNextBarcodeIndex());
                 }
             }
         });
@@ -109,21 +106,96 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     }
 
     public int getNextBarcodeIndex() {
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) codeListView.getLayoutManager();
-        if (linearLayoutManager != null) {
-            return linearLayoutManager.findLastVisibleItemPosition();
+        final LinearLayoutManager llm = (LinearLayoutManager) codeListView.getLayoutManager();
+        if (llm != null) {
+            return llm.findLastVisibleItemPosition();
         }
 
         return 0;
     }
 
     public boolean isAtLastBarcode() {
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) codeListView.getLayoutManager();
-        if (linearLayoutManager != null) {
-            return linearLayoutManager.findLastCompletelyVisibleItemPosition() == linearLayoutManager.getItemCount() - 1;
+        final LinearLayoutManager llm = (LinearLayoutManager) codeListView.getLayoutManager();
+        if (llm != null) {
+            return llm.findLastCompletelyVisibleItemPosition() == llm.getItemCount() - 1;
         }
 
         return true;
+    }
+
+    private void scrollTo(int position) {
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) codeListView.getLayoutManager();
+        RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
+            @Override
+            protected int getVerticalSnapPreference() {
+                return SNAP_TO_START;
+            }
+        };
+
+        smoothScroller.setTargetPosition(position);
+        linearLayoutManager.startSmoothScroll(smoothScroller);
+    }
+
+    private void handleTouchUp() {
+        isTouchReleased = true;
+
+        if (handleScrollIdleState) {
+            handleScrollIdleState = false;
+            handleScrollIdleState();
+        }
+    }
+
+    private void handleScroll(int dy) {
+        isScrollingDown = dy > 0;
+
+        CodeListViewAdapter adapter = ((CodeListViewAdapter)codeListView.getAdapter());
+
+        if (isAtLastBarcode()) {
+            paidButton.setText(R.string.Snabble_QRCode_didPay);
+        } else {
+            paidButton.setText(getResources().getString(R.string.Snabble_QRCode_nextCode,
+                    getNextBarcodeIndex() + 1, adapter.getItemCount()));
+        }
+    }
+
+    private void handleScrollStateChanged(int newState) {
+        if (newState == RecyclerView.SCROLL_STATE_SETTLING && isTouchReleased) {
+            isTouchReleased = false;
+
+            final LinearLayoutManager llm = (LinearLayoutManager) codeListView.getLayoutManager();
+            if (llm != null) {
+                int currentPosition = llm.findFirstVisibleItemPosition();
+
+                if (isScrollingDown) {
+                    scrollTo(currentPosition + 1);
+                } else {
+                    scrollTo(currentPosition);
+                }
+            }
+        } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            if (isTouchReleased) {
+                handleScrollIdleState();
+                isTouchReleased = false;
+            } else {
+                handleScrollIdleState = true;
+            }
+        }
+    }
+
+    private void handleScrollIdleState() {
+        final LinearLayoutManager llm = (LinearLayoutManager) codeListView.getLayoutManager();
+        if (llm != null) {
+            int currentPosition = llm.findFirstVisibleItemPosition();
+            View view = llm.findViewByPosition(currentPosition);
+
+            Rect r = new Rect();
+            view.getGlobalVisibleRect(r);
+            if (r.height() < view.getHeight() / 2) {
+                scrollTo(currentPosition + 1);
+            } else {
+                scrollTo(currentPosition);
+            }
+        }
     }
 
     @Override
@@ -148,6 +220,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             // this avoids a bug in <= API 16 where added views while layouting were discarded
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
+                @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public void run() {
                     DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -160,18 +233,27 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                         scrollContainer.removeAllViews();
                         codeListView = new CodeListView(getContext());
                         scrollContainer.addView(codeListView, lp);
+
+                        codeListView.setOnTouchListener(new OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                if (event.getAction() == MotionEvent.ACTION_UP) {
+                                    handleTouchUp();
+                                }
+
+                                return false;
+                            }
+                        });
+
                         codeListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                             @Override
-                            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
+                            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                                handleScrollStateChanged(newState);
+                            }
 
-                                CodeListViewAdapter adapter = ((CodeListViewAdapter)codeListView.getAdapter());
-                                if (isAtLastBarcode()) {
-                                    paidButton.setText(R.string.Snabble_QRCode_didPay);
-                                } else {
-                                    paidButton.setText(getResources().getString(R.string.Snabble_QRCode_nextCode,
-                                            getNextBarcodeIndex() + 1, adapter.getItemCount()));
-                                }
+                            @Override
+                            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                                handleScroll(dy);
                             }
                         });
 
