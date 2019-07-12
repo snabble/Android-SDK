@@ -106,11 +106,16 @@ public class ReceiptListView extends CoordinatorLayout implements Checkout.OnChe
 
                 if (checkout != null && checkout.getState() == Checkout.State.PAYMENT_APPROVED) {
                     boolean containsOrder = false;
-                    for (ReceiptInfo receiptInfo : newReceiptInfos) {
-                        if (receiptInfo.getId().equals(checkout.getOrderId())) {
-                            containsOrder = true;
-                            break;
+
+                    if (checkout.getOrderId() != null) {
+                        for (ReceiptInfo receiptInfo : newReceiptInfos) {
+                            if (receiptInfo.getId().equals(checkout.getOrderId())) {
+                                containsOrder = true;
+                                break;
+                            }
                         }
+                    } else {
+                        containsOrder = true;
                     }
 
                     if (!containsOrder) {
