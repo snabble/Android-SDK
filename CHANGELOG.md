@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [0.14.9]
 
+### Changes
+- Now showing the 'checkout done' screen when pressing 'done' on encoded codes screen
+- Added snap scrolling to encoded codes screen
+- Improved layout for medium sized devices on encoded codes screen
+
 ### Fixed
 - Fixed a race condition in shopping cart product updates
 

@@ -103,15 +103,13 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                     break;
                 }
 
-                if (!checkout.getSelectedPaymentMethod().isOfflineMethod()) {
-                    if (successView != null) {
-                        displayView(successView);
-                    } else {
-                        displayView(new CheckoutDoneView(getContext()));
-                    }
-
-                    Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+                if (successView != null) {
+                    displayView(successView);
+                } else {
+                    displayView(new CheckoutDoneView(getContext()));
                 }
+
+                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
                 break;
             case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:
