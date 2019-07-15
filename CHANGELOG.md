@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.10]
+
+### Changed
+- Added accessor to additional metadata
+
 ## [0.14.9]
 
 ### Changes

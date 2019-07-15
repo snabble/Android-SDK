@@ -146,10 +146,24 @@ public class Snabble {
      * notify the user that it will not function anymore.
      */
     public boolean isOutdatedSDK() {
+        JsonObject jsonObject = getAdditionalMetadata();
+        if (jsonObject != null) {
+            return JsonUtils.getBooleanOpt(jsonObject, "kill", false);
+        }
+
+        return false;
+    }
+
+    /** Returns additional metadata that may be provided for apps unrelated to the SDK **/
+    public JsonObject getAdditionalMetadata() {
         JsonObject jsonObject = metadataDownloader.getJsonObject();
 
-        return jsonObject.has("metadata") &&
-                JsonUtils.getBooleanOpt(jsonObject.get("metadata").getAsJsonObject(), "kill", false);
+        JsonElement jsonElement = jsonObject.get("metadata");
+        if (jsonElement != null) {
+            return jsonElement.getAsJsonObject();
+        }
+
+        return null;
     }
 
     private synchronized void readMetadata() {
