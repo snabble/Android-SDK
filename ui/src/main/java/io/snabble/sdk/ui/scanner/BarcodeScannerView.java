@@ -457,25 +457,27 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
      */
     public void setTorchEnabled(boolean enabled) {
         if (camera != null && running) {
-            Camera.Parameters parameters = camera.getParameters();
-            if (parameters != null) {
-                List<String> supportedFlashModes = parameters.getSupportedFlashModes();
-                if (supportedFlashModes != null
-                        && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH)
-                        && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
-                    if (enabled) {
-                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                    } else {
-                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                    }
-                }
+            try {
+                Camera.Parameters parameters = camera.getParameters();
 
-                try {
+                if (parameters != null) {
+                    List<String> supportedFlashModes = parameters.getSupportedFlashModes();
+                    if (supportedFlashModes != null
+                            && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH)
+                            && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
+                        if (enabled) {
+                            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        } else {
+                            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        }
+                    }
+
                     camera.setParameters(parameters);
                     torchEnabled = enabled;
-                } catch (RuntimeException e) {
-                    // this is terrible, but happens on some devices in rare circumstances
                 }
+            } catch (RuntimeException e) {
+                // this is terrible, but happens on some devices in rare circumstances
+                // one confirmed device is the motorola moto g7 plus
             }
         }
     }
