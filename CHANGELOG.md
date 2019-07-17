@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Added accessor to additional metadata
+- Added available payment methods to project 
 
 ## [0.14.9]
 

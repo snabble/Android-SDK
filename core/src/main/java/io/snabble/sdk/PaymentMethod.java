@@ -29,4 +29,27 @@ public enum PaymentMethod {
     public boolean isRequiringCredentials() {
         return requiresCredentials;
     }
+
+    public static PaymentMethod fromString(String value) {
+        PaymentMethod[] values = values();
+        for (PaymentMethod pm : values) {
+            try {
+                SerializedName serializedName = PaymentMethod.class.getField(pm.name()).getAnnotation(SerializedName.class);
+                if (serializedName != null) {
+                    String name = serializedName.value();
+                    if (name.equals(value)) {
+                        return pm;
+                    }
+                }
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            PaymentMethod pm = valueOf(value);
+        } catch (Exception ignored) { }
+
+        return null;
+    }
 }

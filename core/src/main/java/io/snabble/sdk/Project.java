@@ -52,6 +52,7 @@ public class Project {
     private Shop checkedInShop;
     private CustomerCardInfo[] acceptedCustomerCardInfos;
     private CustomerCardInfo requiredCustomerCardInfo;
+    private PaymentMethod[] availablePaymentMethods;
 
     private Map<String, String> urls;
 
@@ -185,6 +186,16 @@ public class Project {
                 requiredCustomerCardInfo = customerCardInfo;
             }
         }
+
+        List<PaymentMethod> paymentMethodList = new ArrayList<>();
+        String[] paymentMethods = JsonUtils.getStringArrayOpt(jsonObject, "paymentMethods", new String[0]);
+        for (String paymentMethod : paymentMethods) {
+            PaymentMethod pm = PaymentMethod.fromString(paymentMethod);
+            if (pm != null) {
+                paymentMethodList.add(pm);
+            }
+        }
+        availablePaymentMethods = paymentMethodList.toArray(new PaymentMethod[paymentMethodList.size()]);
 
         if (jsonObject.has("shops")) {
             shops = Shop.fromJson(jsonObject.get("shops"));
@@ -439,6 +450,10 @@ public class Project {
 
     public String getCustomerCardId() {
         return loyaltyCardId;
+    }
+
+    public PaymentMethod[] getAvailablePaymentMethods() {
+        return availablePaymentMethods;
     }
 
     public CodeTemplate getDefaultCodeTemplate() {
