@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.11]
+
+### Changed
+- Choose offline payment method based on available payment methods in metadata
+
 ## [0.14.10]
 
 ### Changed
