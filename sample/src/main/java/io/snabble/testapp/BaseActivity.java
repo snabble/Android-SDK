@@ -31,7 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     private ProgressBar progressIndicator;
     private View content;
     private TextView sdkError;
-    private KeyguardHandler keyguardHandler;
+    private static KeyguardHandler keyguardHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
