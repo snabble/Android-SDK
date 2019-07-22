@@ -22,6 +22,7 @@ public class ShoppingCart {
 
     private String id;
     private long lastModificationTime;
+    private List<Item> oldItems;
     private List<Item> items = new ArrayList<>();
     private int modCount = 0;
     private int addCount = 0;
@@ -35,6 +36,11 @@ public class ShoppingCart {
     private transient Project project;
     private transient ShoppingCartUpdater updater;
     private transient PriceFormatter priceFormatter;
+    private Integer oldOnlineTotalPrice;
+    private int oldAddCount;
+    private int oldModCount;
+    private long oldCartTimestamp;
+
 
     protected ShoppingCart() {
         // for gson
@@ -58,6 +64,12 @@ public class ShoppingCart {
 
         for (Item item : items) {
             item.cart = this;
+        }
+
+        if (oldItems != null) {
+            for (Item item : oldItems) {
+                item.cart = this;
+            }
         }
 
         updatePrices(false);
@@ -104,6 +116,9 @@ public class ShoppingCart {
         addCount++;
         modCount++;
         items.add(index, item);
+
+        clearBackup();
+
         checkLimits();
         notifyItemAdded(this, item);
 
@@ -162,13 +177,52 @@ public class ShoppingCart {
         return items.size();
     }
 
+    public void backup() {
+        if (items.size() > 0) {
+            oldItems = items;
+            oldModCount = modCount;
+            oldAddCount = addCount;
+            oldOnlineTotalPrice = onlineTotalPrice;
+            oldCartTimestamp = System.currentTimeMillis();
+        }
+    }
+
     public void clear() {
-        items.clear();
+        items = new ArrayList<>();
         modCount = 0;
         addCount = 0;
         onlineTotalPrice = null;
+
         checkLimits();
         notifyCleared(this);
+    }
+
+    public void clearBackup() {
+        oldItems = null;
+        oldAddCount = 0;
+        oldModCount = 0;
+        oldOnlineTotalPrice = null;
+        oldCartTimestamp = 0;
+    }
+
+    public void restore() {
+        if (isRestorable()) {
+            items = oldItems;
+            modCount = oldModCount;
+            addCount = oldAddCount;
+            onlineTotalPrice = oldOnlineTotalPrice;
+
+            checkLimits();
+            notifyProductsUpdate(this);
+        }
+    }
+
+    public boolean isRestorable() {
+        return oldItems != null;
+    }
+
+    public long getBackupTimestamp() {
+        return oldCartTimestamp;
     }
 
     public void invalidate() {
@@ -223,7 +277,9 @@ public class ShoppingCart {
         long currentTime = System.currentTimeMillis();
 
         long timeout = Snabble.getInstance().getConfig().maxShoppingCartAge;
+
         if (lastModificationTime + timeout < currentTime) {
+            clearBackup();
             invalidate();
         }
     }

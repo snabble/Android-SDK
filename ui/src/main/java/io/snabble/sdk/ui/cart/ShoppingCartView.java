@@ -29,6 +29,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -65,6 +66,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private Button pay;
     private View coordinatorLayout;
     private ViewGroup emptyState;
+    private View restore;
+    private TextView scanProducts;
     private Snackbar snackbar;
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
@@ -191,7 +194,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             }
         });
 
-        View scanProducts = findViewById(R.id.scan_products);
+
+        scanProducts = findViewById(R.id.scan_products);
         scanProducts.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -199,6 +203,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 if (callback != null) {
                     callback.showScannerWithCode(null);
                 }
+            }
+        });
+
+        restore = findViewById(R.id.restore);
+        restore.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cart.restore();
             }
         });
 
@@ -331,6 +343,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         } else {
             emptyState.setVisibility(View.VISIBLE);
             pay.setVisibility(View.GONE);
+        }
+
+        if (cart.isRestorable() && cart.getBackupTimestamp() > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) {
+            restore.setVisibility(View.VISIBLE);
+            scanProducts.setText(R.string.Snabble_Shoppingcart_emptyState_restartButtonTitle);
+        } else {
+            restore.setVisibility(View.GONE);
+            scanProducts.setText(R.string.Snabble_Shoppingcart_emptyState_buttonTitle);
         }
     }
 

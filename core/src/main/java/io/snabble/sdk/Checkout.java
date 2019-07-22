@@ -459,6 +459,7 @@ public class Checkout {
     private void approve() {
         if (state != State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
+            shoppingCart.backup();
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(State.PAYMENT_APPROVED);

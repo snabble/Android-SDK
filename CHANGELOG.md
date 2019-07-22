@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.14.13]
 
+### Added
+- Ability to restore the previous shopping cart, after checkout. 
+
 ### Fixed
 - Fixed SEPA card input not closing after entry when activity got destroyed before resuming while accepting keyguard
 
