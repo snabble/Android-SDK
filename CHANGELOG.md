@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed SEPA card input not closing after entry when activity got destroyed before resuming while accepting keyguard
 
+### New String Keys
+- Snabble.Shoppingcart.emptyState.restartButtonTitle 
+- Snabble.Shoppingcart.emptyState.restoreButtonTitle
+
 ## [0.14.12]
 
 ### Fixed
