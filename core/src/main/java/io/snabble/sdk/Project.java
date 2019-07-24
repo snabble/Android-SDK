@@ -68,6 +68,7 @@ public class Project {
 
     private int maxOnlinePaymentLimit;
     private int maxCheckoutLimit;
+    private JsonObject encodedCodesJsonObject;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
@@ -133,8 +134,8 @@ public class Project {
         if (jsonObject.has("qrCodeOffline")) {
             JsonElement encodedCodes = jsonObject.get("qrCodeOffline");
             if (!encodedCodes.isJsonNull()) {
-                JsonObject object = encodedCodes.getAsJsonObject();
-                encodedCodesOptions = EncodedCodesOptions.fromJsonObject(this, object);
+                encodedCodesJsonObject = encodedCodes.getAsJsonObject();
+                encodedCodesOptions = EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject);
             }
         }
 
@@ -435,6 +436,10 @@ public class Project {
      */
     public void setCustomerCardId(String loyaltyCardId) {
         this.loyaltyCardId = loyaltyCardId;
+
+        if (encodedCodesJsonObject != null) {
+            encodedCodesOptions = EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject);
+        }
     }
 
     public String getCustomerCardId() {

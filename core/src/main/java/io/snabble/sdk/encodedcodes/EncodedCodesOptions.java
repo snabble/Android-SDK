@@ -130,13 +130,15 @@ public class EncodedCodesOptions {
         }
     }
 
-    public static EncodedCodesOptions fromJsonObject(Project project, JsonObject object) {
-        String format = JsonUtils.getStringOpt(object, "format", "simple");
+    public static EncodedCodesOptions fromJsonObject(Project project, JsonObject jsonObject) {
+        String format = JsonUtils.getStringOpt(jsonObject, "format", "simple");
+        String separator = JsonUtils.getStringOpt(jsonObject, "separator", "\n");
+
         switch (format) {
             case "csv":
                 return new EncodedCodesOptions.Builder(project)
-                        .prefix("snabble;{qrCodeCount};{count}\n")
-                        .separator("\n")
+                        .prefix("snabble;{qrCodeCount};{count}" + separator)
+                        .separator(separator)
                         .suffix("")
                         .repeatCodes(false)
                         .countSeparator(";")
@@ -144,8 +146,8 @@ public class EncodedCodesOptions {
                         .build();
             case "csv_globus":
                 return new EncodedCodesOptions.Builder(project)
-                        .prefix("snabble;\n")
-                        .separator("\n")
+                        .prefix("snabble;" + separator)
+                        .separator(separator)
                         .suffix("")
                         .repeatCodes(false)
                         .countSeparator(";")
@@ -179,15 +181,15 @@ public class EncodedCodesOptions {
             case "simple":
             default:
                 return new EncodedCodesOptions.Builder(project)
-                        .prefix(JsonUtils.getStringOpt(object, "prefix", ""))
-                        .separator(JsonUtils.getStringOpt(object, "separator", "\n"))
-                        .suffix(JsonUtils.getStringOpt(object, "suffix", ""))
-                        .maxCodes(JsonUtils.getIntOpt(object, "maxCodes", 100))
-                        .finalCode(JsonUtils.getStringOpt(object, "finalCode", ""))
-                        .nextCode(JsonUtils.getStringOpt(object, "nextCode", ""))
-                        .nextCodeWithCheck(JsonUtils.getStringOpt(object, "nextCodeWithCheck", ""))
-                        .maxSizeMm(JsonUtils.getIntOpt(object, "maxSizeMM", -1))
-                        .maxChars(JsonUtils.getIntOpt(object, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS))
+                        .prefix(JsonUtils.getStringOpt(jsonObject, "prefix", ""))
+                        .separator(JsonUtils.getStringOpt(jsonObject, "separator", "\n"))
+                        .suffix(JsonUtils.getStringOpt(jsonObject, "suffix", ""))
+                        .maxCodes(JsonUtils.getIntOpt(jsonObject, "maxCodes", 100))
+                        .finalCode(JsonUtils.getStringOpt(jsonObject, "finalCode", ""))
+                        .nextCode(JsonUtils.getStringOpt(jsonObject, "nextCode", ""))
+                        .nextCodeWithCheck(JsonUtils.getStringOpt(jsonObject, "nextCodeWithCheck", ""))
+                        .maxSizeMm(JsonUtils.getIntOpt(jsonObject, "maxSizeMM", -1))
+                        .maxChars(JsonUtils.getIntOpt(jsonObject, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS))
                         .build();
         }
     }
