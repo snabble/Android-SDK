@@ -139,7 +139,7 @@ public class Project {
                         .prefix(JsonUtils.getStringOpt(object, "prefix", ""))
                         .separator(JsonUtils.getStringOpt(object, "separator", "\n"))
                         .suffix(JsonUtils.getStringOpt(object, "suffix", ""))
-                        .maxCodes(JsonUtils.getIntOpt(object, "maxCodes", 100))
+                        .maxCodes(JsonUtils.getIntOpt(object, "maxCodes", EncodedCodesOptions.DEFAULT_MAX_CODES))
                         .finalCode(JsonUtils.getStringOpt(object, "finalCode", ""))
                         .nextCode(JsonUtils.getStringOpt(object, "nextCode", ""))
                         .nextCodeWithCheck(JsonUtils.getStringOpt(object, "nextCodeWithCheck", ""))

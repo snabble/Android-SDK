@@ -6,6 +6,7 @@ import io.snabble.sdk.Project;
 
 public class EncodedCodesOptions {
     public static final int DEFAULT_MAX_CHARS = 2953;
+    public static final int DEFAULT_MAX_CODES = 100;
 
     public final String prefix;
     public final SparseArray<String> prefixMap;

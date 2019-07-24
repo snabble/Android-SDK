@@ -40,7 +40,7 @@ class ShoppingCartUpdater {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                checkoutApi.createCheckoutInfo(project.getCheckedInShop(), cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
+                checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
                     @Override
                     public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
                         handler.post(new Runnable() {

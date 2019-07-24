@@ -207,20 +207,13 @@ class CheckoutApi {
         });
     }
 
-    public void createCheckoutInfo(final Shop shop,
-                                   final ShoppingCart.BackendCart backendCart,
+    public void createCheckoutInfo(final ShoppingCart.BackendCart backendCart,
                                    final PaymentMethod[] clientAcceptedPaymentMethods,
                                    final CheckoutInfoResult checkoutInfoResult) {
         String checkoutUrl = project.getCheckoutUrl();
         if (checkoutUrl == null) {
             Logger.e("Could not checkout, no checkout url provided in metadata");
             checkoutInfoResult.error();
-            return;
-        }
-
-        if (shop == null) {
-            Logger.e("Could not checkout, no shop selected");
-            checkoutInfoResult.noShop();
             return;
         }
 
