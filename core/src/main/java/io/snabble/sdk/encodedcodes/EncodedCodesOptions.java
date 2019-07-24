@@ -2,7 +2,11 @@ package io.snabble.sdk.encodedcodes;
 
 import android.util.SparseArray;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+
 import io.snabble.sdk.Project;
+import io.snabble.sdk.utils.JsonUtils;
 
 public class EncodedCodesOptions {
     public static final int DEFAULT_MAX_CHARS = 2953;
@@ -123,6 +127,68 @@ public class EncodedCodesOptions {
         public EncodedCodesOptions build() {
             return new EncodedCodesOptions(prefix, prefixMap, separator, suffix, maxChars, maxCodes,
                     finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator, maxSizeMm, project);
+        }
+    }
+
+    public static EncodedCodesOptions fromJsonObject(Project project, JsonObject object) {
+        String format = JsonUtils.getStringOpt(object, "format", "simple");
+        switch (format) {
+            case "csv":
+                return new EncodedCodesOptions.Builder(project)
+                        .prefix("snabble;{qrCodeCount};{count}\n")
+                        .separator("\n")
+                        .suffix("")
+                        .repeatCodes(false)
+                        .countSeparator(";")
+                        .maxCodes(100)
+                        .build();
+            case "csv_globus":
+                return new EncodedCodesOptions.Builder(project)
+                        .prefix("snabble;\n")
+                        .separator("\n")
+                        .suffix("")
+                        .repeatCodes(false)
+                        .countSeparator(";")
+                        .maxCodes(100)
+                        .build();
+            case "ikea":
+                EncodedCodesOptions options = project.getEncodedCodesOptions();
+                int maxCodes = 45;
+                int maxChars = EncodedCodesOptions.DEFAULT_MAX_CHARS;
+                if (options != null) {
+                    maxCodes = options.maxCodes;
+                    maxChars = options.maxChars;
+                }
+
+                String prefix = "9100003\u001d100{qrCodeCount}\u001d240";
+
+                String prefixWithCustomerCard = "9100003\u001d100{qrCodeCount}";
+                if (project.getCustomerCardId() != null) {
+                    prefixWithCustomerCard += "\u001d92" + project.getCustomerCardId();
+                }
+                prefixWithCustomerCard += "\u001d240";
+
+                return new EncodedCodesOptions.Builder(project)
+                                .prefix(prefix)
+                                .prefix(0, prefixWithCustomerCard)
+                                .separator("\u001d240")
+                                .suffix("")
+                                .maxCodes(maxCodes)
+                                .maxChars(maxChars)
+                                .build();
+            case "simple":
+            default:
+                return new EncodedCodesOptions.Builder(project)
+                        .prefix(JsonUtils.getStringOpt(object, "prefix", ""))
+                        .separator(JsonUtils.getStringOpt(object, "separator", "\n"))
+                        .suffix(JsonUtils.getStringOpt(object, "suffix", ""))
+                        .maxCodes(JsonUtils.getIntOpt(object, "maxCodes", 100))
+                        .finalCode(JsonUtils.getStringOpt(object, "finalCode", ""))
+                        .nextCode(JsonUtils.getStringOpt(object, "nextCode", ""))
+                        .nextCodeWithCheck(JsonUtils.getStringOpt(object, "nextCodeWithCheck", ""))
+                        .maxSizeMm(JsonUtils.getIntOpt(object, "maxSizeMM", -1))
+                        .maxChars(JsonUtils.getIntOpt(object, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS))
+                        .build();
         }
     }
 }

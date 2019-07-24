@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.14]
+
+### Added
+- Support for new qrCodeOffline metadata
+
+### Changed
+- Removed support for old encodedCodes payment methods
+
 ## [0.14.13]
 
 ### Added
