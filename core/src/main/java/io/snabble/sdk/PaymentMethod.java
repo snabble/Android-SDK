@@ -46,10 +46,6 @@ public enum PaymentMethod {
             }
         }
 
-        try {
-            PaymentMethod pm = valueOf(value);
-        } catch (Exception ignored) { }
-
         return null;
     }
 }
