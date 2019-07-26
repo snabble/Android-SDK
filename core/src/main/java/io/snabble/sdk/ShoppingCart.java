@@ -36,11 +36,11 @@ public class ShoppingCart {
     private transient Project project;
     private transient ShoppingCartUpdater updater;
     private transient PriceFormatter priceFormatter;
+    private String oldId;
     private Integer oldOnlineTotalPrice;
     private int oldAddCount;
     private int oldModCount;
     private long oldCartTimestamp;
-
 
     protected ShoppingCart() {
         // for gson
@@ -182,6 +182,7 @@ public class ShoppingCart {
             oldItems = items;
             oldModCount = modCount;
             oldAddCount = addCount;
+            oldId = id;
             oldOnlineTotalPrice = onlineTotalPrice;
             oldCartTimestamp = System.currentTimeMillis();
         }
@@ -199,6 +200,7 @@ public class ShoppingCart {
 
     public void clearBackup() {
         oldItems = null;
+        oldId = null;
         oldAddCount = 0;
         oldModCount = 0;
         oldOnlineTotalPrice = null;
@@ -211,6 +213,7 @@ public class ShoppingCart {
             modCount = oldModCount;
             addCount = oldAddCount;
             onlineTotalPrice = oldOnlineTotalPrice;
+            id = oldId;
 
             checkLimits();
             notifyProductsUpdate(this);
