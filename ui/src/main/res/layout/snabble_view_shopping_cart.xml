@@ -62,17 +62,17 @@
             <Button style="@style/SnabbleButton.TextButton"
                 android:id="@+id/scan_products"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/Snabble.Shoppingcart.emptyState.buttonTitle" />
 
             <Button style="@style/SnabbleButton.TextButton"
                 android:id="@+id/restore"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/Snabble.Shoppingcart.emptyState.restoreButtonTitle" />
+                android:text="@string/Snabble.Shoppingcart.emptyState.restoreButtonTitle"/>
         </LinearLayout>
     </FrameLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
