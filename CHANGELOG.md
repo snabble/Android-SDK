@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.16]
+
+### Fixed
+- Properly handle unknown checkout info errors
+
 ## [0.14.15]
 
 ### Fixed

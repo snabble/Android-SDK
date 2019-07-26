@@ -248,7 +248,12 @@ public class Checkout {
             }
 
             @Override
-            public void error() {
+            public void unknownError() {
+                notifyStateChanged(State.CONNECTION_ERROR);
+            }
+
+            @Override
+            public void connectionError() {
                 PaymentMethod fallback = getFallbackPaymentMethod();
                 if(fallback != null) {
                     paymentMethod = fallback;
@@ -448,7 +453,12 @@ public class Checkout {
                     }
 
                     @Override
-                    public void error() {
+                    public void unknownError() {
+
+                    }
+
+                            @Override
+                    public void connectionError() {
 
                     }
                 });
