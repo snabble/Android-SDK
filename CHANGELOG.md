@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.14.15]
+
+### Fixed
+- Reuse session id on cart backup/restore
+- Rare crash on BarcodeScannerView when resuming the camera
+- Fixed text being cutoff on restore cart button
+
 ## [0.14.14]
 
 ### Added
