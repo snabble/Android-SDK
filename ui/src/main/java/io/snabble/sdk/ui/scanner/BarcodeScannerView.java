@@ -224,9 +224,14 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 } else {
                     // as stated in the documentation:
                     // focus parameters may not be preserved across preview restarts
-                    Camera.Parameters parameters = camera.getParameters();
-                    chooseFocusMode(parameters);
-                    camera.setParameters(parameters);
+                    try {
+                        Camera.Parameters parameters = camera.getParameters();
+                        chooseFocusMode(parameters);
+                        camera.setParameters(parameters);
+                    } catch (RuntimeException e) {
+                        // occurs on some devices when calling getParameters. Just ignore it an start the preview
+                        // without explicitly setting the focus mode then
+                    }
 
                     try {
                         camera.startPreview();
