@@ -1,7 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.14.17]
+## [0.14.18]
+
+### Fixed
+- Fixed parsing of encodedCodes
+
+## [0.14.17] 
 
 ### Fixed
 - EncodedCodes CSV format headers
