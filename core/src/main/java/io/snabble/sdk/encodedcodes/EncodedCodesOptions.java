@@ -132,29 +132,31 @@ public class EncodedCodesOptions {
 
     public static EncodedCodesOptions fromJsonObject(Project project, JsonObject jsonObject) {
         String format = JsonUtils.getStringOpt(jsonObject, "format", "simple");
-        String separator = JsonUtils.getStringOpt(jsonObject, "separator", "\n");
+        EncodedCodesOptions options = project.getEncodedCodesOptions();
 
         switch (format) {
             case "csv":
-                return new EncodedCodesOptions.Builder(project)
-                        .prefix("snabble;{qrCodeCount};{count}" + separator)
-                        .separator(separator)
+                return new Builder(project)
+                        .prefix("snabble;{qrCodeIndex};{qrCodeCount}" + options.separator)
+                        .separator(options.separator)
                         .suffix("")
                         .repeatCodes(false)
                         .countSeparator(";")
-                        .maxCodes(100)
+                        .maxCodes(options.maxCodes)
+                        .maxChars(options.maxChars)
                         .build();
             case "csv_globus":
                 return new EncodedCodesOptions.Builder(project)
-                        .prefix("snabble;" + separator)
-                        .separator(separator)
+                        .prefix("snabble;" + options.separator)
+                        .separator(options.separator)
                         .suffix("")
                         .repeatCodes(false)
                         .countSeparator(";")
-                        .maxCodes(100)
+                        .maxCodes(options.maxCodes)
+                        .maxChars(options.maxChars)
                         .build();
             case "ikea":
-                EncodedCodesOptions options = project.getEncodedCodesOptions();
+
                 int maxCodes = 45;
                 int maxChars = EncodedCodesOptions.DEFAULT_MAX_CHARS;
                 if (options != null) {
