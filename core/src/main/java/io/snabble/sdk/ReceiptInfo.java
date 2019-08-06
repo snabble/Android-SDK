@@ -4,15 +4,15 @@ import java.util.Date;
 
 public class ReceiptInfo {
     private String id;
-    private Project project;
+    private String projectId;
     private Date date;
     private String pdfUrl;
     private String shopName;
     private String price;
 
-    public ReceiptInfo(String id, Project project, Date date, String pdfUrl, String shopName, String price) {
+    public ReceiptInfo(String id, String projectId, Date date, String pdfUrl, String shopName, String price) {
         this.id = id;
-        this.project = project;
+        this.projectId = projectId;
         this.date = date;
         this.pdfUrl = pdfUrl;
         this.shopName = shopName;
@@ -23,8 +23,8 @@ public class ReceiptInfo {
         return id;
     }
 
-    public Project getProject() {
-        return project;
+    public String getProjectId() {
+        return projectId;
     }
 
     public Date getDate() {

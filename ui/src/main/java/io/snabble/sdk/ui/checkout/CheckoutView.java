@@ -97,9 +97,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayPaymentView();
                 break;
             case PAYMENT_APPROVED:
-            case RECEIPT_AVAILABLE:
-                if (currentState == Checkout.State.PAYMENT_APPROVED
-                 || currentState == Checkout.State.RECEIPT_AVAILABLE) {
+                if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }
 
@@ -132,7 +130,6 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     }
 
     private void displayPaymentView() {
-        Project project = SnabbleUI.getProject();
         switch (checkout.getSelectedPaymentMethod()) {
             case DE_DIRECT_DEBIT:
                 displayView(new CheckoutStatusView(getContext()));

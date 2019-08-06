@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.15.0]
+
+### Breaking Changes
+- Removed RECEIPT_AVAILABLE checkout state
+- Changed ReceiptInfo.getProject to return a string instead of the resolved project
+- Removed receipt ui components 
+
 ## [0.14.18]
 
 ### Fixed
