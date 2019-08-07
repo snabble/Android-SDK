@@ -36,7 +36,7 @@
                 android:paddingRight="16dp"
                 app:autoSizeTextType="uniform"
                 app:autoSizeMinTextSize="8sp"
-                app:autoSizeMaxTextSize="14sp"
+                app:autoSizeMaxTextSize="16sp"
                 android:maxLines="1"
                 app:layout_behavior="io.snabble.sdk.ui.utils.SnackbarPushUpBehavior"
                 tools:text="Pay 47€ for 11 articles" />

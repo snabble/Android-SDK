@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.15.2]
+
+### Changes
+- Increased shopping cart view auto text size
+- Removed payment select empty state icon 
+
 ## [0.15.1]
 
 ### Fixed
