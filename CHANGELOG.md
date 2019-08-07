@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.15.1]
+
+### Fixed
+- Fixed receipts pdf download
+
 ## [0.15.0]
 
 ### Breaking Changes

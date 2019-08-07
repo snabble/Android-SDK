@@ -100,8 +100,8 @@ public class Receipts {
         for (Project p : snabble.getProjects()) {
             if (p.getId().equals(receiptInfo.getProjectId())) {
                 project = p;
+                break;
             }
-            break;
         }
 
         if (project == null) {
