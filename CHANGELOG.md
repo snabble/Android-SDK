@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.15.3]
+
+### Added
+- ProductNotFound events are now posted when a scanned product is not found 
+
 ## [0.15.2]
 
 ### Changes

@@ -164,6 +164,7 @@ public class ProductResolver {
                         } else if (result.error) {
                             handleProductError();
                         } else {
+                            project.getEvents().productNotFound(scannedCodes);
                             handleProductNotFound(result.code);
                         }
                     }
