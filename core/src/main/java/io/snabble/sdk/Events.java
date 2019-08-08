@@ -11,10 +11,14 @@ import com.google.gson.annotations.SerializedName;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.IllegalFormatException;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -111,17 +115,31 @@ public class Events {
     public void analytics(String key, String value, String comment) {
         PayloadAnalytics analytics = new PayloadAnalytics();
 
-        try {
-            analytics.key = key;
-            analytics.value = value;
-            analytics.comment = comment;
-        } catch (IllegalFormatException e) {
-            Logger.e("Could not post event error: invalid format");
-        }
-
+        analytics.key = key;
+        analytics.value = value;
+        analytics.comment = comment;
         analytics.session = cartId;
 
         post(analytics, false);
+    }
+
+    public void productNotFound(List<ScannedCode> scannedCodes) {
+        try {
+            PayloadProductNotFound payload = new PayloadProductNotFound();
+
+            if (scannedCodes != null && scannedCodes.size() > 0) {
+                payload.scannedCode = scannedCodes.get(0).getCode();
+                payload.matched = new HashMap<>();
+
+                for (ScannedCode scannedCode : scannedCodes) {
+                    payload.matched.put(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+                }
+            }
+
+            post(payload, false);
+        } catch (Exception e) {
+            Logger.e("Could not post event productNotFound: " + e);
+        }
     }
 
     private <T extends Payload> void post(final T payload, boolean debounce) {
@@ -205,7 +223,9 @@ public class Events {
         @SerializedName("log")
         LOG,
         @SerializedName("analytics")
-        ANALYTICS
+        ANALYTICS,
+        @SerializedName("productNotFound")
+        PRODUCT_NOT_FOUND
     }
 
     public interface Payload {
@@ -220,6 +240,16 @@ public class Events {
         public String project;
         public String timestamp;
         public JsonElement payload;
+    }
+
+    private static class PayloadProductNotFound implements Payload {
+        public String scannedCode;
+        public Map<String, String> matched;
+
+        @Override
+        public EventType getEventType() {
+            return EventType.PRODUCT_NOT_FOUND;
+        }
     }
 
     private static class PayloadAnalytics implements Payload {

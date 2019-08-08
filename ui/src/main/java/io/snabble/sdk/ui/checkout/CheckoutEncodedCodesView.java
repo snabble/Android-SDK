@@ -53,13 +53,6 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         inflateView(project.getEncodedCodesOptions());
     }
 
-    public CheckoutEncodedCodesView(Context context, EncodedCodesOptions options) {
-        super(context);
-
-        project = SnabbleUI.getProject();
-        inflateView(options);
-    }
-
     private void inflateView(EncodedCodesOptions options) {
         inflate(getContext(), R.layout.snabble_view_checkout_encodedcodes, this);
 

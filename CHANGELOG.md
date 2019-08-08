@@ -1,6 +1,59 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.15.3]
+
+### Added
+- ProductNotFound events are now posted when a scanned product is not found 
+
+## [0.15.2]
+
+### Changes
+- Increased shopping cart view auto text size
+- Removed payment select empty state icon 
+
+## [0.15.1]
+
+### Fixed
+- Fixed receipts pdf download
+
+## [0.15.0]
+
+### Breaking Changes
+- Removed RECEIPT_AVAILABLE checkout state
+- Changed ReceiptInfo.getProject to return a string instead of the resolved project
+- Removed receipt ui components 
+
+## [0.14.18]
+
+### Fixed
+- Fixed parsing of encodedCodes
+
+## [0.14.17] 
+
+### Fixed
+- EncodedCodes CSV format headers
+
+## [0.14.16]
+
+### Fixed
+- Properly handle unknown checkout info errors
+
+## [0.14.15]
+
+### Fixed
+- Reuse session id on cart backup/restore
+- Rare crash on BarcodeScannerView when resuming the camera
+- Fixed text being cutoff on restore cart button
+
+## [0.14.14]
+
+### Added
+- Support for new qrCodeOffline metadata
+
+### Changed
+- Removed support for old encodedCodes payment methods
+
 ## [0.14.13]
 
 ### Added

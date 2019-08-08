@@ -5,12 +5,8 @@ import com.google.gson.annotations.SerializedName;
 public enum PaymentMethod {
     @SerializedName("qrCodePOS")
     QRCODE_POS(false, false),
-    @SerializedName("encodedCodes")
-    ENCODED_CODES(true, false),
-    @SerializedName("encodedCodesCSV")
-    ENCODED_CODES_CSV(true, false),
-    @SerializedName("encodedCodesIKEA")
-    ENCODED_CODES_IKEA(true, false),
+    @SerializedName("qrCodeOffline")
+    QRCODE_OFFLINE(true, false),
     @SerializedName("deDirectDebit")
     DE_DIRECT_DEBIT(false, true);
 
@@ -45,10 +41,6 @@ public enum PaymentMethod {
                 e.printStackTrace();
             }
         }
-
-        try {
-            PaymentMethod pm = valueOf(value);
-        } catch (Exception ignored) { }
 
         return null;
     }

@@ -48,7 +48,7 @@ class ShoppingCartUpdater {
                             public void run() {
                                 // ignore when cart was modified mid request
                                 if (cart.getModCount() != modCount) {
-                                    error();
+                                    unknownError();
                                     return;
                                 }
 
@@ -73,7 +73,7 @@ class ShoppingCartUpdater {
                                     // error out when items are missing
                                     if (requiredSkus.size() > 0) {
                                         Logger.e("Missing products in price update: " + requiredSkus.toString());
-                                        error();
+                                        unknownError();
                                         return;
                                     }
 
@@ -96,7 +96,7 @@ class ShoppingCartUpdater {
                                     Logger.d("Successfully updated prices");
                                 } catch (Exception e) {
                                     Logger.e("Could not update price: %s", e.getMessage());
-                                    error();
+                                    unknownError();
                                     return;
                                 }
 
@@ -122,7 +122,12 @@ class ShoppingCartUpdater {
                     }
 
                     @Override
-                    public void error() {
+                    public void unknownError() {
+                        cart.notifyPriceUpdate(cart);
+                    }
+
+                    @Override
+                    public void connectionError() {
                         cart.notifyPriceUpdate(cart);
                     }
                 });

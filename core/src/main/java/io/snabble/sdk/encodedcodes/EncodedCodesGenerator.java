@@ -54,6 +54,7 @@ public class EncodedCodesGenerator {
         for (int i=0; i<encodedCodes.size(); i++) {
             String code = encodedCodes.get(i);
             code = code.replace("{qrCodeCount}", String.valueOf(encodedCodes.size()));
+            code = code.replace("{qrCodeIndex}", String.valueOf(i + 1));
             ret.add(code);
         }
 

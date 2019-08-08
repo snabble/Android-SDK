@@ -68,6 +68,7 @@ public class Project {
 
     private int maxOnlinePaymentLimit;
     private int maxCheckoutLimit;
+    private JsonObject encodedCodesJsonObject;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
@@ -130,22 +131,11 @@ public class Project {
 
         isCheckoutAvailable = JsonUtils.getBooleanOpt(jsonObject, "enableCheckout", true);
 
-        if (jsonObject.has("encodedCodes")) {
-            JsonElement encodedCodes = jsonObject.get("encodedCodes");
+        if (jsonObject.has("qrCodeOffline")) {
+            JsonElement encodedCodes = jsonObject.get("qrCodeOffline");
             if (!encodedCodes.isJsonNull()) {
-                JsonObject object = encodedCodes.getAsJsonObject();
-
-                encodedCodesOptions = new EncodedCodesOptions.Builder(this)
-                        .prefix(JsonUtils.getStringOpt(object, "prefix", ""))
-                        .separator(JsonUtils.getStringOpt(object, "separator", "\n"))
-                        .suffix(JsonUtils.getStringOpt(object, "suffix", ""))
-                        .maxCodes(JsonUtils.getIntOpt(object, "maxCodes", EncodedCodesOptions.DEFAULT_MAX_CODES))
-                        .finalCode(JsonUtils.getStringOpt(object, "finalCode", ""))
-                        .nextCode(JsonUtils.getStringOpt(object, "nextCode", ""))
-                        .nextCodeWithCheck(JsonUtils.getStringOpt(object, "nextCodeWithCheck", ""))
-                        .maxSizeMm(JsonUtils.getIntOpt(object, "maxSizeMM", -1))
-                        .maxChars(JsonUtils.getIntOpt(object, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS))
-                        .build();
+                encodedCodesJsonObject = encodedCodes.getAsJsonObject();
+                encodedCodesOptions = EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject);
             }
         }
 
@@ -446,6 +436,10 @@ public class Project {
      */
     public void setCustomerCardId(String loyaltyCardId) {
         this.loyaltyCardId = loyaltyCardId;
+
+        if (encodedCodesJsonObject != null) {
+            encodedCodesOptions = EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject);
+        }
     }
 
     public String getCustomerCardId() {

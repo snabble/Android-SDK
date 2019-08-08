@@ -44,10 +44,6 @@ public class Checkout {
          */
         PAYMENT_APPROVED,
         /**
-         * After payment approval, when the receipt is available.
-         */
-        RECEIPT_AVAILABLE,
-        /**
          * The payment was denied by the payment provider.
          */
         DENIED_BY_PAYMENT_PROVIDER,
@@ -127,7 +123,6 @@ public class Checkout {
         cancelOutstandingCalls();
 
         if (state != State.PAYMENT_APPROVED
-                && state != State.RECEIPT_AVAILABLE
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
@@ -149,7 +144,6 @@ public class Checkout {
      */
     public void cancelSilently() {
         if (state != State.PAYMENT_APPROVED
-                && state != State.RECEIPT_AVAILABLE
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
@@ -256,7 +250,12 @@ public class Checkout {
             }
 
             @Override
-            public void error() {
+            public void unknownError() {
+                notifyStateChanged(State.CONNECTION_ERROR);
+            }
+
+            @Override
+            public void connectionError() {
                 PaymentMethod fallback = getFallbackPaymentMethod();
                 if(fallback != null) {
                     paymentMethod = fallback;
@@ -380,13 +379,7 @@ public class Checkout {
 
         if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL) {
             approve();
-
-            if (checkoutProcess.getReceiptLink() != null) {
-                notifyStateChanged(State.RECEIPT_AVAILABLE);
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.PENDING) {
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");

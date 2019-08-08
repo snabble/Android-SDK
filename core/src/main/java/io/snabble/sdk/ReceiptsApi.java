@@ -86,7 +86,7 @@ class ReceiptsApi {
                             try {
                                 ReceiptInfo receiptInfo = new ReceiptInfo(
                                         apiOrder.id,
-                                        project,
+                                        apiOrder.project,
                                         simpleDateFormat.parse(apiOrder.date),
                                         snabble.absoluteUrl(apiLink.href),
                                         apiOrder.shopName,
