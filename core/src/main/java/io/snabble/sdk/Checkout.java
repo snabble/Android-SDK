@@ -301,7 +301,7 @@ public class Checkout {
                 notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
 
                 checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
-                        new CheckoutApi.PaymentProcessResult() {
+                        false, null, new CheckoutApi.PaymentProcessResult() {
                     @Override
                     public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
                         checkoutProcess = checkoutProcessResponse;

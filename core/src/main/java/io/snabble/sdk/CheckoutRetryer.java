@@ -7,21 +7,33 @@ import android.os.Looper;
 
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.Logger;
 
-public class CheckoutRetryer {
+class CheckoutRetryer {
+    private class SavedCart {
+        final ShoppingCart.BackendCart backendCart;
+        final Date finalizedAt;
+
+        public SavedCart(ShoppingCart.BackendCart backendCart, Date finalizedAt) {
+            this.backendCart = backendCart;
+            this.finalizedAt = finalizedAt;
+        }
+    }
+
     private Handler handler;
     private PaymentMethod fallbackPaymentMethod;
     private SharedPreferences sharedPreferences;
     private CheckoutApi checkoutApi;
-    private CopyOnWriteArrayList<ShoppingCart.BackendCart> savedCarts;
+    private CopyOnWriteArrayList<SavedCart> savedCarts;
     private CountDownLatch countDownLatch;
 
-    public CheckoutRetryer(Project project, PaymentMethod fallbackPaymentMethod) {
+    CheckoutRetryer(Project project, PaymentMethod fallbackPaymentMethod) {
         Context context = Snabble.getInstance().getApplication();
         this.sharedPreferences = context.getSharedPreferences("snabble_saved_checkouts_" + project.getId(), Context.MODE_PRIVATE);
         this.checkoutApi = new CheckoutApi(project);
@@ -30,7 +42,7 @@ public class CheckoutRetryer {
 
         String json = sharedPreferences.getString("saved_carts", null);
         if (json != null) {
-            TypeToken typeToken = new TypeToken<CopyOnWriteArrayList<ShoppingCart.BackendCart>>() {};
+            TypeToken typeToken = new TypeToken<CopyOnWriteArrayList<SavedCart>>() {};
             savedCarts = GsonHolder.get().fromJson(json, typeToken.getType());
         } else {
             savedCarts = new CopyOnWriteArrayList<>();
@@ -40,7 +52,7 @@ public class CheckoutRetryer {
     }
 
     public void add(ShoppingCart.BackendCart backendCart) {
-        savedCarts.add(backendCart);
+        savedCarts.add(new SavedCart(backendCart, new Date()));
         save();
     }
 
@@ -62,14 +74,16 @@ public class CheckoutRetryer {
 
                 countDownLatch = new CountDownLatch(savedCarts.size());
 
-                for (final ShoppingCart.BackendCart backendCart : savedCarts) {
-                    checkoutApi.createCheckoutInfo(backendCart, null, new CheckoutApi.CheckoutInfoResult() {
+                for (final SavedCart savedCart : savedCarts) {
+                    checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutApi.CheckoutInfoResult() {
                         @Override
                         public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
-                            checkoutApi.createPaymentProcess(signedCheckoutInfo, fallbackPaymentMethod, null, new CheckoutApi.PaymentProcessResult() {
+                            checkoutApi.createPaymentProcess(signedCheckoutInfo, fallbackPaymentMethod, null,
+                                    true, savedCart.finalizedAt, new CheckoutApi.PaymentProcessResult() {
                                 @Override
                                 public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                                    removeSavedCart(backendCart);
+                                    Logger.d("Successfully resend checkout " + savedCart.backendCart.session);
+                                    removeSavedCart(savedCart);
                                     countDownLatch.countDown();
                                 }
 
@@ -101,7 +115,12 @@ public class CheckoutRetryer {
                         }
 
                         @Override
-                        public void error() {
+                        public void unknownError() {
+                            countDownLatch.countDown();
+                        }
+
+                        @Override
+                        public void connectionError() {
                             countDownLatch.countDown();
                         }
                     });
@@ -110,11 +129,11 @@ public class CheckoutRetryer {
         });
     }
 
-    private void removeSavedCart(final ShoppingCart.BackendCart backendCart) {
+    private void removeSavedCart(final SavedCart savedCart) {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                savedCarts.remove(backendCart);
+                savedCarts.remove(savedCart);
                 save();
             }
         });
