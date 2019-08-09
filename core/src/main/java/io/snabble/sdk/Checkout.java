@@ -513,6 +513,10 @@ public class Checkout {
         return null;
     }
 
+    public void processPendingCheckouts() {
+
+    }
+
     /**
      * Gets the current state of the Checkout.
      * <p>

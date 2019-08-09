@@ -20,7 +20,7 @@ class CheckoutRetryer {
         final ShoppingCart.BackendCart backendCart;
         final Date finalizedAt;
 
-        public SavedCart(ShoppingCart.BackendCart backendCart, Date finalizedAt) {
+        SavedCart(ShoppingCart.BackendCart backendCart, Date finalizedAt) {
             this.backendCart = backendCart;
             this.finalizedAt = finalizedAt;
         }
