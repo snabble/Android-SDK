@@ -114,4 +114,5 @@
 	<string name="Snabble.Keyguard.requireScreenLock">You need to secure your smartphone with a screen lock to add this payment method.</string>
 	<string name="Snabble.Payment.CreditCard.error">There was an error processing your credit card</string>
 	<string name="Snabble.Payment.CreditCard.expireDate">Expires: %s</string>
+	<string name="Snabble.Payment.usableAt">Usable at: %s</string>
 </resources>

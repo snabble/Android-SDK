@@ -76,6 +76,7 @@ public class App extends Application {
         config.endpointBaseUrl = getString(R.string.endpoint);
         config.secret = getString(R.string.secret);
         config.appId = getString(R.string.app_id);
+        config.enableExperimentalCreditCardPayment = true;
 
         final Snabble snabble = Snabble.getInstance();
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {

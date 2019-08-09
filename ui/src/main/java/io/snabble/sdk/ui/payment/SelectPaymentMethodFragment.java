@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -14,8 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -29,7 +34,8 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         View v = inflater.inflate(R.layout.snabble_view_payment_credentials_select, container, false);
 
         entries = new ArrayList<>();
-        entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_sepa_small, "SEPA", new OneShotClickListener() {
+        entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_sepa_small,
+                "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
             @Override
             public void click() {
                 SnabbleUICallback callback = SnabbleUI.getUiCallback();
@@ -41,19 +47,22 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }
         }));
 
-        // Credit card payments are only supported on API 21+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa, "VISA", new OneShotClickListener() {
-                @Override
-                public void click() {
-                    SnabbleUICallback callback = SnabbleUI.getUiCallback();
-                    if (callback != null) {
-                        callback.showCreditCardInput();
-                    }
+        if (Snabble.getInstance().getConfig().enableExperimentalCreditCardPayment) {
+            // Credit card payments are only supported on API 21+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa,
+                        "Kreditkarte", getUsableAtText(PaymentMethod.VISA, PaymentMethod.MASTERCARD), new OneShotClickListener() {
+                    @Override
+                    public void click() {
+                        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                        if (callback != null) {
+                            callback.showCreditCardInput();
+                        }
 
-                    dismissAllowingStateLoss();
-                }
-            }));
+                        dismissAllowingStateLoss();
+                    }
+                }));
+            }
         }
 
         RecyclerView recyclerView = v.findViewById(R.id.recycler_view);
@@ -69,25 +78,57 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         return v;
     }
 
+    private String getUsableAtText(PaymentMethod...paymentMethods) {
+        StringBuilder sb = new StringBuilder();
+
+        int count = 0;
+        for (Project project : Snabble.getInstance().getProjects()) {
+            List<PaymentMethod> availablePaymentMethods = Arrays.asList(project.getAvailablePaymentMethods());
+            for (PaymentMethod pm : paymentMethods) {
+                if (availablePaymentMethods.contains(pm)) {
+                    if (count > 0 ) {
+                        sb.append(", ");
+                    }
+
+                    sb.append(project.getName());
+                    count++;
+                    break;
+                }
+            }
+        }
+
+        if (sb.length() == 0) {
+            sb.append("TEST");
+        }
+
+        return getResources().getString(R.string.Snabble_Payment_usableAt, sb.toString());
+    }
+
     private static class Entry {
         int drawableRes;
         String text;
+        String usableAt;
         View.OnClickListener onClickListener;
 
-        Entry(int drawableRes, String text, View.OnClickListener onClickListener) {
+        Entry(int drawableRes, String text, String usableAt, View.OnClickListener onClickListener) {
             this.drawableRes = drawableRes;
             this.text = text;
+            this.usableAt = usableAt;
             this.onClickListener = onClickListener;
         }
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {
+        TextView usableAt;
         TextView text;
+        ImageView image;
 
         ViewHolder(View itemView) {
             super(itemView);
 
             text = itemView.findViewById(R.id.text);
+            usableAt = itemView.findViewById(R.id.usable_at);
+            image = itemView.findViewById(R.id.image);
         }
     }
 
@@ -102,8 +143,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         public void onBindViewHolder(final SelectPaymentMethodFragment.ViewHolder holder, final int position) {
             SelectPaymentMethodFragment.Entry e = entries.get(position);
 
-            holder.text.setCompoundDrawablesWithIntrinsicBounds(e.drawableRes, 0, 0, 0);
+            if (e.drawableRes != 0) {
+                holder.image.setImageResource(e.drawableRes);
+            }
+
             holder.text.setText(e.text);
+            holder.usableAt.setText(e.usableAt);
             holder.itemView.setOnClickListener(e.onClickListener);
         }
 

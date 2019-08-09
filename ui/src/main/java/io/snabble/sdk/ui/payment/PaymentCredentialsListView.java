@@ -133,7 +133,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
     @Override
     public void onChanged() {
-        Logger.d("onChanged WTF");
         entries.clear();
 
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();

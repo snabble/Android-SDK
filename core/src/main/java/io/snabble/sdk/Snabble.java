@@ -418,7 +418,7 @@ public class Snabble {
         Logger.setEnabled(enabled);
     }
 
-    Config getConfig() {
+    public Config getConfig() {
         return config;
     }
 
@@ -564,5 +564,7 @@ public class Snabble {
 
         /** If set to true, disables certificate pinning **/
         public boolean disableCertificatePinning;
+
+        public boolean enableExperimentalCreditCardPayment;
     }
 }
