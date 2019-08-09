@@ -54,6 +54,7 @@ public class EncodedCodesGenerator {
         for (int i=0; i<encodedCodes.size(); i++) {
             String code = encodedCodes.get(i);
             code = code.replace("{qrCodeCount}", String.valueOf(encodedCodes.size()));
+            code = code.replace("{qrCodeIndex}", String.valueOf(i + 1));
             ret.add(code);
         }
 
@@ -110,29 +111,6 @@ public class EncodedCodesGenerator {
                     item.getQuantity(),
                     item.getScannedCode()));
         }
-
-        Collections.sort(productInfos, new Comparator<ProductInfo>() {
-            @Override
-            public int compare(ProductInfo p1, ProductInfo p2) {
-                int price1 = p1.product.getPrice(options.project.getCustomerCardId());
-                if (p1.scannedCode.hasPrice()) {
-                    price1 = p1.scannedCode.getPrice();
-                }
-
-                int price2 = p2.product.getPrice(options.project.getCustomerCardId());
-                if (p2.scannedCode.hasPrice()) {
-                    price2 = p2.scannedCode.getPrice();
-                }
-
-                if (price1 < price2) {
-                    return -1;
-                } else if (price1 > price2) {
-                    return 1;
-                }
-
-                return 0;
-            }
-        });
 
         for (ProductInfo productInfo : productInfos) {
             if (ageRestricted != isAgeRestricted(productInfo.product)) {

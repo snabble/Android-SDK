@@ -2,9 +2,16 @@ package io.snabble.sdk.encodedcodes;
 
 import android.util.SparseArray;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+
 import io.snabble.sdk.Project;
+import io.snabble.sdk.utils.JsonUtils;
 
 public class EncodedCodesOptions {
+    public static final int DEFAULT_MAX_CHARS = 2953;
+    public static final int DEFAULT_MAX_CODES = 100;
+
     public final String prefix;
     public final SparseArray<String> prefixMap;
     public final String separator;
@@ -45,11 +52,11 @@ public class EncodedCodesOptions {
         private SparseArray<String> prefixMap = new SparseArray<>();
         private String separator = "\n";
         private String suffix = "";
-        private int maxChars = 2953;
+        private int maxChars = DEFAULT_MAX_CHARS;
         private String finalCode = "";
         private String nextCode = "";
         private String nextCodeWithCheck = "";
-        private int maxCodes = 100;
+        private int maxCodes = DEFAULT_MAX_CODES;
         private boolean repeatCodes = true;
         private String countSeparator = ";";
         private int maxSizeMm;
@@ -121,6 +128,65 @@ public class EncodedCodesOptions {
         public EncodedCodesOptions build() {
             return new EncodedCodesOptions(prefix, prefixMap, separator, suffix, maxChars, maxCodes,
                     finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator, maxSizeMm, project);
+        }
+    }
+
+    public static EncodedCodesOptions fromJsonObject(Project project, JsonObject jsonObject) {
+        String format = JsonUtils.getStringOpt(jsonObject, "format", "simple");
+        String separator = JsonUtils.getStringOpt(jsonObject, "separator", "\n");
+        int maxCodes = JsonUtils.getIntOpt(jsonObject, "maxCodes", EncodedCodesOptions.DEFAULT_MAX_CODES);
+        int maxChars = JsonUtils.getIntOpt(jsonObject, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS);
+
+        switch (format) {
+            case "csv":
+                return new Builder(project)
+                        .prefix("snabble;{qrCodeIndex};{qrCodeCount}" + separator)
+                        .separator(separator)
+                        .suffix("")
+                        .repeatCodes(false)
+                        .countSeparator(";")
+                        .maxCodes(maxCodes)
+                        .maxChars(maxChars)
+                        .build();
+            case "csv_globus":
+                return new EncodedCodesOptions.Builder(project)
+                        .prefix("snabble;" + separator)
+                        .separator(separator)
+                        .suffix("")
+                        .repeatCodes(false)
+                        .countSeparator(";")
+                        .maxCodes(maxCodes)
+                        .maxChars(maxChars)
+                        .build();
+            case "ikea":
+                String prefix = "9100003\u001d100{qrCodeCount}\u001d240";
+                String prefixWithCustomerCard = "9100003\u001d100{qrCodeCount}";
+                if (project.getCustomerCardId() != null) {
+                    prefixWithCustomerCard += "\u001d92" + project.getCustomerCardId();
+                }
+                prefixWithCustomerCard += "\u001d240";
+
+                return new EncodedCodesOptions.Builder(project)
+                                .prefix(prefix)
+                                .prefix(0, prefixWithCustomerCard)
+                                .separator("\u001d240")
+                                .suffix("")
+                                .maxCodes(maxCodes)
+                                .maxChars(maxChars)
+                                .build();
+            case "simple":
+            default:
+                return new EncodedCodesOptions.Builder(project)
+                        .prefix(JsonUtils.getStringOpt(jsonObject, "prefix", ""))
+                        .suffix(JsonUtils.getStringOpt(jsonObject, "suffix", ""))
+                        .separator(separator)
+                        .maxCodes(maxCodes)
+                        .maxChars(maxChars)
+                        .finalCode(JsonUtils.getStringOpt(jsonObject, "finalCode", ""))
+                        .nextCode(JsonUtils.getStringOpt(jsonObject, "nextCode", ""))
+                        .nextCodeWithCheck(JsonUtils.getStringOpt(jsonObject, "nextCodeWithCheck", ""))
+                        .maxSizeMm(JsonUtils.getIntOpt(jsonObject, "maxSizeMM", -1))
+                        .build();
         }
     }
 }

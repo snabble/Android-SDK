@@ -70,7 +70,7 @@ public class Receipts {
      */
     public void download(final ReceiptInfo receiptInfo,
                          final ReceiptDownloadCallback callback) {
-        if (receiptInfo.getPdfUrl() == null || receiptInfo.getProject() == null) {
+        if (receiptInfo.getPdfUrl() == null) {
             callback.failure();
             return;
         }
@@ -94,7 +94,22 @@ public class Receipts {
             return;
         }
 
-        call = receiptInfo.getProject().getOkHttpClient().newCall(request);
+        Project project = null;
+
+        Snabble snabble = Snabble.getInstance();
+        for (Project p : snabble.getProjects()) {
+            if (p.getId().equals(receiptInfo.getProjectId())) {
+                project = p;
+                break;
+            }
+        }
+
+        if (project == null) {
+            callback.failure();
+            return;
+        }
+
+        call = project.getOkHttpClient().newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {

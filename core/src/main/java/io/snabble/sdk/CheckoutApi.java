@@ -135,6 +135,8 @@ class CheckoutApi {
         public Map<String, Href> links;
         public Boolean supervisorApproval;
         public Boolean paymentApproval;
+        @SerializedName("orderID")
+        public String orderId;
         public boolean aborted;
         public JsonObject checkoutInfo;
         public PaymentMethod paymentMethod;
@@ -164,7 +166,8 @@ class CheckoutApi {
         void noShop();
         void invalidProducts(List<Product> products);
         void noAvailablePaymentMethod();
-        void error();
+        void unknownError();
+        void connectionError();
     }
 
     public interface PaymentProcessResult {
@@ -219,7 +222,7 @@ class CheckoutApi {
         String checkoutUrl = project.getCheckoutUrl();
         if (checkoutUrl == null) {
             Logger.e("Could not checkout, no checkout url provided in metadata");
-            checkoutInfoResult.error();
+            checkoutInfoResult.connectionError();
             return;
         }
 
@@ -262,19 +265,20 @@ class CheckoutApi {
                 if (availablePaymentMethods != null && availablePaymentMethods.length > 0) {
                     checkoutInfoResult.success(signedCheckoutInfo, price, availablePaymentMethods);
                 } else {
-                    checkoutInfoResult.error();
+                    checkoutInfoResult.connectionError();
                 }
             }
 
             @Override
             public void failure(JsonObject obj) {
                 try {
-                    switch (obj.get("error").getAsJsonObject().get("type").getAsString()) {
+                    JsonObject error = obj.get("error").getAsJsonObject();
+                    String type = error.get("type").getAsString();
+
+                    switch (type) {
                         case "invalid_cart_item":
                             List<String> invalidSkus = new ArrayList<>();
-                            JsonArray arr = obj
-                                    .get("error").getAsJsonObject()
-                                    .get("details").getAsJsonArray();
+                            JsonArray arr = error.get("details").getAsJsonArray();
 
                             for (int i=0; i<arr.size(); i++) {
                                 String sku = arr.get(0).getAsJsonObject().get("sku").getAsString();
@@ -300,6 +304,9 @@ class CheckoutApi {
                         case "shop_not_found":
                             checkoutInfoResult.noShop();
                             break;
+                        default:
+                            checkoutInfoResult.unknownError();
+                            break;
                     }
                 } catch (Exception e) {
                     error(e);
@@ -309,7 +316,7 @@ class CheckoutApi {
             @Override
             public void error(Throwable t) {
                 Logger.e("Error creating checkout info: " + t.getMessage());
-                checkoutInfoResult.error();
+                checkoutInfoResult.connectionError();
             }
         });
     }

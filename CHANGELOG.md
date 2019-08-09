@@ -1,6 +1,136 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.15.3]
+
+### Added
+- ProductNotFound events are now posted when a scanned product is not found 
+
+## [0.15.2]
+
+### Changes
+- Increased shopping cart view auto text size
+- Removed payment select empty state icon 
+
+## [0.15.1]
+
+### Fixed
+- Fixed receipts pdf download
+
+## [0.15.0]
+
+### Breaking Changes
+- Removed RECEIPT_AVAILABLE checkout state
+- Changed ReceiptInfo.getProject to return a string instead of the resolved project
+- Removed receipt ui components 
+
+## [0.14.18]
+
+### Fixed
+- Fixed parsing of encodedCodes
+
+## [0.14.17] 
+
+### Fixed
+- EncodedCodes CSV format headers
+
+## [0.14.16]
+
+### Fixed
+- Properly handle unknown checkout info errors
+
+## [0.14.15]
+
+### Fixed
+- Reuse session id on cart backup/restore
+- Rare crash on BarcodeScannerView when resuming the camera
+- Fixed text being cutoff on restore cart button
+
+## [0.14.14]
+
+### Added
+- Support for new qrCodeOffline metadata
+
+### Changed
+- Removed support for old encodedCodes payment methods
+
+## [0.14.13]
+
+### Added
+- Ability to restore the previous shopping cart, after checkout. 
+
+### Fixed
+- Fixed SEPA card input not closing after entry when activity got destroyed before resuming while accepting keyguard
+
+### New String Keys
+- Snabble.Shoppingcart.emptyState.restartButtonTitle 
+- Snabble.Shoppingcart.emptyState.restoreButtonTitle
+
+## [0.14.12]
+
+### Fixed
+- Crash on moto g7 plus when activating the torch
+
+## [0.14.11]
+
+### Changed
+- Choose offline payment method based on available payment methods in metadata
+
+## [0.14.10]
+
+### Changed
+- Added accessor to additional metadata
+- Added available payment methods to project 
+
+## [0.14.9]
+
+### Changes
+- Now showing the 'checkout done' screen when pressing 'done' on encoded codes screen
+- Added snap scrolling to encoded codes screen
+- Improved layout for medium sized devices on encoded codes screen
+
+### Fixed
+- Fixed a race condition in shopping cart product updates
+
+## [0.14.8]
+
+### Changes
+- Removed sorting by price in encodedCodes
+
+## [0.14.7]
+
+### Changes
+- Added support for encodedCodes 'maxChars' property
+- Layout and Behaviour improvements to the encodedCodes screen
+- Renamed key Snabble.Receipt.noReceipt to Snabble.Receipts.noReceipt 
+
+### New String Keys
+- Snabble.QRCode.entry.title
+- Snabble.Receipts.noReceipt
+
+## [0.14.6]
+
+### Fixed
+- Assume fractional unit is 0 when no conversion is possible of encoded unit
+- Use scanned code when selecting bundle product
+
+## [0.14.5]
+
+### Changes 
+- Allow shorter codes to be matched if the last code template group is a ignore group
+- Embed lookup code instead of zero-filled scanned code when searching by code
+
+## [0.14.4]
+
+### Fixed 
+- Fixed a bug that caused the checkout limit message to not appear when checking out im some cases
+
+## [0.14.3]
+
+### Changes
+- Now exposing orderId in Checkout
+- ReceiptListView is now checking for orderId while fetching
+ 
 ## [0.14.2]
 
 ### Fixed

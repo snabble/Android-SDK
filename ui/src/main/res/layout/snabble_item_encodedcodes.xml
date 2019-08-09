@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <TextView android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="@string/Snabble.QRCode.showThisCode"
+        android:textColor="@color/snabble_textColorDark"
+        android:textStyle="bold"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeMaxTextSize="17sp"
+        app:autoSizeTextType="uniform"
+        android:textSize="17sp" />
+
+    <io.snabble.sdk.ui.scanner.BarcodeView android:id="@+id/barcode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+

@@ -44,10 +44,6 @@ public class Checkout {
          */
         PAYMENT_APPROVED,
         /**
-         * After payment approval, when the receipt is available.
-         */
-        RECEIPT_AVAILABLE,
-        /**
          * The payment was denied by the payment provider.
          */
         DENIED_BY_PAYMENT_PROVIDER,
@@ -125,7 +121,6 @@ public class Checkout {
         cancelOutstandingCalls();
 
         if (state != State.PAYMENT_APPROVED
-                && state != State.RECEIPT_AVAILABLE
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
@@ -147,7 +142,6 @@ public class Checkout {
      */
     public void cancelSilently() {
         if (state != State.PAYMENT_APPROVED
-                && state != State.RECEIPT_AVAILABLE
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
@@ -182,11 +176,11 @@ public class Checkout {
     }
 
     private PaymentMethod getFallbackPaymentMethod() {
-        // TODO remove project id hack when metadata contains explicit fallback method
-        if(project.getEncodedCodesOptions() != null
-                && !project.getId().contains("ikea")
-                && !project.getId().contains("globus")) {
-            return PaymentMethod.ENCODED_CODES;
+        PaymentMethod[] paymentMethods = project.getAvailablePaymentMethods();
+        for (PaymentMethod pm : paymentMethods) {
+            if (pm.isOfflineMethod()) {
+                return pm;
+            }
         }
 
         return null;
@@ -248,7 +242,12 @@ public class Checkout {
             }
 
             @Override
-            public void error() {
+            public void unknownError() {
+                notifyStateChanged(State.CONNECTION_ERROR);
+            }
+
+            @Override
+            public void connectionError() {
                 PaymentMethod fallback = getFallbackPaymentMethod();
                 if(fallback != null) {
                     paymentMethod = fallback;
@@ -372,13 +371,7 @@ public class Checkout {
 
         if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL) {
             approve();
-
-            if (checkoutProcess.getReceiptLink() != null) {
-                notifyStateChanged(State.RECEIPT_AVAILABLE);
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.PENDING) {
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
@@ -448,7 +441,12 @@ public class Checkout {
                     }
 
                     @Override
-                    public void error() {
+                    public void unknownError() {
+
+                    }
+
+                            @Override
+                    public void connectionError() {
 
                     }
                 });
@@ -459,6 +457,7 @@ public class Checkout {
     private void approve() {
         if (state != State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
+            shoppingCart.backup();
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(State.PAYMENT_APPROVED);
@@ -469,6 +468,10 @@ public class Checkout {
         if (paymentMethod != null && paymentMethod.isOfflineMethod()) {
             approve();
         }
+    }
+
+    public String getOrderId() {
+        return checkoutProcess != null ? checkoutProcess.orderId : null;
     }
 
     public void setClientAcceptedPaymentMethods(PaymentMethod[] acceptedPaymentMethods) {

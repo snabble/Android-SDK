@@ -126,24 +126,11 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         }
 
         if (productSelectedListener != null && selectedCode != null) {
-            Project project = SnabbleUI.getProject();
-            CodeTemplate codeTemplate = project.getCodeTemplate(selectedCode.template);
-            if (codeTemplate == null) {
-                codeTemplate = project.getDefaultCodeTemplate();
-            }
-
-            final ScannedCode finalCode = codeTemplate
-                    .code(selectedCode.lookupCode)
-                    .buildCode();
-
-            if (finalCode == null) {
-                return;
-            }
-
+            final Product.Code finalCode = selectedCode;
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productSelectedListener.onProductSelected(finalCode.getCode());
+                    productSelectedListener.onProductSelected(finalCode.lookupCode);
                 }
             });
         }

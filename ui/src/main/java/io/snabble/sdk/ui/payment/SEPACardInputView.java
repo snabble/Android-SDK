@@ -41,6 +41,7 @@ public class SEPACardInputView extends FrameLayout {
     private TextInputLayout ibanCountryCodeTextInputLayout;
     private TextInputLayout ibanTextInputLayout;
     private boolean acceptedKeyguard;
+    private boolean isAttachedToWindow;
 
     public SEPACardInputView(Context context) {
         super(context);
@@ -256,7 +257,7 @@ public class SEPACardInputView extends FrameLayout {
             Snabble.getInstance().getPaymentCredentialsStore().add(pc);
         }
 
-        if (isShown()) {
+        if (isShown() || !isAttachedToWindow) {
             finish();
         } else {
             acceptedKeyguard = true;
@@ -281,6 +282,8 @@ public class SEPACardInputView extends FrameLayout {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+        isAttachedToWindow = true;
+
         Application application = (Application) getContext().getApplicationContext();
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
@@ -288,6 +291,8 @@ public class SEPACardInputView extends FrameLayout {
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+
+        isAttachedToWindow = false;
 
         Application application = (Application) getContext().getApplicationContext();
         application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);

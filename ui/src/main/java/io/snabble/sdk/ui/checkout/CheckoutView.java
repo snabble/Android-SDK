@@ -97,21 +97,17 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 displayPaymentView();
                 break;
             case PAYMENT_APPROVED:
-            case RECEIPT_AVAILABLE:
-                if (currentState == Checkout.State.PAYMENT_APPROVED
-                 || currentState == Checkout.State.RECEIPT_AVAILABLE) {
+                if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }
 
-                if (!checkout.getSelectedPaymentMethod().isOfflineMethod()) {
-                    if (successView != null) {
-                        displayView(successView);
-                    } else {
-                        displayView(new CheckoutDoneView(getContext()));
-                    }
-
-                    Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+                if (successView != null) {
+                    displayView(successView);
+                } else {
+                    displayView(new CheckoutDoneView(getContext()));
                 }
+
+                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
                 break;
             case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:
@@ -134,7 +130,6 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     }
 
     private void displayPaymentView() {
-        Project project = SnabbleUI.getProject();
         switch (checkout.getSelectedPaymentMethod()) {
             case DE_DIRECT_DEBIT:
             case VISA:
@@ -146,43 +141,8 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 checkoutQRCodePOSView.setQRCodeText(checkout.getQRCodePOSContent());
                 displayView(checkoutQRCodePOSView);
                 break;
-            case ENCODED_CODES:
+            case QRCODE_OFFLINE:
                 displayView(new CheckoutEncodedCodesView(getContext()));
-                break;
-            case ENCODED_CODES_CSV:
-                displayView(new CheckoutEncodedCodesView(getContext(),
-                        new EncodedCodesOptions.Builder(project)
-                        .prefix("snabble;\n")
-                        .separator("\n")
-                        .suffix("")
-                        .repeatCodes(false)
-                        .countSeparator(";")
-                        .maxCodes(100)
-                        .build()));
-                break;
-            case ENCODED_CODES_IKEA:
-                EncodedCodesOptions options = project.getEncodedCodesOptions();
-                int maxCodes = 45;
-                if (options != null) {
-                    maxCodes = options.maxCodes;
-                }
-
-                String prefix = "9100003\u001d100{qrCodeCount}\u001d240";
-
-                String prefixWithCustomerCard = "9100003\u001d100{qrCodeCount}";
-                if (project.getCustomerCardId() != null) {
-                    prefixWithCustomerCard += "\u001d92" + project.getCustomerCardId();
-                }
-                prefixWithCustomerCard += "\u001d240";
-
-                displayView(new CheckoutEncodedCodesView(getContext(),
-                        new EncodedCodesOptions.Builder(project)
-                        .prefix(prefix)
-                        .prefix(0, prefixWithCustomerCard)
-                        .separator("\u001d240")
-                        .suffix("")
-                        .maxCodes(maxCodes)
-                        .build()));
                 break;
         }
     }

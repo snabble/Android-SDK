@@ -30,6 +30,7 @@
 	<string name="Snabble.QRCode.showTheseCodes">Show these codes to the cashier</string>
 	<string name="Snabble.QRCode.title">QR Code</string>
 	<string name="Snabble.QRCode.total">Total:\u0020</string>
+	<string name="Snabble.QRCode.entry.title">Code: %d</string>
 	<string name="Snabble.Scanner.Camera.accessDenied">Camera access denied</string>
 	<string name="Snabble.Scanner.Camera.allowAccess">Please allow camera access to enable barcode scanning</string>
 	<string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
@@ -55,10 +56,14 @@
 	<string name="Snabble.Shoppingcart.buyProducts.now">Pay now</string>
 	<string name="Snabble.Shoppingcart.emptyState.buttonTitle">Scan products</string>
 	<string name="Snabble.Shoppingcart.emptyState.description">Scan products to add them to your shopping cart.</string>
+	<string name="Snabble.Shoppingcart.emptyState.restartButtonTitle">Start new shopping trip</string>
+	<string name="Snabble.Shoppingcart.emptyState.restoreButtonTitle">Restore previous cart</string>
 	<string name="Snabble.Shoppingcart.emptyState.title">Your Shopping Cart</string>
 	<string name="Snabble.Shoppingcart.removeItem">Remove %s from the cart?</string>
 	<string name="Snabble.Shoppingcart.removeItems">Remove all products from shopping cart?</string>
 	<string name="Snabble.Shoppingcart.deposit">Deposit</string>
+	<string name="Snabble.Shoppingcart.discounts">Total discounts</string>
+	<string name="Snabble.Shoppingcart.giveaways">Free gift</string>
 	<string name="Snabble.saleStop.errorMsg.title">Sorry</string>
 	<string name="Snabble.saleStop.errorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier.</string>
 	<string name="Snabble.saleStop.errorMsg.one">This product cannot be paid for using the app, please pay for it at the cashier:</string>
@@ -75,8 +80,10 @@
 	<string name="Snabble.PaymentStatus.step2">Processing purchase</string>
 	<string name="Snabble.PaymentStatus.step3">Processing payment</string>
 	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
-	<string name="Snabble.Receipt.title">Receipts</string>
-	<string name="Snabble.Receipt.noReceipt">No receipts found</string>
+	<string name="Snabble.Receipts.title">Receipts</string>
+	<string name="Snabble.Receipts.noReceipt">No receipts found</string>
+	<string name="Snabble.Receipts.oClock">o\'clock</string>
+	<string name="Snabble.Receipts.loading">(loading)</string>
 	<string name="Snabble.Payment.SEPA.Name">Name</string>
 	<string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
 	<string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
