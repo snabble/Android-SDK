@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - ProductNotFound events are now posted when a scanned product is not found 
 
+### Changed
+- ReceiptInfo.getDate() is now deprecated, use getTimestamp instead.
+
 ## [0.15.2]
 
 ### Changes

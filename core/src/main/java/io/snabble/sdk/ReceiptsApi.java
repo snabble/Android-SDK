@@ -87,7 +87,7 @@ class ReceiptsApi {
                                 ReceiptInfo receiptInfo = new ReceiptInfo(
                                         apiOrder.id,
                                         apiOrder.project,
-                                        simpleDateFormat.parse(apiOrder.date),
+                                        simpleDateFormat.parse(apiOrder.date).getTime(),
                                         snabble.absoluteUrl(apiLink.href),
                                         apiOrder.shopName,
                                         priceFormatter.format(apiOrder.price));
