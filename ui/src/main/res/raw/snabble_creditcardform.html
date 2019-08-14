@@ -5,11 +5,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
         <script>
-            window.addEventListener("DOMContentLoaded", init, false);
+            document.onreadystatechange = function onDocumentStateChange() {
+                  if (document.readyState !== 'complete') return;
+
+                  init();
+            };
+
             window.addEventListener("message", receiveMessage, false);
 
             function init() {
                 var form1 = document.getElementById("form1");
+                console.log("#");
                 form1.submit();
             }
 
@@ -61,7 +67,7 @@
         </script>
     </head>
     <body>
-        <iframe name="embed1" id="embed1" src="#" width="100%" height="900px" style="border: none;">
+        <iframe name="embed1" id="embed1" src="#" style="width:100%; height:900px; border: none;">
         </iframe>
 
         <form method="post" action="{{url}}" target="embed1" id="form1">

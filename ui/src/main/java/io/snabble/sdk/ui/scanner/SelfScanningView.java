@@ -45,6 +45,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -245,7 +246,7 @@ public class SelfScanningView extends FrameLayout {
                 .setOnProductNotFoundListener(new ProductResolver.OnProductNotFoundListener() {
                     @Override
                     public void onProductNotFound() {
-                        showWarning(getResources().getString(R.string.Snabble_Scanner_unknownBarcode));
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
                     }
                 })
                 .setOnNetworkErrorListener(new ProductResolver.OnNetworkErrorListener() {
@@ -257,7 +258,7 @@ public class SelfScanningView extends FrameLayout {
                 .setOnShelfCodeScannedListener(new ProductResolver.OnShelfCodeScannedListener() {
                     @Override
                     public void onShelfCodeScanned() {
-                        showWarning(getResources().getString(R.string.Snabble_Scanner_scannedShelfCode));
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
                     }
                 })
                 .setOnSaleStopListener(new ProductResolver.OnSaleStopListener() {

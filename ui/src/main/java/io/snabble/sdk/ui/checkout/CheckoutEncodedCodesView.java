@@ -31,6 +31,7 @@ import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Logger;
 
@@ -308,9 +309,9 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
 
             if (position == 0) {
                 if (codes.size() > 1) {
-                    holder.title.setText(getResources().getString(R.string.Snabble_QRCode_showTheseCodes, getItemCount()));
+                    holder.title.setText(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_QRCode_showTheseCodes), getItemCount()));
                 } else {
-                    holder.title.setText(R.string.Snabble_QRCode_showThisCode);
+                    holder.title.setText(I18nUtils.getIdentifier(getResources(), R.string.Snabble_QRCode_showThisCode));
                 }
             } else {
                 if (explanationText2.getVisibility() == View.GONE) {

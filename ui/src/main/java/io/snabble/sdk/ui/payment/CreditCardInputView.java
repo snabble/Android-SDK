@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -16,10 +17,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Keep;
 import androidx.core.view.ViewCompat;
+
 
 import org.apache.commons.io.IOUtils;
 
@@ -48,6 +51,9 @@ public class CreditCardInputView extends FrameLayout {
     private OkHttpClient okHttpClient;
     private Resources resources;
     private HashResponse lastHashResponse;
+    private Handler handler;
+    private ProgressBar progressBar;
+    private boolean isAttachedToWindow;
 
     public CreditCardInputView(Context context) {
         super(context);
@@ -74,10 +80,41 @@ public class CreditCardInputView extends FrameLayout {
 
         okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
         resources = getContext().getResources();
+        handler = new Handler(Looper.getMainLooper());
+
+        progressBar = findViewById(R.id.progress);
 
         webView = findViewById(R.id.web_view);
-        webView.setWebViewClient(new WebViewClient());
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishWithError();
+                    }
+                });
+            }
+        });
+
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, final int newProgress) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (newProgress == 100) {
+                            progressBar.setVisibility(View.GONE);
+                        } else {
+                            progressBar.setVisibility(View.VISIBLE);
+                        }
+
+                        progressBar.setProgress(newProgress);
+                    }
+                });
+            }
+        });
+
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsInterface(), "snabble");
@@ -111,7 +148,7 @@ public class CreditCardInputView extends FrameLayout {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        loadCreditCardForm(hashResponse);
+                        loadForm(hashResponse);
                     }
                 });
             }
@@ -122,14 +159,18 @@ public class CreditCardInputView extends FrameLayout {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        showConnectionError();
+                        finishWithError();
                     }
                 });
             }
         });
     }
 
-    private void loadCreditCardForm(HashResponse hashResponse) {
+    private void loadForm(HashResponse hashResponse) {
+        if (!isAttachedToWindow) {
+            return;
+        }
+
         try {
             String data = IOUtils.toString(resources.openRawResource(R.raw.snabble_creditcardform), Charset.forName("UTF-8"));
             data = data.replace("{{url}}", hashResponse.url);
@@ -141,20 +182,10 @@ public class CreditCardInputView extends FrameLayout {
 
             // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
             data = data.replace("{{paymentMethod}}", "V");
-
-            webView.loadData(data, null, null);
+            webView.loadData(Base64.encodeToString(data.getBytes(), Base64.DEFAULT), null, "base64");
         } catch (IOException e) {
             Logger.e(e.getMessage());
         }
-    }
-
-    private void showConnectionError() {
-        UIUtils.snackbar(CreditCardInputView.this,
-                R.string.Snabble_networkError,
-                UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                .show();
-
-        finish();
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
@@ -263,6 +294,8 @@ public class CreditCardInputView extends FrameLayout {
 
         Application application = (Application) getContext().getApplicationContext();
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        isAttachedToWindow = true;
     }
 
     @Override
@@ -271,6 +304,8 @@ public class CreditCardInputView extends FrameLayout {
 
         Application application = (Application) getContext().getApplicationContext();
         application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+
+        isAttachedToWindow = false;
     }
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =

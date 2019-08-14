@@ -77,7 +77,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         });
     }
 
-
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         String code = ZebraSupport.dispatchKeyEvent(this, event);
@@ -94,10 +93,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     @Override
-    protected void onStart() {
+    protected void onResume() {
         SnabbleUI.registerUiCallbacks(this);
 
-        super.onStart();
+        super.onResume();
     }
 
     @Override

@@ -168,31 +168,32 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                         entries.add(e);
                     }
                 } else {
-                    Entry e = new Entry();
+                    final Entry e = new Entry();
                     e.text = descriptions.get(paymentMethod);
                     e.paymentMethod = paymentMethod;
 
-                    if (paymentMethod == PaymentMethod.DE_DIRECT_DEBIT) {
-                        e.onClickListener = new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                showSEPACardInput();
-                            }
-                        };
-                    } else if (paymentMethod == PaymentMethod.VISA) {
-                        e.onClickListener = new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                showCreditCardInput();
-                            }
-                        };
-                    } else if (paymentMethod == PaymentMethod.MASTERCARD) {
-                        e.onClickListener = new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                showCreditCardInput();
-                            }
-                        };
+                    switch (paymentMethod) {
+                        case DE_DIRECT_DEBIT:
+                            e.onClickListener = new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    showSEPACardInput();
+                                }
+                            };
+                            break;
+                        case MASTERCARD:
+                        case VISA:
+                            e.onClickListener = new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    showCreditCardInput();
+                                }
+                            };
+                            break;
+                        default:
+                            checkout.pay(e.paymentMethod, e.paymentCredentials);
+                            Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                            break;
                     }
 
                     entries.add(e);
