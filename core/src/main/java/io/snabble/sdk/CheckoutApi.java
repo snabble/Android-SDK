@@ -73,7 +73,8 @@ class CheckoutApi {
                         }
                     }
 
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+                            || !Snabble.getInstance().getConfig().enableExperimentalCreditCardPayment) {
                         result.remove(PaymentMethod.VISA);
                         result.remove(PaymentMethod.MASTERCARD);
                     }

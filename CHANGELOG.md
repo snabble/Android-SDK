@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.0-beta3]
+
+### Fixed 
+- Do not show credit card payment options when not enabling support for it
+
 ## [0.16.0-beta2]
 
 ### Fixed
