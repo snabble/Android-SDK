@@ -48,7 +48,7 @@ class CheckoutRetryer {
             savedCarts = new CopyOnWriteArrayList<>();
         }
 
-        processSavedCheckouts();
+        processPendingCheckouts();
     }
 
     public void add(ShoppingCart.BackendCart backendCart) {
@@ -64,7 +64,7 @@ class CheckoutRetryer {
                 .apply();
     }
 
-    public void processSavedCheckouts() {
+    public void processPendingCheckouts() {
         handler.post(new Runnable() {
             @Override
             public void run() {

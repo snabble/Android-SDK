@@ -1,9 +1,16 @@
 package io.snabble.sdk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Base64;
 
 import com.google.gson.JsonArray;
@@ -132,6 +139,7 @@ public class Snabble {
         }
 
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+        app.registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     public String getVersionName() {
@@ -385,7 +393,7 @@ public class Snabble {
         }
     }
 
-    private void processSavedCheckouts() {
+    private void processPendingCheckouts() {
         for (Project project : projects) {
             project.getCheckout().processPendingCheckouts();
         }
@@ -414,8 +422,28 @@ public class Snabble {
         public void onActivityStarted(Activity activity) {
             updateMetadata();
             checkCartTimeouts();
+            processPendingCheckouts();
         }
     };
+
+    @SuppressLint("MissingPermission")
+    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null) {
+                onConnectionStateChanged(activeNetwork.isConnected());
+            }
+        }
+    };
+
+    private void onConnectionStateChanged(boolean isConnected) {
+        if (isConnected) {
+            processPendingCheckouts();
+        }
+    }
 
     /**
      * Enables debug logging.

@@ -514,7 +514,7 @@ public class Checkout {
     }
 
     public void processPendingCheckouts() {
-
+        checkoutRetryer.processPendingCheckouts();
     }
 
     /**

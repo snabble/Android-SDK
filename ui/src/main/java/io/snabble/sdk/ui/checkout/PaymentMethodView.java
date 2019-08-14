@@ -191,8 +191,13 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                             };
                             break;
                         default:
-                            checkout.pay(e.paymentMethod, e.paymentCredentials);
-                            Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                            e.onClickListener = new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                    Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                                }
+                            };
                             break;
                     }
 

@@ -15,8 +15,6 @@ import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.Project;
-import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;

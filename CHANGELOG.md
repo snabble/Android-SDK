@@ -1,13 +1,26 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.0-beta1]
+
+### Breaking Changes
+- Added showCreditCardInput() to SnabbleUICallback. If you don't use credit card payments, you
+can leave the implementation empty.
+
+### Added
+- Experimental support for credit card payments. To enable set Config.enableExperimentalCreditCardPayment.
+Only supported on API 21+.
+
+- Checkouts are now persisted and will be transferred at a later time.
+- Now always showing a payment method selection when entering a new payment method.
+
 ## [0.15.3]
 
 ### Added
 - ProductNotFound events are now posted when a scanned product is not found 
 
 ### Changed
-- ReceiptInfo.getDate() is now deprecated, use getTimestamp instead.
+- ReceiptInfo.getDate() is now deprecated, use getTimestamp() instead.
 
 ## [0.15.2]
 
