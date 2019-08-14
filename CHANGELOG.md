@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.0-beta2]
+
+### Fixed
+- Flicker when loading credit card input 
+
 ## [0.16.0-beta1]
 
 ### Breaking Changes

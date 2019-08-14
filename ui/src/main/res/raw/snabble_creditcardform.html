@@ -5,17 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
         <script>
-            document.onreadystatechange = function onDocumentStateChange() {
-                  if (document.readyState !== 'complete') return;
-
-                  init();
-            };
-
+            window.addEventListener("DOMContentLoaded", init, false);
             window.addEventListener("message", receiveMessage, false);
 
             function init() {
                 var form1 = document.getElementById("form1");
-                console.log("#");
                 form1.submit();
             }
 
