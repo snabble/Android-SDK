@@ -101,11 +101,13 @@ public class Checkout {
             pollForResult();
         }
     };
+    private CheckoutRetryer checkoutRetryer;
 
     Checkout(Project project) {
         this.project = project;
         this.shoppingCart = project.getShoppingCart();
         this.checkoutApi = new CheckoutApi(project);
+        this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
 
         HandlerThread handlerThread = new HandlerThread("Checkout");
         handlerThread.start();
@@ -206,8 +208,14 @@ public class Checkout {
 
         notifyStateChanged(State.HANDSHAKING);
 
-        checkoutApi.createCheckoutInfo(project.getCheckedInShop(),
-                shoppingCart.toBackendCart(),
+        if (shop == null) {
+            notifyStateChanged(State.NO_SHOP);
+            return;
+        }
+
+        final ShoppingCart.BackendCart backendCart = shoppingCart.toBackendCart();
+
+        checkoutApi.createCheckoutInfo(backendCart,
                 clientAcceptedPaymentMethods,
                 new CheckoutApi.CheckoutInfoResult() {
             @Override
@@ -252,7 +260,7 @@ public class Checkout {
                 if(fallback != null) {
                     paymentMethod = fallback;
                     priceToPay = shoppingCart.getTotalPrice();
-                    retryPostSilent();
+                    checkoutRetryer.add(backendCart);
                     notifyStateChanged(State.WAIT_FOR_APPROVAL);
                 } else {
                     notifyStateChanged(State.CONNECTION_ERROR);
@@ -293,7 +301,7 @@ public class Checkout {
                 notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
 
                 checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
-                        new CheckoutApi.PaymentProcessResult() {
+                        false, null, new CheckoutApi.PaymentProcessResult() {
                     @Override
                     public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
                         checkoutProcess = checkoutProcessResponse;
@@ -389,69 +397,6 @@ public class Checkout {
         }
 
         return false;
-    }
-
-
-    private void retryPostSilent() {
-        final PaymentMethod pm = paymentMethod;
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                checkoutApi.createCheckoutInfo(shop, shoppingCart.toBackendCart(), clientAcceptedPaymentMethods,
-                        new CheckoutApi.CheckoutInfoResult() {
-                    @Override
-                    public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo,
-                                        int onlinePrice,
-                                        PaymentMethod[] availablePaymentMethods) {
-                        priceToPay = shoppingCart.getTotalPrice();
-
-                        checkoutApi.createPaymentProcess(signedCheckoutInfo, pm, null,
-                                new CheckoutApi.PaymentProcessResult() {
-                            @Override
-                            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-
-                            }
-
-                            @Override
-                            public void aborted() {
-
-                            }
-
-                            @Override
-                            public void error() {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void noShop() {
-
-                    }
-
-                    @Override
-                    public void invalidProducts(List<Product> products) {
-
-                    }
-
-                    @Override
-                    public void noAvailablePaymentMethod() {
-
-                    }
-
-                    @Override
-                    public void unknownError() {
-
-                    }
-
-                            @Override
-                    public void connectionError() {
-
-                    }
-                });
-            }
-        }, 2000);
     }
 
     private void approve() {
@@ -566,6 +511,10 @@ public class Checkout {
         }
 
         return null;
+    }
+
+    public void processPendingCheckouts() {
+
     }
 
     /**

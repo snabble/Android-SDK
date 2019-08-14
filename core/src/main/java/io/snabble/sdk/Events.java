@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.utils.DateUtils;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -36,15 +37,11 @@ public class Events {
     private Shop shop;
 
     private Handler handler = new Handler(Looper.getMainLooper());
-    private SimpleDateFormat simpleDateFormat;
     private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
     public Events(Project project) {
         this.project = project;
-
-        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
@@ -158,7 +155,7 @@ public class Events {
         event.appId = Snabble.getInstance().getClientId();
         event.project = project.getId();
         event.shopId = shop.getId();
-        event.timestamp = simpleDateFormat.format(new Date());
+        event.timestamp = DateUtils.toRFC3339(new Date());
         event.payload = GsonHolder.get().toJsonTree(payload);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"),

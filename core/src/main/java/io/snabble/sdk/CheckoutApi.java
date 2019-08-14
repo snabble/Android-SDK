@@ -10,10 +10,12 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.utils.DateUtils;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonCallback;
 import io.snabble.sdk.utils.Logger;
@@ -120,6 +122,8 @@ class CheckoutApi {
         public SignedCheckoutInfo signedCheckoutInfo;
         public PaymentMethod paymentMethod;
         public PaymentInformation paymentInformation;
+        public String finalizedAt;
+        public Boolean processedOffline;
     }
 
     public enum PaymentState {
@@ -215,20 +219,13 @@ class CheckoutApi {
         });
     }
 
-    public void createCheckoutInfo(final Shop shop,
-                                   final ShoppingCart.BackendCart backendCart,
+    public void createCheckoutInfo(final ShoppingCart.BackendCart backendCart,
                                    final PaymentMethod[] clientAcceptedPaymentMethods,
                                    final CheckoutInfoResult checkoutInfoResult) {
         String checkoutUrl = project.getCheckoutUrl();
         if (checkoutUrl == null) {
             Logger.e("Could not checkout, no checkout url provided in metadata");
             checkoutInfoResult.connectionError();
-            return;
-        }
-
-        if (shop == null) {
-            Logger.e("Could not checkout, no shop selected");
-            checkoutInfoResult.noShop();
             return;
         }
 
@@ -254,11 +251,6 @@ class CheckoutApi {
                             .getAsInt();
                 } else {
                     price = project.getShoppingCart().getTotalPrice();
-                }
-
-                if (price != project.getShoppingCart().getTotalPrice()) {
-                    Logger.w("Warning local price is different from remotely calculated price! (Local: "
-                            + project.getShoppingCart().getTotalPrice() + ", Remote: " + price + ")");
                 }
 
                 PaymentMethod[] availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
@@ -355,10 +347,20 @@ class CheckoutApi {
     public void createPaymentProcess(final SignedCheckoutInfo signedCheckoutInfo,
                                      final PaymentMethod paymentMethod,
                                      final PaymentCredentials paymentCredentials,
+                                     final boolean processedOffline,
+                                     final Date finalizedAt,
                                      final PaymentProcessResult paymentProcessResult) {
         CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
         checkoutProcessRequest.paymentMethod = paymentMethod;
         checkoutProcessRequest.signedCheckoutInfo = signedCheckoutInfo;
+
+        if (processedOffline) {
+            checkoutProcessRequest.processedOffline = true;
+
+            if (finalizedAt != null) {
+                checkoutProcessRequest.finalizedAt = DateUtils.toRFC3339(finalizedAt);
+            }
+        }
 
         if (paymentCredentials != null) {
             checkoutProcessRequest.paymentInformation = new PaymentInformation();

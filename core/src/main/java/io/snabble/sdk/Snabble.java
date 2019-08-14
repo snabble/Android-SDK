@@ -385,6 +385,12 @@ public class Snabble {
         }
     }
 
+    private void processSavedCheckouts() {
+        for (Project project : projects) {
+            project.getCheckout().processPendingCheckouts();
+        }
+    }
+
     /**
      * Adds a listener that gets called every time the metadata updates
      */
