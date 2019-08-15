@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.0]
+
+### Changed
+- Replaced credit card icon
+
+### New String Keys
+- Snabble.Payment.CreditCard
+
 ## [0.16.0-beta3]
 
 ### Fixed 
