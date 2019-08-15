@@ -50,8 +50,9 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         if (Snabble.getInstance().getConfig().enableExperimentalCreditCardPayment) {
             // Credit card payments are only supported on API 21+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa,
-                        "Kreditkarte", getUsableAtText(PaymentMethod.VISA, PaymentMethod.MASTERCARD), new OneShotClickListener() {
+                entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_creditcard,
+                        getString(R.string.Snabble_Payment_CreditCard),
+                        getUsableAtText(PaymentMethod.VISA, PaymentMethod.MASTERCARD), new OneShotClickListener() {
                     @Override
                     public void click() {
                         SnabbleUICallback callback = SnabbleUI.getUiCallback();
