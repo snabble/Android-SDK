@@ -30,6 +30,8 @@ public class ProductSearchView extends FrameLayout {
     private String lastSearchQuery;
     private boolean allowAnyCode;
     private OnProductSelectedListener onProductSelectedListener;
+    private boolean showSku;
+    private boolean showBarcode;
 
     public ProductSearchView(Context context) {
         super(context);
@@ -100,6 +102,7 @@ public class ProductSearchView extends FrameLayout {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         searchableProductAdapter = new SearchableProductAdapter();
         searchableProductAdapter.setShowBarcode(true);
+        searchableProductAdapter.setShowSku(showSku);
         searchableProductAdapter.setSearchType(SearchableProductAdapter.SearchType.BARCODE);
         searchableProductAdapter.setOnProductSelectedListener(new OnProductSelectedListener() {
             @Override
@@ -188,5 +191,15 @@ public class ProductSearchView extends FrameLayout {
     /** allows for overriding the default action (calling SnabbleUICallback) **/
     public void setOnProductSelectedListener(OnProductSelectedListener onProductSelectedListener) {
         this.onProductSelectedListener = onProductSelectedListener;
+    }
+
+    public void setShowSku(boolean showSku) {
+        this.showSku = showSku;
+        searchableProductAdapter.setShowSku(showSku);
+    }
+
+    public void setShowBarcode(boolean showBarcode) {
+        this.showBarcode = showBarcode;
+        searchableProductAdapter.setShowBarcode(showBarcode);
     }
 }

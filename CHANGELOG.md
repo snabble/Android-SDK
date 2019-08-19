@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.2]
+
+### Added
+- Option to show the product sku in ProductSearchView
+
 ## [0.16.1]
 
 ### Changed

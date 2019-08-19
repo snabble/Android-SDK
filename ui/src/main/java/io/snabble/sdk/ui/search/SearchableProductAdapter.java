@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.search;
 
 
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -10,6 +11,7 @@ import android.os.OperationCanceledException;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +48,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     private boolean showBarcode = true;
     private String lastQuery = "";
     private Project project;
+    private boolean showSku;
 
     public SearchableProductAdapter() {
         this.project = SnabbleUI.getProject();
@@ -107,6 +110,8 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
             selectedCode = scannableCodes[0];
         }
 
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+
         if (showBarcode) {
             for (Product.Code code : product.getScannableCodes()) {
                 String lookupCode = code.lookupCode;
@@ -116,11 +121,25 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
                     }
 
                     Spannable spannable = highlight(lastQuery, lookupCode);
-                    holder.code.setText(spannable);
+                    ssb.append(spannable);
                     selectedCode = code;
                     break;
                 }
             }
+        }
+
+        if (showSku) {
+            if (ssb.length() > 0) {
+                ssb.append(" (");
+                ssb.append(product.getSku());
+                ssb.append(")");
+            } else {
+                ssb.append(product.getSku());
+            }
+        }
+
+        if (ssb.length() > 0) {
+            holder.code.setText(ssb);
         } else {
             holder.code.setVisibility(View.GONE);
         }
@@ -142,6 +161,10 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
 
     public void setSearchType(SearchType type) {
         searchType = type;
+    }
+
+    public void setShowSku(boolean showSku) {
+        this.showSku = showSku;
     }
 
     public void setOnProductSelectedListener(OnProductSelectedListener productSelectedListener) {
@@ -215,7 +238,7 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
                         break;
                     }
                     final StyleSpan styleSpan = new StyleSpan(android.graphics.Typeface.BOLD);
-                    sb.setSpan(styleSpan, lastIndex, lastIndex + q.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    sb.setSpan(styleSpan, lastIndex, lastIndex + q.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     lastIndex += q.length();
                 }
             }
