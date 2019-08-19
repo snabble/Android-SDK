@@ -136,6 +136,7 @@ public class EncodedCodesOptions {
         String separator = JsonUtils.getStringOpt(jsonObject, "separator", "\n");
         int maxCodes = JsonUtils.getIntOpt(jsonObject, "maxCodes", EncodedCodesOptions.DEFAULT_MAX_CODES);
         int maxChars = JsonUtils.getIntOpt(jsonObject, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS);
+        String finalCode = JsonUtils.getStringOpt(jsonObject, "finalCode", "");
 
         switch (format) {
             case "csv":
@@ -171,6 +172,7 @@ public class EncodedCodesOptions {
                                 .prefix(0, prefixWithCustomerCard)
                                 .separator("\u001d240")
                                 .suffix("")
+                                .finalCode(finalCode)
                                 .maxCodes(maxCodes)
                                 .maxChars(maxChars)
                                 .build();
@@ -182,7 +184,7 @@ public class EncodedCodesOptions {
                         .separator(separator)
                         .maxCodes(maxCodes)
                         .maxChars(maxChars)
-                        .finalCode(JsonUtils.getStringOpt(jsonObject, "finalCode", ""))
+                        .finalCode(finalCode)
                         .nextCode(JsonUtils.getStringOpt(jsonObject, "nextCode", ""))
                         .nextCodeWithCheck(JsonUtils.getStringOpt(jsonObject, "nextCodeWithCheck", ""))
                         .maxSizeMm(JsonUtils.getIntOpt(jsonObject, "maxSizeMM", -1))

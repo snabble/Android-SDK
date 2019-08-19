@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.1]
+
+### Changed
+- Support finalCode for ikea code
+
 ## [0.16.0]
 
 ### Changed
