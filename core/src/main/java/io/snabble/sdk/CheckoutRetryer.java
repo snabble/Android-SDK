@@ -2,6 +2,8 @@ package io.snabble.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -17,8 +19,9 @@ import io.snabble.sdk.utils.Logger;
 
 class CheckoutRetryer {
     private class SavedCart {
-        final ShoppingCart.BackendCart backendCart;
-        final Date finalizedAt;
+        ShoppingCart.BackendCart backendCart;
+        Date finalizedAt;
+        int failureCount;
 
         SavedCart(ShoppingCart.BackendCart backendCart, Date finalizedAt) {
             this.backendCart = backendCart;
@@ -29,14 +32,14 @@ class CheckoutRetryer {
     private Handler handler;
     private PaymentMethod fallbackPaymentMethod;
     private SharedPreferences sharedPreferences;
-    private CheckoutApi checkoutApi;
+    private Project project;
     private CopyOnWriteArrayList<SavedCart> savedCarts;
     private CountDownLatch countDownLatch;
 
     CheckoutRetryer(Project project, PaymentMethod fallbackPaymentMethod) {
         Context context = Snabble.getInstance().getApplication();
         this.sharedPreferences = context.getSharedPreferences("snabble_saved_checkouts_" + project.getId(), Context.MODE_PRIVATE);
-        this.checkoutApi = new CheckoutApi(project);
+        this.project = project;
         this.fallbackPaymentMethod = fallbackPaymentMethod;
         this.handler = new Handler(Looper.getMainLooper());
 
@@ -51,20 +54,42 @@ class CheckoutRetryer {
         processPendingCheckouts();
     }
 
-    public void add(ShoppingCart.BackendCart backendCart) {
-        savedCarts.add(new SavedCart(backendCart, new Date()));
-        save();
+    public void add(final ShoppingCart.BackendCart backendCart) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                savedCarts.add(new SavedCart(backendCart, new Date()));
+                save();
+            }
+        });
     }
 
     private void save() {
-        String json = GsonHolder.get().toJson(savedCarts);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                String json = GsonHolder.get().toJson(savedCarts);
 
-        sharedPreferences.edit()
-                .putString("saved_carts", json)
-                .apply();
+                sharedPreferences.edit()
+                        .putString("saved_carts", json)
+                        .apply();
+            }
+        });
     }
 
     public void processPendingCheckouts() {
+        Context context = Snabble.getInstance().getApplication();
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm == null) {
+            return;
+        }
+
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            return;
+        }
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -75,6 +100,11 @@ class CheckoutRetryer {
                 countDownLatch = new CountDownLatch(savedCarts.size());
 
                 for (final SavedCart savedCart : savedCarts) {
+                    if (savedCart.failureCount >= 3) {
+                        removeSavedCart(savedCart);
+                    }
+
+                    final CheckoutApi checkoutApi = new CheckoutApi(project);
                     checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutApi.CheckoutInfoResult() {
                         @Override
                         public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods) {
@@ -89,38 +119,44 @@ class CheckoutRetryer {
 
                                 @Override
                                 public void aborted() {
-                                    countDownLatch.countDown();
+                                    fail();
                                 }
 
                                 @Override
                                 public void error() {
-                                    countDownLatch.countDown();
+                                    fail();
                                 }
                             });
                         }
 
                         @Override
                         public void noShop() {
-                            countDownLatch.countDown();
+                            fail();
                         }
 
                         @Override
                         public void invalidProducts(List<Product> products) {
-                            countDownLatch.countDown();
+                            fail();
                         }
 
                         @Override
                         public void noAvailablePaymentMethod() {
-                            countDownLatch.countDown();
+                            fail();
                         }
 
                         @Override
                         public void unknownError() {
-                            countDownLatch.countDown();
+                            fail();
                         }
 
                         @Override
                         public void connectionError() {
+                            fail();
+                        }
+
+                        private void fail() {
+                            savedCart.failureCount++;
+                            save();
                             countDownLatch.countDown();
                         }
                     });

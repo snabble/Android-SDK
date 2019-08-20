@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.3]
+
+### Fixed
+- Improved behaviour of offline checkout retryer
+
 ## [0.16.2]
 
 ### Added
