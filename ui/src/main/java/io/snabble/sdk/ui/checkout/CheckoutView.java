@@ -17,6 +17,7 @@ import android.widget.ViewAnimator;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
@@ -192,9 +193,9 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         registerListeners();
 
         if (checkout.getState() == Checkout.State.NONE) {
-            Activity activity = UIUtils.getHostActivity(getContext());
-            if (activity != null) {
-                activity.onBackPressed();
+            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            if (callback != null) {
+                callback.goBack();
             }
         }
     }
