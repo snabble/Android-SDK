@@ -325,7 +325,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 parameters.setRecordingHint(true);
             }
 
-            camera.setParameters(parameters);
+            try {
+                camera.setParameters(parameters);
+            } catch (RuntimeException e) {
+                showError(true);
+            }
         }
 
         try {
