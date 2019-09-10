@@ -310,7 +310,7 @@ public class SelfScanningView extends FrameLayout {
             @Override
             public void run() {
                 UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                        UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_NEUTRAL);
+                        UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL);
             }
         });
     }
@@ -321,7 +321,7 @@ public class SelfScanningView extends FrameLayout {
             @Override
             public void run() {
                 UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                        UIUtils.SNACKBAR_LENGTH_VERY_LONG, UIUtils.INFO_WARNING);
+                        UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING);
             }
         });
     }

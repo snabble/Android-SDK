@@ -43,6 +43,10 @@ public class UIUtils {
 
         return null;
     }
+
+    public static int getDurationByLength(String text) {
+        return Math.max(Math.min(text.length() * 50, 2000), 7000);
+    }
     
     public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, int type) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());

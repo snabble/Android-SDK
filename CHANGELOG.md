@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [0.16.4]
 
 ### Changed
+- Info boxes are now showing longer/shorter based on text length
 - Added snabble_textColorOnPrimary, for coloring elements that are on the primary color 
 
 ## [0.16.3]
