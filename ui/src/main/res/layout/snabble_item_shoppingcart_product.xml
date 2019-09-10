@@ -70,7 +70,7 @@
                 android:background="@drawable/snabble_ic_round_textview"
                 app:backgroundTint="@color/snabble_primaryColor"
                 android:textSize="12dp"
-                android:textColor="@color/snabble_textColorLight"
+                android:textColor="@color/snabble_textColorOnPrimary"
                 android:textStyle="bold"
                 tools:text="2" />
 

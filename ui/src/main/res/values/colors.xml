@@ -12,6 +12,7 @@
     <color name="snabble_infoColorPositive">#009000</color>
     <color name="snabble_infoTextColorPositive">@color/snabble_textColorLight</color>
     <color name="snabble_textColorLight">#FFFFFF</color>
+    <color name="snabble_textColorOnPrimary">@color/snabble_textColorLight</color>
     <color name="snabble_textColorDark">#1D1F24</color>
     <color name="snabble_textColorAction">@color/snabble_primaryColor</color>
     <color name="snabble_textColorError">#DD0000</color>
