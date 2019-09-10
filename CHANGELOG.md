@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.4]
+
+### Changed
+- Added snabble_textColorOnPrimary, for coloring elements that are on the primary color 
+
 ## [0.16.3]
 
 ### Fixed
