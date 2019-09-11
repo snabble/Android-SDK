@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.6]
+
+### Changed 
+- Hide bundles of products without a price
+
 ## [0.16.5]
 
 ### Fixed
