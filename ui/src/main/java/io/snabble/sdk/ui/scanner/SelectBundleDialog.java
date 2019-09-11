@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -46,15 +49,16 @@ class SelectBundleDialog {
         ViewGroup container = view.findViewById(R.id.container);
 
         Product[] bundles = product.getBundleProducts();
-        final Product[] products = new Product[bundles.length + 1];
-        products[0] = product;
-        int i = 1;
+        List<Product> listOfProducts = new ArrayList<>();
+        listOfProducts.add(product);
+
         for (Product p : bundles) {
-            products[i] = p;
-            i++;
+            if (p.getListPrice() == 0) {
+                listOfProducts.add(p);
+            }
         }
 
-        for (final Product p : products) {
+        for (final Product p : listOfProducts) {
             View itemView = View.inflate(context, R.layout.snabble_item_bundle_select, null);
             TextView name = itemView.findViewById(R.id.name);
             name.setText(p.getName());
