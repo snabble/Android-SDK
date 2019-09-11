@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.5]
+
+### Fixed
+- Removed unnecessary cart update on empty carts
+
 ## [0.16.4]
 
 ### Changed

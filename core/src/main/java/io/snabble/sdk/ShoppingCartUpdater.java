@@ -36,6 +36,10 @@ class ShoppingCartUpdater {
     public void update() {
         Logger.d("Updating prices...");
 
+        if (cart.size() == 0) {
+            return;
+        }
+
         final int modCount = cart.getModCount();
         handler.post(new Runnable() {
             @Override
