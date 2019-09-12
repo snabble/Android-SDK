@@ -102,13 +102,19 @@ public class SEPACardInputView extends FrameLayout {
             }
         });
 
-        ibanCountryCode.setEnabled(false);
-
         ibanInput.addTextChangedListener(new TextWatcher() {
             boolean isUpdating;
+            private int previousLength;
+            private boolean backSpace;
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (isUpdating) {
+                        return;
+                    }
+
+                    backSpace = previousLength > s.length();
+
+                    if (backSpace) {
                         return;
                     }
 
@@ -117,14 +123,8 @@ public class SEPACardInputView extends FrameLayout {
                     StringBuilder sb = new StringBuilder();
 
                     for (int i = 0; i < str.length(); i++) {
-                        if (isGermanIBAN()) {
-                            if ((i + 2) % 4 == 0) {
-                                sb.append(' ');
-                            }
-                        } else {
-                            if (i == 2) {
-                                sb.append(' ');
-                            }
+                        if ((i + 2) % 4 == 0) {
+                            sb.append(' ');
                         }
 
                         sb.append(str.charAt(i));
@@ -144,7 +144,7 @@ public class SEPACardInputView extends FrameLayout {
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                previousLength = s.length();
             }
 
             public void afterTextChanged(Editable s) {
@@ -194,20 +194,8 @@ public class SEPACardInputView extends FrameLayout {
     }
 
     private void formatIBANInput() {
-        String str = ibanInput.getText().toString();
-        if(isGermanIBAN()) {
-            ibanInput.setText(str.replace("", " "));
-            ibanInput.setInputType(InputType.TYPE_CLASS_NUMBER);
-            ibanInput.setKeyListener(DigitsKeyListener.getInstance("0123456789 "));
-        } else {
-            ibanInput.setText(str.replace(" ", ""));
-            ibanInput.setKeyListener(null);
-            ibanInput.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        }
-    }
-
-    private boolean isGermanIBAN() {
-        return ibanCountryCode.getText().toString().equals("DE");
+        ibanInput.setKeyListener(null);
+        ibanInput.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
     }
 
     private void saveCard() {

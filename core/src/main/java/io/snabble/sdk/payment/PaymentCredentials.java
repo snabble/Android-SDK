@@ -192,11 +192,9 @@ public class PaymentCredentials {
         }
         sb.append(s.substring(s.length() - numCharsEnd));
 
-        if (sb.toString().startsWith("DE")) {
-            for (int i=4; i<sb.length(); i+=4) {
-                sb.insert(i, ' ');
-                i++;
-            }
+        for (int i=4; i<sb.length(); i+=4) {
+            sb.insert(i, ' ');
+            i++;
         }
 
         return sb.toString();
