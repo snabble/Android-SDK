@@ -101,6 +101,8 @@
 	<string name="Snabble.Payment.confirm">Confirm purchase</string>
 	<string name="Snabble.Payment.presentCode">Show this code at a snabble monitor or to a cashier to confirm your purchase.</string>
 	<string name="Snabble.Payment.waiting">Waiting for confirmation</string>
+	<string name="Snabble.Payment.cancelError.title">Error cancelling payment</string>
+	<string name="Snabble.Payment.cancelError.message">Payment cannot be cancelled at this time.</string>
 	<string name="Snabble.networkError">Connection error</string>
 
 	<!-- SECTION: Android -->

@@ -59,7 +59,7 @@ class CheckoutQRCodePOSView extends FrameLayout {
         abort.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
-                SnabbleUI.getProject().getCheckout().cancelSilently();
+                SnabbleUI.getProject().getCheckout().abortSilently();
 
                 SnabbleUICallback uiCallback = SnabbleUI.getUiCallback();
                 if (uiCallback != null) {

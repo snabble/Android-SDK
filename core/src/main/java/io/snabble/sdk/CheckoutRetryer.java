@@ -118,11 +118,6 @@ class CheckoutRetryer {
                                 }
 
                                 @Override
-                                public void aborted() {
-                                    fail();
-                                }
-
-                                @Override
                                 public void error() {
                                     fail();
                                 }

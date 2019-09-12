@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 ## [0.16.6]
 
 ### Changed 
+- Await and block for abort calls while in checkout
+- A short Checkout-ID is now visible while in payment 
 - Hide bundles of products without a price
+
+### New String Keys
+- Snabble.Payment.cancelError.title
+- Snabble.Payment.cancelError.message
 
 ## [0.16.5]
 

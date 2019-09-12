@@ -1,6 +1,7 @@
 package io.snabble.sdk;
 
 import android.os.Build;
+import android.os.Handler;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -177,7 +178,11 @@ class CheckoutApi {
 
     public interface PaymentProcessResult {
         void success(CheckoutProcessResponse checkoutProcessResponse);
-        void aborted();
+        void error();
+    }
+
+    public interface PaymentAbortResult {
+        void success();
         void error();
     }
 
@@ -197,7 +202,7 @@ class CheckoutApi {
         }
     }
 
-    public void abort(CheckoutProcessResponse checkoutProcessResponse) {
+    public void abort(final CheckoutProcessResponse checkoutProcessResponse, final PaymentAbortResult paymentAbortResult) {
         final Request request = new Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getSelfLink()))
                 .patch(RequestBody.create(JSON, "{\"aborted\":true}"))
@@ -205,17 +210,26 @@ class CheckoutApi {
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     Logger.d("Payment aborted");
+                    if (paymentAbortResult != null) {
+                        paymentAbortResult.success();
+                    }
                 } else {
-                    Logger.e("Could not abort payment");
+                    Logger.e("Error while aborting payment");
+                    if (paymentAbortResult != null) {
+                        paymentAbortResult.error();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                Logger.e("Could not abort payment");
+                Logger.e("Error while aborting payment");
+                if (paymentAbortResult != null) {
+                    paymentAbortResult.error();
+                }
             }
         });
     }

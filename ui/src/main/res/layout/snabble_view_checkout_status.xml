@@ -8,13 +8,27 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/cancel"
+        android:layout_above="@+id/cancel_layout"
         android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
+            <TextView
+                android:id="@+id/checkout_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top|center_horizontal"
+                tools:text="Checkout-ID: a64b"
+                android:textColor="@color/snabble_textColorDark"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="16dp"
+                android:textStyle="bold"
+                android:textSize="17sp" />
+
             <io.snabble.sdk.ui.scanner.BarcodeView
                 android:id="@+id/checkout_id_code"
                 android:layout_width="match_parent"
@@ -53,14 +67,29 @@
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:id="@+id/cancel"
+    <FrameLayout android:id="@+id/cancel_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:text="@string/Snabble.Cancel"/>
+        android:layout_centerHorizontal="true">
+        <Button
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@string/Snabble.Cancel"/>
+
+        <ProgressBar
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:indeterminateOnly="true"
+            android:indeterminate="true"
+            android:id="@+id/cancel_progress"
+            android:visibility="invisible"
+            android:layout_gravity="end|center_vertical" />
+    </FrameLayout>
 </RelativeLayout>

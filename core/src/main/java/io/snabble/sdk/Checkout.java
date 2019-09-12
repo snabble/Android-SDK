@@ -56,6 +56,10 @@ public class Checkout {
          */
         PAYMENT_ABORTED,
         /**
+         * The payment was aborted.
+         */
+        PAYMENT_ABORT_FAILED,
+        /**
          * There was a unrecoverable connection error.
          */
         CONNECTION_ERROR,
@@ -116,41 +120,74 @@ public class Checkout {
     }
 
     /**
-     * Cancels outstanding http calls and notifies the backend that the checkout process
+     * Aborts outstanding http calls and notifies the backend that the checkout process
      * was cancelled
      */
-    public void cancel() {
+    public void abort() {
         cancelOutstandingCalls();
 
         if (state != State.PAYMENT_APPROVED
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
-            checkoutApi.abort(checkoutProcess);
-            notifyStateChanged(State.PAYMENT_ABORTED);
+            checkoutApi.abort(checkoutProcess, new CheckoutApi.PaymentAbortResult() {
+                @Override
+                public void success() {
+                    synchronized (Checkout.this) {
+                        notifyStateChanged(State.PAYMENT_ABORTED);
+
+                        checkoutProcess = null;
+                        invalidProducts = null;
+                        paymentMethod = null;
+                        shop = null;
+                    }
+                }
+
+                @Override
+                public void error() {
+                    notifyStateChanged(State.PAYMENT_ABORT_FAILED);
+                }
+            });
         } else {
             notifyStateChanged(State.NONE);
         }
-
-        checkoutProcess = null;
-        invalidProducts = null;
-        paymentMethod = null;
-        shop = null;
     }
 
     /**
      * Cancels outstanding http calls and notifies the backend that the checkout process
+     * was cancelled
+     *
+      @Deprecated use abort instead
+     */
+    @Deprecated
+    public void cancel() {
+        abort();
+    }
+
+    /**
+     * Aborts outstanding http calls and notifies the backend that the checkout process
      * was cancelled, but does not notify listeners
      */
-    public void cancelSilently() {
+    public void abortSilently() {
         if (state != State.PAYMENT_APPROVED
                 && state != State.DENIED_BY_PAYMENT_PROVIDER
                 && state != State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
-            checkoutApi.abort(checkoutProcess);
+            checkoutApi.abort(checkoutProcess, null);
         }
 
         reset();
+    }
+
+    /**
+     * Aborts outstanding http calls and notifies the backend that the checkout process
+     * was cancelled, but does not notify listeners
+     *
+     * @Deprecated use abortSilently instead
+     */
+    @Deprecated
+    public void cancelSilently() {
+        abortSilently();
     }
 
     public void cancelOutstandingCalls() {
@@ -171,6 +208,13 @@ public class Checkout {
         invalidProducts = null;
         paymentMethod = null;
         shop = null;
+    }
+
+    public void resume() {
+        if (lastState == State.WAIT_FOR_APPROVAL) {
+            notifyStateChanged(State.WAIT_FOR_APPROVAL);
+            pollForResult();
+        }
     }
 
     public boolean isAvailable() {
@@ -304,22 +348,18 @@ public class Checkout {
                         false, null, new CheckoutApi.PaymentProcessResult() {
                     @Override
                     public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                        checkoutProcess = checkoutProcessResponse;
+                        synchronized (Checkout.this) {
+                            checkoutProcess = checkoutProcessResponse;
 
-                        if (!handleProcessResponse()) {
-                            Logger.d("Waiting for approval...");
-                            notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                            if (!handleProcessResponse()) {
+                                Logger.d("Waiting for approval...");
+                                notifyStateChanged(State.WAIT_FOR_APPROVAL);
 
-                            if (!paymentMethod.isOfflineMethod()) {
-                                scheduleNextPoll();
+                                if (!paymentMethod.isOfflineMethod()) {
+                                    scheduleNextPoll();
+                                }
                             }
                         }
-                    }
-
-                    @Override
-                    public void aborted() {
-                        Logger.e("Bad request - aborting");
-                        notifyStateChanged(State.PAYMENT_ABORTED);
                     }
 
                     @Override
@@ -347,16 +387,13 @@ public class Checkout {
         checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
             @Override
             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                checkoutProcess = checkoutProcessResponse;
+                synchronized (Checkout.this) {
+                    checkoutProcess = checkoutProcessResponse;
 
-                if (handleProcessResponse()) {
-                    handler.removeCallbacks(pollRunnable);
+                    if (handleProcessResponse()) {
+                        handler.removeCallbacks(pollRunnable);
+                    }
                 }
-            }
-
-            @Override
-            public void aborted() {
-
             }
 
             @Override
@@ -543,18 +580,20 @@ public class Checkout {
     }
 
     private void notifyStateChanged(final State state) {
-        if (this.state != state) {
-            this.lastState = this.state;
-            this.state = state;
+        synchronized (Checkout.this) {
+            if (this.state != state) {
+                this.lastState = this.state;
+                this.state = state;
 
-            uiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
-                        checkoutStateListener.onStateChanged(state);
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
+                            checkoutStateListener.onStateChanged(state);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 }

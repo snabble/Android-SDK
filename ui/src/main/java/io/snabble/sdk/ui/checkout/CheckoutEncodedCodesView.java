@@ -90,6 +90,15 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
             payAmount.setVisibility(View.GONE);
             explanationText2.setVisibility(View.GONE);
         }
+
+        TextView checkoutId = findViewById(R.id.checkout_id);
+        String id = SnabbleUI.getProject().getCheckout().getId();
+        if (id != null && id.length() >= 4) {
+            String text = getResources().getString(R.string.Snabble_Checkout_ID);
+            checkoutId.setText(String.format("%s: %s", text, id.substring(id.length() - 4)));
+        } else {
+            checkoutId.setVisibility(View.GONE);
+        }
     }
 
     public int getNextBarcodeIndex() {

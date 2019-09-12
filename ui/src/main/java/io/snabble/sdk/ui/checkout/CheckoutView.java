@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -62,7 +63,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
             @Override
             public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
                 if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    checkout.cancel();
+                    checkout.abort();
                     return true;
                 }
                 return false;
@@ -107,6 +108,21 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 }
 
                 Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+                break;
+            case PAYMENT_ABORT_FAILED:
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.Snabble_Payment_cancelError_title)
+                        .setMessage(R.string.Snabble_Payment_cancelError_message)
+                        .setPositiveButton(R.string.Snabble_OK, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                checkout.resume();
+                            }
+                        })
+                        .setCancelable(false)
+                        .create()
+                        .show();
                 break;
             case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:

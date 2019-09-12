@@ -170,7 +170,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             @Override
             public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
                 if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    checkout.cancel();
+                    checkout.abort();
                     return true;
                 }
                 return false;
@@ -399,7 +399,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void registerListeners() {
-        SnabbleUI.getProject().getCheckout().cancelSilently();
+        SnabbleUI.getProject().getCheckout().abortSilently();
 
         cart.addListener(shoppingCartListener);
         checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);

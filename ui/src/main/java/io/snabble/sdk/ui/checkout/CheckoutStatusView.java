@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.R;
@@ -16,6 +17,8 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private Checkout checkout;
     private BarcodeView checkoutIdCode;
+    private View cancel;
+    private View cancelProgress;
 
     public CheckoutStatusView(Context context) {
         super(context);
@@ -36,8 +39,9 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
         inflate(getContext(), R.layout.snabble_view_checkout_status, this);
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
+        cancel = findViewById(R.id.cancel);
+        cancelProgress = findViewById(R.id.cancel_progress);
 
-        final View cancel = findViewById(R.id.cancel);
         cancel.setAlpha(0);
         cancel.setEnabled(false);
 
@@ -54,12 +58,23 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
         cancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkout.cancel();
+                checkout.abort();
+                cancelProgress.setVisibility(View.VISIBLE);
+                cancel.setEnabled(false);
             }
         });
 
         if (SnabbleUI.getActionBar() != null) {
             SnabbleUI.getActionBar().setTitle(R.string.Snabble_Payment_confirm);
+        }
+
+        TextView checkoutId = findViewById(R.id.checkout_id);
+        String id = SnabbleUI.getProject().getCheckout().getId();
+        if (id != null && id.length() >= 4) {
+            String text = getResources().getString(R.string.Snabble_Checkout_ID);
+            checkoutId.setText(String.format("%s: %s", text, id.substring(id.length() - 4)));
+        } else {
+            checkoutId.setVisibility(View.GONE);
         }
 
         checkout = SnabbleUI.getProject().getCheckout();
@@ -92,6 +107,10 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
                 if (id != null) {
                     checkoutIdCode.setText(id);
                 }
+                break;
+            case PAYMENT_ABORT_FAILED:
+                cancel.setEnabled(true);
+                cancelProgress.setVisibility(View.INVISIBLE);
                 break;
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);

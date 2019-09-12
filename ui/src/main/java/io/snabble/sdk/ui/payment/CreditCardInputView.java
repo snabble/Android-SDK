@@ -247,7 +247,7 @@ public class CreditCardInputView extends FrameLayout {
     private void cancelPreAuth(CreditCardInfo creditCardInfo) {
         String url = Snabble.getInstance().getTelecashPreAuthUrl();
         if (url == null) {
-            Logger.e("Could not cancel pre authorization, no url provided");
+            Logger.e("Could not abort pre authorization, no url provided");
             return;
         }
 
