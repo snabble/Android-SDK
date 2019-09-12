@@ -173,6 +173,12 @@ public class PaymentCredentialsStore {
             if (!credentials.validate()) {
                 data.credentialsList.remove(credentials);
                 changed = true;
+            } else {
+                // app id's were not stored in old versions, if its not there assume the
+                // current app id was the app id in which the payment method was created
+                if (credentials.checkAppId()) {
+                    changed = true;
+                }
             }
         }
 

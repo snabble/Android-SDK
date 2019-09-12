@@ -214,7 +214,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
         for (PaymentCredentials pc : paymentCredentials) {
-            if (pc.getType() == getType(pm) && pc.getBrand() == getBrand(pm)) {
+            if (pc.getType() == getType(pm) && pc.getBrand() == getBrand(pm)
+                    && Snabble.getInstance().getConfig().appId.equals(pc.getAppId())) {
                 list.add(pc);
             }
         }

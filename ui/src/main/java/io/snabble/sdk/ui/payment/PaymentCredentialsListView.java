@@ -138,24 +138,26 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
         for (PaymentCredentials pm : paymentCredentials) {
-            if (pm.getType() == PaymentCredentials.Type.SEPA) {
-                entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));
-            } else if (pm.getType() == PaymentCredentials.Type.CREDIT_CARD) {
-                PaymentCredentials.Brand ccBrand = pm.getBrand();
+            if (Snabble.getInstance().getConfig().appId.equals(pm.getAppId())) {
+                if (pm.getType() == PaymentCredentials.Type.SEPA) {
+                    entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));
+                } else if (pm.getType() == PaymentCredentials.Type.CREDIT_CARD) {
+                    PaymentCredentials.Brand ccBrand = pm.getBrand();
 
-                int drawableResId = 0;
-                if (ccBrand != null) {
-                    switch (ccBrand) {
-                        case VISA:
-                            drawableResId = R.drawable.snabble_ic_visa;
-                            break;
-                        case MASTERCARD:
-                            drawableResId = R.drawable.snabble_ic_mastercard;
-                            break;
+                    int drawableResId = 0;
+                    if (ccBrand != null) {
+                        switch (ccBrand) {
+                            case VISA:
+                                drawableResId = R.drawable.snabble_ic_visa;
+                                break;
+                            case MASTERCARD:
+                                drawableResId = R.drawable.snabble_ic_mastercard;
+                                break;
+                        }
                     }
-                }
 
-                entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
+                    entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
+                }
             }
         }
 

@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - A short Checkout-ID is now visible while in payment 
 - Hide bundles of products without a price
 - Removed restriction to german IBAN's
+- Filter payment methods by appId
 
 ### New String Keys
 - Snabble.Payment.cancelError.title

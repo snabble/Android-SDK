@@ -63,6 +63,7 @@ public class PaymentCredentials {
     private long validTo;
     private Type type;
     private Brand brand;
+    private String appId;
 
     private PaymentCredentials() {
 
@@ -97,6 +98,7 @@ public class PaymentCredentials {
         pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
+        pc.appId = Snabble.getInstance().getConfig().appId;
 
         if (pc.encryptedData == null) {
             return null;
@@ -144,6 +146,7 @@ public class PaymentCredentials {
         pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = brand;
+        pc.appId = Snabble.getInstance().getConfig().appId;
 
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
@@ -179,6 +182,10 @@ public class PaymentCredentials {
         }
 
         return brand;
+    }
+
+    public String getAppId() {
+        return appId;
     }
 
     private String obfuscate(String s) {
@@ -325,6 +332,15 @@ public class PaymentCredentials {
             if (sha256Signature(cert).equals(signature)) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    boolean checkAppId() {
+        if (appId == null) {
+            appId = Snabble.getInstance().getConfig().appId;
+            return true;
         }
 
         return false;
