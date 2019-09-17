@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.7]
+
+### Added
+- Encoded codes can now be sorted by using EncodedCodesOptions.sorter 
+
 ## [0.16.6]
 
 ### Changed 

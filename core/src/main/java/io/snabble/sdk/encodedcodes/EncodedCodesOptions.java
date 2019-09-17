@@ -3,12 +3,16 @@ package io.snabble.sdk.encodedcodes;
 import android.util.SparseArray;
 
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.utils.JsonUtils;
 
 public class EncodedCodesOptions {
+    public interface Sorter {
+        int compare(EncodedCodesGenerator.ProductInfo productInfo1,
+                     EncodedCodesGenerator.ProductInfo productInfo2);
+    }
+
     public static final int DEFAULT_MAX_CHARS = 2953;
     public static final int DEFAULT_MAX_CODES = 100;
 
@@ -25,12 +29,14 @@ public class EncodedCodesOptions {
     public final String countSeparator;
     public final int maxSizeMm;
     public final Project project;
+    public final Sorter sorter;
 
     private EncodedCodesOptions(String prefix, SparseArray<String> prefixMap, String separator, String suffix, int maxChars,
                                 int maxCodes, String finalCode, String nextCode,
                                 String nextCodeWithCheck, boolean repeatCodes, String countSeparator,
                                 int maxSizeMm,
-                                Project project) {
+                                Project project,
+                                Sorter sorter) {
         this.prefix = prefix;
         this.prefixMap = prefixMap;
         this.separator = separator;
@@ -44,6 +50,7 @@ public class EncodedCodesOptions {
         this.countSeparator = countSeparator;
         this.maxSizeMm = maxSizeMm;
         this.project = project;
+        this.sorter = sorter;
     }
 
     public static class Builder {
@@ -60,6 +67,7 @@ public class EncodedCodesOptions {
         private boolean repeatCodes = true;
         private String countSeparator = ";";
         private int maxSizeMm;
+        private Sorter sorter;
 
         public Builder(Project project) {
             this.project = project;
@@ -125,9 +133,15 @@ public class EncodedCodesOptions {
             return this;
         }
 
+        public Builder maxSizeMm(Sorter sorter) {
+            this.sorter = sorter;
+            return this;
+        }
+
         public EncodedCodesOptions build() {
             return new EncodedCodesOptions(prefix, prefixMap, separator, suffix, maxChars, maxCodes,
-                    finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator, maxSizeMm, project);
+                    finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator,
+                    maxSizeMm, project, sorter);
         }
     }
 
@@ -178,7 +192,7 @@ public class EncodedCodesOptions {
                                 .build();
             case "simple":
             default:
-                return new EncodedCodesOptions.Builder(project)
+                EncodedCodesOptions.Builder builder = new EncodedCodesOptions.Builder(project)
                         .prefix(JsonUtils.getStringOpt(jsonObject, "prefix", ""))
                         .suffix(JsonUtils.getStringOpt(jsonObject, "suffix", ""))
                         .separator(separator)
@@ -187,8 +201,35 @@ public class EncodedCodesOptions {
                         .finalCode(finalCode)
                         .nextCode(JsonUtils.getStringOpt(jsonObject, "nextCode", ""))
                         .nextCodeWithCheck(JsonUtils.getStringOpt(jsonObject, "nextCodeWithCheck", ""))
-                        .maxSizeMm(JsonUtils.getIntOpt(jsonObject, "maxSizeMM", -1))
-                        .build();
+                        .maxSizeMm(JsonUtils.getIntOpt(jsonObject, "maxSizeMM", -1));
+
+                if (project.getId().contains("knauber")) {
+                    builder.sorter = new Sorter() {
+                        @Override
+                        public int compare(EncodedCodesGenerator.ProductInfo productInfo1,
+                                            EncodedCodesGenerator.ProductInfo productInfo2) {
+                            final String catchAll = "2030801009887";
+
+                            String tc1 = productInfo1.product.getTransmissionCode(
+                                    productInfo1.scannedCode.getTemplateName(),
+                                    productInfo1.scannedCode.getLookupCode());
+
+                            String tc2 = productInfo2.product.getTransmissionCode(
+                                    productInfo2.scannedCode.getTemplateName(),
+                                    productInfo2.scannedCode.getLookupCode());
+
+                            if (catchAll.equals(tc1)) {
+                                return 1;
+                            } else if (catchAll.equals(tc2)) {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    };
+                }
+
+                return builder.build();
         }
     }
 }

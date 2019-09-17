@@ -13,6 +13,18 @@ import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.groups.EmbedGroup;
 
 public class EncodedCodesGenerator {
+    public class ProductInfo {
+        Product product;
+        int quantity;
+        ScannedCode scannedCode;
+
+        public ProductInfo(Product product, int quantity, ScannedCode scannedCode) {
+            this.product = product;
+            this.quantity = quantity;
+            this.scannedCode = scannedCode;
+        }
+    }
+
     private StringBuilder stringBuilder;
     private EncodedCodesOptions options;
     private ArrayList<String> encodedCodes;
@@ -34,8 +46,27 @@ public class EncodedCodesGenerator {
     }
 
     public void add(ShoppingCart shoppingCart) {
-        addProducts(shoppingCart, false);
-        addProducts(shoppingCart, true);
+        List<ProductInfo> productInfos = new ArrayList<>();
+        for (int i = 0; i < shoppingCart.size(); i++) {
+            ShoppingCart.Item item = shoppingCart.get(i);
+            Product product = item.getProduct();
+
+            productInfos.add(new ProductInfo(product,
+                    item.getQuantity(),
+                    item.getScannedCode()));
+        }
+
+        if (options.sorter != null) {
+            Collections.sort(productInfos, new Comparator<ProductInfo>() {
+                @Override
+                public int compare(ProductInfo o1, ProductInfo o2) {
+                    return options.sorter.compare(o1, o2);
+                }
+            });
+        }
+
+        addProducts(productInfos, false);
+        addProducts(productInfos, true);
     }
 
     public void clear() {
@@ -44,14 +75,14 @@ public class EncodedCodesGenerator {
     }
 
     public ArrayList<String> generate() {
-        if (options.finalCode.length() != 0) {
+        if (options.finalCode != null && options.finalCode.length() != 0) {
             append(options.finalCode);
         }
 
         finishCode();
 
         ArrayList<String> ret = new ArrayList<>();
-        for (int i=0; i<encodedCodes.size(); i++) {
+        for (int i = 0; i < encodedCodes.size(); i++) {
             String code = encodedCodes.get(i);
             code = code.replace("{qrCodeCount}", String.valueOf(encodedCodes.size()));
             code = code.replace("{qrCodeIndex}", String.valueOf(i + 1));
@@ -62,9 +93,9 @@ public class EncodedCodesGenerator {
         return ret;
     }
 
-    private boolean hasAgeRestrictedCode(ShoppingCart shoppingCart) {
-        for (int i = 0; i < shoppingCart.size(); i++) {
-            Product product = shoppingCart.get(i).getProduct();
+    private boolean hasAgeRestrictedCode(List<ProductInfo> productInfos) {
+        for (int i = 0; i < productInfos.size(); i++) {
+            Product product = productInfos.get(i).product;
 
             if (product.getSaleRestriction().isAgeRestriction()
                     && product.getSaleRestriction().getValue() >= 16) {
@@ -84,33 +115,8 @@ public class EncodedCodesGenerator {
         return false;
     }
 
-    private class ProductInfo {
-        Product product;
-        int quantity;
-        ScannedCode scannedCode;
-
-        public ProductInfo(Product product, int quantity, ScannedCode scannedCode) {
-            this.product = product;
-            this.quantity = quantity;
-            this.scannedCode = scannedCode;
-        }
-    }
-
-    private void addProducts(final ShoppingCart shoppingCart, boolean ageRestricted) {
-        hasAgeRestrictedCode = hasAgeRestrictedCode(shoppingCart);
-
-        List<ProductInfo> productInfos = new ArrayList<>();
-        for (int i = 0; i < shoppingCart.size(); i++) {
-            ShoppingCart.Item item = shoppingCart.get(i);
-            Product product = item.getProduct();
-            if (ageRestricted != isAgeRestricted(product)) {
-                continue;
-            }
-
-            productInfos.add(new ProductInfo(product,
-                    item.getQuantity(),
-                    item.getScannedCode()));
-        }
+    private void addProducts(final List<ProductInfo> productInfos, boolean ageRestricted) {
+        hasAgeRestrictedCode = hasAgeRestrictedCode(productInfos);
 
         for (ProductInfo productInfo : productInfos) {
             if (ageRestricted != isAgeRestricted(productInfo.product)) {
