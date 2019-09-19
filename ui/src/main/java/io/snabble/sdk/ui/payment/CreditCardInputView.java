@@ -35,6 +35,7 @@ import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -235,6 +236,7 @@ public class CreditCardInputView extends FrameLayout {
                     .show();
         } else {
             Snabble.getInstance().getPaymentCredentialsStore().add(pc);
+            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.getType().name());
         }
 
         if (isShown()) {

@@ -71,6 +71,7 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
                 if (isAtLastBarcode()) {
                     Project project = SnabbleUI.getProject();
                     project.getCheckout().approveOfflineMethod();
+                    Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
                 } else {
                     scrollTo(getNextBarcodeIndex());
                 }

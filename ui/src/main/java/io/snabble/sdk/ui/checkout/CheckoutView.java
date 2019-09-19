@@ -32,6 +32,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
     private Checkout.State currentState;
     private View successView;
     private View failureView;
+    private OnCheckoutScreenChangedListener onCheckoutScreenChangedListener;
 
     public CheckoutView(Context context) {
         super(context);
@@ -167,6 +168,10 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         viewAnimator.addView(view, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
+
+        if (onCheckoutScreenChangedListener != null) {
+            onCheckoutScreenChangedListener.onCheckoutScreenChanged(view);
+        }
     }
 
     /** Sets the view to be shown after a successful checkout (for online methods) **/
@@ -242,4 +247,12 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                     }
                 }
             };
+
+    public interface OnCheckoutScreenChangedListener {
+        void onCheckoutScreenChanged(View view);
+    }
+
+    public void setOnCheckoutScreenChangedListener(OnCheckoutScreenChangedListener onCheckoutScreenChangedListener) {
+        this.onCheckoutScreenChangedListener = onCheckoutScreenChangedListener;
+    }
 }

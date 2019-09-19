@@ -647,6 +647,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 @Override
                 public void onClick(View v) {
                     row.item.setQuantity(row.item.getQuantity() + 1);
+                    Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.getProduct());
                 }
             });
 
@@ -660,6 +661,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         removeAndShowUndoSnackbar(p, row.item);
                     } else {
                         row.item.setQuantity(newQuantity);
+                        Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.getProduct());
                     }
                 }
             });
@@ -669,6 +671,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 public void click() {
                     row.item.setQuantity(getQuantityEditValue());
                     hideInput();
+                    Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.getProduct());
                 }
             });
 

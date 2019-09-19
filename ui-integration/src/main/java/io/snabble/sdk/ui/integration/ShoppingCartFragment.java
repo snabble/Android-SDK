@@ -57,6 +57,7 @@ public class ShoppingCartFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             SnabbleUI.getProject().getShoppingCart().clearBackup();
                             SnabbleUI.getProject().getShoppingCart().clear();
+                            onCartCleared();
                         }
                     })
                     .setNegativeButton(R.string.Snabble_No, null)
@@ -66,6 +67,10 @@ public class ShoppingCartFragment extends Fragment {
         }
 
         return false;
+    }
+
+    public void onCartCleared() {
+
     }
 
     public ShoppingCartView getShoppingCartView() {

@@ -27,6 +27,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
@@ -228,6 +229,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                                 .setNegativeButton(R.string.Snabble_No, null)
                                 .create()
                                 .show();
+
+                        Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
                     }
                 });
             }

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.8]
+
+### Added
+- Added additional telemetry events
+
 ## [0.16.7]
 
 ### Added

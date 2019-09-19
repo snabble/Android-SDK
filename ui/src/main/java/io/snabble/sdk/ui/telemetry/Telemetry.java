@@ -20,7 +20,10 @@ public class Telemetry {
         ToggleTorch,
         DeletedFromCart,
         UndoDeleteFromCart,
+        CartAmountChanged,
         SelectedBundleProduct,
+        PaymentMethodAdded,
+        PaymentMethodDeleted
     }
 
     private static OnEventListener onEventListener;
