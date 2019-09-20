@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.9]
+
+### Fixed
+- Notify payment updates on main thread instead of caller thread
+
 ## [0.16.8]
 
 ### Added

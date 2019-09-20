@@ -5,6 +5,8 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.google.gson.Gson;
 
@@ -188,9 +190,15 @@ public class PaymentCredentialsStore {
     }
 
     private void notifyChanged() {
-        for (Callback cb : callbacks) {
-            cb.onChanged();
-        }
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (Callback cb : callbacks) {
+                    cb.onChanged();
+                }
+            }
+        });
     }
 
     public void addCallback(Callback cb) {
