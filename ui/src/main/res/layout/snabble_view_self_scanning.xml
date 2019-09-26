@@ -17,11 +17,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:text="@string/Snabble.Scanner.Camera.accessDenied"
-        android:textColor="@color/snabble_textColorLight"
+        android:textColor="?android:attr/textColorPrimaryInverse"
         android:id="@+id/no_permission"
         android:gravity="center"
         android:textStyle="bold"
-        android:background="@color/snabble_backgroundColorDark"
+        android:background="?android:attr/colorBackground"
         android:visibility="gone" />
 
     <LinearLayout
@@ -59,7 +59,7 @@
             android:gravity="center"
             android:id="@+id/light" />
 
-        <Button style="@style/SnabbleButton"
+        <Button
             android:id="@+id/goto_cart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -32,6 +32,7 @@ import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 
 /**
@@ -135,8 +136,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         splashView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        splashView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
-                R.color.snabble_backgroundColorDark, null));
+        splashView.setBackgroundResource(UIUtils.getColorByAttribute(getContext(), android.R.attr.background));
         addView(splashView);
 
         cameraUnavailableView = new TextView(getContext());
@@ -145,8 +145,8 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 ViewGroup.LayoutParams.MATCH_PARENT));
         cameraUnavailableView.setText(R.string.Snabble_Scanner_Camera_accessDenied);
         cameraUnavailableView.setGravity(Gravity.CENTER);
-        cameraUnavailableView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.snabble_textColorLight, null));
-        cameraUnavailableView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.snabble_backgroundColorDark, null));
+        cameraUnavailableView.setTextColor(UIUtils.getColorByAttribute(getContext(), android.R.attr.textColorPrimary));
+        cameraUnavailableView.setBackgroundResource(UIUtils.getColorByAttribute(getContext(), android.R.attr.background));
         cameraUnavailableView.setVisibility(View.GONE);
         addView(cameraUnavailableView);
 

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.cart.ShoppingCartView;
+import io.snabble.sdk.ui.utils.UIUtils;
 
 public class ShoppingCartFragment extends Fragment {
     private ShoppingCartView shoppingCartView;
@@ -42,7 +43,7 @@ public class ShoppingCartFragment extends Fragment {
 
         for (int i=0; i<menu.size(); i++) {
             MenuItem menuItem = menu.getItem(i);
-            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_menuIconTint, null);
+            int color = UIUtils.getColorByAttribute(requireContext(), R.attr.colorOnPrimary);
             MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(color));
         }
     }

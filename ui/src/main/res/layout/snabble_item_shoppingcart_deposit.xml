@@ -16,7 +16,7 @@
         android:layout_marginBottom="8dp"
         android:src="@drawable/snabble_ic_deposit"
         android:scaleType="center"
-        app:tint="@color/snabble_primaryColor"
+        app:tint="?attr/colorPrimary"
         app:tintMode="multiply"
         android:id="@+id/image" />
 
@@ -30,7 +30,7 @@
         android:id="@+id/title"
         android:text="@string/Snabble.Shoppingcart.deposit"
         android:textSize="17dp"
-        android:textColor="@color/snabble_textColorDark" />
+        android:textColor="?android:attr/textColorPrimary" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,6 +42,6 @@
         android:id="@+id/deposit"
         tools:text="0,25 €"
         android:textSize="12dp"
-        android:textColor="@color/snabble_textColorDark" />
+        android:textColor="?android:attr/textColorPrimary" />
 
 </RelativeLayout>

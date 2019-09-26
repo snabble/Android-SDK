@@ -22,6 +22,6 @@
         android:padding="16dp"
         android:textSize="17sp"
         android:textStyle="bold"
-        android:textColor="@color/snabble_textColorDark"
+        android:textColor="?android:attr/textColorPrimary"
         tools:text="Coca Cola 1,0 l Mehrweg" />
 </LinearLayout>

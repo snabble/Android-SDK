@@ -28,7 +28,7 @@
         android:layout_below="@+id/search_bar_layout"
         android:id="@+id/recycler_view" />
 
-    <Button style="@style/SnabbleButton.TextButton"
+    <Button style="@style/Widget.MaterialComponents.Button.TextButton"
         android:id="@+id/add_code_as_is"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,6 +37,5 @@
         android:layout_marginTop="56dp"
         android:padding="16dp"
         android:gravity="center"
-        android:textColor="@color/snabble_textColorAction"
         tools:text="Add 2623237002494 as is" />
 </RelativeLayout>

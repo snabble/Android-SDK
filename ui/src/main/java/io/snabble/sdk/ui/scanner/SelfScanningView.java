@@ -169,7 +169,7 @@ public class SelfScanningView extends FrameLayout {
 
     private void updateBarcodeSearchIcon() {
         enterBarcode.setImageResource(R.drawable.snabble_ic_search);
-        int color = ResourcesCompat.getColor(getResources(), R.color.snabble_lightElementColor, null);
+        int color = UIUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface);
         ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(color));
     }
 
@@ -182,12 +182,13 @@ public class SelfScanningView extends FrameLayout {
         if (barcodeScanner.isTorchEnabled()) {
             light.setImageResource(R.drawable.snabble_ic_torch_active);
             light.setBackgroundResource(R.drawable.snabble_ic_button_filled_48dp);
-            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
+            UIUtils.getColorByAttribute(getContext(), R.attr.colorPrimary);
+            int color = UIUtils.getColorByAttribute(getContext(), R.attr.colorPrimary);
             ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
         } else {
             light.setImageResource(R.drawable.snabble_ic_torch);
             light.setBackgroundResource(R.drawable.snabble_ic_button_outlined_48dp);
-            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_lightElementColor, null);
+            int color = UIUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface);
             ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
         }
 

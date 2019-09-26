@@ -7,12 +7,13 @@
             <size
                 android:height="48dp"
                 android:width="48dp" />
-            <solid android:color="#F8F8F8" />
+            <solid android:color="?attr/colorSurface" />
             <stroke
-                android:color="#1A000000"
+                android:color="?attr/colorOnSurface"
                 android:width="1dp" />
         </shape>
     </item>
+
     <item
         android:drawable="@drawable/snabble_ic_plus_content"
         android:left="10dp"

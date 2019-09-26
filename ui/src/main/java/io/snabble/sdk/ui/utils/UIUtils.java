@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Resources;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 import io.snabble.sdk.ui.R;
@@ -13,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +48,12 @@ public class UIUtils {
 
     public static int getDurationByLength(String text) {
         return Math.max(Math.min(text.length() * 50, 2000), 7000);
+    }
+
+    public static int getColorByAttribute(Context context, @AttrRes int attrResId) {
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(attrResId, typedValue, true);
+        return typedValue.data;
     }
     
     public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, int type) {

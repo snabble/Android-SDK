@@ -62,7 +62,7 @@
                 android:maxLength="2"
                 android:text="DE"
                 android:textAllCaps="true"
-                android:textColor="@color/snabble_textColorDark" />
+                android:textColor="?android:attr/textColorPrimary" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,11 +86,11 @@
                 android:inputType="textCapCharacters|textVisiblePassword"
                 android:maxLines="1"
                 android:textAllCaps="true"
-                android:textColor="@color/snabble_textColorDark" />
+                android:textColor="?android:attr/textColorPrimary" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button style="@style/SnabbleButton"
+        <Button
             android:id="@+id/save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

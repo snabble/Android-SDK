@@ -45,8 +45,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility 1.7
-        sourceCompatibility 1.7
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
 }
 
@@ -55,8 +55,9 @@ dependencies {
     implementation project(':ui')
     implementation project(':ui-integration')
 
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'commons-io:commons-io:2.5'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'

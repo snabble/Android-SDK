@@ -12,7 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         tools:text="Checkout-ID: a64b"
-        android:textColor="@color/snabble_textColorDark"
+        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginTop="16dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
@@ -27,7 +27,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/checkout_id"
         android:text="@string/Snabble.QRCode.showThisCode"
-        android:textColor="@color/snabble_textColorDark"
+        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
@@ -54,7 +54,7 @@
         android:textSize="19sp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:textColor="@color/snabble_textColorDark"
+        android:textColor="?android:attr/textColorPrimary"
         tools:text="@string/Snabble.PaymentSelection.title" />
 
     <TextView
@@ -65,14 +65,14 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/abort"
         android:text="@string/Snabble.QRCode.priceMayDiffer"
-        android:textColor="@color/snabble_textColorDark"
+        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
         android:textSize="14sp" />
 
     <Button
-        style="@style/SnabbleButton.TextButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:id="@+id/abort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

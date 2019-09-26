@@ -313,7 +313,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         Spannable spannable = new SpannableString(shortText);
 
         if (startIndex != -1 && endIndex != -1) {
-            int color = ResourcesCompat.getColor(getResources(), R.color.snabble_primaryColor, null);
+            int color = ResourcesCompat.getColor(getResources(), UIUtils.getColorByAttribute(getContext(), R.attr.colorPrimary), null);
 
             spannable.setSpan(new ClickableSpan() {
                 @Override

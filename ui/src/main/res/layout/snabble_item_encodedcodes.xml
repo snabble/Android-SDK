@@ -9,7 +9,7 @@
         android:layout_height="48dp"
         android:gravity="center"
         android:text="@string/Snabble.QRCode.showThisCode"
-        android:textColor="@color/snabble_textColorDark"
+        android:textColor="?android:attr/textColorPrimary"
         android:textStyle="bold"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"

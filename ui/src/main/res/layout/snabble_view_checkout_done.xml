@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Snabble.Payment.success"
-            android:textColor="@color/snabble_textColorDark"
+            android:textColor="?android:attr/textColorPrimary"
             android:layout_gravity="center"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -25,7 +25,7 @@
             android:textSize="17sp"/>
     </FrameLayout>
 
-    <Button style="@style/SnabbleButton"
+    <Button
         android:id="@+id/back"
         android:layout_width="match_parent"
         android:layout_marginLeft="16dp"
