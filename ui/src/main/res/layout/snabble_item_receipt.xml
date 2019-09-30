@@ -48,7 +48,6 @@
         android:layout_height="wrap_content"
         android:src="@drawable/snabble_ic_chevron_right"
         android:layout_centerVertical="true"
-        app:tint="?android:attr/textColorPrimary"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 </RelativeLayout>

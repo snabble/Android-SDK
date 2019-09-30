@@ -93,6 +93,7 @@
         android:insetTop="0dp"
         android:insetBottom="0dp"
         app:iconTint="?attr/colorOnSurface"
+        app:strokeColor="@drawable/snabble_stroke"
         app:icon="@drawable/snabble_ic_minus_content" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -105,6 +106,7 @@
         android:insetTop="0dp"
         android:insetBottom="0dp"
         app:hintEnabled="false"
+        app:boxStrokeColor="@drawable/snabble_stroke"
         android:layout_below="@+id/depositPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp">
@@ -136,6 +138,7 @@
         android:insetBottom="0dp"
         android:layout_toEndOf="@+id/quantity_text_input"
         app:iconTint="?attr/colorOnSurface"
+        app:strokeColor="@drawable/snabble_stroke"
         app:icon="@drawable/snabble_ic_plus_content" />
 
     <TextView

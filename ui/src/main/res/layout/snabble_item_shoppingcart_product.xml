@@ -36,7 +36,6 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:textSize="12dp"
-            android:textColor="?android:attr/textColorPrimary"
             android:id="@+id/subtitle"
             tools:text="Wiha"
             tools:visibility="visible" />
@@ -47,7 +46,6 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:textSize="17dp"
-            android:textColor="?android:attr/textColorPrimary"
             android:id="@+id/name"
             tools:text="Schraubendreher Top G" />
 
@@ -78,7 +76,6 @@
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
@@ -90,8 +87,9 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
         android:id="@+id/controls">
 
         <LinearLayout
@@ -101,30 +99,32 @@
             android:orientation="horizontal"
             tools:visibility="gone">
 
-            <com.google.android.material.button.MaterialButton style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:id="@+id/minus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginRight="16dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:minWidth="0dp"
-                app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.SmallComponent"
+                android:padding="6dp"
+                app:strokeColor="@drawable/snabble_stroke"
                 app:iconTint="?attr/colorOnSurface"
                 app:iconPadding="0dp"
                 app:icon="@drawable/snabble_ic_minus_content" />
 
             <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:id="@+id/plus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginRight="16dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
+                android:padding="6dp"
+                app:strokeColor="@drawable/snabble_stroke"
+                app:iconPadding="0dp"
                 app:iconTint="?attr/colorOnSurface"
                 app:icon="@drawable/snabble_ic_plus_content" />
         </LinearLayout>
@@ -133,41 +133,60 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:minWidth="88dp"
             android:id="@+id/controls_user_weighed"
             tools:visibility="visible">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:id="@+id/quantity_text_input"
+                android:layout_width="72dp"
+                android:layout_height="44dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:hintEnabled="false"
+                app:boxStrokeColor="@drawable/snabble_stroke">
 
-                android:id="@+id/quantity_edit"
-                android:layout_width="64dp"
-                android:layout_height="36dp"
-                android:layout_marginRight="4dp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:gravity="right|center_vertical"
-                android:inputType="number"
-                android:imeOptions="actionDone"
-                android:textSize="15dp"
-                android:text="1" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/quantity_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="right|center_vertical"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:textSize="15dp"
+                    android:text="1"  />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/quantity_annotation"
-                android:layout_width="32dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="4dp"
                 android:gravity="left"
                 android:text="g"
-                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="15dp" />
 
-            <ImageView
+            <Button style="@style/Widget.MaterialComponents.Button.Icon"
                 android:id="@+id/quantity_edit_apply"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/snabble_ic_button_check"
-                tools:visibility="gone" />
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="6dp"
+                android:layout_gravity="center_vertical"
+                app:iconPadding="0dp"
+                app:iconTint="?attr/colorOnPrimary"
+                app:icon="@drawable/snabble_ic_check_white" />
         </LinearLayout>
     </FrameLayout>
 

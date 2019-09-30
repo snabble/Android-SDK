@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -31,6 +32,7 @@ import android.widget.LinearLayout;
 import java.util.List;
 
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.PriceFormatter;
@@ -169,8 +171,8 @@ public class SelfScanningView extends FrameLayout {
 
     private void updateBarcodeSearchIcon() {
         enterBarcode.setImageResource(R.drawable.snabble_ic_search);
-        int color = UIUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface);
-        ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(color));
+        ViewCompat.setBackgroundTintList(enterBarcode, ColorStateList.valueOf(Color.WHITE));
+        ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(Color.WHITE));
     }
 
     private int dp2px(float dp) {
@@ -188,8 +190,8 @@ public class SelfScanningView extends FrameLayout {
         } else {
             light.setImageResource(R.drawable.snabble_ic_torch);
             light.setBackgroundResource(R.drawable.snabble_ic_button_outlined_48dp);
-            int color = UIUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface);
-            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
+            ViewCompat.setBackgroundTintList(light, ColorStateList.valueOf(Color.WHITE));
+            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(Color.WHITE));
         }
 
         int dp = dp2px(12);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.DayNight">
+    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents">
 <!--        <item name="colorPrimary">?attr/colorPrimary</item>-->
 <!--        <item name="colorPrimaryDark">?attr/colorPrimaryDark</item>-->
 <!--        <item name="colorSecondary">?attr/colorPrimary</item>-->

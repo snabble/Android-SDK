@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:layout_height="match_parent">
     <TextView
         android:id="@+id/checkout_id"
         android:layout_width="wrap_content"
@@ -12,7 +11,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         tools:text="Checkout-ID: a64b"
-        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginTop="16dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
@@ -40,7 +38,6 @@
         android:textSize="19sp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:textColor="?android:attr/textColorPrimary"
         tools:text="@string/Snabble.PaymentSelection.title" />
 
     <TextView
@@ -51,7 +48,6 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/paid"
         android:text="@string/Snabble.QRCode.priceMayDiffer"
-        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"

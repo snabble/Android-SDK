@@ -21,7 +21,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="top|center_horizontal"
                 tools:text="Checkout-ID: a64b"
-                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
@@ -33,7 +32,6 @@
                 android:id="@+id/checkout_id_code"
                 android:layout_width="match_parent"
                 android:layout_height="168dp"
-                android:background="?android:attr/windowBackground"
                 app:format="QR_CODE"
                 tools:ignore="RtlHardcoded" />
 

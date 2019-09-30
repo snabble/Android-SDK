@@ -90,7 +90,7 @@ public class BarcodeView extends AppCompatImageView {
         if (background instanceof ColorDrawable) {
             backgroundColor = ((ColorDrawable) background).getColor();
         } else {
-            backgroundColor = Color.WHITE;
+            backgroundColor = UIUtils.getColorByAttribute(getContext(), android.R.attr.windowBackground);
         }
     }
 
@@ -186,11 +186,28 @@ public class BarcodeView extends AppCompatImageView {
                                     }
                                 }
                             } else {
+                                int[] rect = bm.getEnclosingRectangle();
+                                int left = rect[0];
+                                int top = rect[1];
+                                int right = left + rect[2];
+                                int bottom = top + rect[3];
+
+                                int startX = left - dp2px(8);
+                                int startY = top - dp2px(8);
+                                int endX = right + dp2px(8);
+                                int endY = bottom + dp2px(8);
+
                                 for (int y = 0; y < th; y++) {
                                     final int stride = y * tw;
 
                                     for (int x = 0; x < tw; x++) {
-                                        pixels[x + stride] = bm.get(x, y) ? Color.BLACK : backgroundColor;
+                                        int bgColor = backgroundColor;
+
+                                        if (x > startX && y > startY && x < endX && y < endY) {
+                                            bgColor = Color.WHITE;
+                                        }
+
+                                        pixels[x + stride] = bm.get(x, y) ? Color.BLACK : bgColor;
                                     }
                                 }
                             }

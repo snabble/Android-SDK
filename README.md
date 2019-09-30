@@ -7,10 +7,10 @@ Android SDK for Snabble
 ## Requirements
 
 ```
-minSdkVersion = 16
-compileSdkVersion = 28
+minSdkVersion = 21
+compileSdkVersion = 29
 
-androidx for ui components
+androidx and a material components theme for ui components
 ```
 
 ## Installation

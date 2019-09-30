@@ -61,8 +61,7 @@
                 android:inputType="textCapCharacters|textNoSuggestions"
                 android:maxLength="2"
                 android:text="DE"
-                android:textAllCaps="true"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textAllCaps="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -85,8 +84,7 @@
                 android:hint="@string/Snabble.Payment.SEPA.IBAN"
                 android:inputType="textCapCharacters|textVisiblePassword"
                 android:maxLines="1"
-                android:textAllCaps="true"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textAllCaps="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
