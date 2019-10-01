@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.16.10]
+
+### Changed
+- Send cart again after checkout abort 
+
 ## [0.16.9]
 
 ### Fixed
