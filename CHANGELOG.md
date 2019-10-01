@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.16.10]
 
+### Fixed
+- Fixed payment selection ActionBar title
+
 ### Changed
 - Send cart again after checkout abort 
 

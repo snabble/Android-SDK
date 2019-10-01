@@ -343,6 +343,10 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         });
 
+        if (SnabbleUI.getActionBar() != null) {
+            SnabbleUI.getActionBar().setTitle(R.string.Snabble_PaymentSelection_title);
+        }
+
         alertDialog.show();
         alertDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
