@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="snabble_infoColor">#FFFFFF</color>
-    <color name="snabble_infoTextColor">?android:attr/textColorPrimary</color>
+    <color name="snabble_infoTextColor">#000000</color>
     <color name="snabble_infoColorWarning">#FFC400</color>
-    <color name="snabble_infoTextColorWarning">?android:attr/textColorPrimaryInverse</color>
+    <color name="snabble_infoTextColorWarning">#000000</color>
     <color name="snabble_infoColorPositive">#009000</color>
-    <color name="snabble_infoTextColorPositive">?android:attr/textColorPrimary</color>
+    <color name="snabble_infoTextColorPositive">#FFFFFF</color>
 </resources>

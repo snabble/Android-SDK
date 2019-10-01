@@ -5,4 +5,6 @@
         <attr name="format" format="string" />
         <attr name="adjustBrightness" format="boolean" />
     </declare-styleable>
+
+    <attr name="colorOnActionBar" format="color" />
 </resources>

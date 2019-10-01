@@ -2,6 +2,8 @@ package io.snabble.testapp;
 
 import android.app.Application;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -38,6 +40,8 @@ public class App extends Application {
             return;
         }
         LeakCanary.install(this);
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         instance = this;
     }

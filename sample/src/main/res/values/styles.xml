@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents">
+    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.DayNight">
 <!--        <item name="colorPrimary">?attr/colorPrimary</item>-->
 <!--        <item name="colorPrimaryDark">?attr/colorPrimaryDark</item>-->
 <!--        <item name="colorSecondary">?attr/colorPrimary</item>-->
@@ -25,5 +25,7 @@
 <!--        &lt;!&ndash; to prevent wild scrollbars to appear &ndash;&gt;-->
 <!--        <item name="android:scrollbars">none</item>-->
 <!--        <item name="android:statusBarColor">#4d4d4d</item>-->
+
+        <item name="colorOnActionBar">?attr/colorOnSurface</item>
     </style>
 </resources>

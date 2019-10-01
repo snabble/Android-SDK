@@ -43,7 +43,7 @@ public class ShoppingCartFragment extends Fragment {
 
         for (int i=0; i<menu.size(); i++) {
             MenuItem menuItem = menu.getItem(i);
-            int color = UIUtils.getColorByAttribute(requireContext(), R.attr.colorOnPrimary);
+            int color = UIUtils.getColorByAttribute(requireContext(), R.attr.colorOnActionBar);
             MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(color));
         }
     }
