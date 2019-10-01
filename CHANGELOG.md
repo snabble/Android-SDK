@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Send cart again after checkout abort 
+- Increased toast message duration for longer texts
 
 ## [0.16.9]
 

@@ -45,7 +45,7 @@ public class UIUtils {
     }
 
     public static int getDurationByLength(String text) {
-        return Math.max(Math.min(text.length() * 50, 2000), 7000);
+        return Math.max(Math.min(text.length() * 70, 2000), 7000);
     }
     
     public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, int type) {
