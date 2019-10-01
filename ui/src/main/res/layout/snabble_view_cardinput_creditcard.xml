@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/threed_secure_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/Snabble.CC.3dsecureHint" />
+
     <WebView
         android:id="@+id/web_view"
+        android:layout_below="@+id/threed_secure_hint"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -14,4 +23,4 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:visibility="gone"
         android:layout_marginTop="-7dp"/>
-</FrameLayout>
+</RelativeLayout>
