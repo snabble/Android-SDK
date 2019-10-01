@@ -148,6 +148,8 @@ public class Checkout {
                     notifyStateChanged(State.PAYMENT_ABORT_FAILED);
                 }
             });
+
+            project.getShoppingCart().updatePrices(false);
         } else {
             notifyStateChanged(State.NONE);
         }
