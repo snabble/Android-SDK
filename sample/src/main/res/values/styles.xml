@@ -1,31 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.DayNight">
-<!--        <item name="colorPrimary">?attr/colorPrimary</item>-->
-<!--        <item name="colorPrimaryDark">?attr/colorPrimaryDark</item>-->
-<!--        <item name="colorSecondary">?attr/colorPrimary</item>-->
-<!--        <item name="colorAccent">@color/snabble_accentColor</item>-->
-<!--        <item name="colorOnSecondary">?android:attr/textColorPrimaryInverse</item>-->
-
-<!--        <item name="android:textColorPrimary">@color/text_color</item>-->
-<!--        <item name="android:textColorPrimaryInverse">?android:attr/textColorPrimaryInverse</item>-->
-<!--        <item name="android:textColorSecondary">@color/text_color</item>-->
-<!--        <item name="android:textColorSecondaryInverse">?android:attr/textColorPrimaryInverse</item>-->
-<!--        <item name="android:textColorTertiary">@color/text_color</item>-->
-<!--        <item name="android:textColorTertiaryInverse">?android:attr/textColorPrimaryInverse</item>-->
-<!--        -->
-<!--        <item name="android:colorControlHighlight">@color/snabble_colorControlHighlight</item>-->
-<!--        <item name="android:selectableItemBackground">@drawable/round_ripple</item>-->
-
-<!--        <item name="materialCardViewStyle">@style/Widget.Snabble.MaterialCardView</item>-->
-<!--        <item name="materialButtonStyle">@style/Widget.Snabble.MaterialButton</item>-->
-
-<!--        <item name="textAppearanceButton">@style/Snabble.TextAppearance.Button</item>-->
-
-<!--        &lt;!&ndash; to prevent wild scrollbars to appear &ndash;&gt;-->
-<!--        <item name="android:scrollbars">none</item>-->
-<!--        <item name="android:statusBarColor">#4d4d4d</item>-->
-
         <item name="colorOnActionBar">?attr/colorOnSurface</item>
     </style>
 </resources>

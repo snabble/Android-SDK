@@ -1,6 +1,23 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.0]
+
+### Breaking Changes 
+- All ui components are now using the material components theme. 
+
+It is now REQUIRED to use a material components theme for your app. 
+
+For more detailed information see:
+https://github.com/material-components/material-components-android/blob/master/docs/getting-started.md
+
+### Added
+- Night mode support, if a DayNight theme is used.
+
+### Removed
+- All snabble_* colors, all components are now following the material components color system.
+Only the snabble_info* colors are left, but can mostly be left untouched.
+ 
 ## [0.16.10]
 
 ### Fixed
