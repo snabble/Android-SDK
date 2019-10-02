@@ -30,7 +30,7 @@ allprojects {
         minSdkVersion=21
         targetSdkVersion=29
 
-        buildToolsVersion='28.0.3'
+        buildToolsVersion='29.0.2'
         okhttpVersion='3.14.3'
 
         sdkVersion += project.getProperties().get("versionSuffix", "")

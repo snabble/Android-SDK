@@ -6,12 +6,11 @@ android:
   components:
   - platform-tools
   - tools
-  - build-tools-28.0.3
-  - android-28
+  - build-tools-29.0.2
+  - android-29
   - extra-android-m2repository
 before_install:
-- yes | sdkmanager "platforms;android-28"
-- gem install twine
+- yes | sdkmanager "platforms;android-29"
 script:
 - "./gradlew :core:assembleRelease :ui:assembleRelease :ui-integration:assembleRelease :utils:assembleRelease :firebase-detector:assembleRelease"
 after_success:
