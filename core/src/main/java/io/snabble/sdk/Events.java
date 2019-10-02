@@ -79,7 +79,7 @@ public class Events {
 
     public void logError(String format, Object... args) {
         if (Utils.isDebugBuild(Snabble.getInstance().getApplication())) {
-            return; // do not log in errors in debug builds
+            return; // do not log errors in debug builds
         }
 
         PayloadError error = new PayloadError();

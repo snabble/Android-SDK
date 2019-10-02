@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Breaking Changes 
 - All ui components are now using the material components theme. 
 
-It is now REQUIRED to use a material components theme for your app. 
+It is now REQUIRED to use a material components theme for your app. AppCompat themes are not supported anymore.
 
 For more detailed information see:
 https://github.com/material-components/material-components-android/blob/master/docs/getting-started.md

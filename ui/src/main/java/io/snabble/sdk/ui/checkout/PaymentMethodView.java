@@ -3,6 +3,8 @@ package io.snabble.sdk.ui.checkout;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -19,12 +21,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +132,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                         e.paymentMethod = paymentMethod;
                         e.paymentCredentials = pc;
                         e.text = pc.getObfuscatedId();
+                        e.desaturated = false;
 
                         e.onClickListener = new OnClickListener() {
                             @Override
@@ -171,6 +173,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                     final Entry e = new Entry();
                     e.text = descriptions.get(paymentMethod);
                     e.paymentMethod = paymentMethod;
+                    e.desaturated = false;
 
                     switch (paymentMethod) {
                         case DE_DIRECT_DEBIT:
@@ -180,6 +183,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                                     showSEPACardInput();
                                 }
                             };
+                            e.desaturated = true;
                             break;
                         case MASTERCARD:
                         case VISA:
@@ -189,6 +193,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                                     showCreditCardInput();
                                 }
                             };
+                            e.desaturated = true;
                             break;
                         default:
                             e.onClickListener = new OnClickListener() {
@@ -343,10 +348,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         });
 
-        if (SnabbleUI.getActionBar() != null) {
-            SnabbleUI.getActionBar().setTitle(R.string.Snabble_PaymentSelection_title);
-        }
-
         alertDialog.show();
         alertDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -369,6 +370,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         PaymentCredentials paymentCredentials;
         PaymentMethod paymentMethod;
         OnClickListener onClickListener;
+        boolean desaturated;
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
@@ -403,6 +405,13 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 imageView.setVisibility(View.VISIBLE);
             } else {
                 imageView.setVisibility(View.GONE);
+            }
+
+            if (e.desaturated) {
+                ColorMatrix matrix = new ColorMatrix();
+                matrix.setSaturation(0);
+                ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+                imageView.setColorFilter(filter);
             }
 
             TextView textView = holder.text;
