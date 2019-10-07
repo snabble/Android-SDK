@@ -9,6 +9,7 @@ Android SDK for Snabble
 ```
 minSdkVersion = 21
 compileSdkVersion = 29
+java 8
 
 androidx and a material components theme for ui components
 ```

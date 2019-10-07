@@ -19,6 +19,7 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
+    private View message;
 
     public CheckoutStatusView(Context context) {
         super(context);
@@ -39,6 +40,7 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
         inflate(getContext(), R.layout.snabble_view_checkout_status, this);
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
+        message = findViewById(R.id.message);
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
@@ -103,10 +105,17 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
     public void onStateChanged(Checkout.State state) {
         switch (state) {
             case WAIT_FOR_APPROVAL:
+                checkoutIdCode.setVisibility(View.VISIBLE);
                 String id = checkout.getId();
                 if (id != null) {
                     checkoutIdCode.setText(id);
                 }
+                break;
+            case PAYMENT_PROCESSING:
+                checkoutIdCode.setVisibility(View.GONE);
+                message.setVisibility(View.GONE);
+                cancel.setVisibility(View.INVISIBLE);
+                cancelProgress.setVisibility(View.INVISIBLE);
                 break;
             case PAYMENT_ABORT_FAILED:
                 cancel.setEnabled(true);

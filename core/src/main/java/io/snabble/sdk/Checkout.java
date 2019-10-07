@@ -40,6 +40,10 @@ public class Checkout {
          */
         WAIT_FOR_APPROVAL,
         /**
+         * Payment was approved and is currently processing.
+         */
+        PAYMENT_PROCESSING,
+        /**
          * The payment was approved. We are done.
          */
         PAYMENT_APPROVED,
@@ -267,12 +271,18 @@ public class Checkout {
             @Override
             public void success(CheckoutApi.SignedCheckoutInfo checkoutInfo,
                                 int onlinePrice,
-                                PaymentMethod[] availablePaymentMethods) {
+                                CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
                 signedCheckoutInfo = checkoutInfo;
                 priceToPay = shoppingCart.getTotalPrice();
 
-                if (availablePaymentMethods.length == 1 && !availablePaymentMethods[0].isRequiringCredentials()) {
-                    pay(availablePaymentMethods[0], null, true);
+                if (availablePaymentMethods.length == 1) {
+                    PaymentMethod paymentMethod = PaymentMethod.fromString(availablePaymentMethods[0].id);
+                    if (paymentMethod != null && !paymentMethod.isRequiringCredentials()) {
+                        pay(paymentMethod, null, true);
+                    } else {
+                        notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
+                        Logger.d("Payment method requested");
+                    }
                 } else {
                     notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
                     Logger.d("Payment method requested");
@@ -354,8 +364,13 @@ public class Checkout {
                             checkoutProcess = checkoutProcessResponse;
 
                             if (!handleProcessResponse()) {
-                                Logger.d("Waiting for approval...");
-                                notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                                if (checkoutProcessResponse.paymentState == CheckoutApi.PaymentState.PROCESSING) {
+                                    Logger.d("Processing payment...");
+                                    notifyStateChanged(State.PAYMENT_PROCESSING);
+                                } else {
+                                    Logger.d("Waiting for approval...");
+                                    notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                                }
 
                                 if (!paymentMethod.isOfflineMethod()) {
                                     scheduleNextPoll();
@@ -514,7 +529,16 @@ public class Checkout {
      */
     public PaymentMethod[] getAvailablePaymentMethods() {
         if (signedCheckoutInfo != null) {
-            return signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
+            CheckoutApi.PaymentMethodInfo[] paymentMethodInfos =  signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
+            List<PaymentMethod> paymentMethods = new ArrayList<>();
+            for (CheckoutApi.PaymentMethodInfo info : paymentMethodInfos) {
+                PaymentMethod pm = PaymentMethod.fromString(info.id);
+                if (pm != null) {
+                    paymentMethods.add(pm);
+                }
+            }
+
+            return paymentMethods.toArray(new PaymentMethod[paymentMethods.size()]);
         }
 
         return new PaymentMethod[0];

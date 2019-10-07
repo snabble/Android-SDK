@@ -1,6 +1,5 @@
 package io.snabble.sdk.payment;
 
-import android.annotation.SuppressLint;
 import android.util.Base64;
 
 
@@ -35,8 +34,19 @@ import io.snabble.sdk.utils.Utils;
 
 public class PaymentCredentials {
     public enum Type {
-        SEPA,
-        CREDIT_CARD
+        SEPA(null),
+        CREDIT_CARD(null),
+        TEGUT_EMPLOYEE_CARD("tegutEmployeeID");
+
+        private String originType;
+
+        Type(String originType) {
+            this.originType = originType;
+        }
+
+        public String getOriginType() {
+            return originType;
+        }
     }
 
     public enum Brand {
@@ -54,6 +64,10 @@ public class PaymentCredentials {
         private String hostedDataID;
         private String hostedDataStoreID;
         private String cardType;
+    }
+
+    private static class TegutEmployeeCard {
+        private String cardNumber;
     }
 
     private String obfuscatedId;
@@ -160,6 +174,35 @@ public class PaymentCredentials {
         } catch (NumberFormatException | ParseException e) {
             return null;
         }
+
+        if (pc.encryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
+    public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber) {
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.type = Type.TEGUT_EMPLOYEE_CARD;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        pc.obfuscatedId = obfuscatedId;
+
+        X509Certificate certificate = certificates.get(0);
+
+        TegutEmployeeCard data = new TegutEmployeeCard();
+        data.cardNumber = cardNumber;
+        String json = GsonHolder.get().toJson(data, TegutEmployeeCard.class);
+
+        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.signature = pc.sha256Signature(certificate);
+        pc.brand = Brand.UNKNOWN;
+        pc.appId = Snabble.getInstance().getConfig().appId;
 
         if (pc.encryptedData == null) {
             return null;
