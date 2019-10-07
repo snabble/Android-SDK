@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## [0.17.0]
 
 ### Breaking Changes 
+- Minimum API Level is now 21.
+- Java 8 is now required.
 - All ui components are now using the material components theme. 
 
 It is now REQUIRED to use a material components theme for your app. AppCompat themes are not supported anymore.
