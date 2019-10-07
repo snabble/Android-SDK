@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,6 +57,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         icons.put(PaymentMethod.MASTERCARD, R.drawable.snabble_ic_pm_mastercard);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_pm_checkstand);
+        icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_pm_tegut);
     }
 
     private Checkout checkout;
@@ -169,7 +169,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
                         entries.add(e);
                     }
-                } else {
+                } else if (!paymentMethod.isShowOnlyIfCredentialsArePresent()){
                     final Entry e = new Entry();
                     e.text = descriptions.get(paymentMethod);
                     e.paymentMethod = paymentMethod;
@@ -235,6 +235,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 return PaymentCredentials.Type.CREDIT_CARD;
             case DE_DIRECT_DEBIT:
                 return PaymentCredentials.Type.SEPA;
+            case TEGUT_EMPLOYEE_CARD:
+                return PaymentCredentials.Type.TEGUT_EMPLOYEE_CARD;
             default:
                 return null;
         }

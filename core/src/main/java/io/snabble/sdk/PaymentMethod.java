@@ -4,22 +4,26 @@ import com.google.gson.annotations.SerializedName;
 
 public enum PaymentMethod {
     @SerializedName("qrCodePOS")
-    QRCODE_POS(false, false),
+    QRCODE_POS(false, false, false),
     @SerializedName("qrCodeOffline")
-    QRCODE_OFFLINE(true, false),
+    QRCODE_OFFLINE(true, false, false),
     @SerializedName("deDirectDebit")
-    DE_DIRECT_DEBIT(false, true),
+    DE_DIRECT_DEBIT(false, true, false),
     @SerializedName("creditCardVisa")
-    VISA(false, true),
+    VISA(false, true, false),
     @SerializedName("creditCardMastercard")
-    MASTERCARD(false, true);
+    MASTERCARD(false, true, false),
+    @SerializedName("externalBilling")
+    TEGUT_EMPLOYEE_CARD(false, true, true);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;
+    private boolean showOnlyIfCredentialsArePresent;
 
-    PaymentMethod(boolean isOfflineMethod, boolean requiresCredentials) {
+    PaymentMethod(boolean isOfflineMethod, boolean requiresCredentials, boolean showOnlyIfCredentialsArePresent) {
         this.isOfflineMethod = isOfflineMethod;
         this.requiresCredentials = requiresCredentials;
+        this.showOnlyIfCredentialsArePresent = showOnlyIfCredentialsArePresent;
     }
 
     public boolean isOfflineMethod() {
@@ -28,6 +32,10 @@ public enum PaymentMethod {
 
     public boolean isRequiringCredentials() {
         return requiresCredentials;
+    }
+
+    public boolean isShowOnlyIfCredentialsArePresent() {
+        return showOnlyIfCredentialsArePresent;
     }
 
     public static PaymentMethod fromString(String value) {
@@ -48,4 +56,6 @@ public enum PaymentMethod {
 
         return null;
     }
+
+
 }

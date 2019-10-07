@@ -54,37 +54,35 @@ class CheckoutApi {
             return null;
         }
 
-        public PaymentMethod[] getAvailablePaymentMethods(PaymentMethod[] clientAcceptedPaymentMethods) {
-            if (checkoutInfo != null && checkoutInfo.has("availableMethods")) {
-                JsonArray jsonArray = checkoutInfo.getAsJsonArray("availableMethods");
+        public PaymentMethodInfo[] getAvailablePaymentMethods(PaymentMethod[] clientAcceptedPaymentMethods) {
+            if (checkoutInfo != null && checkoutInfo.has("paymentMethods")) {
+                JsonArray jsonArray = checkoutInfo.getAsJsonArray("paymentMethods");
                 if (jsonArray != null) {
-                    List<PaymentMethod> paymentMethods = new Gson().fromJson(jsonArray,
-                            new TypeToken<List<PaymentMethod>>() {
-                            }.getType());
+                    List<PaymentMethodInfo> paymentMethods = new Gson().fromJson(jsonArray,
+                            new TypeToken<List<PaymentMethodInfo>>() {}.getType());
 
                     if (clientAcceptedPaymentMethods == null) {
                         clientAcceptedPaymentMethods = PaymentMethod.values();
                     }
 
-                    List<PaymentMethod> result = new ArrayList<>();
+                    List<PaymentMethodInfo> result = new ArrayList<>();
 
                     for (PaymentMethod clientPaymentMethod : clientAcceptedPaymentMethods) {
-                        if (paymentMethods.contains(clientPaymentMethod)) {
-                            result.add(clientPaymentMethod);
+                        for (PaymentMethodInfo paymentMethodInfo : paymentMethods) {
+                            PaymentMethod pm = PaymentMethod.fromString(paymentMethodInfo.id);
+                            if (pm != null) {
+                                if (pm.equals(clientPaymentMethod)) {
+                                    result.add(paymentMethodInfo);
+                                }
+                            }
                         }
                     }
 
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-                            || !Snabble.getInstance().getConfig().enableExperimentalCreditCardPayment) {
-                        result.remove(PaymentMethod.VISA);
-                        result.remove(PaymentMethod.MASTERCARD);
-                    }
-
-                    return result.toArray(new PaymentMethod[result.size()]);
+                    return result.toArray(new PaymentMethodInfo[result.size()]);
                 }
             }
 
-            return new PaymentMethod[0];
+            return new PaymentMethodInfo[0];
         }
     }
 
@@ -118,6 +116,7 @@ class CheckoutApi {
     public static class PaymentInformation {
         public String qrCodeContent;
         public String encryptedOrigin;
+        public String originType;
     }
 
     public static class CheckoutProcessRequest {
@@ -128,9 +127,16 @@ class CheckoutApi {
         public Boolean processedOffline;
     }
 
+    public static class PaymentMethodInfo {
+        public String id;
+        public String[] acceptedOriginTypes;
+    }
+
     public enum PaymentState {
         @SerializedName("pending")
         PENDING,
+        @SerializedName("processing")
+        PROCESSING,
         @SerializedName("successful")
         SUCCESSFUL,
         @SerializedName("failed")
@@ -168,7 +174,7 @@ class CheckoutApi {
     }
 
     public interface CheckoutInfoResult {
-        void success(SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethod[] availablePaymentMethods);
+        void success(SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, PaymentMethodInfo[] availablePaymentMethods);
         void noShop();
         void invalidProducts(List<Product> products);
         void noAvailablePaymentMethod();
@@ -268,7 +274,7 @@ class CheckoutApi {
                     price = project.getShoppingCart().getTotalPrice();
                 }
 
-                PaymentMethod[] availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
+                PaymentMethodInfo[] availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
                 if (availablePaymentMethods != null && availablePaymentMethods.length > 0) {
                     checkoutInfoResult.success(signedCheckoutInfo, price, availablePaymentMethods);
                 } else {
@@ -386,6 +392,7 @@ class CheckoutApi {
                 return;
             }
 
+            checkoutProcessRequest.paymentInformation.originType = paymentCredentials.getType().getOriginType();
             checkoutProcessRequest.paymentInformation.encryptedOrigin = data;
         }
 

@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.payment;
 
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +27,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.ui.utils.UIUtils;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     private List<Entry> entries;

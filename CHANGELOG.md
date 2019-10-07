@@ -15,6 +15,7 @@ https://github.com/material-components/material-components-android/blob/master/d
 
 ### Added
 - Night mode support, if a DayNight theme is used.
+- Support for tegut employee card payments
 
 ### Removed
 - All snabble_* colors, all components are now following the material components color system.

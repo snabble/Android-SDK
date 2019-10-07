@@ -94,6 +94,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 PaymentMethodView paymentMethodView = new PaymentMethodView(getContext());
                 displayView(paymentMethodView);
                 break;
+            case PAYMENT_PROCESSING:
             case WAIT_FOR_APPROVAL:
                 displayPaymentView();
                 break;
@@ -147,6 +148,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     private void displayPaymentView() {
         switch (checkout.getSelectedPaymentMethod()) {
+            case TEGUT_EMPLOYEE_CARD:
             case DE_DIRECT_DEBIT:
             case VISA:
             case MASTERCARD:
