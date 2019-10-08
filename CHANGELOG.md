@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.1]
+
+### Fixed
+- Fixed night mode icon for camera permission
+
 ## [0.17.0]
 
 ### Breaking Changes 
