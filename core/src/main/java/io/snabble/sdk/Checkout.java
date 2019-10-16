@@ -60,7 +60,7 @@ public class Checkout {
          */
         PAYMENT_ABORTED,
         /**
-         * The payment was aborted.
+         * The payment could not be aborted.
          */
         PAYMENT_ABORT_FAILED,
         /**
