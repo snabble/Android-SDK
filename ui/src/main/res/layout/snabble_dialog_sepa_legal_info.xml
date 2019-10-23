@@ -19,6 +19,7 @@
             android:id="@+id/close"
             android:padding="12dp"
             android:background="?android:attr/selectableItemBackground"
+            android:tint="?attr/colorOnSurface"
             android:src="@drawable/snabble_ic_close" />
 
         <TextView

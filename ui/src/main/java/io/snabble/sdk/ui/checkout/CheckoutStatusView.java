@@ -44,19 +44,6 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
-        cancel.setAlpha(0);
-        cancel.setEnabled(false);
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                cancel.setVisibility(View.VISIBLE);
-                cancel.animate().setDuration(150).alpha(1).start();
-                cancel.setEnabled(true);
-            }
-        }, 2000);
-
         cancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,8 +105,8 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
                 cancelProgress.setVisibility(View.INVISIBLE);
                 break;
             case PAYMENT_ABORT_FAILED:
-                cancel.setEnabled(true);
                 cancelProgress.setVisibility(View.INVISIBLE);
+                cancel.setEnabled(true);
                 break;
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);

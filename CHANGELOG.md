@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.2]
+
+### Changed
+- Removed delay for checkout abort button appearance
+
+### Fixed
+- More night mode fixes
+
 ## [0.17.1]
 
 ### Fixed
