@@ -14,13 +14,17 @@ public enum PaymentMethod {
     @SerializedName("creditCardMastercard")
     MASTERCARD(false, true, false),
     @SerializedName("externalBilling")
-    TEGUT_EMPLOYEE_CARD(false, true, true);
+    TEGUT_EMPLOYEE_CARD(false, true, true),
+    @SerializedName("gatekeeperTerminal")
+    GATEKEEPER_TERMINAL(false, false, false);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;
     private boolean showOnlyIfCredentialsArePresent;
 
-    PaymentMethod(boolean isOfflineMethod, boolean requiresCredentials, boolean showOnlyIfCredentialsArePresent) {
+    PaymentMethod(boolean isOfflineMethod,
+                  boolean requiresCredentials,
+                  boolean showOnlyIfCredentialsArePresent) {
         this.isOfflineMethod = isOfflineMethod;
         this.requiresCredentials = requiresCredentials;
         this.showOnlyIfCredentialsArePresent = showOnlyIfCredentialsArePresent;

@@ -58,6 +58,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_pm_tegut);
+        icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_pm_checkstand);
     }
 
     private Checkout checkout;
@@ -187,6 +188,10 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                             break;
                         case MASTERCARD:
                         case VISA:
+                            if (!Snabble.getInstance().getConfig().enableExperimentalCreditCardPayment) {
+                                continue;
+                            }
+
                             e.onClickListener = new OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
