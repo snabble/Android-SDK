@@ -154,6 +154,9 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
             case MASTERCARD:
                 displayView(new CheckoutStatusView(getContext()));
                 break;
+            case GATEKEEPER_TERMINAL:
+                displayView(new CheckoutGatekeeperView(getContext()));
+                break;
             case QRCODE_POS:
                 CheckoutQRCodePOSView checkoutQRCodePOSView = new CheckoutQRCodePOSView(getContext());
                 checkoutQRCodePOSView.setQRCodeText(checkout.getQRCodePOSContent());
