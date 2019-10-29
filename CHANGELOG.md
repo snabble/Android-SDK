@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.4]
+
+### Fixed
+- Fixed payment result not resetting on consecutive checkouts
+
 ## [0.17.3]
 
 ### Added
