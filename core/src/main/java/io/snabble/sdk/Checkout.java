@@ -231,6 +231,8 @@ public class Checkout {
         checkoutProcess = null;
         invalidProducts = null;
         paymentMethod = null;
+        paymentResultHandled = false;
+        paymentResult = null;
         shop = null;
     }
 
@@ -272,6 +274,8 @@ public class Checkout {
         paymentMethod = null;
         priceToPay = 0;
         invalidProducts = null;
+        paymentResult = null;
+        paymentResultHandled = false;
         shop = project.getCheckedInShop();
 
         notifyStateChanged(State.HANDSHAKING);
