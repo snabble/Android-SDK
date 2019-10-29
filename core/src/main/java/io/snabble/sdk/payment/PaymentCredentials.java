@@ -121,6 +121,35 @@ public class PaymentCredentials {
         return pc;
     }
 
+    public static PaymentCredentials fromEncryptedSEPA(String name, String obfuscatedId, String encryptedData) {
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.type = Type.SEPA;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Invalid Name");
+        }
+
+        pc.obfuscatedId = obfuscatedId;
+
+        X509Certificate certificate = certificates.get(0);
+        pc.encryptedData = encryptedData;
+        pc.encrypt();
+        pc.signature = pc.sha256Signature(certificate);
+        pc.brand = Brand.UNKNOWN;
+        pc.appId = Snabble.getInstance().getConfig().appId;
+
+        if (pc.encryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
     public static PaymentCredentials fromCreditCardData(String name, Brand brand, String obfuscatedId,
                                                         String expirationMonth, String expirationYear,
                                                         String hostedDataId, String storeId) {

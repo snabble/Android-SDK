@@ -44,6 +44,12 @@ public class Checkout {
          */
         PAYMENT_PROCESSING,
         /**
+         * Happens when a user want to save his transaction details when paying over a terminal.
+         *
+         * To continue call {@link #continuePaymentProcess()}.
+         */
+        REQUEST_ADD_PAYMENT_ORIGIN,
+        /**
          * The payment was approved. We are done.
          */
         PAYMENT_APPROVED,
@@ -81,6 +87,16 @@ public class Checkout {
         NO_SHOP,
     }
 
+    public class PaymentOrigin {
+        public final String name;
+        public final String iban;
+
+        PaymentOrigin(String name, String iban) {
+            this.name = name;
+            this.iban = iban;
+        }
+    }
+
     private Project project;
     private CheckoutApi checkoutApi;
     private ShoppingCart shoppingCart;
@@ -102,6 +118,8 @@ public class Checkout {
     private PaymentMethod[] clientAcceptedPaymentMethods;
     private Shop shop;
     private List<Product> invalidProducts;
+    private CheckoutApi.PaymentResult paymentResult;
+    private boolean paymentResultHandled;
 
     private Runnable pollRunnable = new Runnable() {
         @Override
@@ -408,6 +426,7 @@ public class Checkout {
                     checkoutProcess = checkoutProcessResponse;
 
                     if (handleProcessResponse()) {
+                        Logger.d("stop polling");
                         handler.removeCallbacks(pollRunnable);
                     }
                 }
@@ -419,7 +438,9 @@ public class Checkout {
             }
         });
 
-        if (state == State.WAIT_FOR_APPROVAL || state == State.PAYMENT_APPROVED) {
+        if (state == State.WAIT_FOR_APPROVAL
+                || state == State.PAYMENT_APPROVED
+                || state == State.REQUEST_ADD_PAYMENT_ORIGIN) {
             scheduleNextPoll();
         }
     }
@@ -429,6 +450,21 @@ public class Checkout {
             Logger.d("Payment aborted");
             notifyStateChanged(State.PAYMENT_ABORTED);
             return true;
+        }
+
+        if (checkoutProcess.paymentResult != null
+         && checkoutProcess.paymentResult.ehiTechDaysName != null
+         && checkoutProcess.paymentResult.ehiTechDaysIban != null) {
+            if (!paymentResultHandled) {
+                if (paymentResult == null) {
+                    Logger.d("Request adding payment origin");
+                    paymentResult = checkoutProcess.paymentResult;
+                    paymentResultHandled = false;
+                    notifyStateChanged(State.REQUEST_ADD_PAYMENT_ORIGIN);
+                }
+
+                return false;
+            }
         }
 
         if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL) {
@@ -467,6 +503,14 @@ public class Checkout {
         if (paymentMethod != null && paymentMethod.isOfflineMethod()) {
             approve();
         }
+    }
+
+    /** Continues the payment process after it stopped when requiring user interaction,
+     *  for example after REQUEST_ADD_PAYMENT_ORIGIN **/
+    public void continuePaymentProcess() {
+        Logger.d("Continue payment process");
+        paymentResultHandled = true;
+        paymentResult = null;
     }
 
     public String getOrderId() {
@@ -516,12 +560,31 @@ public class Checkout {
         return paymentMethod;
     }
 
+    public PaymentMethod getPaymentMethodForPayment() {
+        if (checkoutProcess != null) {
+            return checkoutProcess.paymentMethod;
+        }
+
+        return null;
+    }
+
     public int getPriceToPay() {
         return priceToPay;
     }
 
     public List<Product> getInvalidProducts() {
         return invalidProducts;
+    }
+
+    public PaymentOrigin getPaymentOrigin() {
+        if (paymentResult != null
+                && paymentResult.ehiTechDaysIban != null
+                && paymentResult.ehiTechDaysName != null) {
+            return new PaymentOrigin(paymentResult.ehiTechDaysName,
+                    paymentResult.ehiTechDaysIban);
+        }
+
+        return null;
     }
 
     /**

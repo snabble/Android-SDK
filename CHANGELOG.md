@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.3]
+
+### Added
+- Added support for terminal handover
+- Added support for adding payment origins over terminal payments
+- Added OnKeyListener to PaymentResolver
+
 ## [0.17.2]
 
 ### Changed

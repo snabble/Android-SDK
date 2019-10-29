@@ -143,6 +143,11 @@ class CheckoutApi {
         FAILED,
     }
 
+    public static class PaymentResult {
+        public String ehiTechDaysIban;
+        public String ehiTechDaysName;
+    }
+
     public static class CheckoutProcessResponse {
         public Map<String, Href> links;
         public Boolean supervisorApproval;
@@ -155,6 +160,7 @@ class CheckoutApi {
         public boolean modified;
         public PaymentInformation paymentInformation;
         public PaymentState paymentState;
+        public PaymentResult paymentResult;
 
         public String getSelfLink() {
             Href link = links.get("self");

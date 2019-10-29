@@ -13,9 +13,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.ui.KeyguardHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -126,6 +130,24 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                         .create()
                         .show();
                 break;
+            case REQUEST_ADD_PAYMENT_ORIGIN:
+                new AlertDialog.Builder(getContext())
+                        .setMessage(R.string.Snabble_Payment_addPaymentOrigin)
+                        .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addPaymentOrigin();
+                            }
+                        })
+                        .setNegativeButton(R.string.Snabble_No, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                checkout.continuePaymentProcess();
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
             case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:
             case DENIED_BY_SUPERVISOR:
@@ -144,6 +166,43 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         }
 
         currentState = state;
+    }
+
+    private void addPaymentOrigin() {
+        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+            SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
+                @Override
+                public void onKeyguardResult(int resultCode) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        addPaymentCredentials();
+                        checkout.continuePaymentProcess();
+                    }
+                }
+            });
+        } else {
+            addPaymentCredentials();
+            checkout.continuePaymentProcess();
+        }
+    }
+
+    public void addPaymentCredentials() {
+        Checkout.PaymentOrigin paymentOrigin = checkout.getPaymentOrigin();
+
+        if (paymentOrigin != null) {
+            final PaymentCredentials pc = PaymentCredentials.fromSEPA(
+                    paymentOrigin.name,
+                    paymentOrigin.iban);
+
+            if (pc == null) {
+                Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                Snabble.getInstance().getPaymentCredentialsStore().add(pc);
+                Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.getType().name());
+
+                checkout.continuePaymentProcess();
+            }
+        }
     }
 
     private void displayPaymentView() {
