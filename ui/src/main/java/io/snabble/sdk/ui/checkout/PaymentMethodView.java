@@ -58,7 +58,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_pm_tegut);
-        icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_pm_checkstand);
+        icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_pm_sco);
     }
 
     private Checkout checkout;
@@ -419,6 +419,8 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                 matrix.setSaturation(0);
                 ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
                 imageView.setColorFilter(filter);
+            } else {
+                imageView.clearColorFilter();
             }
 
             TextView textView = holder.text;

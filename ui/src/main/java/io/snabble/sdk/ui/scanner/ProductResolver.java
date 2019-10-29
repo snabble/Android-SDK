@@ -36,6 +36,7 @@ public class ProductResolver {
     private OnProductNotFoundListener onProductNotFoundListener;
     private OnNetworkErrorListener onNetworkErrorListener;
     private BarcodeFormat barcodeFormat;
+    private DialogInterface.OnKeyListener onKeyListener;
 
     private ProductResolver(Context context) {
         this.context = context;
@@ -47,6 +48,17 @@ public class ProductResolver {
                 if(onDismissListener != null) {
                     onDismissListener.onDismiss();
                 }
+            }
+        });
+
+        productConfirmationDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (onKeyListener != null) {
+                    return onKeyListener.onKey(dialog, keyCode, event);
+                }
+
+                return false;
             }
         });
 
@@ -303,6 +315,10 @@ public class ProductResolver {
         onDismissListener = listener;
     }
 
+    public void addResolvedItemToCart() {
+        productConfirmationDialog.addToCart();
+    }
+
     public interface OnShowListener {
         void onShow();
     }
@@ -346,6 +362,11 @@ public class ProductResolver {
 
         public Builder setOnShowListener(OnShowListener listener) {
             productResolver.onShowListener = listener;
+            return this;
+        }
+
+        public Builder setOnKeyListener(DialogInterface.OnKeyListener listener) {
+            productResolver.onKeyListener = listener;
             return this;
         }
 

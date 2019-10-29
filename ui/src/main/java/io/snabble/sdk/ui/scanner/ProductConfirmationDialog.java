@@ -63,7 +63,7 @@ class ProductConfirmationDialog {
 
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
-
+    private DialogInterface.OnKeyListener onKeyListener;
 
     public ProductConfirmationDialog(Context context,
                                      Project project) {
@@ -84,6 +84,7 @@ class ProductConfirmationDialog {
 
         alertDialog.setOnShowListener(onShowListener);
         alertDialog.setOnDismissListener(onDismissListener);
+        alertDialog.setOnKeyListener(onKeyListener);
 
         quantity = view.findViewById(R.id.quantity);
         subtitle = view.findViewById(R.id.subtitle);
@@ -285,7 +286,7 @@ class ProductConfirmationDialog {
         }
     }
 
-    private void addToCart() {
+    public void addToCart() {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
         if (cartItem == null) {
@@ -394,5 +395,9 @@ class ProductConfirmationDialog {
 
     public void setOnShowListener(DialogInterface.OnShowListener onShowListener) {
         this.onShowListener = onShowListener;
+    }
+
+    public void setOnKeyListener(DialogInterface.OnKeyListener onKeyListener) {
+        this.onKeyListener = onKeyListener;
     }
 }

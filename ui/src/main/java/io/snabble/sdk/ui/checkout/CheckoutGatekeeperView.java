@@ -93,7 +93,7 @@ class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCheckoutS
                 checkoutIdCode.setVisibility(View.VISIBLE);
                 String id = checkout.getId();
                 if (id != null) {
-                    checkoutIdCode.setText("snabble:checkoutInfo:" + id);
+                    checkoutIdCode.setText("snabble:checkoutProcess:" + id);
                 }
                 break;
             case PAYMENT_PROCESSING:
