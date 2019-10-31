@@ -170,7 +170,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
                         entries.add(e);
                     }
-                } else if (!paymentMethod.isShowOnlyIfCredentialsArePresent()){
+                } else if (!paymentMethod.isShowOnlyIfCredentialsArePresent()) {
                     final Entry e = new Entry();
                     e.text = descriptions.get(paymentMethod);
                     e.paymentMethod = paymentMethod;
@@ -216,7 +216,36 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         }
 
+        filterPaymentMethods();
+
         recyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    private void filterPaymentMethods() {
+        boolean hasPaymentMethodWithCredentials = false;
+        boolean hasGatekeeperTerminal = false;
+        for (Entry e : entries) {
+            if (e.paymentCredentials != null) {
+                hasPaymentMethodWithCredentials = true;
+            }
+
+            if (e.paymentMethod == PaymentMethod.GATEKEEPER_TERMINAL) {
+                hasGatekeeperTerminal = true;
+            }
+        }
+
+        if (hasPaymentMethodWithCredentials || hasGatekeeperTerminal) {
+            ArrayList<Entry> removals = new ArrayList<>();
+            for (Entry e : entries) {
+                if (e.paymentCredentials == null && e.paymentMethod.isRequiringCredentials()) {
+                    removals.add(e);
+                }
+            }
+
+            for (Entry e : removals) {
+                entries.remove(e);
+            }
+        }
     }
 
     private List<PaymentCredentials> getPaymentCredentials(PaymentMethod pm) {

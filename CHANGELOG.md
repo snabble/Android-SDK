@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.5]
+
+### Added
+- Simple filtering of payment methods
+
 ## [0.17.4]
 
 ### Fixed
