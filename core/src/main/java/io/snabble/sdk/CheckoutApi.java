@@ -96,6 +96,7 @@ class CheckoutApi {
         String refersTo;
         String sku;
         String name;
+        String scannedCode;
         int amount;
         int price;
         int totalPrice;

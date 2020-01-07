@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.7]
+
+### Fixed
+- Handle overwritten scannedCodes from vPOS
+
 ## [0.17.6]
 
 ### Added
