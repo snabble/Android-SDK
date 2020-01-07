@@ -50,6 +50,9 @@ public class EncodedCodesGenerator {
         for (int i = 0; i < shoppingCart.size(); i++) {
             ShoppingCart.Item item = shoppingCart.get(i);
             Product product = item.getProduct();
+            if (product == null) {
+                continue;
+            }
 
             productInfos.add(new ProductInfo(product,
                     item.getQuantity(),

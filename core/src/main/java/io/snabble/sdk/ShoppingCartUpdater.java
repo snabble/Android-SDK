@@ -7,6 +7,8 @@ import android.os.SystemClock;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -62,38 +64,81 @@ class ShoppingCartUpdater {
                                     CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
 
                                     Set<String> referrerIds = new HashSet<>();
-                                    Set<String> requiredSkus = new HashSet<>();
+                                    Set<String> requiredIds = new HashSet<>();
 
                                     for (int i=0; i<cart.size(); i++) {
                                         ShoppingCart.Item item = cart.get(i);
-                                        requiredSkus.add(item.getProduct().getSku());
+                                        requiredIds.add(item.getId());
                                         referrerIds.add(item.getId());
                                     }
 
                                     for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                                        requiredSkus.remove(lineItem.sku);
+                                        requiredIds.remove(lineItem.id);
                                     }
 
                                     // error out when items are missing
-                                    if (requiredSkus.size() > 0) {
-                                        Logger.e("Missing products in price update: " + requiredSkus.toString());
+                                    if (requiredIds.size() > 0) {
+                                        Logger.e("Missing products in price update: " + requiredIds.toString());
                                         unknownError();
                                         return;
                                     }
 
-                                    for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                                        // exclude deposit line items
-                                        if (lineItem.type == CheckoutApi.LineItemType.DEPOSIT && referrerIds.contains(lineItem.refersTo)) {
-                                            continue;
-                                        }
+                                    int discounts = 0;
 
+                                    for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
                                         ShoppingCart.Item item = cart.getByItemId(lineItem.id);
 
                                         if (item != null) {
+                                            if (!item.getProduct().getSku().equals(lineItem.sku)) {
+                                                CountDownLatch countDownLatch = new CountDownLatch(1);
+                                                boolean[] error = new boolean[1];
+
+                                                project.getProductDatabase().findBySkuOnline(lineItem.sku, new OnProductAvailableListener() {
+                                                    @Override
+                                                    public void onProductAvailable(Product product, boolean wasOnline) {
+                                                        item.replace(product, item.getScannedCode(), lineItem.amount);
+                                                        countDownLatch.countDown();
+                                                    }
+
+                                                    @Override
+                                                    public void onProductNotFound() {
+                                                        error[0] = true;
+                                                        countDownLatch.countDown();
+                                                    }
+
+                                                    @Override
+                                                    public void onError() {
+                                                        error[0] = true;
+                                                        countDownLatch.countDown();
+                                                    }
+                                                });
+
+                                                countDownLatch.await();
+
+                                                if (error[0]) {
+                                                    unknownError();
+                                                    return;
+                                                }
+                                            }
+
                                             item.setLineItem(lineItem);
                                         } else {
-                                            cart.insert(cart.newItem(lineItem), cart.size(), false);
+                                            if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
+                                                discounts += lineItem.price;
+                                            } else {
+                                                cart.insert(cart.newItem(lineItem), cart.size(), false);
+                                            }
                                         }
+                                    }
+
+                                    if (discounts != 0) {
+                                        CheckoutApi.LineItem lineItem = new CheckoutApi.LineItem();
+                                        lineItem.type = CheckoutApi.LineItemType.DISCOUNT;
+                                        lineItem.amount = 1;
+                                        lineItem.price = discounts;
+                                        lineItem.totalPrice = lineItem.price;
+                                        lineItem.id = UUID.randomUUID().toString();
+                                        cart.insert(cart.newItem(lineItem), cart.size(), false);
                                     }
 
                                     cart.setOnlineTotalPrice(checkoutInfo.price.price);

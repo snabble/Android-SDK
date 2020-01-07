@@ -106,7 +106,11 @@ class CheckoutApi {
         @SerializedName("default")
         DEFAULT,
         @SerializedName("deposit")
-        DEPOSIT
+        DEPOSIT,
+        @SerializedName("discount")
+        DISCOUNT,
+        @SerializedName("giveaway")
+        GIVEAWAY,
     }
 
     public static class Price {
