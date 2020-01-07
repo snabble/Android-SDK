@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import androidx.appcompat.widget.AppCompatImageView;
+import androidx.annotation.DrawableRes;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -382,7 +382,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
-            if (item.isLineItem()) continue;
+            if (item.isOnlyLineItem()) continue;
 
             Product product = item.getProduct();
             String url = product.getImageUrl();
@@ -470,6 +470,29 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
+
+            if (item.getTotalDepositPrice() > 0) {
+                continue;
+            }
+
+            if (item.isDiscount()) {
+                SimpleRow row = new SimpleRow();
+                row.title = getResources().getString(R.string.Snabble_Shoppingcart_discounts);
+                row.imageResId = R.drawable.snabble_ic_percent;
+                row.text = sanitize(item.getPriceText());
+                rows.add(row);
+                continue;
+            }
+
+            if (item.isGiveaway()) {
+                SimpleRow row = new SimpleRow();
+                row.title = item.getDisplayName();
+                row.imageResId = R.drawable.snabble_ic_gift;
+                row.text = getResources().getString(R.string.Snabble_Shoppingcart_giveaways);
+                rows.add(row);
+                continue;
+            }
+
             final ProductRow row = new ProductRow();
             final Product product = item.getProduct();
             final int quantity = item.getQuantity();
@@ -489,9 +512,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             rows.add(row);
         }
 
-        if (cart.getTotalDepositPrice() > 0) {
-            DepositRow row = new DepositRow();
-            row.depositPrice = cart.getTotalDepositPrice();
+        int cartTotal = cart.getTotalDepositPrice();
+        if (cartTotal > 0) {
+            SimpleRow row = new SimpleRow();
+            PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
+            row.title = getResources().getString(R.string.Snabble_Shoppingcart_deposit);
+            row.imageResId = R.drawable.snabble_ic_deposit;
+            row.text = priceFormatter.format(cartTotal);
             rows.add(row);
         }
 
@@ -557,22 +584,29 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     }
 
-    private class DepositRow implements Row {
-        int depositPrice;
+    private class SimpleRow implements Row {
+        String text;
+        String title;
+        @DrawableRes int imageResId;
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            DepositRow row = (DepositRow) o;
+            SimpleRow simpleRow = (SimpleRow) o;
 
-            return depositPrice == row.depositPrice;
+            if (imageResId != simpleRow.imageResId) return false;
+            if (text != null ? !text.equals(simpleRow.text) : simpleRow.text != null) return false;
+            return title != null ? title.equals(simpleRow.title) : simpleRow.title == null;
         }
 
         @Override
         public int hashCode() {
-            return depositPrice;
+            int result = text != null ? text.hashCode() : 0;
+            result = 31 * result + (title != null ? title.hashCode() : 0);
+            result = 31 * result + imageResId;
+            return result;
         }
     }
 
@@ -750,27 +784,35 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     }
 
-    private class DepositViewHolder extends RecyclerView.ViewHolder {
-        TextView deposit;
-        AppCompatImageView image;
+    private class SimpleViewHolder extends RecyclerView.ViewHolder {
+        TextView title;
+        TextView text;
+        ImageView image;
 
-        public DepositViewHolder(View itemView) {
+        public SimpleViewHolder(View itemView) {
             super(itemView);
 
-            deposit = itemView.findViewById(R.id.deposit);
+            title = itemView.findViewById(R.id.title);
+            text = itemView.findViewById(R.id.text);
             image = itemView.findViewById(R.id.image);
         }
 
-        public void update(DepositRow row) {
-            PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
-            String depositText = priceFormatter.format(row.depositPrice);
-            deposit.setText(depositText);
+        public void update(SimpleRow row) {
+            title.setText(row.title);
+            text.setText(row.text);
+            image.setImageResource(row.imageResId);
+
+            if (hasAnyImages) {
+                image.setVisibility(View.VISIBLE);
+            } else {
+                image.setVisibility(View.GONE);
+            }
         }
     }
 
     private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private static final int TYPE_ITEM = 0;
-        private static final int TYPE_DEPOSIT = 1;
+        private static final int TYPE_PRODUCT = 0;
+        private static final int TYPE_SIMPLE = 1;
         private List<Row> list = Collections.emptyList();
 
         Adapter() {
@@ -779,15 +821,15 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public int getItemViewType(int position) {
-            if (getItem(position) instanceof DepositRow) {
-                return TYPE_DEPOSIT;
+            if (getItem(position) instanceof SimpleRow) {
+                return TYPE_SIMPLE;
             }
 
-            return TYPE_ITEM;
+            return TYPE_PRODUCT;
         }
 
         public boolean isDismissable(int position) {
-            return getItemViewType(position) != TYPE_DEPOSIT && !((ProductRow)getItem(position)).item.isLineItem();
+            return getItemViewType(position) != TYPE_SIMPLE && !((ProductRow)getItem(position)).item.isOnlyLineItem();
         }
 
         @Override
@@ -817,7 +859,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                         ProductRow productNewRow = (ProductRow) newRow;
 
                         return productOldRow.item == productNewRow.item;
-                    } else if (oldRow instanceof DepositRow && newRow instanceof DepositRow) {
+                    } else if (oldRow instanceof SimpleRow && newRow instanceof SimpleRow) {
                         return true;
                     }
 
@@ -843,9 +885,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == TYPE_DEPOSIT) {
-                View v = View.inflate(getContext(), R.layout.snabble_item_shoppingcart_deposit, null);
-                return new DepositViewHolder(v);
+            if (viewType == TYPE_SIMPLE) {
+                View v = View.inflate(getContext(), R.layout.snabble_item_shoppingcart_simple, null);
+                return new SimpleViewHolder(v);
             } else {
                 View v = View.inflate(getContext(), R.layout.snabble_item_shoppingcart_product, null);
                 return new ViewHolder(v);
@@ -856,12 +898,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             int type = getItemViewType(position);
 
-            if (type == TYPE_ITEM) {
+            if (type == TYPE_PRODUCT) {
                 ViewHolder viewHolder = (ViewHolder) holder;
                 viewHolder.bindTo((ProductRow) getItem(position));
             } else {
-                DepositViewHolder viewHolder = (DepositViewHolder) holder;
-                viewHolder.update((DepositRow) getItem(position));
+                SimpleViewHolder viewHolder = (SimpleViewHolder) holder;
+                viewHolder.update((SimpleRow) getItem(position));
             }
         }
     }

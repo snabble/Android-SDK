@@ -257,7 +257,7 @@ public class ShoppingCart {
         // reverse-order because we are removing items
         for (int i = items.size() - 1; i >= 0; i--) {
             Item item = items.get(i);
-            if (item.isLineItem()) {
+            if (item.isOnlyLineItem()) {
                 items.remove(i);
             } else {
                 item.lineItem = null;
@@ -329,7 +329,7 @@ public class ShoppingCart {
         int sum = 0;
 
         for (Item e : items) {
-            if (e.isLineItem()) {
+            if (e.isOnlyLineItem()) {
                 sum += e.lineItem.amount;
                 continue;
             }
@@ -459,18 +459,19 @@ public class ShoppingCart {
             }
         }
 
-        public boolean isLineItem() {
+        public boolean isOnlyLineItem() {
             return product == null && lineItem != null;
         }
 
         public boolean isEditable() {
-            if (isLineItem()) return false;
+            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT;
 
-            return !scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0;
+            return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
+                    product.getPrice(cart.project.getCustomerCardId()) != 0;
         }
 
         public boolean isMergeable() {
-            if (isLineItem()) return false;
+            if (product == null || lineItem != null) return false;
 
             return product.getType() == Product.Type.Article
                     && getUnit() != PIECE
@@ -478,7 +479,7 @@ public class ShoppingCart {
         }
 
         public Unit getUnit() {
-            if (isLineItem()) return null;
+            if (product == null && lineItem != null) return null;
 
             return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
                     : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
@@ -497,17 +498,27 @@ public class ShoppingCart {
         }
 
         public int getTotalDepositPrice() {
-            if (isLineItem()) return 0;
+            if (lineItem != null && lineItem.type == CheckoutApi.LineItemType.DEPOSIT) {
+                return lineItem.totalPrice;
+            }
 
-            if (product.getDepositProduct() != null) {
+            if (product != null && product.getDepositProduct() != null) {
                 return quantity * product.getDepositProduct().getPrice(cart.project.getCustomerCardId());
             }
 
             return 0;
         }
 
+        public boolean isDiscount() {
+            return lineItem != null && lineItem.type == CheckoutApi.LineItemType.DISCOUNT;
+        }
+
+        public boolean isGiveaway() {
+            return lineItem != null && lineItem.type == CheckoutApi.LineItemType.GIVEAWAY;
+        }
+
         public String getDisplayName() {
-            if (isLineItem()) {
+            if (lineItem != null) {
                 return lineItem.name;
             } else {
                 return product.getName();
@@ -515,7 +526,7 @@ public class ShoppingCart {
         }
 
         public String getQuantityText() {
-            if (isLineItem()) {
+            if (isOnlyLineItem()) {
                 return String.valueOf(lineItem.amount);
             }
 
@@ -548,7 +559,7 @@ public class ShoppingCart {
 
         public String getPriceText() {
             if (lineItem != null) {
-                if (lineItem.price > 0) {
+                if (lineItem.price != 0) {
                     if (product != null && lineItem.amount > 1
                             || (getUnit() != Unit.PRICE
                             && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
@@ -581,6 +592,12 @@ public class ShoppingCart {
             }
 
             return null;
+        }
+
+        void replace(Product product, ScannedCode scannedCode, int quantity) {
+            this.product = product;
+            this.scannedCode = scannedCode;
+            this.quantity = quantity;
         }
     }
 
@@ -639,7 +656,7 @@ public class ShoppingCart {
 
         for (int i = 0; i < size(); i++) {
             ShoppingCart.Item cartItem = get(i);
-            if (cartItem.isLineItem()) continue;
+            if (cartItem.isOnlyLineItem()) continue;
 
             BackendCartItem item = new BackendCartItem();
 

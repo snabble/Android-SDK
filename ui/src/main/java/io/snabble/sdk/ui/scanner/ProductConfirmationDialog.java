@@ -48,6 +48,7 @@ class ProductConfirmationDialog {
     private PriceFormatter priceFormatter;
 
     private EditText quantity;
+    private View quantityTextInput;
     private TextView subtitle;
     private TextView name;
     private TextView price;
@@ -64,6 +65,7 @@ class ProductConfirmationDialog {
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
     private DialogInterface.OnKeyListener onKeyListener;
+
 
     public ProductConfirmationDialog(Context context,
                                      Project project) {
@@ -87,6 +89,7 @@ class ProductConfirmationDialog {
         alertDialog.setOnKeyListener(onKeyListener);
 
         quantity = view.findViewById(R.id.quantity);
+        quantityTextInput = view.findViewById(R.id.quantity_text_input);
         subtitle = view.findViewById(R.id.subtitle);
         name = view.findViewById(R.id.name);
         price = view.findViewById(R.id.price);
@@ -355,12 +358,14 @@ class ProductConfirmationDialog {
                 plus.setVisibility(View.VISIBLE);
                 minus.setVisibility(View.VISIBLE);
                 quantity.setVisibility(View.VISIBLE);
+                quantityTextInput.setVisibility(View.VISIBLE);
             }
         } else {
             quantity.setEnabled(false);
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
             quantity.setVisibility(View.GONE);
+            quantityTextInput.setVisibility(View.GONE);
             quantityAnnotation.setVisibility(View.GONE);
         }
 

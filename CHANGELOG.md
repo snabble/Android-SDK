@@ -1,6 +1,18 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.6]
+
+### Added
+- Added support for vPOS 
+
+### Fixed
+- Commission items are now not editable anymore
+
+### New String Keys
+- Snabble.Shoppingcart.discounts
+- Snabble.Shoppingcart.giveaways
+
 ## [0.17.5]
 
 ### Added
