@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
@@ -96,7 +97,14 @@ class ShoppingCartUpdater {
                                                 project.getProductDatabase().findBySkuOnline(lineItem.sku, new OnProductAvailableListener() {
                                                     @Override
                                                     public void onProductAvailable(Product product, boolean wasOnline) {
-                                                        item.replace(product, item.getScannedCode(), lineItem.amount);
+                                                        ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
+                                                        if (scannedCode == null) {
+                                                            error[0] = true;
+                                                            countDownLatch.countDown();
+                                                            return;
+                                                        }
+
+                                                        item.replace(product, scannedCode, lineItem.amount);
                                                         countDownLatch.countDown();
                                                     }
 
