@@ -40,6 +40,7 @@ class ShoppingCartUpdater {
         Logger.d("Updating prices...");
 
         if (cart.size() == 0) {
+            cart.notifyPriceUpdate(cart);
             return;
         }
 
@@ -157,6 +158,7 @@ class ShoppingCartUpdater {
                                     return;
                                 }
 
+                                cart.setInvalidProducts(null);
                                 cart.checkLimits();
                                 cart.notifyPriceUpdate(cart);
                             }
@@ -170,6 +172,7 @@ class ShoppingCartUpdater {
 
                     @Override
                     public void invalidProducts(List<Product> products) {
+                        cart.setInvalidProducts(products);
                         cart.notifyPriceUpdate(cart);
                     }
 

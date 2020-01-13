@@ -72,6 +72,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
     private Picasso picasso;
+    private List<Product> lastInvalidProducts;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
@@ -373,6 +374,42 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         updatePayText();
         updateEmptyState();
         scanForImages();
+        checkSaleStop();
+    }
+
+    private void checkSaleStop() {
+        List<Product> invalidProducts = cart.getInvalidProducts();
+
+        if (invalidProducts.size() > 0 && !invalidProducts.equals(lastInvalidProducts)) {
+            Resources res = getResources();
+            StringBuilder sb = new StringBuilder();
+            if (invalidProducts.size() == 1) {
+                sb.append(res.getString(R.string.Snabble_saleStop_errorMsg_one));
+            } else {
+                sb.append(res.getString(R.string.Snabble_saleStop_errorMsg));
+            }
+
+            sb.append("\n\n");
+
+            for(Product product : invalidProducts) {
+                if (product.getSubtitle() != null) {
+                    sb.append(product.getSubtitle());
+                    sb.append(" ");
+                }
+
+                sb.append(product.getName());
+                sb.append("\n");
+            }
+
+            new AlertDialog.Builder(getContext())
+                    .setCancelable(false)
+                    .setTitle(R.string.Snabble_saleStop_errorMsg_title)
+                    .setMessage(sb.toString())
+                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .show();
+
+            lastInvalidProducts = invalidProducts;
+        }
     }
 
     private void scanForImages() {

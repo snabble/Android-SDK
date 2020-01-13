@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.17.8]
 
+### Added
+- Support vPOS sale stop
+
 ### Changed
 - Show empty prices in scanner and cart
 

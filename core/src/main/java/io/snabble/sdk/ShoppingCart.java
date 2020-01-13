@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -27,6 +28,7 @@ public class ShoppingCart {
     private int modCount = 0;
     private int addCount = 0;
     private Integer onlineTotalPrice;
+    private List<Product> invalidProducts;
 
     private boolean hasRaisedMaxCheckoutLimit;
     private boolean hasRaisedMaxOnlinePaymentLimit;
@@ -252,6 +254,7 @@ public class ShoppingCart {
     }
 
     public void invalidateOnlinePrices() {
+        invalidProducts = null;
         onlineTotalPrice = null;
 
         // reverse-order because we are removing items
@@ -297,6 +300,18 @@ public class ShoppingCart {
 
     void setOnlineTotalPrice(int totalPrice) {
         onlineTotalPrice = totalPrice;
+    }
+
+    void setInvalidProducts(List<Product> invalidProducts) {
+        this.invalidProducts = invalidProducts;
+    }
+
+    public List<Product> getInvalidProducts() {
+        if (invalidProducts == null) {
+            return Collections.emptyList();
+        }
+
+        return invalidProducts;
     }
 
     public int getTotalPrice() {
