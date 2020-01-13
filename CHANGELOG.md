@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Support vPOS sale stop
+- Added event when payment credentials are not accessible anymore
 
 ### Changed
 - Show empty prices in scanner and cart

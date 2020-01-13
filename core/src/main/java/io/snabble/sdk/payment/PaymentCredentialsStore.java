@@ -95,6 +95,14 @@ public class PaymentCredentialsStore {
         }
 
         if (!secure || data.isKeyguarded != userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
+            Snabble snabble = Snabble.getInstance();
+            if (snabble.getProjects().size() > 0) {
+                if (data.credentialsList != null && data.credentialsList.size() > 0) {
+                    snabble.getProjects().get(0).getEvents()
+                            .log("Deleted payment credentials key store because device is not secure anymore. Lost access to %d payment credentials", data.credentialsList.size());
+                }
+            }
+
             generateRandomId();
             clear();
         }
