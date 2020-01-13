@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Show empty prices in scanner and cart
+- Adjusted vertical touch slop for cart swipe to refresh
 
 ## [0.17.7]
 
