@@ -358,7 +358,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         if (cart != null) {
             int quantity = cart.getTotalQuantity();
             int price = cart.getTotalPrice();
-            if (price > 0) {
+            if (price != 0) {
                 String formattedPrice = priceFormatter.format(price);
                 String text = getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
                         quantity, quantity, formattedPrice);

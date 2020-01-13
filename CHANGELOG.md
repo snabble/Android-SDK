@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.8]
+
+### Changed
+- Show empty prices in scanner and cart
+
 ## [0.17.7]
 
 ### Fixed
