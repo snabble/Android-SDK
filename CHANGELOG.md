@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.9]
+
+### Fixed 
+- SelfScanningFragment not recreating SelfScanningView when reattached using FragmentManager
+
 ## [0.17.8]
 
 ### Added

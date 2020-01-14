@@ -68,15 +68,13 @@ public class SelfScanningFragment extends Fragment {
     }
 
     private void createSelfScanningView() {
-        if(selfScanningView == null) {
-            selfScanningView = new SelfScanningView(getContext());
-            selfScanningView.setAllowShowingHints(allowShowingHints);
+        selfScanningView = new SelfScanningView(getContext());
+        selfScanningView.setAllowShowingHints(allowShowingHints);
 
-            rootView.addView(selfScanningView);
-            permissionContainer.setVisibility(View.GONE);
-            canAskAgain = true;
-            handleBundleArgs();
-        }
+        rootView.addView(selfScanningView);
+        permissionContainer.setVisibility(View.GONE);
+        canAskAgain = true;
+        handleBundleArgs();
     }
 
     private void handleBundleArgs() {
