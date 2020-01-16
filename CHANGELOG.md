@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.17.10]
+
+### Fixed  
+- Fixed a bug that prevented items from counting up after scanning
+- Fixed a bug that caused payment limits to display multiple times while scanning
+- Fixed a bug that caused wrong totals for discounts when using vPOS 
+
 ## [0.17.9]
 
 ### Fixed 

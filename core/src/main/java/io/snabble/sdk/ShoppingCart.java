@@ -486,7 +486,7 @@ public class ShoppingCart {
         }
 
         public boolean isMergeable() {
-            if (product == null || lineItem != null) return false;
+            if (product == null && lineItem != null) return false;
 
             return product.getType() == Product.Type.Article
                     && getUnit() != PIECE

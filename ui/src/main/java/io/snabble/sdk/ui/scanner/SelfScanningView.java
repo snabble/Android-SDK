@@ -233,17 +233,6 @@ public class SelfScanningView extends FrameLayout {
                             resumeBarcodeScanner();
                             delayNextScan();
                         }
-
-                        if (shoppingCart.getModCount() != modCount) {
-                            Project project = SnabbleUI.getProject();
-                            if (project.getMaxCheckoutLimit() > 0 && shoppingCart.getTotalPrice() >= project.getMaxCheckoutLimit()) {
-                                showInfo(getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
-                                        project.getPriceFormatter().format(project.getMaxCheckoutLimit())));
-                            } else if (project.getMaxOnlinePaymentLimit() > 0 && shoppingCart.getTotalPrice() >= project.getMaxOnlinePaymentLimit()) {
-                                showInfo(getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
-                                        project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit())));
-                            }
-                        }
                     }
                 })
                 .setOnProductNotFoundListener(new ProductResolver.OnProductNotFoundListener() {
@@ -540,6 +529,21 @@ public class SelfScanningView extends FrameLayout {
         @Override
         public void onChanged(ShoppingCart list) {
             updateCartButton();
+        }
+
+        @Override
+        public void onCheckoutLimitReached(ShoppingCart list) {
+            Project project = SnabbleUI.getProject();
+            showInfo(getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+                    project.getPriceFormatter().format(project.getMaxCheckoutLimit())));
+        }
+
+        @Override
+        public void onOnlinePaymentLimitReached(ShoppingCart list) {
+            Project project = SnabbleUI.getProject();
+            showInfo(getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
+                    project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit())));
+
         }
     };
 

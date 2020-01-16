@@ -133,7 +133,7 @@ class ShoppingCartUpdater {
                                             item.setLineItem(lineItem);
                                         } else {
                                             if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
-                                                discounts += lineItem.price;
+                                                discounts += lineItem.totalPrice;
                                             } else {
                                                 cart.insert(cart.newItem(lineItem), cart.size(), false);
                                             }
