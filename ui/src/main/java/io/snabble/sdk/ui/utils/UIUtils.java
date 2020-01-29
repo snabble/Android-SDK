@@ -8,6 +8,8 @@ import android.content.res.Resources;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import io.snabble.sdk.ui.R;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -33,6 +35,17 @@ public class UIUtils {
 
     public static Snackbar snackbar(View view, String text, int duration) {
         return Snackbar.make(view, text, duration);
+    }
+
+    public static FragmentActivity getHostFragmentActivity(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (FragmentActivity) context;
+            }
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+
+        return null;
     }
 
     public static Activity getHostActivity(Context context) {

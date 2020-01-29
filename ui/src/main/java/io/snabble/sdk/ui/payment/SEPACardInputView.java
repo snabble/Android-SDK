@@ -7,7 +7,6 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,7 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
-import io.snabble.sdk.ui.KeyguardHandler;
+import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -223,12 +222,15 @@ public class SEPACardInputView extends FrameLayout {
 
         if (ok) {
             if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-                SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
+                Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
                     @Override
-                    public void onKeyguardResult(int resultCode) {
-                        if (resultCode == Activity.RESULT_OK) {
-                            add(name, iban);
-                        }
+                    public void success() {
+                        add(name, iban);
+                    }
+
+                    @Override
+                    public void error() {
+
                     }
                 });
             } else {

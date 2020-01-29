@@ -31,7 +31,7 @@ import java.nio.charset.Charset;
 
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
-import io.snabble.sdk.ui.KeyguardHandler;
+import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -193,17 +193,18 @@ public class CreditCardInputView extends FrameLayout {
         cancelPreAuth(creditCardInfo);
 
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-            SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
+            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
                 @Override
-                public void onKeyguardResult(int resultCode) {
-                    if (resultCode == Activity.RESULT_OK) {
-                        save(creditCardInfo);
+                public void success() {
+                    save(creditCardInfo);
+                }
+
+                @Override
+                public void error() {
+                    if (isShown()) {
+                        finish();
                     } else {
-                        if (isShown()) {
-                            finish();
-                        } else {
-                            acceptedKeyguard = true;
-                        }
+                        acceptedKeyguard = true;
                     }
                 }
             });

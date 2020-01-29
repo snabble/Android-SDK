@@ -37,7 +37,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.UserPreferences;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
-import io.snabble.sdk.ui.KeyguardHandler;
+import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -148,15 +148,16 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
                                         if (userPreferences.isRequiringKeyguardAuthenticationForPayment()
                                                 && e.paymentMethod.isRequiringCredentials()) {
-                                            callback.requestKeyguard(new KeyguardHandler() {
+                                            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
                                                 @Override
-                                                public void onKeyguardResult(int resultCode) {
-                                                    if (resultCode == Activity.RESULT_OK) {
-                                                        checkout.pay(e.paymentMethod, e.paymentCredentials);
-                                                        Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
-                                                    } else {
-                                                        callback.goBack();
-                                                    }
+                                                public void success() {
+                                                    checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                                    Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                                                }
+
+                                                @Override
+                                                public void error() {
+                                                    callback.goBack();
                                                 }
                                             });
                                         } else {

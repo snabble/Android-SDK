@@ -3,6 +3,9 @@ package io.snabble.sdk.ui.search;
 import android.content.Context;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -32,6 +35,8 @@ public class ProductSearchView extends FrameLayout {
     private OnProductSelectedListener onProductSelectedListener;
     private boolean showSku;
     private boolean showBarcode;
+
+    private boolean useDelayedShowKeyboard;
 
     public ProductSearchView(Context context) {
         super(context);
@@ -163,6 +168,18 @@ public class ProductSearchView extends FrameLayout {
         } else {
             addCodeAsIs.setVisibility(View.GONE);
         }
+    }
+
+    public void focusTextInputAndShowKeyboard() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                searchBar.requestFocus();
+                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(searchBar, 0);
+            }
+        }, 100);
     }
 
     public void focusTextInput() {

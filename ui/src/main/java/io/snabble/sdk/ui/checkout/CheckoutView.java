@@ -19,7 +19,7 @@ import android.widget.ViewAnimator;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
-import io.snabble.sdk.ui.KeyguardHandler;
+import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.SnabbleUICallback;
@@ -170,13 +170,16 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
     private void addPaymentOrigin() {
         if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-            SnabbleUI.getUiCallback().requestKeyguard(new KeyguardHandler() {
+            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
                 @Override
-                public void onKeyguardResult(int resultCode) {
-                    if (resultCode == Activity.RESULT_OK) {
-                        addPaymentCredentials();
-                        checkout.continuePaymentProcess();
-                    }
+                public void success() {
+                    addPaymentCredentials();
+                    checkout.continuePaymentProcess();
+                }
+
+                @Override
+                public void error() {
+
                 }
             });
         } else {

@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.18.0]
+
+### Changes
+- Added Keyguard functionality to SDK itself
+- Removed SnabbleUI.requestKeyguard callback
+
 ## [0.17.10]
 
 ### Fixed  
