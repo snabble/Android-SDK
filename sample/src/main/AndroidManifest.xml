@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="GoogleAppIndexingWarning"
     package="io.snabble.testapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <application android:usesCleartextTraffic="true"
-        android:allowBackup="true"
+    <application android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:name=".App"
@@ -24,11 +25,17 @@
 
         <activity android:name=".SelfScanningActivity" />
         <activity android:name=".ProductSearchActivity" />
-        <activity android:name=".CheckoutActivity" />
         <activity android:name=".ShoppingCartActivity" />
         <activity android:name=".SEPACardInputActivity" />
         <activity android:name=".CreditCardInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />
         <activity android:name=".PaymentCredentialsSelectActivity" />
+        <activity android:name=".CheckoutEncodedCodesActivity" />
+        <activity android:name=".CheckoutGatekeeperActivity" />
+        <activity android:name=".CheckoutOnlineActivity" />
+        <activity android:name=".CheckoutQRCodePOSActivity" />
+        <activity android:name=".PaymentSelectionActivity" />
+        <activity android:name=".PaymentFailureActivity" />
+        <activity android:name=".PaymentSuccessActivity" />
     </application>
 </manifest>

@@ -26,7 +26,6 @@ import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
@@ -257,11 +256,11 @@ public class SEPACardInputView extends FrameLayout {
     }
 
     private void finish() {
-        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             hideSoftKeyboard(ibanInput);
             hideSoftKeyboard(nameInput);
-            callback.goBack();
+            callback.execute(SnabbleUI.Action.GO_BACK, null);
         }
     }
 

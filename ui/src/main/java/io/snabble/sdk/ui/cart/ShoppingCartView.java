@@ -23,14 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.DrawableRes;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
@@ -39,6 +31,15 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
@@ -47,7 +48,7 @@ import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
+import io.snabble.sdk.ui.checkout.CheckoutHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
@@ -200,9 +201,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         scanProducts.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
-                    callback.showScannerWithCode(null);
+                    callback.execute(SnabbleUI.Action.SHOW_SCANNER, null);
                 }
             }
         });
@@ -279,11 +280,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     public void onStateChanged(Checkout.State state) {
         if (state == Checkout.State.HANDSHAKING) {
             progressDialog.showAfterDelay(500);
-        } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD || state == Checkout.State.WAIT_FOR_APPROVAL) {
-            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+        } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD) {
+            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
-                callback.showCheckout();
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SELECTION, null);
             }
+            progressDialog.dismiss();
+        } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
+            CheckoutHelper.displayPaymentView(checkout);
             progressDialog.dismiss();
         } else if (state == Checkout.State.INVALID_PRODUCTS) {
             List<Product> invalidProducts = checkout.getInvalidProducts();

@@ -1,10 +1,12 @@
 package io.snabble.sdk.ui.utils;
 
 import android.content.Context;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.snackbar.Snackbar;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class SnackbarPushUpBehavior extends CoordinatorLayout.Behavior<View> {
     public SnackbarPushUpBehavior() {

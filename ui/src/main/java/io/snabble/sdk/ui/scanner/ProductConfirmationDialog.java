@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.appcompat.widget.AppCompatButton;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spannable;
@@ -27,15 +26,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatButton;
+
 import com.squareup.picasso.Picasso;
 
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
-import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;

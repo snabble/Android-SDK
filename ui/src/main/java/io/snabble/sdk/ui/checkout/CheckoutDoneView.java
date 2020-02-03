@@ -7,9 +7,8 @@ import android.widget.FrameLayout;
 
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 
-class CheckoutDoneView extends FrameLayout {
+public class CheckoutDoneView extends FrameLayout {
     public CheckoutDoneView(Context context) {
         super(context);
         inflateView();
@@ -35,9 +34,9 @@ class CheckoutDoneView extends FrameLayout {
         findViewById(R.id.back).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
-                    callback.goBack();
+                    callback.execute(SnabbleUI.Action.GO_BACK, null);
                 }
             }
         });

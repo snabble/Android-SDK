@@ -2,13 +2,11 @@ package io.snabble.sdk.ui.search;
 
 
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.OperationCanceledException;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -18,14 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.Arrays;
 import java.util.List;
 
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.codes.ScannedCode;
-import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.utils.StringNormalizer;

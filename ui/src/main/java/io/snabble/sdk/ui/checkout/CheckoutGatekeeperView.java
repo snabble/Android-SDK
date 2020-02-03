@@ -1,23 +1,28 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.utils.Logger;
 
-class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private Checkout checkout;
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
     private View message;
+    private Checkout.State currentState;
 
     public CheckoutGatekeeperView(Context context) {
         super(context);
@@ -88,6 +93,16 @@ class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCheckoutS
 
     @Override
     public void onStateChanged(Checkout.State state) {
+        if (state == currentState) {
+            return;
+        }
+
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+        if (callback == null) {
+            Logger.e("ui action could not be performed: callback is null");
+            return;
+        }
+
         switch (state) {
             case WAIT_FOR_APPROVAL:
                 checkoutIdCode.setVisibility(View.VISIBLE);
@@ -105,13 +120,39 @@ class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCheckoutS
             case PAYMENT_ABORT_FAILED:
                 cancelProgress.setVisibility(View.INVISIBLE);
                 cancel.setEnabled(true);
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.Snabble_Payment_cancelError_title)
+                        .setMessage(R.string.Snabble_Payment_cancelError_message)
+                        .setPositiveButton(R.string.Snabble_OK, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                checkout.resume();
+                            }
+                        })
+                        .setCancelable(false)
+                        .create()
+                        .show();
                 break;
+            case PAYMENT_APPROVED:
+                if (currentState == Checkout.State.PAYMENT_APPROVED) {
+                    break;
+                }
+                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
+                break;
+            case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
                 break;
             case DENIED_BY_SUPERVISOR:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
                 break;
         }
+
+        currentState = state;
     }
 }

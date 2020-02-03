@@ -4,16 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Resources;
-
-import androidx.annotation.AttrRes;
-import androidx.annotation.StringRes;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.fragment.app.FragmentActivity;
-
-import io.snabble.sdk.ui.R;
-
-import com.google.android.material.snackbar.Snackbar;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.util.TypedValue;
@@ -21,6 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.StringRes;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import io.snabble.sdk.ui.R;
 
 public class UIUtils {
     public static final int INFO_NEUTRAL = 0;

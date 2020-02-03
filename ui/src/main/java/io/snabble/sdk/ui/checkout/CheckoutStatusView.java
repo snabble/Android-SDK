@@ -1,25 +1,33 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
+import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 
-class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private Checkout checkout;
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
     private View message;
+    private Checkout.State currentState;
 
     public CheckoutStatusView(Context context) {
         super(context);
@@ -90,6 +98,16 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
 
     @Override
     public void onStateChanged(Checkout.State state) {
+        if (state == currentState) {
+            return;
+        }
+
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+        if (callback == null) {
+            Logger.e("ui action could not be performed: callback is null");
+            return;
+        }
+
         switch (state) {
             case WAIT_FOR_APPROVAL:
                 checkoutIdCode.setVisibility(View.VISIBLE);
@@ -107,13 +125,97 @@ class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutState
             case PAYMENT_ABORT_FAILED:
                 cancelProgress.setVisibility(View.INVISIBLE);
                 cancel.setEnabled(true);
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.Snabble_Payment_cancelError_title)
+                        .setMessage(R.string.Snabble_Payment_cancelError_message)
+                        .setPositiveButton(R.string.Snabble_OK, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                checkout.resume();
+                            }
+                        })
+                        .setCancelable(false)
+                        .create()
+                        .show();
                 break;
+            case REQUEST_ADD_PAYMENT_ORIGIN:
+                new AlertDialog.Builder(getContext())
+                        .setMessage(R.string.Snabble_Payment_addPaymentOrigin)
+                        .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addPaymentOrigin();
+                            }
+                        })
+                        .setNegativeButton(R.string.Snabble_No, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                checkout.continuePaymentProcess();
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
+            case PAYMENT_APPROVED:
+                if (currentState == Checkout.State.PAYMENT_APPROVED) {
+                    break;
+                }
+                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
+                break;
+            case PAYMENT_ABORTED:
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
                 break;
             case DENIED_BY_SUPERVISOR:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
                 break;
+        }
+
+        currentState = state;
+    }
+
+    private void addPaymentOrigin() {
+        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
+            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
+                @Override
+                public void success() {
+                    addPaymentCredentials();
+                    checkout.continuePaymentProcess();
+                }
+
+                @Override
+                public void error() {
+
+                }
+            });
+        } else {
+            addPaymentCredentials();
+            checkout.continuePaymentProcess();
+        }
+    }
+
+    public void addPaymentCredentials() {
+        Checkout.PaymentOrigin paymentOrigin = checkout.getPaymentOrigin();
+
+        if (paymentOrigin != null) {
+            final PaymentCredentials pc = PaymentCredentials.fromSEPA(
+                    paymentOrigin.name,
+                    paymentOrigin.iban);
+
+            if (pc == null) {
+                Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                Snabble.getInstance().getPaymentCredentialsStore().add(pc);
+                Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.getType().name());
+
+                checkout.continuePaymentProcess();
+            }
         }
     }
 }

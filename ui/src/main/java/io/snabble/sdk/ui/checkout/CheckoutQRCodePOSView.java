@@ -9,17 +9,21 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import io.snabble.sdk.Project;
+import io.snabble.sdk.BarcodeFormat;
+import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PriceFormatter;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeView;
+import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.utils.Logger;
 
-class CheckoutQRCodePOSView extends FrameLayout {
+public class CheckoutQRCodePOSView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private BarcodeView barcodeView;
+    private Checkout checkout;
+    private Checkout.State currentState;
 
     public CheckoutQRCodePOSView(Context context) {
         super(context);
@@ -61,9 +65,9 @@ class CheckoutQRCodePOSView extends FrameLayout {
             public void click() {
                 SnabbleUI.getProject().getCheckout().abortSilently();
 
-                SnabbleUICallback uiCallback = SnabbleUI.getUiCallback();
+                SnabbleUI.Callback uiCallback = SnabbleUI.getUiCallback();
                 if (uiCallback != null) {
-                    uiCallback.goBack();
+                    uiCallback.execute(SnabbleUI.Action.GO_BACK, null);
                 }
             }
         });
@@ -95,6 +99,64 @@ class CheckoutQRCodePOSView extends FrameLayout {
         } else {
             checkoutId.setVisibility(View.GONE);
         }
+
+        checkout = SnabbleUI.getProject().getCheckout();
+        onStateChanged(checkout.getState());
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (checkout != null) {
+            checkout.addOnCheckoutStateChangedListener(this);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (checkout != null) {
+            checkout.removeOnCheckoutStateChangedListener(this);
+        }
+    }
+
+    @Override
+    public void onStateChanged(Checkout.State state) {
+        if (state == currentState) {
+            return;
+        }
+
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+        if (callback == null) {
+            Logger.e("ui action could not be performed: callback is null");
+            return;
+        }
+
+        switch (state) {
+            case WAIT_FOR_APPROVAL:
+                setQRCodeText(checkout.getQRCodePOSContent());
+                break;
+            case PAYMENT_APPROVED:
+                if (currentState == Checkout.State.PAYMENT_APPROVED) {
+                    break;
+                }
+                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
+                break;
+            case PAYMENT_ABORTED:
+            case DENIED_BY_PAYMENT_PROVIDER:
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                break;
+            case DENIED_BY_SUPERVISOR:
+                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                break;
+        }
+
+        currentState = state;
     }
 
     @Override
@@ -109,7 +171,7 @@ class CheckoutQRCodePOSView extends FrameLayout {
         }
     }
 
-    public void setQRCodeText(String text) {
+    private void setQRCodeText(String text) {
         barcodeView.setFormat(BarcodeFormat.QR_CODE);
         barcodeView.setText(text);
     }

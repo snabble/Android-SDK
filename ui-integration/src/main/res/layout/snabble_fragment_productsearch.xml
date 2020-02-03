@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<io.snabble.sdk.ui.search.ProductSearchView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/product_search_view"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <io.snabble.sdk.ui.search.ProductSearchView
-        android:id="@+id/product_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-    </io.snabble.sdk.ui.search.ProductSearchView>
-</FrameLayout>
+</io.snabble.sdk.ui.search.ProductSearchView>

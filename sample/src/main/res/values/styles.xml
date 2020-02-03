@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
+    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.Light">
         <item name="colorOnActionBar">?attr/colorOnSurface</item>
     </style>
 </resources>

@@ -13,12 +13,11 @@ import android.widget.TextView;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
-public abstract class BaseActivity extends AppCompatActivity implements SnabbleUICallback {
+public abstract class BaseActivity extends AppCompatActivity implements SnabbleUI.Callback {
 
     private ProgressBar progressIndicator;
     private View content;
@@ -99,6 +98,54 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public abstract Fragment onCreateFragment();
 
+    @Override
+    public void execute(SnabbleUI.Action action, Object data) {
+        switch(action) {
+            case GO_BACK:
+                onBackPressed();
+                break;
+            case SHOW_SCANNER:
+                showScannerWithCode((String)data);
+                break;
+            case SHOW_SHOPPING_CART:
+                showShoppingCart();
+                break;
+            case SHOW_BARCODE_SEARCH:
+                showBarcodeSearch();
+                break;
+            case SHOW_CHECKOUT_GATEKEEPER:
+                showCheckoutGatekeeper();
+                break;
+            case SHOW_CHECKOUT_ONLINE:
+                showCheckoutOnline();
+                break;
+            case SHOW_CHECKOUT_QRCODE_OFFLINE:
+                showCheckoutEncodedCodes();
+                break;
+            case SHOW_CHECKOUT_QRCODE_POS:
+                showCheckoutQRCodePOS();
+                break;
+            case SHOW_PAYMENT_FAILURE:
+                showPaymentFailure();
+                break;
+            case SHOW_PAYMENT_SUCCESS:
+                showPaymentSuccess();
+                break;
+            case SHOW_SEPA_CARD_INPUT:
+                showSEPACardInput();
+                break;
+            case SHOW_CREDIT_CARD_INPUT:
+                showCreditCardInput();
+                break;
+            case SHOW_PAYMENT_CREDENTIALS_LIST:
+                showPaymentCredentialsList();
+                break;
+            case SHOW_PAYMENT_SELECTION:
+                showPaymentSelection();
+                break;
+        }
+    }
+
     public void showShoppingCart() {
         Intent intent = new Intent(this, ShoppingCartActivity.class);
         startActivity(intent);
@@ -110,13 +157,48 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    @Override
-    public void showCheckout() {
-        Intent intent = new Intent(this, CheckoutActivity.class);
+    public void showPaymentSelection() {
+        Intent intent = new Intent(this, PaymentSelectionActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
 
-    @Override
+    public void showCheckoutEncodedCodes() {
+        Intent intent = new Intent(this, CheckoutEncodedCodesActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+
+    public void showCheckoutGatekeeper() {
+        Intent intent = new Intent(this, CheckoutGatekeeperActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+
+    public void showCheckoutOnline() {
+        Intent intent = new Intent(this, CheckoutOnlineActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+
+    public void showCheckoutQRCodePOS() {
+        Intent intent = new Intent(this, CheckoutQRCodePOSActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+
+    public void showPaymentSuccess() {
+        Intent intent = new Intent(this, PaymentSuccessActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+
+    public void showPaymentFailure() {
+        Intent intent = new Intent(this, PaymentFailureActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+
     public void showScannerWithCode(String scannableCode) {
         Intent intent = new Intent(this, SelfScanningActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -124,33 +206,24 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    @Override
     public void showBarcodeSearch() {
         Intent intent = new Intent(this, ProductSearchActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
 
-    @Override
     public void showSEPACardInput() {
         Intent intent = new Intent(this, SEPACardInputActivity.class);
         startActivity(intent);
     }
 
-    @Override
     public void showCreditCardInput() {
         Intent intent = new Intent(this, CreditCardInputActivity.class);
         startActivity(intent);
     }
 
-    @Override
     public void showPaymentCredentialsList() {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
         startActivity(intent);
-    }
-
-    @Override
-    public void goBack() {
-        onBackPressed();
     }
 }

@@ -23,7 +23,6 @@ import android.widget.Toast;
 import androidx.annotation.Keep;
 import androidx.core.view.ViewCompat;
 
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -34,7 +33,6 @@ import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
@@ -276,9 +274,9 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void finish() {
-        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
-            callback.goBack();
+            callback.execute(SnabbleUI.Action.GO_BACK, null);
         }
     }
 

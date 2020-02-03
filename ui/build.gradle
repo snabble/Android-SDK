@@ -41,11 +41,11 @@ dependencies {
 
     implementation 'androidx.core:core:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'androidx.webkit:webkit:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.google.android.material:material:1.1.0-rc02'
     implementation 'com.google.android:flexbox:1.1.0'
 
     implementation 'commons-io:commons-io:2.5'

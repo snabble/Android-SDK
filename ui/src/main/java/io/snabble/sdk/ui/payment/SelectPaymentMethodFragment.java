@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.payment;
 
-import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,9 +23,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.UIUtils;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     private List<Entry> entries;
@@ -41,9 +37,9 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                 "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
             @Override
             public void click() {
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
-                    callback.showSEPACardInput();
+                    callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);
                 }
 
                 dismissAllowingStateLoss();
@@ -58,9 +54,9 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                         getUsableAtText(PaymentMethod.VISA, PaymentMethod.MASTERCARD), new OneShotClickListener() {
                     @Override
                     public void click() {
-                        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                         if (callback != null) {
-                            callback.showCreditCardInput();
+                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
                         }
 
                         dismissAllowingStateLoss();

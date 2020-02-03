@@ -2,12 +2,34 @@ package io.snabble.sdk.ui;
 
 
 import androidx.appcompat.app.ActionBar;
+
 import io.snabble.sdk.Project;
 import io.snabble.sdk.utils.Logger;
 
 public class SnabbleUI {
+    public enum Action {
+        SHOW_PAYMENT_SELECTION,
+        SHOW_CHECKOUT_QRCODE_POS,
+        SHOW_CHECKOUT_QRCODE_OFFLINE,
+        SHOW_CHECKOUT_GATEKEEPER,
+        SHOW_CHECKOUT_ONLINE,
+        SHOW_PAYMENT_SUCCESS,
+        SHOW_PAYMENT_FAILURE,
+        SHOW_SCANNER,
+        SHOW_BARCODE_SEARCH,
+        SHOW_SEPA_CARD_INPUT,
+        SHOW_CREDIT_CARD_INPUT,
+        SHOW_SHOPPING_CART,
+        SHOW_PAYMENT_CREDENTIALS_LIST,
+        GO_BACK
+    }
+
+    public interface Callback {
+        void execute(Action action, Object data);
+    }
+
     private static Project project;
-    private static SnabbleUICallback uiCallback;
+    private static SnabbleUI.Callback uiCallback;
     private static ActionBar actionBar;
 
     /**
@@ -26,20 +48,20 @@ public class SnabbleUI {
      * <p>
      * Calling this multiple times overwrites the old callback
      */
-    public static void registerUiCallbacks(SnabbleUICallback callback) {
+    public static void registerUiCallbacks(SnabbleUI.Callback callback) {
         uiCallback = callback;
     }
 
     /**
      * Unregisters a callback that was previously registered.
      */
-    public static void unregisterUiCallbacks(SnabbleUICallback callback) {
+    public static void unregisterUiCallbacks(SnabbleUI.Callback callback) {
         if (uiCallback == callback) {
             uiCallback = null;
         }
     }
 
-    public static SnabbleUICallback getUiCallback() {
+    public static SnabbleUI.Callback getUiCallback() {
         if (uiCallback == null) {
             Logger.e("Could not perform user interface action: SnabbleUICallback is null.");
         }

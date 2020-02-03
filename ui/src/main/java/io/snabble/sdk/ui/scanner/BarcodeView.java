@@ -15,10 +15,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import androidx.appcompat.widget.AppCompatImageView;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.WindowManager;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;

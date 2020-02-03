@@ -16,8 +16,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -29,11 +27,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.util.List;
-
-import androidx.core.content.res.ResourcesCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
+
+import java.util.List;
+
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
@@ -44,7 +44,6 @@ import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -163,9 +162,9 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showShoppingCart() {
-        SnabbleUICallback snabbleUICallback = SnabbleUI.getUiCallback();
-        if (snabbleUICallback != null) {
-            snabbleUICallback.showShoppingCart();
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+        if (callback != null) {
+            callback.execute(SnabbleUI.Action.SHOW_SHOPPING_CART, null);
         }
     }
 
@@ -319,10 +318,10 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void onClickEnterBarcode() {
-        SnabbleUICallback callback = SnabbleUI.getUiCallback();
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
-                callback.showBarcodeSearch();
+                callback.execute(SnabbleUI.Action.SHOW_BARCODE_SEARCH, null);
             } else {
                 pauseBarcodeScanner();
 

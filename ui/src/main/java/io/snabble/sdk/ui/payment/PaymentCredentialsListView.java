@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {

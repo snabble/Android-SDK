@@ -13,8 +13,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
@@ -24,6 +22,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -2,7 +2,11 @@ package io.snabble.sdk.ui.checkout;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.text.Spannable;
@@ -12,6 +16,7 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,16 +45,17 @@ import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
-class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.Callback {
+public class PaymentSelectionView extends FrameLayout implements PaymentCredentialsStore.Callback,
+        Checkout.OnCheckoutStateChangedListener {
     private static Map<PaymentMethod, Integer> icons = new HashMap<>();
-    private static Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     static {
         icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.snabble_ic_pm_sepa);
@@ -68,18 +74,20 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private RecyclerView recyclerView;
     private Adapter recyclerViewAdapter;
     private UserPreferences userPreferences;
+    private DelayedProgressDialog progressDialog;
+    private Checkout.State currentState;
 
-    public PaymentMethodView(Context context) {
+    public PaymentSelectionView(Context context) {
         super(context);
         inflateView();
     }
 
-    public PaymentMethodView(Context context, AttributeSet attrs) {
+    public PaymentSelectionView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public PaymentMethodView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PaymentSelectionView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }
@@ -87,7 +95,21 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_payment_method, this);
 
-        descriptions.clear();
+        progressDialog = new DelayedProgressDialog(getContext());
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    checkout.abort();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         project = SnabbleUI.getProject();
         checkout = project.getCheckout();
@@ -117,6 +139,11 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
 
         update();
+
+        setKeepScreenOn(true);
+
+        checkout = SnabbleUI.getProject().getCheckout();
+        onStateChanged(checkout.getState());
     }
 
     private void update() {
@@ -124,12 +151,11 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
         PaymentMethod[] availablePaymentMethods = checkout.getAvailablePaymentMethods();
         for (final PaymentMethod paymentMethod : availablePaymentMethods) {
-            if (icons.containsKey(paymentMethod) || descriptions.containsKey(paymentMethod)) {
+            if (icons.containsKey(paymentMethod)) {
                 List<PaymentCredentials> pcList = getPaymentCredentials(paymentMethod);
                 if (pcList.size() > 0) {
                     for (PaymentCredentials pc : pcList) {
                         final Entry e = new Entry();
-                        e.text = descriptions.get(paymentMethod);
                         e.paymentMethod = paymentMethod;
                         e.paymentCredentials = pc;
                         e.text = pc.getObfuscatedId();
@@ -141,7 +167,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                                 showSEPALegalInfoIfNeeded(e.paymentMethod, new OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        final SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                                        final SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                                         if (callback == null) {
                                             return;
                                         }
@@ -157,7 +183,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
 
                                                 @Override
                                                 public void error() {
-                                                    callback.goBack();
+                                                    callback.execute(SnabbleUI.Action.GO_BACK, null);
                                                 }
                                             });
                                         } else {
@@ -173,7 +199,6 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
                     }
                 } else if (!paymentMethod.isShowOnlyIfCredentialsArePresent()) {
                     final Entry e = new Entry();
-                    e.text = descriptions.get(paymentMethod);
                     e.paymentMethod = paymentMethod;
                     e.desaturated = false;
 
@@ -217,6 +242,7 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
             }
         }
 
+        // TODO move to Checkout
         filterPaymentMethods();
 
         recyclerViewAdapter.notifyDataSetChanged();
@@ -291,17 +317,17 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private void showSEPACardInput() {
         if (userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
             if (KeyguardUtils.isDeviceSecure()) {
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
-                    callback.showSEPACardInput();
+                    callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);
                 }
             } else {
                 showPaymentNotPossibleDialog();
             }
         } else {
-            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
-                callback.showSEPACardInput();
+                callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);
             }
         }
     }
@@ -309,17 +335,17 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
     private void showCreditCardInput() {
         if (userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
             if (KeyguardUtils.isDeviceSecure()) {
-                SnabbleUICallback callback = SnabbleUI.getUiCallback();
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
-                    callback.showCreditCardInput();
+                    callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
                 }
             } else {
                 showPaymentNotPossibleDialog();
             }
         } else {
-            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
-                callback.showCreditCardInput();
+                callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
             }
         }
     }
@@ -424,15 +450,15 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
     }
 
-    private class Adapter extends RecyclerView.Adapter<PaymentMethodView.ViewHolder> {
+    private class Adapter extends RecyclerView.Adapter<PaymentSelectionView.ViewHolder> {
         @Override
-        public PaymentMethodView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public PaymentSelectionView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_method, parent, false);
-            return new PaymentMethodView.ViewHolder(v);
+            return new PaymentSelectionView.ViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(final PaymentMethodView.ViewHolder holder, final int position) {
+        public void onBindViewHolder(final PaymentSelectionView.ViewHolder holder, final int position) {
             final Entry e = entries.get(position);
 
             Integer drawableResId = icons.get(e.paymentMethod);
@@ -470,12 +496,43 @@ class PaymentMethodView extends FrameLayout implements PaymentCredentialsStore.C
         }
     }
 
+    @Override
+    public void onStateChanged(Checkout.State state) {
+        if (state == currentState) {
+            return;
+        }
+
+        if (state == Checkout.State.VERIFYING_PAYMENT_METHOD) {
+            progressDialog.showAfterDelay(500);
+        } else {
+            progressDialog.dismiss();
+        }
+
+        switch (state) {
+            case PAYMENT_PROCESSING:
+            case WAIT_FOR_APPROVAL:
+                CheckoutHelper.displayPaymentView(checkout);
+                break;
+            case CONNECTION_ERROR:
+                UIUtils.snackbar(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .show();
+                break;
+            case NONE:
+                break;
+        }
+
+        currentState = state;
+    }
+
+
     private void registerListeners() {
+        checkout.addOnCheckoutStateChangedListener(this);
         paymentCredentialsStore.addCallback(this);
         update();
     }
 
     private void unregisterListeners() {
+        checkout.removeOnCheckoutStateChangedListener(this);
         paymentCredentialsStore.removeCallback(this);
     }
 

@@ -5,9 +5,6 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,13 +13,15 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.UIUtils;
@@ -95,8 +94,8 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
 
         switch (state) {
             case REQUEST_PAYMENT_METHOD:
-                PaymentMethodView paymentMethodView = new PaymentMethodView(getContext());
-                displayView(paymentMethodView);
+                PaymentSelectionView paymentSelectionView = new PaymentSelectionView(getContext());
+                displayView(paymentSelectionView);
                 break;
             case PAYMENT_PROCESSING:
             case WAIT_FOR_APPROVAL:
@@ -221,7 +220,7 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
                 break;
             case QRCODE_POS:
                 CheckoutQRCodePOSView checkoutQRCodePOSView = new CheckoutQRCodePOSView(getContext());
-                checkoutQRCodePOSView.setQRCodeText(checkout.getQRCodePOSContent());
+                // checkoutQRCodePOSView.setQRCodeText(checkout.getQRCodePOSContent());
                 displayView(checkoutQRCodePOSView);
                 break;
             case QRCODE_OFFLINE:
@@ -281,9 +280,9 @@ public class CheckoutView extends FrameLayout implements Checkout.OnCheckoutStat
         registerListeners();
 
         if (checkout.getState() == Checkout.State.NONE) {
-            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
-                callback.goBack();
+                callback.execute(SnabbleUI.Action.GO_BACK, null);
             }
         }
     }

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.NonNull;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,27 +15,29 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+
+import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
-import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Logger;
 
-class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener {
+public class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener,
+        Checkout.OnCheckoutStateChangedListener {
     private FrameLayout scrollContainer;
     private TextView explanationText2;
     private Project project;
@@ -46,15 +48,28 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
     private boolean isTouchReleased;
     private boolean isScrollingDown;
     private boolean handleScrollIdleState;
+    private Checkout checkout;
+    private Checkout.State currentState;
 
     public CheckoutEncodedCodesView(Context context) {
         super(context);
-
-        project = SnabbleUI.getProject();
-        inflateView(project.getEncodedCodesOptions());
+        init();
     }
 
-    private void inflateView(EncodedCodesOptions options) {
+    public CheckoutEncodedCodesView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public CheckoutEncodedCodesView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        project = SnabbleUI.getProject();
+        EncodedCodesOptions options = project.getEncodedCodesOptions();
+
         inflate(getContext(), R.layout.snabble_view_checkout_encodedcodes, this);
 
         scrollContainer = findViewById(R.id.scroll_container);
@@ -100,7 +115,45 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         } else {
             checkoutId.setVisibility(View.GONE);
         }
+
+        checkout = SnabbleUI.getProject().getCheckout();
+        onStateChanged(checkout.getState());
     }
+
+    @Override
+    public void onStateChanged(Checkout.State state) {
+        if (state == currentState) {
+            return;
+        }
+
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+        if (callback == null) {
+            Logger.e("ui action could not be performed: callback is null");
+            return;
+        }
+
+        switch (state) {
+            case PAYMENT_APPROVED:
+                if (currentState == Checkout.State.PAYMENT_APPROVED) {
+                    break;
+                }
+                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
+                break;
+            case PAYMENT_ABORTED:
+            case DENIED_BY_PAYMENT_PROVIDER:
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                break;
+            case DENIED_BY_SUPERVISOR:
+                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                break;
+        }
+
+        currentState = state;
+    }
+
 
     public int getNextBarcodeIndex() {
         final LinearLayoutManager llm = (LinearLayoutManager) codeListView.getLayoutManager();
@@ -200,6 +253,10 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         super.onAttachedToWindow();
 
         scrollContainer.addOnLayoutChangeListener(this);
+
+        if (checkout != null) {
+            checkout.addOnCheckoutStateChangedListener(this);
+        }
     }
 
     @Override
@@ -207,6 +264,10 @@ class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChang
         super.onDetachedFromWindow();
 
         scrollContainer.removeOnLayoutChangeListener(this);
+
+        if (checkout != null) {
+            checkout.removeOnCheckoutStateChangedListener(this);
+        }
     }
 
     @Override

@@ -1,9 +1,6 @@
 package io.snabble.sdk.ui.search;
 
 import android.content.Context;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
@@ -16,12 +13,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.SnabbleUICallback;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
 public class ProductSearchView extends FrameLayout {
@@ -139,9 +138,9 @@ public class ProductSearchView extends FrameLayout {
         } else {
             Telemetry.event(Telemetry.Event.ManuallyEnteredProduct, scannableCode);
 
-            SnabbleUICallback callback = SnabbleUI.getUiCallback();
+            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
-                callback.showScannerWithCode(scannableCode);
+                callback.execute(SnabbleUI.Action.SHOW_SCANNER, scannableCode);
             }
         }
     }
