@@ -8,18 +8,18 @@ import android.widget.FrameLayout;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 
-public class CheckoutAbortedView extends FrameLayout {
-    public CheckoutAbortedView(Context context) {
+public class PaymentFailureView extends FrameLayout {
+    public PaymentFailureView(Context context) {
         super(context);
         inflateView();
     }
 
-    public CheckoutAbortedView(Context context, AttributeSet attrs) {
+    public PaymentFailureView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public CheckoutAbortedView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PaymentFailureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }

@@ -30,7 +30,7 @@
         <activity android:name=".CreditCardInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />
         <activity android:name=".PaymentCredentialsSelectActivity" />
-        <activity android:name=".CheckoutEncodedCodesActivity" />
+        <activity android:name=".CheckoutQRCodeOfflineActivity" />
         <activity android:name=".CheckoutGatekeeperActivity" />
         <activity android:name=".CheckoutOnlineActivity" />
         <activity android:name=".CheckoutQRCodePOSActivity" />

@@ -41,8 +41,6 @@ public class App extends Application {
         }
         LeakCanary.install(this);
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-
         instance = this;
     }
 

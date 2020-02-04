@@ -164,7 +164,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     public void showCheckoutEncodedCodes() {
-        Intent intent = new Intent(this, CheckoutEncodedCodesActivity.class);
+        Intent intent = new Intent(this, CheckoutQRCodeOfflineActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }

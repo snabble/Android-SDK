@@ -21,7 +21,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 
-public class CheckoutStatusView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutOnlineView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private Checkout checkout;
     private BarcodeView checkoutIdCode;
     private View cancel;
@@ -29,17 +29,17 @@ public class CheckoutStatusView extends FrameLayout implements Checkout.OnChecko
     private View message;
     private Checkout.State currentState;
 
-    public CheckoutStatusView(Context context) {
+    public CheckoutOnlineView(Context context) {
         super(context);
         inflateView();
     }
 
-    public CheckoutStatusView(Context context, AttributeSet attrs) {
+    public CheckoutOnlineView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public CheckoutStatusView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CheckoutOnlineView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }

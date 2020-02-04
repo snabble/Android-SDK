@@ -36,7 +36,7 @@ import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Logger;
 
-public class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayoutChangeListener,
+public class CheckoutQRCodeOfflineView extends FrameLayout implements View.OnLayoutChangeListener,
         Checkout.OnCheckoutStateChangedListener {
     private FrameLayout scrollContainer;
     private TextView explanationText2;
@@ -51,17 +51,17 @@ public class CheckoutEncodedCodesView extends FrameLayout implements View.OnLayo
     private Checkout checkout;
     private Checkout.State currentState;
 
-    public CheckoutEncodedCodesView(Context context) {
+    public CheckoutQRCodeOfflineView(Context context) {
         super(context);
         init();
     }
 
-    public CheckoutEncodedCodesView(Context context, AttributeSet attrs) {
+    public CheckoutQRCodeOfflineView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public CheckoutEncodedCodesView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CheckoutQRCodeOfflineView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
