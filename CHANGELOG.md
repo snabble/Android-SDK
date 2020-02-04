@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.18.1]
+
+### Changes
+- Expose client id setter
+
 ## [0.18.0]
 
 ### Changes
