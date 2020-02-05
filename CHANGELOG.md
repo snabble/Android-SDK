@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.18.2]
+
+### Added
+- Added setManualCameraControl to SelfScanningView to control the camera by the app itself
+
+### Fixed
+- Updating ShoppingCartView in onAttachedToWindow to fix an issue when reusing existing 
+ShoppingCartView's and displaying them again instead of creating a new instance
+
 ## [0.18.1]
 
 ### Changes
