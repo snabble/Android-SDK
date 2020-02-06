@@ -27,6 +27,10 @@ public class UserPreferences {
                 .replace("-", "")
                 .toLowerCase(Locale.ROOT);
 
+        setClientId(clientId);
+    }
+
+    public void setClientId(String clientId) {
         sharedPreferences.edit().putString(SHARED_PREFERENCES_CLIENT_ID, clientId).apply();
     }
 

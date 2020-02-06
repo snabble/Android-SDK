@@ -67,6 +67,7 @@ public class SelfScanningView extends FrameLayout {
     private ShoppingCart shoppingCart;
     private boolean allowShowingHints;
     private boolean isShowingHint;
+    private boolean manualCameraControl;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -158,7 +159,7 @@ public class SelfScanningView extends FrameLayout {
         });
 
         isInitialized = true;
-        startBarcodeScanner();
+        startBarcodeScanner(false);
     }
 
     private void showShoppingCart() {
@@ -445,7 +446,34 @@ public class SelfScanningView extends FrameLayout {
         }
     }
 
-    private void startBarcodeScanner() {
+    /**
+     * Setting this to true, makes you the controller of the camera,
+     * with the use of startScanning and stopScanning.
+     *
+     * Default is false which means the view controls the camera by itself
+     * when it attached and detaches itself of the window
+     */
+    public void setManualCameraControl(boolean b) {
+        manualCameraControl = b;
+    }
+
+    public void startScanning() {
+        if (manualCameraControl) {
+            startBarcodeScanner(true);
+        }
+    }
+
+    public void stopScanning() {
+        if (manualCameraControl) {
+            stopBarcodeScanner(true);
+        }
+    }
+
+    private void startBarcodeScanner(boolean force) {
+        if (manualCameraControl && !force) {
+            return;
+        }
+
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             if (isInitialized) {
@@ -459,7 +487,11 @@ public class SelfScanningView extends FrameLayout {
         }
     }
 
-    private void stopBarcodeScanner() {
+    private void stopBarcodeScanner(boolean force) {
+        if (manualCameraControl && !force) {
+            return;
+        }
+
         if (isInitialized) {
             barcodeScanner.stop();
         }
@@ -476,7 +508,7 @@ public class SelfScanningView extends FrameLayout {
     private void registerListeners() {
         isRunning = true;
 
-        startBarcodeScanner();
+        startBarcodeScanner(false);
         shoppingCart.addListener(shoppingCartListener);
         updateCartButton();
     }
@@ -484,7 +516,7 @@ public class SelfScanningView extends FrameLayout {
     private void unregisterListeners() {
         isRunning = false;
 
-        stopBarcodeScanner();
+        stopBarcodeScanner(false);
 
         progressDialog.dismiss();
         shoppingCart.removeListener(shoppingCartListener);
@@ -565,7 +597,7 @@ public class SelfScanningView extends FrameLayout {
                 @Override
                 public void onActivityResumed(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
-                        startBarcodeScanner();
+                        startBarcodeScanner(false);
                     }
                 }
             };

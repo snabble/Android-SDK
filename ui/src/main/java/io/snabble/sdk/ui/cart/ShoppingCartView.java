@@ -444,6 +444,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         cart.addListener(shoppingCartListener);
         checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
+        submitList();
+        update();
     }
 
     private void unregisterListeners() {
