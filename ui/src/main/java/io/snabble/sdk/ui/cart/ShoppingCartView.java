@@ -440,7 +440,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void registerListeners() {
-        SnabbleUI.getProject().getCheckout().abortSilently();
+        // IDK why this is here
+        // SnabbleUI.getProject().getCheckout().abortSilently();
 
         cart.addListener(shoppingCartListener);
         checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);

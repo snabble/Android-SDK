@@ -20,28 +20,28 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Logger;
 
-public class CheckoutQRCodePOSView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private BarcodeView barcodeView;
     private Checkout checkout;
     private Checkout.State currentState;
 
-    public CheckoutQRCodePOSView(Context context) {
+    public CheckoutPointOfSaleView(Context context) {
         super(context);
         inflateView();
     }
 
-    public CheckoutQRCodePOSView(Context context, AttributeSet attrs) {
+    public CheckoutPointOfSaleView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public CheckoutQRCodePOSView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CheckoutPointOfSaleView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.snabble_view_checkout_qrcode, this);
+        inflate(getContext(), R.layout.snabble_view_checkout_pos, this);
 
         Project project = SnabbleUI.getProject();
 

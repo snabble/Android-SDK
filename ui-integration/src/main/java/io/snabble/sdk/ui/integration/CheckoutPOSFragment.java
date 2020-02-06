@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
-public class CheckoutQRCodePOSFragment extends Fragment {
+public class CheckoutPOSFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,6 +16,6 @@ public class CheckoutQRCodePOSFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.snabble_fragment_checkout_qrcodepos, container, false);
+        return inflater.inflate(R.layout.snabble_fragment_checkout_pos, container, false);
     }
 }

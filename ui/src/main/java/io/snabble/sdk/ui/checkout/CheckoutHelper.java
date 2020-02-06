@@ -23,10 +23,10 @@ public class CheckoutHelper {
                 callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_GATEKEEPER, null);
                 break;
             case QRCODE_POS:
-                callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_QRCODE_POS, null);
+                callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_POINT_OF_SALE, null);
                 break;
             case QRCODE_OFFLINE:
-                callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_QRCODE_OFFLINE, null);
+                callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE, null);
                 break;
         }
     }

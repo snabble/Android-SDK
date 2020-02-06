@@ -5,8 +5,6 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.text.Spannable;
@@ -50,7 +48,6 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentSelectionView extends FrameLayout implements PaymentCredentialsStore.Callback,
@@ -93,7 +90,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.snabble_view_payment_method, this);
+        inflate(getContext(), R.layout.snabble_view_payment_selection, this);
 
         progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

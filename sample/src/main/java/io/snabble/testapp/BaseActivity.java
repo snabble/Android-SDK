@@ -119,10 +119,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_CHECKOUT_ONLINE:
                 showCheckoutOnline();
                 break;
-            case SHOW_CHECKOUT_QRCODE_OFFLINE:
+            case SHOW_CHECKOUT_OFFLINE:
                 showCheckoutEncodedCodes();
                 break;
-            case SHOW_CHECKOUT_QRCODE_POS:
+            case SHOW_CHECKOUT_POINT_OF_SALE:
                 showCheckoutQRCodePOS();
                 break;
             case SHOW_PAYMENT_FAILURE:
@@ -164,7 +164,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     public void showCheckoutEncodedCodes() {
-        Intent intent = new Intent(this, CheckoutQRCodeOfflineActivity.class);
+        Intent intent = new Intent(this, CheckoutOfflineActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
@@ -182,7 +182,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     public void showCheckoutQRCodePOS() {
-        Intent intent = new Intent(this, CheckoutQRCodePOSActivity.class);
+        Intent intent = new Intent(this, CheckoutPOSActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }

@@ -1,6 +1,16 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.0-alpha01]
+
+### Breaking Changes
+- Updated ui callbacks, now using an interface with an enum instead of an interface with functions
+- Splitting up of CheckoutView into multiple Views (PaymentSelectionView, CheckoutOnlineView,
+  CheckoutOfflineView, CheckoutGatekeeperView and CheckoutPointOfSaleView)
+ 
+### Fixed
+- Various compatibility fixes for usage in react-native
+
 ## [0.18.2]
 
 ### Added

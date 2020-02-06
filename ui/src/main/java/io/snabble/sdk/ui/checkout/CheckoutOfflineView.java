@@ -36,8 +36,7 @@ import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Logger;
 
-public class CheckoutQRCodeOfflineView extends FrameLayout implements View.OnLayoutChangeListener,
-        Checkout.OnCheckoutStateChangedListener {
+public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private FrameLayout scrollContainer;
     private TextView explanationText2;
     private Project project;
@@ -51,17 +50,17 @@ public class CheckoutQRCodeOfflineView extends FrameLayout implements View.OnLay
     private Checkout checkout;
     private Checkout.State currentState;
 
-    public CheckoutQRCodeOfflineView(Context context) {
+    public CheckoutOfflineView(Context context) {
         super(context);
         init();
     }
 
-    public CheckoutQRCodeOfflineView(Context context, AttributeSet attrs) {
+    public CheckoutOfflineView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public CheckoutQRCodeOfflineView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CheckoutOfflineView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -70,7 +69,7 @@ public class CheckoutQRCodeOfflineView extends FrameLayout implements View.OnLay
         project = SnabbleUI.getProject();
         EncodedCodesOptions options = project.getEncodedCodesOptions();
 
-        inflate(getContext(), R.layout.snabble_view_checkout_encodedcodes, this);
+        inflate(getContext(), R.layout.snabble_view_checkout_offline, this);
 
         scrollContainer = findViewById(R.id.scroll_container);
 
@@ -252,8 +251,6 @@ public class CheckoutQRCodeOfflineView extends FrameLayout implements View.OnLay
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        scrollContainer.addOnLayoutChangeListener(this);
-
         if (checkout != null) {
             checkout.addOnCheckoutStateChangedListener(this);
         }
@@ -263,68 +260,65 @@ public class CheckoutQRCodeOfflineView extends FrameLayout implements View.OnLay
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        scrollContainer.removeOnLayoutChangeListener(this);
-
         if (checkout != null) {
             checkout.removeOnCheckoutStateChangedListener(this);
         }
     }
 
+    @SuppressLint({"DrawAllocation", "ClickableViewAccessibility"})
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
-            // posting using a handler too force adding after the layout pass.
-            // this avoids a bug in <= API 16 where added views while layouting were discarded
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public void run() {
-                    DisplayMetrics dm = getResources().getDisplayMetrics();
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
 
-                    if (scrollContainer.getWidth() > 0 && scrollContainer.getHeight() > 0) {
-                        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT);
+        if (changed) {
+            DisplayMetrics dm = getResources().getDisplayMetrics();
 
-                        scrollContainer.removeAllViews();
-                        codeListView = new CodeListView(getContext());
-                        scrollContainer.addView(codeListView, lp);
+            if (scrollContainer.getWidth() > 0 && scrollContainer.getHeight() > 0) {
+               FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
 
-                        codeListView.setOnTouchListener(new OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                if (event.getAction() == MotionEvent.ACTION_UP) {
-                                    handleTouchUp();
-                                }
+                scrollContainer.removeAllViews();
+                codeListView = new CodeListView(getContext());
+                scrollContainer.addView(codeListView, lp);
 
-                                return false;
-                            }
-                        });
+                codeListView.setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            handleTouchUp();
+                        }
 
-                        codeListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                                handleScrollStateChanged(newState);
-                            }
+                        return false;
+                    }
+                });
 
-                            @Override
-                            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                                handleScroll(dy);
-                            }
-                        });
-
-                        codeListView.setPadding(0, (int) (12 * dm.density), 0, 0);
-                        codeListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+                codeListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                        handleScrollStateChanged(newState);
                     }
 
-                    int dpHeight = Math.round(scrollContainer.getHeight() / dm.density);
-                    if (dpHeight < 220) {
-                        explanationText2.setVisibility(View.GONE);
+                    @Override
+                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                        handleScroll(dy);
                     }
-                }
-            });
+                });
+
+                codeListView.setPadding(0, (int) (12 * dm.density), 0, 0);
+                codeListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+                // compatibility fix for react-native, react-native is not relayouting views when
+                // adding views from the native side...
+                measure(MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+                layout(getLeft(), getTop(), getRight(), getBottom());
+            }
+
+            int dpHeight = Math.round(scrollContainer.getHeight() / dm.density);
+            if (dpHeight < 220) {
+                explanationText2.setVisibility(View.GONE);
+            }
         }
     }
 

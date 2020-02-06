@@ -25,7 +25,7 @@ public class PaymentSuccessView extends FrameLayout {
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.snabble_view_checkout_done, this);
+        inflate(getContext(), R.layout.snabble_view_payment_success, this);
 
         if (SnabbleUI.getActionBar() != null) {
             SnabbleUI.getActionBar().setTitle(R.string.Snabble_Checkout_done);
