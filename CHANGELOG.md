@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Various compatibility fixes for usage in react-native
 
+## [0.18.4]
+
+### Fixed
+- Added missing night mode icon
+
 ## [0.18.3]
 
 ### Changed 
