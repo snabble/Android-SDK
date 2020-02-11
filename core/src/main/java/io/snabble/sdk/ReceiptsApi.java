@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,22 +18,29 @@ import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-class ReceiptsApi {
-    private class ApiLink {
+public class ReceiptsApi {
+    public class ApiLink {
         public String href;
     }
 
-    private class ApiReceipt {
+    public class ApiReceipt {
         public ApiOrder[] orders;
     }
 
-    private class ApiOrder {
+    public class ApiOrder {
         public String id;
         public String project;
         public String date;
+        @SerializedName("shopID")
+        public String shopId;
         public String shopName;
         public int price;
         public Map<String, ApiLink> links;
+    }
+
+    public interface RawReceiptUpdateCallback {
+        void success(ApiReceipt receipts);
+        void failure();
     }
 
     public interface ReceiptUpdateCallback {
@@ -44,6 +53,33 @@ class ReceiptsApi {
     public ReceiptsApi() {
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    public void getRaw(final RawReceiptUpdateCallback rawReceiptUpdateCallback) {
+        final Snabble snabble = Snabble.getInstance();
+        String url = snabble.getReceiptsUrl();
+
+        if (url != null) {
+            Request request = new Request.Builder()
+                    .get()
+                    .url(url)
+                    .build();
+
+            OkHttpClient okHttpClient = snabble.getProjects().get(0).getOkHttpClient();
+            okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<ApiReceipt>(ApiReceipt.class) {
+                @Override
+                public void success(ApiReceipt apiReceipt) {
+                    rawReceiptUpdateCallback.success(apiReceipt);
+                }
+
+                @Override
+                public void error(Throwable t) {
+                    rawReceiptUpdateCallback.failure();
+                }
+            });
+        } else {
+            rawReceiptUpdateCallback.failure();
+        }
     }
 
     public void get(final ReceiptUpdateCallback receiptUpdateCallback) {
@@ -76,7 +112,7 @@ class ReceiptsApi {
                     for (ApiOrder apiOrder : apiReceipt.orders) {
                         ApiLink apiLink = apiOrder.links.get("receipt");
                         if (apiLink == null) {
-                           return;
+                            continue;
                         }
 
                         Project project = projectsById.get(apiOrder.project);

@@ -32,6 +32,10 @@ public class Receipts {
         receiptsApi = new ReceiptsApi();
     }
 
+    public void getRawReceipts(final ReceiptsApi.RawReceiptUpdateCallback rawReceiptUpdateCallback) {
+        receiptsApi.getRaw(rawReceiptUpdateCallback);
+    }
+
     public void getReceiptInfos(final ReceiptInfoCallback receiptInfoCallback) {
         receiptsApi.get(new ReceiptsApi.ReceiptUpdateCallback() {
             @Override
