@@ -108,6 +108,8 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
             }
         });
 
+        descriptions.put(PaymentMethod.GATEKEEPER_TERMINAL, getResources().getString(R.string.Snabble_Payment_payAtSCO));
+
         project = SnabbleUI.getProject();
         checkout = project.getCheckout();
         paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
@@ -211,10 +213,6 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                             break;
                         case MASTERCARD:
                         case VISA:
-                            if (!Snabble.getInstance().getConfig().enableExperimentalCreditCardPayment) {
-                                continue;
-                            }
-
                             e.onClickListener = new OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
