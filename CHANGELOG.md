@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.18.3]
+
+### Changed 
+
+- Added new gatekeeper icon
+- Enabled credit card payments by default
+
 ## [0.18.2]
 
 ### Added

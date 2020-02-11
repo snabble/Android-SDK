@@ -22,6 +22,7 @@
 	<string name="Snabble.PaymentSelection.title">Pay</string>
 	<string name="Snabble.PaymentSelection.howToPay">How would you like to pay %s?</string>
 	<string name="Snabble.PaymentSelection.payNow">Pay %s now</string>
+	<string name="Snabble.PaymentSelection.addNow">Add now</string>
 	<string name="Snabble.Payment.noMethodAvailable">Unfortunately, this purchase can\'t be made using the app.</string>
 	<string name="Snabble.QRCode.didPay">I\'ve paid</string>
 	<string name="Snabble.QRCode.nextCode">Next Code</string>
@@ -94,6 +95,7 @@
 	<string name="Snabble.Payment.emptyState.add">Add SEPA credentials</string>
 	<string name="Snabble.Payment.delete.message">Are you sure you want to remove this payment method?</string>
 	<string name="Snabble.Payment.add">Add SEPA credentials</string>
+	<string name="Snabble.Payment.payAtSCO">Card at EC terminal</string>
 	<string name="Snabble.Checkout.verifying">Verifying</string>
 	<string name="Snabble.Checkout.done">Finished!</string>
 	<string name="Snabble.Checkout.payAtCashRegister">Pay at cash register</string>
