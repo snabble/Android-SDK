@@ -73,6 +73,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
     private UserPreferences userPreferences;
     private DelayedProgressDialog progressDialog;
     private Checkout.State currentState;
+    private Map<PaymentMethod, String> descriptions = new HashMap<>();
 
     public PaymentSelectionView(Context context) {
         super(context);
@@ -155,6 +156,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                 if (pcList.size() > 0) {
                     for (PaymentCredentials pc : pcList) {
                         final Entry e = new Entry();
+                        e.text = descriptions.get(paymentMethod);
                         e.paymentMethod = paymentMethod;
                         e.paymentCredentials = pc;
                         e.text = pc.getObfuscatedId();
@@ -198,6 +200,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                     }
                 } else if (!paymentMethod.isShowOnlyIfCredentialsArePresent()) {
                     final Entry e = new Entry();
+                    e.text = descriptions.get(paymentMethod);
                     e.paymentMethod = paymentMethod;
                     e.desaturated = false;
 
