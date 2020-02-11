@@ -26,7 +26,7 @@ class OkHttpClientFactory {
     static OkHttpClient createOkHttpClient(Application application) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        builder.cache(new Cache(application.getCacheDir(), 10485760)); //10 MB
+        builder.cache(new Cache(application.getCacheDir(), 25 * 1024 * 1024));
         builder.retryOnConnectionFailure(true);
         builder.pingInterval(5, TimeUnit.SECONDS); // workaround for https://github.com/square/okhttp/issues/3146
 

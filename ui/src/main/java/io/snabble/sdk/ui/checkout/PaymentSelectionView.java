@@ -368,7 +368,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                 .setView(view)
                 .create();
 
-        final TextView message = view.findViewById(R.id.message);
+        final TextView message = view.findViewById(R.id.helperText);
         View ok = view.findViewById(R.id.button);
         View close = view.findViewById(R.id.close);
 
@@ -443,7 +443,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
 
             card = itemView.findViewById(R.id.card);
             text = itemView.findViewById(R.id.text);
-            image = itemView.findViewById(R.id.image);
+            image = itemView.findViewById(R.id.helperImage);
         }
     }
 

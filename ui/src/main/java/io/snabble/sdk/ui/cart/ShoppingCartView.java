@@ -672,7 +672,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         public ViewHolder(View itemView) {
             super(itemView);
 
-            image = itemView.findViewById(R.id.image);
+            image = itemView.findViewById(R.id.helperImage);
             name = itemView.findViewById(R.id.name);
             subtitle = itemView.findViewById(R.id.subtitle);
             quantityTextView = itemView.findViewById(R.id.quantity);
@@ -838,7 +838,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             title = itemView.findViewById(R.id.title);
             text = itemView.findViewById(R.id.text);
-            image = itemView.findViewById(R.id.image);
+            image = itemView.findViewById(R.id.helperImage);
         }
 
         public void update(SimpleRow row) {

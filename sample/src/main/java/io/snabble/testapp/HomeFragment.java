@@ -5,9 +5,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.ReceiptsApi;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.SnabbleUI;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.commons.io.FileUtils;
 

@@ -316,6 +316,11 @@ public class Project {
         return urls.get("checkoutInfo");
     }
 
+    public String getAssetsUrl() {
+        return Snabble.getInstance().absoluteUrl("/" + id + "/assets/manifest.json");
+        // return urls.get("assets");
+    }
+
     public String getProductBySkuUrl() {
         return urls.get("resolvedProductBySku");
     }

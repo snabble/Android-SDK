@@ -2,13 +2,20 @@ package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Snabble;
@@ -26,8 +33,10 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
-    private View message;
+    private View helperText;
     private Checkout.State currentState;
+    private ImageView helperImage;
+    private View upArrow;
 
     public CheckoutOnlineView(Context context) {
         super(context);
@@ -48,9 +57,12 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         inflate(getContext(), R.layout.snabble_view_checkout_online, this);
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
-        message = findViewById(R.id.message);
+        helperText = findViewById(R.id.helperText);
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
+
+        helperImage = findViewById(R.id.helperImage);
+        upArrow = findViewById(R.id.arrow);
 
         cancel.setOnClickListener(new OnClickListener() {
             @Override
@@ -118,7 +130,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 break;
             case PAYMENT_PROCESSING:
                 checkoutIdCode.setVisibility(View.GONE);
-                message.setVisibility(View.GONE);
+                helperText.setVisibility(View.GONE);
                 cancel.setVisibility(View.INVISIBLE);
                 cancelProgress.setVisibility(View.INVISIBLE);
                 break;
@@ -177,6 +189,29 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         }
 
         currentState = state;
+    }
+
+    public void setHelperImage(Drawable drawable) {
+        if (drawable != null) {
+            helperImage.setImageDrawable(drawable);
+            upArrow.setVisibility(View.VISIBLE);
+            helperImage.setVisibility(View.VISIBLE);
+            helperText.setVisibility(View.GONE);
+        } else {
+            upArrow.setVisibility(View.GONE);
+            helperImage.setVisibility(View.GONE);
+            helperText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setHelperImage(@DrawableRes int drawableRes) {
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), drawableRes, null);
+        setHelperImage(drawable);
+    }
+
+    public void setHelperImage(Bitmap bitmap) {
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+        setHelperImage(bitmapDrawable);
     }
 
     private void addPaymentOrigin() {

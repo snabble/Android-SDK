@@ -43,7 +43,7 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
         inflate(getContext(), R.layout.snabble_view_checkout_gatekeeper, this);
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
-        message = findViewById(R.id.message);
+        message = findViewById(R.id.helperText);
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
