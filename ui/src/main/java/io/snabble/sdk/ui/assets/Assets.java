@@ -1,25 +1,38 @@
 package io.snabble.sdk.ui.assets;
 
-import android.content.res.AssetManager;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.hardware.display.DisplayManager;
+import android.util.DisplayMetrics;
+import android.widget.ImageView;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
+import io.snabble.sdk.utils.Utils;
 import okhttp3.CacheControl;
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class Assets {
     private enum Variant {
@@ -41,17 +54,47 @@ public class Assets {
         }
     }
 
-    private class Asset {
+    private class ApiAsset {
         String name;
         Map<Variant, String> variants;
     }
 
-    private class Manifest {
-        Asset[] files;
+    private class ApiManifest {
+        ApiAsset[] files;
+    }
+
+    public class Asset {
+        public File asset;
+        public float density;
+
+        public Asset(File asset, float density) {
+            this.asset = asset;
+            this.density = density;
+        }
+
+        public void loadInto(ImageView imageView) {
+
+        }
     }
 
     public interface Callback {
         void onReceive(Bitmap bitmap);
+    }
+
+    private OkHttpClient okHttpClient;
+    private File assetDir;
+    private Project project;
+    private SharedPreferences sharedPreferences;
+
+    public Assets(Project project) {
+        this.project = project;
+        this.sharedPreferences = Snabble.getInstance().getApplication()
+                .getSharedPreferences("snabble_assets", Context.MODE_PRIVATE);
+        this.okHttpClient = project.getOkHttpClient()
+                .newBuilder()
+                .cache(null)
+                .build();
+        this.assetDir = new File(project.getInternalStorageDirectory(), "assets/");
     }
 
     public void download(Project project) {
@@ -61,9 +104,9 @@ public class Assets {
                 .get()
                 .build();
 
-        project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<Manifest>(Manifest.class) {
+        project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<ApiManifest>(ApiManifest.class) {
             @Override
-            public void success(Manifest manifest) {
+            public void success(ApiManifest manifest) {
                 downloadAssets(project, manifest);
             }
 
@@ -74,19 +117,25 @@ public class Assets {
         });
     }
 
-    private void downloadAssets(Project project, Manifest manifest) {
-        Resources res = Snabble.getInstance().getApplication().getResources();
+    private File getLocalAssetFile(String hash) {
+        return new File(assetDir, hash);
+    }
 
-        OkHttpClient okHttpClient = project.getOkHttpClient()
-                .newBuilder()
-                .cache(null)
-                .build();
-
-        Variant bestVariant = getBestVariant();
-
+    private void downloadAssets(Project project, ApiManifest manifest) {
         if (manifest.files != null) {
-            for (Asset asset : manifest.files) {
-                String url = asset.variants.get(bestVariant);
+            SharedPreferences.Editor prefs = sharedPreferences.edit();
+            Set<String> hashes = new HashSet<>();
+            Variant bestVariant = getBestVariant();
+
+            for (ApiAsset apiAsset : manifest.files) {
+                String url = apiAsset.variants.get(bestVariant);
+                String hash = Utils.sha1Hex(url);
+                hashes.add(hash);
+
+                File localFile = getLocalAssetFile(hash);
+                if (localFile.exists()) {
+                    continue;
+                }
 
                 if (url != null) {
                     Request request = new Request.Builder()
@@ -98,8 +147,14 @@ public class Assets {
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             if (response.isSuccessful()) {
-                                AssetManager assetManager =
-                                response.body().byteStream()
+                                ResponseBody body = response.body();
+                                if (body != null) {
+                                    if (localFile.createNewFile()) {
+                                        Asset asset = new Asset(localFile, bestVariant.density);
+                                        IOUtils.copy(body.byteStream(), new FileOutputStream(localFile));
+                                        prefs.putString(apiAsset.name, GsonHolder.get().toJson(asset));
+                                    }
+                                }
                             }
                         }
 
@@ -110,6 +165,20 @@ public class Assets {
                     });
                 }
             }
+
+            Map<String, ?> all = sharedPreferences.getAll();
+            for (
+            // clear orphans
+            File[] files = assetDir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (!hashes.contains(f.getName())) {
+                        f.delete();
+                    }
+                }
+            }
+        } else {
+            Logger.e("Unknown asset manifest file format, ignoring.");
         }
     }
 
