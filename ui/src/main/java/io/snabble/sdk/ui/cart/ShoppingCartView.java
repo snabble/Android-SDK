@@ -515,7 +515,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
 
-            if (item.getTotalDepositPrice() > 0) {
+            if (item.isOnlyLineItem() && item.getTotalDepositPrice() > 0) {
                 continue;
             }
 
