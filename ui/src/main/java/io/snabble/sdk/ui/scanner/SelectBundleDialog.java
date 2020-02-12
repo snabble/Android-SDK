@@ -53,7 +53,7 @@ class SelectBundleDialog {
         listOfProducts.add(product);
 
         for (Product p : bundles) {
-            if (p.getListPrice() == 0) {
+            if (p.getListPrice() != 0) {
                 listOfProducts.add(p);
             }
         }
