@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.18.5]
+
+### Fixed
+- Bundle products not showing up if they have a price > 0 
+
 ## [0.18.4]
 
 ### Fixed
