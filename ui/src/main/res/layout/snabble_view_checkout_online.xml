@@ -32,8 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:visibility="gone"
-                android:tint="?attr/colorOnSurface" />
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/arrow"
@@ -57,28 +56,10 @@
                 android:layout_height="wrap_content"
                 android:gravity="top|center_horizontal"
                 tools:text="a64b"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="2dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:textStyle="bold"
-                android:textSize="17sp" />
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:indeterminate="true"/>
-
-            <TextView
-                android:id="@+id/waiting"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:paddingTop="4dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="@string/Snabble.Payment.waiting"
                 android:textSize="17sp" />
         </LinearLayout>
     </ScrollView>

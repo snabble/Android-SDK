@@ -28,7 +28,7 @@ public class Receipts {
     private ReceiptsApi receiptsApi;
     private Call call;
 
-    public Receipts() {
+    Receipts() {
         receiptsApi = new ReceiptsApi();
     }
 

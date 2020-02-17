@@ -35,6 +35,7 @@ public class Project {
     private Checkout checkout;
     private ShoppingCartStorage shoppingCartStorage;
     private Events events;
+    private Assets assets;
 
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
@@ -87,6 +88,7 @@ public class Project {
         shoppingCartStorage = new ShoppingCartStorage(this);
         checkout = new Checkout(this);
         events = new Events(this);
+        assets = new Assets(this);
     }
 
     void parse(JsonObject jsonObject) {
@@ -427,6 +429,10 @@ public class Project {
 
     public Events getEvents() {
         return events;
+    }
+
+    public Assets getAssets() {
+        return assets;
     }
 
     public void logErrorEvent(String format, Object... args) {

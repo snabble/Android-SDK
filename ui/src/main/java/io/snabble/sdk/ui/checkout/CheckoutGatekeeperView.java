@@ -2,14 +2,17 @@ package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
@@ -23,6 +26,9 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
     private View cancelProgress;
     private View message;
     private Checkout.State currentState;
+    private TextView helperText;
+    private ImageView helperImage;
+    private View upArrow;
 
     public CheckoutGatekeeperView(Context context) {
         super(context);
@@ -42,18 +48,21 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_checkout_gatekeeper, this);
 
+        Project project = SnabbleUI.getProject();
+
         checkoutIdCode = findViewById(R.id.checkout_id_code);
         message = findViewById(R.id.helperText);
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
-        cancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkout.abort();
-                cancelProgress.setVisibility(View.VISIBLE);
-                cancel.setEnabled(false);
-            }
+        helperText = findViewById(R.id.helperText);
+        helperImage = findViewById(R.id.helperImage);
+        upArrow = findViewById(R.id.arrow);
+
+        cancel.setOnClickListener(v -> {
+            checkout.abort();
+            cancelProgress.setVisibility(View.VISIBLE);
+            cancel.setEnabled(false);
         });
 
         if (SnabbleUI.getActionBar() != null) {
@@ -63,14 +72,28 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
         TextView checkoutId = findViewById(R.id.checkout_id);
         String id = SnabbleUI.getProject().getCheckout().getId();
         if (id != null && id.length() >= 4) {
-            String text = getResources().getString(R.string.Snabble_Checkout_ID);
-            checkoutId.setText(String.format("%s: %s", text, id.substring(id.length() - 4)));
+            checkoutId.setText(id.substring(id.length() - 4));
         } else {
             checkoutId.setVisibility(View.GONE);
         }
 
+        project.getAssets().get("checkout-online", this::setHelperImage);
+
         checkout = SnabbleUI.getProject().getCheckout();
         onStateChanged(checkout.getState());
+    }
+
+    public void setHelperImage(Bitmap bitmap) {
+        if (bitmap != null) {
+            helperImage.setImageBitmap(bitmap);
+            upArrow.setVisibility(View.VISIBLE);
+            helperImage.setVisibility(View.VISIBLE);
+            helperText.setVisibility(View.GONE);
+        } else {
+            upArrow.setVisibility(View.GONE);
+            helperImage.setVisibility(View.GONE);
+            helperText.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -124,12 +147,9 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.Snabble_Payment_cancelError_title)
                         .setMessage(R.string.Snabble_Payment_cancelError_message)
-                        .setPositiveButton(R.string.Snabble_OK, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                checkout.resume();
-                            }
+                        .setPositiveButton(R.string.Snabble_OK, (dialog, which) -> {
+                            dialog.dismiss();
+                            checkout.resume();
                         })
                         .setCancelable(false)
                         .create()

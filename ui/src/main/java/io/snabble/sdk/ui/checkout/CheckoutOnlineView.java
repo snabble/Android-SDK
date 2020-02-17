@@ -17,7 +17,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import io.snabble.sdk.Assets;
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
@@ -56,6 +58,8 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_checkout_online, this);
 
+        Project project = SnabbleUI.getProject();
+
         checkoutIdCode = findViewById(R.id.checkout_id_code);
         helperText = findViewById(R.id.helperText);
         cancel = findViewById(R.id.cancel);
@@ -64,13 +68,10 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         helperImage = findViewById(R.id.helperImage);
         upArrow = findViewById(R.id.arrow);
 
-        cancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkout.abort();
-                cancelProgress.setVisibility(View.VISIBLE);
-                cancel.setEnabled(false);
-            }
+        cancel.setOnClickListener(v -> {
+            checkout.abort();
+            cancelProgress.setVisibility(View.VISIBLE);
+            cancel.setEnabled(false);
         });
 
         if (SnabbleUI.getActionBar() != null) {
@@ -80,13 +81,14 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         TextView checkoutId = findViewById(R.id.checkout_id);
         String id = SnabbleUI.getProject().getCheckout().getId();
         if (id != null && id.length() >= 4) {
-            String text = getResources().getString(R.string.Snabble_Checkout_ID);
-            checkoutId.setText(String.format("%s: %s", text, id.substring(id.length() - 4)));
+            checkoutId.setText(id.substring(id.length() - 4));
         } else {
             checkoutId.setVisibility(View.GONE);
         }
 
-        checkout = SnabbleUI.getProject().getCheckout();
+        project.getAssets().get("checkout-online", this::setHelperImage);
+
+        checkout = project.getCheckout();
         onStateChanged(checkout.getState());
     }
 
@@ -141,12 +143,9 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.Snabble_Payment_cancelError_title)
                         .setMessage(R.string.Snabble_Payment_cancelError_message)
-                        .setPositiveButton(R.string.Snabble_OK, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                checkout.resume();
-                            }
+                        .setPositiveButton(R.string.Snabble_OK, (dialog, which) -> {
+                            dialog.dismiss();
+                            checkout.resume();
                         })
                         .setCancelable(false)
                         .create()
@@ -155,18 +154,10 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             case REQUEST_ADD_PAYMENT_ORIGIN:
                 new AlertDialog.Builder(getContext())
                         .setMessage(R.string.Snabble_Payment_addPaymentOrigin)
-                        .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                addPaymentOrigin();
-                            }
-                        })
-                        .setNegativeButton(R.string.Snabble_No, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                checkout.continuePaymentProcess();
-                            }
-                        })
+                        .setPositiveButton(R.string.Snabble_Yes,
+                                (dialog, which) -> addPaymentOrigin())
+                        .setNegativeButton(R.string.Snabble_No,
+                                (dialog, which) -> checkout.continuePaymentProcess())
                         .create()
                         .show();
                 break;
@@ -191,9 +182,9 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         currentState = state;
     }
 
-    public void setHelperImage(Drawable drawable) {
-        if (drawable != null) {
-            helperImage.setImageDrawable(drawable);
+    public void setHelperImage(Bitmap bitmap) {
+        if (bitmap != null) {
+            helperImage.setImageBitmap(bitmap);
             upArrow.setVisibility(View.VISIBLE);
             helperImage.setVisibility(View.VISIBLE);
             helperText.setVisibility(View.GONE);
@@ -202,16 +193,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             helperImage.setVisibility(View.GONE);
             helperText.setVisibility(View.VISIBLE);
         }
-    }
-
-    public void setHelperImage(@DrawableRes int drawableRes) {
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), drawableRes, null);
-        setHelperImage(drawable);
-    }
-
-    public void setHelperImage(Bitmap bitmap) {
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-        setHelperImage(bitmapDrawable);
     }
 
     private void addPaymentOrigin() {

@@ -2,11 +2,8 @@ package io.snabble.testapp;
 
 import android.app.Application;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import android.util.Log;
-
-import com.squareup.leakcanary.LeakCanary;
 
 import org.apache.commons.io.IOUtils;
 
@@ -33,14 +30,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
-
         instance = this;
     }
 
@@ -103,6 +92,9 @@ public class App extends Application {
 
                 // if you want to force keyguard authentication before online payment
                 snabble.getUserPreferences().setRequireKeyguardAuthenticationForPayment(true);
+
+                // optional: preload assets
+                project.getAssets().update();
 
                 callback.done();
             }
