@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.0-alpha02]
+
+### Changes
+- Added RawReceipts callback
+
 ## [0.19.0-alpha01]
 
 ### Breaking Changes
