@@ -2,7 +2,6 @@ package io.snabble.testapp;
 
 import android.app.Application;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import android.util.Log;
 

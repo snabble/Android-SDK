@@ -511,6 +511,12 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
             case WAIT_FOR_APPROVAL:
                 CheckoutHelper.displayPaymentView(checkout);
                 break;
+            case PAYMENT_APPROVED:
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                if (callback != null) {
+                    callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
+                }
+                break;
             case CONNECTION_ERROR:
                 UIUtils.snackbar(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show();
@@ -542,6 +548,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
         registerListeners();
+        onStateChanged(checkout.getState());
     }
 
     @Override
@@ -563,6 +570,15 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                     }
                 }
 
+                @Override
+                public void onActivityPaused(Activity activity) {
+                    super.onActivityPaused(activity);
+
+                    if (UIUtils.getHostActivity(getContext()) == activity) {
+                        unregisterListeners();
+                    }
+                }
+                
                 @Override
                 public void onActivityStopped(Activity activity) {
                     if (UIUtils.getHostActivity(getContext()) == activity) {
