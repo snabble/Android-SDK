@@ -98,15 +98,12 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
-        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    checkout.abort();
-                    return true;
-                }
-                return false;
+        progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                checkout.abort();
+                return true;
             }
+            return false;
         });
 
         descriptions.put(PaymentMethod.GATEKEEPER_TERMINAL, getResources().getString(R.string.Snabble_Payment_payAtSCO));
@@ -162,39 +159,31 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                         e.text = pc.getObfuscatedId();
                         e.desaturated = false;
 
-                        e.onClickListener = new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                showSEPALegalInfoIfNeeded(e.paymentMethod, new OnClickListener() {
+                        e.onClickListener = v -> showSEPALegalInfoIfNeeded(e.paymentMethod, v1 -> {
+                            final SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                            if (callback == null) {
+                                return;
+                            }
+
+                            if (userPreferences.isRequiringKeyguardAuthenticationForPayment()
+                                    && e.paymentMethod.isRequiringCredentials()) {
+                                Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
                                     @Override
-                                    public void onClick(View v) {
-                                        final SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                                        if (callback == null) {
-                                            return;
-                                        }
+                                    public void success() {
+                                        checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                        Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
+                                    }
 
-                                        if (userPreferences.isRequiringKeyguardAuthenticationForPayment()
-                                                && e.paymentMethod.isRequiringCredentials()) {
-                                            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                                                @Override
-                                                public void success() {
-                                                    checkout.pay(e.paymentMethod, e.paymentCredentials);
-                                                    Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
-                                                }
-
-                                                @Override
-                                                public void error() {
-                                                    callback.execute(SnabbleUI.Action.GO_BACK, null);
-                                                }
-                                            });
-                                        } else {
-                                            checkout.pay(e.paymentMethod, e.paymentCredentials);
-                                            Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
-                                        }
+                                    @Override
+                                    public void error() {
+                                        callback.execute(SnabbleUI.Action.GO_BACK, null);
                                     }
                                 });
+                            } else {
+                                checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
                             }
-                        };
+                        });
 
                         entries.add(e);
                     }
@@ -206,31 +195,18 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
 
                     switch (paymentMethod) {
                         case DE_DIRECT_DEBIT:
-                            e.onClickListener = new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    showSEPACardInput();
-                                }
-                            };
+                            e.onClickListener = v -> showSEPACardInput();
                             e.desaturated = true;
                             break;
                         case MASTERCARD:
                         case VISA:
-                            e.onClickListener = new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    showCreditCardInput();
-                                }
-                            };
+                            e.onClickListener = v -> showCreditCardInput();
                             e.desaturated = true;
                             break;
                         default:
-                            e.onClickListener = new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    checkout.pay(e.paymentMethod, e.paymentCredentials);
-                                    Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
-                                }
+                            e.onClickListener = v -> {
+                                checkout.pay(e.paymentMethod, e.paymentCredentials);
+                                Telemetry.event(Telemetry.Event.SelectedPaymentMethod, e.paymentMethod);
                             };
                             break;
                     }

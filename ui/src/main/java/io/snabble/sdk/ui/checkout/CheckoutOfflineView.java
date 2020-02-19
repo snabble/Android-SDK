@@ -282,15 +282,12 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                 codeListView = new CodeListView(getContext());
                 scrollContainer.addView(codeListView, lp);
 
-                codeListView.setOnTouchListener(new OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_UP) {
-                            handleTouchUp();
-                        }
-
-                        return false;
+                codeListView.setOnTouchListener((v, event) -> {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        handleTouchUp();
                     }
+
+                    return false;
                 });
 
                 codeListView.addOnScrollListener(new RecyclerView.OnScrollListener() {

@@ -31,13 +31,10 @@ public class PaymentFailureView extends FrameLayout {
             SnabbleUI.getActionBar().setTitle(R.string.Snabble_Checkout_error);
         }
 
-        findViewById(R.id.goto_home).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.execute(SnabbleUI.Action.GO_BACK, null);
-                }
+        findViewById(R.id.goto_home).setOnClickListener(v -> {
+            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+            if (callback != null) {
+                callback.execute(SnabbleUI.Action.SHOW_SHOPPING_CART, null);
             }
         });
     }

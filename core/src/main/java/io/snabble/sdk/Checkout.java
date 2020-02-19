@@ -18,11 +18,11 @@ public class Checkout {
         /**
          * The initial default state.
          */
-        NONE,
+        NONE(false),
         /**
          * A checkout request was started, and we are waiting for the backend to confirm.
          */
-        HANDSHAKING,
+        HANDSHAKING(false),
         /**
          * The checkout request is started and confirmed by the backend. We are waiting for
          * selection of the payment method. Usually done by the user.
@@ -30,61 +30,67 @@ public class Checkout {
          * Gets skipped for projects that have only 1 available payment method,
          * that can be selected without user intervention.
          */
-        REQUEST_PAYMENT_METHOD,
+        REQUEST_PAYMENT_METHOD(true),
         /**
          * Payment method was selected and we are waiting for confirmation of the backend.
          */
-        VERIFYING_PAYMENT_METHOD,
+        VERIFYING_PAYMENT_METHOD(true),
         /**
          * Payment was received by the backend and we are waiting for confirmation of the payment provider
          */
-        WAIT_FOR_APPROVAL,
+        WAIT_FOR_APPROVAL(false),
         /**
          * Payment was approved and is currently processing.
          */
-        PAYMENT_PROCESSING,
+        PAYMENT_PROCESSING(false),
         /**
          * Happens when a user want to save his transaction details when paying over a terminal.
          *
          * To continue call {@link #continuePaymentProcess()}.
          */
-        REQUEST_ADD_PAYMENT_ORIGIN,
+        REQUEST_ADD_PAYMENT_ORIGIN(false),
         /**
          * The payment was approved. We are done.
          */
-        PAYMENT_APPROVED,
+        PAYMENT_APPROVED(false),
         /**
          * The payment was denied by the payment provider.
          */
-        DENIED_BY_PAYMENT_PROVIDER,
+        DENIED_BY_PAYMENT_PROVIDER(true),
         /**
          * The payment was denied by the supervisor.
          */
-        DENIED_BY_SUPERVISOR,
+        DENIED_BY_SUPERVISOR(true),
         /**
          * The payment was aborted.
          */
-        PAYMENT_ABORTED,
+        PAYMENT_ABORTED(true),
         /**
          * The payment could not be aborted.
          */
-        PAYMENT_ABORT_FAILED,
+        PAYMENT_ABORT_FAILED(false),
         /**
          * There was a unrecoverable connection error.
          */
-        CONNECTION_ERROR,
+        CONNECTION_ERROR(true),
         /**
          * Invalid products detected. For example if a sale ∂stop was issued.
          */
-        INVALID_PRODUCTS,
+        INVALID_PRODUCTS(false),
         /**
          * No payment method available.
          */
-        NO_PAYMENT_METHOD_AVAILABLE,
+        NO_PAYMENT_METHOD_AVAILABLE(false),
         /**
          * No shop was selected.
          */
-        NO_SHOP,
+        NO_SHOP(false);
+
+        private boolean canPay;
+
+        State(boolean canPay) {
+            this.canPay = canPay;
+        }
     }
 
     public class PaymentOrigin {
@@ -300,7 +306,7 @@ public class Checkout {
                 if (availablePaymentMethods.length == 1) {
                     PaymentMethod paymentMethod = PaymentMethod.fromString(availablePaymentMethods[0].id);
                     if (paymentMethod != null && !paymentMethod.isRequiringCredentials()) {
-                        pay(paymentMethod, null, true);
+                        pay(paymentMethod, null);
                     } else {
                         notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
                         Logger.d("Payment method requested");
@@ -363,51 +369,44 @@ public class Checkout {
      * @param paymentMethod the payment method to pay with
      * @param paymentCredentials may be null if the payment method requires no payment credentials
      */
-    public void pay(PaymentMethod paymentMethod, PaymentCredentials paymentCredentials) {
-        pay(paymentMethod, paymentCredentials, false);
-    }
-
-    private void pay(final PaymentMethod paymentMethod, final PaymentCredentials paymentCredentials, boolean force) {
+    public void pay(final PaymentMethod paymentMethod, final PaymentCredentials paymentCredentials) {
         if (signedCheckoutInfo != null) {
-            boolean isRequestingPaymentMethod = (state == State.REQUEST_PAYMENT_METHOD);
-            boolean wasRequestingPaymentMethod = (lastState == State.REQUEST_PAYMENT_METHOD
-                    || lastState == State.VERIFYING_PAYMENT_METHOD);
+            this.paymentMethod = paymentMethod;
 
-            if (force || isRequestingPaymentMethod || ((state == State.CONNECTION_ERROR || state == State.NONE) && wasRequestingPaymentMethod)) {
-                this.paymentMethod = paymentMethod;
+            notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
 
-                notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
+            checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
+                    false, null, new CheckoutApi.PaymentProcessResult() {
+                @Override
+                public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                    synchronized (Checkout.this) {
+                        checkoutProcess = checkoutProcessResponse;
 
-                checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
-                        false, null, new CheckoutApi.PaymentProcessResult() {
-                    @Override
-                    public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                        synchronized (Checkout.this) {
-                            checkoutProcess = checkoutProcessResponse;
+                        if (!handleProcessResponse()) {
+                            if (checkoutProcessResponse.paymentState == CheckoutApi.PaymentState.PROCESSING) {
+                                Logger.d("Processing payment...");
+                                notifyStateChanged(State.PAYMENT_PROCESSING);
+                            } else {
+                                Logger.d("Waiting for approval...");
+                                notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                            }
 
-                            if (!handleProcessResponse()) {
-                                if (checkoutProcessResponse.paymentState == CheckoutApi.PaymentState.PROCESSING) {
-                                    Logger.d("Processing payment...");
-                                    notifyStateChanged(State.PAYMENT_PROCESSING);
-                                } else {
-                                    Logger.d("Waiting for approval...");
-                                    notifyStateChanged(State.WAIT_FOR_APPROVAL);
-                                }
-
-                                if (!paymentMethod.isOfflineMethod()) {
-                                    scheduleNextPoll();
-                                }
+                            if (!paymentMethod.isOfflineMethod()) {
+                                scheduleNextPoll();
                             }
                         }
                     }
+                }
 
-                    @Override
-                    public void error() {
-                        Logger.e("Connection error while creating checkout process");
-                        notifyStateChanged(State.CONNECTION_ERROR);
-                    }
-                });
-            }
+                @Override
+                public void error() {
+                    Logger.e("Connection error while creating checkout process");
+                    notifyStateChanged(State.CONNECTION_ERROR);
+                }
+            });
+        } else {
+            Logger.e("Invalid checkout state");
+            notifyStateChanged(State.CONNECTION_ERROR);
         }
     }
 

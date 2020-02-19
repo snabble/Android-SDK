@@ -132,7 +132,9 @@ public class Assets {
 
                     @Override
                     public void error(Throwable t) {
-                        callback.failure();
+                        if (callback != null) {
+                            callback.failure();
+                        }
                     }
                 });
             }
