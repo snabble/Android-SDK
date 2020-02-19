@@ -443,7 +443,7 @@ public class Checkout {
         });
 
         if (state == State.WAIT_FOR_APPROVAL
-                || state == State.PAYMENT_APPROVED
+                || state == State.PAYMENT_PROCESSING
                 || state == State.REQUEST_ADD_PAYMENT_ORIGIN) {
             scheduleNextPoll();
         }

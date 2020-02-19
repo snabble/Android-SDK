@@ -1,6 +1,21 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.0-alpha04]
+
+### Fixed
+- Fixed a bug that caused checkouts to stop polling 
+
+## [0.19.0-alpha03]
+
+### Fixed
+- Handle PAYMENT_APPROVED in payment selection
+
+## [0.19.0-alpha02]
+
+### Changes
+- Added RawReceipts callback
+
 ## [0.19.0-alpha01]
 
 ### Breaking Changes
