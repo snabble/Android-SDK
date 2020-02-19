@@ -48,6 +48,7 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.google.android:flexbox:1.1.0'
+    implementation 'me.relex:circleindicator:2.1.4'
 
     implementation 'commons-io:commons-io:2.5'
     implementation 'com.google.zxing:core:3.3.3'

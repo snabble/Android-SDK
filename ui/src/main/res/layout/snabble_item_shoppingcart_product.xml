@@ -21,13 +21,13 @@
         android:layout_marginBottom="8dp"
         android:layout_toRightOf="@+id/anchor"
         android:visibility="gone"
-        android:id="@+id/helperImage" />
+        android:id="@+id/helper_image" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:layout_toRightOf="@+id/helperImage"
+        android:layout_toRightOf="@+id/helper_image"
         android:orientation="vertical"
         android:layout_toLeftOf="@+id/controls">
         <TextView

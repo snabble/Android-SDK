@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.text.Spannable;
@@ -345,7 +344,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                 .setView(view)
                 .create();
 
-        final TextView message = view.findViewById(R.id.helperText);
+        final TextView message = view.findViewById(R.id.helper_text);
         View ok = view.findViewById(R.id.button);
         View close = view.findViewById(R.id.close);
 
@@ -420,7 +419,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
 
             card = itemView.findViewById(R.id.card);
             text = itemView.findViewById(R.id.text);
-            image = itemView.findViewById(R.id.helperImage);
+            image = itemView.findViewById(R.id.helper_image);
         }
     }
 

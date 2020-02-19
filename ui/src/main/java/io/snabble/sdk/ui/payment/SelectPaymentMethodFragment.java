@@ -126,7 +126,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
             text = itemView.findViewById(R.id.text);
             usableAt = itemView.findViewById(R.id.usable_at);
-            image = itemView.findViewById(R.id.helperImage);
+            image = itemView.findViewById(R.id.helper_image);
         }
     }
 

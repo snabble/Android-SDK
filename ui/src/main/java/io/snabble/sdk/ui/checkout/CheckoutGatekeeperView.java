@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
@@ -24,7 +23,6 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
-    private View message;
     private Checkout.State currentState;
     private TextView helperText;
     private ImageView helperImage;
@@ -51,12 +49,11 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
         Project project = SnabbleUI.getProject();
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
-        message = findViewById(R.id.helperText);
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
-        helperText = findViewById(R.id.helperText);
-        helperImage = findViewById(R.id.helperImage);
+        helperText = findViewById(R.id.helper_text);
+        helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
 
         cancel.setOnClickListener(v -> {
@@ -136,7 +133,7 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                 break;
             case PAYMENT_PROCESSING:
                 checkoutIdCode.setVisibility(View.GONE);
-                message.setVisibility(View.GONE);
+                helperText.setVisibility(View.GONE);
                 cancel.setVisibility(View.INVISIBLE);
                 cancelProgress.setVisibility(View.INVISIBLE);
                 break;

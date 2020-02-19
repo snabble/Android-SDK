@@ -17,13 +17,13 @@
         android:scaleType="fitCenter"
         app:tint="?attr/colorPrimary"
         app:tintMode="multiply"
-        android:id="@+id/helperImage" />
+        android:id="@+id/helper_image" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/helperImage"
+        android:layout_toEndOf="@+id/helper_image"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:orientation="vertical">

@@ -1,10 +1,7 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -12,12 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 
-import io.snabble.sdk.Assets;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
@@ -61,11 +54,11 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         Project project = SnabbleUI.getProject();
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
-        helperText = findViewById(R.id.helperText);
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
-        helperImage = findViewById(R.id.helperImage);
+        helperText = findViewById(R.id.helper_text);
+        helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
 
         cancel.setOnClickListener(v -> {
