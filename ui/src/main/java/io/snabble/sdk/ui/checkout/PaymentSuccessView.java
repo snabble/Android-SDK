@@ -34,7 +34,7 @@ public class PaymentSuccessView extends FrameLayout {
         findViewById(R.id.back).setOnClickListener(v -> {
             SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
-                callback.execute(SnabbleUI.Action.SHOW_SHOPPING_CART, null);
+                callback.execute(SnabbleUI.Action.GO_BACK, null);
             }
         });
     }
