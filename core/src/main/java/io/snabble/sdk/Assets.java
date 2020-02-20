@@ -118,8 +118,8 @@ public class Assets {
             try {
                 FileReader fileReader = new FileReader(manifestFile);
                 Manifest newManifest = GsonHolder.get().fromJson(fileReader, Manifest.class);
-                
-                 Dispatch.mainThread(() -> {
+
+                Dispatch.mainThread(() -> {
                     if (newManifest != null && newManifest.assets != null) {
                         manifest = newManifest;
                     } else {
@@ -131,7 +131,7 @@ public class Assets {
             } catch (IOException e) {
                 Logger.d("No assets for project %s", project.getId());
 
-                 Dispatch.mainThread(() -> {
+                Dispatch.mainThread(() -> {
                     manifest = new Manifest();
                     manifest.assets = new HashMap<>();
                 });
@@ -144,14 +144,17 @@ public class Assets {
 
         Dispatch.background(() -> {
             try {
-                FileWriter fileWriter = new FileWriter(manifestFile);
+                String[] json = new String[1];
+
                 CountDownLatch countDownLatch = new CountDownLatch(1);
-                 Dispatch.mainThread(() -> {
-                    GsonHolder.get().toJson(manifest, fileWriter);
+                Dispatch.mainThread(() -> {
+                    json[0] = GsonHolder.get().toJson(manifest);
                     countDownLatch.countDown();
                 });
-
                 countDownLatch.await();
+
+                FileWriter fileWriter = new FileWriter(manifestFile);
+                fileWriter.write(json[0]);
                 fileWriter.close();
             } catch (IOException e) {
                 Logger.e("Could not write assets: " + e.getMessage());
@@ -162,7 +165,7 @@ public class Assets {
     }
 
     private void download(DownloadCallback callback) {
-         Dispatch.mainThread(() -> {
+        Dispatch.mainThread(() -> {
             Request request = new Request.Builder()
                     .cacheControl(new CacheControl.Builder()
                             .maxAge(30, TimeUnit.SECONDS)
@@ -239,7 +242,7 @@ public class Assets {
                                 Asset asset = new Asset(localFile, bestVariant.density, hash);
                                 IOUtils.copy(body.byteStream(), new FileOutputStream(localFile));
 
-                                 Dispatch.mainThread(() -> {
+                                Dispatch.mainThread(() -> {
                                     manifest.assets.put(apiAsset.name, asset);
                                     changed[0] = true;
                                 });
@@ -251,7 +254,7 @@ public class Assets {
                 }
             }
 
-             Dispatch.mainThread(() -> {
+            Dispatch.mainThread(() -> {
                 ArrayList<String> removals = new ArrayList<>();
 
                 if (manifest != null) {
@@ -358,7 +361,7 @@ public class Assets {
             download(new DownloadCallback() {
                 @Override
                 public void success() {
-                     Dispatch.mainThread(() -> callback.onReceive(getBitmap(fileName)));
+                    Dispatch.mainThread(() -> callback.onReceive(getBitmap(fileName)));
                 }
 
                 @Override
