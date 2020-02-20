@@ -1,9 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.19.0-alpha04]
+## [0.18.7] + [0.19.0-alpha05]
 
-### Fixed
+### Fixed 
+- Parsing of required customer cards now works without presence of accepted field
+
+## [0.18.6] + [0.19.0-alpha04]
+
+### Fixed 
 - Fixed a bug that caused checkouts to stop polling 
 
 ## [0.19.0-alpha03]
@@ -25,6 +30,7 @@ All notable changes to this project will be documented in this file.
  
 ### Fixed
 - Various compatibility fixes for usage in react-native
+
 
 ## [0.18.5]
 
