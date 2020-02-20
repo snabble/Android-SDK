@@ -2,8 +2,6 @@ package io.snabble.sdk;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,14 +19,17 @@ import org.apache.commons.io.IOUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import io.snabble.sdk.Project;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
@@ -67,7 +68,7 @@ public class Assets {
         ApiAsset[] files;
     }
 
-    public class Asset {
+    private class Asset {
         public File file;
         public float density;
         public String hash;
@@ -77,10 +78,10 @@ public class Assets {
             this.density = density;
             this.hash = hash;
         }
+    }
 
-        public void loadInto(ImageView imageView) {
-
-        }
+    private class Manifest {
+        Map<String, Asset> assets;
     }
 
     private interface DownloadCallback {
@@ -92,52 +93,108 @@ public class Assets {
         void onReceive(Bitmap bitmap);
     }
 
-    private final Object lock = new Object();
-
     private Application app;
     private File assetDir;
     private Project project;
-    private SharedPreferences sharedPreferences;
+    private File manifestFile;
     private Handler mainThreadHandler;
+    private Manifest manifest;
 
     Assets(Project project) {
         this.app = Snabble.getInstance().getApplication();
         this.mainThreadHandler = new Handler(Looper.getMainLooper());
         this.project = project;
-        this.sharedPreferences = app.getSharedPreferences("snabble_assets", Context.MODE_PRIVATE);
+        this.manifestFile = new File(project.getInternalStorageDirectory(), "assets.json");
         this.assetDir = new File(project.getInternalStorageDirectory(), "assets/");
         this.assetDir.mkdirs();
+
+        loadManifest();
     }
 
     public void update() {
         download(null);
     }
 
-    private void download(DownloadCallback callback) {
-        mainThreadHandler.post(() -> {
-            synchronized (lock) {
-                Request request = new Request.Builder()
-                        .cacheControl(new CacheControl.Builder()
-                                .maxAge(30, TimeUnit.SECONDS)
-                                .build())
-                        .url(project.getAssetsUrl())
-                        .get()
-                        .build();
+    private void loadManifest() {
+        Logger.d("Load manifest for project %s", project.getId());
 
-                project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<ApiManifest>(ApiManifest.class) {
-                    @Override
-                    public void success(ApiManifest manifest) {
-                        downloadAssets(project, manifest, callback);
-                    }
-
-                    @Override
-                    public void error(Throwable t) {
-                        if (callback != null) {
-                            callback.failure();
-                        }
+        HandlerThread handlerThread = new HandlerThread("snabble Assets");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(() -> {
+            try {
+                FileReader fileReader = new FileReader(manifestFile);
+                Manifest newManifest = GsonHolder.get().fromJson(fileReader, Manifest.class);
+                mainThreadHandler.post(() -> {
+                    if (newManifest != null && newManifest.assets != null) {
+                        manifest = newManifest;
+                    } else {
+                        manifest = new Manifest();
+                        manifest.assets = new HashMap<>();
                     }
                 });
+                fileReader.close();
+            } catch (IOException e) {
+                Logger.d("No assets for project %s", project.getId());
+
+                mainThreadHandler.post(() -> {
+                    manifest = new Manifest();
+                    manifest.assets = new HashMap<>();
+                });
             }
+        });
+        handlerThread.quitSafely();
+    }
+
+    private void saveManifest() {
+        Logger.d("Save manifest for project %s", project.getId());
+
+        HandlerThread handlerThread = new HandlerThread("snabble Assets");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(() -> {
+            try {
+                FileWriter fileWriter = new FileWriter(manifestFile);
+                CountDownLatch countDownLatch = new CountDownLatch(1);
+                mainThreadHandler.post(() -> {
+                    GsonHolder.get().toJson(manifest, fileWriter);
+                    countDownLatch.countDown();
+                });
+
+                countDownLatch.await();
+                fileWriter.close();
+            } catch (IOException e) {
+                Logger.e("Could not write assets: " + e.getMessage());
+            } catch (InterruptedException e) {
+                Logger.e(e.getMessage());
+            }
+        });
+        handlerThread.quitSafely();
+    }
+
+    private void download(DownloadCallback callback) {
+        mainThreadHandler.post(() -> {
+            Request request = new Request.Builder()
+                    .cacheControl(new CacheControl.Builder()
+                            .maxAge(30, TimeUnit.SECONDS)
+                            .build())
+                    .url(project.getAssetsUrl())
+                    .get()
+                    .build();
+
+            project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<ApiManifest>(ApiManifest.class) {
+                @Override
+                public void success(ApiManifest manifest) {
+                    downloadAssets(project, manifest, callback);
+                }
+
+                @Override
+                public void error(Throwable t) {
+                    if (callback != null) {
+                        callback.failure();
+                    }
+                }
+            });
         });
     }
 
@@ -146,13 +203,14 @@ public class Assets {
     }
 
     @SuppressLint("ApplySharedPref")
-    private void downloadAssets(Project project, ApiManifest manifest, DownloadCallback callback) {
-        if (manifest.files != null) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
+    private void downloadAssets(Project project, ApiManifest apiManifest, DownloadCallback callback) {
+        if (apiManifest.files != null) {
+            boolean[] changed = new boolean[1];
+
             Set<String> hashes = new HashSet<>();
             Variant bestVariant = getBestVariant();
 
-            for (ApiAsset apiAsset : manifest.files) {
+            for (ApiAsset apiAsset : apiManifest.files) {
                 String url = apiAsset.variants.get(bestVariant);
                 if (url == null) {
                     continue;
@@ -191,28 +249,41 @@ public class Assets {
 
                                 Asset asset = new Asset(localFile, bestVariant.density, hash);
                                 IOUtils.copy(body.byteStream(), new FileOutputStream(localFile));
-                                editor.putString(apiAsset.name, GsonHolder.get().toJson(asset));
+
+                                mainThreadHandler.post(() -> {
+                                    manifest.assets.put(apiAsset.name, asset);
+                                    changed[0] = true;
+                                });
                             }
                         }
                     }
                 } catch (IOException e) {
-                    // ignore
+                    Logger.e(e.getMessage());
                 }
             }
 
             mainThreadHandler.post(() -> {
-                Map<String, ?> all = sharedPreferences.getAll();
-                for (Map.Entry<String, ?> entry : all.entrySet()) {
-                    Asset asset = GsonHolder.get().fromJson((String) entry.getValue(), Asset.class);
-                    if (!hashes.contains(asset.hash)) {
-                        Logger.d("remove " + entry.getKey());
+                ArrayList<String> removals = new ArrayList<>();
 
-                        asset.file.delete();
-                        editor.remove(entry.getKey());
+                if (manifest != null) {
+                    for (Map.Entry<String, Asset> entry : manifest.assets.entrySet()) {
+                        Asset asset = entry.getValue();
+                        if (!hashes.contains(asset.hash)) {
+                            Logger.d("remove " + entry.getKey());
+
+                            asset.file.delete();
+                            removals.add(entry.getKey());
+                        }
+                    }
+
+                    for (String s : removals) {
+                        manifest.assets.remove(s);
                     }
                 }
 
-                editor.commit();
+                if (changed[0] || removals.size() > 0) {
+                    saveManifest();
+                }
             });
 
             if (callback != null) {
@@ -246,14 +317,23 @@ public class Assets {
     }
 
     private Bitmap getBitmap(String name) {
-        String json = sharedPreferences.getString(name, null);
-        if (json != null) {
+        // currently a limitation due to asynchronous reads and saves,
+        // could be solved with careful locking
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new RuntimeException("Can only be access from the main thread");
+        }
+
+        if (manifest == null) {
+            return null;
+        }
+
+        Asset asset = manifest.assets.get(name);
+        if (asset != null) {
             try {
                 Logger.d("decode " + name);
                 Resources res = app.getResources();
                 DisplayMetrics dm = res.getDisplayMetrics();
 
-                Asset asset = GsonHolder.get().fromJson(json, Asset.class);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 

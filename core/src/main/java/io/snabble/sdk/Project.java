@@ -319,6 +319,7 @@ public class Project {
     }
 
     public String getAssetsUrl() {
+        // TODO get from metadata
         return Snabble.getInstance().absoluteUrl("/" + id + "/assets/manifest.json");
         // return urls.get("assets");
     }
