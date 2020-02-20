@@ -159,22 +159,22 @@ public class Project {
         JsonObject customerCards = jsonObject.getAsJsonObject("customerCards");
         String[] acceptedCustomerCards = JsonUtils.getStringArrayOpt(customerCards, "accepted", new String[0]);
         String requiredCustomerCard = JsonUtils.getStringOpt(customerCards, "required", null);
-        acceptedCustomerCardInfos = new CustomerCardInfo[acceptedCustomerCards.length];
 
-        for (int i=0; i<acceptedCustomerCards.length; i++) {
-            String id = acceptedCustomerCards[i];
-
+        List<CustomerCardInfo> customerCardInfos = new ArrayList<>();
+        for (String id : acceptedCustomerCards) {
             boolean required = false;
             if (id.equals(requiredCustomerCard)) {
                 required = true;
             }
 
             CustomerCardInfo customerCardInfo = new CustomerCardInfo(id, required);
-            acceptedCustomerCardInfos[i] = customerCardInfo;
+            customerCardInfos.add(customerCardInfo);
+        }
 
-            if (required) {
-                requiredCustomerCardInfo = customerCardInfo;
-            }
+        acceptedCustomerCardInfos = customerCardInfos.toArray(new CustomerCardInfo[customerCardInfos.size()]);
+
+        if (requiredCustomerCard != null) {
+            requiredCustomerCardInfo = new CustomerCardInfo(requiredCustomerCard, true);
         }
 
         List<PaymentMethod> paymentMethodList = new ArrayList<>();
