@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+
 import io.snabble.sdk.utils.Logger;
 
 public abstract class KeyStoreCipher {

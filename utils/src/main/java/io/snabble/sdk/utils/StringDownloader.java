@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public abstract class StringDownloader extends Downloader {
     private File storageFile = null;

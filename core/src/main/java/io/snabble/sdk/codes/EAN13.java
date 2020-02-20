@@ -2,12 +2,7 @@ package io.snabble.sdk.codes;
 
 import android.util.SparseIntArray;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.io.Serializable;
-
-import io.snabble.sdk.Project;
-import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class EAN13 implements Serializable {
     /**

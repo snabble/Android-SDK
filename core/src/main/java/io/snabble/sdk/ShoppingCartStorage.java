@@ -2,7 +2,6 @@ package io.snabble.sdk;
 
 
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 
 import org.apache.commons.io.FileUtils;
@@ -14,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
@@ -22,17 +22,12 @@ class ShoppingCartStorage {
     private ShoppingCart shoppingCart;
     private File file;
     private Handler mainThreadHandler;
-    private Handler backgroundHandler;
 
     ShoppingCartStorage(final Project project) {
-        this.project = project;
-        file = new File(project.getInternalStorageDirectory(), "shoppingCart.json");
-
         mainThreadHandler = new Handler(Looper.getMainLooper());
 
-        HandlerThread handlerThread = new HandlerThread("ShoppingCartStorage");
-        handlerThread.start();
-        backgroundHandler = new Handler(handlerThread.getLooper());
+        this.project = project;
+        file = new File(project.getInternalStorageDirectory(), "shoppingCart.json");
 
         load();
 
@@ -62,24 +57,18 @@ class ShoppingCartStorage {
 
     private void save() {
         mainThreadHandler.removeCallbacksAndMessages(null);
-        mainThreadHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                final String json = shoppingCart.toJson();
+        mainThreadHandler.postDelayed(() -> {
+            final String json = shoppingCart.toJson();
 
-                backgroundHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            FileUtils.forceMkdirParent(file);
-                            IOUtils.write(json, new FileOutputStream(file), Charset.forName("UTF-8"));
-                        } catch (IOException e) {
-                            //could not save shopping cart, silently ignore
-                            Logger.e("Could not save shopping list for " + project.getId() + ": " + e.getMessage());
-                        }
-                    }
-                });
-            }
+            Dispatch.background(() -> {
+                try {
+                    FileUtils.forceMkdirParent(file);
+                    IOUtils.write(json, new FileOutputStream(file), Charset.forName("UTF-8"));
+                } catch (IOException e) {
+                    //could not save shopping cart, silently ignore
+                    Logger.e("Could not save shopping list for " + project.getId() + ": " + e.getMessage());
+                }
+            });
         }, 1000);
     }
 

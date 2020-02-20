@@ -6,6 +6,8 @@ import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.UserNotAuthenticatedException;
 
+import androidx.annotation.RequiresApi;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.Date;
@@ -14,7 +16,6 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 
-import androidx.annotation.RequiresApi;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 

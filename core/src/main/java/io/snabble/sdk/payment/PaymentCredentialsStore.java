@@ -5,8 +5,6 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.google.gson.Gson;
 
@@ -18,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import io.snabble.sdk.Environment;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.UserPreferences;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 import io.snabble.sdk.utils.security.KeyStoreCipher;
@@ -198,13 +197,9 @@ public class PaymentCredentialsStore {
     }
 
     private void notifyChanged() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (Callback cb : callbacks) {
-                    cb.onChanged();
-                }
+        Dispatch.mainThread(() -> {
+            for (Callback cb : callbacks) {
+                cb.onChanged();
             }
         });
     }

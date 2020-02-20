@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -14,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
@@ -29,7 +28,6 @@ class CheckoutRetryer {
         }
     }
 
-    private Handler handler;
     private PaymentMethod fallbackPaymentMethod;
     private SharedPreferences sharedPreferences;
     private Project project;
@@ -41,7 +39,6 @@ class CheckoutRetryer {
         this.sharedPreferences = context.getSharedPreferences("snabble_saved_checkouts_" + project.getId(), Context.MODE_PRIVATE);
         this.project = project;
         this.fallbackPaymentMethod = fallbackPaymentMethod;
-        this.handler = new Handler(Looper.getMainLooper());
 
         String json = sharedPreferences.getString("saved_carts", null);
         if (json != null) {
@@ -55,25 +52,19 @@ class CheckoutRetryer {
     }
 
     public void add(final ShoppingCart.BackendCart backendCart) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                savedCarts.add(new SavedCart(backendCart, new Date()));
-                save();
-            }
+        Dispatch.mainThread(() -> {
+            savedCarts.add(new SavedCart(backendCart, new Date()));
+            save();
         });
     }
 
     private void save() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                String json = GsonHolder.get().toJson(savedCarts);
+        Dispatch.mainThread(() -> {
+            String json = GsonHolder.get().toJson(savedCarts);
 
-                sharedPreferences.edit()
-                        .putString("saved_carts", json)
-                        .apply();
-            }
+            sharedPreferences.edit()
+                    .putString("saved_carts", json)
+                    .apply();
         });
     }
 
@@ -90,83 +81,77 @@ class CheckoutRetryer {
             return;
         }
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (countDownLatch != null && countDownLatch.getCount() > 0) {
-                    return;
+        Dispatch.mainThread(() -> {
+            if (countDownLatch != null && countDownLatch.getCount() > 0) {
+                return;
+            }
+
+            countDownLatch = new CountDownLatch(savedCarts.size());
+
+            for (final SavedCart savedCart : savedCarts) {
+                if (savedCart.failureCount >= 3) {
+                    removeSavedCart(savedCart);
                 }
 
-                countDownLatch = new CountDownLatch(savedCarts.size());
+                final CheckoutApi checkoutApi = new CheckoutApi(project);
+                checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutApi.CheckoutInfoResult() {
+                    @Override
+                    public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
+                        checkoutApi.createPaymentProcess(signedCheckoutInfo, fallbackPaymentMethod, null,
+                                true, savedCart.finalizedAt, new CheckoutApi.PaymentProcessResult() {
+                            @Override
+                            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                                Logger.d("Successfully resend checkout " + savedCart.backendCart.session);
+                                removeSavedCart(savedCart);
+                                countDownLatch.countDown();
+                            }
 
-                for (final SavedCart savedCart : savedCarts) {
-                    if (savedCart.failureCount >= 3) {
-                        removeSavedCart(savedCart);
+                            @Override
+                            public void error() {
+                                fail();
+                            }
+                        });
                     }
 
-                    final CheckoutApi checkoutApi = new CheckoutApi(project);
-                    checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutApi.CheckoutInfoResult() {
-                        @Override
-                        public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
-                            checkoutApi.createPaymentProcess(signedCheckoutInfo, fallbackPaymentMethod, null,
-                                    true, savedCart.finalizedAt, new CheckoutApi.PaymentProcessResult() {
-                                @Override
-                                public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-                                    Logger.d("Successfully resend checkout " + savedCart.backendCart.session);
-                                    removeSavedCart(savedCart);
-                                    countDownLatch.countDown();
-                                }
+                    @Override
+                    public void noShop() {
+                        fail();
+                    }
 
-                                @Override
-                                public void error() {
-                                    fail();
-                                }
-                            });
-                        }
+                    @Override
+                    public void invalidProducts(List<Product> products) {
+                        fail();
+                    }
 
-                        @Override
-                        public void noShop() {
-                            fail();
-                        }
+                    @Override
+                    public void noAvailablePaymentMethod() {
+                        fail();
+                    }
 
-                        @Override
-                        public void invalidProducts(List<Product> products) {
-                            fail();
-                        }
+                    @Override
+                    public void unknownError() {
+                        fail();
+                    }
 
-                        @Override
-                        public void noAvailablePaymentMethod() {
-                            fail();
-                        }
+                    @Override
+                    public void connectionError() {
+                        fail();
+                    }
 
-                        @Override
-                        public void unknownError() {
-                            fail();
-                        }
-
-                        @Override
-                        public void connectionError() {
-                            fail();
-                        }
-
-                        private void fail() {
-                            savedCart.failureCount++;
-                            save();
-                            countDownLatch.countDown();
-                        }
-                    });
-                }
+                    private void fail() {
+                        savedCart.failureCount++;
+                        save();
+                        countDownLatch.countDown();
+                    }
+                });
             }
         });
     }
 
     private void removeSavedCart(final SavedCart savedCart) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                savedCarts.remove(savedCart);
-                save();
-            }
+        Dispatch.mainThread(() -> {
+            savedCarts.remove(savedCart);
+            save();
         });
     }
 }

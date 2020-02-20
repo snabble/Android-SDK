@@ -5,11 +5,11 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class Utils {
     public static Activity getActivity(Context context) {

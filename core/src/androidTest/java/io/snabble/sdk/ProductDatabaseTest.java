@@ -3,9 +3,9 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.AndroidJUnit4;
-import io.snabble.sdk.codes.ScannedCode;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -22,7 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.assertArrayEquals;
+import io.snabble.sdk.codes.ScannedCode;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;

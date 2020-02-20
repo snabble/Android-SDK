@@ -1,11 +1,9 @@
 package io.snabble.sdk;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.google.gson.annotations.SerializedName;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.HttpUrl;
@@ -58,12 +56,10 @@ class ProductApi {
 
     private Project project;
     private OkHttpClient okHttpClient;
-    private Handler handler;
 
     ProductApi(Project project) {
         this.project = project;
         this.okHttpClient = project.getOkHttpClient();
-        this.handler = new Handler(Looper.getMainLooper());
     }
 
     public void findBySku(String sku, final OnProductAvailableListener productAvailableListener) {
@@ -162,30 +158,15 @@ class ProductApi {
     }
 
     private void success(final OnProductAvailableListener onProductAvailableListener, final Product product) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                onProductAvailableListener.onProductAvailable(product, true);
-            }
-        });
+        Dispatch.mainThread(() -> onProductAvailableListener.onProductAvailable(product, true));
     }
 
     private void notFound(final OnProductAvailableListener onProductAvailableListener) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                onProductAvailableListener.onProductNotFound();
-            }
-        });
+        Dispatch.mainThread(onProductAvailableListener::onProductNotFound);
     }
 
     private void error(final OnProductAvailableListener onProductAvailableListener) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                onProductAvailableListener.onError();
-            }
-        });
+        Dispatch.mainThread(onProductAvailableListener::onError);
     }
 
     private Product[] toProducts(ApiProduct[] apiProducts) {

@@ -13,7 +13,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -28,6 +27,7 @@ import com.google.zxing.common.BitMatrix;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Dispatch;
 
 public class BarcodeView extends AppCompatImageView {
     private static int attachCount = 0;
@@ -154,123 +154,109 @@ public class BarcodeView extends AppCompatImageView {
                 height = h;
                 generatedText = text;
 
-                final HandlerThread handlerThread = new HandlerThread("BarcodeView");
-                handlerThread.start();
-                final Handler backgroundHandler = new Handler(handlerThread.getLooper());
-                backgroundHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MultiFormatWriter writer = new MultiFormatWriter();
-                        try {
-                            int paddingWidth = getPaddingRight() + getPaddingLeft();
-                            int paddingHeight = getPaddingBottom() + getPaddingTop();
+                Dispatch.background(() -> {
+                    MultiFormatWriter writer = new MultiFormatWriter();
+                    try {
+                        int paddingWidth = getPaddingRight() + getPaddingLeft();
+                        int paddingHeight = getPaddingBottom() + getPaddingTop();
 
-                            int tw = w - paddingWidth;
-                            int th = h - paddingHeight;
+                        int tw = w - paddingWidth;
+                        int th = h - paddingHeight;
 
-                            BitMatrix bm = writer.encode(text, ZXingHelper.toZXingFormat(format), tw, th);
-                            int[] pixels = new int[w * h];
+                        BitMatrix bm = writer.encode(text, ZXingHelper.toZXingFormat(format), tw, th);
+                        int[] pixels = new int[w * h];
 
-                            // DATA-MATRIX codes are not scaled
-                            // See https://github.com/zxing/zxing/issues/836
-                            if (format == BarcodeFormat.DATA_MATRIX) {
-                                float dw = (float)tw / (float)bm.getWidth();
-                                float dh = (float)th / (float)bm.getHeight();
+                        // DATA-MATRIX codes are not scaled
+                        // See https://github.com/zxing/zxing/issues/836
+                        if (format == BarcodeFormat.DATA_MATRIX) {
+                            float dw = (float)tw / (float)bm.getWidth();
+                            float dh = (float)th / (float)bm.getHeight();
 
-                                for (int y = 0; y < th; y++) {
-                                    final int stride = y * tw;
-                                    final int ay = (int)((float)y/dh);
+                            for (int y = 0; y < th; y++) {
+                                final int stride = y * tw;
+                                final int ay = (int)((float)y/dh);
 
-                                    for (int x = 0; x < tw; x++) {
-                                        int ax = (int)((float)x/dw);
-                                        pixels[x + stride] = bm.get(ax, ay) ? Color.BLACK : backgroundColor;
-                                    }
-                                }
-                            } else {
-                                int[] rect = bm.getEnclosingRectangle();
-                                int left = rect[0];
-                                int top = rect[1];
-                                int right = left + rect[2];
-                                int bottom = top + rect[3];
-
-                                int startX = left - dp2px(8);
-                                int startY = top - dp2px(8);
-                                int endX = right + dp2px(8);
-                                int endY = bottom + dp2px(8);
-
-                                for (int y = 0; y < th; y++) {
-                                    final int stride = y * tw;
-
-                                    for (int x = 0; x < tw; x++) {
-                                        int bgColor = backgroundColor;
-
-                                        if (x > startX && y > startY && x < endX && y < endY) {
-                                            bgColor = Color.WHITE;
-                                        }
-
-                                        pixels[x + stride] = bm.get(x, y) ? Color.BLACK : bgColor;
-                                    }
+                                for (int x = 0; x < tw; x++) {
+                                    int ax = (int)((float)x/dw);
+                                    pixels[x + stride] = bm.get(ax, ay) ? Color.BLACK : backgroundColor;
                                 }
                             }
+                        } else {
+                            int[] rect = bm.getEnclosingRectangle();
+                            int left = rect[0];
+                            int top = rect[1];
+                            int right = left + rect[2];
+                            int bottom = top + rect[3];
 
-                            Bitmap bitmap = Bitmap.createBitmap(pixels, tw, th, Bitmap.Config.ARGB_8888);
+                            int startX = left - dp2px(8);
+                            int startY = top - dp2px(8);
+                            int endX = right + dp2px(8);
+                            int endY = bottom + dp2px(8);
 
-                            if (isNumberDisplayEnabled) {
-                                if (format == BarcodeFormat.EAN_13) {
-                                    bitmap = drawEan13Text(bm, bitmap);
+                            for (int y = 0; y < th; y++) {
+                                final int stride = y * tw;
+
+                                for (int x = 0; x < tw; x++) {
+                                    int bgColor = backgroundColor;
+
+                                    if (x > startX && y > startY && x < endX && y < endY) {
+                                        bgColor = Color.WHITE;
+                                    }
+
+                                    pixels[x + stride] = bm.get(x, y) ? Color.BLACK : bgColor;
                                 }
                             }
-
-                            final Bitmap finalBitmap = bitmap;
-
-                            uiHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setAlpha(0.0f);
-                                    setImageBitmap(finalBitmap);
-                                    animate().alpha(1)
-                                            .setDuration(200)
-                                            // strange behaviour:
-                                            // if the view is out of bounds, we need to set
-                                            // the alpha directly after the animation, or else
-                                            // the alpha value stays at 0
-                                            .setListener(new Animator.AnimatorListener() {
-                                                @Override
-                                                public void onAnimationStart(Animator animation) {
-
-                                                }
-
-                                                @Override
-                                                public void onAnimationEnd(Animator animation) {
-                                                    setAlpha(1.0f);
-                                                }
-
-                                                @Override
-                                                public void onAnimationCancel(Animator animation) {
-
-                                                }
-
-                                                @Override
-                                                public void onAnimationRepeat(Animator animation) {
-
-                                                }
-                                            })
-                                            .start();
-                                }
-                            });
-                        } catch (WriterException e) {
-                            uiHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    width = 0;
-                                    height = 0;
-                                    generatedText = null;
-                                    setImageBitmap(null);
-                                }
-                            });
                         }
 
-                        handlerThread.quit();
+                        Bitmap bitmap = Bitmap.createBitmap(pixels, tw, th, Bitmap.Config.ARGB_8888);
+
+                        if (isNumberDisplayEnabled) {
+                            if (format == BarcodeFormat.EAN_13) {
+                                bitmap = drawEan13Text(bm, bitmap);
+                            }
+                        }
+
+                        final Bitmap finalBitmap = bitmap;
+
+                        uiHandler.post(() -> {
+                            setAlpha(0.0f);
+                            setImageBitmap(finalBitmap);
+                            animate().alpha(1)
+                                    .setDuration(200)
+                                    // strange behaviour:
+                                    // if the view is out of bounds, we need to set
+                                    // the alpha directly after the animation, or else
+                                    // the alpha value stays at 0
+                                    .setListener(new Animator.AnimatorListener() {
+                                        @Override
+                                        public void onAnimationStart(Animator animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            setAlpha(1.0f);
+                                        }
+
+                                        @Override
+                                        public void onAnimationCancel(Animator animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animator animation) {
+
+                                        }
+                                    })
+                                    .start();
+                        });
+                    } catch (WriterException e) {
+                        uiHandler.post(() -> {
+                            width = 0;
+                            height = 0;
+                            generatedText = null;
+                            setImageBitmap(null);
+                        });
                     }
                 });
             }

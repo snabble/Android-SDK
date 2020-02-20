@@ -1,16 +1,14 @@
 package io.snabble.sdk;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 
 import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 
 public class Checkout {
@@ -18,11 +16,11 @@ public class Checkout {
         /**
          * The initial default state.
          */
-        NONE(false),
+        NONE,
         /**
          * A checkout request was started, and we are waiting for the backend to confirm.
          */
-        HANDSHAKING(false),
+        HANDSHAKING,
         /**
          * The checkout request is started and confirmed by the backend. We are waiting for
          * selection of the payment method. Usually done by the user.
@@ -30,67 +28,61 @@ public class Checkout {
          * Gets skipped for projects that have only 1 available payment method,
          * that can be selected without user intervention.
          */
-        REQUEST_PAYMENT_METHOD(true),
+        REQUEST_PAYMENT_METHOD,
         /**
          * Payment method was selected and we are waiting for confirmation of the backend.
          */
-        VERIFYING_PAYMENT_METHOD(true),
+        VERIFYING_PAYMENT_METHOD,
         /**
          * Payment was received by the backend and we are waiting for confirmation of the payment provider
          */
-        WAIT_FOR_APPROVAL(false),
+        WAIT_FOR_APPROVAL,
         /**
          * Payment was approved and is currently processing.
          */
-        PAYMENT_PROCESSING(false),
+        PAYMENT_PROCESSING,
         /**
          * Happens when a user want to save his transaction details when paying over a terminal.
          *
          * To continue call {@link #continuePaymentProcess()}.
          */
-        REQUEST_ADD_PAYMENT_ORIGIN(false),
+        REQUEST_ADD_PAYMENT_ORIGIN,
         /**
          * The payment was approved. We are done.
          */
-        PAYMENT_APPROVED(false),
+        PAYMENT_APPROVED,
         /**
          * The payment was denied by the payment provider.
          */
-        DENIED_BY_PAYMENT_PROVIDER(true),
+        DENIED_BY_PAYMENT_PROVIDER,
         /**
          * The payment was denied by the supervisor.
          */
-        DENIED_BY_SUPERVISOR(true),
+        DENIED_BY_SUPERVISOR,
         /**
          * The payment was aborted.
          */
-        PAYMENT_ABORTED(true),
+        PAYMENT_ABORTED,
         /**
          * The payment could not be aborted.
          */
-        PAYMENT_ABORT_FAILED(false),
+        PAYMENT_ABORT_FAILED,
         /**
          * There was a unrecoverable connection error.
          */
-        CONNECTION_ERROR(true),
+        CONNECTION_ERROR,
         /**
          * Invalid products detected. For example if a sale ∂stop was issued.
          */
-        INVALID_PRODUCTS(false),
+        INVALID_PRODUCTS,
         /**
          * No payment method available.
          */
-        NO_PAYMENT_METHOD_AVAILABLE(false),
+        NO_PAYMENT_METHOD_AVAILABLE,
         /**
          * No shop was selected.
          */
-        NO_SHOP(false);
-
-        private boolean canPay;
-
-        State(boolean canPay) {
-            this.canPay = canPay;
-        }
+        NO_SHOP;
     }
 
     public class PaymentOrigin {
@@ -114,9 +106,6 @@ public class Checkout {
 
     private List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
 
-    private Handler handler;
-    private Handler uiHandler;
-
     private State lastState = State.NONE;
     private State state = State.NONE;
 
@@ -126,25 +115,14 @@ public class Checkout {
     private List<Product> invalidProducts;
     private CheckoutApi.PaymentResult paymentResult;
     private boolean paymentResultHandled;
-
-    private Runnable pollRunnable = new Runnable() {
-        @Override
-        public void run() {
-            pollForResult();
-        }
-    };
     private CheckoutRetryer checkoutRetryer;
+    private Future<?> currentPollFuture;
 
     Checkout(Project project) {
         this.project = project;
         this.shoppingCart = project.getShoppingCart();
         this.checkoutApi = new CheckoutApi(project);
         this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
-
-        HandlerThread handlerThread = new HandlerThread("Checkout");
-        handlerThread.start();
-        handler = new Handler(handlerThread.getLooper());
-        uiHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -222,7 +200,7 @@ public class Checkout {
 
     public void cancelOutstandingCalls() {
         checkoutApi.cancel();
-        handler.removeCallbacks(pollRunnable);
+        stopPolling();
     }
 
     /**
@@ -411,7 +389,15 @@ public class Checkout {
     }
 
     private void scheduleNextPoll() {
-        handler.postDelayed(pollRunnable, 2000);
+        currentPollFuture = Dispatch.background(this::pollForResult, 2000);
+    }
+
+    private void stopPolling() {
+        Logger.d("Stop polling");
+
+        if (currentPollFuture != null) {
+            currentPollFuture.cancel(true);
+        }
     }
 
     private void pollForResult() {
@@ -429,8 +415,7 @@ public class Checkout {
                     checkoutProcess = checkoutProcessResponse;
 
                     if (handleProcessResponse()) {
-                        Logger.d("stop polling");
-                        handler.removeCallbacks(pollRunnable);
+                        stopPolling();
                     }
                 }
             }
@@ -677,12 +662,9 @@ public class Checkout {
                 this.lastState = this.state;
                 this.state = state;
 
-                uiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
-                            checkoutStateListener.onStateChanged(state);
-                        }
+                Dispatch.mainThread(() -> {
+                    for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
+                        checkoutStateListener.onStateChanged(state);
                     }
                 });
             }

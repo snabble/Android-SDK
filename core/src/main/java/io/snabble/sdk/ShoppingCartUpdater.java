@@ -45,154 +45,146 @@ class ShoppingCartUpdater {
         }
 
         final int modCount = cart.getModCount();
-        handler.post(new Runnable() {
+        handler.post(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
-            public void run() {
-                checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
-                    @Override
-                    public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // ignore when cart was modified mid request
-                                if (cart.getModCount() != modCount) {
-                                    unknownError();
-                                    return;
-                                }
+            public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
+                handler.post(() -> {
+                    // ignore when cart was modified mid request
+                    if (cart.getModCount() != modCount) {
+                        unknownError();
+                        return;
+                    }
 
-                                cart.invalidateOnlinePrices();
+                    cart.invalidateOnlinePrices();
 
-                                try {
-                                    CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
+                    try {
+                        CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
 
-                                    Set<String> referrerIds = new HashSet<>();
-                                    Set<String> requiredIds = new HashSet<>();
+                        Set<String> referrerIds = new HashSet<>();
+                        Set<String> requiredIds = new HashSet<>();
 
-                                    for (int i=0; i<cart.size(); i++) {
-                                        ShoppingCart.Item item = cart.get(i);
-                                        requiredIds.add(item.getId());
-                                        referrerIds.add(item.getId());
-                                    }
+                        for (int i=0; i<cart.size(); i++) {
+                            ShoppingCart.Item item = cart.get(i);
+                            requiredIds.add(item.getId());
+                            referrerIds.add(item.getId());
+                        }
 
-                                    for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                                        requiredIds.remove(lineItem.id);
-                                    }
+                        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                            requiredIds.remove(lineItem.id);
+                        }
 
-                                    // error out when items are missing
-                                    if (requiredIds.size() > 0) {
-                                        Logger.e("Missing products in price update: " + requiredIds.toString());
+                        // error out when items are missing
+                        if (requiredIds.size() > 0) {
+                            Logger.e("Missing products in price update: " + requiredIds.toString());
+                            unknownError();
+                            return;
+                        }
+
+                        int discounts = 0;
+
+                        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                            ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+
+                            if (item != null) {
+                                if (!item.getProduct().getSku().equals(lineItem.sku)) {
+                                    CountDownLatch countDownLatch = new CountDownLatch(1);
+                                    boolean[] error = new boolean[1];
+
+                                    project.getProductDatabase().findBySkuOnline(lineItem.sku, new OnProductAvailableListener() {
+                                        @Override
+                                        public void onProductAvailable(Product product, boolean wasOnline) {
+                                            ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
+                                            if (scannedCode == null) {
+                                                error[0] = true;
+                                                countDownLatch.countDown();
+                                                return;
+                                            }
+
+                                            item.replace(product, scannedCode, lineItem.amount);
+                                            countDownLatch.countDown();
+                                        }
+
+                                        @Override
+                                        public void onProductNotFound() {
+                                            error[0] = true;
+                                            countDownLatch.countDown();
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            error[0] = true;
+                                            countDownLatch.countDown();
+                                        }
+                                    });
+
+                                    countDownLatch.await();
+
+                                    if (error[0]) {
                                         unknownError();
                                         return;
                                     }
-
-                                    int discounts = 0;
-
-                                    for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                                        ShoppingCart.Item item = cart.getByItemId(lineItem.id);
-
-                                        if (item != null) {
-                                            if (!item.getProduct().getSku().equals(lineItem.sku)) {
-                                                CountDownLatch countDownLatch = new CountDownLatch(1);
-                                                boolean[] error = new boolean[1];
-
-                                                project.getProductDatabase().findBySkuOnline(lineItem.sku, new OnProductAvailableListener() {
-                                                    @Override
-                                                    public void onProductAvailable(Product product, boolean wasOnline) {
-                                                        ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
-                                                        if (scannedCode == null) {
-                                                            error[0] = true;
-                                                            countDownLatch.countDown();
-                                                            return;
-                                                        }
-
-                                                        item.replace(product, scannedCode, lineItem.amount);
-                                                        countDownLatch.countDown();
-                                                    }
-
-                                                    @Override
-                                                    public void onProductNotFound() {
-                                                        error[0] = true;
-                                                        countDownLatch.countDown();
-                                                    }
-
-                                                    @Override
-                                                    public void onError() {
-                                                        error[0] = true;
-                                                        countDownLatch.countDown();
-                                                    }
-                                                });
-
-                                                countDownLatch.await();
-
-                                                if (error[0]) {
-                                                    unknownError();
-                                                    return;
-                                                }
-                                            }
-
-                                            item.setLineItem(lineItem);
-                                        } else {
-                                            if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
-                                                discounts += lineItem.totalPrice;
-                                            } else {
-                                                cart.insert(cart.newItem(lineItem), cart.size(), false);
-                                            }
-                                        }
-                                    }
-
-                                    if (discounts != 0) {
-                                        CheckoutApi.LineItem lineItem = new CheckoutApi.LineItem();
-                                        lineItem.type = CheckoutApi.LineItemType.DISCOUNT;
-                                        lineItem.amount = 1;
-                                        lineItem.price = discounts;
-                                        lineItem.totalPrice = lineItem.price;
-                                        lineItem.id = UUID.randomUUID().toString();
-                                        cart.insert(cart.newItem(lineItem), cart.size(), false);
-                                    }
-
-                                    cart.setOnlineTotalPrice(checkoutInfo.price.price);
-                                    Logger.d("Successfully updated prices");
-                                } catch (Exception e) {
-                                    Logger.e("Could not update price: %s", e.getMessage());
-                                    unknownError();
-                                    return;
                                 }
 
-                                cart.setInvalidProducts(null);
-                                cart.checkLimits();
-                                cart.notifyPriceUpdate(cart);
+                                item.setLineItem(lineItem);
+                            } else {
+                                if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
+                                    discounts += lineItem.totalPrice;
+                                } else {
+                                    cart.insert(cart.newItem(lineItem), cart.size(), false);
+                                }
                             }
-                        });
+                        }
+
+                        if (discounts != 0) {
+                            CheckoutApi.LineItem lineItem = new CheckoutApi.LineItem();
+                            lineItem.type = CheckoutApi.LineItemType.DISCOUNT;
+                            lineItem.amount = 1;
+                            lineItem.price = discounts;
+                            lineItem.totalPrice = lineItem.price;
+                            lineItem.id = UUID.randomUUID().toString();
+                            cart.insert(cart.newItem(lineItem), cart.size(), false);
+                        }
+
+                        cart.setOnlineTotalPrice(checkoutInfo.price.price);
+                        Logger.d("Successfully updated prices");
+                    } catch (Exception e) {
+                        Logger.e("Could not update price: %s", e.getMessage());
+                        unknownError();
+                        return;
                     }
 
-                    @Override
-                    public void noShop() {
-                        cart.notifyPriceUpdate(cart);
-                    }
-
-                    @Override
-                    public void invalidProducts(List<Product> products) {
-                        cart.setInvalidProducts(products);
-                        cart.notifyPriceUpdate(cart);
-                    }
-
-                    @Override
-                    public void noAvailablePaymentMethod() {
-                        cart.notifyPriceUpdate(cart);
-                    }
-
-                    @Override
-                    public void unknownError() {
-                        cart.notifyPriceUpdate(cart);
-                    }
-
-                    @Override
-                    public void connectionError() {
-                        cart.notifyPriceUpdate(cart);
-                    }
+                    cart.setInvalidProducts(null);
+                    cart.checkLimits();
+                    cart.notifyPriceUpdate(cart);
                 });
             }
-        });
+
+            @Override
+            public void noShop() {
+                cart.notifyPriceUpdate(cart);
+            }
+
+            @Override
+            public void invalidProducts(List<Product> products) {
+                cart.setInvalidProducts(products);
+                cart.notifyPriceUpdate(cart);
+            }
+
+            @Override
+            public void noAvailablePaymentMethod() {
+                cart.notifyPriceUpdate(cart);
+            }
+
+            @Override
+            public void unknownError() {
+                cart.notifyPriceUpdate(cart);
+            }
+
+            @Override
+            public void connectionError() {
+                cart.notifyPriceUpdate(cart);
+            }
+        }));
     }
 
     public void dispatchUpdate() {

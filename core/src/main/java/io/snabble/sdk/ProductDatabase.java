@@ -9,8 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.CancellationSignal;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.text.format.Formatter;
 
@@ -28,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringNormalizer;
@@ -58,8 +57,6 @@ public class ProductDatabase {
     private Project project;
     private Application application;
     private ProductDatabaseDownloader productDatabaseDownloader;
-
-    private Handler handler = new Handler(Looper.getMainLooper());
     private ProductApi productApi;
 
     ProductDatabase(Project project, String name, boolean generateSearchIndex) {
@@ -592,12 +589,7 @@ public class ProductDatabase {
                     callback.success();
                 }
 
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        project.getShoppingCart().updateProducts();
-                    }
-                });
+                Dispatch.mainThread(() -> project.getShoppingCart().updateProducts());
             }
         }, deltaUpdateOnly);
     }
@@ -1270,12 +1262,9 @@ public class ProductDatabase {
     }
 
     private void notifyOnDatabaseUpdated() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (OnDatabaseUpdateListener listener : onDatabaseUpdateListeners) {
-                    listener.onDatabaseUpdated();
-                }
+        Dispatch.mainThread(() -> {
+            for (OnDatabaseUpdateListener listener : onDatabaseUpdateListeners) {
+                listener.onDatabaseUpdated();
             }
         });
     }

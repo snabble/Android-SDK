@@ -1,9 +1,9 @@
 package io.snabble.testapp;
 
 import android.app.Application;
-import androidx.annotation.Nullable;
-
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
 

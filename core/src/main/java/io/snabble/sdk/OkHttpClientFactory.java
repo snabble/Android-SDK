@@ -1,7 +1,9 @@
 package io.snabble.sdk;
 
 import android.app.Application;
+
 import java.util.concurrent.TimeUnit;
+
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
