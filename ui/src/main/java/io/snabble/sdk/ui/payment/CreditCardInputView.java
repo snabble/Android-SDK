@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
@@ -45,6 +46,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class CreditCardInputView extends FrameLayout {
+    public static PaymentMethod type;
+
     private boolean acceptedKeyguard;
     private WebView webView;
     private OkHttpClient okHttpClient;
@@ -180,7 +183,11 @@ public class CreditCardInputView extends FrameLayout {
             data = data.replace("{{hash}}", hashResponse.hash);
 
             // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
-            data = data.replace("{{paymentMethod}}", "V");
+            if (type == PaymentMethod.MASTERCARD) {
+                data = data.replace("{{paymentMethod}}", "M");
+            } else {
+                data = data.replace("{{paymentMethod}}", "V");
+            }
             webView.loadData(Base64.encodeToString(data.getBytes(), Base64.DEFAULT), null, "base64");
         } catch (IOException e) {
             Logger.e(e.getMessage());

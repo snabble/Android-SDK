@@ -22,7 +22,6 @@
 	<string name="Snabble.PaymentSelection.title">Pay</string>
 	<string name="Snabble.PaymentSelection.howToPay">How would you like to pay %s?</string>
 	<string name="Snabble.PaymentSelection.payNow">Pay %s now</string>
-	<string name="Snabble.PaymentSelection.addNow">Add now</string>
 	<string name="Snabble.Payment.noMethodAvailable">Unfortunately, this purchase can\'t be made using the app.</string>
 	<string name="Snabble.QRCode.didPay">I\'ve paid</string>
 	<string name="Snabble.QRCode.nextCode">Next Code</string>
@@ -64,7 +63,7 @@
 	<string name="Snabble.Shoppingcart.removeItems">Remove all products from shopping cart?</string>
 	<string name="Snabble.Shoppingcart.deposit">Deposit</string>
 	<string name="Snabble.Shoppingcart.discounts">Total discounts</string>
-	<string name="Snabble.Shoppingcart.giveaways">Free gift</string>
+	<string name="Snabble.Shoppingcart.giveaway">Free gift</string>
 	<string name="Snabble.saleStop.errorMsg.title">Sorry</string>
 	<string name="Snabble.saleStop.errorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier.</string>
 	<string name="Snabble.saleStop.errorMsg.one">This product cannot be paid for using the app, please pay for it at the cashier:</string>
@@ -82,7 +81,7 @@
 	<string name="Snabble.PaymentStatus.step3">Processing payment</string>
 	<string name="Snabble.Receipt.errorDownload">Receipt could not be downloaded</string>
 	<string name="Snabble.Receipts.title">Receipts</string>
-	<string name="Snabble.Receipts.noReceipt">No receipts found</string>
+	<string name="Snabble.Receipts.noReceipts">No receipts found</string>
 	<string name="Snabble.Receipts.oClock">o\'clock</string>
 	<string name="Snabble.Receipts.loading">(loading)</string>
 	<string name="Snabble.Payment.SEPA.Name">Name</string>
@@ -92,9 +91,9 @@
 	<string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
 	<string name="Snabble.Save">Save</string>
 	<string name="Snabble.Payment.emptyState.message">You don\'t have any payment methods added yet. Add one now to conveniently check out.</string>
-	<string name="Snabble.Payment.emptyState.add">Add SEPA credentials</string>
+	<string name="Snabble.Payment.emptyState.add">Add payment method</string>
 	<string name="Snabble.Payment.delete.message">Are you sure you want to remove this payment method?</string>
-	<string name="Snabble.Payment.add">Add SEPA credentials</string>
+	<string name="Snabble.Payment.add">Add payment method</string>
 	<string name="Snabble.Payment.payAtSCO">Card at EC terminal</string>
 	<string name="Snabble.Checkout.verifying">Verifying</string>
 	<string name="Snabble.Checkout.done">Finished!</string>
@@ -124,4 +123,26 @@
 	<string name="Snabble.CC.3dsecureHint">In order to verify your credit card, you will be redirected to your bank after entering your data. There you will be asked to approve a payment of € 1.00 to snabble. The amount will be credited to you immediately after your approval.</string>
 	<string name="Snabble.Keyguard.title">Please unlock your device</string>
 	<string name="Snabble.Keyguard.message">That\'s how we make sure that only you have access to this payment method</string>
+	<string name="Snabble.CC.cardNumber">Card number</string>
+	<string name="Snabble.CC.validUntil">Valid until</string>
+
+	<!-- SECTION: Payment Methods -->
+	<string name="Snabble.PaymentMethods.title">Payment Methods</string>
+	<string name="Snabble.PaymentMethods.add">Add payment method</string>
+	<string name="Snabble.PaymentMethods.noDeviceCode">No Code Protection</string>
+	<string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Your iPhone isn\'t protected by a code. For your own safety, please assign a code before storing your payment information.</string>
+	<string name="Snabble.PaymentMethods.noCodeAlert.biometry">Your iPhone isn\'t protected by a code or Touch ID/Face ID. For your own safety, please assign a code before storing your payment information.</string>
+	<string name="Snabble.Biometry.TouchId">Touch ID</string>
+	<string name="Snabble.Biometry.FaceId">Face ID</string>
+	<string name="Snabble.Biometry.Alert.title">Activate %s?</string>
+	<string name="Snabble.Biometry.Alert.message">Do you want to protect online payments with %s?</string>
+	<string name="Snabble.Biometry.Alert.laterButton">Not now</string>
+	<string name="Snabble.Biometry.enterCode">Enter code</string>
+	<string name="Snabble.Payment.SEPA.Title">SEPA direct debit</string>
+	<string name="Snabble.SEPA.editingHint">Your SEPA data is only stored in encrypted form and therefore cannot be edited.</string>
+	<string name="Snabble.SEPA.encryptionError">Error encrypting data</string>
+	<string name="Snabble.CC.editingHint">Your credit card data is only stored in encrypted form and therefore cannot be edited.</string>
+	<string name="Snabble.CC.noEntryPossible">Unfortunately you can\'t add credit cards at this time.</string>
+	<string name="Snabble.Payment.SEPA.missingCountry">Country code cannot be empty.</string>
+	<string name="Snabble.PaymentSelection.addNow">Add now</string>
 </resources>
