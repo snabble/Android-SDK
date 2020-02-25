@@ -100,7 +100,7 @@ public class ShoppingCart {
     void insert(Item item, int index, boolean update) {
         if (item.isMergeable()) {
             Item existing = getByProduct(item.getProduct());
-            if (existing != null) {
+            if (existing != null && existing.isMergeable()) {
                 items.remove(existing);
                 items.add(index, item);
                 modCount++;
@@ -488,9 +488,11 @@ public class ShoppingCart {
         public boolean isMergeable() {
             if (product == null && lineItem != null) return false;
 
-            return product.getType() == Product.Type.Article
+            boolean b = product.getType() == Product.Type.Article
                     && getUnit() != PIECE
-                    && product.getPrice(cart.project.getCustomerCardId()) != 0;
+                    && product.getPrice(cart.project.getCustomerCardId()) != 0
+                    && scannedCode.getEmbeddedData() == 0;
+            return b;
         }
 
         public Unit getUnit() {

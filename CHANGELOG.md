@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.0-alpha06]
+
+### Fixed 
+- Fixed a bug that caused products that are reduced in price to be able to merge with the same
+product that is not reduced in price, resulting in odd behaviour
+
 ## [0.18.7] + [0.19.0-alpha05]
 
 ### Fixed 
