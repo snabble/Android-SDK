@@ -21,7 +21,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 import org.apache.commons.io.IOUtils;
 
@@ -56,6 +61,8 @@ public class CreditCardInputView extends FrameLayout {
     private Handler handler;
     private ProgressBar progressBar;
     private boolean isAttachedToWindow;
+    private boolean isActivityResumed;
+    private CreditCardInfo pendingCreditCardInfo;
 
     public CreditCardInputView(Context context) {
         super(context);
@@ -78,6 +85,13 @@ public class CreditCardInputView extends FrameLayout {
             throw new RuntimeException("CreditCardInputView is only supported on API 21+");
         }
 
+        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
+        if (fragmentActivity != null) {
+            isActivityResumed = fragmentActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+        } else {
+            isActivityResumed = true;
+        }
+
         inflate(getContext(), R.layout.snabble_view_cardinput_creditcard, this);
 
         okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
@@ -90,29 +104,21 @@ public class CreditCardInputView extends FrameLayout {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishWithError();
-                    }
-                });
+                handler.post(() -> finishWithError());
             }
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, final int newProgress) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (newProgress == 100) {
-                            progressBar.setVisibility(View.GONE);
-                        } else {
-                            progressBar.setVisibility(View.VISIBLE);
-                        }
-
-                        progressBar.setProgress(newProgress);
+                handler.post(() -> {
+                    if (newProgress == 100) {
+                        progressBar.setVisibility(View.GONE);
+                    } else {
+                        progressBar.setVisibility(View.VISIBLE);
                     }
+
+                    progressBar.setProgress(newProgress);
                 });
             }
         });
@@ -147,23 +153,13 @@ public class CreditCardInputView extends FrameLayout {
             public void success(final HashResponse hashResponse) {
                 lastHashResponse = hashResponse;
                 Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadForm(hashResponse);
-                    }
-                });
+                handler.post(() -> loadForm(hashResponse));
             }
 
             @Override
             public void error(Throwable t) {
                 Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishWithError();
-                    }
-                });
+                handler.post(() -> finishWithError());
             }
         });
     }
@@ -323,6 +319,23 @@ public class CreditCardInputView extends FrameLayout {
                         }
                     }
                 }
+
+                @Override
+                public void onActivityResumed(Activity activity) {
+                    super.onActivityResumed(activity);
+                    isActivityResumed = true;
+
+                    if (pendingCreditCardInfo != null) {
+                        authenticateAndSave(pendingCreditCardInfo);
+                        pendingCreditCardInfo = null;
+                    }
+                }
+
+                @Override
+                public void onActivityPaused(Activity activity) {
+                    super.onActivityPaused(activity);
+                    isActivityResumed = false;
+                }
             };
 
     private class CreditCardInfo {
@@ -365,37 +378,28 @@ public class CreditCardInputView extends FrameLayout {
                              final String brand, final String expirationYear,
                              final String expirationMonth, final String hostedDataId,
                              final String transactionId) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    authenticateAndSave(new CreditCardInfo(cardHolder, obfuscatedCardNumber,
-                            brand, expirationYear,
-                            expirationMonth, hostedDataId, transactionId));
-                }
-            });
+            CreditCardInfo creditCardInfo = new CreditCardInfo(cardHolder, obfuscatedCardNumber,
+                    brand, expirationYear,
+                    expirationMonth, hostedDataId, transactionId);
+
+            if (isActivityResumed) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> authenticateAndSave(creditCardInfo));
+            } else {
+                pendingCreditCardInfo = creditCardInfo;
+            }
         }
 
         @JavascriptInterface
         public void fail() {
             Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    finishWithError();
-                }
-            });
+            handler.post(() -> finishWithError());
         }
 
         @JavascriptInterface
         public void abort() {
             Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    finish();
-                }
-            });
+            handler.post(() -> finish());
         }
 
         @JavascriptInterface

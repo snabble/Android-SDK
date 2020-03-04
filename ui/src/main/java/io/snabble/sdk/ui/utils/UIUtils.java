@@ -38,7 +38,7 @@ public class UIUtils {
 
     public static FragmentActivity getHostFragmentActivity(Context context) {
         while (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
+            if (context instanceof FragmentActivity) {
                 return (FragmentActivity) context;
             }
             context = ((ContextWrapper) context).getBaseContext();

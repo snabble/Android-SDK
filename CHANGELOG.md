@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.2]
+
+### Fixed
+- CreditCardInputView now works with external app 3d secure authentications
+
 ## [0.19.1]
 
 ### Fixed
