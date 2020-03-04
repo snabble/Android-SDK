@@ -169,10 +169,6 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void loadForm(HashResponse hashResponse) {
-        if (!isAttachedToWindow) {
-            return;
-        }
-
         try {
             String data = IOUtils.toString(resources.openRawResource(R.raw.snabble_creditcardform), Charset.forName("UTF-8"));
             data = data.replace("{{url}}", hashResponse.url);
