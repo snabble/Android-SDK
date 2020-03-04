@@ -345,7 +345,9 @@ public class ShoppingCart {
 
         for (Item e : items) {
             if (e.isOnlyLineItem()) {
-                sum += e.lineItem.amount;
+                if (e.lineItem.type == CheckoutApi.LineItemType.DEFAULT) {
+                    sum += e.lineItem.amount;
+                }
                 continue;
             }
 
