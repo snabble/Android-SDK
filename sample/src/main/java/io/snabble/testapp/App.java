@@ -2,6 +2,7 @@ package io.snabble.testapp;
 
 import android.app.Application;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.util.Log;
 
@@ -39,6 +40,10 @@ public class App extends Application {
             return;
         }
         LeakCanary.install(this);
+
+        // if you are using a light mode theme, disable night mode resources
+        // this seems like a bug in android
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         instance = this;
     }
