@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.1]
+
+### Fixed
+- Fixed a bug that CreditCardInputView did not load when embedded in react-native
+- Fixed a bug that vPOS discounts got added to the total quantity in the ShoppingCart
+
 ## [0.19.0]
 
 ### Fixed 
