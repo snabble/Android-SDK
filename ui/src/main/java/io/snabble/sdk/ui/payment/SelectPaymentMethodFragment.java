@@ -48,11 +48,27 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         // Credit card payments are only supported on API 21+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_creditcard,
-                    getString(R.string.Snabble_Payment_CreditCard),
-                    getUsableAtText(PaymentMethod.VISA, PaymentMethod.MASTERCARD), new OneShotClickListener() {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa,
+                    "VISA",
+                    getUsableAtText(PaymentMethod.VISA), new OneShotClickListener() {
                 @Override
                 public void click() {
+                    CreditCardInputView.type = PaymentMethod.VISA;
+                    SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                    if (callback != null) {
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                    }
+
+                    dismissAllowingStateLoss();
+                }
+            }));
+
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_mastercard,
+                    "Mastercard",
+                    getUsableAtText(PaymentMethod.MASTERCARD), new OneShotClickListener() {
+                @Override
+                public void click() {
+                    CreditCardInputView.type = PaymentMethod.MASTERCARD;
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
                         callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
@@ -77,10 +93,15 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     }
 
     private String getUsableAtText(PaymentMethod...paymentMethods) {
+        List<Project> projects = Snabble.getInstance().getProjects();
+        if (projects.size() == 1) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
 
         int count = 0;
-        for (Project project : Snabble.getInstance().getProjects()) {
+        for (Project project : projects) {
             List<PaymentMethod> availablePaymentMethods = Arrays.asList(project.getAvailablePaymentMethods());
             for (PaymentMethod pm : paymentMethods) {
                 if (availablePaymentMethods.contains(pm)) {
@@ -146,7 +167,11 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }
 
             holder.text.setText(e.text);
-            holder.usableAt.setText(e.usableAt);
+            if (e.usableAt == null) {
+                holder.usableAt.setVisibility(View.GONE);
+            } else {
+                holder.usableAt.setText(e.usableAt);
+            }
             holder.itemView.setOnClickListener(e.onClickListener);
         }
 

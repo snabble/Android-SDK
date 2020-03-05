@@ -532,7 +532,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 SimpleRow row = new SimpleRow();
                 row.title = item.getDisplayName();
                 row.imageResId = R.drawable.snabble_ic_gift;
-                row.text = getResources().getString(R.string.Snabble_Shoppingcart_giveaways);
+                row.text = getResources().getString(R.string.Snabble_Shoppingcart_giveaway);
                 rows.add(row);
                 continue;
             }

@@ -1,6 +1,28 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.3]
+
+### Changed
+- When in a single project app, adding payment methods does not show the project anymore
+
+## [0.19.2]
+
+### Fixed
+- CreditCardInputView now works with external app 3d secure authentications
+
+## [0.19.1]
+
+### Fixed
+- Fixed a bug that CreditCardInputView did not load when embedded in react-native
+- Fixed a bug that vPOS discounts got added to the total quantity in the ShoppingCart
+
+## [0.19.0]
+
+### Fixed 
+- Fixed a bug that caused products that are reduced in price to be able to merge with the same
+product that is not reduced in price, resulting in odd behaviour
+
 ## [0.18.7] + [0.19.0-alpha05]
 
 ### Fixed 
