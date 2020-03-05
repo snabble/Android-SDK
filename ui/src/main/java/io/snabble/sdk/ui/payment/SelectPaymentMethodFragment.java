@@ -93,10 +93,15 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     }
 
     private String getUsableAtText(PaymentMethod...paymentMethods) {
+        List<Project> projects = Snabble.getInstance().getProjects();
+        if (projects.size() == 1) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
 
         int count = 0;
-        for (Project project : Snabble.getInstance().getProjects()) {
+        for (Project project : projects) {
             List<PaymentMethod> availablePaymentMethods = Arrays.asList(project.getAvailablePaymentMethods());
             for (PaymentMethod pm : paymentMethods) {
                 if (availablePaymentMethods.contains(pm)) {
@@ -162,7 +167,11 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }
 
             holder.text.setText(e.text);
-            holder.usableAt.setText(e.usableAt);
+            if (e.usableAt == null) {
+                holder.usableAt.setVisibility(View.GONE);
+            } else {
+                holder.usableAt.setText(e.usableAt);
+            }
             holder.itemView.setOnClickListener(e.onClickListener);
         }
 

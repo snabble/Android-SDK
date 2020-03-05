@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.3]
+
+### Changed
+- When in a single project app, adding payment methods does not show the project anymore
+
 ## [0.19.2]
 
 ### Fixed
