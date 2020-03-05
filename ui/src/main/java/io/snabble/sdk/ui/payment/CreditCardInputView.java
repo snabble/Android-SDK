@@ -6,8 +6,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.view.View;
@@ -41,6 +39,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
@@ -58,7 +57,6 @@ public class CreditCardInputView extends FrameLayout {
     private OkHttpClient okHttpClient;
     private Resources resources;
     private HashResponse lastHashResponse;
-    private Handler handler;
     private ProgressBar progressBar;
     private boolean isAttachedToWindow;
     private boolean isActivityResumed;
@@ -96,7 +94,6 @@ public class CreditCardInputView extends FrameLayout {
 
         okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
         resources = getContext().getResources();
-        handler = new Handler(Looper.getMainLooper());
 
         progressBar = findViewById(R.id.progress);
 
@@ -104,14 +101,14 @@ public class CreditCardInputView extends FrameLayout {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                handler.post(() -> finishWithError());
+                Dispatch.mainThread(() -> finishWithError());
             }
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, final int newProgress) {
-                handler.post(() -> {
+                Dispatch.mainThread(() -> {
                     if (newProgress == 100) {
                         progressBar.setVisibility(View.GONE);
                     } else {
@@ -152,14 +149,12 @@ public class CreditCardInputView extends FrameLayout {
             @Override
             public void success(final HashResponse hashResponse) {
                 lastHashResponse = hashResponse;
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(() -> loadForm(hashResponse));
+                Dispatch.mainThread(() -> loadForm(hashResponse));
             }
 
             @Override
             public void error(Throwable t) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(() -> finishWithError());
+                Dispatch.mainThread(() -> finishWithError());
             }
         });
     }
@@ -383,8 +378,7 @@ public class CreditCardInputView extends FrameLayout {
                     expirationMonth, hostedDataId, transactionId);
 
             if (isActivityResumed) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(() -> authenticateAndSave(creditCardInfo));
+                Dispatch.mainThread(() -> authenticateAndSave(creditCardInfo));
             } else {
                 pendingCreditCardInfo = creditCardInfo;
             }
@@ -392,14 +386,12 @@ public class CreditCardInputView extends FrameLayout {
 
         @JavascriptInterface
         public void fail() {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> finishWithError());
+            Dispatch.mainThread(CreditCardInputView.this::finishWithError);
         }
 
         @JavascriptInterface
         public void abort() {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> finish());
+            Dispatch.mainThread(CreditCardInputView.this::finish);
         }
 
         @JavascriptInterface

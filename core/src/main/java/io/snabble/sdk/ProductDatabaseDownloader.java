@@ -1,7 +1,5 @@
 package io.snabble.sdk;
 
-import android.content.res.Resources;
-
 import java.io.IOException;
 
 import io.snabble.sdk.utils.Downloader;

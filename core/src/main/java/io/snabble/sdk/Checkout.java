@@ -1,16 +1,14 @@
 package io.snabble.sdk;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 
 import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 
 public class Checkout {
@@ -108,9 +106,6 @@ public class Checkout {
 
     private List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
 
-    private Handler handler;
-    private Handler uiHandler;
-
     private State lastState = State.NONE;
     private State state = State.NONE;
 
@@ -120,25 +115,14 @@ public class Checkout {
     private List<Product> invalidProducts;
     private CheckoutApi.PaymentResult paymentResult;
     private boolean paymentResultHandled;
-
-    private Runnable pollRunnable = new Runnable() {
-        @Override
-        public void run() {
-            pollForResult();
-        }
-    };
     private CheckoutRetryer checkoutRetryer;
+    private Future<?> currentPollFuture;
 
     Checkout(Project project) {
         this.project = project;
         this.shoppingCart = project.getShoppingCart();
         this.checkoutApi = new CheckoutApi(project);
         this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
-
-        HandlerThread handlerThread = new HandlerThread("Checkout");
-        handlerThread.start();
-        handler = new Handler(handlerThread.getLooper());
-        uiHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -216,7 +200,7 @@ public class Checkout {
 
     public void cancelOutstandingCalls() {
         checkoutApi.cancel();
-        handler.removeCallbacks(pollRunnable);
+        stopPolling();
     }
 
     /**
@@ -412,7 +396,15 @@ public class Checkout {
     }
 
     private void scheduleNextPoll() {
-        handler.postDelayed(pollRunnable, 2000);
+        currentPollFuture = Dispatch.background(this::pollForResult, 2000);
+    }
+
+    private void stopPolling() {
+        Logger.d("Stop polling");
+
+        if (currentPollFuture != null) {
+            currentPollFuture.cancel(true);
+        }
     }
 
     private void pollForResult() {
@@ -430,8 +422,7 @@ public class Checkout {
                     checkoutProcess = checkoutProcessResponse;
 
                     if (handleProcessResponse()) {
-                        Logger.d("stop polling");
-                        handler.removeCallbacks(pollRunnable);
+                        stopPolling();
                     }
                 }
             }
@@ -678,12 +669,9 @@ public class Checkout {
                 this.lastState = this.state;
                 this.state = state;
 
-                uiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
-                            checkoutStateListener.onStateChanged(state);
-                        }
+                Dispatch.mainThread(() -> {
+                    for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
+                        checkoutStateListener.onStateChanged(state);
                     }
                 });
             }

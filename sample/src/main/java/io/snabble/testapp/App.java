@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
 
+import androidx.annotation.Nullable;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;

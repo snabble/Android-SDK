@@ -4,8 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spannable;
@@ -40,6 +38,7 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
+import io.snabble.sdk.utils.Dispatch;
 
 class ProductConfirmationDialog {
     private Context context;
@@ -241,14 +240,10 @@ class ProductConfirmationDialog {
         if (product.getType() == Product.Type.UserWeighed) {
             quantity.requestFocus();
 
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    InputMethodManager inputMethodManager = (InputMethodManager) context
-                            .getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.showSoftInput(quantity, 0);
-                }
+            Dispatch.mainThread(() -> {
+                InputMethodManager inputMethodManager = (InputMethodManager) context
+                        .getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(quantity, 0);
             });
         }
     }

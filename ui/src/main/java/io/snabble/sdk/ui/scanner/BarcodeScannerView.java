@@ -106,13 +106,13 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
     private void init() {
         if (cameraHandler == null) {
-            HandlerThread cameraHandlerThread = new HandlerThread("CameraHandler");
+            HandlerThread cameraHandlerThread = new HandlerThread("snabble CameraHandler");
             cameraHandlerThread.start();
             cameraHandler = new Handler(cameraHandlerThread.getLooper());
         }
 
         if (barcodeProcessingHandler == null) {
-            HandlerThread frameProcessingThread = new HandlerThread("BarcodeFrameProcessor");
+            HandlerThread frameProcessingThread = new HandlerThread("snabble BarcodeFrameProcessor");
             frameProcessingThread.start();
             barcodeProcessingHandler = new Handler(frameProcessingThread.getLooper());
         }
@@ -169,42 +169,31 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             throw new RuntimeException("Missing camera permission");
         }
 
-        cameraHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!running) {
-                    startRequested = true;
-                    startIfRequested();
-                }
+        cameraHandler.post(() -> {
+            if (!running) {
+                startRequested = true;
+                startIfRequested();
             }
         });
     }
 
     private void startIfRequestedAsync() {
         splashView.setVisibility(View.VISIBLE);
-        cameraHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                startIfRequested();
-            }
-        });
+        cameraHandler.post(() -> startIfRequested());
     }
 
     /**
      * Pauses the camera preview and barcode scanning, but keeps the camera intact.
      */
     public void pause() {
-        cameraHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                isPaused = true;
+        cameraHandler.post(() -> {
+            isPaused = true;
 
-                if (running) {
-                    isProcessing = false;
-                    camera.stopPreview();
-                    camera.setPreviewCallbackWithBuffer(null);
-                    decodeEnabled = false;
-                }
+            if (running) {
+                isProcessing = false;
+                camera.stopPreview();
+                camera.setPreviewCallbackWithBuffer(null);
+                decodeEnabled = false;
             }
         });
     }
@@ -213,40 +202,37 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
      * Resumes the camera preview and barcode scanning.
      */
     public void resume() {
-        cameraHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                resetFalsePositiveFilter();
-                isPaused = false;
+        cameraHandler.post(() -> {
+            resetFalsePositiveFilter();
+            isPaused = false;
 
-                if (!running) {
-                    start();
-                } else {
-                    // as stated in the documentation:
-                    // focus parameters may not be preserved across preview restarts
-                    try {
-                        Camera.Parameters parameters = camera.getParameters();
-                        chooseFocusMode(parameters);
-                        camera.setParameters(parameters);
-                    } catch (RuntimeException e) {
-                        // occurs on some devices when calling getParameters. Just ignore it an start the preview
-                        // without explicitly setting the focus mode then
-                    }
+            if (!running) {
+                start();
+            } else {
+                // as stated in the documentation:
+                // focus parameters may not be preserved across preview restarts
+                try {
+                    Camera.Parameters parameters = camera.getParameters();
+                    chooseFocusMode(parameters);
+                    camera.setParameters(parameters);
+                } catch (RuntimeException e) {
+                    // occurs on some devices when calling getParameters. Just ignore it an start the preview
+                    // without explicitly setting the focus mode then
+                }
 
-                    try {
-                        camera.startPreview();
-                    } catch (RuntimeException e) {
-                        showError(true);
-                        return;
-                    }
+                try {
+                    camera.startPreview();
+                } catch (RuntimeException e) {
+                    showError(true);
+                    return;
+                }
 
-                    clearBuffers();
-                    decodeEnabled = true;
+                clearBuffers();
+                decodeEnabled = true;
 
-                    synchronized (frameBufferLock) {
-                        camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
-                        camera.addCallbackBuffer(backBuffer);
-                    }
+                synchronized (frameBufferLock) {
+                    camera.setPreviewCallbackWithBuffer(BarcodeScannerView.this);
+                    camera.addCallbackBuffer(backBuffer);
                 }
             }
         });
@@ -376,13 +362,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         setTorchEnabled(torchEnabled);
 
-        mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                autoFocus();
-                updateTransform();
-                decodeEnabled = true;
-            }
+        mainThreadHandler.post(() -> {
+            autoFocus();
+            updateTransform();
+            decodeEnabled = true;
         });
 
         scheduleAutoFocus();
@@ -395,12 +378,9 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void resetFalsePositiveFilter() {
-        barcodeProcessingHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (barcodeDetector != null) {
-                    barcodeDetector.reset();
-                }
+        barcodeProcessingHandler.post(() -> {
+            if (barcodeDetector != null) {
+                barcodeDetector.reset();
             }
         });
     }
@@ -445,17 +425,14 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void showError(final boolean show) {
-        mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (show) {
-                    cameraUnavailableView.setVisibility(View.VISIBLE);
-                } else {
-                    cameraUnavailableView.setVisibility(View.GONE);
-                }
-
-                setScanIndicatorVisible(!show);
+        mainThreadHandler.post(() -> {
+            if (show) {
+                cameraUnavailableView.setVisibility(View.VISIBLE);
+            } else {
+                cameraUnavailableView.setVisibility(View.GONE);
             }
+
+            setScanIndicatorVisible(!show);
         });
     }
 
@@ -509,14 +486,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void scheduleAutoFocus() {
-        mainThreadHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (running) {
-                    autoFocus();
+        mainThreadHandler.postDelayed(() -> {
+            if (running) {
+                autoFocus();
 
-                    scheduleAutoFocus();
-                }
+                scheduleAutoFocus();
             }
         }, 1000);
     }
@@ -581,20 +555,17 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     public void stop() {
-        cameraHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (running) {
-                    camera.stopPreview();
-                    camera.setPreviewCallbackWithBuffer(null);
-                    camera.release();
-                    camera = null;
-                    running = false;
-                    decodeEnabled = false;
-                }
-
-                startRequested = false;
+        cameraHandler.post(() -> {
+            if (running) {
+                camera.stopPreview();
+                camera.setPreviewCallbackWithBuffer(null);
+                camera.release();
+                camera = null;
+                running = false;
+                decodeEnabled = false;
             }
+
+            startRequested = false;
         });
     }
 
@@ -655,30 +626,24 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
             isProcessing = true;
             nextDetectionTimeMs = SystemClock.elapsedRealtime() + detectionDelayMs;
 
-            barcodeProcessingHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isAttachedToWindow || !decodeEnabled) {
-                        isProcessing = false;
-                        return;
-                    }
-
-                    final Barcode barcode = barcodeDetector.detect(frontBuffer, previewSize.width,
-                            previewSize.height, bitsPerPixel, detectionRect, displayOrientation);
-
-                    if (barcode != null) {
-                        mainThreadHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
-                                    callback.onBarcodeDetected(barcode);
-                                }
-                            }
-                        });
-                    }
-
+            barcodeProcessingHandler.post(() -> {
+                if (!isAttachedToWindow || !decodeEnabled) {
                     isProcessing = false;
+                    return;
                 }
+
+                final Barcode barcode = barcodeDetector.detect(frontBuffer, previewSize.width,
+                        previewSize.height, bitsPerPixel, detectionRect, displayOrientation);
+
+                if (barcode != null) {
+                    mainThreadHandler.post(() -> {
+                        if (decodeEnabled && callback != null && isAttachedToWindow && !isPaused) {
+                            callback.onBarcodeDetected(barcode);
+                        }
+                    });
+                }
+
+                isProcessing = false;
             });
         }
     }

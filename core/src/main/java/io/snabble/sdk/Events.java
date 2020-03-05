@@ -9,14 +9,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.IllegalFormatException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.DateUtils;

@@ -1,8 +1,6 @@
 package io.snabble.sdk.ui.checkout;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -18,6 +16,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 
 public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
@@ -50,14 +49,11 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
         final View abort = findViewById(R.id.abort);
         abort.setVisibility(View.INVISIBLE);
         abort.setAlpha(0);
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                abort.setVisibility(View.VISIBLE);
-                abort.animate().setDuration(150).alpha(1).start();
-                abort.setEnabled(true);
-            }
+
+        Dispatch.mainThread(() -> {
+            abort.setVisibility(View.VISIBLE);
+            abort.animate().setDuration(150).alpha(1).start();
+            abort.setEnabled(true);
         }, 5000);
 
         abort.setOnClickListener(new OneShotClickListener() {

@@ -1,13 +1,6 @@
 package io.snabble.testapp;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import io.snabble.sdk.Project;
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.ui.SnabbleUI;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +9,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.util.List;
+
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.SnabbleUI;
 
 public class HomeFragment extends Fragment {
     @Nullable

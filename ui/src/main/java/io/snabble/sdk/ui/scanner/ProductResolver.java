@@ -3,9 +3,6 @@ package io.snabble.sdk.ui.scanner;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
 import android.view.KeyEvent;
 
 import java.math.BigDecimal;
@@ -23,6 +20,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.utils.Dispatch;
 
 public class ProductResolver {
     private List<ScannedCode> scannedCodes;
@@ -118,70 +116,59 @@ public class ProductResolver {
         }
 
         // create multiple online requests asynchronously and wait for all to succeed or fail
-        HandlerThread handlerThread = new HandlerThread("ProductResolver");
-        handlerThread.start();
-        Handler handler = new Handler(handlerThread.getLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                final CountDownLatch countDownLatch = new CountDownLatch(scannedCodes.size());
-                final Result result = new Result();
+        Dispatch.background(() -> {
+            final CountDownLatch countDownLatch = new CountDownLatch(scannedCodes.size());
+            final Result result = new Result();
 
-                for (int i=0; i<scannedCodes.size(); i++) {
-                    final ScannedCode scannedCode = scannedCodes.get(i);
-                    productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
-                        @Override
-                        public void onProductAvailable(Product product, boolean wasOnlineProduct) {
-                            result.product = product;
-                            result.wasOnlineProduct = wasOnlineProduct;
-                            result.code = scannedCode;
-                            result.matchCount++;
-                            countDownLatch.countDown();
-                        }
-
-                        @Override
-                        public void onProductNotFound() {
-                            if (result.code == null) {
-                                result.code = scannedCode;
-                            }
-
-                            countDownLatch.countDown();
-                        }
-
-                        @Override
-                        public void onError() {
-                            result.error = true;
-                            countDownLatch.countDown();
-                        }
-                    }, true);
-                }
-
-                try {
-                    countDownLatch.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-
-                Handler mainThread = new Handler(Looper.getMainLooper());
-                mainThread.post(new Runnable() {
+            for (int i=0; i<scannedCodes.size(); i++) {
+                final ScannedCode scannedCode = scannedCodes.get(i);
+                productDatabase.findByCodeOnline(scannedCode, new OnProductAvailableListener() {
                     @Override
-                    public void run() {
-                        if (result.matchCount > 1) {
-                            project.logErrorEvent("Multiple code matches for product " + result.product.getSku());
+                    public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+                        result.product = product;
+                        result.wasOnlineProduct = wasOnlineProduct;
+                        result.code = scannedCode;
+                        result.matchCount++;
+                        countDownLatch.countDown();
+                    }
+
+                    @Override
+                    public void onProductNotFound() {
+                        if (result.code == null) {
+                            result.code = scannedCode;
                         }
 
-                        if (result.product != null) {
-                            handleProductAvailable(result.product, result.wasOnlineProduct, result.code);
-                        } else if (result.error) {
-                            handleProductError();
-                        } else {
-                            project.getEvents().productNotFound(scannedCodes);
-                            handleProductNotFound(result.code);
-                        }
+                        countDownLatch.countDown();
                     }
-                });
+
+                    @Override
+                    public void onError() {
+                        result.error = true;
+                        countDownLatch.countDown();
+                    }
+                }, true);
             }
+
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Dispatch.mainThread(() -> {
+                if (result.matchCount > 1) {
+                    project.logErrorEvent("Multiple code matches for product " + result.product.getSku());
+                }
+
+                if (result.product != null) {
+                    handleProductAvailable(result.product, result.wasOnlineProduct, result.code);
+                } else if (result.error) {
+                    handleProductError();
+                } else {
+                    project.getEvents().productNotFound(scannedCodes);
+                    handleProductNotFound(result.code);
+                }
+            });
         });
     }
 

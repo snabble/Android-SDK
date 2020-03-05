@@ -3,9 +3,6 @@ package io.snabble.sdk.ui.search;
 
 import android.database.Cursor;
 import android.os.CancellationSignal;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
 import android.os.OperationCanceledException;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -26,6 +23,7 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.StringNormalizer;
 
 public class SearchableProductAdapter extends RecyclerView.Adapter {
@@ -33,9 +31,6 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
         BARCODE,
         FOLDED_NAME
     }
-
-    private static Handler backgroundHandler;
-    private Handler uiHandler;
 
     private OnProductSelectedListener productSelectedListener;
     private SearchType searchType = SearchType.FOLDED_NAME;
@@ -51,14 +46,6 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
     public SearchableProductAdapter() {
         this.project = SnabbleUI.getProject();
         this.productDatabase = project.getProductDatabase();
-
-        if (backgroundHandler == null) {
-            HandlerThread thread = new HandlerThread("SearchableProductAdapter");
-            thread.start();
-            backgroundHandler = new Handler(thread.getLooper());
-        }
-
-        uiHandler = new Handler(Looper.getMainLooper());
     }
 
     @Deprecated
@@ -178,40 +165,35 @@ public class SearchableProductAdapter extends RecyclerView.Adapter {
 
         if (searchQuery != null && searchQuery.length() > 0) {
             final String normalizedSearchQuery = StringNormalizer.normalize(searchQuery);
-            backgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        final Cursor newCursor;
 
-                        if (searchType == SearchType.BARCODE) {
-                            newCursor = productDatabase.searchByCode(normalizedSearchQuery,
-                                    cancellationSignal);
-                        } else {
-                            newCursor = productDatabase.searchByFoldedName(normalizedSearchQuery,
-                                    cancellationSignal);
-                        }
+            Dispatch.background(() -> {
+                try {
+                    final Cursor newCursor;
 
-                        if (newCursor != null) {
-                            final int count = newCursor.getCount();
-
-                            uiHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (cursor != null && !cursor.isClosed()) {
-                                        cursor.close();
-                                    }
-                                    cursor = newCursor;
-
-                                    itemCount = count;
-                                    lastQuery = searchQuery;
-                                    notifyDataSetChanged();
-                                }
-                            });
-                        }
-                    } catch (OperationCanceledException e) {
-
+                    if (searchType == SearchType.BARCODE) {
+                        newCursor = productDatabase.searchByCode(normalizedSearchQuery,
+                                cancellationSignal);
+                    } else {
+                        newCursor = productDatabase.searchByFoldedName(normalizedSearchQuery,
+                                cancellationSignal);
                     }
+
+                    if (newCursor != null) {
+                        final int count = newCursor.getCount();
+
+                        Dispatch.mainThread(() -> {
+                            if (cursor != null && !cursor.isClosed()) {
+                                cursor.close();
+                            }
+                            cursor = newCursor;
+
+                            itemCount = count;
+                            lastQuery = searchQuery;
+                            notifyDataSetChanged();
+                        });
+                    }
+                } catch (OperationCanceledException e) {
+
                 }
             });
         } else {

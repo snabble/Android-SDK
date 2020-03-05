@@ -12,8 +12,6 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.InputType;
@@ -49,6 +47,7 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
@@ -220,57 +219,30 @@ public class SelfScanningView extends FrameLayout {
         new ProductResolver.Builder(getContext())
                 .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
-                .setOnShowListener(new ProductResolver.OnShowListener() {
-                    @Override
-                    public void onShow() {
-                        pauseBarcodeScanner();
+                .setOnShowListener(this::pauseBarcodeScanner)
+                .setOnDismissListener(() -> {
+                    if (!isShowingHint) {
+                        resumeBarcodeScanner();
+                        delayNextScan();
                     }
                 })
-                .setOnDismissListener(new ProductResolver.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        if (!isShowingHint) {
-                            resumeBarcodeScanner();
-                            delayNextScan();
-                        }
-                    }
+                .setOnProductNotFoundListener(() -> {
+                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
                 })
-                .setOnProductNotFoundListener(new ProductResolver.OnProductNotFoundListener() {
-                    @Override
-                    public void onProductNotFound() {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
-                    }
+                .setOnNetworkErrorListener(() -> {
+                    showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
                 })
-                .setOnNetworkErrorListener(new ProductResolver.OnNetworkErrorListener() {
-                    @Override
-                    public void onNetworkError() {
-                        showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
-                    }
+                .setOnShelfCodeScannedListener(() -> {
+                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
                 })
-                .setOnShelfCodeScannedListener(new ProductResolver.OnShelfCodeScannedListener() {
-                    @Override
-                    public void onShelfCodeScanned() {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
-                    }
-                })
-                .setOnSaleStopListener(new ProductResolver.OnSaleStopListener() {
-                    @Override
-                    public void onSaleStop() {
-                        new AlertDialog.Builder(getContext())
-                                .setTitle(R.string.Snabble_saleStop_errorMsg_title)
-                                .setMessage(R.string.Snabble_saleStop_errorMsg_scan)
-                                .setPositiveButton(R.string.Snabble_OK, null)
-                                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                    @Override
-                                    public void onDismiss(DialogInterface dialog) {
-                                        resumeBarcodeScanner();
-                                    }
-                                })
-                                .setCancelable(false)
-                                .create()
-                                .show();
-                    }
-                })
+                .setOnSaleStopListener(() -> new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.Snabble_saleStop_errorMsg_title)
+                        .setMessage(R.string.Snabble_saleStop_errorMsg_scan)
+                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setOnDismissListener(dialog -> resumeBarcodeScanner())
+                        .setCancelable(false)
+                        .create()
+                        .show())
                 .create()
                 .show();
     }
@@ -297,25 +269,13 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showInfo(final String text) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                        UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL);
-            }
-        });
+        Dispatch.mainThread(() -> UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
+                UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL));
     }
 
     private void showWarning(final String text) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                        UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING);
-            }
-        });
+        Dispatch.mainThread(() -> UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
+                UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING));
     }
 
     private void onClickEnterBarcode() {
@@ -336,30 +296,19 @@ public class SelfScanningView extends FrameLayout {
                 new AlertDialog.Builder(getContext())
                         .setView(input)
                         .setTitle(R.string.Snabble_Scanner_enterBarcode)
-                        .setPositiveButton(R.string.Snabble_Done, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
-                            }
+                        .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> {
+                            lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
                         })
                         .setNegativeButton(R.string.Snabble_Cancel, null)
-                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                resumeBarcodeScanner();
-                            }
-                        })
+                        .setOnDismissListener(dialog -> resumeBarcodeScanner())
                         .create()
                         .show();
 
                 input.requestFocus();
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
-                    }
+
+                Dispatch.mainThread(() -> {
+                    InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
                 });
             }
         }
@@ -384,12 +333,9 @@ public class SelfScanningView extends FrameLayout {
                         .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .setCancelable(true)
-                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                resumeBarcodeScanner();
-                                isShowingHint = false;
-                            }
+                        .setOnDismissListener(dialog -> {
+                            resumeBarcodeScanner();
+                            isShowingHint = false;
                         })
                         .create();
 

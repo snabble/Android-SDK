@@ -1,13 +1,12 @@
 package io.snabble.sdk;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import io.snabble.sdk.utils.Dispatch;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -40,24 +39,12 @@ public class Receipts {
         receiptsApi.get(new ReceiptsApi.ReceiptUpdateCallback() {
             @Override
             public void success(final ReceiptInfo[] receiptInfos) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        receiptInfoCallback.success(receiptInfos);
-                    }
-                });
+                Dispatch.mainThread(() -> receiptInfoCallback.success(receiptInfos));
             }
 
             @Override
             public void failure() {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        receiptInfoCallback.failure();
-                    }
-                });
+                Dispatch.mainThread(receiptInfoCallback::failure);
             }
         });
     }

@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
-import android.security.keystore.KeyPermanentlyInvalidatedException;
-import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Base64;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +28,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
-import androidx.annotation.RequiresApi;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 

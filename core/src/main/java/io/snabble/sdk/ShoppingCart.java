@@ -1,8 +1,5 @@
 package io.snabble.sdk;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -13,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
 import static io.snabble.sdk.Unit.PIECE;
@@ -34,7 +32,6 @@ public class ShoppingCart {
     private boolean hasRaisedMaxOnlinePaymentLimit;
 
     private transient List<ShoppingCartListener> listeners;
-    private transient Handler handler;
     private transient Project project;
     private transient ShoppingCartUpdater updater;
     private transient PriceFormatter priceFormatter;
@@ -60,7 +57,6 @@ public class ShoppingCart {
         this.updater = new ShoppingCartUpdater(project, this);
         this.priceFormatter = project.getPriceFormatter();
         this.listeners = new CopyOnWriteArrayList<>();
-        this.handler = new Handler(Looper.getMainLooper());
 
         checkForTimeout();
 
@@ -826,12 +822,9 @@ public class ShoppingCart {
     private void notifyItemAdded(final ShoppingCart list, final Item item) {
         updateTimestamp();
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onItemAdded(list, item);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onItemAdded(list, item);
             }
         });
     }
@@ -839,12 +832,9 @@ public class ShoppingCart {
     private void notifyItemRemoved(final ShoppingCart list, final Item item, final int pos) {
         updateTimestamp();
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onItemRemoved(list, item, pos);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onItemRemoved(list, item, pos);
             }
         });
     }
@@ -852,56 +842,41 @@ public class ShoppingCart {
     private void notifyQuantityChanged(final ShoppingCart list, final Item item) {
         updateTimestamp();
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onQuantityChanged(list, item);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onQuantityChanged(list, item);
             }
         });
     }
 
     private void notifyProductsUpdate(final ShoppingCart list) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onProductsUpdated(list);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onProductsUpdated(list);
             }
         });
     }
 
     void notifyPriceUpdate(final ShoppingCart list) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onPricesUpdated(list);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onPricesUpdated(list);
             }
         });
     }
 
     void notifyCheckoutLimitReached(final ShoppingCart list) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onCheckoutLimitReached(list);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onCheckoutLimitReached(list);
             }
         });
     }
 
     void notifyOnlinePaymentLimitReached(final ShoppingCart list) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onOnlinePaymentLimitReached(list);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onOnlinePaymentLimitReached(list);
             }
         });
     }
@@ -913,12 +888,9 @@ public class ShoppingCart {
     private void notifyCleared(final ShoppingCart list) {
         updateTimestamp();
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onCleared(list);
-                }
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onCleared(list);
             }
         });
     }

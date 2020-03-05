@@ -2,7 +2,6 @@ package io.snabble.sdk.payment;
 
 import android.util.Base64;
 
-
 import java.io.InputStream;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
