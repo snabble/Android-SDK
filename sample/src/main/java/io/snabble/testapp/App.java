@@ -6,10 +6,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import android.util.Log;
 
-import com.squareup.leakcanary.LeakCanary;
-
-import androidx.annotation.Nullable;
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -35,19 +31,12 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
+        instance = this;
 
         // if you are using a light mode theme, disable night mode resources
         // this seems like a bug in android
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        instance = this;
     }
 
     public void initBlocking() {

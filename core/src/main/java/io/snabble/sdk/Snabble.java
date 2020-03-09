@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.util.Base64;
 
 import com.google.gson.JsonArray;
@@ -20,6 +21,7 @@ import com.google.gson.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -63,6 +65,7 @@ public class Snabble {
     private String telecashSecretUrl;
     private String telecashPreAuthUrl;
     private OkHttpClient okHttpClient;
+    private WeakReference<Activity> currentActivity;
 
     private Snabble() {
 
@@ -418,11 +421,28 @@ public class Snabble {
     }
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
+
         @Override
         public void onActivityStarted(Activity activity) {
+            if (currentActivity != null) {
+                currentActivity.clear();
+                currentActivity = null;
+            }
+
+            currentActivity = new WeakReference<>(activity);
             updateMetadata();
             checkCartTimeouts();
             processPendingCheckouts();
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+            if (currentActivity != null) {
+                if (currentActivity.get() == activity) {
+                    currentActivity.clear();
+                    currentActivity = null;
+                }
+            }
         }
     };
 
@@ -477,6 +497,14 @@ public class Snabble {
 
     public static Snabble getInstance() {
         return instance;
+    }
+
+    public Activity getCurrentActivity() {
+        if (currentActivity != null) {
+            return currentActivity.get();
+        }
+
+        return null;
     }
 
     public interface SetupCompletionListener {

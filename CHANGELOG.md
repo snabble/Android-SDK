@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.19.3]
 
+### Added
+- Added support for adding payment origins over terminal payments
+
 ### Changed
 - When in a single project app, adding payment methods does not show the project anymore
 

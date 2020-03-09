@@ -140,24 +140,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                         .create()
                         .show();
                 break;
-            case REQUEST_ADD_PAYMENT_ORIGIN:
-                new AlertDialog.Builder(getContext())
-                        .setMessage(R.string.Snabble_Payment_addPaymentOrigin)
-                        .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                addPaymentOrigin();
-                            }
-                        })
-                        .setNegativeButton(R.string.Snabble_No, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                checkout.continuePaymentProcess();
-                            }
-                        })
-                        .create()
-                        .show();
-                break;
             case PAYMENT_APPROVED:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
@@ -177,45 +159,5 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         }
 
         currentState = state;
-    }
-
-    private void addPaymentOrigin() {
-        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                @Override
-                public void success() {
-                    addPaymentCredentials();
-                    checkout.continuePaymentProcess();
-                }
-
-                @Override
-                public void error() {
-
-                }
-            });
-        } else {
-            addPaymentCredentials();
-            checkout.continuePaymentProcess();
-        }
-    }
-
-    public void addPaymentCredentials() {
-        Checkout.PaymentOrigin paymentOrigin = checkout.getPaymentOrigin();
-
-        if (paymentOrigin != null) {
-            final PaymentCredentials pc = PaymentCredentials.fromSEPA(
-                    paymentOrigin.name,
-                    paymentOrigin.iban);
-
-            if (pc == null) {
-                Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
-                        .show();
-            } else {
-                Snabble.getInstance().getPaymentCredentialsStore().add(pc);
-                Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.getType().name());
-
-                checkout.continuePaymentProcess();
-            }
-        }
     }
 }

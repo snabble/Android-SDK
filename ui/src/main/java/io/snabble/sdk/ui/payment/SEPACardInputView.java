@@ -15,11 +15,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.google.android.material.textfield.TextInputLayout;
 
+import io.snabble.sdk.PaymentOriginCandidateHelper;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -27,12 +32,15 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class SEPACardInputView extends FrameLayout {
     private Button save;
+    private TextView hint;
     private EditText nameInput;
     private EditText ibanCountryCode;
     private EditText ibanInput;
@@ -41,6 +49,9 @@ public class SEPACardInputView extends FrameLayout {
     private TextInputLayout ibanTextInputLayout;
     private boolean acceptedKeyguard;
     private boolean isAttachedToWindow;
+    private ProgressBar progressIndicator;
+    private PaymentOriginCandidateHelper.PaymentOriginCandidate paymentOriginCandidate;
+    private PaymentCredentials paymentCredentials;
 
     public SEPACardInputView(Context context) {
         super(context);
@@ -60,9 +71,11 @@ public class SEPACardInputView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_cardinput_sepa, this);
 
+        hint = findViewById(R.id.hint);
         nameInput = findViewById(R.id.input_name);
         ibanCountryCode = findViewById(R.id.prefix);
         ibanInput = findViewById(R.id.input_iban);
+        progressIndicator = findViewById(R.id.progress_indicator);
 
         nameTextInputLayout = findViewById(R.id.input_name_layout);
         ibanCountryCodeTextInputLayout = findViewById(R.id.prefix_layout);
@@ -190,6 +203,22 @@ public class SEPACardInputView extends FrameLayout {
         });
 
         formatIBANInput();
+
+        try {
+            Project project = SnabbleUI.getProject();
+            PaymentOriginCandidateHelper paymentOriginCandidateHelper = project.getCheckout().getPaymentOriginCandidateHelper();
+            paymentOriginCandidate = paymentOriginCandidateHelper.getPaymentOriginCandidate();
+
+            if (paymentOriginCandidate != null) {
+                ibanCountryCode.setText(paymentOriginCandidate.origin.substring(0, 2));
+                ibanInput.setText(paymentOriginCandidate.origin.substring(2));
+                ibanInput.setEnabled(false);
+                ibanCountryCode.setEnabled(false);
+                hint.setText(R.string.Snabble_SEPA_scoTransferHint);
+            }
+        } catch (Exception e) {
+            // runtime exception when no project is set, in which case this view is still valid to show!
+        }
     }
 
     private void formatIBANInput() {
@@ -221,17 +250,25 @@ public class SEPACardInputView extends FrameLayout {
 
         if (ok) {
             if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-                Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                    @Override
-                    public void success() {
-                        add(name, iban);
-                    }
+                if (KeyguardUtils.isDeviceSecure()) {
+                    Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
+                        @Override
+                        public void success() {
+                            add(name, iban);
+                        }
 
-                    @Override
-                    public void error() {
+                        @Override
+                        public void error() {
 
-                    }
-                });
+                        }
+                    });
+                } else {
+                    new AlertDialog.Builder(getContext())
+                            .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
+                            .setPositiveButton(R.string.Snabble_OK, null)
+                            .setCancelable(false)
+                            .show();
+                }
             } else {
                 add(name, iban);
             }
@@ -239,13 +276,13 @@ public class SEPACardInputView extends FrameLayout {
     }
 
     private void add(String name, String iban) {
-        final PaymentCredentials pc = PaymentCredentials.fromSEPA(name, iban);
-        if (pc == null) {
+        paymentCredentials = PaymentCredentials.fromSEPA(name, iban);
+        if (paymentCredentials == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
                     .show();
         } else {
-            Snabble.getInstance().getPaymentCredentialsStore().add(pc);
-            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.getType().name());
+            Snabble.getInstance().getPaymentCredentialsStore().add(paymentCredentials);
+            Telemetry.event(Telemetry.Event.PaymentMethodAdded, paymentCredentials.getType().name());
         }
 
         if (isShown() || !isAttachedToWindow) {
@@ -256,6 +293,32 @@ public class SEPACardInputView extends FrameLayout {
     }
 
     private void finish() {
+        if (paymentOriginCandidate != null) {
+            progressIndicator.setVisibility(View.VISIBLE);
+
+            paymentOriginCandidate.promote(paymentCredentials, new PaymentOriginCandidateHelper.PromoteResult() {
+                @Override
+                public void success() {
+                    Dispatch.mainThread(() -> {
+                        progressIndicator.setVisibility(View.GONE);
+                        close();
+                    });
+                }
+
+                @Override
+                public void error() {
+                    Dispatch.mainThread(() -> {
+                        progressIndicator.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), R.string.Snabble_networkError, Toast.LENGTH_LONG).show();
+                    });
+                }
+            });
+        } else {
+            close();
+        }
+    }
+
+    private void close() {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             hideSoftKeyboard(ibanInput);

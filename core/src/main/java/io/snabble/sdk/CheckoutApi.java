@@ -146,8 +146,7 @@ class CheckoutApi {
     }
 
     public static class PaymentResult {
-        public String ehiTechDaysIban;
-        public String ehiTechDaysName;
+        public String originCandidateLink;
     }
 
     public static class CheckoutProcessResponse {
@@ -199,6 +198,7 @@ class CheckoutApi {
         void success();
         void error();
     }
+
 
     private Project project;
     private OkHttpClient okHttpClient;
