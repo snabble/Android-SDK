@@ -420,6 +420,20 @@ public class Snabble {
         void onMetaDataUpdated();
     }
 
+    /**
+     * Sets the current activity context.
+     *
+     * This is an internal method and should not be called.
+     */
+    public void _setCurrentActivity(Activity activity) {
+        if (currentActivity != null) {
+            currentActivity.clear();
+            currentActivity = null;
+        }
+
+        currentActivity = new WeakReference<>(activity);
+    }
+
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
 
         @Override

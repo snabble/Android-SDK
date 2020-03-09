@@ -45,6 +45,8 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
     }
 
     private void inflateView() {
+        Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
+
         inflate(getContext(), R.layout.snabble_view_checkout_online, this);
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);

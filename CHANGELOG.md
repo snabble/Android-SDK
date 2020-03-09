@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.4]
+
+### Fixed
+- Added workaround when SDK is initialized after Activity creation
+
 ## [0.19.3]
 
 ### Added

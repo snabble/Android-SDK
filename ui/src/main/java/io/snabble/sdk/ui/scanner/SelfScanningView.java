@@ -39,6 +39,7 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -84,6 +85,8 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void inflateView() {
+        Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
+
         inflate(getContext(), R.layout.snabble_view_self_scanning, this);
 
         Project project = SnabbleUI.getProject();
