@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.20.0]
+
+### Added
+- Added support for dynamic asset downloading, to update Assets use project.getAssets().update()
+
+### Changed
+- Redesigned payment screens, now with retailer specific images and less clutter
+
 ## [0.19.5]
 
 ### Fixed
