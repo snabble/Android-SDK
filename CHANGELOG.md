@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [0.20.1]
 
+### Added
+- Added support for 'customerCardPOS' payment method
+- Added new views and events for customerCardPOS
+
 ### Changed
 - Improved support for small devices
 

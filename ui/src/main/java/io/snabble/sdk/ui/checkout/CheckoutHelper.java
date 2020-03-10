@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.checkout;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.utils.Logger;
 
@@ -26,6 +25,9 @@ public class CheckoutHelper {
                     break;
                 case QRCODE_POS:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_POINT_OF_SALE, null);
+                    break;
+                case CUSTOMERCARD_POS:
+                    callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_CUSTOMERCARD, null);
                     break;
                 case QRCODE_OFFLINE:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE, null);

@@ -244,7 +244,7 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            return new ViewHolder(layoutInflater.inflate(R.layout.snabble_item_encodedcodes, parent, false));
+            return new ViewHolder(layoutInflater.inflate(R.layout.snabble_item_checkout_offline_qrcode, parent, false));
         }
 
         @Override

@@ -21,6 +21,11 @@ public abstract class JsonCallback<T, T2> implements Callback {
     public void onResponse(Call call, Response response) {
         try {
             String body = response.body().string(); // string closes response
+
+            if (BuildConfig.DEBUG) {
+                Logger.d("http response: " + body);
+            }
+
             responseCode = response.code();
 
             if(response.isSuccessful()) {

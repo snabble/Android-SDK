@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/paid"
+        android:layout_marginBottom="12dp">
+        <LinearLayout
+            android:id="@+id/helper_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/helper_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/Snabble.Payment.presentCode"
+                android:textSize="17sp"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/helper_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_margin="8dp"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/snabble_ic_arrow_upward"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                android:tint="?attr/colorOnSurface" />
+
+            <io.snabble.sdk.ui.scanner.BarcodeView
+                android:id="@+id/barcode_view"
+                android:layout_width="280dp"
+                android:layout_height="100dp"
+                android:format="EAN_13"/>
+        </LinearLayout>
+    </FrameLayout>
+    <Button
+        android:id="@+id/paid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/Snabble.QRCode.didPay" />
+</RelativeLayout>
