@@ -93,7 +93,9 @@ public class PaymentOriginCandidateHelper {
     }
 
     public PaymentOriginCandidate getPaymentOriginCandidate() {
-        return paymentOriginCandidate;
+        PaymentOriginCandidate candidate = paymentOriginCandidate;
+        reset();
+        return candidate;
     }
 
     public void addPaymentOriginCandidateAvailableListener(PaymentOriginCandidateAvailableListener listener) {

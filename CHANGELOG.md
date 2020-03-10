@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.5]
+
+### Fixed
+- Fixed a bug that caused SEPACardInputView to retain prefilled state
+
 ## [0.19.4]
 
 ### Fixed
