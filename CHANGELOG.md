@@ -1,7 +1,20 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.19.5]
+
+### Fixed
+- Fixed a bug that caused SEPACardInputView to retain prefilled state
+
+## [0.19.4]
+
+### Fixed
+- Added workaround when SDK is initialized after Activity creation
+
 ## [0.19.3]
+
+### Added
+- Added support for adding payment origins over terminal payments
 
 ### Changed
 - When in a single project app, adding payment methods does not show the project anymore

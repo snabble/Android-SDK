@@ -145,4 +145,7 @@
 	<string name="Snabble.CC.noEntryPossible">Unfortunately you can\'t add credit cards at this time.</string>
 	<string name="Snabble.Payment.SEPA.missingCountry">Country code cannot be empty.</string>
 	<string name="Snabble.PaymentSelection.addNow">Add now</string>
+	<string name="Snabble.SEPA.scoTransferHint">Please enter the name from the card to save it for future payments.</string>
+	<string name="Snabble.SEPA.ibanTransferAlert.title">Save payment data</string>
+	<string name="Snabble.SEPA.ibanTransferAlert.message">Would you like to save this account information (IBAN: %s) for future purchases?</string>
 </resources>

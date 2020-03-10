@@ -45,6 +45,7 @@ import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -126,6 +127,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void inflateView(Context context, AttributeSet attrs) {
+        Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
+
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
         picasso = Picasso.with(getContext());
         final Project project = SnabbleUI.getProject();

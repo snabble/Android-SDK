@@ -42,12 +42,6 @@ public class Checkout {
          */
         PAYMENT_PROCESSING,
         /**
-         * Happens when a user want to save his transaction details when paying over a terminal.
-         *
-         * To continue call {@link #continuePaymentProcess()}.
-         */
-        REQUEST_ADD_PAYMENT_ORIGIN,
-        /**
          * The payment was approved. We are done.
          */
         PAYMENT_APPROVED,
@@ -85,7 +79,7 @@ public class Checkout {
         NO_SHOP;
     }
 
-    public class PaymentOrigin {
+    public static class PaymentOrigin {
         public final String name;
         public final String iban;
 
@@ -114,15 +108,16 @@ public class Checkout {
     private Shop shop;
     private List<Product> invalidProducts;
     private CheckoutApi.PaymentResult paymentResult;
-    private boolean paymentResultHandled;
     private CheckoutRetryer checkoutRetryer;
     private Future<?> currentPollFuture;
+    private PaymentOriginCandidateHelper paymentOriginCandidateHelper;
 
     Checkout(Project project) {
         this.project = project;
         this.shoppingCart = project.getShoppingCart();
         this.checkoutApi = new CheckoutApi(project);
         this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
+        this.paymentOriginCandidateHelper = new PaymentOriginCandidateHelper(project);
     }
 
     /**
@@ -215,7 +210,6 @@ public class Checkout {
         checkoutProcess = null;
         invalidProducts = null;
         paymentMethod = null;
-        paymentResultHandled = false;
         paymentResult = null;
         shop = null;
     }
@@ -259,8 +253,8 @@ public class Checkout {
         priceToPay = 0;
         invalidProducts = null;
         paymentResult = null;
-        paymentResultHandled = false;
         shop = project.getCheckedInShop();
+        paymentOriginCandidateHelper.reset();
 
         notifyStateChanged(State.HANDSHAKING);
 
@@ -426,9 +420,7 @@ public class Checkout {
             }
         });
 
-        if (state == State.WAIT_FOR_APPROVAL
-                || state == State.PAYMENT_PROCESSING
-                || state == State.REQUEST_ADD_PAYMENT_ORIGIN) {
+        if (state == State.WAIT_FOR_APPROVAL || state == State.PAYMENT_PROCESSING) {
             scheduleNextPoll();
         }
     }
@@ -440,20 +432,7 @@ public class Checkout {
             return true;
         }
 
-        if (checkoutProcess.paymentResult != null
-         && checkoutProcess.paymentResult.ehiTechDaysName != null
-         && checkoutProcess.paymentResult.ehiTechDaysIban != null) {
-            if (!paymentResultHandled) {
-                if (paymentResult == null) {
-                    Logger.d("Request adding payment origin");
-                    paymentResult = checkoutProcess.paymentResult;
-                    paymentResultHandled = false;
-                    notifyStateChanged(State.REQUEST_ADD_PAYMENT_ORIGIN);
-                }
-
-                return false;
-            }
-        }
+        paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
 
         if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL) {
             approve();
@@ -497,7 +476,6 @@ public class Checkout {
      *  for example after REQUEST_ADD_PAYMENT_ORIGIN **/
     public void continuePaymentProcess() {
         Logger.d("Continue payment process");
-        paymentResultHandled = true;
         paymentResult = null;
     }
 
@@ -564,15 +542,8 @@ public class Checkout {
         return invalidProducts;
     }
 
-    public PaymentOrigin getPaymentOrigin() {
-        if (paymentResult != null
-                && paymentResult.ehiTechDaysIban != null
-                && paymentResult.ehiTechDaysName != null) {
-            return new PaymentOrigin(paymentResult.ehiTechDaysName,
-                    paymentResult.ehiTechDaysIban);
-        }
-
-        return null;
+    public PaymentOriginCandidateHelper getPaymentOriginCandidateHelper() {
+        return paymentOriginCandidateHelper;
     }
 
     /**

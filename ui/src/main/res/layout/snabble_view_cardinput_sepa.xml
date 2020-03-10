@@ -11,7 +11,7 @@
         android:paddingBottom="276dp"> <!-- helps when adjustPan is set -->
 
         <TextView
-            android:id="@+id/imageView"
+            android:id="@+id/hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -30,7 +30,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
             android:hint="@string/Snabble.Payment.SEPA.Name"
-            android:layout_below="@+id/imageView">
+            android:layout_below="@+id/hint">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_name"
                 android:layout_width="match_parent"
@@ -87,14 +87,31 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/save"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/input_iban_layout"
-            android:layout_centerHorizontal="true"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:text="@string/Snabble.Save" />
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/input_iban_layout">
+
+            <Button
+                android:id="@+id/save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Snabble.Save" />
+
+            <ProgressBar
+                android:id="@+id/progress_indicator"
+                android:visibility="gone"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="8dp"
+                android:indeterminateOnly="true"
+                android:indeterminate="true"
+                android:elevation="10dp"
+                android:progressTint="?attr/colorOnPrimary"/>
+        </FrameLayout>
     </RelativeLayout>
 </ScrollView>
