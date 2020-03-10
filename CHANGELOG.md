@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.20.1]
+
+### Changed
+- Improved support for small devices
+
+### Fixed
+- Added night mode support for dynamic assets
+
 ## [0.20.0]
 
 ### Added

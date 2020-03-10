@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.checkout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
@@ -11,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -124,6 +127,28 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
 
         checkout = SnabbleUI.getProject().getCheckout();
         onStateChanged(checkout.getState());
+    }
+
+    @SuppressLint("DrawAllocation")
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        if (changed) {
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            int dpHeight = Math.round(getHeight() / dm.density);
+            if (dpHeight < 500) {
+                if (helperImage.getLayoutParams().width == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                    helperImage.setLayoutParams(new LinearLayout.LayoutParams(
+                            Math.round(helperImage.getWidth() * 0.5f),
+                            Math.round(helperImage.getHeight() * 0.5f)));
+                }
+            } else {
+                helperImage.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+        }
     }
 
     public void setHelperImage(Bitmap bitmap) {

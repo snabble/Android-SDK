@@ -2,11 +2,15 @@ package io.snabble.sdk;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -311,6 +315,28 @@ public class Assets {
         return bestVariant;
     }
 
+    private static boolean isNightModeActive(Context context) {
+        int defaultNightMode = AppCompatDelegate.getDefaultNightMode();
+        if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            return true;
+        }
+        if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            return false;
+        }
+
+        int currentNightMode = context.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                return false;
+            case Configuration.UI_MODE_NIGHT_YES:
+                return true;
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                return false;
+        }
+        return false;
+    }
+
     private Bitmap getBitmap(String name) {
         // currently a limitation due to asynchronous reads and saves,
         // could be solved with careful locking
@@ -322,7 +348,16 @@ public class Assets {
             return null;
         }
 
-        Asset asset = manifest.assets.get(name);
+        boolean nightMode = isNightModeActive(Snabble.getInstance().getApplication());
+
+        final String fileName = FilenameUtils.removeExtension(name) + (nightMode ? "_dark" : "") + ".png";
+
+        Asset asset = manifest.assets.get(fileName);
+        if (asset == null) {
+            // try non night mode version
+            asset = manifest.assets.get(name);
+        }
+
         if (asset != null) {
             try {
                 Logger.d("decode " + name);
