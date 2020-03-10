@@ -40,20 +40,22 @@ import okhttp3.ResponseBody;
 public class Assets {
     private enum Variant {
         @SerializedName("1x")
-        MDPI(1.0f),
+        MDPI("1x", 1.0f),
         @SerializedName("1.5x")
-        HDPI(1.5f),
+        HDPI("1.5x", 1.5f),
         @SerializedName("2x")
-        XHDPI(2.0f),
+        XHDPI("2x", 2.0f),
         @SerializedName("3x")
-        XXHDPI(3.0f),
+        XXHDPI("3x", 3.0f),
         @SerializedName("4x")
-        XXXHDPI(4.0f);
+        XXXHDPI("4x", 4.0f);
 
         float density;
+        String tag;
 
-        Variant(float density) {
+        Variant(String tag, float density) {
             this.density = density;
+            this.tag = tag;
         }
     }
 
@@ -166,11 +168,12 @@ public class Assets {
 
     private void download(DownloadCallback callback) {
         Dispatch.mainThread(() -> {
+            Variant variant = getBestVariant();
             Request request = new Request.Builder()
                     .cacheControl(new CacheControl.Builder()
                             .maxAge(30, TimeUnit.SECONDS)
                             .build())
-                    .url(project.getAssetsUrl())
+                    .url(project.getAssetsUrl() + "?type=png&variant=" + variant.tag)
                     .get()
                     .build();
 
