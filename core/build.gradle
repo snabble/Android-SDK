@@ -40,6 +40,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'org.iban4j:iban4j:3.2.1'
     implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttpVersion}"
+    implementation 'com.caverock:androidsvg-aar:1.4'
 
     api "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
     api 'com.google.code.gson:gson:2.8.5'

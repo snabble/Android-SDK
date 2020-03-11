@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.20.5]
 
+### Changed
+- Now loading svg assets instead of png
+
 ### Fixed
 - Fixed a race condition when loading assets
 

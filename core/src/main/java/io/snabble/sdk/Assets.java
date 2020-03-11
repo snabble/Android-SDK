@@ -6,12 +6,13 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.caverock.androidsvg.SVG;
 import com.google.gson.annotations.SerializedName;
 
 import org.apache.commons.io.FilenameUtils;
@@ -74,12 +75,10 @@ public class Assets {
 
     private class Asset {
         public File file;
-        public float density;
         public String hash;
 
-        public Asset(File file, float density, String hash) {
+        public Asset(File file, String hash) {
             this.file = file;
-            this.density = density;
             this.hash = hash;
         }
     }
@@ -177,7 +176,7 @@ public class Assets {
                     .cacheControl(new CacheControl.Builder()
                             .maxAge(30, TimeUnit.SECONDS)
                             .build())
-                    .url(project.getAssetsUrl() + "?type=png&variant=" + variant.tag)
+                    .url(project.getAssetsUrl() + "?type=svg")
                     .get()
                     .build();
 
@@ -218,7 +217,7 @@ public class Assets {
                 String hash = Utils.sha1Hex(url);
                 hashes.add(hash);
 
-                if (!FilenameUtils.getExtension(apiAsset.name).equals("png")) {
+                if (!FilenameUtils.getExtension(apiAsset.name).equals("svg")) {
                     continue;
                 }
 
@@ -247,7 +246,7 @@ public class Assets {
 
                             Logger.d("add " + apiAsset.name);
 
-                            Asset asset = new Asset(localFile, bestVariant.density, hash);
+                            Asset asset = new Asset(localFile, hash);
                             IOUtils.copy(body.byteStream(), new FileOutputStream(localFile));
 
                             Dispatch.mainThread(() -> {
@@ -298,21 +297,7 @@ public class Assets {
     }
 
     private Variant getBestVariant() {
-        Resources res = Snabble.getInstance().getApplication().getResources();
-        float density = res.getDisplayMetrics().density;
-
-        float bestDiff = Float.MAX_VALUE;
-        Variant bestVariant = Variant.XXHDPI;
-
-        for (Variant variant : Variant.values()) {
-            float diff = Math.abs(density - variant.density);
-            if (diff < bestDiff) {
-                bestDiff = diff;
-                bestVariant = variant;
-            }
-        }
-
-        return bestVariant;
+        return Variant.MDPI; // TODO remove
     }
 
     private static boolean isNightModeActive(Context context) {
@@ -350,7 +335,7 @@ public class Assets {
 
         boolean nightMode = isNightModeActive(Snabble.getInstance().getApplication());
 
-        final String fileName = FilenameUtils.removeExtension(name) + (nightMode ? "_dark" : "") + ".png";
+        final String fileName = FilenameUtils.removeExtension(name) + (nightMode ? "_dark" : "") + ".svg";
 
         Asset asset = manifest.assets.get(fileName);
         if (asset == null) {
@@ -360,24 +345,22 @@ public class Assets {
 
         if (asset != null) {
             try {
-                Logger.d("decode " + name);
+                Logger.d("render %s/%s", project.getId(), name);
+
                 Resources res = app.getResources();
                 DisplayMetrics dm = res.getDisplayMetrics();
 
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                SVG svg = SVG.getFromInputStream(new FileInputStream(asset.file));
+                int width = Math.round(svg.getDocumentWidth() * dm.density);
+                int height = Math.round(svg.getDocumentHeight() * dm.density);
 
-                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(asset.file), null, options);
-                if (bitmap == null || dm.density == asset.density) {
-                    return bitmap;
-                } else {
-                    float scaleFactor = dm.density / asset.density;
-                    int w = Math.round(bitmap.getWidth() * scaleFactor);
-                    int h = Math.round(bitmap.getHeight() * scaleFactor);
+                svg.setDocumentWidth(width);
+                svg.setDocumentHeight(height);
 
-                    Logger.d("rescaling image " + name + " sourceDensity " + asset.density + " targetDensity " + dm.density);
-                    return Bitmap.createScaledBitmap(bitmap, w, h, true);
-                }
+                Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                svg.renderToCanvas(canvas);
+                return bitmap;
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
                 return null;
@@ -388,7 +371,7 @@ public class Assets {
     }
 
     public void get(String name, Callback callback) {
-        final String fileName = FilenameUtils.removeExtension(name) + ".png";
+        final String fileName = FilenameUtils.removeExtension(name) + ".svg";
 
         Bitmap bitmap = getBitmap(fileName);
         if (bitmap != null) {
