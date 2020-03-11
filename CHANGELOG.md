@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.20.5]
+
+### Fixed
+- Fixed a race condition when loading assets
+
 ## [0.20.4]
 
 ### Fixed

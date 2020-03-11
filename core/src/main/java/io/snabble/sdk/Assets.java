@@ -222,8 +222,7 @@ public class Assets {
                     continue;
                 }
 
-                File localFile = getLocalAssetFile(hash);
-                if (localFile.exists()) {
+                if (manifest.assets.containsKey(apiAsset.name)) {
                     continue;
                 }
 
@@ -243,17 +242,18 @@ public class Assets {
                     if (response.isSuccessful()) {
                         ResponseBody body = response.body();
                         if (body != null) {
-                            if (localFile.createNewFile()) {
-                                Logger.d("add " + apiAsset.name);
+                            File localFile = getLocalAssetFile(hash);
+                            localFile.createNewFile();
 
-                                Asset asset = new Asset(localFile, bestVariant.density, hash);
-                                IOUtils.copy(body.byteStream(), new FileOutputStream(localFile));
+                            Logger.d("add " + apiAsset.name);
 
-                                Dispatch.mainThread(() -> {
-                                    manifest.assets.put(apiAsset.name, asset);
-                                    changed[0] = true;
-                                });
-                            }
+                            Asset asset = new Asset(localFile, bestVariant.density, hash);
+                            IOUtils.copy(body.byteStream(), new FileOutputStream(localFile));
+
+                            Dispatch.mainThread(() -> {
+                                manifest.assets.put(apiAsset.name, asset);
+                                changed[0] = true;
+                            });
                         }
                     }
                 } catch (IOException e) {
