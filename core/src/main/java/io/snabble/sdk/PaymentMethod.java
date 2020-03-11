@@ -16,7 +16,7 @@ public enum PaymentMethod {
     @SerializedName("externalBilling")
     TEGUT_EMPLOYEE_CARD(false, false, true),
     @SerializedName("customerCardPOS")
-    CUSTOMERCARD_POS(true, false, false),
+    CUSTOMERCARD_POS(false, false, false),
     @SerializedName("gatekeeperTerminal")
     GATEKEEPER_TERMINAL(false, false, false);
 
