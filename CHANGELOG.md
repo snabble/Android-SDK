@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [0.20.4]
 
 ### Fixed
+- Fixed a regression in credit card input view
 - Updated okhttp to 3.14.7 to fix an issue with Android 11
 
 ## [0.20.3]

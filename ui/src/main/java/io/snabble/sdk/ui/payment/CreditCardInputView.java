@@ -83,12 +83,7 @@ public class CreditCardInputView extends FrameLayout {
             throw new RuntimeException("CreditCardInputView is only supported on API 21+");
         }
 
-        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
-        if (fragmentActivity != null) {
-            isActivityResumed = fragmentActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
-        } else {
-            isActivityResumed = true;
-        }
+        checkActivityResumed();
 
         inflate(getContext(), R.layout.snabble_view_cardinput_creditcard, this);
 
@@ -131,6 +126,15 @@ public class CreditCardInputView extends FrameLayout {
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
         requestHash();
+    }
+
+    private void checkActivityResumed() {
+        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
+        if (fragmentActivity != null) {
+            isActivityResumed = fragmentActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+        } else {
+            isActivityResumed = true;
+        }
     }
 
     private void requestHash() {
@@ -286,6 +290,8 @@ public class CreditCardInputView extends FrameLayout {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
+
+        checkActivityResumed();
 
         Application application = (Application) getContext().getApplicationContext();
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
