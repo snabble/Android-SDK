@@ -285,7 +285,11 @@ public class BarcodeView extends AppCompatImageView {
         canvas.drawBitmap(barcodeBitmap, 0, 0, null);
 
         Paint backgroundPaint = new Paint();
-        backgroundPaint.setColor(backgroundColor);
+        if (Color.alpha(backgroundColor) == 0) {
+            backgroundPaint.setColor(Color.WHITE);
+        } else {
+            backgroundPaint.setColor(backgroundColor);
+        }
 
         TextPaint textPaint = new TextPaint();
         textPaint.setColor(Color.BLACK);

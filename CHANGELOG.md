@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.20.3]
+
+### Fixed
+- Payment finished event for customer card payments
+- Use Color.WHITE for EAN13 barcode text's when a translucent window background is set 
+
 ## [0.20.2]
 
 ### Fixed
