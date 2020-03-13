@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [0.20.6]
 
 ### Fixed
-- Fixed a bug that caused vPOS implementations to count deposit prices twice 
+- Fixed a bug that caused vPOS implementations to count deposit prices twice
 
 ## [0.20.5]
 
