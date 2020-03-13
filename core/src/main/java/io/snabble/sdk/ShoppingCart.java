@@ -328,12 +328,17 @@ public class ShoppingCart {
 
     public int getTotalDepositPrice() {
         int sum = 0;
+        int vPOSsum = 0;
 
         for (Item e : items) {
-            sum += e.getTotalDepositPrice();
+            if (e.isOnlyLineItem()) {
+                vPOSsum += e.getTotalDepositPrice();
+            } else {
+                sum += e.getTotalDepositPrice();
+            }
         }
 
-        return sum;
+        return Math.max(vPOSsum, sum);
     }
 
     public int getTotalQuantity() {
