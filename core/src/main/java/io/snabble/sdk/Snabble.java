@@ -64,6 +64,7 @@ public class Snabble {
     private String receiptsUrl;
     private String telecashSecretUrl;
     private String telecashPreAuthUrl;
+    private String createAppUserUrl;
     private OkHttpClient okHttpClient;
     private WeakReference<Activity> currentActivity;
 
@@ -102,7 +103,7 @@ public class Snabble {
 
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app);
         userPreferences = new UserPreferences(app);
-        tokenRegistry = new TokenRegistry(okHttpClient, userPreferences.getClientId(), config.appId, config.secret);
+        tokenRegistry = new TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret);
         receipts = new Receipts();
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
@@ -193,6 +194,7 @@ public class Snabble {
 
             telecashSecretUrl = getUrl(jsonObject, "telecashSecret");
             telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth");
+            createAppUserUrl = getUrl(jsonObject, "createAppUser");
         }
 
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
@@ -301,6 +303,10 @@ public class Snabble {
 
     public String getTelecashPreAuthUrl() {
         return telecashPreAuthUrl;
+    }
+
+    public String getCreateAppUserUrl() {
+        return createAppUserUrl;
     }
 
     public File getInternalStorageDirectory() {

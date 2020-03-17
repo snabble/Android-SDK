@@ -3,13 +3,19 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.util.Base64;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.UUID;
+
+import io.snabble.sdk.auth.AppUser;
 
 public class UserPreferences {
     private static final String SHARED_PREFERENCES_TAG = "snabble_prefs";
     private static final String SHARED_PREFERENCES_CLIENT_ID = "Client-ID";
+    private static final String SHARED_PREFERENCES_APPUSER_ID = "AppUser-ID";
+    private static final String SHARED_PREFERENCES_APPUSER_SECRET = "AppUser-Secret";
     private static final String SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard";
 
     private SharedPreferences sharedPreferences;
@@ -30,7 +36,63 @@ public class UserPreferences {
         setClientId(clientId);
     }
 
-    public void setClientId(String clientId) {
+    public AppUser getAppUser() {
+        String appUserId = sharedPreferences.getString(SHARED_PREFERENCES_APPUSER_ID, null);
+        String appUserSecret = sharedPreferences.getString(SHARED_PREFERENCES_APPUSER_SECRET, null);
+
+        if (appUserId != null && appUserSecret != null) {
+            return new AppUser(appUserId, appUserSecret);
+        } else {
+            return null;
+        }
+    }
+
+    public void setAppUser(AppUser appUser) {
+        if (appUser == null) {
+            sharedPreferences.edit()
+                    .putString(SHARED_PREFERENCES_APPUSER_ID, null)
+                    .putString(SHARED_PREFERENCES_APPUSER_SECRET, null)
+                    .apply();
+            return;
+        }
+
+        if (appUser.id != null && appUser.secret != null) {
+            sharedPreferences.edit()
+                    .putString(SHARED_PREFERENCES_APPUSER_ID, appUser.id)
+                    .putString(SHARED_PREFERENCES_APPUSER_SECRET, appUser.secret)
+                    .apply();
+        }
+    }
+
+    public String getAppUserBase64() {
+        AppUser appUser = getAppUser();
+        if (appUser != null) {
+            String content = appUser.id + ":" + appUser.secret;
+
+            try {
+                return Base64.encodeToString(content.getBytes("UTF-8"), Base64.NO_WRAP);
+            } catch (UnsupportedEncodingException e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    public void setAppUserBase64(String appUserBase64) {
+        String[] split = appUserBase64.split(":");
+
+        if (split.length == 2) {
+            String appUserId = split[0];
+            String appUserSecret = split[1];
+
+            if (appUserId.length() > 0 && appUserSecret.length() > 0) {
+                setAppUser(new AppUser(appUserId, appUserSecret));
+            }
+        }
+    }
+
+    private void setClientId(String clientId) {
         sharedPreferences.edit().putString(SHARED_PREFERENCES_CLIENT_ID, clientId).apply();
     }
 

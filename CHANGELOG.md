@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.21.0-alpha01]
+
+### Added
+- Support for app user ids
+
 ## [0.20.6]
 
 ### Fixed

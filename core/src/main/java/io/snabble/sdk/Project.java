@@ -70,6 +70,8 @@ public class Project {
     private int maxOnlinePaymentLimit;
     private int maxCheckoutLimit;
     private JsonObject encodedCodesJsonObject;
+    private String tokensUrl;
+    private String appUserUrl;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
@@ -111,6 +113,8 @@ public class Project {
         }
 
         this.urls = Collections.unmodifiableMap(urls);
+        this.tokensUrl = urls.get("tokens") + "?role=retailerApp";
+        this.appUserUrl = snabble.getCreateAppUserUrl() + "?project=" + id;
 
         this.roundingMode = parseRoundingMode(jsonObject.get("roundingMode"));
 
@@ -303,7 +307,11 @@ public class Project {
     }
 
     public String getTokensUrl() {
-        return urls.get("tokens");
+        return tokensUrl;
+    }
+
+    public String getAppUserUrl() {
+        return appUserUrl;
     }
 
     public String getEventsUrl() {

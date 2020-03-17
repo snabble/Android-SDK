@@ -9,26 +9,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.snabble.sdk.Project;
+import io.snabble.sdk.UserPreferences;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class TokenRegistry {
     private Totp totp;
     private Map<String, Token> tokens = new HashMap<>();
-    private String clientId;
+    private UserPreferences userPreferences;
     private String appId;
     private OkHttpClient okHttpClient;
     private long timeOffset;
 
-    public TokenRegistry(OkHttpClient okHttpClient, String clientId, String appId, String secret) {
+    public TokenRegistry(OkHttpClient okHttpClient,
+                         UserPreferences userPreferences,
+                         String appId,
+                         String secret) {
         try {
             byte[] secretData = Base32String.decode(secret);
 
             this.totp = new Totp("HmacSHA256", secretData, 8, 30);
-            this.clientId = clientId;
+            this.userPreferences = userPreferences;
             this.appId = appId;
             this.okHttpClient = okHttpClient;
         } catch (Base32String.DecodingException e) {
@@ -47,7 +53,18 @@ public class TokenRegistry {
                 String.valueOf(time),
                 String.valueOf(time / 30));
 
-        String auth = appId + ":" + totp.generate(time);
+        final AppUser appUser = userPreferences.getAppUser();
+
+        String auth;
+        String url;
+        if (appUser != null) {
+            auth = appId + ":" + totp.generate(time) + ":" + appUser.id + ":" + appUser.secret;
+            url = project.getTokensUrl();
+        } else {
+            auth = appId + ":" + totp.generate(time);
+            url = project.getAppUserUrl();
+        }
+
         String base64;
 
         try {
@@ -57,17 +74,22 @@ public class TokenRegistry {
             return null;
         }
 
-        String url = project.getTokensUrl() + "?role=retailerApp";
+        Request.Builder request = new Request.Builder()
+                .url(url);
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Basic " + base64)
-                .addHeader("Client-ID", clientId)
-                .build();
+        if (appUser != null) {
+            request = request.get();
+        } else {
+            request = request.post(RequestBody.create(null, ""));
+        }
+
+        request.addHeader("Authorization", "Basic " + base64)
+        .addHeader("Client-ID", userPreferences.getClientId())
+        .build();
 
         Response response = null;
         try {
-            response = okHttpClient.newCall(request).execute();
+            response = okHttpClient.newCall(request.build()).execute();
             String body = response.body().string();
             response.close();
 
@@ -75,9 +97,16 @@ public class TokenRegistry {
                 Logger.d("Successfully generated token for %s", project.getId());
 
                 adjustTimeOffset(response);
-                Token token = GsonHolder.get().fromJson(body, Token.class);
-                tokens.put(project.getId(), token);
-                return token;
+                if (appUser == null) {
+                    AppUserAndToken appUserAndToken = GsonHolder.get().fromJson(body, AppUserAndToken.class);
+                    userPreferences.setAppUser(appUserAndToken.appUser);
+                    tokens.put(project.getId(), appUserAndToken.token);
+                    return appUserAndToken.token;
+                } else {
+                    Token token = GsonHolder.get().fromJson(body, Token.class);
+                    tokens.put(project.getId(), token);
+                    return token;
+                }
             } else {
                 if (!isRetry) {
                     Logger.d("Could not generate token, trying again with server time");
