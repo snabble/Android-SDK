@@ -178,6 +178,10 @@ public class Snabble {
     private synchronized void readMetadata() {
         JsonObject jsonObject = metadataDownloader.getJsonObject();
         if (jsonObject != null) {
+            createAppUserUrl = getUrl(jsonObject, "createAppUser");
+            telecashSecretUrl = getUrl(jsonObject, "telecashSecret");
+            telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth");
+
             if (jsonObject.has("projects")) {
                 parseProjects(jsonObject);
             }
@@ -191,10 +195,6 @@ public class Snabble {
             if (receiptsUrl != null) {
                 receiptsUrl = receiptsUrl.replace("{clientID}", getClientId());
             }
-
-            telecashSecretUrl = getUrl(jsonObject, "telecashSecret");
-            telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth");
-            createAppUserUrl = getUrl(jsonObject, "createAppUser");
         }
 
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
