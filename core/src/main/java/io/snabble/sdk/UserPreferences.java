@@ -36,9 +36,24 @@ public class UserPreferences {
         setClientId(clientId);
     }
 
+    private String getAppUserIdKey() {
+        Snabble.Config config = Snabble.getInstance().getConfig();
+        return SHARED_PREFERENCES_APPUSER_ID + "_" + Snabble.getInstance().getEnvironment().name() + config.appId;
+    }
+
+    private String getAppUserIdSecret() {
+        Snabble.Config config = Snabble.getInstance().getConfig();
+        return SHARED_PREFERENCES_APPUSER_SECRET + "_" + Snabble.getInstance().getEnvironment().name() + config.appId;
+    }
+
     public AppUser getAppUser() {
-        String appUserId = sharedPreferences.getString(SHARED_PREFERENCES_APPUSER_ID, null);
-        String appUserSecret = sharedPreferences.getString(SHARED_PREFERENCES_APPUSER_SECRET, null);
+        Snabble.Config config = Snabble.getInstance().getConfig();
+        if (config == null) {
+            return null;
+        }
+
+        String appUserId = sharedPreferences.getString(getAppUserIdKey(), null);
+        String appUserSecret = sharedPreferences.getString(getAppUserIdSecret(), null);
 
         if (appUserId != null && appUserSecret != null) {
             return new AppUser(appUserId, appUserSecret);
@@ -50,16 +65,16 @@ public class UserPreferences {
     public void setAppUser(AppUser appUser) {
         if (appUser == null) {
             sharedPreferences.edit()
-                    .putString(SHARED_PREFERENCES_APPUSER_ID, null)
-                    .putString(SHARED_PREFERENCES_APPUSER_SECRET, null)
+                    .putString(getAppUserIdKey(), null)
+                    .putString(getAppUserIdSecret(), null)
                     .apply();
             return;
         }
 
         if (appUser.id != null && appUser.secret != null) {
             sharedPreferences.edit()
-                    .putString(SHARED_PREFERENCES_APPUSER_ID, appUser.id)
-                    .putString(SHARED_PREFERENCES_APPUSER_SECRET, appUser.secret)
+                    .putString(getAppUserIdKey(), appUser.id)
+                    .putString(getAppUserIdSecret(), appUser.secret)
                     .apply();
         }
     }

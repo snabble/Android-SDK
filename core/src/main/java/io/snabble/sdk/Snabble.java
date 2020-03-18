@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.auth.TokenRegistry;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
@@ -190,11 +191,7 @@ public class Snabble {
                 parsePaymentCertificates(jsonObject);
             }
 
-            receiptsUrl = getUrl(jsonObject, "clientOrders");
-
-            if (receiptsUrl != null) {
-                receiptsUrl = receiptsUrl.replace("{clientID}", getClientId());
-            }
+            receiptsUrl = getUrl(jsonObject, "appUserOrders");
         }
 
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
@@ -294,7 +291,12 @@ public class Snabble {
     }
 
     public String getReceiptsUrl() {
-        return receiptsUrl;
+        AppUser appUser = userPreferences.getAppUser();
+        if (appUser != null) {
+            return receiptsUrl.replace("{appUserID}", userPreferences.getAppUser().id);
+        } else {
+            return null;
+        }
     }
 
     public String getTelecashSecretUrl() {
