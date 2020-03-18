@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.Dispatch;
@@ -629,6 +630,10 @@ public class ShoppingCart {
         String session;
         @SerializedName("shopID")
         String shopId;
+        @SerializedName("clientID")
+        String clientId;
+        @SerializedName("appUserID")
+        String appUserId;
         BackendCartCustomer customer;
         BackendCartItem[] items;
 
@@ -657,6 +662,14 @@ public class ShoppingCart {
         BackendCart backendCart = new BackendCart();
         backendCart.session = getId();
         backendCart.shopId = "unknown";
+
+        UserPreferences userPreferences = Snabble.getInstance().getUserPreferences();
+        backendCart.clientId = userPreferences.getClientId();
+
+        AppUser appUser = userPreferences.getAppUser();
+        if (appUser != null) {
+            backendCart.appUserId = appUser.id;
+        }
 
         String loyaltyCardId = project.getCustomerCardId();
         if (loyaltyCardId != null) {
