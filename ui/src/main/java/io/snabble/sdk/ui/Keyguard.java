@@ -77,7 +77,7 @@ public class Keyguard {
 
                                     @Override
                                     public void onAuthenticationFailed() {
-                                        error();
+
                                     }
                                 });
             } else {

@@ -152,6 +152,9 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                             case MASTERCARD:
                                 drawableResId = R.drawable.snabble_ic_mastercard;
                                 break;
+                            case AMEX:
+                                drawableResId = R.drawable.snabble_ic_amex;
+                                break;
                         }
                     }
 

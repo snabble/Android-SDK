@@ -13,6 +13,8 @@ public enum PaymentMethod {
     VISA(false, true, false),
     @SerializedName("creditCardMastercard")
     MASTERCARD(false, true, false),
+    @SerializedName("creditCardAmericanExpress")
+    AMEX(false, true, false),
     @SerializedName("externalBilling")
     TEGUT_EMPLOYEE_CARD(false, false, true),
     @SerializedName("customerCardPOS")

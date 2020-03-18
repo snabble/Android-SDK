@@ -174,11 +174,19 @@ public class CreditCardInputView extends FrameLayout {
             data = data.replace("{{hash}}", hashResponse.hash);
 
             // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
-            if (type == PaymentMethod.MASTERCARD) {
-                data = data.replace("{{paymentMethod}}", "M");
-            } else {
-                data = data.replace("{{paymentMethod}}", "V");
+            switch(type) {
+                case MASTERCARD:
+                    data = data.replace("{{paymentMethod}}", "M");
+                    break;
+                case AMEX:
+                    data = data.replace("{{paymentMethod}}", "A");
+                    break;
+                case VISA:
+                default:
+                    data = data.replace("{{paymentMethod}}", "V");
+                    break;
             }
+
             webView.loadData(Base64.encodeToString(data.getBytes(), Base64.DEFAULT), null, "base64");
         } catch (IOException e) {
             Logger.e(e.getMessage());
@@ -218,6 +226,9 @@ public class CreditCardInputView extends FrameLayout {
                 break;
             case "MASTERCARD":
                 ccBrand = PaymentCredentials.Brand.MASTERCARD;
+                break;
+            case "AMEX":
+                ccBrand = PaymentCredentials.Brand.AMEX;
                 break;
             default:
                 ccBrand = PaymentCredentials.Brand.UNKNOWN;

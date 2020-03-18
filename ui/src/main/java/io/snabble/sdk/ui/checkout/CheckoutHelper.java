@@ -18,6 +18,7 @@ public class CheckoutHelper {
                 case DE_DIRECT_DEBIT:
                 case VISA:
                 case MASTERCARD:
+                case AMEX:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_ONLINE, null);
                     break;
                 case GATEKEEPER_TERMINAL:
