@@ -77,6 +77,21 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     dismissAllowingStateLoss();
                 }
             }));
+
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_amex,
+                    "American Express",
+                    getUsableAtText(PaymentMethod.AMEX), new OneShotClickListener() {
+                @Override
+                public void click() {
+                    CreditCardInputView.type = PaymentMethod.AMEX;
+                    SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                    if (callback != null) {
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                    }
+
+                    dismissAllowingStateLoss();
+                }
+            }));
         }
 
         RecyclerView recyclerView = v.findViewById(R.id.recycler_view);

@@ -51,7 +51,8 @@ public class PaymentCredentials {
     public enum Brand {
         UNKNOWN,
         VISA,
-        MASTERCARD
+        MASTERCARD,
+        AMEX
     }
 
     private static class SepaData {
@@ -177,6 +178,9 @@ public class PaymentCredentials {
             case MASTERCARD:
                 creditCardData.cardType = "creditCardMastercard";
                 break;
+            case AMEX:
+                creditCardData.cardType = "creditCardAmericanExpress";
+                break;
             default:
                 return null;
         }
@@ -199,7 +203,7 @@ public class PaymentCredentials {
             calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
             pc.validTo = calendar.getTimeInMillis();
-        } catch (NumberFormatException | ParseException e) {
+        } catch (Exception e) {
             return null;
         }
 

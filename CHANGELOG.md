@@ -1,10 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.21.0-alpha01]
+## [0.20.7]
 
 ### Added
-- Support for app user ids
+- Support for American Express
+
+### Fixed
+- Fixed a bug that caused failed fingerprint authentications to return to the previous view
+instead of allowing to retry entering the fingerprint
 
 ## [0.20.6]
 

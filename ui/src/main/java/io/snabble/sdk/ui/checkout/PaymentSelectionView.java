@@ -57,6 +57,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
         icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.snabble_ic_pm_sepa);
         icons.put(PaymentMethod.VISA, R.drawable.snabble_ic_pm_visa);
         icons.put(PaymentMethod.MASTERCARD, R.drawable.snabble_ic_pm_mastercard);
+        icons.put(PaymentMethod.AMEX, R.drawable.snabble_ic_pm_amex);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_pm_checkstand);
         icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_pm_tegut);
@@ -268,6 +269,7 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
         switch (pm) {
             case VISA:
             case MASTERCARD:
+            case AMEX:
                 return PaymentCredentials.Type.CREDIT_CARD;
             case DE_DIRECT_DEBIT:
                 return PaymentCredentials.Type.SEPA;
@@ -284,6 +286,8 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                 return PaymentCredentials.Brand.VISA;
             case MASTERCARD:
                 return PaymentCredentials.Brand.MASTERCARD;
+            case AMEX:
+                return PaymentCredentials.Brand.AMEX;
             default:
                 return PaymentCredentials.Brand.UNKNOWN;
         }
