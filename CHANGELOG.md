@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 - Support for app user id's
 - Support for American Express
 
+### Changed
+- Now transmitting obfuscated credit card number and date when making payments 
+
 ### Fixed
 - Fixed a bug that caused failed fingerprint authentications to return to the previous view
 instead of allowing to retry entering the fingerprint

@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -119,6 +120,8 @@ class CheckoutApi {
         public String qrCodeContent;
         public String encryptedOrigin;
         public String originType;
+        public String validUntil;
+        public String cardNumber;
     }
 
     public static class CheckoutProcessRequest {
@@ -402,6 +405,13 @@ class CheckoutApi {
 
             checkoutProcessRequest.paymentInformation.originType = paymentCredentials.getType().getOriginType();
             checkoutProcessRequest.paymentInformation.encryptedOrigin = data;
+
+            if (paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD) {
+                Date date = new Date(paymentCredentials.getValidTo());
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                checkoutProcessRequest.paymentInformation.validUntil = simpleDateFormat.format(date);
+                checkoutProcessRequest.paymentInformation.cardNumber = paymentCredentials.getObfuscatedId();
+            }
         }
 
         String url = signedCheckoutInfo.getCheckoutProcessLink();
