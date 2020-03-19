@@ -37,6 +37,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
 import io.snabble.sdk.auth.AppUser;
+import io.snabble.sdk.auth.Token;
 import io.snabble.sdk.auth.TokenRegistry;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
@@ -128,6 +129,16 @@ public class Snabble {
                 @Override
                 protected void onDataLoaded(boolean wasStillValid) {
                     readMetadata();
+
+                    AppUser appUser = userPreferences.getAppUser();
+                    if (appUser == null && projects.size() > 0) {
+                        Token token = tokenRegistry.getToken(projects.get(0));
+                        if (token == null) {
+                            setupCompletionListener.onError(Error.CONNECTION_TIMEOUT);
+                            return;
+                        }
+                    }
+
                     setupCompletionListener.onReady();
                 }
 
