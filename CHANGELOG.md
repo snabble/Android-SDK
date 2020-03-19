@@ -1,9 +1,10 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.20.7]
+## [0.21.0]
 
 ### Added
+- Support for app user id's
 - Support for American Express
 
 ### Fixed
