@@ -6,6 +6,9 @@ import android.os.Build;
 import android.util.Base64;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -16,7 +19,10 @@ public class UserPreferences {
     private static final String SHARED_PREFERENCES_CLIENT_ID = "Client-ID";
     private static final String SHARED_PREFERENCES_APPUSER_ID = "AppUser-ID";
     private static final String SHARED_PREFERENCES_APPUSER_SECRET = "AppUser-Secret";
+    private static final String SHARED_PREFERENCES_BIRTHDAY = "Birthday";
     private static final String SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard";
+
+    private static final SimpleDateFormat BIRTHDAY_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
     private SharedPreferences sharedPreferences;
 
@@ -113,6 +119,25 @@ public class UserPreferences {
 
     public String getClientId() {
         return sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null);
+    }
+
+    public void setBirthday(Date date) {
+        sharedPreferences.edit()
+                .putString(SHARED_PREFERENCES_BIRTHDAY, BIRTHDAY_FORMAT.format(date))
+                .apply();
+    }
+
+    public Date getBirthday() {
+        String s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null);
+        if (s == null) {
+            return null;
+        }
+
+        try {
+            return BIRTHDAY_FORMAT.parse(s);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     /**

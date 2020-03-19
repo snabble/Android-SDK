@@ -659,5 +659,7 @@ public class Snabble {
 
         /** If set to true, disables certificate pinning **/
         public boolean disableCertificatePinning;
+
+        public boolean enableAgeVerification;
     }
 }

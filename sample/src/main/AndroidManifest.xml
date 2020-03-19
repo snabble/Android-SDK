@@ -26,6 +26,7 @@
         <activity android:name=".SelfScanningActivity" />
         <activity android:name=".ProductSearchActivity" />
         <activity android:name=".ShoppingCartActivity" />
+        <activity android:name=".AgeVerificationActivity" />
         <activity android:name=".SEPACardInputActivity" />
         <activity android:name=".CreditCardInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Support for app user id's
 - Support for American Express
+- Limited support for german age verification
 
 ### Changed
 - Now transmitting obfuscated credit card number and date when making payments 

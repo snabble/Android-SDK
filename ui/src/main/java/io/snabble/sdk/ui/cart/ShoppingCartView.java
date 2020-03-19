@@ -37,6 +37,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +52,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.CheckoutHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.utils.Age;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -193,8 +195,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
                     snackbar.show();
                 } else {
-                    checkout.checkout();
                     Telemetry.event(Telemetry.Event.ClickCheckout);
+
+                    if (verifyUserAge()) {
+                        checkout.checkout();
+                    } else {
+                        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                        if (callback != null) {
+                            callback.execute(SnabbleUI.Action.SHOW_AGE_VERIFICATION, null);
+                        }
+                    }
                 }
             }
         });
@@ -374,6 +384,20 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             } else {
                 pay.setText(R.string.Snabble_Shoppingcart_buyProducts_now);
             }
+        }
+    }
+
+    private boolean verifyUserAge() {
+        if (Snabble.getInstance().getConfig().enableAgeVerification) {
+            Date date = Snabble.getInstance().getUserPreferences().getBirthday();
+            if (date == null) {
+                return cart.getMinimumAge() == 0;
+            }
+
+            Age age = Age.calculateAge(date);
+            return age.years >= cart.getMinimumAge();
+        } else {
+            return true;
         }
     }
 

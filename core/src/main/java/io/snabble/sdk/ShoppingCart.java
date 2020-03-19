@@ -399,6 +399,16 @@ public class ShoppingCart {
         }
     }
 
+    public int getMinimumAge() {
+        int minimumAge = 0;
+
+        for (Item item : items) {
+            minimumAge = Math.max(minimumAge, item.getMinimumAge());
+        }
+
+        return minimumAge;
+    }
+
     public static class Item {
         private Product product;
         private ScannedCode scannedCode;
@@ -613,6 +623,17 @@ public class ShoppingCart {
             }
 
             return null;
+        }
+
+        public int getMinimumAge() {
+            if (product != null) {
+                Product.SaleRestriction saleRestriction = product.getSaleRestriction();
+                if (saleRestriction != null && saleRestriction.isAgeRestriction()) {
+                    return (int) saleRestriction.getValue();
+                }
+            }
+
+            return 0;
         }
 
         void replace(Product product, ScannedCode scannedCode, int quantity) {

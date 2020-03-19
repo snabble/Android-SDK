@@ -27,6 +27,7 @@ public class SnabbleUI {
         SHOW_CREDIT_CARD_INPUT,
         SHOW_SHOPPING_CART,
         SHOW_PAYMENT_CREDENTIALS_LIST,
+        SHOW_AGE_VERIFICATION,
         GO_BACK
     }
 
