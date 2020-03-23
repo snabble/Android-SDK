@@ -9,8 +9,10 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.auth.AppUser;
 
@@ -25,9 +27,11 @@ public class UserPreferences {
     private static final SimpleDateFormat BIRTHDAY_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
     private SharedPreferences sharedPreferences;
+    private List<OnNewAppUserListener> onNewAppUserListeners;
 
     UserPreferences(Context context) {
-        sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
+        this.sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
+        this.onNewAppUserListeners = new CopyOnWriteArrayList<>();
 
         if (getClientId() == null) {
             generateClientId();
@@ -74,6 +78,7 @@ public class UserPreferences {
                     .putString(getAppUserIdKey(), null)
                     .putString(getAppUserIdSecret(), null)
                     .apply();
+            notifyOnNewAppUser(null);
             return;
         }
 
@@ -82,6 +87,7 @@ public class UserPreferences {
                     .putString(getAppUserIdKey(), appUser.id)
                     .putString(getAppUserIdSecret(), appUser.secret)
                     .apply();
+            notifyOnNewAppUser(appUser);
         }
     }
 
@@ -167,5 +173,25 @@ public class UserPreferences {
         }
 
         return false;
+    }
+
+    public void addOnNewAppUserListener(OnNewAppUserListener onNewAppUserListener) {
+        if (!onNewAppUserListeners.contains(onNewAppUserListener)) {
+            onNewAppUserListeners.add(onNewAppUserListener);
+        }
+    }
+
+    public void removeOnNewAppUserListener(OnNewAppUserListener onNewAppUserListener) {
+        onNewAppUserListeners.remove(onNewAppUserListener);
+    }
+
+    private void notifyOnNewAppUser(AppUser appUser) {
+        for (OnNewAppUserListener listener : onNewAppUserListeners) {
+            listener.onNewAppUser(appUser);
+        }
+    }
+
+    public interface OnNewAppUserListener {
+        void onNewAppUser(AppUser appUser);
     }
 }

@@ -37,9 +37,15 @@ public class TokenRegistry {
             this.userPreferences = userPreferences;
             this.appId = appId;
             this.okHttpClient = okHttpClient;
+
+            userPreferences.addOnNewAppUserListener(appUser -> invalidate());
         } catch (Base32String.DecodingException e) {
             e.printStackTrace();
         }
+    }
+
+    public void invalidate() {
+        tokens.clear();
     }
 
     private synchronized Token refreshToken(Project project, boolean isRetry) {
