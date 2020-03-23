@@ -101,7 +101,8 @@ public class UserPreferences {
     }
 
     public void setAppUserBase64(String appUserBase64) {
-        String[] split = appUserBase64.split(":");
+        String appUser = new String(Base64.decode(appUserBase64, Base64.DEFAULT));
+        String[] split = appUser.split(":");
 
         if (split.length == 2) {
             String appUserId = split[0];
