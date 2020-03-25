@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.21.3]
 
+### Added
+- Added events for product confirmation show/hide
+
 ### Changed
 - Now listing added employee cards in payment method list
 

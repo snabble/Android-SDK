@@ -28,7 +28,9 @@ public class SnabbleUI {
         SHOW_SHOPPING_CART,
         SHOW_PAYMENT_CREDENTIALS_LIST,
         SHOW_AGE_VERIFICATION,
-        GO_BACK
+        GO_BACK,
+        EVENT_PRODUCT_CONFIRMATION_SHOW,
+        EVENT_PRODUCT_CONFIRMATION_HIDE,
     }
 
     public interface Callback {

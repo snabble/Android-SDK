@@ -94,7 +94,7 @@ public class ProductResolver {
     }
 
     private void lookupAndShowProduct(final List<ScannedCode> scannedCodes) {
-        productConfirmationDialog.dismiss();
+        productConfirmationDialog.dismiss(false);
         progressDialog.showAfterDelay(300);
 
         if (onShowListener != null) {
@@ -291,7 +291,7 @@ public class ProductResolver {
     }
 
     public void dismiss() {
-        productConfirmationDialog.dismiss();
+        productConfirmationDialog.dismiss(false);
     }
 
     public void setOnShowListener(OnShowListener listener) {

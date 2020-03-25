@@ -36,6 +36,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.utils.Dispatch;
@@ -66,7 +67,6 @@ class ProductConfirmationDialog {
     private DialogInterface.OnShowListener onShowListener;
     private DialogInterface.OnKeyListener onKeyListener;
 
-
     public ProductConfirmationDialog(Context context,
                                      Project project) {
         this.context = context;
@@ -76,7 +76,7 @@ class ProductConfirmationDialog {
     }
 
     public void show(Product product, ScannedCode scannedCode) {
-        dismiss();
+        dismiss(false);
 
         View view = View.inflate(context, R.layout.snabble_dialog_product_confirmation, null);
 
@@ -170,7 +170,7 @@ class ProductConfirmationDialog {
                 // its possible that the callback gets called before a dismiss is dispatched
                 // and when that happens the product is already null
                 if (cartItem == null) {
-                    dismiss();
+                    dismiss(false);
                     return;
                 }
 
@@ -218,7 +218,8 @@ class ProductConfirmationDialog {
             @Override
             public void onClick(View v) {
                 Telemetry.event(Telemetry.Event.RejectedProduct, cartItem.getProduct());
-                dismiss();
+                cartItem = null;
+                dismiss(false);
             }
         });
 
@@ -245,6 +246,11 @@ class ProductConfirmationDialog {
                         .getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(quantity, 0);
             });
+        }
+
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+        if (callback != null) {
+            callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_SHOW, null);
         }
     }
 
@@ -289,7 +295,7 @@ class ProductConfirmationDialog {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
         if (cartItem == null) {
-            dismiss();
+            dismiss(false);
             return;
         }
 
@@ -317,7 +323,11 @@ class ProductConfirmationDialog {
                     .fetch();
         }
 
-        dismiss();
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+        if (callback != null) {
+            callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, cartItem);
+        }
+        dismiss(true);
     }
 
     private void shake() {
@@ -340,7 +350,7 @@ class ProductConfirmationDialog {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
         if (cartItem == null) {
-            dismiss();
+            dismiss(false);
             return;
         }
 
@@ -380,11 +390,18 @@ class ProductConfirmationDialog {
         updatePrice();
     }
 
-    public void dismiss() {
+    public void dismiss(boolean addToCart) {
         if (alertDialog != null) {
             alertDialog.dismiss();
             alertDialog.setOnDismissListener(null);
             alertDialog = null;
+
+            if (!addToCart) {
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                if (callback != null) {
+                    callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, null);
+                }
+            }
         }
 
         cartItem = null;
