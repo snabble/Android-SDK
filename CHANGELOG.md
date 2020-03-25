@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Now listing added employee cards in payment method list
 
+### Fixed
+- Added workaround to fix ProductSearchView not updating when embedding in react-native applications
+
 ## [0.21.2]
 
 ### Fixed

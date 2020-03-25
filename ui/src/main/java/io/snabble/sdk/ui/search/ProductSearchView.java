@@ -119,6 +119,7 @@ public class ProductSearchView extends FrameLayout {
             @Override
             public void onChanged() {
                 onSearchUpdated();
+                requestLayout();
             }
         });
 
