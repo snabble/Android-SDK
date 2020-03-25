@@ -138,27 +138,33 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         for (PaymentCredentials pm : paymentCredentials) {
             if (Snabble.getInstance().getConfig().appId.equals(pm.getAppId())) {
-                if (pm.getType() == PaymentCredentials.Type.SEPA) {
-                    entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));
-                } else if (pm.getType() == PaymentCredentials.Type.CREDIT_CARD) {
-                    PaymentCredentials.Brand ccBrand = pm.getBrand();
+                switch (pm.getType()) {
+                    case SEPA:
+                        entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));
+                        break;
+                    case CREDIT_CARD:
+                        PaymentCredentials.Brand ccBrand = pm.getBrand();
 
-                    int drawableResId = 0;
-                    if (ccBrand != null) {
-                        switch (ccBrand) {
-                            case VISA:
-                                drawableResId = R.drawable.snabble_ic_visa;
-                                break;
-                            case MASTERCARD:
-                                drawableResId = R.drawable.snabble_ic_mastercard;
-                                break;
-                            case AMEX:
-                                drawableResId = R.drawable.snabble_ic_amex;
-                                break;
+                        int drawableResId = 0;
+                        if (ccBrand != null) {
+                            switch (ccBrand) {
+                                case VISA:
+                                    drawableResId = R.drawable.snabble_ic_visa;
+                                    break;
+                                case MASTERCARD:
+                                    drawableResId = R.drawable.snabble_ic_mastercard;
+                                    break;
+                                case AMEX:
+                                    drawableResId = R.drawable.snabble_ic_amex;
+                                    break;
+                            }
                         }
-                    }
 
-                    entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
+                        entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
+                        break;
+                    case TEGUT_EMPLOYEE_CARD:
+                        entries.add(new Entry(pm, R.drawable.snabble_ic_tg, pm.getObfuscatedId()));
+                        break;
                 }
             }
         }
