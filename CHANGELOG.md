@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.21.3]
+
+### Changed
+- Now listing added employee cards in payment method list
+
 ## [0.21.2]
 
 ### Fixed
