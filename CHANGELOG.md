@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.21.4]
+
+### Changed
+- Canceling a checkout by pressing cancel now goes back in the navigation hierarchy instead of showing a payment error message
+
 ## [0.21.3]
 
 ### Added

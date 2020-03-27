@@ -147,6 +147,9 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
                 callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
                 break;
             case PAYMENT_ABORTED:
+                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
+                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                break;
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
                 callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
