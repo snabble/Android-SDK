@@ -49,6 +49,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     // all events posted are processed in proper order
     private static Handler cameraHandler;
     private static Handler barcodeProcessingHandler;
+    private static BarcodeScannerView activeScannerView;
 
     private Handler mainThreadHandler;
 
@@ -189,11 +190,12 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraHandler.post(() -> {
             isPaused = true;
 
-            if (running) {
+            if (running && activeScannerView == this) {
                 isProcessing = false;
                 camera.stopPreview();
                 camera.setPreviewCallbackWithBuffer(null);
                 decodeEnabled = false;
+                activeScannerView = null;
             }
         });
     }
@@ -222,6 +224,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
                 try {
                     camera.startPreview();
+                    activeScannerView = this;
                 } catch (RuntimeException e) {
                     showError(true);
                     return;
@@ -333,6 +336,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         try {
             camera.startPreview();
+            activeScannerView = this;
         } catch (RuntimeException e) {
             showError(true);
             return;
@@ -371,9 +375,10 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         scheduleAutoFocus();
         showError(false);
 
-        if (isPaused) {
+        if (isPaused && activeScannerView == this) {
             camera.stopPreview();
             camera.setPreviewCallbackWithBuffer(null);
+            activeScannerView = null;
         }
     }
 
@@ -556,13 +561,14 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
     public void stop() {
         cameraHandler.post(() -> {
-            if (running) {
+            if (running && activeScannerView == this) {
                 camera.stopPreview();
                 camera.setPreviewCallbackWithBuffer(null);
                 camera.release();
                 camera = null;
                 running = false;
                 decodeEnabled = false;
+                activeScannerView = null;
             }
 
             startRequested = false;
@@ -795,7 +801,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
 
         rect.inset(Math.round(rect.width() * (1.0f - restrictionOvershoot)),
-                    Math.round(rect.height() * (1.0f - restrictionOvershoot)));
+                Math.round(rect.height() * (1.0f - restrictionOvershoot)));
 
         rect.left = Math.max(0, rect.left);
         rect.top = Math.max(0, rect.top);
