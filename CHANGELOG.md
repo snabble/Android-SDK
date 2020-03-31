@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.21.5]
+
+### Changed
+- Exclude not used assets from asset preload
+
 ## [0.21.4]
 
 ### Changed

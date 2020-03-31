@@ -113,7 +113,7 @@ public class Assets {
     }
 
     public void update() {
-        download(null);
+        download(null, null);
     }
 
     private void loadManifest() {
@@ -169,9 +169,8 @@ public class Assets {
         });
     }
 
-    private void download(DownloadCallback callback) {
+    private void download(String nonRootIncludedFileName, DownloadCallback callback) {
         Dispatch.mainThread(() -> {
-            Variant variant = getBestVariant();
             Request request = new Request.Builder()
                     .cacheControl(new CacheControl.Builder()
                             .maxAge(30, TimeUnit.SECONDS)
@@ -183,7 +182,7 @@ public class Assets {
             project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<ApiManifest>(ApiManifest.class) {
                 @Override
                 public void success(ApiManifest manifest) {
-                    downloadAssets(project, manifest, callback);
+                    downloadAssets(project, manifest, nonRootIncludedFileName, callback);
                 }
 
                 @Override
@@ -201,7 +200,7 @@ public class Assets {
     }
 
     @SuppressLint("ApplySharedPref")
-    private void downloadAssets(Project project, ApiManifest apiManifest, DownloadCallback callback) {
+    private void downloadAssets(Project project, ApiManifest apiManifest, String nonRootIncludedFileName, DownloadCallback callback) {
         if (apiManifest.files != null) {
             boolean[] changed = new boolean[1];
 
@@ -218,6 +217,11 @@ public class Assets {
                 hashes.add(hash);
 
                 if (!FilenameUtils.getExtension(apiAsset.name).equals("svg")) {
+                    continue;
+                }
+
+                // exclude assets that are not in the root when not explicitly requested
+                if (apiAsset.name.contains("/") && !apiAsset.name.equals(nonRootIncludedFileName)) {
                     continue;
                 }
 
@@ -288,7 +292,7 @@ public class Assets {
                 callback.success();
             }
         } else {
-            Logger.e("Unknown file manifest file format, ignoring.");
+            Logger.e("Unknown manifest file format, ignoring.");
 
             if (callback != null) {
                 callback.failure();
@@ -297,7 +301,7 @@ public class Assets {
     }
 
     private Variant getBestVariant() {
-        return Variant.MDPI; // TODO remove
+        return Variant.MDPI;
     }
 
     private static boolean isNightModeActive(Context context) {
@@ -379,7 +383,7 @@ public class Assets {
             callback.onReceive(bitmap);
         } else {
             Logger.d("cache miss " + fileName);
-            download(new DownloadCallback() {
+            download(fileName, new DownloadCallback() {
                 @Override
                 public void success() {
                     Dispatch.mainThread(() -> callback.onReceive(getBitmap(fileName)));
