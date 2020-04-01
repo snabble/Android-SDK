@@ -31,6 +31,7 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
     private TextView helperText;
     private ImageView helperImage;
     private View upArrow;
+    private View progressIndicator;
 
     public CheckoutGatekeeperView(Context context) {
         super(context);
@@ -59,6 +60,7 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
         helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
+        progressIndicator = findViewById(R.id.progress_indicator);
 
         cancel.setOnClickListener(v -> {
             checkout.abort();
@@ -90,10 +92,12 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
             upArrow.setVisibility(View.VISIBLE);
             helperImage.setVisibility(View.VISIBLE);
             helperText.setVisibility(View.GONE);
+            progressIndicator.setVisibility(View.GONE);
         } else {
             upArrow.setVisibility(View.GONE);
             helperImage.setVisibility(View.GONE);
             helperText.setVisibility(View.VISIBLE);
+            progressIndicator.setVisibility(View.GONE);
         }
     }
 
@@ -162,6 +166,9 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
             case PAYMENT_PROCESSING:
                 checkoutIdCode.setVisibility(View.GONE);
                 helperText.setVisibility(View.GONE);
+                helperImage.setVisibility(View.GONE);
+                upArrow.setVisibility(View.GONE);
+                progressIndicator.setVisibility(View.VISIBLE);
                 cancel.setVisibility(View.INVISIBLE);
                 cancelProgress.setVisibility(View.INVISIBLE);
                 break;
