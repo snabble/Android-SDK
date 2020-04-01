@@ -16,7 +16,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
@@ -33,21 +35,28 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         View v = inflater.inflate(R.layout.snabble_view_payment_credentials_select, container, false);
 
         entries = new ArrayList<>();
-        entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_sepa_small,
-                "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
-            @Override
-            public void click() {
-                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);
+
+        Set<PaymentMethod> availablePaymentMethods = new HashSet<>();
+        for (Project project : Snabble.getInstance().getProjects()) {
+            availablePaymentMethods.addAll(Arrays.asList(project.getAvailablePaymentMethods()));
+        }
+
+        if (availablePaymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_sepa_small,
+                    "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
+                @Override
+                public void click() {
+                    SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                    if (callback != null) {
+                        callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);
+                    }
+
+                    dismissAllowingStateLoss();
                 }
+            }));
+        }
 
-                dismissAllowingStateLoss();
-            }
-        }));
-
-        // Credit card payments are only supported on API 21+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (availablePaymentMethods.contains(PaymentMethod.VISA)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa,
                     "VISA",
                     getUsableAtText(PaymentMethod.VISA), new OneShotClickListener() {
@@ -62,7 +71,9 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     dismissAllowingStateLoss();
                 }
             }));
+        }
 
+        if (availablePaymentMethods.contains(PaymentMethod.MASTERCARD)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_mastercard,
                     "Mastercard",
                     getUsableAtText(PaymentMethod.MASTERCARD), new OneShotClickListener() {
@@ -77,7 +88,9 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     dismissAllowingStateLoss();
                 }
             }));
+        }
 
+        if (availablePaymentMethods.contains(PaymentMethod.AMEX)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_amex,
                     "American Express",
                     getUsableAtText(PaymentMethod.AMEX), new OneShotClickListener() {

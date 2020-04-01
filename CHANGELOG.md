@@ -1,10 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+
 ## [0.21.6]
 
 ### Fixed
 - Properly handle camera state when rapidly creating / destroying multiple copies of BarcodeScannerView from a thread that is not the main thread
+- Only let the user add payment methods that are available to the app
 
 ## [0.21.5]
 
