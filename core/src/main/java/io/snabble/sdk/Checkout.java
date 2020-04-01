@@ -3,11 +3,13 @@ package io.snabble.sdk;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
 import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.utils.Age;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 
@@ -33,6 +35,10 @@ public class Checkout {
          * Payment method was selected and we are waiting for confirmation of the backend.
          */
         VERIFYING_PAYMENT_METHOD,
+        /**
+         * Age needs to be verified.
+         */
+        REQUEST_VERIFY_AGE,
         /**
          * Payment was received by the backend and we are waiting for confirmation of the payment provider
          */
@@ -100,8 +106,8 @@ public class Checkout {
 
     private List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
 
-    private State lastState = State.NONE;
-    private State state = State.NONE;
+    private State lastState = Checkout.State.NONE;
+    private State state = Checkout.State.NONE;
 
     private List<String> codes = new ArrayList<>();
     private PaymentMethod[] clientAcceptedPaymentMethods;
@@ -127,15 +133,15 @@ public class Checkout {
     public void abort() {
         cancelOutstandingCalls();
 
-        if (state != State.PAYMENT_APPROVED
-                && state != State.DENIED_BY_PAYMENT_PROVIDER
-                && state != State.DENIED_BY_SUPERVISOR
+        if (state != Checkout.State.PAYMENT_APPROVED
+                && state != Checkout.State.DENIED_BY_PAYMENT_PROVIDER
+                && state != Checkout.State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
             checkoutApi.abort(checkoutProcess, new CheckoutApi.PaymentAbortResult() {
                 @Override
                 public void success() {
                     synchronized (Checkout.this) {
-                        notifyStateChanged(State.PAYMENT_ABORTED);
+                        notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
 
                         checkoutProcess = null;
                         invalidProducts = null;
@@ -146,13 +152,13 @@ public class Checkout {
 
                 @Override
                 public void error() {
-                    notifyStateChanged(State.PAYMENT_ABORT_FAILED);
+                    notifyStateChanged(Checkout.State.PAYMENT_ABORT_FAILED);
                 }
             });
 
             project.getShoppingCart().updatePrices(false);
         } else {
-            notifyStateChanged(State.NONE);
+            notifyStateChanged(Checkout.State.NONE);
         }
     }
 
@@ -172,9 +178,9 @@ public class Checkout {
      * was cancelled, but does not notify listeners
      */
     public void abortSilently() {
-        if (state != State.PAYMENT_APPROVED
-                && state != State.DENIED_BY_PAYMENT_PROVIDER
-                && state != State.DENIED_BY_SUPERVISOR
+        if (state != Checkout.State.PAYMENT_APPROVED
+                && state != Checkout.State.DENIED_BY_PAYMENT_PROVIDER
+                && state != Checkout.State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
             checkoutApi.abort(checkoutProcess, null);
         }
@@ -205,7 +211,7 @@ public class Checkout {
      */
     public void reset() {
         cancelOutstandingCalls();
-        notifyStateChanged(State.NONE);
+        notifyStateChanged(Checkout.State.NONE);
 
         checkoutProcess = null;
         invalidProducts = null;
@@ -215,8 +221,8 @@ public class Checkout {
     }
 
     public void resume() {
-        if (lastState == State.WAIT_FOR_APPROVAL) {
-            notifyStateChanged(State.WAIT_FOR_APPROVAL);
+        if (lastState == Checkout.State.WAIT_FOR_APPROVAL) {
+            notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
             pollForResult();
         }
     }
@@ -242,7 +248,7 @@ public class Checkout {
      * Requires a shop to be set with {@link Project#setCheckedInShop(Shop)}.
      * <p>
      * If successful and there is more then 1 payment method
-     * the checkout state will be {@link Checkout.State#REQUEST_PAYMENT_METHOD}.
+     * the checkout state will be {@link State#REQUEST_PAYMENT_METHOD}.
      * You then need to sometime after call @link Checkout#pay(PaymentMethod)}
      * to pay with that payment method.
      */
@@ -256,10 +262,10 @@ public class Checkout {
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
 
-        notifyStateChanged(State.HANDSHAKING);
+        notifyStateChanged(Checkout.State.HANDSHAKING);
 
         if (shop == null) {
-            notifyStateChanged(State.NO_SHOP);
+            notifyStateChanged(Checkout.State.NO_SHOP);
             return;
         }
 
@@ -280,34 +286,34 @@ public class Checkout {
                     if (paymentMethod != null && !paymentMethod.isRequiringCredentials()) {
                         pay(paymentMethod, null);
                     } else {
-                        notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
+                        notifyStateChanged(Checkout.State.REQUEST_PAYMENT_METHOD);
                         Logger.d("Payment method requested");
                     }
                 } else {
-                    notifyStateChanged(State.REQUEST_PAYMENT_METHOD);
+                    notifyStateChanged(Checkout.State.REQUEST_PAYMENT_METHOD);
                     Logger.d("Payment method requested");
                 }
             }
 
             @Override
             public void noShop() {
-                notifyStateChanged(State.NO_SHOP);
+                notifyStateChanged(Checkout.State.NO_SHOP);
             }
 
             @Override
             public void invalidProducts(List<Product> products) {
                 invalidProducts = products;
-                notifyStateChanged(State.INVALID_PRODUCTS);
+                notifyStateChanged(Checkout.State.INVALID_PRODUCTS);
             }
 
             @Override
             public void noAvailablePaymentMethod() {
-                notifyStateChanged(State.NO_PAYMENT_METHOD_AVAILABLE);
+                notifyStateChanged(Checkout.State.NO_PAYMENT_METHOD_AVAILABLE);
             }
 
             @Override
             public void unknownError() {
-                notifyStateChanged(State.CONNECTION_ERROR);
+                notifyStateChanged(Checkout.State.CONNECTION_ERROR);
             }
 
             @Override
@@ -317,26 +323,26 @@ public class Checkout {
                     paymentMethod = fallback;
                     priceToPay = shoppingCart.getTotalPrice();
                     checkoutRetryer.add(backendCart);
-                    notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                    notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
                 } else {
-                    notifyStateChanged(State.CONNECTION_ERROR);
+                    notifyStateChanged(Checkout.State.CONNECTION_ERROR);
                 }
             }
         });
     }
 
     /**
-     * Needs to be called when the checkout is state {@link Checkout.State#REQUEST_PAYMENT_METHOD}.
+     * Needs to be called when the checkout is state {@link State#REQUEST_PAYMENT_METHOD}.
      * <p>
-     * When successful the state will switch to {@link Checkout.State#WAIT_FOR_APPROVAL} which
+     * When successful the state will switch to {@link State#WAIT_FOR_APPROVAL} which
      * waits for a event of the backend that the payment has been confirmed or denied.
      * <p>
      * Possible states after receiving the event:
      * <p>
-     * {@link Checkout.State#PAYMENT_APPROVED}
-     * {@link Checkout.State#PAYMENT_ABORTED}
-     * {@link Checkout.State#DENIED_BY_PAYMENT_PROVIDER}
-     * {@link Checkout.State#DENIED_BY_SUPERVISOR}
+     * {@link State#PAYMENT_APPROVED}
+     * {@link State#PAYMENT_ABORTED}
+     * {@link State#DENIED_BY_PAYMENT_PROVIDER}
+     * {@link State#DENIED_BY_SUPERVISOR}
      *
      * @param paymentMethod the payment method to pay with
      * @param paymentCredentials may be null if the payment method requires no payment credentials
@@ -345,7 +351,7 @@ public class Checkout {
         if (signedCheckoutInfo != null) {
             this.paymentMethod = paymentMethod;
 
-            notifyStateChanged(State.VERIFYING_PAYMENT_METHOD);
+            notifyStateChanged(Checkout.State.VERIFYING_PAYMENT_METHOD);
 
             checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
                     false, null, new CheckoutApi.PaymentProcessResult() {
@@ -355,12 +361,16 @@ public class Checkout {
                         checkoutProcess = checkoutProcessResponse;
 
                         if (!handleProcessResponse()) {
-                            if (checkoutProcessResponse.paymentState == CheckoutApi.PaymentState.PROCESSING) {
-                                Logger.d("Processing payment...");
-                                notifyStateChanged(State.PAYMENT_PROCESSING);
-                            } else {
-                                Logger.d("Waiting for approval...");
-                                notifyStateChanged(State.WAIT_FOR_APPROVAL);
+                            boolean allChecksOk = runChecks(checkoutProcessResponse);
+
+                            if (allChecksOk) {
+                                if (checkoutProcessResponse.paymentState == CheckoutApi.State.PROCESSING) {
+                                    Logger.d("Processing payment...");
+                                    notifyStateChanged(Checkout.State.PAYMENT_PROCESSING);
+                                } else {
+                                    Logger.d("Waiting for approval...");
+                                    notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
+                                }
                             }
 
                             if (!paymentMethod.isOfflineMethod()) {
@@ -373,13 +383,46 @@ public class Checkout {
                 @Override
                 public void error() {
                     Logger.e("Connection error while creating checkout process");
-                    notifyStateChanged(State.CONNECTION_ERROR);
+                    notifyStateChanged(Checkout.State.CONNECTION_ERROR);
                 }
             });
         } else {
             Logger.e("Invalid checkout state");
-            notifyStateChanged(State.CONNECTION_ERROR);
+            notifyStateChanged(Checkout.State.CONNECTION_ERROR);
         }
+    }
+
+    private boolean runChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+        boolean allChecksOk = true;
+
+        if (checkoutProcessResponse.checks != null) {
+            for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
+                if (check.type == CheckoutApi.CheckType.MIN_AGE) {
+                    if (check.state == CheckoutApi.State.PENDING) {
+                        if (!verifyUserAge(check.requiredAge)) {
+                            Logger.d("Verifying age...");
+                            notifyStateChanged(State.REQUEST_VERIFY_AGE);
+                        } else {
+                            allChecksOk = false;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        return allChecksOk;
+    }
+
+    private boolean verifyUserAge(int minAge) {
+        Date date = Snabble.getInstance().getUserPreferences().getBirthday();
+        if (date == null) {
+            return minAge == 0;
+        }
+
+        Age age = Age.calculateAge(date);
+        return age.years >= minAge;
     }
 
     private void scheduleNextPoll() {
@@ -396,7 +439,7 @@ public class Checkout {
 
     private void pollForResult() {
         if (checkoutProcess == null) {
-            notifyStateChanged(State.PAYMENT_ABORTED);
+            notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
             return;
         }
 
@@ -420,7 +463,7 @@ public class Checkout {
             }
         });
 
-        if (state == State.WAIT_FOR_APPROVAL || state == State.PAYMENT_PROCESSING) {
+        if (state == Checkout.State.WAIT_FOR_APPROVAL || state == Checkout.State.PAYMENT_PROCESSING) {
             scheduleNextPoll();
         }
     }
@@ -428,28 +471,28 @@ public class Checkout {
     private boolean handleProcessResponse() {
         if (checkoutProcess.aborted) {
             Logger.d("Payment aborted");
-            notifyStateChanged(State.PAYMENT_ABORTED);
+            notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
             return true;
         }
 
         paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
 
-        if (checkoutProcess.paymentState == CheckoutApi.PaymentState.SUCCESSFUL) {
+        if (checkoutProcess.paymentState == CheckoutApi.State.SUCCESSFUL) {
             approve();
             return true;
-        } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.PENDING) {
+        } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING) {
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
-                notifyStateChanged(State.DENIED_BY_SUPERVISOR);
+                notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
                 return true;
             } else if (checkoutProcess.paymentApproval != null && !checkoutProcess.paymentApproval) {
                 Logger.d("Payment denied by payment provider");
-                notifyStateChanged(State.DENIED_BY_PAYMENT_PROVIDER);
+                notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
                 return true;
             }
-        } else if (checkoutProcess.paymentState == CheckoutApi.PaymentState.FAILED) {
+        } else if (checkoutProcess.paymentState == CheckoutApi.State.FAILED) {
             Logger.d("Payment denied by payment provider");
-            notifyStateChanged(State.DENIED_BY_PAYMENT_PROVIDER);
+            notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
             return true;
         }
 
@@ -457,12 +500,12 @@ public class Checkout {
     }
 
     private void approve() {
-        if (state != State.PAYMENT_APPROVED) {
+        if (state != Checkout.State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
             shoppingCart.backup();
             shoppingCart.invalidate();
             clearCodes();
-            notifyStateChanged(State.PAYMENT_APPROVED);
+            notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
         }
     }
 
@@ -548,7 +591,7 @@ public class Checkout {
     }
 
     /**
-     * Gets all available payment methods, callable after {@link Checkout.State#REQUEST_PAYMENT_METHOD}.
+     * Gets all available payment methods, callable after {@link State#REQUEST_PAYMENT_METHOD}.
      */
     public PaymentMethod[] getAvailablePaymentMethods() {
         if (signedCheckoutInfo != null) {
@@ -606,7 +649,7 @@ public class Checkout {
     /**
      * Gets the current state of the Checkout.
      * <p>
-     * See {@link Checkout.State}.
+     * See {@link State}.
      *
      * @return
      */

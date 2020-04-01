@@ -50,6 +50,10 @@ public abstract class JsonCallback<T, T2> implements Callback {
     }
 
     protected void handleFailure(String body) {
+        if (BuildConfig.DEBUG) {
+            Logger.d("http response (fail): " + body);
+        }
+
         try {
             T2 obj = GsonHolder.get().fromJson(body, failureClass);
             failure(obj);

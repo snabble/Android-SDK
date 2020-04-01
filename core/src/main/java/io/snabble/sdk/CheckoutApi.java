@@ -137,7 +137,11 @@ class CheckoutApi {
         public String[] acceptedOriginTypes;
     }
 
-    public enum PaymentState {
+    public static class PaymentResult {
+        public String originCandidateLink;
+    }
+
+    public enum State {
         @SerializedName("pending")
         PENDING,
         @SerializedName("processing")
@@ -148,14 +152,32 @@ class CheckoutApi {
         FAILED,
     }
 
-    public static class PaymentResult {
-        public String originCandidateLink;
+    public enum CheckType {
+        @SerializedName("min_age")
+        MIN_AGE,
+    }
+
+    public static class Check {
+        public String id;
+        public Map<String, Href> links;
+        public CheckType type;
+        public Integer requiredAge;
+        public State state;
+
+        public String getSelfLink() {
+            Href link = links.get("self");
+            if (link != null && link.href != null) {
+                return link.href;
+            }
+            return null;
+        }
     }
 
     public static class CheckoutProcessResponse {
         public Map<String, Href> links;
         public Boolean supervisorApproval;
         public Boolean paymentApproval;
+        public Check[] checks;
         @SerializedName("orderID")
         public String orderId;
         public boolean aborted;
@@ -163,7 +185,7 @@ class CheckoutApi {
         public PaymentMethod paymentMethod;
         public boolean modified;
         public PaymentInformation paymentInformation;
-        public PaymentState paymentState;
+        public State paymentState;
         public PaymentResult paymentResult;
 
         public String getSelfLink() {

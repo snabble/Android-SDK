@@ -487,13 +487,19 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
             progressDialog.dismiss();
         }
 
+        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+
         switch (state) {
+            case REQUEST_VERIFY_AGE:
+                if (callback != null) {
+                    callback.execute(SnabbleUI.Action.SHOW_AGE_VERIFICATION, null);
+                }
+                break;
             case PAYMENT_PROCESSING:
             case WAIT_FOR_APPROVAL:
                 CheckoutHelper.displayPaymentView(checkout);
                 break;
             case PAYMENT_APPROVED:
-                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                 if (callback != null) {
                     callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
                 }

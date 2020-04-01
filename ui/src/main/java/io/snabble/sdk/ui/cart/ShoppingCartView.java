@@ -196,15 +196,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     snackbar.show();
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout);
-
-                    if (verifyUserAge()) {
-                        checkout.checkout();
-                    } else {
-                        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                        if (callback != null) {
-                            callback.execute(SnabbleUI.Action.SHOW_AGE_VERIFICATION, null);
-                        }
-                    }
+                    checkout.checkout();
                 }
             }
         });
@@ -384,20 +376,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             } else {
                 pay.setText(R.string.Snabble_Shoppingcart_buyProducts_now);
             }
-        }
-    }
-
-    private boolean verifyUserAge() {
-        if (Snabble.getInstance().getConfig().enableAgeVerification) {
-            Date date = Snabble.getInstance().getUserPreferences().getBirthday();
-            if (date == null) {
-                return cart.getMinimumAge() == 0;
-            }
-
-            Age age = Age.calculateAge(date);
-            return age.years >= cart.getMinimumAge();
-        } else {
-            return true;
         }
     }
 
