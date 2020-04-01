@@ -26,6 +26,7 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +50,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     // all events posted are processed in proper order
     private static Handler cameraHandler;
     private static Handler barcodeProcessingHandler;
-    private static BarcodeScannerView activeScannerView;
+    private static WeakReference<BarcodeScannerView> activeScannerView;
 
     private Handler mainThreadHandler;
 
@@ -190,7 +191,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         cameraHandler.post(() -> {
             isPaused = true;
 
-            if (running && activeScannerView == this) {
+            if (running && activeScannerView.get() == this) {
                 isProcessing = false;
                 camera.stopPreview();
                 camera.setPreviewCallbackWithBuffer(null);
@@ -224,7 +225,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
                 try {
                     camera.startPreview();
-                    activeScannerView = this;
+                    activeScannerView = new WeakReference<>(this);
                 } catch (RuntimeException e) {
                     showError(true);
                     return;
@@ -336,7 +337,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         try {
             camera.startPreview();
-            activeScannerView = this;
+            activeScannerView = new WeakReference<>(this);
         } catch (RuntimeException e) {
             showError(true);
             return;
@@ -375,7 +376,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         scheduleAutoFocus();
         showError(false);
 
-        if (isPaused && activeScannerView == this) {
+        if (isPaused && activeScannerView.get() == this) {
             camera.stopPreview();
             camera.setPreviewCallbackWithBuffer(null);
             activeScannerView = null;
@@ -561,14 +562,14 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
     public void stop() {
         cameraHandler.post(() -> {
-            if (running && activeScannerView == this) {
+            if (running && activeScannerView.get() == this) {
                 camera.stopPreview();
                 camera.setPreviewCallbackWithBuffer(null);
                 camera.release();
                 camera = null;
                 running = false;
                 decodeEnabled = false;
-                activeScannerView = null;
+                activeScannerView = new WeakReference<>(null);
             }
 
             startRequested = false;
