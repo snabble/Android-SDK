@@ -52,6 +52,10 @@ public class Checkout {
          */
         PAYMENT_APPROVED,
         /**
+         * Age is too young.
+         */
+        DENIED_TOO_YOUNG,
+        /**
          * The payment was denied by the payment provider.
          */
         DENIED_BY_PAYMENT_PROVIDER,
@@ -398,15 +402,23 @@ public class Checkout {
         if (checkoutProcessResponse.checks != null) {
             for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
                 if (check.type == CheckoutApi.CheckType.MIN_AGE) {
-                    if (check.state == CheckoutApi.State.PENDING) {
-                        if (!verifyUserAge(check.requiredAge)) {
-                            Logger.d("Verifying age...");
+                    Logger.d("Verifying age...");
+                    switch (check.state) {
+                        case PENDING:
+                            Logger.d("Age check pending...");
                             notifyStateChanged(State.REQUEST_VERIFY_AGE);
-                        } else {
+                            abortSilently();
                             allChecksOk = false;
-                        }
-
-                        break;
+                            break;
+                        case FAILED:
+                            Logger.d("Age check failed...");
+                            notifyStateChanged(State.DENIED_TOO_YOUNG);
+                            abortSilently();
+                            allChecksOk = false;
+                            break;
+                        case SUCCESSFUL:
+                            Logger.d("Age check successful");
+                            break;
                     }
                 }
             }
@@ -415,14 +427,14 @@ public class Checkout {
         return allChecksOk;
     }
 
-    private boolean verifyUserAge(int minAge) {
+    private int getUserAge() {
         Date date = Snabble.getInstance().getUserPreferences().getBirthday();
         if (date == null) {
-            return minAge == 0;
+            return -1;
         }
 
         Age age = Age.calculateAge(date);
-        return age.years >= minAge;
+        return age.years;
     }
 
     private void scheduleNextPoll() {

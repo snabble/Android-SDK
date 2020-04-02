@@ -99,6 +99,16 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
             helperText.setVisibility(View.VISIBLE);
             progressIndicator.setVisibility(View.GONE);
         }
+
+        if (currentState == Checkout.State.PAYMENT_PROCESSING) {
+            checkoutIdCode.setVisibility(View.GONE);
+            helperText.setVisibility(View.GONE);
+            helperImage.setVisibility(View.GONE);
+            upArrow.setVisibility(View.GONE);
+            progressIndicator.setVisibility(View.VISIBLE);
+            cancel.setVisibility(View.INVISIBLE);
+            cancelProgress.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

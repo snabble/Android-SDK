@@ -1,11 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.22.0]
 
-## [0.21.6]
+### Added
+- Added support for checkout process checks (age verification)
 
 ### Changed
 - Show progress indicator when payment is processing
+- Age verification is not optional anymore
+- Removed enableAgeVerification config parameter
 
 ### Fixed
 - Properly handle camera state when rapidly creating / destroying multiple copies of BarcodeScannerView from a thread that is not the main thread

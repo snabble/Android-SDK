@@ -21,7 +21,7 @@ public class UserPreferences {
     private static final String SHARED_PREFERENCES_CLIENT_ID = "Client-ID";
     private static final String SHARED_PREFERENCES_APPUSER_ID = "AppUser-ID";
     private static final String SHARED_PREFERENCES_APPUSER_SECRET = "AppUser-Secret";
-    private static final String SHARED_PREFERENCES_BIRTHDAY = "Birthday";
+    private static final String SHARED_PREFERENCES_BIRTHDAY = "Birthday_v2";
     private static final String SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard";
 
     private static final SimpleDateFormat BIRTHDAY_FORMAT = new SimpleDateFormat("yyyy/MM/dd");

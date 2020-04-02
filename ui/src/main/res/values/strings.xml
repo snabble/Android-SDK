@@ -148,4 +148,16 @@
 	<string name="Snabble.SEPA.scoTransferHint">Please enter the name from the card to save it for future payments.</string>
 	<string name="Snabble.SEPA.ibanTransferAlert.title">Save payment data</string>
 	<string name="Snabble.SEPA.ibanTransferAlert.message">Would you like to save this account information (IBAN: %s) for future purchases?</string>
+	<string name="Snabble.paydirekt.authorizationFailed.title">Authorization failed</string>
+	<string name="Snabble.paydirekt.authorizationFailed.message">Please try again later</string>
+	<string name="Snabble.paydirekt.savedAuthorization">You\'ve successfully authorized this app for paydirekt. To remove this authorization, you need to log in to your paydirekt account. If you do not want to use this payment method anymore, you can remove it here.</string>
+	<string name="Snabble.paydirekt.deleteAuthorization">Delete method</string>
+	<string name="Snabble.paydirekt.gotoWebsite">Go to paydirekt.de</string>
+	<string name="Snabble.ageVerification.title">Age verification</string>
+	<string name="Snabble.ageVerification.explanation">To purchase certain products like alcoholic beverages, verifying your age is required. Enter the 7-digit Number from the back side of your ID card.</string>
+	<string name="Snabble.ageVerification.placeholder">7 Digits</string>
+	<string name="Snabble.ageVerification.pending.title">Age verification required</string>
+	<string name="Snabble.ageVerification.pending.message">Some products in your cart have an age restriction. Please verify your age before continuing.</string>
+	<string name="Snabble.ageVerification.failed.title">Age restriction</string>
+	<string name="Snabble.ageVerification.failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
 </resources>

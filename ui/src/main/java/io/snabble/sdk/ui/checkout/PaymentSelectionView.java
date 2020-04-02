@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.text.Spannable;
@@ -491,12 +492,32 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
 
         switch (state) {
             case REQUEST_VERIFY_AGE:
-                if (callback != null) {
-                    callback.execute(SnabbleUI.Action.SHOW_AGE_VERIFICATION, null);
-                }
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.Snabble_ageVerification_pending_title)
+                        .setMessage(R.string.Snabble_ageVerification_pending_message)
+                        .setPositiveButton(R.string.Snabble_OK, (dialog, which) -> {
+                            if (callback != null) {
+                                callback.execute(SnabbleUI.Action.SHOW_AGE_VERIFICATION, null);
+                            }
+                        })
+                        .setNegativeButton(R.string.Snabble_Cancel, null)
+                        .create()
+                        .show();
                 break;
-            case PAYMENT_PROCESSING:
+            case DENIED_TOO_YOUNG:
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.Snabble_ageVerification_failed_title)
+                        .setMessage(R.string.Snabble_ageVerification_failed_message)
+                        .setPositiveButton(R.string.Snabble_OK, (dialog, which) -> {
+                            if (callback != null) {
+                                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                            }
+                        })
+                        .create()
+                        .show();
+                break;
             case WAIT_FOR_APPROVAL:
+            case PAYMENT_PROCESSING:
                 CheckoutHelper.displayPaymentView(checkout);
                 break;
             case PAYMENT_APPROVED:

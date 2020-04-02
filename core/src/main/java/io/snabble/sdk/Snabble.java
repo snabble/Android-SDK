@@ -52,6 +52,7 @@ public class Snabble {
     private List<Project> projects;
     private TokenRegistry tokenRegistry;
     private Receipts receipts;
+    private Users users;
     private Application application;
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
@@ -64,6 +65,7 @@ public class Snabble {
     private Environment environment;
     private List<X509Certificate> paymentCertificates;
     private String receiptsUrl;
+    private String usersUrl;
     private String telecashSecretUrl;
     private String telecashPreAuthUrl;
     private String createAppUserUrl;
@@ -107,6 +109,7 @@ public class Snabble {
         userPreferences = new UserPreferences(app);
         tokenRegistry = new TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret);
         receipts = new Receipts();
+        users = new Users();
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
@@ -203,6 +206,9 @@ public class Snabble {
             }
 
             receiptsUrl = getUrl(jsonObject, "appUserOrders");
+            if (receiptsUrl != null) {
+                usersUrl = receiptsUrl.replace("/orders", "");
+            }
         }
 
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
@@ -322,6 +328,10 @@ public class Snabble {
         return createAppUserUrl;
     }
 
+    public String getUsersUrl() {
+        return usersUrl;
+    }
+
     public File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
@@ -340,6 +350,10 @@ public class Snabble {
 
     public Receipts getReceipts() {
         return receipts;
+    }
+
+    public Users getUsers() {
+        return users;
     }
 
     public List<Project> getProjects() {
@@ -659,7 +673,5 @@ public class Snabble {
 
         /** If set to true, disables certificate pinning **/
         public boolean disableCertificatePinning;
-
-        public boolean enableAgeVerification;
     }
 }

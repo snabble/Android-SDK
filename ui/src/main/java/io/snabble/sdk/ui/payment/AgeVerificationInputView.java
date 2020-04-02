@@ -1,11 +1,21 @@
 package io.snabble.sdk.ui.payment;
 
+import android.app.Activity;
+import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.Editable;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,10 +28,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.Users;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import okhttp3.Call;
 
 public class AgeVerificationInputView extends FrameLayout {
+    private DelayedProgressDialog progressDialog;
+    private TextInputLayout textInputLayout;
+    private TextInputEditText textInputEditText;
+
     public AgeVerificationInputView(@NonNull Context context) {
         super(context);
         inflateView();
@@ -40,25 +59,70 @@ public class AgeVerificationInputView extends FrameLayout {
     public void inflateView() {
         inflate(getContext(), R.layout.snabble_view_age_verification, this);
 
-        TextInputLayout textInputLayout = findViewById(R.id.input_layout);
-        TextInputEditText textInputEditText = findViewById(R.id.input);
-        Button save = findViewById(R.id.save);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
 
-        save.setOnClickListener(view -> {
-            Editable editable = textInputEditText.getText();
-            if (editable != null) {
-                String input = editable.toString();
-                if (verify(input)) {
-                    Snabble.getInstance().getUserPreferences().setBirthday(getDate(input));
-                    SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                    if (callback != null) {
-                        callback.execute(SnabbleUI.Action.GO_BACK, null);
-                    }
-                } else {
-                    textInputLayout.setError(getResources().getString(R.string.Snabble_AgeVerification_errorHint));
-                }
+        progressDialog = new DelayedProgressDialog(getContext());
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                Snabble.getInstance().getUsers().cancelUpdatingBirthday();
+                return true;
             }
+            return false;
         });
+
+        textInputLayout = findViewById(R.id.input_layout);
+        textInputEditText = findViewById(R.id.input);
+
+        textInputEditText.setOnEditorActionListener((v, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH
+                            || actionId == EditorInfo.IME_ACTION_DONE
+                            || event.getAction() == KeyEvent.ACTION_DOWN
+                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                        handleInput();
+                        return true;
+                    }
+                    return false;
+                });
+
+        Button save = findViewById(R.id.save);
+        save.setOnClickListener(view -> handleInput());
+    }
+
+    private void handleInput() {
+        Editable editable = textInputEditText.getText();
+        if (editable != null) {
+            String input = editable.toString();
+            if (verify(input)) {
+                hideSoftKeyboard(textInputLayout);
+                hideSoftKeyboard(textInputEditText);
+
+                Date birthday = getDate(input);
+                Snabble.getInstance().getUsers().updateBirthday(birthday, new Users.UpdateAgeCallback() {
+                    @Override
+                    public void success() {
+                        post(() -> {
+                            Snabble.getInstance().getUserPreferences().setBirthday(getDate(input));
+                            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                            if (callback != null) {
+                                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failure() {
+                        post(() -> Toast.makeText(getContext(), R.string.Snabble_networkError, Toast.LENGTH_LONG).show());
+                    }
+                });
+            } else {
+                textInputLayout.setError(" ");
+            }
+        }
     }
 
     private Date getDate(String input) {
@@ -89,4 +153,17 @@ public class AgeVerificationInputView extends FrameLayout {
         int check = checksum % 10;
         return check == Character.digit(input.charAt(6), 10);
     }
+
+    private void hideSoftKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        hideSoftKeyboard(textInputLayout);
+        hideSoftKeyboard(textInputEditText);
+        super.onDetachedFromWindow();
+    }
+
 }
