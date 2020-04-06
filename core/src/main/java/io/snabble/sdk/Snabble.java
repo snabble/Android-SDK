@@ -206,9 +206,7 @@ public class Snabble {
             }
 
             receiptsUrl = getUrl(jsonObject, "appUserOrders");
-            if (receiptsUrl != null) {
-                usersUrl = receiptsUrl.replace("/orders", "");
-            }
+            usersUrl = getUrl(jsonObject, "appUser");
         }
 
         paymentCredentialsStore = new PaymentCredentialsStore(application, environment);

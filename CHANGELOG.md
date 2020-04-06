@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.22.1]
+
+### Fixed
+- Update appUser url
+
 ## [0.22.0]
 
 ### Added
