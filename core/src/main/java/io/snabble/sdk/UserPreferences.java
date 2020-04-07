@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.auth.AppUser;
+import io.snabble.sdk.utils.Logger;
 
 public class UserPreferences {
     private static final String SHARED_PREFERENCES_TAG = "snabble_prefs";
@@ -78,6 +79,8 @@ public class UserPreferences {
                     .putString(getAppUserIdKey(), null)
                     .putString(getAppUserIdSecret(), null)
                     .apply();
+
+            Logger.d("Clearing app user");
             notifyOnNewAppUser(null);
             return;
         }
@@ -87,6 +90,8 @@ public class UserPreferences {
                     .putString(getAppUserIdKey(), appUser.id)
                     .putString(getAppUserIdSecret(), appUser.secret)
                     .apply();
+
+            Logger.d("Setting app user to %s", appUser.id);
             notifyOnNewAppUser(appUser);
         }
     }
@@ -107,6 +112,11 @@ public class UserPreferences {
     }
 
     public void setAppUserBase64(String appUserBase64) {
+        if (appUserBase64 == null) {
+            setAppUser(null);
+            return;
+        }
+
         String appUser = new String(Base64.decode(appUserBase64, Base64.DEFAULT));
         String[] split = appUser.split(":");
 

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.22.2]
+
+### Fixed
+- Allow setAppUserBase64 to be null to clear the current app user
+
 ## [0.22.1]
 
 ### Fixed
