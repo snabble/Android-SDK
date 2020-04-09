@@ -50,7 +50,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     // all events posted are processed in proper order
     private static Handler cameraHandler;
     private static Handler barcodeProcessingHandler;
-    private static WeakReference<BarcodeScannerView> activeScannerView;
+    private static WeakReference<BarcodeScannerView> activeScannerView = new WeakReference<>(null);
 
     private Handler mainThreadHandler;
 
@@ -196,7 +196,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 camera.stopPreview();
                 camera.setPreviewCallbackWithBuffer(null);
                 decodeEnabled = false;
-                activeScannerView = null;
+                activeScannerView = new WeakReference<>(null);
             }
         });
     }
@@ -379,7 +379,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         if (isPaused && activeScannerView.get() == this) {
             camera.stopPreview();
             camera.setPreviewCallbackWithBuffer(null);
-            activeScannerView = null;
+            activeScannerView = new WeakReference<>(null);
         }
     }
 
