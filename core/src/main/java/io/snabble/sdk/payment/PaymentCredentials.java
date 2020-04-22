@@ -72,6 +72,7 @@ public class PaymentCredentials {
 
     private String obfuscatedId;
     private boolean isKeyStoreEncrypted;
+    private boolean canBypassKeyStore;
     private String encryptedData;
     private String signature;
     private long validTo;
@@ -215,6 +216,13 @@ public class PaymentCredentials {
     }
 
     public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber) {
+        if (cardNumber == null || cardNumber.length() != 19
+                || (!cardNumber.startsWith("9280001621")
+                && !cardNumber.startsWith("9280001625")
+                && !cardNumber.startsWith("9280001620"))) {
+            return null;
+        }
+
         PaymentCredentials pc = new PaymentCredentials();
         pc.type = Type.TEGUT_EMPLOYEE_CARD;
 
@@ -235,6 +243,7 @@ public class PaymentCredentials {
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.canBypassKeyStore = true;
 
         if (pc.encryptedData == null) {
             return null;
@@ -341,6 +350,10 @@ public class PaymentCredentials {
         }
 
         return encryptedData;
+    }
+
+    public boolean canBypassKeyStore() {
+        return canBypassKeyStore;
     }
 
     private boolean validateCertificate(X509Certificate certificate) {

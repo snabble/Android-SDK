@@ -76,7 +76,7 @@ public class PaymentCredentialsStore {
             if (!id.equals(data.id)) {
                 data.id = keyStoreCipher.id();
                 data.isKeyguarded = true;
-                clear();
+                removeInvalidCredentials();
             }
         }
 
@@ -94,16 +94,7 @@ public class PaymentCredentialsStore {
         }
 
         if (!secure || data.isKeyguarded != userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
-            Snabble snabble = Snabble.getInstance();
-            if (snabble.getProjects().size() > 0) {
-                if (data.credentialsList != null && data.credentialsList.size() > 0) {
-                    snabble.getProjects().get(0).getEvents()
-                            .log("Deleted payment credentials key store because device is not secure anymore. Lost access to %d payment credentials", data.credentialsList.size());
-                }
-            }
-
-            generateRandomId();
-            clear();
+            removeInvalidCredentials();
         }
     }
 
@@ -124,6 +115,10 @@ public class PaymentCredentialsStore {
     }
 
     public void add(PaymentCredentials credentials) {
+        if (credentials == null) {
+            return;
+        }
+
         ensureKeyStoreIsAccessible();
 
         data.credentialsList.add(credentials);
@@ -135,6 +130,33 @@ public class PaymentCredentialsStore {
         if (data.credentialsList.remove(credentials)) {
             save();
             notifyChanged();
+        }
+    }
+
+    public void removeInvalidCredentials() {
+        List<PaymentCredentials> removals = new ArrayList<>();
+        for (PaymentCredentials credentials : data.credentialsList) {
+            if (!credentials.canBypassKeyStore()) {
+                removals.add(credentials);
+            }
+        }
+
+        for (PaymentCredentials credentials : removals) {
+            data.credentialsList.remove(credentials);
+        }
+
+        if (removals.size() > 0) {
+            generateRandomId();
+            save();
+            notifyChanged();
+
+            Snabble snabble = Snabble.getInstance();
+            if (snabble.getProjects().size() > 0) {
+                if (removals.size() > 0) {
+                    snabble.getProjects().get(0).getEvents()
+                            .log("Deleted payment credentials because device is not secure anymore. Lost access to %d payment credentials", removals.size());
+                }
+            }
         }
     }
 
@@ -179,14 +201,16 @@ public class PaymentCredentialsStore {
         for (int i = data.credentialsList.size() - 1; i >= 0; i--) {
             PaymentCredentials credentials = data.credentialsList.get(i);
 
-            if (!credentials.validate()) {
-                data.credentialsList.remove(credentials);
-                changed = true;
-            } else {
-                // app id's were not stored in old versions, if its not there assume the
-                // current app id was the app id in which the payment method was created
-                if (credentials.checkAppId()) {
+            if (credentials != null) {
+                if (!credentials.validate()) {
+                    data.credentialsList.remove(credentials);
                     changed = true;
+                } else {
+                    // app id's were not stored in old versions, if its not there assume the
+                    // current app id was the app id in which the payment method was created
+                    if (credentials.checkAppId()) {
+                        changed = true;
+                    }
                 }
             }
         }

@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.22.4]
+
+### Changed
+- Check employee card payment methods for validity
+
+### Fixed
+- Its now possible to enter employee cards without access to the Android KeyStore
+
 ## [0.22.3]
 
 ### Fixed
