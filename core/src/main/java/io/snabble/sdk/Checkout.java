@@ -48,9 +48,13 @@ public class Checkout {
          */
         PAYMENT_PROCESSING,
         /**
-         * The payment was approved. We are done.
+         * The payment was approved, but fulfillments are still to be carried out. E.g. cigarette's in an dispenser.
          */
         PAYMENT_APPROVED,
+        /**
+         * The payment was approved and fulfillments are done.
+         */
+        PAYMENT_AND_FULFILLMENTS_DONE,
         /**
          * Age is too young.
          */
@@ -87,15 +91,9 @@ public class Checkout {
          * No shop was selected.
          */
         NO_SHOP;
-    }
 
-    public static class PaymentOrigin {
-        public final String name;
-        public final String iban;
-
-        PaymentOrigin(String name, String iban) {
-            this.name = name;
-            this.iban = iban;
+        public boolean isPaymentApproved() {
+            return this == PAYMENT_APPROVED || this == PAYMENT_AND_FULFILLMENTS_DONE;
         }
     }
 
@@ -427,6 +425,23 @@ public class Checkout {
         return allChecksOk;
     }
 
+    private boolean areAllFulfillmentsClosed() {
+        if (checkoutProcess == null || checkoutProcess.fulfillments == null) {
+            return true;
+        }
+
+        boolean ok = true;
+
+        for (CheckoutApi.Fulfillment fulfillment : checkoutProcess.fulfillments)  {
+            if (fulfillment.state.isOpen()) {
+                ok = false;
+                break;
+            }
+        }
+
+        return ok;
+    }
+
     private int getUserAge() {
         Date date = Snabble.getInstance().getUserPreferences().getBirthday();
         if (date == null) {
@@ -490,8 +505,7 @@ public class Checkout {
         paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
 
         if (checkoutProcess.paymentState == CheckoutApi.State.SUCCESSFUL) {
-            approve();
-            return true;
+            return approve();
         } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING) {
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
@@ -511,13 +525,20 @@ public class Checkout {
         return false;
     }
 
-    private void approve() {
-        if (state != Checkout.State.PAYMENT_APPROVED) {
+    private boolean approve() {
+        if (!state.isPaymentApproved()) {
             Logger.d("Payment approved");
             shoppingCart.backup();
             shoppingCart.invalidate();
             clearCodes();
-            notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
+        }
+
+        if (areAllFulfillmentsClosed()) {
+            notifyStateChanged(State.PAYMENT_AND_FULFILLMENTS_DONE);
+            return true;
+        } else {
+            notifyStateChanged(State.PAYMENT_APPROVED);
+            return false;
         }
     }
 
@@ -652,6 +673,10 @@ public class Checkout {
         }
 
         return null;
+    }
+
+    public CheckoutApi.Fulfillment[] getFulfillments() {
+        return checkoutProcess.fulfillments;
     }
 
     public void processPendingCheckouts() {

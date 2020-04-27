@@ -11,6 +11,7 @@ public abstract class JsonCallback<T, T2> implements Callback {
     private final Class<T2> failureClass;
 
     private int responseCode;
+    private String rawResponse;
 
     public JsonCallback(Class<T> successClass, Class<T2> failureClass) {
         this.successClass = successClass;
@@ -27,6 +28,7 @@ public abstract class JsonCallback<T, T2> implements Callback {
             }
 
             responseCode = response.code();
+            rawResponse = body;
 
             if(response.isSuccessful()) {
                 T obj = GsonHolder.get().fromJson(body, successClass);
@@ -47,6 +49,10 @@ public abstract class JsonCallback<T, T2> implements Callback {
 
     public int responseCode() {
         return responseCode;
+    }
+
+    public String rawResponse() {
+        return rawResponse;
     }
 
     protected void handleFailure(String body) {

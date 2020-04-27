@@ -173,6 +173,22 @@ class CheckoutApi {
         }
     }
 
+    public static class Fulfillment {
+        public String id;
+        public String type;
+        public FulfillmentState state;
+        public String[] refersTo;
+        public Map<String, Href> links;
+
+        public String getSelfLink() {
+            Href link = links.get("self");
+            if (link != null && link.href != null) {
+                return link.href;
+            }
+            return null;
+        }
+    }
+
     public static class CheckoutProcessResponse {
         public Map<String, Href> links;
         public Boolean supervisorApproval;
@@ -187,6 +203,7 @@ class CheckoutApi {
         public PaymentInformation paymentInformation;
         public State paymentState;
         public PaymentResult paymentResult;
+        public Fulfillment[] fulfillments;
 
         public String getSelfLink() {
             Href link = links.get("self");

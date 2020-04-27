@@ -198,6 +198,7 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                         .show();
                 break;
             case PAYMENT_APPROVED:
+            case PAYMENT_AND_FULFILLMENTS_DONE:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }
