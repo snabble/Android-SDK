@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.23.1]
+
+### Changed
+- Make checkoutProcess accessible after payment failure
+
 ## [0.23.0]
 
 ### Added
