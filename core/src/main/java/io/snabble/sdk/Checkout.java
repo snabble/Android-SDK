@@ -139,8 +139,6 @@ public class Checkout {
                     synchronized (Checkout.this) {
                         notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
 
-                        checkoutProcess = null;
-                        rawCheckoutProcess = null;
                         invalidProducts = null;
                         paymentMethod = null;
                         shop = null;
@@ -210,8 +208,6 @@ public class Checkout {
         cancelOutstandingCalls();
         notifyStateChanged(Checkout.State.NONE);
 
-        checkoutProcess = null;
-        rawCheckoutProcess = null;
         invalidProducts = null;
         paymentMethod = null;
         paymentResult = null;
@@ -440,6 +436,23 @@ public class Checkout {
         return ok;
     }
 
+    private boolean hasAnyFulfillmentFailed() {
+        if (checkoutProcess == null || checkoutProcess.fulfillments == null) {
+            return false;
+        }
+
+        boolean ok = false;
+
+        for (CheckoutApi.Fulfillment fulfillment : checkoutProcess.fulfillments)  {
+            if (fulfillment.state.isFailure()) {
+                ok = true;
+                break;
+            }
+        }
+
+        return ok;
+    }
+
     private int getUserAge() {
         Date date = Snabble.getInstance().getUserPreferences().getBirthday();
         if (date == null) {
@@ -515,6 +528,13 @@ public class Checkout {
                 return false;
             }
         } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING) {
+            if (hasAnyFulfillmentFailed()) {
+                checkoutApi.abort(checkoutProcess, null);
+                notifyStateChanged(State.PAYMENT_ABORTED);
+                notifyFulfillmentDone();
+                return true;
+            }
+
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
