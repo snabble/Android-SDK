@@ -852,6 +852,12 @@ public class ProductDatabase {
             builder.setScannableCodes(productCodes);
         }
 
+        int availability = cursor.getInt(17);
+        Product.Availability[] availabilities = Product.Availability.values();
+        if (availability >= 0 && availability < availabilities.length) {
+            builder.setAvailability(availabilities[availability]);
+        }
+
         Shop shop = project.getCheckedInShop();
 
         if(!queryPrice(builder, sku, shop)) {
@@ -910,6 +916,12 @@ public class ProductDatabase {
     }
 
     private String productSqlString(String appendSql, boolean distinct) {
+        Shop shop = project.getCheckedInShop();
+        String shopId = "0";
+        if (shop != null) {
+            shopId = shop.getId();
+        }
+
         String sql = "SELECT " + (distinct ? "DISTINCT " : "") +
                 "p.sku," +
                 "p.name," +
@@ -928,6 +940,7 @@ public class ProductDatabase {
                 ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",p.scanMessage" +
+                ",ifnull((SELECT a.available FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), 0)" +
                 " FROM products p "
                 + appendSql;
 

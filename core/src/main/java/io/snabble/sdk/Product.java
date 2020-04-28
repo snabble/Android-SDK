@@ -97,6 +97,12 @@ public class Product implements Serializable, Parcelable {
         }
     }
 
+    public enum Availability {
+        IN_STOCK,
+        LISTED,
+        NOT_AVAILABLE;
+    }
+
     public static class Code implements Serializable {
         public final String lookupCode;
         public final String transmissionCode;
@@ -137,6 +143,7 @@ public class Product implements Serializable, Parcelable {
     private String basePrice;
     private String scanMessage;
     private SaleRestriction saleRestriction = SaleRestriction.NONE;
+    private Availability availability = Availability.IN_STOCK;
     private Unit referenceUnit;
     private Unit encodingUnit;
     private boolean saleStop;
@@ -292,6 +299,10 @@ public class Product implements Serializable, Parcelable {
      */
     public boolean getSaleStop() {
         return saleStop;
+    }
+
+    public Availability getAvailability() {
+        return availability;
     }
 
     /** Returns the identifier of the scan message to look up in i18n resources **/
@@ -496,6 +507,11 @@ public class Product implements Serializable, Parcelable {
 
         public Builder setSaleStop(boolean saleStop) {
             product.saleStop = saleStop;
+            return this;
+        }
+
+        public Builder setAvailability(Availability availability) {
+            product.availability = availability;
             return this;
         }
 
