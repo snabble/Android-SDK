@@ -521,7 +521,6 @@ public class PaymentSelectionView extends FrameLayout implements PaymentCredenti
                 CheckoutHelper.displayPaymentView(checkout);
                 break;
             case PAYMENT_APPROVED:
-            case PAYMENT_AND_FULFILLMENTS_DONE:
                 if (callback != null) {
                     callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
                 }

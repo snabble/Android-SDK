@@ -135,7 +135,6 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
                 setQRCodeText(checkout.getQRCodePOSContent());
                 break;
             case PAYMENT_APPROVED:
-            case PAYMENT_AND_FULFILLMENTS_DONE:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }

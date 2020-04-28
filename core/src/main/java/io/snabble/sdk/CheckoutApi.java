@@ -232,7 +232,7 @@ class CheckoutApi {
     }
 
     public interface PaymentProcessResult {
-        void success(CheckoutProcessResponse checkoutProcessResponse);
+        void success(CheckoutProcessResponse checkoutProcessResponse, String rawResponse);
         void error();
     }
 
@@ -404,7 +404,7 @@ class CheckoutApi {
         call.enqueue(new SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse.class) {
             @Override
             public void success(CheckoutProcessResponse checkoutProcessResponse) {
-                paymentProcessResult.success(checkoutProcessResponse);
+                paymentProcessResult.success(checkoutProcessResponse, rawResponse());
                 CheckoutApi.this.call = null;
             }
 
@@ -471,7 +471,7 @@ class CheckoutApi {
         call.enqueue(new SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse.class) {
             @Override
             public void success(CheckoutProcessResponse checkoutProcess) {
-                paymentProcessResult.success(checkoutProcess);
+                paymentProcessResult.success(checkoutProcess, rawResponse());
             }
 
             @Override

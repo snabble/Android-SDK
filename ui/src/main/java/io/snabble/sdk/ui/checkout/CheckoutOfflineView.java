@@ -178,7 +178,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
 
         switch (state) {
             case PAYMENT_APPROVED:
-            case PAYMENT_AND_FULFILLMENTS_DONE:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }

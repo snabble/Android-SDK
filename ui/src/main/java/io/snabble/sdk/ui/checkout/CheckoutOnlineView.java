@@ -178,7 +178,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                         .show();
                 break;
             case PAYMENT_APPROVED:
-            case PAYMENT_AND_FULFILLMENTS_DONE:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }

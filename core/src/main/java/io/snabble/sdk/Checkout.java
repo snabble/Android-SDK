@@ -48,13 +48,9 @@ public class Checkout {
          */
         PAYMENT_PROCESSING,
         /**
-         * The payment was approved, but fulfillments are still to be carried out. E.g. cigarette's in an dispenser.
+         * The payment was approved. We are done.
          */
         PAYMENT_APPROVED,
-        /**
-         * The payment was approved and fulfillments are done.
-         */
-        PAYMENT_AND_FULFILLMENTS_DONE,
         /**
          * Age is too young.
          */
@@ -91,10 +87,6 @@ public class Checkout {
          * No shop was selected.
          */
         NO_SHOP;
-
-        public boolean isPaymentApproved() {
-            return this == PAYMENT_APPROVED || this == PAYMENT_AND_FULFILLMENTS_DONE;
-        }
     }
 
     private Project project;
@@ -103,10 +95,12 @@ public class Checkout {
 
     private CheckoutApi.SignedCheckoutInfo signedCheckoutInfo;
     private CheckoutApi.CheckoutProcessResponse checkoutProcess;
+    private String rawCheckoutProcess;
     private PaymentMethod paymentMethod;
     private int priceToPay;
 
     private List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
+    private List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
 
     private State lastState = Checkout.State.NONE;
     private State state = Checkout.State.NONE;
@@ -146,6 +140,7 @@ public class Checkout {
                         notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
 
                         checkoutProcess = null;
+                        rawCheckoutProcess = null;
                         invalidProducts = null;
                         paymentMethod = null;
                         shop = null;
@@ -216,6 +211,7 @@ public class Checkout {
         notifyStateChanged(Checkout.State.NONE);
 
         checkoutProcess = null;
+        rawCheckoutProcess = null;
         invalidProducts = null;
         paymentMethod = null;
         paymentResult = null;
@@ -256,6 +252,7 @@ public class Checkout {
      */
     public void checkout() {
         checkoutProcess = null;
+        rawCheckoutProcess = null;
         signedCheckoutInfo = null;
         paymentMethod = null;
         priceToPay = 0;
@@ -357,10 +354,11 @@ public class Checkout {
 
             checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
                     false, null, new CheckoutApi.PaymentProcessResult() {
-                @Override
-                public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                        @Override
+                public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                     synchronized (Checkout.this) {
                         checkoutProcess = checkoutProcessResponse;
+                        rawCheckoutProcess = rawResponse;
 
                         if (!handleProcessResponse()) {
                             boolean allChecksOk = runChecks(checkoutProcessResponse);
@@ -474,9 +472,10 @@ public class Checkout {
 
         checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
             @Override
-            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                 synchronized (Checkout.this) {
                     checkoutProcess = checkoutProcessResponse;
+                    rawCheckoutProcess = rawResponse;
 
                     if (handleProcessResponse()) {
                         stopPolling();
@@ -490,7 +489,8 @@ public class Checkout {
             }
         });
 
-        if (state == Checkout.State.WAIT_FOR_APPROVAL || state == Checkout.State.PAYMENT_PROCESSING) {
+        if (state == Checkout.State.WAIT_FOR_APPROVAL || state == Checkout.State.PAYMENT_PROCESSING
+        || (state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
             scheduleNextPoll();
         }
     }
@@ -505,7 +505,15 @@ public class Checkout {
         paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
 
         if (checkoutProcess.paymentState == CheckoutApi.State.SUCCESSFUL) {
-            return approve();
+            approve();
+
+            if (areAllFulfillmentsClosed()) {
+                notifyFulfillmentDone();
+                return true;
+            } else {
+                notifyFulfillmentUpdate();
+                return false;
+            }
         } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING) {
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
@@ -525,20 +533,13 @@ public class Checkout {
         return false;
     }
 
-    private boolean approve() {
-        if (!state.isPaymentApproved()) {
+    private void approve() {
+        if (state != Checkout.State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
             shoppingCart.backup();
             shoppingCart.invalidate();
             clearCodes();
-        }
-
-        if (areAllFulfillmentsClosed()) {
-            notifyStateChanged(State.PAYMENT_AND_FULFILLMENTS_DONE);
-            return true;
-        } else {
-            notifyStateChanged(State.PAYMENT_APPROVED);
-            return false;
+            notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
         }
     }
 
@@ -675,8 +676,12 @@ public class Checkout {
         return null;
     }
 
-    public CheckoutApi.Fulfillment[] getFulfillments() {
-        return checkoutProcess.fulfillments;
+    public CheckoutApi.CheckoutProcessResponse getCheckoutProcess() {
+        return checkoutProcess;
+    }
+
+    public String getRawCheckoutProcessJson() {
+        return rawCheckoutProcess;
     }
 
     public void processPendingCheckouts() {
@@ -721,5 +726,36 @@ public class Checkout {
                 });
             }
         }
+    }
+
+    public interface OnFulfillmentUpdateListener {
+        void onFulfillmentUpdated();
+        void onFulfillmentDone();
+    }
+
+    public void addOnFulfillmentListener(OnFulfillmentUpdateListener listener) {
+        if (!fulfillmentUpdateListeners.contains(listener)) {
+            fulfillmentUpdateListeners.add(listener);
+        }
+    }
+
+    public void removeOnFulfillmentListener(OnFulfillmentUpdateListener listener) {
+        fulfillmentUpdateListeners.remove(listener);
+    }
+
+    private void notifyFulfillmentUpdate() {
+        Dispatch.mainThread(() -> {
+            for (OnFulfillmentUpdateListener checkoutStateListener : fulfillmentUpdateListeners) {
+                checkoutStateListener.onFulfillmentUpdated();
+            }
+        });
+    }
+
+    private void notifyFulfillmentDone() {
+        Dispatch.mainThread(() -> {
+            for (OnFulfillmentUpdateListener checkoutStateListener : fulfillmentUpdateListeners) {
+                checkoutStateListener.onFulfillmentDone();
+            }
+        });
     }
 }

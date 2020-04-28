@@ -100,7 +100,7 @@ class CheckoutRetryer {
                         checkoutApi.createPaymentProcess(signedCheckoutInfo, fallbackPaymentMethod, null,
                                 true, savedCart.finalizedAt, new CheckoutApi.PaymentProcessResult() {
                             @Override
-                            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+                            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                                 Logger.d("Successfully resend checkout " + savedCart.backendCart.session);
                                 removeSavedCart(savedCart);
                                 countDownLatch.countDown();

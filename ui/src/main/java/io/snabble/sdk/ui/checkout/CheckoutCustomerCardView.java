@@ -140,7 +140,6 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
 
         switch (state) {
             case PAYMENT_APPROVED:
-            case PAYMENT_AND_FULFILLMENTS_DONE:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }
