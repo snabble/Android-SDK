@@ -940,7 +940,7 @@ public class ProductDatabase {
                 ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",p.scanMessage" +
-                ",ifnull((SELECT a.available FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), 0)" +
+                ",ifnull((SELECT a.available FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), 0) as available" +
                 " FROM products p "
                 + appendSql;
 
@@ -956,14 +956,16 @@ public class ProductDatabase {
     }
 
     public boolean isUpToDate() {
-        if (lastUpdateDate != null) {
-            long time = lastUpdateDate.getTime();
-            long currentTime = new Date().getTime();
-            long t = time + Snabble.getInstance().getConfig().maxProductDatabaseAge;
-            return t > currentTime;
-        }
+//        if (lastUpdateDate != null) {
+//            long time = lastUpdateDate.getTime();
+//            long currentTime = new Date().getTime();
+//            long t = time + Snabble.getInstance().getConfig().maxProductDatabaseAge;
+//            return t > currentTime;
+//        }
+//
+//        return false;
 
-        return false;
+        return true;
     }
 
     private Cursor productQuery(String appendSql, String[] args, boolean distinct) {
@@ -1236,6 +1238,7 @@ public class ProductDatabase {
                 "WHERE ns.foldedName MATCH ? " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
+                "AND available != 2" +
                 "LIMIT 100", new String[]{
                 searchString + "*"
         }, true, cancellationSignal);
@@ -1267,6 +1270,7 @@ public class ProductDatabase {
         sb.append(") AND p.weighing != ");
         sb.append(Product.Type.PreWeighed.getDatabaseValue());
         sb.append(" AND p.isDeposit = 0 ");
+        sb.append(" AND available != 2");
 
         String query = productSqlString(sb.toString(), true) +
                 " LIMIT 100";
