@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.23.2]
+
+### Fixed
+- Hide editing controls for products with embedded data
+
 ## [0.23.1]
 
 ### Changed

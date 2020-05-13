@@ -493,7 +493,7 @@ public class ShoppingCart {
         }
 
         public boolean isEditable() {
-            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT;
+            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT && !scannedCode.hasEmbeddedData();
 
             return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
                     product.getPrice(cart.project.getCustomerCardId()) != 0;
