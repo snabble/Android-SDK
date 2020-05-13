@@ -24,6 +24,10 @@ import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import io.snabble.sdk.auth.AppUser;
+import io.snabble.sdk.auth.AppUserAndToken;
+import io.snabble.sdk.auth.Token;
+import io.snabble.sdk.utils.GsonHolder;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -99,8 +103,16 @@ public class SnabbleSdkTest {
                                     "\"expiresAt\":" + (System.currentTimeMillis() / 1000 + TimeUnit.HOURS.toSeconds(1))
                                     + "}")
                             .setResponseCode(200);
+                } else if (request.getPath().contains("/users")) {
+                    Token token = new Token("", "", System.currentTimeMillis() / 1000, System.currentTimeMillis() / 1000 + TimeUnit.HOURS.toSeconds(1));
+                    AppUser appUser = new AppUser("user", "geheim");
+                    AppUserAndToken appUserAndToken = new AppUserAndToken(token, appUser);
+                    return new MockResponse()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Cache-Control", "no-cache")
+                            .setBody(GsonHolder.get().toJson(appUserAndToken))
+                            .setResponseCode(200);
                 }
-
 
                 return new MockResponse().setResponseCode(404);
             }

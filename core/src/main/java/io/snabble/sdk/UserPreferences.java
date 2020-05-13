@@ -47,14 +47,25 @@ public class UserPreferences {
         setClientId(clientId);
     }
 
+    private String getEnvironmentKey() {
+        Environment environment = Snabble.getInstance().getEnvironment();
+        if (environment != null) {
+            return environment.name();
+        } else {
+            return "UNKNOWN";
+        }
+    }
+
     private String getAppUserIdKey() {
         Snabble.Config config = Snabble.getInstance().getConfig();
-        return SHARED_PREFERENCES_APPUSER_ID + "_" + Snabble.getInstance().getEnvironment().name() + config.appId;
+
+
+        return SHARED_PREFERENCES_APPUSER_ID + "_" + getEnvironmentKey() + config.appId;
     }
 
     private String getAppUserIdSecret() {
         Snabble.Config config = Snabble.getInstance().getConfig();
-        return SHARED_PREFERENCES_APPUSER_SECRET + "_" + Snabble.getInstance().getEnvironment().name() + config.appId;
+        return SHARED_PREFERENCES_APPUSER_SECRET + "_" + getEnvironmentKey() + config.appId;
     }
 
     public AppUser getAppUser() {

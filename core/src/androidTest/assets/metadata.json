@@ -1,7 +1,16 @@
 {
   "links": {
+    "appUser": {
+      "href": "/apps/users/{appUserID}"
+    },
+    "appUserOrders": {
+      "href": "/apps/users/{appUserID}/orders"
+    },
     "clientOrders": {
       "href": "/clients/{clientID}/orders"
+    },
+    "createAppUser": {
+      "href": "/apps/test/users"
     },
     "self": {
       "href": "/metadata/app/test-app/version/1.0"
