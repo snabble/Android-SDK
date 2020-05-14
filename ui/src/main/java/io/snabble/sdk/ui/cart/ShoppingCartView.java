@@ -238,6 +238,10 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if (viewHolder.getAdapterPosition() == -1) {
+                    return super.getMovementFlags(recyclerView, viewHolder);
+                }
+
                 if (!recyclerViewAdapter.isDismissable(viewHolder.getAdapterPosition())) {
                     return 0;
                 }
