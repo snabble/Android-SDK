@@ -940,7 +940,7 @@ public class ProductDatabase {
                 ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",p.scanMessage" +
-                ",ifnull((SELECT a.available FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), 0) as availability" +
+                ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), 0) as availability" +
                 " FROM products p "
                 + appendSql;
 

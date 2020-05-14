@@ -26,9 +26,19 @@ class ProductApi {
         boolean saleStop;
         ApiScannableCode[] codes;
         Product.SaleRestriction saleRestriction = Product.SaleRestriction.NONE;
+        ApiAvailability availability;
 
         ApiProduct deposit;
         ApiProduct[] bundles;
+    }
+
+    private enum ApiAvailability {
+        @SerializedName("inStock")
+        IN_STOCK,
+        @SerializedName("listed")
+        LISTED,
+        @SerializedName("notAvailable")
+        NOT_AVAILABLE,
     }
 
     private static class ApiPrice {
@@ -242,6 +252,22 @@ class ProductApi {
                 }
             } else {
                 builder.setType(Product.Type.Article);
+            }
+        }
+
+        if (apiProduct.availability == null) {
+            builder.setAvailability(Product.Availability.IN_STOCK);
+        } else {
+            switch(apiProduct.availability) {
+                case IN_STOCK:
+                    builder.setAvailability(Product.Availability.IN_STOCK);
+                    break;
+                case LISTED:
+                    builder.setAvailability(Product.Availability.LISTED);
+                    break;
+                case NOT_AVAILABLE:
+                    builder.setAvailability(Product.Availability.NOT_AVAILABLE);
+                    break;
             }
         }
 
