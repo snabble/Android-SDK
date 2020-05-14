@@ -38,6 +38,7 @@ public class ProductDatabase {
     private static final String METADATA_KEY_SCHEMA_VERSION_MINOR = "schemaVersionMinor";
     private static final String METADATA_KEY_REVISION = "revision";
     private static final String METADATA_KEY_PROJECT = "project";
+    private static final String METADATA_DEFAULT_AVAILABILITY = "defaultAvailability";
     private static final String METADATA_KEY_LAST_UPDATE_TIMESTAMP = "app_lastUpdateTimestamp";
 
     private SQLiteDatabase db;
@@ -58,6 +59,7 @@ public class ProductDatabase {
     private Application application;
     private ProductDatabaseDownloader productDatabaseDownloader;
     private ProductApi productApi;
+    private int defaultAvailability;
 
     ProductDatabase(Project project, String name, boolean generateSearchIndex) {
         this.project = project;
@@ -111,6 +113,12 @@ public class ProductDatabase {
                     Logger.d("Database has incompatible schema, deleting local database");
                     delete();
                     return false;
+                }
+
+                try {
+                    defaultAvailability = Integer.parseInt(getMetaData(METADATA_DEFAULT_AVAILABILITY));
+                } catch (Exception e) {
+                    defaultAvailability = 0;
                 }
 
                 createFTSIndexIfNecessary();
@@ -940,7 +948,7 @@ public class ProductDatabase {
                 ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",p.scanMessage" +
-                ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), 0) as availability" +
+                ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), " + defaultAvailability + ") as availability" +
                 " FROM products p "
                 + appendSql;
 
