@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.23.2]
 
+### Added
+- Support for availabilities
+
 ### Fixed
 - Hide editing controls for products with embedded data
 - Fixed a rare crash when dismissing items in the shopping cart
