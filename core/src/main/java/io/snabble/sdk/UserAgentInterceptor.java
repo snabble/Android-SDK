@@ -6,6 +6,7 @@ import android.os.Build;
 import java.io.IOException;
 
 import okhttp3.Interceptor;
+import okhttp3.OkHttp;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -18,7 +19,7 @@ class UserAgentInterceptor implements Interceptor {
                 + " snabble/" + Snabble.getVersion() +
                 " (Android " + Build.VERSION.RELEASE
                 + "; " + Build.BRAND + "; " + Build.MODEL + ")" +
-                " okhttp";
+                " okhttp " + OkHttp.VERSION;
     }
 
     @Override

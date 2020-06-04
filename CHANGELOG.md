@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.1]
+
+### Changed
+- Include okhttp version in User-Agent, this requires at least okhttp 4.7.0.
+
 ## [0.24.0]
 
 ### Added

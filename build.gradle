@@ -23,7 +23,7 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.24.0'
+        sdkVersion='0.24.1'
         versionCode=1
 
         compileSdkVersion=29
@@ -31,7 +31,7 @@ allprojects {
         targetSdkVersion=29
 
         buildToolsVersion='29.0.2'
-        okhttpVersion='3.14.9'
+        okhttpVersion='4.7.2'
 
         sdkVersion += project.getProperties().get("versionSuffix", "")
     }
