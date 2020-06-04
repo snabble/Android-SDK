@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.0]
+
+### Added
+- Moved payment selection to shopping cart
+- SnabbleUI.getProjectAsLiveData to get the current project as a reactive element
+
+### Removed
+- PaymentSelectionView and PaymentSelectionFragment
+
 ## [0.23.2]
 
 ### Added
