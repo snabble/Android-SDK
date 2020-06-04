@@ -167,9 +167,9 @@ public class ShoppingCart {
         modCount++;
         Item item = items.remove(index);
         checkLimits();
-        notifyItemRemoved(this, item, index);
+        updatePrices(size() != 0);
         invalidateOnlinePrices();
-        updatePrices(true);
+        notifyItemRemoved(this, item, index);
     }
 
     public int size() {
@@ -194,6 +194,7 @@ public class ShoppingCart {
         onlineTotalPrice = null;
 
         checkLimits();
+        updatePrices(false);
         notifyCleared(this);
     }
 
@@ -215,6 +216,7 @@ public class ShoppingCart {
             id = oldId;
 
             checkLimits();
+            updatePrices(false);
             notifyProductsUpdate(this);
         }
     }
@@ -641,6 +643,14 @@ public class ShoppingCart {
             this.scannedCode = scannedCode;
             this.quantity = quantity;
         }
+    }
+
+    public CheckoutApi.PaymentMethodInfo[] getAvailablePaymentMethods() {
+        return updater.getLastAvailablePaymentMethods();
+    }
+
+    public boolean isVerifiedOnline() {
+        return updater.isUpdated();
     }
 
     public String toJson() {

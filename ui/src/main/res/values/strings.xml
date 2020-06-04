@@ -54,6 +54,11 @@
 	<string name="Snabble.Shoppingcart.buyProducts.one">Buy %1$d product for %2$s</string>
 	<string name="Snabble.Shoppingcart.buyProducts">Buy %1$d products for %2$s</string>
 	<string name="Snabble.Shoppingcart.buyProducts.now">Pay now</string>
+	<string name="Snabble.Shoppingcart.numberOfItems.one">%d product</string>
+	<string name="Snabble.Shoppingcart.numberOfItems">%d products</string>
+	<string name="Snabble.Shoppingcart.howToPay">How would you like to pay?</string>
+	<string name="Snabble.Shoppingcart.notForVendor">Not supported by this retailer</string>
+	<string name="Snabble.Shoppingcart.notForThisPurchase">Not available for this purchase</string>
 	<string name="Snabble.Shoppingcart.emptyState.buttonTitle">Scan products</string>
 	<string name="Snabble.Shoppingcart.emptyState.description">Scan products to add them to your shopping cart.</string>
 	<string name="Snabble.Shoppingcart.emptyState.restartButtonTitle">Start new shopping trip</string>
@@ -95,6 +100,9 @@
 	<string name="Snabble.Payment.delete.message">Are you sure you want to remove this payment method?</string>
 	<string name="Snabble.Payment.add">Add payment method</string>
 	<string name="Snabble.Payment.payAtSCO">Card at EC terminal</string>
+	<string name="Snabble.Payment.payAtCashDesk">Cash desk</string>
+	<string name="Snabble.Payment.payViaInvoice">via Invoice</string>
+	<string name="Snabble.Payment.payUsingCustomerCard">using Customer Card</string>
 	<string name="Snabble.Checkout.verifying">Verifying</string>
 	<string name="Snabble.Checkout.done">Finished!</string>
 	<string name="Snabble.Checkout.payAtCashRegister">Pay at cash register</string>
@@ -160,4 +168,5 @@
 	<string name="Snabble.ageVerification.pending.message">Some products in your cart have an age restriction. Please verify your age before continuing.</string>
 	<string name="Snabble.ageVerification.failed.title">Age restriction</string>
 	<string name="Snabble.ageVerification.failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
+	<string name="Snabble.Payment.offlineHint">You are currently offline and some payment methods may not be available</string>
 </resources>

@@ -1,0 +1,107 @@
+package io.snabble.sdk.ui.cart;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+import java.util.ArrayList;
+
+import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.SnabbleUI;
+
+public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
+    public static final String ARG_ENTRIES = "entries";
+    public static final String ARG_SHOW_OFFLINE_HINT = "showOfflineHint";
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = View.inflate(requireContext(), R.layout.snabble_dialog_payment_selection, null);
+        LinearLayout options = view.findViewById(R.id.options);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            View headerView = View.inflate(requireContext(), R.layout.snabble_item_payment_select_header, null);
+            options.addView(headerView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            if (args.getBoolean(ARG_SHOW_OFFLINE_HINT, false)) {
+                View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select_offline_hint, null);
+                options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+
+            if (args.containsKey(ARG_ENTRIES)) {
+                ArrayList<PaymentSelectionHelper.Entry> entries = (ArrayList<PaymentSelectionHelper.Entry>) args.getSerializable(ARG_ENTRIES);
+                if (entries != null) {
+                    for (final PaymentSelectionHelper.Entry entry : entries) {
+                        View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select, null);
+
+                        ImageView imageView = v.findViewById(R.id.image);
+                        TextView name = v.findViewById(R.id.name);
+                        TextView id = v.findViewById(R.id.id);
+
+                        int resId = entry.iconResId;
+                        if (resId != 0) {
+                            imageView.setImageResource(entry.iconResId);
+                        } else {
+                            imageView.setVisibility(View.INVISIBLE);
+                        }
+
+                        if (entry.text != null) {
+                            name.setText(entry.text);
+                        } else {
+                            name.setVisibility(View.GONE);
+                        }
+
+                        if (entry.hint != null) {
+                            id.setText(entry.hint);
+                        } else {
+                            id.setVisibility(View.GONE);
+                        }
+
+                        if (entry.isAvailable) {
+                            v.setOnClickListener(v1 -> {
+                                PaymentSelectionHelper.getInstance().select(entry);
+                                dismissAllowingStateLoss();
+                            });
+                            name.setEnabled(true);
+                        } else {
+                            name.setEnabled(false);
+                        }
+
+                        options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    }
+                }
+            }
+        }
+
+        boolean canAdd = false;
+        for (PaymentMethod pm : SnabbleUI.getProject().getAvailablePaymentMethods()) {
+            if (!pm.isOfflineMethod()) {
+                canAdd = true;
+                break;
+            }
+        }
+
+        if (canAdd) {
+            View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select_add, null);
+            v.setOnClickListener(v12 -> {
+                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                if (callback != null) {
+                    callback.execute(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, null);
+                }
+                dismissAllowingStateLoss();
+            });
+            options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        return view;
+    }
+}
+

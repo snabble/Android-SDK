@@ -5,6 +5,8 @@ import android.app.Activity;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import io.snabble.sdk.PaymentOriginCandidateHelper;
 import io.snabble.sdk.Project;
@@ -37,7 +39,8 @@ public class SnabbleUI {
         void execute(Action action, Object data);
     }
 
-    private static Project project;
+    private static Project currentProject;
+    private static MutableLiveData<Project> projectLiveData = new MutableLiveData<>();
     private static SnabbleUI.Callback uiCallback;
     private static ActionBar actionBar;
     private static PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener paymentOriginCandidateAvailableListener;
@@ -48,11 +51,15 @@ public class SnabbleUI {
      */
     public static void useProject(Project project) {
         if (paymentOriginCandidateAvailableListener != null) {
-            SnabbleUI.project.getCheckout().getPaymentOriginCandidateHelper()
-                    .removePaymentOriginCandidateAvailableListener(paymentOriginCandidateAvailableListener);
+            Project currentProject = projectLiveData.getValue();
+            if (currentProject != null) {
+                currentProject.getCheckout().getPaymentOriginCandidateHelper()
+                        .removePaymentOriginCandidateAvailableListener(paymentOriginCandidateAvailableListener);
+            }
         }
 
-        SnabbleUI.project = project;
+        currentProject = project;
+        projectLiveData.postValue(project);
 
         project.getCheckout().getPaymentOriginCandidateHelper()
                 .addPaymentOriginCandidateAvailableListener(paymentOriginCandidate -> {
@@ -129,11 +136,15 @@ public class SnabbleUI {
     }
 
     public static Project getProject() {
-        if (project == null) {
+        if (currentProject == null) {
             throw new RuntimeException("No Project instance set." +
                     " Use SnabbleUI.registerProject after SDK initialization.");
         }
 
-        return project;
+        return currentProject;
+    }
+
+    public static LiveData<Project> getProjectAsLiveData() {
+        return projectLiveData;
     }
 }

@@ -15,16 +15,13 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
+import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
@@ -79,6 +76,7 @@ public class PaymentCredentials {
     private Type type;
     private Brand brand;
     private String appId;
+    private String id;
 
     private PaymentCredentials() {
 
@@ -86,6 +84,7 @@ public class PaymentCredentials {
 
     public static PaymentCredentials fromSEPA(String name, String iban) {
         PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
         pc.type = Type.SEPA;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
@@ -155,6 +154,7 @@ public class PaymentCredentials {
                                                         String expirationMonth, String expirationYear,
                                                         String hostedDataId, String storeId) {
         PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
         pc.type = Type.CREDIT_CARD;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
@@ -434,6 +434,14 @@ public class PaymentCredentials {
         return false;
     }
 
+    void generateId() {
+        id = UUID.randomUUID().toString();
+    }
+
+    public String getId() {
+        return id;
+    }
+
     public long getValidTo() {
         return validTo;
     }
@@ -444,5 +452,21 @@ public class PaymentCredentials {
 
     public String getEncryptedData() {
         return decrypt();
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        if (getType() == PaymentCredentials.Type.SEPA) {
+            return PaymentMethod.DE_DIRECT_DEBIT;
+        } else if (type == PaymentCredentials.Type.CREDIT_CARD) {
+            switch (getBrand()) {
+                case VISA: return PaymentMethod.VISA;
+                case AMEX: return PaymentMethod.AMEX;
+                case MASTERCARD: return PaymentMethod.MASTERCARD;
+            }
+        } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
+            return PaymentMethod.TEGUT_EMPLOYEE_CARD;
+        }
+
+        return null;
     }
 }

@@ -203,17 +203,18 @@ public class ProductResolver {
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product, scannedCode);
         } else {
-            if (product.getSaleStop()) {
-                if (onSaleStopListener != null) {
-                    onSaleStopListener.onSaleStop();
-                }
-
-                progressDialog.dismiss();
-
-                if (onDismissListener != null) {
-                    onDismissListener.onDismiss();
-                }
-            } else if (product.getType() == Product.Type.PreWeighed
+//            if (product.getSaleStop()) {
+//                if (onSaleStopListener != null) {
+//                    onSaleStopListener.onSaleStop();
+//                }
+//
+//                progressDialog.dismiss();
+//
+//                if (onDismissListener != null) {
+//                    onDismissListener.onDismiss();
+//                }
+//            } else
+                if (product.getType() == Product.Type.PreWeighed
                     && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
                 if (onShelfCodeScannedListener != null) {
                     onShelfCodeScannedListener.onShelfCodeScanned();

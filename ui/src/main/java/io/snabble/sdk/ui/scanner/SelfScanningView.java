@@ -173,8 +173,10 @@ public class SelfScanningView extends FrameLayout {
 
     private void updateBarcodeSearchIcon() {
         enterBarcode.setImageResource(R.drawable.snabble_ic_search);
-        ViewCompat.setBackgroundTintList(enterBarcode, ColorStateList.valueOf(Color.WHITE));
-        ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(Color.WHITE));
+
+        int color = Color.argb(128, 255, 255, 255);
+        ViewCompat.setBackgroundTintList(enterBarcode, ColorStateList.valueOf(color));
+        ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(color));
     }
 
     private int dp2px(float dp) {
@@ -192,8 +194,9 @@ public class SelfScanningView extends FrameLayout {
         } else {
             light.setImageResource(R.drawable.snabble_ic_torch);
             light.setBackgroundResource(R.drawable.snabble_ic_button_outlined_48dp);
-            ViewCompat.setBackgroundTintList(light, ColorStateList.valueOf(Color.WHITE));
-            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(Color.WHITE));
+            int color = Color.argb(128, 255, 255, 255);
+            ViewCompat.setBackgroundTintList(light, ColorStateList.valueOf(color));
+            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
         }
 
         int dp = dp2px(12);

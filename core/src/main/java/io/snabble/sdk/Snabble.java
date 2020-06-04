@@ -10,9 +10,14 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -121,6 +126,7 @@ public class Snabble {
 
         environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl);
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
+        paymentCredentialsStore = new PaymentCredentialsStore();
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
 
@@ -158,7 +164,16 @@ public class Snabble {
         }
 
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
-        app.registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        registerNetworkCallback(app);
+    }
+
+    private void registerNetworkCallback(Application app) {
+        ConnectivityManager cm = (ConnectivityManager) app.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        cm.registerNetworkCallback(new NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build(),
+                networkCallback);
     }
 
     public String getVersionName() {
@@ -209,7 +224,7 @@ public class Snabble {
             usersUrl = getUrl(jsonObject, "appUser");
         }
 
-        paymentCredentialsStore = new PaymentCredentialsStore(application, environment);
+        paymentCredentialsStore.init(application, environment);
     }
 
     private String getUrl(JsonObject jsonObject, String urlName) {
@@ -491,22 +506,31 @@ public class Snabble {
         }
     };
 
-    @SuppressLint("MissingPermission")
-    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if (activeNetwork != null) {
-                onConnectionStateChanged(activeNetwork.isConnected());
-            }
+    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+        @Override
+        public void onAvailable(@NonNull Network network) {
+            onConnectionStateChanged(true);
+        }
+
+        @Override
+        public void onLost(@NonNull Network network) {
+            onConnectionStateChanged(false);
+        }
+
+        @Override
+        public void onUnavailable() {
+            onConnectionStateChanged(false);
         }
     };
 
     private void onConnectionStateChanged(boolean isConnected) {
         if (isConnected) {
             processPendingCheckouts();
+        }
+
+        for (Project project : projects) {
+            project.getShoppingCart().updatePrices(false);
         }
     }
 

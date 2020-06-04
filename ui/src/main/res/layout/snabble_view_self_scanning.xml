@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         android:id="@+id/bottom_bar">
 
         <ImageView
@@ -38,10 +38,7 @@
             android:background="@drawable/snabble_ic_button_outlined_48dp"
             android:src="@drawable/snabble_ic_search"
             android:padding="12dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
             android:gravity="center"
             android:id="@+id/enter_barcode" />
 
@@ -52,10 +49,7 @@
             android:background="@drawable/snabble_ic_button_outlined_48dp"
             android:src="@drawable/snabble_ic_torch"
             android:padding="12dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
             android:gravity="center"
             android:id="@+id/light" />
 
@@ -68,6 +62,10 @@
             app:autoSizeTextType="uniform"
             app:autoSizeMinTextSize="8sp"
             app:autoSizeMaxTextSize="14sp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetLeft="0dp"
+            android:insetBottom="0dp"
             android:text="@string/Snabble.Scanner.goToCart.empty"
             tools:text="Warenkorb: 99,99 €"/>
     </LinearLayout>

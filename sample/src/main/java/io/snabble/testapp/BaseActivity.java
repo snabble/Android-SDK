@@ -142,9 +142,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_PAYMENT_CREDENTIALS_LIST:
                 showPaymentCredentialsList();
                 break;
-            case SHOW_PAYMENT_SELECTION:
-                showPaymentSelection();
-                break;
             case SHOW_AGE_VERIFICATION:
                 showAgeVerification();
                 break;
@@ -159,11 +156,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     public void showScanner() {
         Intent intent = new Intent(this, SelfScanningActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-    }
-
-    public void showPaymentSelection() {
-        Intent intent = new Intent(this, PaymentSelectionActivity.class);
         startActivity(intent);
     }
 

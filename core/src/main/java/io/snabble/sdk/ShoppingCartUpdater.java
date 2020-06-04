@@ -21,6 +21,8 @@ class ShoppingCartUpdater {
     private ShoppingCart cart;
     private CheckoutApi checkoutApi;
     private Handler handler;
+    private CheckoutApi.PaymentMethodInfo[] lastAvailablePaymentMethods;
+    private boolean isUpdated;
 
     ShoppingCartUpdater(Project project, ShoppingCart shoppingCart) {
         this.project = project;
@@ -36,10 +38,15 @@ class ShoppingCartUpdater {
         }
     };
 
+    public CheckoutApi.PaymentMethodInfo[] getLastAvailablePaymentMethods() {
+        return lastAvailablePaymentMethods;
+    }
+
     public void update() {
         Logger.d("Updating prices...");
 
         if (cart.size() == 0) {
+            lastAvailablePaymentMethods = null;
             cart.notifyPriceUpdate(cart);
             return;
         }
@@ -51,7 +58,6 @@ class ShoppingCartUpdater {
                 handler.post(() -> {
                     // ignore when cart was modified mid request
                     if (cart.getModCount() != modCount) {
-                        unknownError();
                         return;
                     }
 
@@ -153,6 +159,10 @@ class ShoppingCartUpdater {
                         return;
                     }
 
+                    lastAvailablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(
+                            project.getCheckout().getClientAcceptedPaymentMethods());
+
+                    isUpdated = true;
                     cart.setInvalidProducts(null);
                     cart.checkLimits();
                     cart.notifyPriceUpdate(cart);
@@ -161,30 +171,44 @@ class ShoppingCartUpdater {
 
             @Override
             public void noShop() {
+                isUpdated = true;
+                lastAvailablePaymentMethods = null;
                 cart.notifyPriceUpdate(cart);
             }
 
             @Override
             public void invalidProducts(List<Product> products) {
+                isUpdated = true;
+                lastAvailablePaymentMethods = null;
                 cart.setInvalidProducts(products);
                 cart.notifyPriceUpdate(cart);
             }
 
             @Override
             public void noAvailablePaymentMethod() {
+                isUpdated = true;
+                lastAvailablePaymentMethods = null;
                 cart.notifyPriceUpdate(cart);
             }
 
             @Override
             public void unknownError() {
+                isUpdated = false;
+                lastAvailablePaymentMethods = null;
                 cart.notifyPriceUpdate(cart);
             }
 
             @Override
             public void connectionError() {
+                isUpdated = false;
+                lastAvailablePaymentMethods = null;
                 cart.notifyPriceUpdate(cart);
             }
         }));
+    }
+
+    public boolean isUpdated() {
+        return isUpdated;
     }
 
     public void dispatchUpdate() {

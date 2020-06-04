@@ -585,6 +585,10 @@ public class Checkout {
         clientAcceptedPaymentMethods = acceptedPaymentMethods;
     }
 
+    public PaymentMethod[] getClientAcceptedPaymentMethods() {
+        return clientAcceptedPaymentMethods;
+    }
+
     public void addCode(String code) {
         codes.add(code);
     }

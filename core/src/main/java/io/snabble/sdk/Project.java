@@ -385,6 +385,7 @@ public class Project {
     public void setCheckedInShop(Shop checkedInShop) {
         this.checkedInShop = checkedInShop;
         events.updateShop(checkedInShop);
+        getShoppingCart().updatePrices(false);
     }
 
     public Shop getCheckedInShop() {

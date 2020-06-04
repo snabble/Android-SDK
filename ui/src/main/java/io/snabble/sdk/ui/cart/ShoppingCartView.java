@@ -2,11 +2,9 @@ package io.snabble.sdk.ui.cart;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -17,13 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
 import androidx.annotation.DrawableRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -32,27 +37,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
+import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.payment.PaymentCredentialsStore;
+import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.CheckoutHelper;
+import io.snabble.sdk.ui.payment.SEPALegalInfoHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
-import io.snabble.sdk.utils.Age;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -77,8 +77,17 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private boolean hasAnyImages;
     private Picasso picasso;
     private List<Product> lastInvalidProducts;
+    private PaymentSelectionHelper paymentSelectionHelper;
+    private ImageView payIcon;
+    private View paySelector;
+    private View paySelectorButton;
+    private TextView priceSum;
+    private TextView articleCount;
+    private View sumContainer;
+    private AlertDialog alertDialog;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+
         @Override
         public void onChanged(ShoppingCart cart) {
             swipeRefreshLayout.setRefreshing(false);
@@ -88,28 +97,38 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         @Override
         public void onCheckoutLimitReached(ShoppingCart list) {
-            if (snackbar != null) {
-                snackbar.dismiss();
+            if (alertDialog != null) {
+                alertDialog.dismiss();
             }
 
             Project project = SnabbleUI.getProject();
             String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
-            snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
-            snackbar.show();
+
+            alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.Snabble_limitsAlert_title)
+                    .setMessage(message)
+                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .create();
+            alertDialog.show();
         }
 
         @Override
         public void onOnlinePaymentLimitReached(ShoppingCart list) {
-            if (snackbar != null) {
-                snackbar.dismiss();
+            if (alertDialog != null) {
+                alertDialog.dismiss();
             }
 
             Project project = SnabbleUI.getProject();
             String message = getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
                     project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit()));
-            snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
-            snackbar.show();
+
+            alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.Snabble_limitsAlert_title)
+                    .setMessage(message)
+                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .create();
+            alertDialog.show();
         }
     };
 
@@ -158,12 +177,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         recyclerView.addItemDecoration(itemDecoration);
 
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                cart.updatePrices(false);
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> cart.updatePrices(false));
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         emptyState = findViewById(R.id.empty_state);
@@ -173,15 +187,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
-        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    checkout.abort();
-                    return true;
-                }
-                return false;
+        progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                checkout.abort();
+                return true;
             }
+            return false;
         });
 
         pay = findViewById(R.id.pay);
@@ -195,31 +206,49 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
                     snackbar.show();
                 } else {
-                    Telemetry.event(Telemetry.Event.ClickCheckout);
-                    checkout.checkout();
+                    PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
+                    if (entry != null) {
+                        Telemetry.event(Telemetry.Event.ClickCheckout);
+                        SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),
+                                entry.paymentMethod,
+                                new OneShotClickListener() {
+                                    @Override
+                                    public void click() {
+                                        checkout.checkout();
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(getContext(), R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
 
+        priceSum = findViewById(R.id.price_sum);
+        articleCount = findViewById(R.id.article_count);
+        sumContainer = findViewById(R.id.sum_container);
 
         scanProducts = findViewById(R.id.scan_products);
-        scanProducts.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.execute(SnabbleUI.Action.SHOW_SCANNER, null);
-                }
+        scanProducts.setOnClickListener(view -> {
+            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+            if (callback != null) {
+                callback.execute(SnabbleUI.Action.SHOW_SCANNER, null);
             }
         });
 
         restore = findViewById(R.id.restore);
-        restore.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cart.restore();
-            }
-        });
+        restore.setOnClickListener(v -> cart.restore());
+
+        payIcon = findViewById(R.id.payment_icon);
+        paySelector = findViewById(R.id.payment_selector);
+        paySelectorButton = findViewById(R.id.payment_selector_button);
+
+        payIcon.setImageResource(R.drawable.snabble_ic_payment_select_pos);
+
+        paymentSelectionHelper = PaymentSelectionHelper.getInstance();
+        paymentSelectionHelper.getSelectedEntry().observe((FragmentActivity)UIUtils.getHostActivity(getContext()), entry -> update());
+
+        paySelectorButton.setOnClickListener(v -> paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(getContext())));
 
         createItemTouchHelper();
         submitList();
@@ -274,12 +303,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         snackbar = UIUtils.snackbar(coordinatorLayout,
                 R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
-        snackbar.setAction(R.string.Snabble_undo, new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cart.insert(item, adapterPosition);
-                Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
-            }
+        snackbar.setAction(R.string.Snabble_undo, v -> {
+            cart.insert(item, adapterPosition);
+            Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
         });
 
         snackbar.show();
@@ -290,11 +316,31 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         if (state == Checkout.State.HANDSHAKING) {
             progressDialog.showAfterDelay(500);
         } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD) {
-            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-            if (callback != null) {
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SELECTION, null);
+            final PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
+
+            if (entry == null) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show();
+                return;
             }
-            progressDialog.dismiss();
+
+            if (entry.paymentCredentials != null) {
+                progressDialog.dismiss();
+                Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
+                    @Override
+                    public void success() {
+                        progressDialog.showAfterDelay(500);
+                        checkout.pay(entry.paymentMethod, entry.paymentCredentials);
+                    }
+
+                    @Override
+                    public void error() {
+                        progressDialog.dismiss();
+                    }
+                });
+            } else {
+                checkout.pay(entry.paymentMethod, null);
+            }
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
             CheckoutHelper.displayPaymentView(checkout);
             progressDialog.dismiss();
@@ -353,7 +399,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private void updateEmptyState() {
         if (cart.size() > 0) {
             emptyState.setVisibility(View.GONE);
-            pay.setVisibility(checkout.isAvailable() ? View.VISIBLE : View.GONE);
+            pay.setVisibility(paymentSelectionHelper.getSelectedEntry().getValue() != null && checkout.isAvailable() ? View.VISIBLE : View.GONE);
         } else {
             emptyState.setVisibility(View.VISIBLE);
             pay.setVisibility(View.GONE);
@@ -372,22 +418,42 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         if (cart != null) {
             int quantity = cart.getTotalQuantity();
             int price = cart.getTotalPrice();
-            if (price != 0) {
-                String formattedPrice = priceFormatter.format(price);
-                String text = getResources().getQuantityString(R.plurals.Snabble_Shoppingcart_buyProducts,
-                        quantity, quantity, formattedPrice);
-                pay.setText(text);
+
+            if (quantity > 0) {
+                articleCount.setText(quantity + " Artikel"); // TODO i18n
+
+                if (price != 0) {
+                    priceSum.setText(priceFormatter.format(price));
+                    priceSum.setVisibility(View.VISIBLE);
+                } else {
+                    priceSum.setVisibility(View.GONE);
+                }
             } else {
-                pay.setText(R.string.Snabble_Shoppingcart_buyProducts_now);
+                sumContainer.setVisibility(View.GONE);
             }
         }
     }
 
     private void update() {
         updatePayText();
+        updatePaySelector();
         updateEmptyState();
         scanForImages();
         checkSaleStop();
+    }
+
+    private void updatePaySelector() {
+        PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
+        if (entry == null) {
+            paySelector.setVisibility(View.GONE);
+        } else {
+            PaymentCredentialsStore pcs = Snabble.getInstance().getPaymentCredentialsStore();
+            int size = pcs.getAllWithoutKeyStoreValidation().size();
+            boolean hasNoPaymentMethods = size == 0;
+            boolean isHidden = SnabbleUI.getProject().getAvailablePaymentMethods().length == 1 && hasNoPaymentMethods;
+            paySelector.setVisibility(isHidden ? View.GONE : View.VISIBLE);
+            payIcon.setImageResource(entry.iconResId);
+        }
     }
 
     private void checkSaleStop() {
@@ -449,9 +515,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     }
 
     private void registerListeners() {
-        // IDK why this is here
-        // SnabbleUI.getProject().getCheckout().abortSilently();
-
         cart.addListener(shoppingCartListener);
         checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
         submitList();

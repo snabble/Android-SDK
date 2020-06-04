@@ -36,7 +36,11 @@ public class PaymentCredentialsStore {
 
     KeyStoreCipher keyStoreCipher;
 
-    public PaymentCredentialsStore(Context context, Environment environment) {
+    public PaymentCredentialsStore() {
+
+    }
+
+    public void init(Context context, Environment environment) {
         sharedPreferences = context.getSharedPreferences("snabble_payment", Context.MODE_PRIVATE);
         credentialsKey = "credentials_" + (environment != null ? environment.name() : "_UNKNOWN");
         userPreferences = Snabble.getInstance().getUserPreferences();
@@ -106,6 +110,16 @@ public class PaymentCredentialsStore {
     public List<PaymentCredentials> getAll() {
         validate();
         ensureKeyStoreIsAccessible();
+        return Collections.unmodifiableList(data.credentialsList);
+    }
+
+    /**
+     * @return Returns a list of PaymentCredentials that may not be accessible.
+     *
+     * You can use this method for listing payment methods, because it does not do validation
+     * which can be slow
+     */
+    public List<PaymentCredentials> getAllWithoutKeyStoreValidation() {
         return Collections.unmodifiableList(data.credentialsList);
     }
 
@@ -212,6 +226,14 @@ public class PaymentCredentialsStore {
                         changed = true;
                     }
                 }
+            }
+        }
+
+        // old apps don't have ids set
+        for (PaymentCredentials pc : data.credentialsList) {
+            if (pc.getId() == null) {
+                pc.generateId();
+                changed = true;
             }
         }
 

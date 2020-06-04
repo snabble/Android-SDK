@@ -27,7 +27,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-class CheckoutApi {
+public class CheckoutApi {
     private static MediaType JSON = MediaType.parse("application/json");
 
     /*
@@ -246,7 +246,7 @@ class CheckoutApi {
     private OkHttpClient okHttpClient;
     private Call call;
 
-    public CheckoutApi(Project project) {
+    CheckoutApi(Project project) {
         this.project = project;
         this.okHttpClient = project.getOkHttpClient();
     }
