@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.2]
+
+### Fixed
+- Payment selection now does hide completely when showing empty state
+- Price does now update correctly when undoing items from empty state
+- Now using Snabble.Shoppingcart.numberOfItems and Snabble.Shoppingcart.numberOfItems.one
+
 ## [0.24.1]
 
 ### Changed

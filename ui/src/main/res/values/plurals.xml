@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="Snabble.Shoppingcart.numberOfItems">
+        <item quantity="one">@string/Snabble.Shoppingcart.numberOfItems.one</item>
+        <item quantity="other">@string/Snabble.Shoppingcart.numberOfItems</item>
+    </plurals>
+</resources>

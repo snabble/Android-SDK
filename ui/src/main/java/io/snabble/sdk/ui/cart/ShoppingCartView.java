@@ -26,6 +26,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -85,6 +86,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private TextView articleCount;
     private View sumContainer;
     private AlertDialog alertDialog;
+    private View paymentContainer;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
 
@@ -227,6 +229,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         priceSum = findViewById(R.id.price_sum);
         articleCount = findViewById(R.id.article_count);
         sumContainer = findViewById(R.id.sum_container);
+        paymentContainer = findViewById(R.id.bottom_payment_container);
 
         scanProducts = findViewById(R.id.scan_products);
         scanProducts.setOnClickListener(view -> {
@@ -398,9 +401,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
     private void updateEmptyState() {
         if (cart.size() > 0) {
+            paymentContainer.setVisibility(View.VISIBLE);
             emptyState.setVisibility(View.GONE);
             pay.setVisibility(paymentSelectionHelper.getSelectedEntry().getValue() != null && checkout.isAvailable() ? View.VISIBLE : View.GONE);
         } else {
+            paymentContainer.setVisibility(View.GONE);
             emptyState.setVisibility(View.VISIBLE);
             pay.setVisibility(View.GONE);
         }
@@ -420,7 +425,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             int price = cart.getTotalPrice();
 
             if (quantity > 0) {
-                articleCount.setText(quantity + " Artikel"); // TODO i18n
+                Resources res = getContext().getResources();
+                CharSequence articlesText = res.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity);
+                articleCount.setText(String.format(articlesText.toString(), quantity));
 
                 if (price != 0) {
                     priceSum.setText(priceFormatter.format(price));
@@ -428,6 +435,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 } else {
                     priceSum.setVisibility(View.GONE);
                 }
+                sumContainer.setVisibility(View.VISIBLE);
             } else {
                 sumContainer.setVisibility(View.GONE);
             }
