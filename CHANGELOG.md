@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.5]
+
+### Fixed
+- Fixed a crash while generating the list of available payment methods
+
 ## [0.24.4]
 
 ### Added

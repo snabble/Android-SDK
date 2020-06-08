@@ -120,9 +120,12 @@ public class PaymentSelectionHelper {
         if (entries.size() > 0 && cart.size() > 0) {
             if (lastAddedPaymentCredentials != null) {
                 for (Entry e : entries) {
-                    if (e.paymentCredentials.getId().equals(lastAddedPaymentCredentials.getId())) {
-                        select(e);
-                        break;
+                    if (e.paymentCredentials != null) {
+                        if (e.paymentCredentials.getId().equals(lastAddedPaymentCredentials.getId())) {
+                            select(e);
+                            lastAddedPaymentCredentials = null;
+                            break;
+                        }
                     }
                 }
             }
