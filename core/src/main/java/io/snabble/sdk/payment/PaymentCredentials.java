@@ -352,6 +352,14 @@ public class PaymentCredentials {
         return encryptedData;
     }
 
+    /**
+     * @return Returns true if the current app id matches the app id when this payment
+     * method was created.
+     */
+    public boolean isAvailableInCurrentApp() {
+        return Snabble.getInstance().getConfig().appId.equals(appId);
+    }
+
     public boolean canBypassKeyStore() {
         return canBypassKeyStore;
     }

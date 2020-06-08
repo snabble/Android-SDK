@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.3]
+
+### Fixed
+- Don't show payment credentials of other app id's in new payment selector
+- Skip payment method list and go directly to bottom sheet when adding payment methods from
+shopping cart
+
 ## [0.24.2]
 
 ### Fixed

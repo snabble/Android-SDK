@@ -201,7 +201,7 @@ public class PaymentSelectionHelper {
             final Entry e = new Entry();
 
             e.paymentMethod = pc.getPaymentMethod();
-            if (e.paymentMethod == null) {
+            if (e.paymentMethod == null || !pc.isAvailableInCurrentApp()) {
                 continue;
             }
 

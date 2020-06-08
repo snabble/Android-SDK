@@ -137,7 +137,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
         for (PaymentCredentials pm : paymentCredentials) {
-            if (Snabble.getInstance().getConfig().appId.equals(pm.getAppId())) {
+            if (pm.isAvailableInCurrentApp()) {
                 switch (pm.getType()) {
                     case SEPA:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));

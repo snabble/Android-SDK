@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.cart;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -16,6 +19,8 @@ import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
+import io.snabble.sdk.ui.utils.UIUtils;
 
 public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
     public static final String ARG_ENTRIES = "entries";
@@ -92,9 +97,12 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
         if (canAdd) {
             View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select_add, null);
             v.setOnClickListener(v12 -> {
-                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.execute(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, null);
+                Activity activity = UIUtils.getHostActivity(getContext());
+                if (activity instanceof FragmentActivity) {
+                    SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
+                    dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
+                } else {
+                    throw new RuntimeException("Host activity needs to be a Fragment Activity");
                 }
                 dismissAllowingStateLoss();
             });
