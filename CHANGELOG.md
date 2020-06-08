@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.4]
+
+### Added
+- Added checkmark for selected payment method
+
+### Changed
+- Automatically select payment method added from shopping cart
+
 ## [0.24.3]
 
 ### Fixed

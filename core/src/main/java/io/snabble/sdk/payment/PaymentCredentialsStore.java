@@ -31,6 +31,7 @@ public class PaymentCredentialsStore {
     private SharedPreferences sharedPreferences;
     private Data data;
     private List<Callback> callbacks = new CopyOnWriteArrayList<>();
+    private List<OnPaymentCredentialsAddedListener> onPaymentCredentialsAddedListeners = new CopyOnWriteArrayList<>();
     private String credentialsKey;
     private UserPreferences userPreferences;
 
@@ -137,6 +138,7 @@ public class PaymentCredentialsStore {
 
         data.credentialsList.add(credentials);
         save();
+        notifyPaymentCredentialsAdded(credentials);
         notifyChanged();
     }
 
@@ -242,6 +244,32 @@ public class PaymentCredentialsStore {
         }
     }
 
+    public interface OnPaymentCredentialsAddedListener {
+        void onAdded(PaymentCredentials paymentCredentials);
+    }
+
+    private void notifyPaymentCredentialsAdded(PaymentCredentials pc) {
+        Dispatch.mainThread(() -> {
+            for (OnPaymentCredentialsAddedListener l : onPaymentCredentialsAddedListeners) {
+                l.onAdded(pc);
+            }
+        });
+    }
+
+    public void addOnPaymentCredentialsAddedListener(OnPaymentCredentialsAddedListener onPaymentCredentialsAddedListener) {
+        if (!onPaymentCredentialsAddedListeners.contains(onPaymentCredentialsAddedListener)) {
+            onPaymentCredentialsAddedListeners.add(onPaymentCredentialsAddedListener);
+        }
+    }
+
+    public void removeOnPaymentCredentialsAddedListener(OnPaymentCredentialsAddedListener onPaymentCredentialsAddedListener) {
+        onPaymentCredentialsAddedListeners.remove(onPaymentCredentialsAddedListener);
+    }
+
+    public interface Callback {
+        void onChanged();
+    }
+
     private void notifyChanged() {
         Dispatch.mainThread(() -> {
             for (Callback cb : callbacks) {
@@ -258,9 +286,5 @@ public class PaymentCredentialsStore {
 
     public void removeCallback(Callback cb) {
         callbacks.remove(cb);
-    }
-
-    public interface Callback {
-        void onChanged();
     }
 }

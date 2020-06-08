@@ -53,6 +53,7 @@ public class PaymentSelectionHelper {
     private ArrayList<Entry> entries;
     private boolean isOffline;
     private WeakReference<DialogFragment> existingDialogFragment;
+    private PaymentCredentials lastAddedPaymentCredentials;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener =
             new ShoppingCart.SimpleShoppingCartListener() {
@@ -88,6 +89,11 @@ public class PaymentSelectionHelper {
         paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
         paymentCredentialsStore.addCallback(this::update);
 
+        paymentCredentialsStore.addOnPaymentCredentialsAddedListener(paymentCredentials -> {
+            lastAddedPaymentCredentials = paymentCredentials;
+            update();
+        });
+
         sharedPreferences = Snabble.getInstance().getApplication()
                 .getSharedPreferences("snabble_cart", Context.MODE_PRIVATE);
 
@@ -112,6 +118,15 @@ public class PaymentSelectionHelper {
         updateEntries();
 
         if (entries.size() > 0 && cart.size() > 0) {
+            if (lastAddedPaymentCredentials != null) {
+                for (Entry e : entries) {
+                    if (e.paymentCredentials.getId().equals(lastAddedPaymentCredentials.getId())) {
+                        select(e);
+                        break;
+                    }
+                }
+            }
+
             // preserve last payment selection, if its still available
             String last = sharedPreferences.getString("lastPaymentSelection", null);
             Entry lastEntry = null;
@@ -128,13 +143,13 @@ public class PaymentSelectionHelper {
                     if (e.paymentCredentials != null && lastEntry.paymentCredentials != null) {
                         if (e.paymentCredentials.getId().equals(lastEntry.paymentCredentials.getId())) {
                             if (e.isAvailable) {
-                                selectedEntry.postValue(lastEntry);
+                                selectedEntry.postValue(e);
                                 return;
                             }
                         }
                     } else if (lastEntry.paymentMethod == e.paymentMethod) {
                         if (e.isAvailable) {
-                            selectedEntry.postValue(lastEntry);
+                            selectedEntry.postValue(e);
                             return;
                         }
                     }
@@ -145,6 +160,7 @@ public class PaymentSelectionHelper {
             for (Entry e : entries) {
                 if (e.isAvailable) {
                     selectedEntry.postValue(e);
+                    break;
                 }
             }
         } else {

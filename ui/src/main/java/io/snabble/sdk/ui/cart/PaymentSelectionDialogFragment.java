@@ -50,6 +50,7 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                         ImageView imageView = v.findViewById(R.id.image);
                         TextView name = v.findViewById(R.id.name);
                         TextView id = v.findViewById(R.id.id);
+                        View check = v.findViewById(R.id.check);
 
                         int resId = entry.iconResId;
                         if (resId != 0) {
@@ -78,6 +79,12 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                             name.setEnabled(true);
                         } else {
                             name.setEnabled(false);
+                        }
+
+                        if (entry == PaymentSelectionHelper.getInstance().getSelectedEntry().getValue()) {
+                            check.setVisibility(View.VISIBLE);
+                        } else {
+                            check.setVisibility(View.GONE);
                         }
 
                         options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
