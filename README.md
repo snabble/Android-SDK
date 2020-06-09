@@ -49,7 +49,7 @@ dependencies {
 The library can be installed to the local maven repository using:
 
 ```sh
-./gradlew install 
+./gradlew publishToMavenLocal
 ```
 
 Make sure you add maven local to your repositories in your gradle script.
