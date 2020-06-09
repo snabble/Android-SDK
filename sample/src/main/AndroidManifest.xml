@@ -30,13 +30,11 @@
         <activity android:name=".SEPACardInputActivity" />
         <activity android:name=".CreditCardInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />
-        <activity android:name=".PaymentCredentialsSelectActivity" />
         <activity android:name=".CheckoutCustomerCardActivity" />
         <activity android:name=".CheckoutOfflineActivity" />
         <activity android:name=".CheckoutGatekeeperActivity" />
         <activity android:name=".CheckoutOnlineActivity" />
         <activity android:name=".CheckoutPOSActivity" />
-        <activity android:name=".PaymentSelectionActivity" />
         <activity android:name=".PaymentFailureActivity" />
         <activity android:name=".PaymentSuccessActivity" />
     </application>
