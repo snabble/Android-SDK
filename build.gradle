@@ -9,11 +9,14 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath 'gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         classpath "gradle.plugin.gmazzo:sqlite-plugin:0.2"
     }
+}
+
+plugins {
+    id 'maven-publish'
 }
 
 allprojects {
@@ -23,17 +26,29 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.24.5'
+        sdkVersion='0.24.6'
         versionCode=1
 
         compileSdkVersion=29
         minSdkVersion=21
         targetSdkVersion=29
 
-        buildToolsVersion='29.0.2'
+        buildToolsVersion='29.0.3'
         okhttpVersion='4.7.2'
 
         sdkVersion += project.getProperties().get("versionSuffix", "")
+    }
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                def releasesRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-releases/"
+                def snapshotsRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-snapshots/"
+                url = rootProject.sdkVersion.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
     }
 }
 

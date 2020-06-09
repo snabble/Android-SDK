@@ -1,5 +1,5 @@
 #!/bin/bash
 
 d=`date +"%s"`
-./gradlew install -PversionSuffix=-${d}
+./gradlew publishToMavenLocal -PversionSuffix=-${d}
 ./gradlew printVersion -PversionSuffix=-${d}
