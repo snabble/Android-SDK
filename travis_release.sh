@@ -12,7 +12,7 @@ if git rev-parse "$TRAVIS_TAG" >/dev/null 2>&1; then
     rm -rf build/maven-snapshots
     rm -rf maven-repository
 
-    ./gradlew publish
+    ./gradlew publishAllPublicationsToLocalBuildDirRepository
 
     ./travis_decrypt_file.sh github_deploy_key.gpg
 

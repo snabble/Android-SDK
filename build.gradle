@@ -44,9 +44,20 @@ afterEvaluate {
     publishing {
         repositories {
             maven {
+                name = "LocalBuildDir"
                 def releasesRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-releases/"
                 def snapshotsRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-snapshots/"
                 url = rootProject.sdkVersion.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/snabble/Android-SDK")
+
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
             }
         }
     }
