@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.7]
+
+### Fixed
+- Now creating a new scanned code when selecting a bundle product
+- vPOS price display now multiplies by units, if available
+
 ## [0.24.6]
 
 Is identical to 0.24.5

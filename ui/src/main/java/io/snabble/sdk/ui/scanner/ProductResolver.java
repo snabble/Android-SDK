@@ -245,7 +245,12 @@ public class ProductResolver {
 
                 Product.Code[] codes = product.getScannableCodes();
                 if (codes.length > 0) {
-                    showProduct(product, scannedCode);
+                    List<ScannedCode> newCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].transmissionCode);
+                    if (newCodes.size() > 0) {
+                        showProduct(product, newCodes.get(0));
+                    } else {
+                        showProduct(product, scannedCode);
+                    }
                 }
             }
 

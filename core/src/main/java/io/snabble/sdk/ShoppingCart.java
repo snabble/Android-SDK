@@ -597,8 +597,16 @@ public class ShoppingCart {
                             || (getUnit() != Unit.PRICE
                             && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
                             && getEffectiveQuantity() > 1)) {
+
+                        int price;
+                        if (lineItem.units != null) {
+                            price = lineItem.units * lineItem.price;
+                        } else {
+                            price = lineItem.price;
+                        }
+
                         return String.format("\u00D7 %s = %s",
-                                cart.priceFormatter.format(product, lineItem.price),
+                                cart.priceFormatter.format(product, price),
                                 cart.priceFormatter.format(getTotalPrice()));
                     } else {
                         return cart.priceFormatter.format(getTotalPrice(), true);

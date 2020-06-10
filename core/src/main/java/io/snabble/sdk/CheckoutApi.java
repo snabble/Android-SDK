@@ -97,6 +97,7 @@ public class CheckoutApi {
         String scannedCode;
         int amount;
         int price;
+        Integer units;
         int totalPrice;
         LineItemType type;
     }
