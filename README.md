@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/snabble/Android-SDK.svg?branch=master)](https://travis-ci.org/snabble/Android-SDK)
+![Build](https://github.com/snabble/Android-SDK/workflows/Build/badge.svg)
 
 # Snabble
 
