@@ -26,6 +26,9 @@ cd maven-repository
 cp -r ../build/maven-releases/* . 2>/dev/null
 cp -r ../build/maven-snapshots/* . 2>/dev/null
 
+git config --global user.email "<>"
+git config --global user.name "GitHub Workflows"
+
 git add *
 git commit -m "[GitHub-Workflows] release $GITHUB_REF commit $GITHUB_SHA"
 git push
