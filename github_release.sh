@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -z $TRAVIS ]; then
-    echo "This script should only be run by Travis-CI"
+if [ -z $GITHUB_ACTION ]; then
+    echo "This script should only be run by github workflows"
     exit 1
 fi
 
