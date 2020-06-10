@@ -1,6 +1,10 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.24.6] + [0.24.7]
+
+Are identical to 0.24.5
+
 ## [0.24.5]
 
 ### Fixed
