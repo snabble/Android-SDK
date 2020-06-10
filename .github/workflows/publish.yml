@@ -2,7 +2,7 @@ name: Publish
 
 on:
   release:
-    types: [created, published]
+    types: [published]
 
 jobs:
   build:
@@ -20,6 +20,7 @@ jobs:
         run: ./gradlew build
       - name: Publish to Maven Repository
         run: |
+          eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.MAVEN_DEPLOY }}"
           ./github_release.sh
       - name: Publish to GitHub Packages
