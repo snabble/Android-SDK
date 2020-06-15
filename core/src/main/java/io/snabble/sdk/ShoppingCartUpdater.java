@@ -4,8 +4,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -62,123 +65,209 @@ class ShoppingCartUpdater {
                         return;
                     }
 
-                    cart.invalidateOnlinePrices();
+                    List<String> skus = getToBeReplacedSkus(signedCheckoutInfo);
 
-                    try {
-                        CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
-
-                        Set<String> referrerIds = new HashSet<>();
-                        Set<String> requiredIds = new HashSet<>();
-
-                        for (int i=0; i<cart.size(); i++) {
-                            ShoppingCart.Item item = cart.get(i);
-                            requiredIds.add(item.getId());
-                            referrerIds.add(item.getId());
-                        }
-
-                        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                            requiredIds.remove(lineItem.id);
-                        }
-
-                        // error out when items are missing
-                        if (requiredIds.size() > 0) {
-                            Logger.e("Missing products in price update: " + requiredIds.toString());
-                            unknownError();
-                            return;
-                        }
-
-                        int discounts = 0;
-
-                        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                            ShoppingCart.Item item = cart.getByItemId(lineItem.id);
-
-                            if (item != null) {
-                                if (!item.getProduct().getSku().equals(lineItem.sku)) {
-                                    Product product = project.getProductDatabase().findBySku(lineItem.sku);
-
-                                    if (product != null) {
-                                        ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
-                                        if (scannedCode != null) {
-                                            item.replace(product, scannedCode, lineItem.amount);
-                                            item.setLineItem(lineItem);
-                                        }
-                                    }
-                                } else {
-                                    item.setLineItem(lineItem);
-                                }
+                    if (skus.size() > 0) {
+                        Dispatch.background(() -> {
+                            Map<String, Product> products = getReplacedProducts(skus);
+                            if (products == null) {
+                                Dispatch.mainThread(this::unknownError);
                             } else {
-                                if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
-                                    discounts += lineItem.totalPrice;
-                                } else {
-                                    cart.insert(cart.newItem(lineItem), cart.size(), false);
-                                }
+                                Dispatch.mainThread(() -> commitCartUpdate(modCount, signedCheckoutInfo, products));
                             }
-                        }
-
-                        if (discounts != 0) {
-                            CheckoutApi.LineItem lineItem = new CheckoutApi.LineItem();
-                            lineItem.type = CheckoutApi.LineItemType.DISCOUNT;
-                            lineItem.amount = 1;
-                            lineItem.price = discounts;
-                            lineItem.totalPrice = lineItem.price;
-                            lineItem.id = UUID.randomUUID().toString();
-                            cart.insert(cart.newItem(lineItem), cart.size(), false);
-                        }
-
-                        cart.setOnlineTotalPrice(checkoutInfo.price.price);
-                        Logger.d("Successfully updated prices");
-                    } catch (Exception e) {
-                        Logger.e("Could not update price: %s", e.getMessage());
-                        unknownError();
-                        return;
+                        });
+                    } else {
+                        Dispatch.mainThread(() -> commitCartUpdate(modCount, signedCheckoutInfo, null));
                     }
-
-                    lastAvailablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(
-                            project.getCheckout().getClientAcceptedPaymentMethods());
-
-                    isUpdated = true;
-                    cart.setInvalidProducts(null);
-                    cart.checkLimits();
-                    cart.notifyPriceUpdate(cart);
                 });
             }
 
             @Override
             public void noShop() {
-                isUpdated = true;
-                lastAvailablePaymentMethods = null;
-                cart.notifyPriceUpdate(cart);
+                error(true);
             }
 
             @Override
             public void invalidProducts(List<Product> products) {
-                isUpdated = true;
-                lastAvailablePaymentMethods = null;
                 cart.setInvalidProducts(products);
-                cart.notifyPriceUpdate(cart);
+                error(true);
             }
 
             @Override
             public void noAvailablePaymentMethod() {
-                isUpdated = true;
-                lastAvailablePaymentMethods = null;
-                cart.notifyPriceUpdate(cart);
+               error(true);
             }
 
             @Override
             public void unknownError() {
-                isUpdated = false;
-                lastAvailablePaymentMethods = null;
-                cart.notifyPriceUpdate(cart);
+                error(false);
             }
 
             @Override
             public void connectionError() {
-                isUpdated = false;
-                lastAvailablePaymentMethods = null;
-                cart.notifyPriceUpdate(cart);
+                error(false);
             }
         }));
+    }
+
+    private void error(boolean b) {
+        isUpdated = b;
+        lastAvailablePaymentMethods = null;
+        cart.notifyPriceUpdate(cart);
+    }
+
+    private void commitCartUpdate(int modCount, CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, Map<String, Product> products) {
+        try {
+            if (cart.getModCount() != modCount) {
+                error(false);
+                return;
+            }
+
+            cart.invalidateOnlinePrices();
+
+            CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
+
+            Set<String> referrerIds = new HashSet<>();
+            Set<String> requiredIds = new HashSet<>();
+
+            for (int i=0; i<cart.size(); i++) {
+                ShoppingCart.Item item = cart.get(i);
+                requiredIds.add(item.getId());
+                referrerIds.add(item.getId());
+            }
+
+            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                requiredIds.remove(lineItem.id);
+            }
+
+            // error out when items are missing
+            if (requiredIds.size() > 0) {
+                Logger.e("Missing products in price update: " + requiredIds.toString());
+                error(false);
+                return;
+            }
+
+            int discounts = 0;
+
+            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+                ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+
+                if (item != null) {
+                    if (!item.getProduct().getSku().equals(lineItem.sku)) {
+                        if (products == null) {
+                            error(false);
+                            return;
+                        }
+
+                        Product product = products.get(lineItem.sku);
+
+                        if (product != null) {
+                            ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
+                            if (scannedCode != null) {
+                                item.replace(product, scannedCode, lineItem.amount);
+                                item.setLineItem(lineItem);
+                            }
+                        }
+                    } else {
+                        item.setLineItem(lineItem);
+                    }
+                } else {
+                    if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
+                        discounts += lineItem.totalPrice;
+                    } else {
+                        cart.insert(cart.newItem(lineItem), cart.size(), false);
+                    }
+                }
+            }
+
+            if (discounts != 0) {
+                CheckoutApi.LineItem lineItem = new CheckoutApi.LineItem();
+                lineItem.type = CheckoutApi.LineItemType.DISCOUNT;
+                lineItem.amount = 1;
+                lineItem.price = discounts;
+                lineItem.totalPrice = lineItem.price;
+                lineItem.id = UUID.randomUUID().toString();
+                cart.insert(cart.newItem(lineItem), cart.size(), false);
+            }
+
+            cart.setOnlineTotalPrice(checkoutInfo.price.price);
+            Logger.d("Successfully updated prices");
+        } catch (Exception e) {
+            Logger.e("Could not update price: %s", e.getMessage());
+            error(false);
+            return;
+        }
+
+        lastAvailablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(
+                project.getCheckout().getClientAcceptedPaymentMethods());
+
+        isUpdated = true;
+        cart.setInvalidProducts(null);
+        cart.checkLimits();
+        cart.notifyPriceUpdate(cart);
+    }
+
+    private List<String> getToBeReplacedSkus(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo) {
+        CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
+
+        List<String> skus = new ArrayList<>();
+        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+            ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+
+            if (item != null) {
+                if (!item.getProduct().getSku().equals(lineItem.sku)) {
+                    skus.add(lineItem.sku);
+                }
+            }
+        }
+
+        return skus;
+    }
+
+    private Map<String, Product> getReplacedProducts(List<String> skus) {
+        Map<String, Product> products = new HashMap<>();
+
+        for (String sku : skus) {
+            Product product = findProductBlocking(sku);
+            if (product == null) {
+                return null;
+            } else {
+                products.put(sku, product);
+            }
+        }
+
+        return products;
+    }
+
+    private Product findProductBlocking(String sku) {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        final Product[] product = {null};
+
+        project.getProductDatabase().findBySkuOnline(sku, new OnProductAvailableListener() {
+            @Override
+            public void onProductAvailable(Product p, boolean wasOnline) {
+                product[0] = p;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onProductNotFound() {
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError() {
+                countDownLatch.countDown();
+            }
+        });
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return product[0];
     }
 
     public boolean isUpdated() {
