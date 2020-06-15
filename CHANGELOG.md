@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Now creating a new scanned code when selecting a bundle product
 - vPOS price display now multiplies by units, if available
+- vPOS replace operations with products that are not in the local db are not blocking the
+ui anymore
 
 ## [0.24.6]
 
