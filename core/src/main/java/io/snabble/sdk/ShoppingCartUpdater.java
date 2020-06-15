@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
@@ -52,10 +53,10 @@ class ShoppingCartUpdater {
         }
 
         final int modCount = cart.getModCount();
-        handler.post(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
+        Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
             public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
-                handler.post(() -> {
+                Dispatch.mainThread(() -> {
                     // ignore when cart was modified mid request
                     if (cart.getModCount() != modCount) {
                         return;
@@ -93,45 +94,18 @@ class ShoppingCartUpdater {
 
                             if (item != null) {
                                 if (!item.getProduct().getSku().equals(lineItem.sku)) {
-                                    CountDownLatch countDownLatch = new CountDownLatch(1);
-                                    boolean[] error = new boolean[1];
+                                    Product product = project.getProductDatabase().findBySku(lineItem.sku);
 
-                                    project.getProductDatabase().findBySkuOnline(lineItem.sku, new OnProductAvailableListener() {
-                                        @Override
-                                        public void onProductAvailable(Product product, boolean wasOnline) {
-                                            ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
-                                            if (scannedCode == null) {
-                                                error[0] = true;
-                                                countDownLatch.countDown();
-                                                return;
-                                            }
-
+                                    if (product != null) {
+                                        ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
+                                        if (scannedCode != null) {
                                             item.replace(product, scannedCode, lineItem.amount);
-                                            countDownLatch.countDown();
+                                            item.setLineItem(lineItem);
                                         }
-
-                                        @Override
-                                        public void onProductNotFound() {
-                                            error[0] = true;
-                                            countDownLatch.countDown();
-                                        }
-
-                                        @Override
-                                        public void onError() {
-                                            error[0] = true;
-                                            countDownLatch.countDown();
-                                        }
-                                    });
-
-                                    countDownLatch.await();
-
-                                    if (error[0]) {
-                                        unknownError();
-                                        return;
                                     }
+                                } else {
+                                    item.setLineItem(lineItem);
                                 }
-
-                                item.setLineItem(lineItem);
                             } else {
                                 if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
                                     discounts += lineItem.totalPrice;
