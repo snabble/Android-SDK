@@ -32,6 +32,7 @@ public class PaymentCredentials {
     public enum Type {
         SEPA(null),
         CREDIT_CARD(null),
+        PAYDIREKT(null),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID");
 
         private String originType;
@@ -61,6 +62,11 @@ public class PaymentCredentials {
         private String hostedDataID;
         private String hostedDataStoreID;
         private String cardType;
+    }
+
+    private static class PaydirektData {
+        private String clientID;
+        private String customerAuthorizationURI;
     }
 
     private static class TegutEmployeeCard {
@@ -207,6 +213,42 @@ public class PaymentCredentials {
         } catch (Exception e) {
             return null;
         }
+
+        if (pc.encryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
+    public static PaymentCredentials fromPaydirektInfo(String customerAuthorizationURI) {
+        if (customerAuthorizationURI == null) {
+            return null;
+        }
+
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
+        pc.type = Type.PAYDIREKT;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        pc.obfuscatedId = "paydirekt";
+
+        PaydirektData paydirektData = new PaydirektData();
+        paydirektData.clientID = Snabble.getInstance().getClientId();
+        paydirektData.customerAuthorizationURI = customerAuthorizationURI;
+
+        String json = GsonHolder.get().toJson(paydirektData, PaydirektData.class);
+
+        X509Certificate certificate = certificates.get(0);
+        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.encrypt();
+        pc.signature = pc.sha256Signature(certificate);
+        pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.validTo = System.currentTimeMillis() + 2000000; // TODO real valid to date!
 
         if (pc.encryptedData == null) {
             return null;
@@ -473,6 +515,8 @@ public class PaymentCredentials {
             }
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
+        } else if (type == Type.PAYDIREKT) {
+            return PaymentMethod.PAYDIREKT;
         }
 
         return null;

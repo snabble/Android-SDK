@@ -29,6 +29,7 @@
         <activity android:name=".AgeVerificationActivity" />
         <activity android:name=".SEPACardInputActivity" />
         <activity android:name=".CreditCardInputActivity" />
+        <activity android:name=".PaydirektInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />
         <activity android:name=".CheckoutCustomerCardActivity" />
         <activity android:name=".CheckoutOfflineActivity" />

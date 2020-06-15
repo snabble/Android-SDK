@@ -110,6 +110,22 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }));
         }
 
+        if (availablePaymentMethods.contains(PaymentMethod.PAYDIREKT)) {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_paydirekt,
+                    "Paydirekt",
+                    getUsableAtText(PaymentMethod.PAYDIREKT), new OneShotClickListener() {
+                @Override
+                public void click() {
+                    SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+                    if (callback != null) {
+                        callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null);
+                    }
+
+                    dismissAllowingStateLoss();
+                }
+            }));
+        }
+
         RecyclerView recyclerView = v.findViewById(R.id.recycler_view);
         recyclerView.setAdapter(new SelectPaymentMethodFragment.Adapter());
 

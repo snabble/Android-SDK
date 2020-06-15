@@ -14,6 +14,7 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
+import io.snabble.sdk.ui.payment.PaydirektInputView;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUI.Callback {
@@ -139,6 +140,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_CREDIT_CARD_INPUT:
                 showCreditCardInput();
                 break;
+            case SHOW_PAYDIREKT_INPUT:
+                showPaydirektInput();
+                break;
             case SHOW_PAYMENT_CREDENTIALS_LIST:
                 showPaymentCredentialsList();
                 break;
@@ -221,6 +225,11 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showCreditCardInput() {
         Intent intent = new Intent(this, CreditCardInputActivity.class);
+        startActivity(intent);
+    }
+
+    public void showPaydirektInput() {
+        Intent intent = new Intent(this, PaydirektInputActivity.class);
         startActivity(intent);
     }
 

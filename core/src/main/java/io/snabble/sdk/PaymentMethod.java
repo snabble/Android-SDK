@@ -20,7 +20,9 @@ public enum PaymentMethod {
     @SerializedName("customerCardPOS")
     CUSTOMERCARD_POS(false, false, false),
     @SerializedName("gatekeeperTerminal")
-    GATEKEEPER_TERMINAL(false, false, false);
+    GATEKEEPER_TERMINAL(false, false, false),
+    @SerializedName("paydirektOneKlick")
+    PAYDIREKT(false, true, false);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;

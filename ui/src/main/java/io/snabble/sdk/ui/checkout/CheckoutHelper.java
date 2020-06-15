@@ -19,6 +19,7 @@ public class CheckoutHelper {
                 case VISA:
                 case MASTERCARD:
                 case AMEX:
+                case PAYDIREKT:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_ONLINE, null);
                     break;
                 case GATEKEEPER_TERMINAL:

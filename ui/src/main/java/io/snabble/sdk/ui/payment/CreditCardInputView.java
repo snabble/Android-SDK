@@ -79,10 +79,6 @@ public class CreditCardInputView extends FrameLayout {
 
     @SuppressLint({"InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void inflateView() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            throw new RuntimeException("CreditCardInputView is only supported on API 21+");
-        }
-
         checkActivityResumed();
 
         inflate(getContext(), R.layout.snabble_view_cardinput_creditcard, this);

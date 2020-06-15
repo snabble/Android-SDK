@@ -70,6 +70,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.VISA, R.drawable.snabble_ic_payment_select_visa);
         icons.put(PaymentMethod.MASTERCARD, R.drawable.snabble_ic_payment_select_mastercard);
         icons.put(PaymentMethod.AMEX, R.drawable.snabble_ic_payment_select_amex);
+        icons.put(PaymentMethod.PAYDIREKT, R.drawable.snabble_ic_payment_select_paydirekt);
         icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_payment_select_tegut);
         icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_payment_select_sco);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_payment_select_pos);
@@ -79,6 +80,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.VISA, "VISA");
         names.put(PaymentMethod.MASTERCARD, "Mastercard");
         names.put(PaymentMethod.AMEX, "American Express");
+        names.put(PaymentMethod.PAYDIREKT, "Paydirekt");
         names.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, "Tegut... Mitarbeiterkarte");
         names.put(PaymentMethod.GATEKEEPER_TERMINAL, context.getString(R.string.Snabble_Payment_payAtSCO));
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));

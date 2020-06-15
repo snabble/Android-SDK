@@ -73,6 +73,7 @@ public class Snabble {
     private String usersUrl;
     private String telecashSecretUrl;
     private String telecashPreAuthUrl;
+    private String paydirektAuthUrl;
     private String createAppUserUrl;
     private OkHttpClient okHttpClient;
     private WeakReference<Activity> currentActivity;
@@ -211,6 +212,7 @@ public class Snabble {
             createAppUserUrl = getUrl(jsonObject, "createAppUser");
             telecashSecretUrl = getUrl(jsonObject, "telecashSecret");
             telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth");
+            paydirektAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization");
 
             if (jsonObject.has("projects")) {
                 parseProjects(jsonObject);
@@ -335,6 +337,10 @@ public class Snabble {
 
     public String getTelecashPreAuthUrl() {
         return telecashPreAuthUrl;
+    }
+
+    public String getPaydirektAuthUrl() {
+        return paydirektAuthUrl;
     }
 
     public String getCreateAppUserUrl() {
