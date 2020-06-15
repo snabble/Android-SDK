@@ -244,8 +244,8 @@ public class ProductResolver {
                 Telemetry.event(Telemetry.Event.SelectedBundleProduct, product);
 
                 Product.Code[] codes = product.getScannableCodes();
-                if (codes.length > 0) {
-                    List<ScannedCode> newCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].transmissionCode);
+                if (codes.length > 0 && codes[0].lookupCode != null) {
+                    List<ScannedCode> newCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].lookupCode);
                     if (newCodes.size() > 0) {
                         showProduct(product, newCodes.get(0));
                     } else {
