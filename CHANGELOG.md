@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.0]
+
+### Added
+- Support for paydirekt
+
 ## [0.24.7]
 
 ### Fixed
