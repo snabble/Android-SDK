@@ -140,7 +140,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             if (pm.isAvailableInCurrentApp()) {
                 switch (pm.getType()) {
                     case SEPA:
-                        entries.add(new Entry(pm, R.drawable.snabble_ic_sepa_small, pm.getObfuscatedId()));
+                        entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));
                         break;
                     case CREDIT_CARD:
                         PaymentCredentials.Brand ccBrand = pm.getBrand();
@@ -149,13 +149,13 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         if (ccBrand != null) {
                             switch (ccBrand) {
                                 case VISA:
-                                    drawableResId = R.drawable.snabble_ic_visa;
+                                    drawableResId = R.drawable.snabble_ic_payment_select_visa;
                                     break;
                                 case MASTERCARD:
-                                    drawableResId = R.drawable.snabble_ic_mastercard;
+                                    drawableResId = R.drawable.snabble_ic_payment_select_mastercard;
                                     break;
                                 case AMEX:
-                                    drawableResId = R.drawable.snabble_ic_amex;
+                                    drawableResId = R.drawable.snabble_ic_payment_select_amex;
                                     break;
                             }
                         }
@@ -166,7 +166,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_paydirekt, pm.getObfuscatedId()));
                         break;
                     case TEGUT_EMPLOYEE_CARD:
-                        entries.add(new Entry(pm, R.drawable.snabble_ic_tg, pm.getObfuscatedId()));
+                        entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_tegut, pm.getObfuscatedId()));
                         break;
                 }
             }
@@ -225,23 +225,17 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 }
 
                 vh.text.setText(e.text);
-                vh.delete.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        new AlertDialog.Builder(getContext())
-                                .setMessage(R.string.Snabble_Payment_delete_message)
-                                .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        paymentCredentialsStore.remove(e.paymentCredentials);
-                                    }
-                                })
-                                .setNegativeButton(R.string.Snabble_No, null)
-                                .create()
-                                .show();
+                vh.delete.setOnClickListener(view -> {
+                    new AlertDialog.Builder(getContext())
+                            .setMessage(R.string.Snabble_Payment_delete_message)
+                            .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
+                                paymentCredentialsStore.remove(e.paymentCredentials);
+                            })
+                            .setNegativeButton(R.string.Snabble_No, null)
+                            .create()
+                            .show();
 
-                        Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
-                    }
+                    Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
                 });
             }
         }

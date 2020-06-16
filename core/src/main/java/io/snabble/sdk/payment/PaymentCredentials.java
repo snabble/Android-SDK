@@ -67,6 +67,17 @@ public class PaymentCredentials {
     private static class PaydirektData {
         private String clientID;
         private String customerAuthorizationURI;
+        private PaydirektAuthorizationData authorizationData;
+    }
+
+    public static class PaydirektAuthorizationData {
+        public String id;
+        public String name;
+        public String ipAddress;
+        public String fingerprint;
+        public String redirectUrlAfterSuccess;
+        public String redirectUrlAfterCancellation;
+        public String redirectUrlAfterFailure;
     }
 
     private static class TegutEmployeeCard {
@@ -83,6 +94,7 @@ public class PaymentCredentials {
     private Brand brand;
     private String appId;
     private String id;
+    private Map<String, String> additionalData;
 
     private PaymentCredentials() {
 
@@ -115,35 +127,6 @@ public class PaymentCredentials {
 
         X509Certificate certificate = certificates.get(0);
         pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
-        pc.signature = pc.sha256Signature(certificate);
-        pc.brand = Brand.UNKNOWN;
-        pc.appId = Snabble.getInstance().getConfig().appId;
-
-        if (pc.encryptedData == null) {
-            return null;
-        }
-
-        return pc;
-    }
-
-    public static PaymentCredentials fromEncryptedSEPA(String name, String obfuscatedId, String encryptedData) {
-        PaymentCredentials pc = new PaymentCredentials();
-        pc.type = Type.SEPA;
-
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
-        if (certificates.size() == 0) {
-            return null;
-        }
-
-        if (name == null || name.length() == 0) {
-            throw new IllegalArgumentException("Invalid Name");
-        }
-
-        pc.obfuscatedId = obfuscatedId;
-
-        X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = encryptedData;
         pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
@@ -221,7 +204,7 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromPaydirektInfo(String customerAuthorizationURI) {
+    public static PaymentCredentials fromPaydirekt(PaydirektAuthorizationData authorizationData, String customerAuthorizationURI) {
         if (customerAuthorizationURI == null) {
             return null;
         }
@@ -248,7 +231,12 @@ public class PaymentCredentials {
         pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
-        pc.validTo = System.currentTimeMillis() + 2000000; // TODO real valid to date!
+
+        pc.additionalData = new HashMap<>();
+        pc.additionalData.put("deviceID", authorizationData.id);
+        pc.additionalData.put("deviceName", authorizationData.name);
+        pc.additionalData.put("deviceFingerprint", authorizationData.fingerprint);
+        pc.additionalData.put("deviceIPAddress", authorizationData.ipAddress);
 
         if (pc.encryptedData == null) {
             return null;
@@ -502,6 +490,10 @@ public class PaymentCredentials {
 
     public String getEncryptedData() {
         return decrypt();
+    }
+
+    public Map<String, String> getAdditionalData() {
+        return additionalData;
     }
 
     public PaymentMethod getPaymentMethod() {

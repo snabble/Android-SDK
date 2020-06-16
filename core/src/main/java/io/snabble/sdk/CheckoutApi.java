@@ -123,6 +123,10 @@ public class CheckoutApi {
         public String originType;
         public String validUntil;
         public String cardNumber;
+        public String deviceID;
+        public String deviceName;
+        public String deviceFingerprint;
+        public String deviceIPAddress;
     }
 
     public static class CheckoutProcessRequest {
@@ -451,6 +455,14 @@ public class CheckoutApi {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                 checkoutProcessRequest.paymentInformation.validUntil = simpleDateFormat.format(date);
                 checkoutProcessRequest.paymentInformation.cardNumber = paymentCredentials.getObfuscatedId();
+            } else if (paymentCredentials.getType() == PaymentCredentials.Type.PAYDIREKT) {
+                Map<String, String> additionalData = paymentCredentials.getAdditionalData();
+                if (additionalData != null) {
+                    checkoutProcessRequest.paymentInformation.deviceID = additionalData.get("deviceID");
+                    checkoutProcessRequest.paymentInformation.deviceName = additionalData.get("deviceName");
+                    checkoutProcessRequest.paymentInformation.deviceFingerprint = additionalData.get("deviceFingerprint");
+                    checkoutProcessRequest.paymentInformation.deviceIPAddress = additionalData.get("deviceIPAddress");
+                }
             }
         }
 

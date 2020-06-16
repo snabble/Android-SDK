@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -18,20 +17,16 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
 
-import com.google.gson.JsonObject;
+import com.google.android.material.snackbar.Snackbar;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
-import io.snabble.sdk.CheckoutApi;
-import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
@@ -44,20 +39,17 @@ import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class PaydirektInputView extends FrameLayout {
     private static class Href {
         public String href;
     }
 
-    private static class PaydirektAuthorizationResult {
+    private static class AuthorizationResult {
         public String id;
         public Map<String, Href> links;
 
@@ -78,48 +70,28 @@ public class PaydirektInputView extends FrameLayout {
         }
     }
 
-    private static class PaydirektAuthorizationRequest {
-        String id;
-        String name;
-        String ipAddress;
-        String fingerprint;
-        String redirectUrlAfterSuccess;
-        String redirectUrlAfterCancellation;
-        String redirectUrlAfterFailure;
-    }
-
-    private enum RedirectUrl {
-        SUCCESS("success"),
-        CANCELLED("cancelled"),
-        FAILURE("failure");
-
-        String path;
-
-        RedirectUrl(String path) {
-            this.path = path;
-        }
-
-        public String getUrl() {
-            return "snabble-paydirekt://" + path;
-        }
-    }
-
-    private class PaydirektInfo {
-        String whateverId;
-
-        public PaydirektInfo(String whateverId) {
-
-        }
-    }
+    private static final String SUCCESS_URL = "snabble-paydirekt://success";
+    private static final String CANCELLED_URL = "snabble-paydirekt://cancelled";
+    private static final String FAILURE_URL = "snabble-paydirekt://failure";
 
     private boolean acceptedKeyguard;
     private WebView webView;
     private OkHttpClient okHttpClient;
     private ProgressBar progressBar;
-    private boolean isAttachedToWindow;
-    private boolean isActivityResumed;
-    private PaydirektInfo pendingPaydirektInfo;
-    private PaydirektAuthorizationResult authorizationResult;
+    private AuthorizationResult authorizationResult;
+    private PaymentCredentials.PaydirektAuthorizationData authorizationData;
+
+    private OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if (webView != null && webView.canGoBack()) {
+                webView.goBack();
+            } else {
+                onBackPressedCallback.remove();
+                finish();
+            }
+        }
+    };
 
     public PaydirektInputView(Context context) {
         super(context);
@@ -138,8 +110,6 @@ public class PaydirektInputView extends FrameLayout {
 
     @SuppressLint({"InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void inflateView() {
-        checkActivityResumed();
-
         inflate(getContext(), R.layout.snabble_view_paydirekt, this);
 
         okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
@@ -150,33 +120,29 @@ public class PaydirektInputView extends FrameLayout {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Logger.d("onReceivedError " + failingUrl);
                 Dispatch.mainThread(() -> finishWithError());
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Logger.d("shouldOverrideUrlLoading " + request.getUrl().toString());
-
                 Uri uri = request.getUrl();
                 if (uri != null) {
                     String url = uri.toString();
-                    for (RedirectUrl redirectUrl : RedirectUrl.values()) {
-                        if (url.equals(redirectUrl.getUrl())) {
-                            switch (redirectUrl) {
-                                case SUCCESS:
-                                    authenticateAndSave();
-                                    break;
-                                case CANCELLED:
-                                    finish();
-                                    break;
-                                case FAILURE:
-                                    finishWithError();
-                                    break;
-                            }
+                    Logger.d("shouldOverrideUrlLoading " + url);
 
+                    switch (url) {
+                        case SUCCESS_URL:
+                            authenticateAndSave();
                             return true;
-                        }
+                        case CANCELLED_URL:
+                            finish();
+                            return true;
+                        case FAILURE_URL:
+                            finishWithError();
+                            return true;
                     }
+
                 }
                 return super.shouldOverrideUrlLoading(view, request);
             }
@@ -198,33 +164,31 @@ public class PaydirektInputView extends FrameLayout {
         });
 
         webView.getSettings().setJavaScriptEnabled(true);
-//        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
 
-//        CookieManager.getInstance().setAcceptCookie(true);
-//        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-
+        CookieManager.getInstance().setAcceptCookie(true);
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
         load();
     }
 
     private void load() {
-        Project project = SnabbleUI.getProject();
         String url = Snabble.getInstance().getPaydirektAuthUrl();
         if (url == null) {
             finishWithError();
             return;
         }
 
-        PaydirektAuthorizationRequest paydirektAuthorizationRequest = new PaydirektAuthorizationRequest();
-        paydirektAuthorizationRequest.id = Build.MODEL;
-        paydirektAuthorizationRequest.name = Build.PRODUCT; // TODO correct?
-        paydirektAuthorizationRequest.fingerprint = "167-671"; // WTF?
-        paydirektAuthorizationRequest.ipAddress = "127.0.0.1"; // WTF?
-        paydirektAuthorizationRequest.redirectUrlAfterSuccess = RedirectUrl.SUCCESS.getUrl();
-        paydirektAuthorizationRequest.redirectUrlAfterCancellation = RedirectUrl.CANCELLED.getUrl();
-        paydirektAuthorizationRequest.redirectUrlAfterFailure = RedirectUrl.FAILURE.getUrl();
+        authorizationData = new PaymentCredentials.PaydirektAuthorizationData();
+        authorizationData.id = UUID.randomUUID().toString();
+        authorizationData.name = Build.MODEL;
+        authorizationData.fingerprint = "167-671";
+        authorizationData.ipAddress = "127.0.0.1";
+        authorizationData.redirectUrlAfterSuccess = SUCCESS_URL;
+        authorizationData.redirectUrlAfterCancellation = CANCELLED_URL;
+        authorizationData.redirectUrlAfterFailure = FAILURE_URL;
 
-        String json = GsonHolder.get().toJson(paydirektAuthorizationRequest);
+        String json = GsonHolder.get().toJson(authorizationData);
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
@@ -232,10 +196,10 @@ public class PaydirektInputView extends FrameLayout {
                 .post(body)
                 .build();
 
-        project.getOkHttpClient().newCall(request).enqueue(
-                new SimpleJsonCallback<PaydirektAuthorizationResult>(PaydirektAuthorizationResult.class) {
+        okHttpClient.newCall(request).enqueue(
+                new SimpleJsonCallback<AuthorizationResult>(AuthorizationResult.class) {
                     @Override
-            public void success(PaydirektAuthorizationResult result) {
+            public void success(AuthorizationResult result) {
                 Dispatch.mainThread(() -> {
                     authorizationResult = result;
                     String webLink = result.getWebLink();
@@ -255,15 +219,6 @@ public class PaydirektInputView extends FrameLayout {
                 });
             }
         });
-    }
-
-    private void checkActivityResumed() {
-        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
-        if (fragmentActivity != null) {
-            isActivityResumed = fragmentActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
-        } else {
-            isActivityResumed = true;
-        }
     }
 
     private void authenticateAndSave() {
@@ -289,7 +244,7 @@ public class PaydirektInputView extends FrameLayout {
     }
 
     private void save() {
-        final PaymentCredentials pc = PaymentCredentials.fromPaydirektInfo(authorizationResult.getAuthorizationLink());
+        final PaymentCredentials pc = PaymentCredentials.fromPaydirekt(authorizationData, authorizationResult.getAuthorizationLink());
 
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
@@ -314,9 +269,11 @@ public class PaydirektInputView extends FrameLayout {
     }
 
     private void finishWithError() {
+        Logger.d("finishWithError");
+
         Toast.makeText(getContext(),
-                R.string.Snabble_paydirekt_authorizationFailed_message,
-                Toast.LENGTH_SHORT)
+                R.string.Snabble_paydirekt_authorizationFailed_title,
+                Toast.LENGTH_LONG)
                 .show();
 
         finish();
@@ -326,12 +283,13 @@ public class PaydirektInputView extends FrameLayout {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        checkActivityResumed();
-
         Application application = (Application) getContext().getApplicationContext();
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
-        isAttachedToWindow = true;
+        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
+        if (fragmentActivity != null) {
+            fragmentActivity.getOnBackPressedDispatcher().addCallback(fragmentActivity, onBackPressedCallback);
+        }
     }
 
     @Override
@@ -341,7 +299,7 @@ public class PaydirektInputView extends FrameLayout {
         Application application = (Application) getContext().getApplicationContext();
         application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
-        isAttachedToWindow = false;
+        onBackPressedCallback.remove();
     }
 
     private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
@@ -355,24 +313,5 @@ public class PaydirektInputView extends FrameLayout {
                         }
                     }
                 }
-
-                @Override
-                public void onActivityResumed(Activity activity) {
-                    super.onActivityResumed(activity);
-                    isActivityResumed = true;
-
-                    if (pendingPaydirektInfo != null) {
-                        authenticateAndSave();
-                        pendingPaydirektInfo = null;
-                    }
-                }
-
-                @Override
-                public void onActivityPaused(Activity activity) {
-                    super.onActivityPaused(activity);
-                    isActivityResumed = false;
-                }
             };
-
-
 }

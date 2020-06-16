@@ -45,7 +45,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
 
         if (availablePaymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_sepa_small,
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_sepa,
                     "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
                 @Override
                 public void click() {
@@ -60,7 +60,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
 
         if (availablePaymentMethods.contains(PaymentMethod.VISA)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_visa,
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_visa,
                     "VISA",
                     getUsableAtText(PaymentMethod.VISA), new OneShotClickListener() {
                 @Override
@@ -77,7 +77,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
 
         if (availablePaymentMethods.contains(PaymentMethod.MASTERCARD)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_mastercard,
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_mastercard,
                     "Mastercard",
                     getUsableAtText(PaymentMethod.MASTERCARD), new OneShotClickListener() {
                 @Override
@@ -94,7 +94,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
 
         if (availablePaymentMethods.contains(PaymentMethod.AMEX)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_amex,
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_amex,
                     "American Express",
                     getUsableAtText(PaymentMethod.AMEX), new OneShotClickListener() {
                 @Override

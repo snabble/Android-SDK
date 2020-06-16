@@ -324,7 +324,7 @@ public class Snabble {
 
     public String getReceiptsUrl() {
         AppUser appUser = userPreferences.getAppUser();
-        if (appUser != null) {
+        if (appUser != null && receiptsUrl != null) {
             return receiptsUrl.replace("{appUserID}", userPreferences.getAppUser().id);
         } else {
             return null;
