@@ -24,9 +24,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,14 +37,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
-import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
@@ -347,6 +343,18 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
             CheckoutHelper.displayPaymentView(checkout);
             progressDialog.dismiss();
+        } else if (state == Checkout.State.PAYMENT_APPROVED) {
+            Telemetry.event(Telemetry.Event.CheckoutSuccessful);
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS);
+        } else if (state == Checkout.State.PAYMENT_ABORTED) {
+            Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
+            SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
+        } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
+            Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE);
+        } else if (state == Checkout.State.DENIED_BY_SUPERVISOR) {
+            Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE);
         } else if (state == Checkout.State.INVALID_PRODUCTS) {
             List<Product> invalidProducts = checkout.getInvalidProducts();
             if (invalidProducts != null && invalidProducts.size() > 0) {

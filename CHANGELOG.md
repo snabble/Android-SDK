@@ -1,6 +1,16 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.1]
+
+### Fixed
+- Payment methods that are not requiring a intermediate status screen are now showing the payment
+success screen
+- The OnFullfillmentUpdateListener is now not emitting onFullfillmentDone when no fulfillments are present
+after a successful payment
+- Payment selector is now hiding customer card payment methods that are not added
+- Fixed a crash in the payment selector when adding a new customer card
+
 ## [0.25.0]
 
 ### Added

@@ -521,7 +521,9 @@ public class Checkout {
             approve();
 
             if (areAllFulfillmentsClosed()) {
-                notifyFulfillmentDone();
+                if (checkoutProcess.fulfillments != null) {
+                    notifyFulfillmentDone();
+                }
                 return true;
             } else {
                 notifyFulfillmentUpdate();

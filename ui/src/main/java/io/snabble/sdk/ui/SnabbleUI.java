@@ -111,6 +111,16 @@ public class SnabbleUI {
         return uiCallback;
     }
 
+    public static void executeAction(Action action) {
+        executeAction(action, null);
+    }
+
+    public static void executeAction(Action action, Object data) {
+        if (uiCallback != null) {
+            uiCallback.execute(action, data);
+        }
+    }
+
     /**
      * Registers a ActionBar for suggested changes on the action bar.
      * <p>

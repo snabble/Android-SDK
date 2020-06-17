@@ -254,6 +254,7 @@ public class PaymentCredentials {
         }
 
         PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
         pc.type = Type.TEGUT_EMPLOYEE_CARD;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
