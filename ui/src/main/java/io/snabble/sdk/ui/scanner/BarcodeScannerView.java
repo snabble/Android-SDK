@@ -479,12 +479,16 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
      */
     public boolean isTorchEnabled() {
         if (camera != null && running) {
-            Camera.Parameters parameters = camera.getParameters();
-            if (parameters != null) {
-                String flashMode = parameters.getFlashMode();
-                if (flashMode != null) {
-                    return flashMode.equals(Camera.Parameters.FLASH_MODE_TORCH);
+            try {
+                Camera.Parameters parameters = camera.getParameters();
+                if (parameters != null) {
+                    String flashMode = parameters.getFlashMode();
+                    if (flashMode != null) {
+                        return flashMode.equals(Camera.Parameters.FLASH_MODE_TORCH);
+                    }
                 }
+            } catch (Exception e) {
+                // some devices throw an exception sometimes when calling getParameters()
             }
         }
 
