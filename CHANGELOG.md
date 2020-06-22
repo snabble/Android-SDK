@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.2]
+
+### Fixed
+- Fixed a crash when pausing the activity while the payment selection is open
+- Fixed payment select dialog not always selecting the current payment
+- Fixed most http requests calling the error callback when being cancelled
+
 ## [0.25.1]
 
 ### Fixed

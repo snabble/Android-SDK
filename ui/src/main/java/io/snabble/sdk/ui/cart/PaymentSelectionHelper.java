@@ -289,6 +289,11 @@ public class PaymentSelectionHelper {
         args.putSerializable(PaymentSelectionDialogFragment.ARG_ENTRIES, entries);
         args.putBoolean(PaymentSelectionDialogFragment.ARG_SHOW_OFFLINE_HINT, isOffline);
 
+        Entry se = selectedEntry.getValue();
+        if (se != null) {
+            args.putSerializable("selectedEntry", se);
+        }
+
         DialogFragment dialogFragment = new PaymentSelectionDialogFragment();
         dialogFragment.setArguments(args);
         dialogFragment.show(fragmentActivity.getSupportFragmentManager(), null);

@@ -25,6 +25,7 @@ import io.snabble.sdk.ui.utils.UIUtils;
 public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
     public static final String ARG_ENTRIES = "entries";
     public static final String ARG_SHOW_OFFLINE_HINT = "showOfflineHint";
+    public static final String ARG_SELECTED_ENTRY = "selectedEntry";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
             }
 
             if (args.containsKey(ARG_ENTRIES)) {
+                PaymentSelectionHelper.Entry selectedEntry = (PaymentSelectionHelper.Entry) args.getSerializable(ARG_SELECTED_ENTRY);
                 ArrayList<PaymentSelectionHelper.Entry> entries = (ArrayList<PaymentSelectionHelper.Entry>) args.getSerializable(ARG_ENTRIES);
                 if (entries != null) {
                     for (final PaymentSelectionHelper.Entry entry : entries) {
@@ -81,7 +83,7 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                             name.setEnabled(false);
                         }
 
-                        if (entry == PaymentSelectionHelper.getInstance().getSelectedEntry().getValue()) {
+                        if (entry == selectedEntry) {
                             check.setVisibility(View.VISIBLE);
                         } else {
                             check.setVisibility(View.GONE);
@@ -117,6 +119,12 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissAllowingStateLoss();
     }
 }
 

@@ -44,7 +44,9 @@ public abstract class JsonCallback<T, T2> implements Callback {
 
     @Override
     public void onFailure(Call call, IOException e) {
-        error(e);
+        if (!call.isCanceled()) {
+            error(e);
+        }
     }
 
     public int responseCode() {
