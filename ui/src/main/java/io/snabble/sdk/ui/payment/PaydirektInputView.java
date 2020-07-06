@@ -87,7 +87,6 @@ public class PaydirektInputView extends FrameLayout {
             if (webView != null && webView.canGoBack()) {
                 webView.goBack();
             } else {
-                onBackPressedCallback.remove();
                 finish();
             }
         }
@@ -262,6 +261,8 @@ public class PaydirektInputView extends FrameLayout {
     }
 
     private void finish() {
+        onBackPressedCallback.remove();
+
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             callback.execute(SnabbleUI.Action.GO_BACK, null);
