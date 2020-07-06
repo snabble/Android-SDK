@@ -313,7 +313,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     @Override
     public void onStateChanged(Checkout.State state) {
         if (state == Checkout.State.HANDSHAKING) {
-            progressDialog.showAfterDelay(500);
+            progressDialog.showAfterDelay(300);
         } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD) {
             final PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
 
@@ -328,7 +328,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
                     @Override
                     public void success() {
-                        progressDialog.showAfterDelay(500);
+                        progressDialog.showAfterDelay(300);
                         checkout.pay(entry.paymentMethod, entry.paymentCredentials);
                     }
 
@@ -338,12 +338,14 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     }
                 });
             } else {
-                progressDialog.showAfterDelay(500);
+                progressDialog.showAfterDelay(300);
                 checkout.pay(entry.paymentMethod, null);
             }
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
             CheckoutHelper.displayPaymentView(checkout);
             progressDialog.dismiss();
+        }  else if (state == Checkout.State.PAYMENT_PROCESSING) {
+            progressDialog.showAfterDelay(300);
         } else if (state == Checkout.State.PAYMENT_APPROVED) {
             Telemetry.event(Telemetry.Event.CheckoutSuccessful);
             SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS);

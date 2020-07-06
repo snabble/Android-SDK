@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Auto-approval payment methods should now also show a progress dialog if they take too long
+- Payment method that were added in other App-Id's are now excluded when populating the list 
 
 ## [0.25.2]
 
