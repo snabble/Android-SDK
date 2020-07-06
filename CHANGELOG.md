@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Auto-approval payment methods should now also show a progress dialog if they take too long
 - Payment method that were added in other App-Id's are now excluded when populating the list
 - Fixed paydirekt not going back after adding new credentials
+- Fixed age verification not always popping up in new payment selection
 
 ## [0.25.2]
 

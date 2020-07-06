@@ -349,9 +349,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         } else if (state == Checkout.State.PAYMENT_APPROVED) {
             Telemetry.event(Telemetry.Event.CheckoutSuccessful);
             SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS);
-        } else if (state == Checkout.State.PAYMENT_ABORTED) {
-            Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-            SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
         } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
             Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
             SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE);
@@ -397,6 +394,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                     .show();
             progressDialog.dismiss();
+        } else if (state == Checkout.State.PAYMENT_ABORTED) {
+            progressDialog.dismiss();
+        } else if (state == Checkout.State.REQUEST_VERIFY_AGE) {
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_AGE_VERIFICATION);
+            progressDialog.dismiss();
         } else if (state == Checkout.State.NO_PAYMENT_METHOD_AVAILABLE) {
             new AlertDialog.Builder(getContext())
                     .setCancelable(false)
@@ -404,8 +406,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     .setMessage(R.string.Snabble_Payment_noMethodAvailable)
                     .setPositiveButton(R.string.Snabble_OK, null)
                     .show();
-            progressDialog.dismiss();
-        } else if (state != Checkout.State.VERIFYING_PAYMENT_METHOD) {
             progressDialog.dismiss();
         }
     }

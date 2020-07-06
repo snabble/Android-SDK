@@ -441,16 +441,16 @@ public class Checkout {
             return false;
         }
 
-        boolean ok = false;
+        boolean fail = false;
 
         for (CheckoutApi.Fulfillment fulfillment : checkoutProcess.fulfillments)  {
             if (fulfillment.state.isFailure()) {
-                ok = true;
+                fail = true;
                 break;
             }
         }
 
-        return ok;
+        return fail;
     }
 
     private int getUserAge() {
