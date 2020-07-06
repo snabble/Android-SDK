@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
@@ -40,6 +41,17 @@ public class UIUtils {
         while (context instanceof ContextWrapper) {
             if (context instanceof FragmentActivity) {
                 return (FragmentActivity) context;
+            }
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+
+        return null;
+    }
+
+    public static ComponentActivity getHostComponentActivity(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof ComponentActivity) {
+                return (ComponentActivity) context;
             }
             context = ((ContextWrapper) context).getBaseContext();
         }

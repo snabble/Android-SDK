@@ -72,6 +72,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.AMEX, R.drawable.snabble_ic_payment_select_amex);
         icons.put(PaymentMethod.PAYDIREKT, R.drawable.snabble_ic_payment_select_paydirekt);
         icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_payment_select_tegut);
+        icons.put(PaymentMethod.CUSTOMERCARD_POS, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_payment_select_sco);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_payment_select_pos);
@@ -84,6 +85,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, "Tegut... Mitarbeiterkarte");
         names.put(PaymentMethod.GATEKEEPER_TERMINAL, context.getString(R.string.Snabble_Payment_payAtSCO));
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
+        names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
 
         selectedEntry = new MutableLiveData<>();

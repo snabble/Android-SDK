@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
@@ -287,9 +288,9 @@ public class PaydirektInputView extends FrameLayout {
         Application application = (Application) getContext().getApplicationContext();
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
-        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
-        if (fragmentActivity != null) {
-            fragmentActivity.getOnBackPressedDispatcher().addCallback(fragmentActivity, onBackPressedCallback);
+        ComponentActivity componentActivity = UIUtils.getHostComponentActivity(getContext());
+        if (componentActivity != null) {
+            componentActivity.getOnBackPressedDispatcher().addCallback(componentActivity, onBackPressedCallback);
         }
     }
 

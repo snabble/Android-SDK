@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.4]
+
+### Fixed
+- CUSTOMER_CARD_POS payment method not displaying in payment selector
+
 ## [0.25.3]
 
 ### Fixed
