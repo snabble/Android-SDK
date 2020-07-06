@@ -338,6 +338,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     }
                 });
             } else {
+                progressDialog.showAfterDelay(500);
                 checkout.pay(entry.paymentMethod, null);
             }
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.3]
+
+### Fixed
+- Auto-approval payment methods should now also show a progress dialog if they take too long
+
 ## [0.25.2]
 
 ### Fixed
