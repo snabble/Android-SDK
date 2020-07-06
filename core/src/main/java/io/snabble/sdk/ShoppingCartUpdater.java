@@ -190,7 +190,12 @@ class ShoppingCartUpdater {
                 cart.insert(cart.newItem(lineItem), cart.size(), false);
             }
 
-            cart.setOnlineTotalPrice(checkoutInfo.price.price);
+            if (project.isDisplayingNetPrice()) {
+                cart.setOnlineTotalPrice(checkoutInfo.price.netPrice);
+            } else {
+                cart.setOnlineTotalPrice(checkoutInfo.price.price);
+            }
+
             Logger.d("Successfully updated prices");
         } catch (Exception e) {
             Logger.e("Could not update price: %s", e.getMessage());

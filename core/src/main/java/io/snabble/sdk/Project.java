@@ -72,6 +72,7 @@ public class Project {
     private JsonObject encodedCodesJsonObject;
     private String tokensUrl;
     private String appUserUrl;
+    private boolean displayNetPrice;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         Snabble snabble = Snabble.getInstance();
@@ -273,6 +274,8 @@ public class Project {
             }
         }
 
+        displayNetPrice = JsonUtils.getBooleanOpt(jsonObject, "displayNetPrice", false);
+
         notifyUpdate();
     }
 
@@ -348,6 +351,10 @@ public class Project {
 
     public boolean isCheckoutAvailable() {
         return isCheckoutAvailable;
+    }
+
+    public boolean isDisplayingNetPrice() {
+        return displayNetPrice;
     }
 
     /**

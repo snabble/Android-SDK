@@ -115,6 +115,7 @@ public class CheckoutApi {
 
     public static class Price {
         int price;
+        int netPrice;
     }
 
     public static class PaymentInformation {

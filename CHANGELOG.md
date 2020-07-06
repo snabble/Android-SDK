@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.25.4]
 
+### Added
+- Support for "displayNetPrice"
+
 ### Fixed
 - CUSTOMER_CARD_POS payment method not displaying in payment selector
 
