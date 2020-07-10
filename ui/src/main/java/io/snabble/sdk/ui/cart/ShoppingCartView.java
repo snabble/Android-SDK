@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.snabble.sdk.Checkout;
+import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
@@ -325,18 +326,23 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             if (entry.paymentCredentials != null) {
                 progressDialog.dismiss();
-                Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                    @Override
-                    public void success() {
-                        progressDialog.showAfterDelay(300);
-                        checkout.pay(entry.paymentMethod, entry.paymentCredentials);
-                    }
 
-                    @Override
-                    public void error() {
-                        progressDialog.dismiss();
-                    }
-                });
+                if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
+                    checkout.pay(entry.paymentMethod, entry.paymentCredentials);
+                } else {
+                    Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
+                        @Override
+                        public void success() {
+                            progressDialog.showAfterDelay(300);
+                            checkout.pay(entry.paymentMethod, entry.paymentCredentials);
+                        }
+
+                        @Override
+                        public void error() {
+                            progressDialog.dismiss();
+                        }
+                    });
+                }
             } else {
                 progressDialog.showAfterDelay(300);
                 checkout.pay(entry.paymentMethod, null);

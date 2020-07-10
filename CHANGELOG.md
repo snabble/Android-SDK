@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.5]
+
+### Fixed
+- Do not require keyguard authentication for employee card payment methods
+
 ## [0.25.4]
 
 ### Added
