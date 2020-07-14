@@ -120,11 +120,16 @@ public class ReceiptsApi {
                             PriceFormatter priceFormatter = project.getPriceFormatter();
 
                             try {
+                                String url = apiLink.href;
+                                if (url == null || url.equals("")) {
+                                    url = null;
+                                }
+
                                 ReceiptInfo receiptInfo = new ReceiptInfo(
                                         apiOrder.id,
                                         apiOrder.project,
                                         simpleDateFormat.parse(apiOrder.date).getTime(),
-                                        snabble.absoluteUrl(apiLink.href),
+                                        snabble.absoluteUrl(url),
                                         apiOrder.shopName,
                                         priceFormatter.format(apiOrder.price));
 
@@ -135,12 +140,7 @@ public class ReceiptsApi {
                         }
                     }
 
-                    Collections.sort(result, new Comparator<ReceiptInfo>() {
-                        @Override
-                        public int compare(ReceiptInfo o1, ReceiptInfo o2) {
-                            return -o1.getDate().compareTo(o2.getDate());
-                        }
-                    });
+                    Collections.sort(result, (o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
 
                     receiptUpdateCallback.success(result.toArray(new ReceiptInfo[result.size()]));
                 }

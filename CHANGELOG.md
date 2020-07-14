@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changes
 - Added "animateBarcode" property to BarcodeView
 - Added customerNetworks to Shop
+- Allow receipt pdf url to be null
 
 ## [0.25.5]
 

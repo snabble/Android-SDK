@@ -307,6 +307,10 @@ public class Snabble {
     }
 
     public String absoluteUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+
         if (url.startsWith("http")) {
             return url;
         } else {
