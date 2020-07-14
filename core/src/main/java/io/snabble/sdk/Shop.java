@@ -73,6 +73,17 @@ public class Shop implements Serializable, Parcelable {
         }
     }
 
+    public class CustomerNetwork {
+        public String ssid;
+
+        @Override
+        public String toString() {
+            return "CustomerNetwork{" +
+                    "ssid='" + ssid + '\'' +
+                    '}';
+        }
+    }
+
     private String id;
     private String externalId;
     private String name;
@@ -89,7 +100,7 @@ public class Shop implements Serializable, Parcelable {
     private double latitude;
     @SerializedName("lon")
     private double longitude;
-    private String[] customerNetworks;
+    private CustomerNetwork[] customerNetworks;
     private OpeningHourSpecification[] openingHoursSpecification;
     private JsonElement external;
 
@@ -149,7 +160,7 @@ public class Shop implements Serializable, Parcelable {
         return name;
     }
 
-    public String[] getCustomerNetworks() {
+    public CustomerNetwork[] getCustomerNetworks() {
         return customerNetworks;
     }
 

@@ -30,6 +30,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Logger;
 import me.relex.circleindicator.CircleIndicator3;
@@ -73,6 +74,8 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
                 Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
             }
         });
+        paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
+                SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
 
         helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);

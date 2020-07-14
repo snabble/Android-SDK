@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.7]
+
+### Fixed
+- Fixed customerNetwork data model - breaking change from 0.25.6
+
 ## [0.25.6]
 
 ### Changes

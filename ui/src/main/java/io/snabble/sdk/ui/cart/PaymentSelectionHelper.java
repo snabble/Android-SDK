@@ -104,16 +104,18 @@ public class PaymentSelectionHelper {
         update();
 
         SnabbleUI.getProjectAsLiveData().observeForever(project -> {
-            PaymentSelectionHelper.this.project = project;
+            if (project != null) {
+                PaymentSelectionHelper.this.project = project;
 
-            if (cart != null) {
-                cart.removeListener(shoppingCartListener);
+                if (cart != null) {
+                    cart.removeListener(shoppingCartListener);
+                }
+
+                cart = project.getShoppingCart();
+                cart.addListener(shoppingCartListener);
+
+                update();
             }
-
-            cart = project.getShoppingCart();
-            cart.addListener(shoppingCartListener);
-
-            update();
         });
     }
 

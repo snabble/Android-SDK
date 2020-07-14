@@ -30,6 +30,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Logger;
 import me.relex.circleindicator.CircleIndicator3;
@@ -91,6 +92,8 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                 }
             }
         });
+        paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
+                SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
 
         helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);
@@ -103,7 +106,8 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
             @Override
             public void onPageSelected(int position) {
                 if (position == viewPagerAdapter.getItemCount() - 1) {
-                    paidButton.setText(R.string.Snabble_QRCode_didPay);
+                    paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
+                            SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
                 } else {
                     paidButton.setText(getResources().getString(R.string.Snabble_QRCode_nextCode));
                 }

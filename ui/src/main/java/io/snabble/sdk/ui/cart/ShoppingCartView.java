@@ -52,6 +52,7 @@ import io.snabble.sdk.ui.checkout.CheckoutHelper;
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
@@ -222,6 +223,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 }
             }
         });
+        pay.setText(I18nUtils.getIdentifierForProject(getResources(), project, R.string.Snabble_Shoppingcart_buyProducts_now));
 
         priceSum = findViewById(R.id.price_sum);
         articleCount = findViewById(R.id.article_count);
