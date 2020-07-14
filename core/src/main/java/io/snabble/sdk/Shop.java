@@ -89,6 +89,7 @@ public class Shop implements Serializable, Parcelable {
     private double latitude;
     @SerializedName("lon")
     private double longitude;
+    private String[] customerNetworks;
     private OpeningHourSpecification[] openingHoursSpecification;
     private JsonElement external;
 
@@ -148,6 +149,10 @@ public class Shop implements Serializable, Parcelable {
         return name;
     }
 
+    public String[] getCustomerNetworks() {
+        return customerNetworks;
+    }
+
     public Map<String, Href> getLinks() {
         return links;
     }
@@ -203,6 +208,7 @@ public class Shop implements Serializable, Parcelable {
                 ", links=" + links +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
+                ", customerNetworks=" + Arrays.toString(customerNetworks) +
                 ", openingHoursSpecification=" + Arrays.toString(openingHoursSpecification) +
                 ", external=" + external +
                 '}';

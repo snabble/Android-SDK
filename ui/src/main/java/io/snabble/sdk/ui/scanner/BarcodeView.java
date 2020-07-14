@@ -41,6 +41,7 @@ public class BarcodeView extends AppCompatImageView {
 
     private boolean isNumberDisplayEnabled = true;
     private boolean adjustBrightness = true;
+    private boolean animateBarcode = true;
 
     private Handler uiHandler;
     private int backgroundColor;
@@ -82,6 +83,7 @@ public class BarcodeView extends AppCompatImageView {
                 }
 
                 adjustBrightness = arr.getBoolean(R.styleable.BarcodeView_adjustBrightness, true);
+                animateBarcode = arr.getBoolean(R.styleable.BarcodeView_animateBarcode, true);
             } finally {
                 arr.recycle();
             }
@@ -126,6 +128,10 @@ public class BarcodeView extends AppCompatImageView {
             text = code;
             generate();
         }
+    }
+
+    public void setAnimateBarcode(boolean animate) {
+        animateBarcode = animate;
     }
 
     @Override
@@ -219,36 +225,40 @@ public class BarcodeView extends AppCompatImageView {
                         final Bitmap finalBitmap = bitmap;
 
                         uiHandler.post(() -> {
-                            setAlpha(0.0f);
-                            setImageBitmap(finalBitmap);
-                            animate().alpha(1)
-                                    .setDuration(200)
-                                    // strange behaviour:
-                                    // if the view is out of bounds, we need to set
-                                    // the alpha directly after the animation, or else
-                                    // the alpha value stays at 0
-                                    .setListener(new Animator.AnimatorListener() {
-                                        @Override
-                                        public void onAnimationStart(Animator animation) {
+                            if (animateBarcode) {
+                                setAlpha(0.0f);
+                                setImageBitmap(finalBitmap);
+                                animate().alpha(1)
+                                        .setDuration(200)
+                                        // strange behaviour:
+                                        // if the view is out of bounds, we need to set
+                                        // the alpha directly after the animation, or else
+                                        // the alpha value stays at 0
+                                        .setListener(new Animator.AnimatorListener() {
+                                            @Override
+                                            public void onAnimationStart(Animator animation) {
 
-                                        }
+                                            }
 
-                                        @Override
-                                        public void onAnimationEnd(Animator animation) {
-                                            setAlpha(1.0f);
-                                        }
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                setAlpha(1.0f);
+                                            }
 
-                                        @Override
-                                        public void onAnimationCancel(Animator animation) {
+                                            @Override
+                                            public void onAnimationCancel(Animator animation) {
 
-                                        }
+                                            }
 
-                                        @Override
-                                        public void onAnimationRepeat(Animator animation) {
+                                            @Override
+                                            public void onAnimationRepeat(Animator animation) {
 
-                                        }
-                                    })
-                                    .start();
+                                            }
+                                        })
+                                        .start();
+                            } else {
+                                setImageBitmap(finalBitmap);
+                            }
                         });
                     } catch (WriterException e) {
                         uiHandler.post(() -> {
