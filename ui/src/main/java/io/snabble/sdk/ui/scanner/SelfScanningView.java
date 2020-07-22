@@ -249,6 +249,13 @@ public class SelfScanningView extends FrameLayout {
                         .setCancelable(false)
                         .create()
                         .show())
+                .setOnNotForSaleListener(product -> {
+                    if (product.getScanMessage() != null) {
+                        showScanMessage(product);
+                    } else {
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                    }
+                })
                 .create()
                 .show();
     }

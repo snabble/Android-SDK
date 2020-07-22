@@ -147,6 +147,7 @@ public class Product implements Serializable, Parcelable {
     private Unit referenceUnit;
     private Unit encodingUnit;
     private boolean saleStop;
+    private boolean notForSale;
 
     public Product() {
 
@@ -301,6 +302,10 @@ public class Product implements Serializable, Parcelable {
         return saleStop;
     }
 
+    public boolean getNotForSale() {
+        return notForSale;
+    }
+
     public Availability getAvailability() {
         return availability;
     }
@@ -393,6 +398,7 @@ public class Product implements Serializable, Parcelable {
                 ", saleRestriction=" + saleRestriction +
                 ", referenceUnit=" + referenceUnit +
                 ", saleStop=" + saleStop +
+                ", notForSale=" + notForSale +
                 '}';
     }
 
@@ -507,6 +513,11 @@ public class Product implements Serializable, Parcelable {
 
         public Builder setSaleStop(boolean saleStop) {
             product.saleStop = saleStop;
+            return this;
+        }
+
+        public Builder setNotForSale(boolean notForSale) {
+            product.notForSale = notForSale;
             return this;
         }
 

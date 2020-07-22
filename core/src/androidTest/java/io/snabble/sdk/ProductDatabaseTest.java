@@ -37,12 +37,12 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     public void testAllPromotionsQuery() {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product[] products = productDatabase.getDiscountedProducts();
-        assertEquals(13, products.length);
+        assertEquals(17, products.length);
     }
 
     @Test
     public void testTextSearchNoFTS() throws IOException, Snabble.SnabbleException {
-        withDb("test_1_19.sqlite3", true);
+        withDb("test_1_21.sqlite3", true);
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
@@ -91,11 +91,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     public void testFindByCode() {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findByCode(ScannedCode.parse(project, "0885580466725").get(0));
-        Product product2 = productDatabase.findByCode(ScannedCode.parse(project, "test1234").get(0));
-
         assertEquals(product.getSku(), "6");
-        assertEquals(product, product2);
-
         assertNull(productDatabase.findByCode(ScannedCode.parse(project, "unknownCode").get(0)));
     }
 
@@ -280,7 +276,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdate() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        productDatabase.applyFullUpdate(context.getAssets().open("update_1_19.sqlite3"));
+        productDatabase.applyFullUpdate(context.getAssets().open("update_1_21.sqlite3"));
 
         Product product = productDatabase.findBySku("0");
 
@@ -294,7 +290,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnCorruptedFile() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("update_1_19.sqlite3"));
+        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("update_1_21.sqlite3"));
         for (int i = 0; i < bytes.length; i++) {
             if (i % 4 == 0) {
                 bytes[i] = 42;
@@ -313,12 +309,12 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnWrongMajorVersion() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        InputStream is = context.getResources().getAssets().open("update_1_19.sqlite3");
-        File outputFile = context.getDatabasePath("update_1_19.sqlite3");
+        InputStream is = context.getResources().getAssets().open("update_1_21.sqlite3");
+        File outputFile = context.getDatabasePath("update_1_21.sqlite3");
         FileOutputStream fos = new FileOutputStream(outputFile);
         IOUtils.copy(is, fos);
 
-        SQLiteDatabase db = context.openOrCreateDatabase("update_1_19.sqlite3", Context.MODE_PRIVATE, null);
+        SQLiteDatabase db = context.openOrCreateDatabase("update_1_21.sqlite3", Context.MODE_PRIVATE, null);
         db.execSQL("UPDATE metadata SET value = 2 WHERE metadata.key = 'schemaVersionMajor'");
         db.close();
 
@@ -375,10 +371,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testRecoverFromFileCorruptions() throws IOException, Snabble.SnabbleException, InterruptedException {
-        withDb("test_1_19_corrupt.sqlite3");
+        withDb("test_1_21_corrupt.sqlite3");
         Assert.assertNull(project.getProductDatabase().findBySku("1"));
 
-        prepareUpdateDb("test_1_19.sqlite3");
+        prepareUpdateDb("test_1_21.sqlite3");
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
             @Override

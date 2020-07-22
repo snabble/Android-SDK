@@ -781,18 +781,18 @@ public class ProductDatabase {
 
         builder.setSaleRestriction(decodeSaleRestriction(cursor.getLong(9)));
         builder.setSaleStop(cursor.getInt(10) != 0);
+        builder.setNotForSale(cursor.getInt(11) != 0);
 
         builder.setBundleProducts(findBundlesOfProduct(builder.build()));
 
         if (lookupCodes != null) {
-            String transmissionCodesStr = cursor.getString(11);
+            String transmissionCodesStr = cursor.getString(12);
             if (transmissionCodesStr != null) {
                 transmissionCodes = transmissionCodesStr.split(",", -1);
             }
         }
 
-
-        String referenceUnit = cursor.getString(12);
+        String referenceUnit = cursor.getString(13);
         if (referenceUnit != null) {
             Unit unit = Unit.fromString(referenceUnit);
             builder.setReferenceUnit(unit);
@@ -802,25 +802,25 @@ public class ProductDatabase {
             }
         }
 
-        String encodingUnit = cursor.getString(13);
+        String encodingUnit = cursor.getString(14);
         if (encodingUnit != null) {
             Unit unit = Unit.fromString(encodingUnit);
             builder.setEncodingUnit(unit);
         }
 
         if (lookupCodes != null) {
-            String encodingUnitsStr = cursor.getString(14);
+            String encodingUnitsStr = cursor.getString(15);
             if (encodingUnitsStr != null) {
                 codeEncodingUnits = encodingUnitsStr.split(",", -1);
             }
 
-            String templatesStr = cursor.getString(15);
+            String templatesStr = cursor.getString(16);
             if (templatesStr != null) {
                 templates = templatesStr.split(",", -1);
             }
         }
 
-        String scanMessage = cursor.getString(16);
+        String scanMessage = cursor.getString(17);
         if (scanMessage != null) {
             builder.setScanMessage(scanMessage);
         }
@@ -860,7 +860,7 @@ public class ProductDatabase {
             builder.setScannableCodes(productCodes);
         }
 
-        int availability = cursor.getInt(17);
+        int availability = cursor.getInt(18);
         Product.Availability[] availabilities = Product.Availability.values();
         if (availability >= 0 && availability < availabilities.length) {
             builder.setAvailability(availabilities[availability]);
@@ -942,6 +942,7 @@ public class ProductDatabase {
                 "p.subtitle" +
                 ",p.saleRestriction"+
                 ",p.saleStop" +
+                ",p.notForSale" +
                 ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",p.referenceUnit" +
                 ",p.encodingUnit" +
@@ -1244,7 +1245,7 @@ public class ProductDatabase {
                 "WHERE ns.foldedName MATCH ? " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
-                "AND availability != 2" +
+                "AND availability != 2 " +
                 "LIMIT 100", new String[]{
                 searchString + "*"
         }, true, cancellationSignal);

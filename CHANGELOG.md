@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.25.8]
+
+### Changes
+- Requires schemaVersion 1.21
+
+### Added
+- Add support for 'notForSale'
+
 ## [0.25.7]
 
 ### Fixed

@@ -24,6 +24,7 @@ class ProductApi {
         String scanMessage;
         ApiPrice price;
         boolean saleStop;
+        boolean notForSale;
         ApiScannableCode[] codes;
         Product.SaleRestriction saleRestriction = Product.SaleRestriction.NONE;
         ApiAvailability availability;
@@ -209,6 +210,7 @@ class ProductApi {
                 .setImageUrl(apiProduct.imageUrl)
                 .setSaleRestriction(apiProduct.saleRestriction)
                 .setSaleStop(apiProduct.saleStop)
+                .setNotForSale(apiProduct.notForSale)
                 .setScanMessage(apiProduct.scanMessage);
 
         if (apiProduct.codes != null) {

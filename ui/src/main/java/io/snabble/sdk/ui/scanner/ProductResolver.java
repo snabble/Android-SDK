@@ -30,6 +30,7 @@ public class ProductResolver {
     private OnShowListener onShowListener;
     private OnDismissListener onDismissListener;
     private OnSaleStopListener onSaleStopListener;
+    private OnNotForSaleListener onNotForSaleListener;
     private OnShelfCodeScannedListener onShelfCodeScannedListener;
     private OnProductNotFoundListener onProductNotFoundListener;
     private OnNetworkErrorListener onNetworkErrorListener;
@@ -203,17 +204,27 @@ public class ProductResolver {
         if(product.getBundleProducts().length > 0){
             showBundleDialog(product, scannedCode);
         } else {
-//            if (product.getSaleStop()) {
-//                if (onSaleStopListener != null) {
-//                    onSaleStopListener.onSaleStop();
-//                }
-//
-//                progressDialog.dismiss();
-//
-//                if (onDismissListener != null) {
-//                    onDismissListener.onDismiss();
-//                }
-//            } else
+            if (product.getSaleStop()) {
+                if (onSaleStopListener != null) {
+                    onSaleStopListener.onSaleStop();
+                }
+
+                progressDialog.dismiss();
+
+                if (onDismissListener != null) {
+                    onDismissListener.onDismiss();
+                }
+            } else if (product.getNotForSale()) {
+                if (onNotForSaleListener != null) {
+                    onNotForSaleListener.onNotForSale(product);
+                }
+
+                progressDialog.dismiss();
+
+                if (onDismissListener != null) {
+                    onDismissListener.onDismiss();
+                }
+            } else
                 if (product.getType() == Product.Type.PreWeighed
                     && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
                 if (onShelfCodeScannedListener != null) {
@@ -324,6 +335,10 @@ public class ProductResolver {
         void onSaleStop();
     }
 
+    public interface OnNotForSaleListener {
+        void onNotForSale(Product product);
+    }
+
     public interface OnShelfCodeScannedListener {
         void onShelfCodeScanned();
     }
@@ -380,6 +395,11 @@ public class ProductResolver {
 
         public Builder setOnSaleStopListener(OnSaleStopListener listener) {
             productResolver.onSaleStopListener = listener;
+            return this;
+        }
+
+        public Builder setOnNotForSaleListener(OnNotForSaleListener listener) {
+            productResolver.onNotForSaleListener = listener;
             return this;
         }
 
