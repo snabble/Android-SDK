@@ -1,7 +1,7 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.25.8]
+## [0.26.0]
 
 ### Changes
 - Requires schemaVersion 1.21
