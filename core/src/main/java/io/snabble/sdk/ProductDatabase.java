@@ -877,8 +877,19 @@ public class ProductDatabase {
 
     private boolean queryPrice(Product.Builder builder, String sku, Shop shop) {
         String id = shop != null ? shop.getId() : "";
-        String priceQuery = "SELECT listPrice, discountedPrice, customerCardPrice, basePrice FROM prices " +
-                "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
+
+        String priceQuery;
+
+        if (schemaVersionMinor >= 22 && shop != null) {
+            priceQuery = "SELECT listPrice, discountedPrice, customerCardPrice, basePrice FROM prices " +
+                    "JOIN shops ON shops.pricingCategory = prices.pricingCategory " +
+                    "WHERE shops.id = ? AND sku = ? " +
+                    "ORDER BY priority DESC " +
+                    "LIMIT 1";
+        } else {
+            priceQuery = "SELECT listPrice, discountedPrice, customerCardPrice, basePrice FROM prices " +
+                    "WHERE pricingCategory = ifnull((SELECT pricingCategory FROM shops WHERE shops.id = ?), '0') AND sku = ?";
+        }
 
         Cursor priceCursor = rawQuery(priceQuery, new String[]{id, sku}, null);
 

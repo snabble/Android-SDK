@@ -1,13 +1,18 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.26.1]
+
+### Added
+- Added support for multiple pricing categories in ProductDatabase
+
 ## [0.26.0]
 
 ### Changes
 - Requires schemaVersion 1.21
 
 ### Added
-- Add support for 'notForSale'
+- Added support for 'notForSale'
 
 ## [0.25.7]
 

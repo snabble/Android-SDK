@@ -200,6 +200,32 @@
           "state": "NRW",
           "street": "Rochusstraße 2-4",
           "zip": "53123"
+        },
+        {
+          "city": "Gold City",
+          "country": "Germany",
+          "countryCode": "deu",
+          "customerNetworks": [],
+          "email": "",
+          "external": null,
+          "externalId": null,
+          "id": "7856",
+          "lat": 1,
+          "links": {
+            "self": {
+              "href": "https://api.snabble-testing.io/test-ieme8a/shops/7856"
+            }
+          },
+          "lon": 1,
+          "name": "Expensive Shop",
+          "openingHoursSpecification": [],
+          "phone": "53478278882",
+          "project": "test-ieme8a",
+          "services": [],
+          "state": "",
+          "street": "Rich Street",
+          "visible": true,
+          "zip": "45324"
         }
       ],
       "unitPrefixes": [

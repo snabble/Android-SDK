@@ -396,5 +396,21 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         Assert.assertEquals("1", product.getSku());
     }
 
+    @Test
+    public void testMultiplePricingCategories() throws IOException, Snabble.SnabbleException {
+        withDb("test_1_22.sqlite3");
+        project.setCheckedInShop(project.getShops()[3]);
 
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product product = productDatabase.findBySku("multiple-categories");
+        Assert.assertNotNull(product);
+        Assert.assertEquals(product.getListPrice(), 83);
+
+        project.setCheckedInShop(project.getShops()[1]);
+
+        productDatabase = project.getProductDatabase();
+        product = productDatabase.findBySku("multiple-categories");
+        Assert.assertNotNull(product);
+        Assert.assertEquals(product.getListPrice(), 49);
+    }
 }
