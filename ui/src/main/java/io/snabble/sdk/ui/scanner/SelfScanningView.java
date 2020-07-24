@@ -251,7 +251,7 @@ public class SelfScanningView extends FrameLayout {
                         .show())
                 .setOnNotForSaleListener(product -> {
                     if (product.getScanMessage() != null) {
-                        showScanMessage(product);
+                        showScanMessage(product, true);
                     } else {
                         showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
                     }
@@ -359,7 +359,7 @@ public class SelfScanningView extends FrameLayout {
         }
     }
 
-    private void showScanMessage(Product product) {
+    private void showScanMessage(Product product, boolean allowFallback) {
         Project project = SnabbleUI.getProject();
         Resources res = getResources();
 
@@ -379,6 +379,11 @@ public class SelfScanningView extends FrameLayout {
             if (resId != 0) {
                 String str = res.getString(resId);
                 showInfo(str);
+            } else {
+                if (allowFallback) {
+                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                            R.string.Snabble_Scanner_unknownBarcode)));
+                }
             }
         }
     }
@@ -513,7 +518,7 @@ public class SelfScanningView extends FrameLayout {
 
         @Override
         public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
-            showScanMessage(item.getProduct());
+            showScanMessage(item.getProduct(), false);
         }
 
         @Override

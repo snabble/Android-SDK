@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.26.3]
+
+### Changes
+- Show fallback scan message when invalid scan message is set 
+
 ## [0.26.2]
 
 ### Changes
