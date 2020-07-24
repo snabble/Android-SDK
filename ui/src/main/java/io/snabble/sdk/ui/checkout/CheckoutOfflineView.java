@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +33,7 @@ import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -95,6 +97,18 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
         paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
                 SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
 
+        paidButton.setVisibility(View.INVISIBLE);
+        paidButton.setAlpha(0);
+
+        Dispatch.mainThread(() -> {
+            paidButton.setVisibility(View.VISIBLE);
+            paidButton.animate()
+                    .setDuration(150)
+                    .alpha(1)
+                    .start();
+            paidButton.setEnabled(true);
+        }, 2000);
+
         helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
@@ -125,6 +139,14 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                     child.setOverScrollMode(OVER_SCROLL_NEVER);
                 }
             }
+        }
+
+        TextView checkoutId = findViewById(R.id.checkout_id);
+        String id = SnabbleUI.getProject().getCheckout().getId();
+        if (id != null && id.length() >= 4) {
+            checkoutId.setText(id.substring(id.length() - 4));
+        } else {
+            checkoutId.setVisibility(View.GONE);
         }
 
         project.getAssets().get("checkout-offline", this::setHelperImage);
