@@ -171,6 +171,11 @@ public class Assets {
 
     private void download(String nonRootIncludedFileName, DownloadCallback callback) {
         Dispatch.mainThread(() -> {
+            if (project.getAssetsUrl() == null) {
+                callback.failure();
+                return;
+            }
+
             Request request = new Request.Builder()
                     .cacheControl(new CacheControl.Builder()
                             .maxAge(30, TimeUnit.SECONDS)

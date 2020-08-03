@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.26.4]
+
+### Changes
+- Articles can now not go below quantity of 1 when scanning
+- Fixed a crash when handling old metadata 
+
 ## [0.26.3]
 
 ### Changes

@@ -376,6 +376,10 @@ class ProductConfirmationDialog {
         }
 
         if (cartItem.getProduct().getType() != Product.Type.UserWeighed) {
+            if (cartItem.getProduct().getType() == Product.Type.Article) {
+                number = Math.max(1, number);
+            }
+
             quantity.setText(String.valueOf(number));
             quantity.setSelection(quantity.getText().length());
         } else {
