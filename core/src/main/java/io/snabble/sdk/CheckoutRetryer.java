@@ -143,7 +143,7 @@ class CheckoutRetryer {
                         save();
                         countDownLatch.countDown();
                     }
-                });
+                }, -1);
             }
         });
     }

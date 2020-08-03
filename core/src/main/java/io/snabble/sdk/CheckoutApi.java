@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.DateUtils;
@@ -298,7 +299,8 @@ public class CheckoutApi {
 
     public void createCheckoutInfo(final ShoppingCart.BackendCart backendCart,
                                    final PaymentMethod[] clientAcceptedPaymentMethods,
-                                   final CheckoutInfoResult checkoutInfoResult) {
+                                   final CheckoutInfoResult checkoutInfoResult,
+                                   final long timeout) {
         String checkoutUrl = project.getCheckoutUrl();
         if (checkoutUrl == null) {
             Logger.e("Could not checkout, no checkout url provided in metadata");
@@ -313,7 +315,15 @@ public class CheckoutApi {
 
         cancel();
 
-        call = okHttpClient.newCall(request);
+        OkHttpClient okClient = okHttpClient;
+
+        if (timeout > 0) {
+            okClient = okClient.newBuilder()
+                    .callTimeout(timeout, TimeUnit.MILLISECONDS)
+                    .build();
+        }
+
+        call = okClient.newCall(request);
         call.enqueue(new JsonCallback<SignedCheckoutInfo, JsonObject>(SignedCheckoutInfo.class, JsonObject.class) {
             @Override
             public void success(SignedCheckoutInfo signedCheckoutInfo) {

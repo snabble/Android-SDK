@@ -236,6 +236,10 @@ public class Checkout {
         return null;
     }
 
+    public void checkout() {
+        checkout(-1);
+    }
+
     /**
      * Starts the checkout process.
      * <p>
@@ -246,7 +250,7 @@ public class Checkout {
      * You then need to sometime after call @link Checkout#pay(PaymentMethod)}
      * to pay with that payment method.
      */
-    public void checkout() {
+    public void checkout(long timeout) {
         checkoutProcess = null;
         rawCheckoutProcess = null;
         signedCheckoutInfo = null;
@@ -323,7 +327,7 @@ public class Checkout {
                     notifyStateChanged(Checkout.State.CONNECTION_ERROR);
                 }
             }
-        });
+        }, timeout);
     }
 
     /**

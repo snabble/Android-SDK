@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -186,10 +187,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
         progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
             if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                 checkout.abort();
+                dialogInterface.dismiss();
                 return true;
             }
             return false;
@@ -214,7 +216,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                                 new OneShotClickListener() {
                                     @Override
                                     public void click() {
-                                        checkout.checkout();
+                                        if (entry.paymentMethod.isOfflineMethod()) {
+                                            checkout.checkout(600);
+                                        } else {
+                                            checkout.checkout();
+                                        }
                                     }
                                 });
                     } else {

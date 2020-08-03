@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.26.5]
+
+### Changes
+- Faster call timeout for checkout request that could be handled offline
+
 ## [0.26.4]
 
 ### Changes

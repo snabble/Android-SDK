@@ -107,7 +107,7 @@ class ShoppingCartUpdater {
             public void connectionError() {
                 error(false);
             }
-        }));
+        }, -1));
     }
 
     private void error(boolean b) {
