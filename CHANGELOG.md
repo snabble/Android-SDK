@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.26.6]
+
+### Fixed
+- Fixed checkout ProgressBar sometimes being endless 
+
 ## [0.26.5]
 
 ### Changes

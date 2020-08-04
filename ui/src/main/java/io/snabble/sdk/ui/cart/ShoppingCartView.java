@@ -217,7 +217,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                                     @Override
                                     public void click() {
                                         if (entry.paymentMethod.isOfflineMethod()) {
-                                            checkout.checkout(600);
+                                            checkout.checkout(3000);
                                         } else {
                                             checkout.checkout();
                                         }
