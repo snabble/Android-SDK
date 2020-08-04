@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z $GITHUB_ACTION ]; then
+if [ -z $GITHUB_ACTIONS ]; then
     echo "This script should only be run by github workflows"
     exit 1
 fi
