@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.26.7]
+
+### Fixed
+- Fixed a bug that caused products to be scannable even when they are not available
+
 ## [0.26.6]
 
 ### Fixed

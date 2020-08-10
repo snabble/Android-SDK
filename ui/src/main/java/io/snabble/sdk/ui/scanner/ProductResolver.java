@@ -224,6 +224,8 @@ public class ProductResolver {
                 if (onDismissListener != null) {
                     onDismissListener.onDismiss();
                 }
+            } else if (product.getAvailability() == Product.Availability.NOT_AVAILABLE) {
+                handleProductNotFound(scannedCode);
             } else
                 if (product.getType() == Product.Type.PreWeighed
                     && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
