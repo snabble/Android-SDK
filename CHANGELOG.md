@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.26.7]
 
+### Changes
+- Now using lower camera preview resolution when device memory is low
+
 ### Fixed
 - Fixed a bug that caused products to be scannable even when they are not available
 

@@ -889,8 +889,22 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
         // we are using 1920x1080 as our base resolution, as its available on most devices and provides
         // a good balance between quality and performance
+        // on low memory devices we try to use 1280x720
+
+        final Runtime runtime = Runtime.getRuntime();
+        final long used = runtime.totalMemory() - runtime.freeMemory();
+        final long maxHeap = runtime.maxMemory();
+        final long availableHeap = maxHeap - used;
+
         int targetWidth = 1920;
         int targetHeight = 1080;
+
+        final long approxBytesNeeded = targetWidth * targetHeight * 4 * 2;
+
+        if (availableHeap < approxBytesNeeded) {
+            targetWidth = 1280;
+            targetHeight = 720;
+        }
 
         float minDiffX = Float.MAX_VALUE;
         float minDiffY = Float.MAX_VALUE;
