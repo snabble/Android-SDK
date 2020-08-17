@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.27.1]
+
+### Fixed
+- Fixed a possible freeze in BarcodeScannerView
+
 ## [0.27.0]
 
 ### Added

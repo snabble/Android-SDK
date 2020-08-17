@@ -571,11 +571,11 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 camera.setPreviewCallbackWithBuffer(null);
                 camera.release();
                 camera = null;
-                running = false;
-                decodeEnabled = false;
                 activeScannerView = new WeakReference<>(null);
             }
 
+            running = false;
+            decodeEnabled = false;
             startRequested = false;
         });
     }
