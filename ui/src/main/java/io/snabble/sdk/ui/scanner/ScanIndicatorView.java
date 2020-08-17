@@ -16,7 +16,8 @@ import androidx.annotation.Nullable;
 public class ScanIndicatorView extends View {
     public enum Style {
         RECT,
-        QUAD
+        QUAD,
+        NORMALIZED
     }
 
     private float scale = 1.0f;
@@ -33,8 +34,12 @@ public class ScanIndicatorView extends View {
     private int minPaddingRight;
     private int minPaddingBottom;
 
-    private Style style = Style.RECT;
+    private float normalizedLeft;
+    private float normalizedTop;
+    private float normalizedRight;
+    private float normalizedBottom;
 
+    private Style style = Style.RECT;
 
     public ScanIndicatorView(@NonNull Context context) {
         super(context);
@@ -68,46 +73,53 @@ public class ScanIndicatorView extends View {
         int w = getWidth();
         int h = getHeight();
 
-        int maxWidth = w - minPaddingLeft - minPaddingRight;
-        int maxHeight = h - minPaddingTop - minPaddingBottom;
-
-        int rectWidth;
-        int rectHeight;
-
-        if (style == Style.RECT) {
-            rectWidth = getWidth() - minPaddingLeft - minPaddingRight;
-            rectHeight = Math.round(rectWidth * 0.55f);
+        if (style == Style.NORMALIZED) {
+            rect.left = w * normalizedLeft;
+            rect.top = h * normalizedTop;
+            rect.right = w * normalizedRight;
+            rect.bottom = h * normalizedBottom;
         } else {
-            rectWidth = dp2px(360) - minPaddingLeft - minPaddingRight;
-            rectHeight = Math.round(rectWidth * 0.85f);
+            int maxWidth = w - minPaddingLeft - minPaddingRight;
+            int maxHeight = h - minPaddingTop - minPaddingBottom;
+
+            int rectWidth;
+            int rectHeight;
+
+            if (style == Style.RECT) {
+                rectWidth = getWidth() - minPaddingLeft - minPaddingRight;
+                rectHeight = Math.round(rectWidth * 0.55f);
+            } else {
+                rectWidth = dp2px(360) - minPaddingLeft - minPaddingRight;
+                rectHeight = Math.round(rectWidth * 0.85f);
+            }
+
+            if (rectHeight > maxHeight) {
+                float scaleFactor = ((float) maxHeight / (float) rectHeight);
+
+                rectWidth = Math.round((float) rectWidth * scaleFactor);
+                rectHeight = Math.round((float) rectHeight * scaleFactor);
+            }
+
+            if (rectWidth > maxWidth) {
+                float scaleFactor = ((float) maxWidth / (float) rectWidth);
+
+                rectWidth = Math.round((float) rectWidth * scaleFactor);
+                rectHeight = Math.round((float) rectHeight * scaleFactor);
+            }
+
+            rect.left = w / 2.0f - rectWidth / 2.0f;
+            rect.right = w / 2.0f + rectWidth / 2.0f;
+            rect.top = h / 2.0f - rectHeight / 2.0f;
+            rect.bottom = h / 2.0f + rectHeight / 2.0f;
+
+            float rw = rect.width();
+            float rh = rect.height();
+
+            rect.left = offsetX + w / 2.0f - Math.round(rw / 2.0f * scale);
+            rect.right = offsetX + w / 2.0f + Math.round(rw / 2.0f * scale);
+            rect.top = offsetY + h / 2.0f - Math.round(rh / 2.0f * scale);
+            rect.bottom = offsetY + h / 2.0f + Math.round(rh / 2.0f * scale);
         }
-
-        if (rectHeight > maxHeight) {
-            float scaleFactor = ((float) maxHeight / (float) rectHeight);
-
-            rectWidth = Math.round((float) rectWidth * scaleFactor);
-            rectHeight = Math.round((float) rectHeight * scaleFactor);
-        }
-
-        if (rectWidth > maxWidth) {
-            float scaleFactor = ((float) maxWidth / (float) rectWidth);
-
-            rectWidth = Math.round((float) rectWidth * scaleFactor);
-            rectHeight = Math.round((float) rectHeight * scaleFactor);
-        }
-
-        rect.left = w / 2.0f - rectWidth / 2.0f;
-        rect.right = w / 2.0f + rectWidth / 2.0f;
-        rect.top = h / 2.0f - rectHeight / 2.0f;
-        rect.bottom = h / 2.0f + rectHeight / 2.0f;
-
-        float rw = rect.width();
-        float rh = rect.height();
-
-        rect.left = offsetX + w / 2.0f - Math.round(rw / 2.0f * scale);
-        rect.right = offsetX + w / 2.0f + Math.round(rw / 2.0f * scale);
-        rect.top = offsetY + h / 2.0f - Math.round(rh / 2.0f * scale);
-        rect.bottom = offsetY + h / 2.0f + Math.round(rh / 2.0f * scale);
 
         path.reset();
         path.addRoundRect(rect, dp2px(10), dp2px(10), Path.Direction.CCW);
@@ -138,6 +150,13 @@ public class ScanIndicatorView extends View {
     public void setStyle(Style style) {
         this.style = style;
         update();
+    }
+
+    public void setNormalizedSize(float left, float top, float right, float bottom) {
+        normalizedLeft = left;
+        normalizedTop = top;
+        normalizedRight = right;
+        normalizedBottom = bottom;
     }
 
     public void setOffset(int offsetX, int offsetY) {

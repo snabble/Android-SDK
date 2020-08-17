@@ -694,6 +694,15 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         scanIndicatorView.setStyle(style);
     }
 
+    /**
+     * Sets indicator style in when in normalized style, ignoring all padding's and offsets
+     *
+     * setIndicatorStyle(ScanIndicatorView.Style.NORMALIZED)
+     */
+    public void setIndicatorNormalizedSize(float left, float top, float right, float bottom) {
+        scanIndicatorView.setNormalizedSize(left, top, right, bottom);
+    }
+
     private void setScanIndicatorVisible(boolean visible) {
         if (indicatorEnabled && visible) {
             scanIndicatorView.setVisibility(View.VISIBLE);
