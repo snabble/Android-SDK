@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.27.2]
+
+### Fixed
+- Fixed a crash when parsing metadata contain null payment methods
+
 ## [0.27.1]
 
 ### Fixed
