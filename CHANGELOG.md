@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.27.3]
+
+### Fixed 
+- Fix a initialization crash in BarcodeScannerView
+- Handle obscured urls gracefully in TokenRegistry
+
 ## [0.27.2]
 
 ### Fixed
