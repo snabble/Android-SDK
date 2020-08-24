@@ -243,63 +243,42 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
     }
 
     private void startIfRequested() {
-        final SurfaceTexture surface = textureView.getSurfaceTexture();
+        try {
+            final SurfaceTexture surface = textureView.getSurfaceTexture();
 
-        if (surface == null || running || !startRequested || isPaused) {
-            return;
-        }
+            if (surface == null || running || !startRequested || isPaused) {
+                return;
+            }
 
-        setupBarcodeDetector();
-        resetFalsePositiveFilter();
+            setupBarcodeDetector();
+            resetFalsePositiveFilter();
 
-        showError(false);
+            showError(false);
 
-        int numberOfCameras = Camera.getNumberOfCameras();
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        for (int i = 0; i < numberOfCameras; i++) {
-            Camera.getCameraInfo(i, info);
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                try {
+            int numberOfCameras = Camera.getNumberOfCameras();
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            for (int i = 0; i < numberOfCameras; i++) {
+                Camera.getCameraInfo(i, info);
+                if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
                     camera = Camera.open(i);
                     cameraInfo = info;
-                    break;
-                } catch (RuntimeException e) {
-                    // could not connect to camera service
-                    showError(true);
-                    return;
                 }
             }
-        }
 
-        if (camera == null || cameraInfo == null) {
-            try {
+            if (camera == null || cameraInfo == null) {
                 cameraInfo = new Camera.CameraInfo();
                 Camera.getCameraInfo(0, cameraInfo);
                 camera = Camera.open(0);
-            } catch (RuntimeException e) {
-                showError(true);
-                return;
+            } else {
+                camera.stopPreview();
             }
-        } else {
-            camera.stopPreview();
-        }
 
-        updateDisplayOrientation();
-        int displayOrientation = getDisplayOrientation();
-
-        try {
+            updateDisplayOrientation();
+            int displayOrientation = getDisplayOrientation();
             camera.setDisplayOrientation(displayOrientation);
-        } catch (RuntimeException e) {
-            // happens in very rare cases on the HUAWEI Mate 9.
-            // sendCommand: attempt to use a locked camera from a different process
-            // show a user error in that case
-            showError(true);
-            return;
-        }
 
-        Camera.Parameters parameters = camera.getParameters();
+            Camera.Parameters parameters = camera.getParameters();
 
-        if (parameters != null) {
             chooseFocusMode(parameters);
             chooseFrameRate(parameters);
 
@@ -315,71 +294,52 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
                 parameters.setRecordingHint(true);
             }
 
-            try {
-                camera.setParameters(parameters);
-            } catch (RuntimeException e) {
-                showError(true);
-            }
-        }
+            camera.setParameters(parameters);
 
-        try {
             camera.setPreviewTexture(surface);
-        } catch (IOException e) {
-            showError(true);
-            return;
-        }
-
-        if (parameters == null) {
-            Logger.e("Could not get camera parameters");
-            showError(true);
-            return;
-        }
-
-        try {
             camera.startPreview();
             activeScannerView = new WeakReference<>(this);
-        } catch (RuntimeException e) {
+
+            previewSize = parameters.getPreviewSize();
+
+            bitsPerPixel = ImageFormat.getBitsPerPixel(parameters.getPreviewFormat());
+            int bufferSize = previewSize.width * previewSize.height * bitsPerPixel / 8;
+
+            // buffer where the barcode processing will be
+            frontBuffer = new byte[bufferSize];
+
+            // buffer where the camera will write to
+            backBuffer = new byte[bufferSize];
+
+            camera.setPreviewCallbackWithBuffer(this);
+            camera.addCallbackBuffer(backBuffer);
+
+            detectionRect.left = 0;
+            detectionRect.top = 0;
+            detectionRect.right = previewSize.width;
+            detectionRect.bottom = previewSize.height;
+
+            running = true;
+            isProcessing = false;
+
+            setTorchEnabled(torchEnabled);
+
+            mainThreadHandler.post(() -> {
+                autoFocus();
+                updateTransform();
+                decodeEnabled = true;
+            });
+
+            scheduleAutoFocus();
+            showError(false);
+
+            if (isPaused && activeScannerView.get() == this) {
+                camera.stopPreview();
+                camera.setPreviewCallbackWithBuffer(null);
+                activeScannerView = new WeakReference<>(null);
+            }
+        } catch (Exception e) {
             showError(true);
-            return;
-        }
-
-        previewSize = parameters.getPreviewSize();
-
-        bitsPerPixel = ImageFormat.getBitsPerPixel(parameters.getPreviewFormat());
-        int bufferSize = previewSize.width * previewSize.height * bitsPerPixel / 8;
-
-        // buffer where the barcode processing will be
-        frontBuffer = new byte[bufferSize];
-
-        // buffer where the camera will write to
-        backBuffer = new byte[bufferSize];
-
-        camera.setPreviewCallbackWithBuffer(this);
-        camera.addCallbackBuffer(backBuffer);
-
-        detectionRect.left = 0;
-        detectionRect.top = 0;
-        detectionRect.right = previewSize.width;
-        detectionRect.bottom = previewSize.height;
-
-        running = true;
-        isProcessing = false;
-
-        setTorchEnabled(torchEnabled);
-
-        mainThreadHandler.post(() -> {
-            autoFocus();
-            updateTransform();
-            decodeEnabled = true;
-        });
-
-        scheduleAutoFocus();
-        showError(false);
-
-        if (isPaused && activeScannerView.get() == this) {
-            camera.stopPreview();
-            camera.setPreviewCallbackWithBuffer(null);
-            activeScannerView = new WeakReference<>(null);
         }
     }
 
