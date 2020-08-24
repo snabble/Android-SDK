@@ -80,8 +80,14 @@ public class TokenRegistry {
             return null;
         }
 
-        Request.Builder request = new Request.Builder()
-                .url(url);
+        Request.Builder request;
+
+        try {
+            request = new Request.Builder()
+                    .url(url);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
 
         if (appUser != null) {
             request = request.get();
