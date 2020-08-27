@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.28.0]
+
+### Added
+- Support for updating the users age by external payments
+- Added age restricted product warning message
+
 ## [0.27.3]
 
 ### Fixed 

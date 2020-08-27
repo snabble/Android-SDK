@@ -220,8 +220,6 @@ public class SelfScanningView extends FrameLayout {
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
-        final int modCount = shoppingCart.getModCount();
-
         new ProductResolver.Builder(getContext())
                 .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
@@ -249,6 +247,10 @@ public class SelfScanningView extends FrameLayout {
                         .setCancelable(false)
                         .create()
                         .show())
+                .setOnAgeNotReachedListener(() -> {
+                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                            R.string.Snabble_Scanner_scannedAgeRestrictedProduct)));
+                })
                 .setOnNotForSaleListener(product -> {
                     if (product.getScanMessage() != null) {
                         showScanMessage(product, true);

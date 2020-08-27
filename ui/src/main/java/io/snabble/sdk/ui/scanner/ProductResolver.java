@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.view.KeyEvent;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -14,12 +15,14 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.utils.Age;
 import io.snabble.sdk.utils.Dispatch;
 
 public class ProductResolver {
@@ -33,9 +36,11 @@ public class ProductResolver {
     private OnNotForSaleListener onNotForSaleListener;
     private OnShelfCodeScannedListener onShelfCodeScannedListener;
     private OnProductNotFoundListener onProductNotFoundListener;
+    private OnAgeNotReachedListener onAgeNotReachedListener;
     private OnNetworkErrorListener onNetworkErrorListener;
     private BarcodeFormat barcodeFormat;
     private DialogInterface.OnKeyListener onKeyListener;
+    private Product lastProduct;
 
     private ProductResolver(Context context) {
         this.context = context;
@@ -44,6 +49,10 @@ public class ProductResolver {
         productConfirmationDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
+                if (lastProduct != null) {
+                    checkMinAge(lastProduct);
+                }
+
                 if(onDismissListener != null) {
                     onDismissListener.onDismiss();
                 }
@@ -76,6 +85,26 @@ public class ProductResolver {
                 return false;
             }
         });
+    }
+
+    private void checkMinAge(Product product) {
+        if (product.getSaleRestriction().isAgeRestriction()) {
+            long minAge = product.getSaleRestriction().getValue();
+            Date birthday = Snabble.getInstance().getUserPreferences().getBirthday();
+            boolean isOldEnough = false;
+            if (birthday != null) {
+                Age age = Age.calculateAge(Snabble.getInstance().getUserPreferences().getBirthday());
+                if (age.years >= minAge) {
+                    isOldEnough = true;
+                }
+            }
+
+            if (!isOldEnough) {
+                if (onAgeNotReachedListener != null) {
+                    onAgeNotReachedListener.onAgeNotReached();
+                }
+            }
+        }
     }
 
     public List<ScannedCode> getScannedCodes() {
@@ -302,6 +331,7 @@ public class ProductResolver {
     }
 
     private void showProduct(Product product, ScannedCode scannedCode) {
+        lastProduct = product;
         productConfirmationDialog.show(product, scannedCode);
     }
 
@@ -353,6 +383,10 @@ public class ProductResolver {
         void onNetworkError();
     }
 
+    public interface OnAgeNotReachedListener {
+        void onAgeNotReached();
+    }
+
     public static class Builder {
         private ProductResolver productResolver;
 
@@ -402,6 +436,11 @@ public class ProductResolver {
 
         public Builder setOnNotForSaleListener(OnNotForSaleListener listener) {
             productResolver.onNotForSaleListener = listener;
+            return this;
+        }
+
+        public Builder setOnAgeNotReachedListener(OnAgeNotReachedListener listener) {
+            productResolver.onAgeNotReachedListener = listener;
             return this;
         }
 

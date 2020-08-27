@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.UserPreferences;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -177,9 +178,11 @@ public class TokenRegistry {
                 if (newToken != null) {
                     token = newToken;
                 }
+                Snabble.getInstance().getUsers().update();
             }
         } else {
             token = refreshToken(project, false);
+            Snabble.getInstance().getUsers().update();
         }
 
         return token;

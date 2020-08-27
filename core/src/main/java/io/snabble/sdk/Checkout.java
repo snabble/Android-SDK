@@ -566,6 +566,8 @@ public class Checkout {
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
+
+            Snabble.getInstance().getUsers().update();
         }
     }
 

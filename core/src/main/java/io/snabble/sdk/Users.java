@@ -8,48 +8,86 @@ import java.util.TimeZone;
 
 import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class Users {
-    private Call updateBirthdayCall;
-
-    public interface UpdateAgeCallback {
+    public interface UpdateUserCallback {
         void success();
         void failure();
     }
 
-    private final SimpleDateFormat simpleDateFormat;
-
-    private static class UpdateBirthdayRequest {
-        public String dayOfBirth;
-        public String id;
+    public interface GetUserCallback {
+        void success(Response response);
+        void failure();
     }
+
+    private static class Request {
+        public String id;
+        public String dayOfBirth;
+    }
+
+    public static class Response {
+        public String id;
+        public String dayOfBirth;
+        public String bornBeforeOrOn;
+    }
+
+    private Call updateBirthdayCall;
+    private final SimpleDateFormat simpleDateFormat;
 
     public Users() {
         simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    public void updateBirthday(Date birthday, final UpdateAgeCallback updateAgeCallback) {
+    public void get(final GetUserCallback callback) {
         final Snabble snabble = Snabble.getInstance();
         String url = snabble.getUsersUrl();
 
         AppUser appUser = snabble.getUserPreferences().getAppUser();
 
         if (appUser != null && url != null) {
-            UpdateBirthdayRequest updateBirthdayRequest = new UpdateBirthdayRequest();
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .get()
+                    .url(url.replace("{appUserID}", appUser.id))
+                    .build();
+
+            OkHttpClient okHttpClient = snabble.getProjects().get(0).getOkHttpClient();
+            okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<Response>(Response.class) {
+                @Override
+                public void success(Response response) {
+                    callback.success(response);
+                }
+
+                @Override
+                public void error(Throwable t) {
+                    callback.failure();
+                }
+            });
+        } else {
+            callback.failure();
+        }
+    }
+
+    public void setBirthday(Date birthday, final UpdateUserCallback updateUserCallback) {
+        final Snabble snabble = Snabble.getInstance();
+        String url = snabble.getUsersUrl();
+
+        AppUser appUser = snabble.getUserPreferences().getAppUser();
+
+        if (appUser != null && url != null) {
+            Request updateBirthdayRequest = new Request();
             updateBirthdayRequest.id = appUser.id;
             updateBirthdayRequest.dayOfBirth = simpleDateFormat.format(birthday);
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"),
                     GsonHolder.get().toJson(updateBirthdayRequest));
 
-            Request request = new Request.Builder()
+            okhttp3.Request request = new okhttp3.Request.Builder()
                     .patch(requestBody)
                     .url(url.replace("{appUserID}", appUser.id))
                     .build();
@@ -60,24 +98,50 @@ public class Users {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     updateBirthdayCall = null;
-                    updateAgeCallback.failure();
+                    updateUserCallback.failure();
                 }
 
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
                     if (response.isSuccessful()) {
                         updateBirthdayCall = null;
-                        updateAgeCallback.success();
+                        updateUserCallback.success();
                     } else {
                         updateBirthdayCall = null;
-                        updateAgeCallback.failure();
+                        updateUserCallback.failure();
                     }
                 }
             });
+        } else {
+            updateUserCallback.failure();
         }
     }
 
-    public void cancelUpdatingBirthday() {
+    public void update() {
+        get(new GetUserCallback() {
+            @Override
+            public void success(Response response) {
+                Date birthday = null;
+
+                try {
+                    if (response.dayOfBirth != null) {
+                        birthday = simpleDateFormat.parse(response.dayOfBirth);
+                    } else if (response.bornBeforeOrOn != null) {
+                        birthday = simpleDateFormat.parse(response.bornBeforeOrOn);
+                    }
+                } catch (Exception ignored) { }
+
+                Snabble.getInstance().getUserPreferences().setBirthday(birthday);
+            }
+
+            @Override
+            public void failure() {
+
+            }
+        });
+    }
+
+    public void cancelUpdatingUser() {
         if (updateBirthdayCall != null) {
             updateBirthdayCall.cancel();
         }

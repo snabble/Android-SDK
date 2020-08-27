@@ -1,10 +1,7 @@
 package io.snabble.sdk.ui.payment;
 
-import android.app.Activity;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -12,9 +9,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,9 +27,6 @@ import io.snabble.sdk.Users;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
-import io.snabble.sdk.ui.utils.UIUtils;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
-import okhttp3.Call;
 
 public class AgeVerificationInputView extends FrameLayout {
     private DelayedProgressDialog progressDialog;
@@ -69,7 +61,7 @@ public class AgeVerificationInputView extends FrameLayout {
         progressDialog.setCancelable(false);
         progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
             if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                Snabble.getInstance().getUsers().cancelUpdatingBirthday();
+                Snabble.getInstance().getUsers().cancelUpdatingUser();
                 return true;
             }
             return false;
@@ -102,7 +94,7 @@ public class AgeVerificationInputView extends FrameLayout {
                 hideSoftKeyboard(textInputEditText);
 
                 Date birthday = getDate(input);
-                Snabble.getInstance().getUsers().updateBirthday(birthday, new Users.UpdateAgeCallback() {
+                Snabble.getInstance().getUsers().setBirthday(birthday, new Users.UpdateUserCallback() {
                     @Override
                     public void success() {
                         post(() -> {
