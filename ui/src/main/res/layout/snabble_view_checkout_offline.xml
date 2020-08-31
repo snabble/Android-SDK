@@ -12,25 +12,24 @@
         android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/helper_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleX="0.9"
-            android:scaleY="0.9"
-            android:gravity="center"
-            android:layout_margin="8dp"
-            android:visibility="gone"/>
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_margin="8dp" />
 
         <ImageView
             android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:src="@drawable/snabble_ic_arrow_upward"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:visibility="gone"
             android:tint="?attr/colorOnSurface" />
 
@@ -38,9 +37,8 @@
             android:id="@+id/helper_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:gravity="center"
-            android:layout_marginTop="8dp"
             android:text="@string/Snabble.QRCode.message"
             android:textSize="17sp"/>
     </LinearLayout>

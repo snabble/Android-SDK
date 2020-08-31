@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,6 +47,7 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
     private ImageView helperImage;
     private View upArrow;
     private CodeListViewAdapter viewPagerAdapter;
+    private boolean isSmallDevice;
 
     public CheckoutOfflineView(Context context) {
         super(context);
@@ -162,28 +161,30 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
             DisplayMetrics dm = getResources().getDisplayMetrics();
             int dpHeight = Math.round(getHeight() / dm.density);
             if (dpHeight < 500) {
-                if (helperImage.getLayoutParams().width == ViewGroup.LayoutParams.WRAP_CONTENT) {
-                    helperImage.setLayoutParams(new LinearLayout.LayoutParams(
-                            Math.round(helperImage.getWidth() * 0.5f),
-                            Math.round(helperImage.getHeight() * 0.5f)));
-                }
+                Dispatch.mainThread(() -> {
+                    isSmallDevice = true;
+                    upArrow.setVisibility(View.GONE);
+                    helperImage.setVisibility(View.GONE);
+                });
             } else {
-                helperImage.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                Dispatch.mainThread(() -> {
+                    isSmallDevice = false;
+                    project.getAssets().get("checkout-offline", this::setHelperImage);
+                });
             }
         }
     }
 
     public void setHelperImage(Bitmap bitmap) {
-        if (bitmap != null) {
-            helperImage.setImageBitmap(bitmap);
-            upArrow.setVisibility(View.VISIBLE);
+        if (bitmap != null && !isSmallDevice) {
             helperImage.setVisibility(View.VISIBLE);
+            upArrow.setVisibility(View.VISIBLE);
         } else {
-            upArrow.setVisibility(View.GONE);
             helperImage.setVisibility(View.GONE);
+            upArrow.setVisibility(View.GONE);
         }
+
+        helperImage.setImageBitmap(bitmap);
     }
 
     @Override
