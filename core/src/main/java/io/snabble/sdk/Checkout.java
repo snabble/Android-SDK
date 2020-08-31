@@ -555,8 +555,15 @@ public class Checkout {
                 return true;
             }
         } else if (checkoutProcess.paymentState == CheckoutApi.State.FAILED) {
-            Logger.d("Payment denied by payment provider");
-            notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
+            if (checkoutProcess.paymentResult != null
+                    && checkoutProcess.paymentResult.failureCause != null
+                    && checkoutProcess.paymentResult.failureCause.equals("terminalAbort")) {
+                Logger.d("Payment aborted by terminal");
+                notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+            } else {
+                Logger.d("Payment denied by payment provider");
+                notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
+            }
             return true;
         }
 

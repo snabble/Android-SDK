@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 - Support for updating the users age by external payments
 - Added age restricted product warning message
 
+### Changed
+- Route to PAYMENT_ABORTED on terminal aborts
+
 ### Fixed
 - Fixed NullPointerException on unknown fulfillment check state
 

@@ -146,6 +146,7 @@ public class CheckoutApi {
 
     public static class PaymentResult {
         public String originCandidateLink;
+        public String failureCause;
     }
 
     public enum State {
