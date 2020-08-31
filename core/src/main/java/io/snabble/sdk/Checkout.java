@@ -554,6 +554,8 @@ public class Checkout {
                 notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
                 return true;
             }
+        } else if (checkoutProcess.paymentState == CheckoutApi.State.PROCESSING) {
+            notifyStateChanged(State.PAYMENT_PROCESSING);
         } else if (checkoutProcess.paymentState == CheckoutApi.State.FAILED) {
             if (checkoutProcess.paymentResult != null
                     && checkoutProcess.paymentResult.failureCause != null

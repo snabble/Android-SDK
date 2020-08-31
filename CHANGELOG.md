@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed NullPointerException on unknown fulfillment check state
+- ProgressBar not showing when payment is processing on gatekeeper checkout
 
 ## [0.27.3]
 

@@ -175,8 +175,6 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                 break;
             case PAYMENT_PROCESSING:
                 checkoutIdCode.setVisibility(View.GONE);
-                helperText.setVisibility(View.GONE);
-                helperImage.setVisibility(View.GONE);
                 upArrow.setVisibility(View.GONE);
                 progressIndicator.setVisibility(View.VISIBLE);
                 cancel.setVisibility(View.INVISIBLE);
