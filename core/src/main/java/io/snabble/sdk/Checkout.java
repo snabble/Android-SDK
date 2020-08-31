@@ -397,6 +397,10 @@ public class Checkout {
 
         if (checkoutProcessResponse.checks != null) {
             for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
+                if (check.type == null || check.state == null) {
+                    continue;
+                }
+
                 if (check.type == CheckoutApi.CheckType.MIN_AGE) {
                     Logger.d("Verifying age...");
                     switch (check.state) {
