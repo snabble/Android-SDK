@@ -108,21 +108,32 @@ public class Product implements Serializable, Parcelable {
         public final String transmissionCode;
         public final String template;
         public final Unit encodingUnit;
+        public final boolean isPrimary;
+        public final int specifiedQuantity;
 
-        public Code(String lookupCode, String transmissionCode, String template, Unit encodingUnit) {
+        public Code(String lookupCode,
+                    String transmissionCode,
+                    String template,
+                    Unit encodingUnit,
+                    boolean isPrimary,
+                    int specifiedQuantity) {
             this.lookupCode = lookupCode;
             this.transmissionCode = transmissionCode;
             this.template = template;
             this.encodingUnit = encodingUnit;
+            this.isPrimary = isPrimary;
+            this.specifiedQuantity = specifiedQuantity;
         }
 
         @Override
         public String toString() {
             return "Code{" +
-                    "template=" + template +
-                    ", lookupCode='" + lookupCode + '\'' +
+                    "lookupCode='" + lookupCode + '\'' +
                     ", transmissionCode='" + transmissionCode + '\'' +
+                    ", template='" + template + '\'' +
                     ", encodingUnit=" + encodingUnit +
+                    ", isPrimary=" + isPrimary +
+                    ", specifiedQuantity=" + specifiedQuantity +
                     '}';
         }
     }

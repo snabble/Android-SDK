@@ -756,6 +756,8 @@ public class ProductDatabase {
         String[] lookupCodes = null;
         String[] transmissionCodes = null;
         String[] codeEncodingUnits = null;
+        int[] codeSpecifiedQuantities = null;
+        boolean[] codeIsPrimaryCode = null;
         String[] templates = null;
 
         String sku = anyToString(cursor, 0);
@@ -818,9 +820,40 @@ public class ProductDatabase {
             if (templatesStr != null) {
                 templates = templatesStr.split(",", -1);
             }
+
+            String isPrimaryStr = cursor.getString(17);
+            if (isPrimaryStr != null) {
+                String[] split = isPrimaryStr.split(",", -1);
+                if (split.length > 0) {
+                    codeIsPrimaryCode = new boolean[split.length];
+                    for (int i=0; i<split.length; i++) {
+                        if (split[i].equals("1")) {
+                            codeIsPrimaryCode[i] = true;
+                        } else {
+                            codeIsPrimaryCode[i] = false;
+                        }
+                    }
+                }
+            }
+
+            String specifiedQuantities = cursor.getString(18);
+            if (specifiedQuantities != null) {
+                String[] split = specifiedQuantities.split(",", -1);
+                if (split.length > 0) {
+                    codeSpecifiedQuantities = new int[split.length];
+                    for (int i=0; i<split.length; i++) {
+                        try {
+                            int value = Integer.parseInt(split[i]);
+                            codeSpecifiedQuantities[i] = value;
+                        } catch (Exception e) {
+                            codeSpecifiedQuantities[i] = 0;
+                        }
+                    }
+                }
+            }
         }
 
-        String scanMessage = cursor.getString(17);
+        String scanMessage = cursor.getString(19);
         if (scanMessage != null) {
             builder.setScanMessage(scanMessage);
         }
@@ -853,14 +886,32 @@ public class ProductDatabase {
                     }
                 }
 
+                String primaryTransmissionCode = transmissionCode;
+                if (codeIsPrimaryCode != null) {
+                    for (int j = 0; j < codeIsPrimaryCode.length; j++) {
+                        if (codeIsPrimaryCode[j]) {
+                            if (transmissionCodes != null && transmissionCodes.length > j && !transmissionCodes[j].equals("")) {
+                                primaryTransmissionCode = transmissionCodes[j];
+                            } else if (lookupCodes.length > j && !lookupCodes[j].equals("")) {
+                                primaryTransmissionCode = lookupCodes[j];
+                            }
+                        }
+                    }
+                }
+
                 String templateName = template != null ? template.getName() : null;
-                productCodes[i] = new Product.Code(lookupCode, transmissionCode, templateName, codeEncodingUnit);
+                productCodes[i] = new Product.Code(lookupCode,
+                        primaryTransmissionCode,
+                        templateName,
+                        codeEncodingUnit,
+                        codeIsPrimaryCode != null && codeIsPrimaryCode[i],
+                        codeSpecifiedQuantities != null ? codeSpecifiedQuantities[i] : 0);
             }
 
             builder.setScannableCodes(productCodes);
         }
 
-        int availability = cursor.getInt(18);
+        int availability = cursor.getInt(20);
         Product.Availability[] availabilities = Product.Availability.values();
         if (availability >= 0 && availability < availabilities.length) {
             builder.setAvailability(availabilities[availability]);
@@ -959,6 +1010,8 @@ public class ProductDatabase {
                 ",p.encodingUnit" +
                 ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(sc.isPrimary, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(sc.specifiedQuantity, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
                 ",p.scanMessage" +
                 ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), " + defaultAvailability + ") as availability" +
                 " FROM products p "

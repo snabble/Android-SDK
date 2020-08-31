@@ -63,6 +63,8 @@ class ProductApi {
         String template;
         String transmissionCode;
         String encodingUnit;
+        boolean isPrimary;
+        int specifiedQuantity;
     }
 
     private Project project;
@@ -219,10 +221,24 @@ class ProductApi {
             for (int i=0; i<codes.length; i++) {
                 ApiScannableCode apiScannableCode = apiProduct.codes[i];
 
+                String primaryTransmissionCode = apiScannableCode.transmissionCode;
+
+                for (ApiScannableCode apiCode : apiProduct.codes) {
+                    if (apiCode.isPrimary) {
+                        if (apiCode.transmissionCode != null) {
+                            primaryTransmissionCode = apiCode.transmissionCode;
+                        } else {
+                            primaryTransmissionCode = apiCode.code;
+                        }
+                    }
+                }
+
                 Product.Code code = new Product.Code(apiScannableCode.code,
-                        apiScannableCode.transmissionCode,
+                        primaryTransmissionCode,
                         apiScannableCode.template,
-                        Unit.fromString(apiScannableCode.encodingUnit));
+                        Unit.fromString(apiScannableCode.encodingUnit),
+                        apiScannableCode.isPrimary,
+                        apiScannableCode.specifiedQuantity);
 
                 codes[i] = code;
             }

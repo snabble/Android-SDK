@@ -432,7 +432,16 @@ public class ShoppingCart {
             if (product.getType() == Product.Type.UserWeighed) {
                 this.quantity = 0;
             } else {
-                this.quantity = 1;
+                for (Product.Code code : product.getScannableCodes()) {
+                    if (code.template.equals(scannedCode.getTemplateName())
+                            && code.lookupCode.equals(scannedCode.getLookupCode())) {
+                        this.quantity = code.specifiedQuantity;
+                    }
+                }
+
+                if (this.quantity == 0) {
+                    this.quantity = 1;
+                }
             }
         }
 
