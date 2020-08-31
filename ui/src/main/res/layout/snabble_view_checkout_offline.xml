@@ -9,25 +9,18 @@
         android:id="@+id/helper_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/helper_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/Snabble.Payment.presentCode"
-            android:textSize="17sp"
-            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/helper_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
             android:gravity="center"
             android:layout_margin="8dp"
             android:visibility="gone"/>
@@ -37,9 +30,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/snabble_ic_arrow_upward"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:visibility="gone"
             android:tint="?attr/colorOnSurface" />
+
+        <TextView
+            android:id="@+id/helper_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:text="@string/Snabble.QRCode.message"
+            android:textSize="17sp"/>
     </LinearLayout>
 
     <androidx.viewpager2.widget.ViewPager2

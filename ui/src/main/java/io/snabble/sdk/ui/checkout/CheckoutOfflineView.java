@@ -46,7 +46,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
     private Checkout.State currentState;
     private ViewPager2 viewPager;
     private CircleIndicator3 viewPagerIndicator;
-    private View helperText;
     private ImageView helperImage;
     private View upArrow;
     private CodeListViewAdapter viewPagerAdapter;
@@ -109,7 +108,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
             paidButton.setEnabled(true);
         }, 2000);
 
-        helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
 
@@ -182,11 +180,9 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
             helperImage.setImageBitmap(bitmap);
             upArrow.setVisibility(View.VISIBLE);
             helperImage.setVisibility(View.VISIBLE);
-            helperText.setVisibility(View.GONE);
         } else {
             upArrow.setVisibility(View.GONE);
             helperImage.setVisibility(View.GONE);
-            helperText.setVisibility(View.VISIBLE);
         }
     }
 

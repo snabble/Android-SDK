@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Route to PAYMENT_ABORTED on terminal aborts
+- QRCode offline layout improvements 
 
 ### Fixed
 - Fixed NullPointerException on unknown fulfillment check state
