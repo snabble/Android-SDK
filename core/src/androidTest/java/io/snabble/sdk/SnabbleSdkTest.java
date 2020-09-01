@@ -129,7 +129,7 @@ public class SnabbleSdkTest {
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        withDb("test_1_21.sqlite3");
+        withDb("test_1_24.sqlite3");
     }
 
     public void withDb(String testDbName) throws IOException, Snabble.SnabbleException {

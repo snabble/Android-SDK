@@ -42,7 +42,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTextSearchNoFTS() throws IOException, Snabble.SnabbleException {
-        withDb("test_1_21.sqlite3", true);
+        withDb("test_1_24.sqlite3", true);
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
@@ -162,7 +162,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         assertEquals(product.getSku(), "salfter-classic");
         assertEquals(product.getListPrice(), 100);
 
-        project.setCheckedInShop(project.getShops()[1]);
+        project.setCheckedInShop(project.getShops()[2]);
         final Product product2 = productDatabase.findBySku("salfter-classic");
         assertEquals(product2.getSku(), "salfter-classic");
         assertEquals(product2.getListPrice(), 200);
@@ -276,9 +276,9 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdate() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        productDatabase.applyFullUpdate(context.getAssets().open("update_1_21.sqlite3"));
+        productDatabase.applyFullUpdate(context.getAssets().open("update_1_24.sqlite3"));
 
-        Product product = productDatabase.findBySku("0");
+        Product product = productDatabase.findBySku("1337");
 
         assertEquals(product.getListPrice(), 349);
         assertEquals(product.getName(), "UPDATE");
@@ -290,7 +290,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnCorruptedFile() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("update_1_21.sqlite3"));
+        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("update_1_24.sqlite3"));
         for (int i = 0; i < bytes.length; i++) {
             if (i % 4 == 0) {
                 bytes[i] = 42;
@@ -309,12 +309,12 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnWrongMajorVersion() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        InputStream is = context.getResources().getAssets().open("update_1_21.sqlite3");
-        File outputFile = context.getDatabasePath("update_1_21.sqlite3");
+        InputStream is = context.getResources().getAssets().open("update_1_24.sqlite3");
+        File outputFile = context.getDatabasePath("update_1_24.sqlite3");
         FileOutputStream fos = new FileOutputStream(outputFile);
         IOUtils.copy(is, fos);
 
-        SQLiteDatabase db = context.openOrCreateDatabase("update_1_21.sqlite3", Context.MODE_PRIVATE, null);
+        SQLiteDatabase db = context.openOrCreateDatabase("update_1_24.sqlite3", Context.MODE_PRIVATE, null);
         db.execSQL("UPDATE metadata SET value = 2 WHERE metadata.key = 'schemaVersionMajor'");
         db.close();
 
@@ -371,10 +371,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testRecoverFromFileCorruptions() throws IOException, Snabble.SnabbleException, InterruptedException {
-        withDb("test_1_21_corrupt.sqlite3");
+        withDb("corrupt.sqlite3");
         Assert.assertNull(project.getProductDatabase().findBySku("1"));
 
-        prepareUpdateDb("test_1_21.sqlite3");
+        prepareUpdateDb("test_1_24.sqlite3");
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
             @Override
@@ -398,7 +398,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testMultiplePricingCategories() throws IOException, Snabble.SnabbleException {
-        withDb("test_1_22.sqlite3");
+        withDb("test_1_24.sqlite3");
         project.setCheckedInShop(project.getShops()[3]);
 
         ProductDatabase productDatabase = project.getProductDatabase();

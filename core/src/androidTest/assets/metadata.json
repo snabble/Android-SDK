@@ -23,7 +23,7 @@
     {
       "codeTemplates": {
         "default": "{code:*}",
-        "ean13_instore_chk": "2{code:5}{i}{embed:5}{ec}",
+        "ean13_instore": "2{code:5}{i}{embed:5}{_}",
         "ean14_code128": "01{code:ean14}"
       },
       "currency": "EUR",

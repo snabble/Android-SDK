@@ -109,7 +109,7 @@ public class ProductDatabase {
                 schemaVersionMajor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MAJOR));
                 schemaVersionMinor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MINOR));
 
-                if (schemaVersionMajor == 1 && schemaVersionMinor < 19) {
+                if (schemaVersionMajor == 1 && schemaVersionMinor < 24) {
                     Logger.d("Database has incompatible schema, deleting local database");
                     delete();
                     return false;

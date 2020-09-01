@@ -57,10 +57,10 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         simpleProduct3 = new TestProduct(project.getProductDatabase().findBySku("3"), code("0885580466701", "default"));
 
         userWeighedProduct = new TestProduct(project.getProductDatabase().findBySku("34"), code("23232327", "default"));
-        preWeighedProduct = new TestProduct(project.getProductDatabase().findBySku("34-b"), code("2423230001544", "ean13_instore_chk"));
-        pieceProduct = new TestProduct(project.getProductDatabase().findBySku("34-c"), code("2523232000061", "ean13_instore_chk"));
-        priceProduct = new TestProduct(project.getProductDatabase().findBySku("34-d"), code("2623237002494", "ean13_instore_chk"));
-        zeroAmountProduct = new TestProduct(project.getProductDatabase().findBySku("34-c"), code("2523230000001", "ean13_instore_chk"));
+        preWeighedProduct = new TestProduct(project.getProductDatabase().findBySku("34-b"), code("2423230001544", "ean13_instore"));
+        pieceProduct = new TestProduct(project.getProductDatabase().findBySku("34-c"), code("2523232000061", "ean13_instore"));
+        priceProduct = new TestProduct(project.getProductDatabase().findBySku("34-d"), code("2623237002494", "ean13_instore"));
+        zeroAmountProduct = new TestProduct(project.getProductDatabase().findBySku("34-c"), code("2523230000001", "ean13_instore"));
     }
 
     @Test
@@ -302,7 +302,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
 
         Assert.assertEquals(backendCart.items[cart.size() - 6].amount, 1);
         Assert.assertEquals(backendCart.items[cart.size() - 6].units.intValue(), 4);
-        Assert.assertEquals(backendCart.items[cart.size() - 6].scannedCode, "2523237000042");
+        Assert.assertEquals(backendCart.items[cart.size() - 6].scannedCode, "2523237000040");
         Assert.assertEquals(backendCart.items[cart.size() - 6].weightUnit, Unit.PIECE.getId());
     }
 
