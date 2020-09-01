@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 - QRCode offline layout improvements 
 
 ### Fixed
+- Fixed BarcodeScannerView choosing the wrong camera when multiple back cameras
+are available and not all camera support auto-focus
 - Fixed NullPointerException on unknown fulfillment check state
 - ProgressBar not showing when payment is processing on gatekeeper checkout
 

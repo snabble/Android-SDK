@@ -255,15 +255,7 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
             showError(false);
 
-            int numberOfCameras = Camera.getNumberOfCameras();
-            Camera.CameraInfo info = new Camera.CameraInfo();
-            for (int i = 0; i < numberOfCameras; i++) {
-                Camera.getCameraInfo(i, info);
-                if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                    camera = Camera.open(i);
-                    cameraInfo = info;
-                }
-            }
+            chooseBestCamera();
 
             if (camera == null || cameraInfo == null) {
                 cameraInfo = new Camera.CameraInfo();
@@ -343,12 +335,42 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         }
     }
 
+    private void chooseBestCamera() {
+        int numberOfCameras = Camera.getNumberOfCameras();
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                try {
+                    camera = Camera.open(i);
+                    if (isSupportingAutoFocus(camera.getParameters())) {
+                        cameraInfo = info;
+                        break;
+                    } else {
+                        camera.release();
+                    }
+                } catch (Exception e) {
+                    try {
+                        if (camera != null) {
+                            camera.release();
+                        }
+                    } catch (Exception ignored) { }
+                }
+            }
+        }
+    }
+
     private void resetFalsePositiveFilter() {
         barcodeProcessingHandler.post(() -> {
             if (barcodeDetector != null) {
                 barcodeDetector.reset();
             }
         });
+    }
+
+    private boolean isSupportingAutoFocus(Camera.Parameters parameters) {
+        List<String> supportedFocusModes = parameters.getSupportedFocusModes();
+        return supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO);
     }
 
     private void chooseOptimalPreviewSize(Camera.Parameters parameters) {
@@ -459,7 +481,6 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
         mainThreadHandler.postDelayed(() -> {
             if (running) {
                 autoFocus();
-
                 scheduleAutoFocus();
             }
         }, 1000);
@@ -467,7 +488,9 @@ public class BarcodeScannerView extends FrameLayout implements TextureView.Surfa
 
     private void autoFocus() {
         try {
-            camera.autoFocus(null);
+            camera.autoFocus((success, camera) -> {
+                // empty callback
+            });
         } catch (RuntimeException e) {
             //ignore, happens mostly when calling autoFocus while its still focussing
         }
