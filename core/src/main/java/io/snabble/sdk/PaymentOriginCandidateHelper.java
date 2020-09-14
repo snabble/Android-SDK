@@ -70,7 +70,9 @@ public class PaymentOriginCandidateHelper {
 
                         @Override
                         public void error(Throwable t) {
-                            poll(checkoutProcessResponse);
+                            if (responseCode() >= 500) {
+                                poll(checkoutProcessResponse);
+                            }
                         }
                     });
         }, 1000);

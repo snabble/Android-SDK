@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.28.1]
+
+### Fixed
+- Stop polling for payment origin candidates on 404
+
 ## [0.28.0]
 
 ### Added
