@@ -50,8 +50,11 @@ dependencies {
     implementation 'com.google.android:flexbox:2.0.1'
     implementation 'me.relex:circleindicator:2.1.4'
 
+    //noinspection GradleDependency
     implementation 'commons-io:commons-io:2.5'
+    //noinspection GradleDependency
     implementation 'com.google.zxing:core:3.3.3'
+    //noinspection GradleDependency
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
     testImplementation 'junit:junit:4.13'

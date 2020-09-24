@@ -41,7 +41,7 @@
                 android:src="@drawable/snabble_ic_arrow_upward"
                 android:layout_margin="8dp"
                 android:visibility="gone"
-                android:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurface" />
 
             <LinearLayout android:id="@+id/progress_indicator"
                 android:layout_width="wrap_content"

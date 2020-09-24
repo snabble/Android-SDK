@@ -42,7 +42,7 @@
                 android:src="@drawable/snabble_ic_arrow_upward"
                 android:layout_margin="8dp"
                 android:visibility="gone"
-                android:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurface" />
 
             <io.snabble.sdk.ui.scanner.BarcodeView
                 android:id="@+id/checkout_id_code"
