@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Stop polling for payment origin candidates on 404
+- Product that were scanned with encoded data are now not showing the bundle dialog anymore
 
 ## [0.28.0]
 

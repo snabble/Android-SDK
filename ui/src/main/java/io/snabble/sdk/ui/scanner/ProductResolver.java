@@ -230,7 +230,7 @@ public class ProductResolver {
             }
         }
 
-        if(product.getBundleProducts().length > 0){
+        if(product.getBundleProducts().length > 0 && !scannedCode.hasEmbeddedData()){
             showBundleDialog(product, scannedCode);
         } else {
             if (product.getSaleStop()) {
