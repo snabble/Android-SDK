@@ -18,11 +18,20 @@ import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.utils.Logger;
 
 public class UserPreferences {
+    enum ConsentStatus {
+        UNDECIDED,
+        TRANSMITTING,
+        TRANSMIT_FAILED,
+        ACCEPTED
+    }
+
     private static final String SHARED_PREFERENCES_TAG = "snabble_prefs";
     private static final String SHARED_PREFERENCES_CLIENT_ID = "Client-ID";
     private static final String SHARED_PREFERENCES_APPUSER_ID = "AppUser-ID";
     private static final String SHARED_PREFERENCES_APPUSER_SECRET = "AppUser-Secret";
     private static final String SHARED_PREFERENCES_BIRTHDAY = "Birthday_v2";
+    private static final String SHARED_PREFERENCES_CONSENT_STATUS = "ConsentStatus";
+    private static final String SHARED_PREFERENCES_CONSENT_VERSION = "ConsentVersion";
     private static final String SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard";
 
     private static final SimpleDateFormat BIRTHDAY_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
@@ -166,6 +175,35 @@ public class UserPreferences {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    public void setConsentStatus(ConsentStatus consent) {
+        sharedPreferences.edit()
+                .putString(SHARED_PREFERENCES_CONSENT_STATUS, consent.name())
+                .apply();
+    }
+
+    public ConsentStatus getConsentStatus() {
+        String s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null);
+        if (s == null) {
+            return ConsentStatus.UNDECIDED;
+        }
+
+        try {
+            return ConsentStatus.valueOf(s);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void setConsentVersion(String version) {
+        sharedPreferences.edit()
+                .putString(SHARED_PREFERENCES_CONSENT_VERSION, version)
+                .apply();
+    }
+
+    public String getConsentVersion() {
+        return sharedPreferences.getString(SHARED_PREFERENCES_CONSENT_VERSION, null);
     }
 
     /**
