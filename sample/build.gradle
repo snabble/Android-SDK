@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.gmazzo.sqlite'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -45,12 +47,20 @@ android {
     }
 
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjvm-default=all"]
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
+
     implementation project(':core')
     implementation project(':ui')
     implementation project(':ui-integration')
