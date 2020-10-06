@@ -42,9 +42,9 @@ public class Product implements Serializable, Parcelable {
         UserWeighed(2),
 
         /**
-         * A product that is used for deposit slip's
+         * A product that is used for deposit return voucher's
          */
-        DepositSlip(3);
+        DepositReturnVoucher(3);
 
         private int databaseValue;
 

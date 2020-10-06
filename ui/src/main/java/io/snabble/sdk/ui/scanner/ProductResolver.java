@@ -15,7 +15,6 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
@@ -268,7 +267,7 @@ public class ProductResolver {
                 if (onDismissListener != null) {
                     onDismissListener.onDismiss();
                 }
-            } else if (product.getType() == Product.Type.DepositSlip
+            } else if (product.getType() == Product.Type.DepositReturnVoucher
                     && SnabbleUI.getProject().getShoppingCart().containsScannedCode(scannedCode)) {
                 if (onAlreadyScannedListener != null) {
                     onAlreadyScannedListener.onAlreadyScanned();

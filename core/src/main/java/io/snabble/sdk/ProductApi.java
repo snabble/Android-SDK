@@ -56,8 +56,8 @@ class ProductApi {
         WEIGHABLE,
         @SerializedName("deposit")
         DEPOSIT,
-        @SerializedName("depositSlip")
-        DEPOSIT_SLIP
+        @SerializedName("depositReturnVoucher")
+        DEPOSIT_RETURN_VOUCHER
     }
 
     private static class ApiScannableCode {
@@ -270,8 +270,8 @@ class ProductApi {
                 } else {
                     builder.setType(Product.Type.PreWeighed);
                 }
-            } else if (apiProduct.productType == ApiProductType.DEPOSIT_SLIP) {
-                builder.setType(Product.Type.DepositSlip);
+            } else if (apiProduct.productType == ApiProductType.DEPOSIT_RETURN_VOUCHER) {
+                builder.setType(Product.Type.DepositReturnVoucher);
             } else {
                 builder.setType(Product.Type.Article);
             }

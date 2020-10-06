@@ -455,7 +455,7 @@ public class ShoppingCart {
                 }
             }
 
-            if (scannedCode.hasEmbeddedData() && product.getType() == Product.Type.DepositSlip) {
+            if (scannedCode.hasEmbeddedData() && product.getType() == Product.Type.DepositReturnVoucher) {
                 ScannedCode.Builder builder = scannedCode.newBuilder();
 
                 if (scannedCode.hasEmbeddedData()) {
