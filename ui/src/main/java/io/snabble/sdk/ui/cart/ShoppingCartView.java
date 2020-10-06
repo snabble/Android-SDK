@@ -45,12 +45,14 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
+import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.CheckoutHelper;
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper;
+import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -201,32 +203,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         pay.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
-                if (cart.hasReachedMaxCheckoutLimit()) {
-                    Project project = SnabbleUI.getProject();
-                    String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
-                            project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
-                    snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
-                    snackbar.show();
-                } else {
-                    PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
-                    if (entry != null) {
-                        Telemetry.event(Telemetry.Event.ClickCheckout);
-                        SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),
-                                entry.paymentMethod,
-                                new OneShotClickListener() {
-                                    @Override
-                                    public void click() {
-                                        if (entry.paymentMethod.isOfflineMethod()) {
-                                            checkout.checkout(3000);
-                                        } else {
-                                            checkout.checkout();
-                                        }
-                                    }
-                                });
-                    } else {
-                        Toast.makeText(getContext(), R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show();
-                    }
-                }
+                pay();
             }
         });
         pay.setText(I18nUtils.getIdentifierForProject(getResources(), project, R.string.Snabble_Shoppingcart_buyProducts_now));
@@ -317,6 +294,55 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         });
 
         snackbar.show();
+    }
+
+    private void pay() {
+        Project project = SnabbleUI.getProject();
+
+        if (cart.hasReachedMaxCheckoutLimit()) {
+            String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+                    project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
+            snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+            snackbar.show();
+        } else {
+            PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
+            if (entry != null) {
+                Telemetry.event(Telemetry.Event.ClickCheckout);
+                SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),
+                        entry.paymentMethod,
+                        new OneShotClickListener() {
+                            @Override
+                            public void click() {
+                                if (entry.paymentMethod.isOfflineMethod()) {
+                                    checkout.checkout(3000);
+                                } else {
+                                    checkout.checkout();
+                                }
+                            }
+                        });
+            } else {
+                boolean hasPaymentMethodThatRequiresCredentials = false;
+                PaymentMethod[] paymentMethods = project.getAvailablePaymentMethods();
+                if (paymentMethods != null && paymentMethods.length > 0) {
+                    for (PaymentMethod pm : paymentMethods) {
+                        if (pm.isRequiringCredentials()) {
+                            hasPaymentMethodThatRequiresCredentials = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (hasPaymentMethodThatRequiresCredentials) {
+                    Activity activity = UIUtils.getHostActivity(getContext());
+                    if (activity instanceof FragmentActivity) {
+                        SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
+                        dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
+                    }
+                } else {
+                    Toast.makeText(getContext(), R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 
     @Override
@@ -428,7 +454,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         if (cart.size() > 0) {
             paymentContainer.setVisibility(View.VISIBLE);
             emptyState.setVisibility(View.GONE);
-            pay.setVisibility(paymentSelectionHelper.getSelectedEntry().getValue() != null && checkout.isAvailable() ? View.VISIBLE : View.GONE);
+            pay.setVisibility(checkout.isAvailable() ? View.VISIBLE : View.GONE);
         } else {
             paymentContainer.setVisibility(View.GONE);
             emptyState.setVisibility(View.VISIBLE);
@@ -483,8 +509,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             paySelector.setVisibility(View.GONE);
         } else {
             PaymentCredentialsStore pcs = Snabble.getInstance().getPaymentCredentialsStore();
-            int size = pcs.getAllWithoutKeyStoreValidation().size();
-            boolean hasNoPaymentMethods = size == 0;
+            boolean hasNoPaymentMethods = pcs.getUsablePaymentCredentialsCount() == 0;
             boolean isHidden = SnabbleUI.getProject().getAvailablePaymentMethods().length == 1 && hasNoPaymentMethods;
             paySelector.setVisibility(isHidden ? View.GONE : View.VISIBLE);
             payIcon.setImageResource(entry.iconResId);

@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 ## [0.28.2]
 
 ### Added
-- Support for deposit slip's
+- Support for deposit return vouchers's
+
+### Fixed
+- Projects that have no offline fallback as a payment method are now forced to enter
+payment credentials
 
 ## [0.28.1]
 

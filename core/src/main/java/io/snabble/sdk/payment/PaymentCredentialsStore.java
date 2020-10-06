@@ -244,6 +244,16 @@ public class PaymentCredentialsStore {
         }
     }
 
+    public int getUsablePaymentCredentialsCount() {
+        int i = 0;
+        for (PaymentCredentials pc : data.credentialsList) {
+            if (pc.getAppId().equals(Snabble.getInstance().getConfig().appId)) {
+                i++;
+            }
+        }
+        return i;
+    }
+
     public interface OnPaymentCredentialsAddedListener {
         void onAdded(PaymentCredentials paymentCredentials);
     }
