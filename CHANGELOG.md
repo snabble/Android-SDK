@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.28.2]
+
+### Added
+- Support for deposit slip's
+
 ## [0.28.1]
 
 ### Fixed

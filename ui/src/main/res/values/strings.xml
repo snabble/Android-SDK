@@ -38,6 +38,7 @@
 	<string name="Snabble.Scanner.enterCodeButton">Enter\nBarcode</string>
 	<string name="Snabble.Scanner.scannedShelfCode">Please scan the article\'s barcode instead</string>
 	<string name="Snabble.Scanner.scannedAgeRestrictedProduct">This is an age-restricted product, your age will be verified during checkout.</string>
+	<string name="Snabble.Scanner.duplicateDepositScanned">Each deposit slip can only be scanned once.</string>
 	<string name="Snabble.Scanner.scanningTitle">Scan Barcode</string>
 	<string name="Snabble.Scanner.title">Scanner</string>
 	<string name="Snabble.Scanner.torchButton">Torch</string>

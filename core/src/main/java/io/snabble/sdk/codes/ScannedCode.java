@@ -82,12 +82,29 @@ public class ScannedCode implements Serializable {
         return price != null;
     }
 
+    public Builder newBuilder() {
+        return new Builder(this);
+    }
+
     public static class Builder {
         ScannedCode scannedCode;
 
         public Builder(String templateName) {
             scannedCode = new ScannedCode();
             scannedCode.templateName = templateName;
+        }
+
+        public Builder(ScannedCode source) {
+            scannedCode = new ScannedCode();
+            scannedCode.embeddedData = source.embeddedData;
+            scannedCode.embeddedDecimalData = source.embeddedDecimalData;
+            scannedCode.price = source.price;
+            scannedCode.lookupCode = source.lookupCode;
+            scannedCode.code = source.code;
+            scannedCode.templateName = source.templateName;
+            scannedCode.embeddedUnit = source.embeddedUnit;
+            scannedCode.transformationTemplateName = source.transformationTemplateName;
+            scannedCode.transformationCode = source.transformationCode;
         }
 
         public Builder setScannedCode(String scannedCode) {

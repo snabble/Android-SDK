@@ -39,7 +39,12 @@ public class Product implements Serializable, Parcelable {
          * A product that needs to be user weighed. The price from {@link Product#getListPrice()}
          * is a base price of 1000g
          */
-        UserWeighed(2);
+        UserWeighed(2),
+
+        /**
+         * A product that is used for deposit slip's
+         */
+        DepositSlip(3);
 
         private int databaseValue;
 

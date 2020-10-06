@@ -71,7 +71,14 @@ public class ProductDatabase {
         this.productDatabaseDownloader = new ProductDatabaseDownloader(project, this);
         this.productApi = new ProductApi(project);
 
-        if (!open()) {
+        if (open()) {
+            String[] initialSQL = Snabble.getInstance().getConfig().initialSQL;
+            if (initialSQL != null) {
+                for (String sql : initialSQL) {
+                    exec(sql);
+                }
+            }
+        } else {
             Logger.i("Product database is missing. Offline products are not available.");
         }
     }
@@ -769,8 +776,14 @@ public class ProductDatabase {
 
         String depositSku = anyToString(cursor, 4);
 
-        builder.setIsDeposit(cursor.getInt(5) != 0)
-                .setType(productTypes[cursor.getInt(6)]);
+        builder.setIsDeposit(cursor.getInt(5) != 0);
+
+        int productTypeInt = cursor.getInt(6);
+        if (productTypeInt >= 0 && productTypeInt < productTypes.length) {
+            builder.setType(productTypes[cursor.getInt(6)]);
+        } else {
+            builder.setType(Product.Type.Article);
+        }
 
         builder.setDepositProduct(findBySku(depositSku));
 
@@ -963,6 +976,7 @@ public class ProductDatabase {
 
         return Product.SaleRestriction.fromDatabaseField(type, value);
     }
+
 
     private String anyToString(Cursor cursor, int index) {
         switch (cursor.getType(index)) {
@@ -1308,6 +1322,7 @@ public class ProductDatabase {
         return productQuery("JOIN searchByName ns ON ns.sku = p.sku " +
                 "WHERE ns.foldedName MATCH ? " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
+                "AND p.weighing != " + Product.Type.DepositSlip.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
                 "AND availability != 2 " +
                 "LIMIT 100", new String[]{
@@ -1340,6 +1355,8 @@ public class ProductDatabase {
 
         sb.append(") AND p.weighing != ");
         sb.append(Product.Type.PreWeighed.getDatabaseValue());
+        sb.append(" AND p.weighing != ");
+        sb.append(Product.Type.DepositSlip.getDatabaseValue());
         sb.append(" AND p.isDeposit = 0 ");
         sb.append(" AND availability != 2");
 

@@ -55,7 +55,9 @@ class ProductApi {
         @SerializedName("weighable")
         WEIGHABLE,
         @SerializedName("deposit")
-        DEPOSIT
+        DEPOSIT,
+        @SerializedName("depositSlip")
+        DEPOSIT_SLIP
     }
 
     private static class ApiScannableCode {
@@ -268,6 +270,8 @@ class ProductApi {
                 } else {
                     builder.setType(Product.Type.PreWeighed);
                 }
+            } else if (apiProduct.productType == ApiProductType.DEPOSIT_SLIP) {
+                builder.setType(Product.Type.DepositSlip);
             } else {
                 builder.setType(Product.Type.Article);
             }

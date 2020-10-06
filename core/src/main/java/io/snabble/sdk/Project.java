@@ -225,7 +225,7 @@ public class Project {
         if (!hasDefaultTemplate) {
             codeTemplates.add(new CodeTemplate("default", "{code:*}"));
         }
-
+        
         this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
 
         List<PriceOverrideTemplate> priceOverrideTemplates = new ArrayList<>();

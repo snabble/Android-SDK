@@ -454,13 +454,15 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 CharSequence articlesText = res.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity);
                 articleCount.setText(String.format(articlesText.toString(), quantity));
 
-                if (price != 0) {
-                    priceSum.setText(priceFormatter.format(price));
-                    priceSum.setVisibility(View.VISIBLE);
-                } else {
-                    priceSum.setVisibility(View.GONE);
-                }
+                priceSum.setText(priceFormatter.format(price));
+                priceSum.setVisibility(View.VISIBLE);
                 sumContainer.setVisibility(View.VISIBLE);
+
+                if (price <= 0) {
+                    pay.setEnabled(false);
+                } else {
+                    pay.setEnabled(true);
+                }
             } else {
                 sumContainer.setVisibility(View.GONE);
             }

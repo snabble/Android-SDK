@@ -2,6 +2,7 @@ package io.snabble.sdk;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -411,6 +412,16 @@ public class ShoppingCart {
         return minimumAge;
     }
 
+    public boolean containsScannedCode(ScannedCode scannedCode) {
+        for (Item item : items) {
+            if (item.scannedCode.getCode().equals(scannedCode.getCode())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static class Item {
         private Product product;
         private ScannedCode scannedCode;
@@ -442,6 +453,19 @@ public class ShoppingCart {
                 if (this.quantity == 0) {
                     this.quantity = 1;
                 }
+            }
+
+            if (scannedCode.hasEmbeddedData() && product.getType() == Product.Type.DepositSlip) {
+                ScannedCode.Builder builder = scannedCode.newBuilder();
+
+                if (scannedCode.hasEmbeddedData()) {
+                    builder.setEmbeddedData(scannedCode.getEmbeddedData() * -1);
+                }
+                if (scannedCode.hasEmbeddedDecimalData()) {
+                    builder.setEmbeddedDecimalData(scannedCode.getEmbeddedDecimalData().multiply(new BigDecimal(-1)));
+                }
+
+                this.scannedCode = builder.create();
             }
         }
 
@@ -627,10 +651,10 @@ public class ShoppingCart {
                 return null;
             }
 
-            if (product.getPrice(cart.project.getCustomerCardId()) > 0 || (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0)) {
+            if (product.getPrice(cart.project.getCustomerCardId()) > 0 || scannedCode.hasEmbeddedData()) {
                 Unit unit = getUnit();
 
-                if (unit == Unit.PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
+                if (unit == Unit.PRICE || unit == PIECE) {
                     return cart.priceFormatter.format(getTotalPrice());
                 } else if (getEffectiveQuantity() <= 1) {
                     return cart.priceFormatter.format(product);

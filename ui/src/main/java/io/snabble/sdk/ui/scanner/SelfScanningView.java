@@ -251,6 +251,10 @@ public class SelfScanningView extends FrameLayout {
                     showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
                             R.string.Snabble_Scanner_scannedAgeRestrictedProduct)));
                 })
+                .setOnAlreadyScannedListener(() -> {
+                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                            R.string.Snabble_Scanner_duplicateDepositScanned)));
+                })
                 .setOnNotForSaleListener(product -> {
                     if (product.getScanMessage() != null) {
                         showScanMessage(product, true);

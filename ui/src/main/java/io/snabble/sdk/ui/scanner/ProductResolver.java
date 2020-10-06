@@ -15,6 +15,7 @@ import io.snabble.sdk.OnProductAvailableListener;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
@@ -38,6 +39,7 @@ public class ProductResolver {
     private OnProductNotFoundListener onProductNotFoundListener;
     private OnAgeNotReachedListener onAgeNotReachedListener;
     private OnNetworkErrorListener onNetworkErrorListener;
+    private OnAlreadyScannedListener onAlreadyScannedListener;
     private BarcodeFormat barcodeFormat;
     private DialogInterface.OnKeyListener onKeyListener;
     private Product lastProduct;
@@ -255,11 +257,21 @@ public class ProductResolver {
                 }
             } else if (product.getAvailability() == Product.Availability.NOT_AVAILABLE) {
                 handleProductNotFound(scannedCode);
-            } else
-                if (product.getType() == Product.Type.PreWeighed
+            } else if (product.getType() == Product.Type.PreWeighed
                     && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0)) {
                 if (onShelfCodeScannedListener != null) {
                     onShelfCodeScannedListener.onShelfCodeScanned();
+                }
+
+                progressDialog.dismiss();
+
+                if (onDismissListener != null) {
+                    onDismissListener.onDismiss();
+                }
+            } else if (product.getType() == Product.Type.DepositSlip
+                    && SnabbleUI.getProject().getShoppingCart().containsScannedCode(scannedCode)) {
+                if (onAlreadyScannedListener != null) {
+                    onAlreadyScannedListener.onAlreadyScanned();
                 }
 
                 progressDialog.dismiss();
@@ -387,6 +399,10 @@ public class ProductResolver {
         void onAgeNotReached();
     }
 
+    public interface OnAlreadyScannedListener {
+        void onAlreadyScanned();
+    }
+
     public static class Builder {
         private ProductResolver productResolver;
 
@@ -441,6 +457,11 @@ public class ProductResolver {
 
         public Builder setOnAgeNotReachedListener(OnAgeNotReachedListener listener) {
             productResolver.onAgeNotReachedListener = listener;
+            return this;
+        }
+
+        public Builder setOnAlreadyScannedListener(OnAlreadyScannedListener listener) {
+            productResolver.onAlreadyScannedListener = listener;
             return this;
         }
 

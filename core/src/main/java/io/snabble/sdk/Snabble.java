@@ -1,20 +1,14 @@
 package io.snabble.sdk;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.net.NetworkRequest;
-import android.os.Bundle;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -46,7 +40,6 @@ import io.snabble.sdk.auth.Token;
 import io.snabble.sdk.auth.TokenRegistry;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
-import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -706,5 +699,8 @@ public class Snabble {
 
         /** If set to true, disables certificate pinning **/
         public boolean disableCertificatePinning;
+
+        /** SQL queries that will get executed in order on the product database **/
+        public String[] initialSQL = null;
     }
 }
