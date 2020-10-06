@@ -35,8 +35,16 @@ public class Shop implements Serializable, Parcelable {
         PARKING
     }
 
-    public class Href {
-        public String href;
+    public static class Href {
+        private final String href;
+
+        public Href(String href) {
+            this.href = href;
+        }
+
+        public String getHref() {
+            return href;
+        }
 
         @Override
         public String toString() {
@@ -46,10 +54,16 @@ public class Shop implements Serializable, Parcelable {
         }
     }
 
-    public class OpeningHourSpecification {
-        public String closes;
-        public String opens;
-        public String dayOfWeek;
+    public static class OpeningHourSpecification {
+        private final String closes;
+        private final String opens;
+        private final String dayOfWeek;
+
+        public OpeningHourSpecification(String closes, String opens, String dayOfWeek) {
+            this.closes = closes;
+            this.opens = opens;
+            this.dayOfWeek = dayOfWeek;
+        }
 
         public String getCloses() {
             return closes;
@@ -73,13 +87,68 @@ public class Shop implements Serializable, Parcelable {
         }
     }
 
-    public class CustomerNetwork {
-        public String ssid;
+    public static class CustomerNetwork {
+        private final String ssid;
+
+        public CustomerNetwork(String ssid) {
+            this.ssid = ssid;
+        }
+
+        public String getSsid() {
+            return ssid;
+        }
 
         @Override
         public String toString() {
             return "CustomerNetwork{" +
                     "ssid='" + ssid + '\'' +
+                    '}';
+        }
+    }
+
+    public static class Company {
+        public final String city;
+        public final String country;
+        public final String name;
+        public final String street;
+        public final String zip;
+
+        public Company(String city, String country, String name, String street, String zip) {
+            this.city = city;
+            this.country = country;
+            this.name = name;
+            this.street = street;
+            this.zip = zip;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public String getCountry() {
+            return country;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getStreet() {
+            return street;
+        }
+
+        public String getZip() {
+            return zip;
+        }
+
+        @Override
+        public String toString() {
+            return "Company{" +
+                    "city='" + city + '\'' +
+                    ", country='" + country + '\'' +
+                    ", name='" + name + '\'' +
+                    ", street='" + street + '\'' +
+                    ", zip='" + zip + '\'' +
                     '}';
         }
     }
@@ -102,6 +171,7 @@ public class Shop implements Serializable, Parcelable {
     private double longitude;
     private CustomerNetwork[] customerNetworks;
     private OpeningHourSpecification[] openingHoursSpecification;
+    private Company company;
     private JsonElement external;
 
     public Shop() {

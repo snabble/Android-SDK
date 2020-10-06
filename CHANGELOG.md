@@ -3,8 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [0.28.2]
 
+### Breaking Changes
+- Sealed inner classes of Shop, you may need to use getter functions instead of accessing the 
+fields directly
+
 ### Added
 - Support for deposit return vouchers's
+- Parse company data from Shop
 
 ### Fixed
 - Projects that have no offline fallback as a payment method are now forced to enter
