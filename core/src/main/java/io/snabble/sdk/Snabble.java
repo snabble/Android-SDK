@@ -62,9 +62,11 @@ public class Snabble {
     private List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
     private String versionName;
     private Environment environment;
+    private TermsOfService termsOfService;
     private List<X509Certificate> paymentCertificates;
     private String receiptsUrl;
     private String usersUrl;
+    private String consentUrl;
     private String telecashSecretUrl;
     private String telecashPreAuthUrl;
     private String paydirektAuthUrl;
@@ -109,7 +111,7 @@ public class Snabble {
         userPreferences = new UserPreferences(app);
         tokenRegistry = new TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret);
         receipts = new Receipts();
-        users = new Users();
+        users = new Users(userPreferences);
 
         projects = Collections.unmodifiableList(new ArrayList<Project>());
 
@@ -218,9 +220,15 @@ public class Snabble {
 
             receiptsUrl = getUrl(jsonObject, "appUserOrders");
             usersUrl = getUrl(jsonObject, "appUser");
+            consentUrl = getUrl(jsonObject, "consents");
+
+            if (jsonObject.has("terms")) {
+                termsOfService = GsonHolder.get().fromJson(jsonObject.get("terms"), TermsOfService.class);
+            }
         }
 
         paymentCredentialsStore.init(application, environment);
+        users.postPendingConsents();
     }
 
     private String getUrl(JsonObject jsonObject, String urlName) {
@@ -349,6 +357,10 @@ public class Snabble {
         return usersUrl;
     }
 
+    public String getConsentUrl() {
+        return consentUrl;
+    }
+
     public File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
@@ -371,6 +383,10 @@ public class Snabble {
 
     public Users getUsers() {
         return users;
+    }
+
+    public TermsOfService getTermsOfService() {
+        return termsOfService;
     }
 
     public List<Project> getProjects() {

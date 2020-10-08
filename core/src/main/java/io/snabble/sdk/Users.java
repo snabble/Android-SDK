@@ -37,12 +37,20 @@ public class Users {
         public String bornBeforeOrOn;
     }
 
-    private Call updateBirthdayCall;
-    private final SimpleDateFormat simpleDateFormat;
+    private static class UpdateConsentRequest {
+        public String version;
+    }
 
-    public Users() {
+    private Call updateBirthdayCall;
+    private Call postConsentCall;
+    private final SimpleDateFormat simpleDateFormat;
+    private final UserPreferences userPreferences;
+
+    public Users(UserPreferences userPreferences) {
         simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        this.userPreferences = userPreferences;
     }
 
     public void get(final GetUserCallback callback) {
@@ -102,7 +110,7 @@ public class Users {
                 }
 
                 @Override
-                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                public void onResponse(Call call, okhttp3.Response response) {
                     if (response.isSuccessful()) {
                         updateBirthdayCall = null;
                         updateUserCallback.success();
@@ -115,6 +123,70 @@ public class Users {
         } else {
             updateUserCallback.failure();
         }
+    }
+
+    public void postPendingConsents() {
+        UserPreferences.ConsentStatus consentStatus = userPreferences.getConsentStatus();
+        if (consentStatus == UserPreferences.ConsentStatus.TRANSMIT_FAILED) {
+            postConsentVersion();
+        } else if (consentStatus == UserPreferences.ConsentStatus.TRANSMITTING) {
+            if (postConsentCall == null) {
+                postConsentVersion();
+            }
+        }
+    }
+
+    public void setConsent(String version) {
+        userPreferences.setConsentVersion(version);
+        postConsentVersion();
+    }
+
+    private void postConsentVersion() {
+        final Snabble snabble = Snabble.getInstance();
+        String url = snabble.getConsentUrl();
+        AppUser appUser = userPreferences.getAppUser();
+
+        if (appUser == null || url == null) {
+            return;
+        }
+
+        String version = userPreferences.getConsentVersion();
+        UpdateConsentRequest updateBirthdayRequest = new UpdateConsentRequest();
+        updateBirthdayRequest.version = version;
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"),
+                GsonHolder.get().toJson(updateBirthdayRequest));
+
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .post(requestBody)
+                .url(url.replace("{appUserID}", appUser.id))
+                .build();
+
+        userPreferences.setConsentStatus(UserPreferences.ConsentStatus.TRANSMITTING);
+
+        OkHttpClient okHttpClient = snabble.getProjects().get(0).getOkHttpClient();
+        postConsentCall = okHttpClient.newCall(request);
+        postConsentCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                postConsentCall = null;
+                userPreferences.setConsentStatus(UserPreferences.ConsentStatus.TRANSMIT_FAILED);
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) {
+                if (response.isSuccessful()) {
+                    postConsentCall = null;
+                    userPreferences.setConsentStatus(UserPreferences.ConsentStatus.ACCEPTED);
+                } else {
+                    postConsentCall = null;
+                    if (response.code() == 400) {
+                        userPreferences.setConsentStatus(UserPreferences.ConsentStatus.ACCEPTED);
+                    } else {
+                        userPreferences.setConsentStatus(UserPreferences.ConsentStatus.TRANSMIT_FAILED);
+                    }
+                }
+            }
+        });
     }
 
     public void update() {
