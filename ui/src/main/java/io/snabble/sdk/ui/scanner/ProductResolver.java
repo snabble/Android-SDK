@@ -50,7 +50,7 @@ public class ProductResolver {
         productConfirmationDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (lastProduct != null) {
+                if (lastProduct != null && productConfirmationDialog.wasAddedToCart()) {
                     checkMinAge(lastProduct);
                 }
 

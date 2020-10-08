@@ -40,6 +40,7 @@ import io.snabble.sdk.auth.Token;
 import io.snabble.sdk.auth.TokenRegistry;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.utils.Downloader;
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;

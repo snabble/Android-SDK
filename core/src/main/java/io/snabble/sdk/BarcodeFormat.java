@@ -24,6 +24,7 @@ public enum BarcodeFormat {
             case "datamatrix":
                 return DATA_MATRIX;
             case "qr":
+            case "qrCode":
                 return QR_CODE;
         }
 

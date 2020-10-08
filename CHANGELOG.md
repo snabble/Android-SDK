@@ -10,10 +10,13 @@ fields directly
 ### Added
 - Support for deposit return vouchers's
 - Parse company data from Shop
+- Parsing of terms of use data
+- Support for exit gate's
 
 ### Fixed
 - Projects that have no offline fallback as a payment method are now forced to enter
 payment credentials
+- Fixed age restriction hint promting even when product dialog got dismissed
 
 ## [0.28.1]
 

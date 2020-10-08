@@ -114,6 +114,11 @@ public class CheckoutApi {
         GIVEAWAY,
     }
 
+    public static class ExitToken {
+        public String value;
+        public String format;
+    }
+
     public static class Price {
         int price;
         int netPrice;
@@ -209,6 +214,7 @@ public class CheckoutApi {
         public PaymentMethod paymentMethod;
         public boolean modified;
         public PaymentInformation paymentInformation;
+        public ExitToken exitToken;
         public State paymentState;
         public PaymentResult paymentResult;
         public Fulfillment[] fulfillments;

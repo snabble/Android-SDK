@@ -66,6 +66,7 @@ class ProductConfirmationDialog {
     private DialogInterface.OnDismissListener onDismissListener;
     private DialogInterface.OnShowListener onShowListener;
     private DialogInterface.OnKeyListener onKeyListener;
+    private boolean wasAddedToCart;
 
     public ProductConfirmationDialog(Context context,
                                      Project project) {
@@ -395,6 +396,8 @@ class ProductConfirmationDialog {
     }
 
     public void dismiss(boolean addToCart) {
+        wasAddedToCart = addToCart;
+
         if (alertDialog != null) {
             alertDialog.dismiss();
             alertDialog.setOnDismissListener(null);
@@ -409,6 +412,10 @@ class ProductConfirmationDialog {
         }
 
         cartItem = null;
+    }
+
+    public boolean wasAddedToCart() {
+        return wasAddedToCart;
     }
 
     public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
