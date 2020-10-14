@@ -22,6 +22,7 @@ import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.OkHttpClient;
@@ -32,6 +33,7 @@ public class Project {
 
     private ProductDatabase productDatabase;
     private Shop[] shops;
+    private Company company;
     private Checkout checkout;
     private ShoppingCartStorage shoppingCartStorage;
     private Events events;
@@ -200,6 +202,10 @@ public class Project {
 
         if (shops == null) {
             shops = new Shop[0];
+        }
+
+        if (jsonObject.has("company")) {
+            company = GsonHolder.get().fromJson(jsonObject.get("company"), Company.class);
         }
 
         ArrayList<CodeTemplate> codeTemplates = new ArrayList<>();
@@ -404,6 +410,10 @@ public class Project {
      */
     public Shop[] getShops() {
         return shops;
+    }
+
+    public Company getCompany() {
+        return company;
     }
 
     public ShoppingCart getShoppingCart() {

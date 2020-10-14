@@ -14,6 +14,9 @@ android {
         versionName project.sdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
+
+        // since AGP 4.1.0 this field is missing - WTF?
+        buildConfigField "String", "VERSION_NAME", '"' + versionName + '"'
     }
 
     buildTypes {
