@@ -1,7 +1,7 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.28.2]
+## [0.29.0]
 
 ### Breaking Changes
 - Sealed inner classes of Shop, you may need to use getter functions instead of accessing the 
