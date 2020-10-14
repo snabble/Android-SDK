@@ -86,12 +86,12 @@ public class Checkout {
         /**
          * No shop was selected.
          */
-        NO_SHOP;
+        NO_SHOP
     }
 
-    private Project project;
-    private CheckoutApi checkoutApi;
-    private ShoppingCart shoppingCart;
+    private final Project project;
+    private final CheckoutApi checkoutApi;
+    private final ShoppingCart shoppingCart;
 
     private CheckoutApi.SignedCheckoutInfo signedCheckoutInfo;
     private CheckoutApi.CheckoutProcessResponse checkoutProcess;
@@ -99,20 +99,20 @@ public class Checkout {
     private PaymentMethod paymentMethod;
     private int priceToPay;
 
-    private List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
-    private List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
+    private final List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
+    private final List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
 
     private State lastState = Checkout.State.NONE;
     private State state = Checkout.State.NONE;
 
-    private List<String> codes = new ArrayList<>();
+    private final List<String> codes = new ArrayList<>();
     private PaymentMethod[] clientAcceptedPaymentMethods;
     private Shop shop;
     private List<Product> invalidProducts;
     private CheckoutApi.PaymentResult paymentResult;
-    private CheckoutRetryer checkoutRetryer;
+    private final CheckoutRetryer checkoutRetryer;
     private Future<?> currentPollFuture;
-    private PaymentOriginCandidateHelper paymentOriginCandidateHelper;
+    private final PaymentOriginCandidateHelper paymentOriginCandidateHelper;
 
     Checkout(Project project) {
         this.project = project;
@@ -401,24 +401,26 @@ public class Checkout {
                     continue;
                 }
 
-                if (check.type == CheckoutApi.CheckType.MIN_AGE) {
-                    Logger.d("Verifying age...");
-                    switch (check.state) {
-                        case PENDING:
-                            Logger.d("Age check pending...");
-                            notifyStateChanged(State.REQUEST_VERIFY_AGE);
-                            abortSilently();
-                            allChecksOk = false;
-                            break;
-                        case FAILED:
-                            Logger.d("Age check failed...");
-                            notifyStateChanged(State.DENIED_TOO_YOUNG);
-                            abortSilently();
-                            allChecksOk = false;
-                            break;
-                        case SUCCESSFUL:
-                            Logger.d("Age check successful");
-                            break;
+                if (check.performedBy == CheckoutApi.Performer.APP) {
+                    if (check.type == CheckoutApi.CheckType.MIN_AGE) {
+                        Logger.d("Verifying age...");
+                        switch (check.state) {
+                            case PENDING:
+                                Logger.d("Age check pending...");
+                                notifyStateChanged(State.REQUEST_VERIFY_AGE);
+                                abortSilently();
+                                allChecksOk = false;
+                                break;
+                            case FAILED:
+                                Logger.d("Age check failed...");
+                                notifyStateChanged(State.DENIED_TOO_YOUNG);
+                                abortSilently();
+                                allChecksOk = false;
+                                break;
+                            case SUCCESSFUL:
+                                Logger.d("Age check successful");
+                                break;
+                        }
                     }
                 }
             }
@@ -701,7 +703,7 @@ public class Checkout {
                 return null;
             }
 
-            return selfLink.substring(selfLink.lastIndexOf('/') + 1, selfLink.length());
+            return selfLink.substring(selfLink.lastIndexOf('/') + 1);
         }
 
         return null;

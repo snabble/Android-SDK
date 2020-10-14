@@ -29,7 +29,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class CheckoutApi {
-    private static MediaType JSON = MediaType.parse("application/json");
+    private static final MediaType JSON = MediaType.parse("application/json");
 
     /*
      * Data structures as defined here:
@@ -170,11 +170,23 @@ public class CheckoutApi {
         MIN_AGE,
     }
 
+    public enum Performer {
+        @SerializedName("app")
+        APP,
+        @SerializedName("backend")
+        SUPERVISOR,
+        @SerializedName("supervisor")
+        BACKEND,
+        @SerializedName("payment")
+        PAYMENT
+    }
+
     public static class Check {
         public String id;
         public Map<String, Href> links;
         public CheckType type;
         public Integer requiredAge;
+        public Performer performedBy;
         public State state;
 
         public String getSelfLink() {
@@ -256,8 +268,8 @@ public class CheckoutApi {
     }
 
 
-    private Project project;
-    private OkHttpClient okHttpClient;
+    private final Project project;
+    private final OkHttpClient okHttpClient;
     private Call call;
 
     CheckoutApi(Project project) {

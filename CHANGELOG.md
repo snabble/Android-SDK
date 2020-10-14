@@ -12,6 +12,7 @@ fields directly
 - Parse company data from Shop
 - Parsing of terms of use data
 - Support for exit gate's
+- Support for performedBy in checks
 
 ### Fixed
 - Projects that have no offline fallback as a payment method are now forced to enter
