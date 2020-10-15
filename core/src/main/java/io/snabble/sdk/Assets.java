@@ -172,7 +172,9 @@ public class Assets {
     private void download(String nonRootIncludedFileName, DownloadCallback callback) {
         Dispatch.mainThread(() -> {
             if (project.getAssetsUrl() == null) {
-                callback.failure();
+                if (callback != null) {
+                    callback.failure();
+                }
                 return;
             }
 

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.29.1]
+
+### Fixed
+- Fixed a potential crash when updating Assets
+
 ## [0.29.0]
 
 ### Breaking Changes
