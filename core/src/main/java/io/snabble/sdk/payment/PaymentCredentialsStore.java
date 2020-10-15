@@ -214,12 +214,12 @@ public class PaymentCredentialsStore {
     private void validate() {
         boolean changed = false;
 
-        for (int i = data.credentialsList.size() - 1; i >= 0; i--) {
-            PaymentCredentials credentials = data.credentialsList.get(i);
+        List<PaymentCredentials> removals = new ArrayList<>();
 
+        for (PaymentCredentials credentials : data.credentialsList) {
             if (credentials != null) {
                 if (!credentials.validate()) {
-                    data.credentialsList.remove(credentials);
+                    removals.add(credentials);
                     changed = true;
                 } else {
                     // app id's were not stored in old versions, if its not there assume the
@@ -229,6 +229,10 @@ public class PaymentCredentialsStore {
                     }
                 }
             }
+        }
+
+        for (PaymentCredentials credentials : removals) {
+            data.credentialsList.remove(credentials);
         }
 
         // old apps don't have ids set

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed a potential crash when updating Assets
+- Fixed a potential crash when payment methods are not valid anymore and needed to remove
 
 ## [0.29.0]
 
