@@ -1,10 +1,13 @@
 package io.snabble.sdk;
 
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
@@ -109,7 +112,6 @@ public class Checkout {
     private PaymentMethod[] clientAcceptedPaymentMethods;
     private Shop shop;
     private List<Product> invalidProducts;
-    private CheckoutApi.PaymentResult paymentResult;
     private final CheckoutRetryer checkoutRetryer;
     private Future<?> currentPollFuture;
     private final PaymentOriginCandidateHelper paymentOriginCandidateHelper;
@@ -141,6 +143,7 @@ public class Checkout {
 
                         invalidProducts = null;
                         paymentMethod = null;
+                        shoppingCart.generateNewUUID();
                         shop = null;
                     }
                 }
@@ -158,17 +161,6 @@ public class Checkout {
     }
 
     /**
-     * Cancels outstanding http calls and notifies the backend that the checkout process
-     * was cancelled
-     *
-      @Deprecated use abort instead
-     */
-    @Deprecated
-    public void cancel() {
-        abort();
-    }
-
-    /**
      * Aborts outstanding http calls and notifies the backend that the checkout process
      * was cancelled, but does not notify listeners
      */
@@ -181,17 +173,6 @@ public class Checkout {
         }
 
         reset();
-    }
-
-    /**
-     * Aborts outstanding http calls and notifies the backend that the checkout process
-     * was cancelled, but does not notify listeners
-     *
-     * @Deprecated use abortSilently instead
-     */
-    @Deprecated
-    public void cancelSilently() {
-        abortSilently();
     }
 
     public void cancelOutstandingCalls() {
@@ -210,7 +191,7 @@ public class Checkout {
 
         invalidProducts = null;
         paymentMethod = null;
-        paymentResult = null;
+        shoppingCart.generateNewUUID();
         shop = null;
     }
 
@@ -257,7 +238,6 @@ public class Checkout {
         paymentMethod = null;
         priceToPay = 0;
         invalidProducts = null;
-        paymentResult = null;
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
 
@@ -352,9 +332,9 @@ public class Checkout {
 
             notifyStateChanged(Checkout.State.VERIFYING_PAYMENT_METHOD);
 
-            checkoutApi.createPaymentProcess(signedCheckoutInfo, paymentMethod, paymentCredentials,
-                    false, null, new CheckoutApi.PaymentProcessResult() {
-                        @Override
+            checkoutApi.createPaymentProcess(shoppingCart.getUUID(), signedCheckoutInfo,
+                    paymentMethod, paymentCredentials, false, null, new CheckoutApi.PaymentProcessResult() {
+                @Override
                 public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                     synchronized (Checkout.this) {
                         checkoutProcess = checkoutProcessResponse;
@@ -378,6 +358,11 @@ public class Checkout {
                             }
                         }
                     }
+                }
+
+                @Override
+                public void alreadyInPayment(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
+                    Dispatch.mainThread(() -> Toast.makeText(Snabble.getInstance().getApplication(), "ALREADY IN PAYMENT!", Toast.LENGTH_LONG).show());
                 }
 
                 @Override
@@ -507,6 +492,11 @@ public class Checkout {
             }
 
             @Override
+            public void alreadyInPayment(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
+
+            }
+
+            @Override
             public void error() {
 
             }
@@ -591,13 +581,6 @@ public class Checkout {
          || paymentMethod == PaymentMethod.CUSTOMERCARD_POS) {
             approve();
         }
-    }
-
-    /** Continues the payment process after it stopped when requiring user interaction,
-     *  for example after REQUEST_ADD_PAYMENT_ORIGIN **/
-    public void continuePaymentProcess() {
-        Logger.d("Continue payment process");
-        paymentResult = null;
     }
 
     public String getOrderId() {

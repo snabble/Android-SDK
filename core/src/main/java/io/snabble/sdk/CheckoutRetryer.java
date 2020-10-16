@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -97,13 +98,18 @@ class CheckoutRetryer {
                 checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutApi.CheckoutInfoResult() {
                     @Override
                     public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
-                        checkoutApi.createPaymentProcess(signedCheckoutInfo, fallbackPaymentMethod, null,
+                        checkoutApi.createPaymentProcess(UUID.randomUUID().toString(), signedCheckoutInfo, fallbackPaymentMethod, null,
                                 true, savedCart.finalizedAt, new CheckoutApi.PaymentProcessResult() {
                             @Override
                             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                                 Logger.d("Successfully resend checkout " + savedCart.backendCart.session);
                                 removeSavedCart(savedCart);
                                 countDownLatch.countDown();
+                            }
+
+                            @Override
+                            public void alreadyInPayment(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
+
                             }
 
                             @Override

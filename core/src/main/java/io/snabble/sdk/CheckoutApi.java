@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -259,6 +260,7 @@ public class CheckoutApi {
 
     public interface PaymentProcessResult {
         void success(CheckoutProcessResponse checkoutProcessResponse, String rawResponse);
+        void alreadyInPayment(CheckoutProcessResponse checkoutProcessResponse, String rawResponse);
         void error();
     }
 
@@ -266,7 +268,6 @@ public class CheckoutApi {
         void success();
         void error();
     }
-
 
     private final Project project;
     private final OkHttpClient okHttpClient;
@@ -419,15 +420,8 @@ public class CheckoutApi {
         });
     }
 
-
-    public void updatePaymentProcess(final CheckoutProcessResponse checkoutProcessResponse,
+    public void updatePaymentProcess(final String url,
                                      final PaymentProcessResult paymentProcessResult) {
-        String url = checkoutProcessResponse.getSelfLink();
-        if (url == null) {
-            paymentProcessResult.error();
-            return;
-        }
-
         final Request request = new Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(url))
                 .get()
@@ -450,7 +444,19 @@ public class CheckoutApi {
         });
     }
 
-    public void createPaymentProcess(final SignedCheckoutInfo signedCheckoutInfo,
+    public void updatePaymentProcess(final CheckoutProcessResponse checkoutProcessResponse,
+                                     final PaymentProcessResult paymentProcessResult) {
+        String url = checkoutProcessResponse.getSelfLink();
+        if (url == null) {
+            paymentProcessResult.error();
+            return;
+        }
+
+        updatePaymentProcess(url, paymentProcessResult);
+    }
+
+    public void createPaymentProcess(final String id,
+                                     final SignedCheckoutInfo signedCheckoutInfo,
                                      final PaymentMethod paymentMethod,
                                      final PaymentCredentials paymentCredentials,
                                      final boolean processedOffline,
@@ -502,15 +508,18 @@ public class CheckoutApi {
             return;
         }
 
+        url = url + "/" + id;
         String json = GsonHolder.get().toJson(checkoutProcessRequest);
         final Request request = new Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(url))
-                .post(RequestBody.create(JSON, json))
+                .put(RequestBody.create(JSON, json))
                 .build();
 
         cancel();
 
         call = okHttpClient.newCall(request);
+
+        String finalUrl = url;
         call.enqueue(new SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse.class) {
             @Override
             public void success(CheckoutProcessResponse checkoutProcess) {
@@ -519,7 +528,11 @@ public class CheckoutApi {
 
             @Override
             public void error(Throwable t) {
-                paymentProcessResult.error();
+                if (responseCode() == 403) {
+                    updatePaymentProcess(finalUrl, paymentProcessResult);
+                } else {
+                    paymentProcessResult.error();
+                }
             }
         });
     }
