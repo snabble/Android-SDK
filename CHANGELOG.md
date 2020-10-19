@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.29.2]
+
+### Changed
+- Now using PUT and GET instead of POST and a client-side generated uuid for checkout process to be able to reuse
+existing checkout processes
+
 ## [0.29.1]
 
 ### Fixed
