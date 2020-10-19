@@ -527,7 +527,7 @@ public class CheckoutApi {
 
             @Override
             public void error(Throwable t) {
-                if (responseCode() == 403) { // TODO change to 409 when backend is fixed
+                if (responseCode() == 403) {
                     updatePaymentProcess(finalUrl, paymentProcessResult);
                 } else {
                     paymentProcessResult.error();
