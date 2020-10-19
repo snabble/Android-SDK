@@ -361,11 +361,6 @@ public class Checkout {
                 }
 
                 @Override
-                public void alreadyInPayment(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
-                    Dispatch.mainThread(() -> Toast.makeText(Snabble.getInstance().getApplication(), "ALREADY IN PAYMENT!", Toast.LENGTH_LONG).show());
-                }
-
-                @Override
                 public void error() {
                     Logger.e("Connection error while creating checkout process");
                     notifyStateChanged(Checkout.State.CONNECTION_ERROR);
@@ -489,11 +484,6 @@ public class Checkout {
                         stopPolling();
                     }
                 }
-            }
-
-            @Override
-            public void alreadyInPayment(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
-
             }
 
             @Override

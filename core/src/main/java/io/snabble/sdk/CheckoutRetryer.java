@@ -108,11 +108,6 @@ class CheckoutRetryer {
                             }
 
                             @Override
-                            public void alreadyInPayment(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
-
-                            }
-
-                            @Override
                             public void error() {
                                 fail();
                             }

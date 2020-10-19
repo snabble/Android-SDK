@@ -260,7 +260,6 @@ public class CheckoutApi {
 
     public interface PaymentProcessResult {
         void success(CheckoutProcessResponse checkoutProcessResponse, String rawResponse);
-        void alreadyInPayment(CheckoutProcessResponse checkoutProcessResponse, String rawResponse);
         void error();
     }
 
@@ -528,7 +527,7 @@ public class CheckoutApi {
 
             @Override
             public void error(Throwable t) {
-                if (responseCode() == 403) {
+                if (responseCode() == 403) { // TODO change to 409 when backend is fixed
                     updatePaymentProcess(finalUrl, paymentProcessResult);
                 } else {
                     paymentProcessResult.error();
