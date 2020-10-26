@@ -4,36 +4,39 @@ import com.google.gson.annotations.SerializedName;
 
 public enum PaymentMethod {
     @SerializedName("qrCodePOS")
-    QRCODE_POS(false, false, false),
+    QRCODE_POS(false, false, false, false),
     @SerializedName("qrCodeOffline")
-    QRCODE_OFFLINE(true, false, false),
+    QRCODE_OFFLINE(true, false, false, false),
     @SerializedName("deDirectDebit")
-    DE_DIRECT_DEBIT(false, true, false),
+    DE_DIRECT_DEBIT(false, true, false, true),
     @SerializedName("creditCardVisa")
-    VISA(false, true, false),
+    VISA(false, true, false, true),
     @SerializedName("creditCardMastercard")
-    MASTERCARD(false, true, false),
+    MASTERCARD(false, true, false, true),
     @SerializedName("creditCardAmericanExpress")
-    AMEX(false, true, false),
+    AMEX(false, true, false, true),
     @SerializedName("externalBilling")
-    TEGUT_EMPLOYEE_CARD(false, true, true),
+    TEGUT_EMPLOYEE_CARD(false, true, true, true),
     @SerializedName("customerCardPOS")
-    CUSTOMERCARD_POS(false, false, false),
+    CUSTOMERCARD_POS(false, false, false, false),
     @SerializedName("gatekeeperTerminal")
-    GATEKEEPER_TERMINAL(false, false, false),
+    GATEKEEPER_TERMINAL(false, false, false, false),
     @SerializedName("paydirektOneKlick")
-    PAYDIREKT(false, true, false);
+    PAYDIREKT(false, true, false, true);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;
     private boolean showOnlyIfCredentialsArePresent;
+    private boolean needsAbortConfirmation;
 
     PaymentMethod(boolean isOfflineMethod,
                   boolean requiresCredentials,
-                  boolean showOnlyIfCredentialsArePresent) {
+                  boolean showOnlyIfCredentialsArePresent,
+                  boolean needsAbortConfirmation) {
         this.isOfflineMethod = isOfflineMethod;
         this.requiresCredentials = requiresCredentials;
         this.showOnlyIfCredentialsArePresent = showOnlyIfCredentialsArePresent;
+        this.needsAbortConfirmation = needsAbortConfirmation;
     }
 
     public boolean isOfflineMethod() {
@@ -46,6 +49,10 @@ public enum PaymentMethod {
 
     public boolean isShowOnlyIfCredentialsArePresent() {
         return showOnlyIfCredentialsArePresent;
+    }
+
+    public boolean needsAbortConfirmation() {
+        return needsAbortConfirmation;
     }
 
     public static PaymentMethod fromString(String value) {

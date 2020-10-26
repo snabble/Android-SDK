@@ -22,6 +22,7 @@ public class ShoppingCart {
     public static final int MAX_QUANTITY = 99999;
 
     private String id;
+    private String uuid;
     private long lastModificationTime;
     private List<Item> oldItems;
     private List<Item> items = new ArrayList<>();
@@ -42,6 +43,7 @@ public class ShoppingCart {
     private int oldAddCount;
     private int oldModCount;
     private long oldCartTimestamp;
+    private String oldUUID;
 
     protected ShoppingCart() {
         // for gson
@@ -70,6 +72,10 @@ public class ShoppingCart {
             for (Item item : oldItems) {
                 item.cart = this;
             }
+        }
+        
+        if (uuid == null) {
+            generateNewUUID();
         }
 
         updatePrices(false);
@@ -102,7 +108,9 @@ public class ShoppingCart {
                 items.remove(existing);
                 items.add(index, item);
                 modCount++;
+                generateNewUUID();
                 checkLimits();
+
                 notifyQuantityChanged(this, item);
 
                 if (update) {
@@ -115,6 +123,7 @@ public class ShoppingCart {
 
         addCount++;
         modCount++;
+        generateNewUUID();
         items.add(index, item);
 
         clearBackup();
@@ -166,6 +175,7 @@ public class ShoppingCart {
 
     public void remove(int index) {
         modCount++;
+        generateNewUUID();
         Item item = items.remove(index);
         checkLimits();
         updatePrices(size() != 0);
@@ -182,6 +192,7 @@ public class ShoppingCart {
             oldItems = items;
             oldModCount = modCount;
             oldAddCount = addCount;
+            oldUUID = uuid;
             oldId = id;
             oldOnlineTotalPrice = onlineTotalPrice;
             oldCartTimestamp = System.currentTimeMillis();
@@ -192,6 +203,7 @@ public class ShoppingCart {
         items = new ArrayList<>();
         modCount = 0;
         addCount = 0;
+        generateNewUUID();
         onlineTotalPrice = null;
 
         checkLimits();
@@ -204,6 +216,7 @@ public class ShoppingCart {
         oldId = null;
         oldAddCount = 0;
         oldModCount = 0;
+        oldUUID = null;
         oldOnlineTotalPrice = null;
         oldCartTimestamp = 0;
     }
@@ -213,6 +226,7 @@ public class ShoppingCart {
             items = oldItems;
             modCount = oldModCount;
             addCount = oldAddCount;
+            uuid = oldUUID;
             onlineTotalPrice = oldOnlineTotalPrice;
             id = oldId;
 
@@ -231,7 +245,7 @@ public class ShoppingCart {
     }
 
     public void invalidate() {
-        id = UUID.randomUUID().toString();
+        generateNewUUID();
         clear();
     }
 
@@ -296,6 +310,14 @@ public class ShoppingCart {
 
     public int getModCount() {
         return modCount;
+    }
+
+    public void generateNewUUID() {
+        uuid = UUID.randomUUID().toString();
+    }
+    
+    public String getUUID() {
+        return uuid;
     }
 
     void setOnlineTotalPrice(int totalPrice) {
@@ -518,6 +540,7 @@ public class ShoppingCart {
                 }
 
                 cart.modCount++;
+                cart.generateNewUUID();
                 cart.invalidateOnlinePrices();
                 cart.updatePrices(true);
             }

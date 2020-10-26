@@ -152,13 +152,13 @@ public class PaymentSelectionHelper {
                     if (e.paymentCredentials != null && lastEntry.paymentCredentials != null) {
                         if (e.paymentCredentials.getId().equals(lastEntry.paymentCredentials.getId())) {
                             if (e.isAvailable) {
-                                selectedEntry.postValue(e);
+                                setSelectedEntry(e);
                                 return;
                             }
                         }
                     } else if (lastEntry.paymentMethod == e.paymentMethod) {
                         if (e.isAvailable) {
-                            selectedEntry.postValue(e);
+                            setSelectedEntry(e);
                             return;
                         }
                     }
@@ -168,12 +168,12 @@ public class PaymentSelectionHelper {
             // payment credentials or payment method were not available, use defaults
             for (Entry e : entries) {
                 if (e.isAvailable) {
-                    selectedEntry.postValue(e);
+                    setSelectedEntry(e);
                     break;
                 }
             }
         } else {
-            selectedEntry.postValue(null);
+            setSelectedEntry(null);
         }
     }
 
@@ -275,8 +275,17 @@ public class PaymentSelectionHelper {
     }
 
     public void select(PaymentSelectionHelper.Entry entry) {
-        selectedEntry.postValue(entry);
+        setSelectedEntry(entry);
         save(entry);
+    }
+
+    private void setSelectedEntry(Entry entry) {
+        Entry currentEntry = selectedEntry.getValue();
+        if (currentEntry != null && entry != null && currentEntry.paymentMethod != entry.paymentMethod) {
+            cart.generateNewUUID();
+        }
+
+        selectedEntry.postValue(entry);
     }
 
     public LiveData<Entry> getSelectedEntry() {
