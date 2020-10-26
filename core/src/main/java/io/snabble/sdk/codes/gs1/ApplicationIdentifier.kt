@@ -8,9 +8,33 @@ data class ApplicationIdentifier(
         val needsFNC1: Boolean,
         val regex: String
 ) {
+    val contentLength: Int
+        get() {
+            predefinedLengths[twoDigitIdentifier]?.let {
+                return it - prefix.length - 2
+            }
+            return 0
+        }
+
+    val twoDigitIdentifier: String
+        get() {
+            return prefix.substring(0, 2)
+        }
+
+    val additionalIdentifier: String?
+        get() {
+            return prefix.substring(2)
+        }
+
     companion object {
         private val charset82 = "\u0021-\u0022\u0025-\u002F\u0030-\u0039\u003A-\u003F\u0041-\u005A\u005F\u0061-\u007A"
         private val charset39 = "\u0023\u002D\u002F\u0030-\u0039\u0041-\u005A"
+        
+        val predefinedLengths = mapOf(
+            "00" to 20, "01" to 16, "02" to 16, "03" to 16, "04" to 18, "11" to 8, "12" to 8, "13" to 8, "14" to 8,
+            "15" to 8, "16" to 8, "17" to 8, "18" to 8, "19" to 8, "20" to 4, "31" to 10, "32" to 10, "33" to 10,
+            "34" to 10, "35" to 10, "36" to 10, "41" to 16
+        )
 
         val allIdentifiers = listOf(
                 ApplicationIdentifier("00", "Serial Shipping Container Code (SSCC)", "N2+N18", "SSCC", false, "00(\\d{18})"),
@@ -530,6 +554,21 @@ data class ApplicationIdentifier(
                 ApplicationIdentifier("98", "Company internal information", "N2+X..90", "INTERNAL", true, "98([$charset82]{0,90})"),
                 ApplicationIdentifier("99", "Company internal information", "N2+X..90", "INTERNAL", true, "99([$charset82]{0,90})")
         )
+
+        private val prefixMap = generatePrefixMap()
+
+        private fun generatePrefixMap() : Map<String, ArrayList<ApplicationIdentifier>> {
+            val map = HashMap<String, ArrayList<ApplicationIdentifier>>()
+            allIdentifiers.forEach {
+                val list = map.getOrPut(it.twoDigitIdentifier, { ArrayList() })
+                list.add(it)
+            }
+            return map
+        }
+
+        fun byPrefix(prefix: String): List<ApplicationIdentifier>? {
+            return prefixMap[prefix]
+        }
     }
 }
 
