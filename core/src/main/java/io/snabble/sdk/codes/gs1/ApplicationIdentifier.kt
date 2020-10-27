@@ -569,6 +569,10 @@ data class ApplicationIdentifier(
         fun byPrefix(prefix: String): List<ApplicationIdentifier>? {
             return prefixMap[prefix]
         }
+
+        fun elementLength(prefix: String): Int {
+            return predefinedLengths[prefix] ?: 0
+        }
     }
 }
 
