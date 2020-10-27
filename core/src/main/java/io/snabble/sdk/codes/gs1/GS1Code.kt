@@ -1,13 +1,15 @@
 package io.snabble.sdk.codes.gs1
 
-import kotlin.math.max
+import io.snabble.sdk.Dimension
+import io.snabble.sdk.Unit
+import java.math.BigDecimal
 import kotlin.math.min
 
-class GS1Code(val gs1Code: String) {
+class GS1Code(val code: String) {
     companion object {
         const val GS = "\u001D"
 
-        val symbologyIdentifiers = listOf(
+        private val symbologyIdentifiers = listOf(
                 "]C1",  // = GS1-128
                 "]e0",  // = GS1 DataBar
                 "]d2",  // = GS1 DataMatrix
@@ -16,51 +18,49 @@ class GS1Code(val gs1Code: String) {
         )
     }
 
-    val identifiers: ArrayList<Element>
-    val skipped: ArrayList<String>
+    val identifiers: ArrayList<Element> = ArrayList()
+    val skipped: ArrayList<String> = ArrayList()
 
-    private var code: String
+    private var remainingCode: String
 
     init {
-        identifiers = ArrayList()
-        skipped = ArrayList()
-        code = gs1Code
-
+        remainingCode = code
         parse()
     }
 
     private fun parse() {
         symbologyIdentifiers.forEach {
-            code = code.removePrefix(it)
+            remainingCode = remainingCode.removePrefix(it)
         }
 
+        @Suppress("ControlFlowWithEmptyBody")
         while (nextElement()){}
     }
 
     private fun nextElement(): Boolean {
-        while (code.startsWith(GS) && code.isNotEmpty()) {
-            code = code.removePrefix(GS)
+        while (remainingCode.startsWith(GS) && remainingCode.isNotEmpty()) {
+            remainingCode = remainingCode.removePrefix(GS)
         }
 
-        if (code.length >= 2) {
-            val prefix = code.substring(0, 2)
+        if (remainingCode.length >= 2) {
+            val prefix = remainingCode.substring(0, 2)
             val elementLength = ApplicationIdentifier.elementLength(prefix)
             val elementString = if (elementLength > 0) {
-                code.substring(0, min(code.length, elementLength))
+                remainingCode.substring(0, min(remainingCode.length, elementLength))
             } else {
-                code.substringBefore(GS)
+                remainingCode.substringBefore(GS)
             }
 
             if (elementString.isNotEmpty()) {
                 ApplicationIdentifier.byPrefix(prefix)?.forEach { ai ->
-                    val remaining = code.removePrefix(prefix)
+                    val remaining = remainingCode.removePrefix(prefix)
                     if (remaining.startsWith(ai.additionalIdentifier ?: "")) {
                         val contentLength = ai.contentLength
 
-                        code = if (contentLength > 0) {
-                            code.substringAfter(elementString, "")
+                        remainingCode = if (contentLength > 0) {
+                            remainingCode.substringAfter(elementString, "")
                         } else {
-                            code.substringAfter(GS, "")
+                            remainingCode.substringAfter(GS, "")
                         }
 
                         val result = Regex(ai.regex).find(elementString)
@@ -78,7 +78,7 @@ class GS1Code(val gs1Code: String) {
                 }
 
                 skipped.add(elementString)
-                code = code.substringAfter(elementString, "")
+                remainingCode = remainingCode.substringAfter(elementString, "")
                 return true
             } else {
                 return true
@@ -87,4 +87,32 @@ class GS1Code(val gs1Code: String) {
 
         return false
     }
+
+    private fun firstValue(prefix: String): String? {
+        return identifiers.firstOrNull{
+            it.identifier.prefix.startsWith(prefix)
+        }?.values?.firstOrNull()
+    }
+
+    fun weight(unit: Unit): BigDecimal? {
+        if (unit.dimension == Dimension.MASS) {
+            val weight = firstValue("310")?.toIntOrNull()
+            if (weight != null) {
+                return when (unit) {
+                    Unit.KILOGRAM -> BigDecimal(weight)
+                    Unit.HECTOGRAM -> BigDecimal(weight * 10)
+                    Unit.DECAGRAM -> BigDecimal(weight * 100)
+                    Unit.GRAM -> BigDecimal(weight * 1000)
+                    else -> return null
+                }
+            }
+        }
+
+        return null
+    }
+
+    val weight: Int?
+        get() {
+            return weight(Unit.GRAM)?.toInt()
+        }
 }

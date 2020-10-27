@@ -87,6 +87,43 @@ class GS1CodeTest {
         Assert.assertEquals(code2.skipped[0], "3910aaabbbb")
     }
 
+    @Test
+    fun testWeight() {
+        // net weight in kg, no decimal digits: 1kg
+        val code1 = GS1Code("3100000001")
+        val weight1 = code1.weight(Unit.KILOGRAM)
+        Assert.assertEquals(weight1, 1.toBigDecimal())
+
+        // net weight in kg, no decimal digits: 1kg
+        val code2 = GS1Code("3100000001")
+        val weight2 = code2.weight(Unit.GRAM)
+        Assert.assertEquals(weight2, 1000.toBigDecimal())
+
+        // net weight in kg, 3 decimal digits: 1.02kg
+        val code3 = GS1Code("3103001020")
+        val weight3 = code3.weight(Unit.GRAM)
+        Assert.assertEquals(weight3, 1020.toBigDecimal())
+
+        // net weight in kg, 2 decimal digits: 1.23kg
+        val code4 = GS1Code("3102000123")
+        val weight4 = code4.weight(Unit.DECAGRAM)
+        Assert.assertEquals(weight4, 123.toBigDecimal())
+
+        // net weight in kg, 2 decimal digits: 1.24kg
+        val code5 = GS1Code("3102000124")
+        val weight5 = code5.weight(Unit.HECTOGRAM)
+        Assert.assertEquals(weight5, 12.4.toBigDecimal())
+
+        Assert.assertEquals(GS1Code("3100000001").weight, 1000)
+        Assert.assertEquals(GS1Code("3101000011").weight, 1100)
+        Assert.assertEquals(GS1Code("3102000124").weight, 1240)
+        Assert.assertEquals(GS1Code("3103001001").weight, 1001)
+
+        Assert.assertNull(GS1Code("3102000124").weight(Unit.LITER))
+        Assert.assertNull(GS1Code("3902000124").weight(Unit.KILOGRAM))
+    }
+
+
     private fun check(code: String, data: Map<String, String>? = null, skipped: List<String>? = null) {
         val gs1Code = GS1Code(code)
         var validCount = 0
