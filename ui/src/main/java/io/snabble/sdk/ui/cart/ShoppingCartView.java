@@ -484,7 +484,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 priceSum.setVisibility(View.VISIBLE);
                 sumContainer.setVisibility(View.VISIBLE);
 
-                if (price <= 0) {
+                boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && cart.getAvailablePaymentMethods().length > 0;
+
+                if (price <= 0 || (!onlinePaymentAvailable && paymentSelectionHelper.getSelectedEntry().getValue() == null)) {
                     pay.setEnabled(false);
                 } else {
                     pay.setEnabled(true);
