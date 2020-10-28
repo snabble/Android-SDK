@@ -516,10 +516,14 @@ public class ShoppingCart {
         public int getEffectiveQuantity() {
             return scannedCode != null
                     && scannedCode.hasEmbeddedData()
-                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : quantity;
+                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : getQuantity();
         }
 
         public int getQuantity() {
+            if (lineItem != null && lineItem.units != null) {
+                return lineItem.units;
+            }
+
             return quantity;
         }
 
@@ -575,12 +579,12 @@ public class ShoppingCart {
         }
 
         public int getTotalPrice() {
-            if (lineItem != null) {
-                return lineItem.totalPrice;
-            }
-
             if (getUnit() == Unit.PRICE) {
                 return scannedCode.getEmbeddedData();
+            }
+
+            if (lineItem != null) {
+                return lineItem.totalPrice;
             }
 
             return product.getPriceForQuantity(getEffectiveQuantity(), scannedCode, cart.project.getRoundingMode(), cart.project.getCustomerCardId());
@@ -621,7 +625,11 @@ public class ShoppingCart {
 
             Unit unit = getUnit();
             if (unit == PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
-                return "1";
+                if (lineItem != null && lineItem.units != null) {
+                    return String.valueOf(lineItem.units);
+                } else {
+                    return "1";
+                }
             }
 
             int q = getEffectiveQuantity();
@@ -665,7 +673,13 @@ public class ShoppingCart {
                                 cart.priceFormatter.format(product, price),
                                 cart.priceFormatter.format(getTotalPrice()));
                     } else {
-                        return cart.priceFormatter.format(getTotalPrice(), true);
+                        if (lineItem.units != null) {
+                            return String.format("\u00D7 %s = %s",
+                                    cart.priceFormatter.format(product, lineItem.price),
+                                    cart.priceFormatter.format(getTotalPrice()));
+                        } else {
+                            return cart.priceFormatter.format(getTotalPrice(), true);
+                        }
                     }
                 }
             }

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.29.4]
+
+### Added
+- Add support for vPOS price reevaluation codes
+
 ## [0.29.3]
 
 ### Fixed
