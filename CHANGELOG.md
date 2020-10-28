@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.29.3]
+
+### Fixed
+- Grey out checkout button when no online checkouts are available and no offline fallback is configured
+
 ## [0.29.2]
 
 ### Changed
