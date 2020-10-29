@@ -3,6 +3,7 @@ package io.snabble.sdk.codes.gs1
 import io.snabble.sdk.Dimension
 import io.snabble.sdk.Unit
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import kotlin.math.min
 
 class GS1Code(val code: String) {
@@ -18,7 +19,7 @@ class GS1Code(val code: String) {
         )
     }
 
-    val identifiers: ArrayList<Element> = ArrayList()
+    val elements: ArrayList<Element> = ArrayList()
     val skipped: ArrayList<String> = ArrayList()
 
     private var remainingCode: String
@@ -65,7 +66,7 @@ class GS1Code(val code: String) {
 
                         val result = Regex(ai.regex).find(elementString)
                         if (result != null) {
-                            identifiers.add(Element(ai, result.groupValues.drop(1)))
+                            elements.add(Element(ai, result.groupValues.drop(1)))
                             val leftover = elementString.removeRange(result.range)
                             if (leftover.isNotEmpty()) {
                                 skipped.add(leftover)
@@ -89,22 +90,35 @@ class GS1Code(val code: String) {
     }
 
     private fun firstValue(prefix: String): String? {
-        return identifiers.firstOrNull{
+        return elements.firstOrNull{
             it.identifier.prefix.startsWith(prefix)
         }?.values?.firstOrNull()
     }
 
+    private fun firstDecimal(prefix: String): BigDecimal? {
+        return elements.firstOrNull{ it.identifier.prefix.startsWith(prefix) }?.decimal
+    }
+
+    private fun BigDecimal.trim(): BigDecimal {
+        val df = DecimalFormat()
+        df.maximumFractionDigits = 2
+        df.minimumFractionDigits = 0
+        df.isGroupingUsed = false
+        df.isParseBigDecimal = true
+        return df.parse(df.format(this)) as BigDecimal
+    }
+
     fun weight(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.MASS) {
-            val weight = firstValue("310")?.toIntOrNull()
+            val weight = firstDecimal("310")
             if (weight != null) {
                 return when (unit) {
-                    Unit.KILOGRAM -> BigDecimal(weight)
-                    Unit.HECTOGRAM -> BigDecimal(weight * 10)
-                    Unit.DECAGRAM -> BigDecimal(weight * 100)
-                    Unit.GRAM -> BigDecimal(weight * 1000)
-                    else -> return null
-                }
+                    Unit.KILOGRAM -> weight
+                    Unit.HECTOGRAM -> weight * 10.toBigDecimal()
+                    Unit.DECAGRAM -> weight * 100.toBigDecimal()
+                    Unit.GRAM -> weight * 1000.toBigDecimal()
+                    else -> null
+                }?.trim()
             }
         }
 
@@ -114,5 +128,50 @@ class GS1Code(val code: String) {
     val weight: Int?
         get() {
             return weight(Unit.GRAM)?.toInt()
+        }
+
+    fun length(unit: Unit): BigDecimal? {
+        if (unit.dimension == Dimension.DISTANCE) {
+            val length = firstDecimal("311")
+            if (length != null) {
+                return when (unit) {
+                    Unit.METER -> length
+                    Unit.DECIMETER -> length * 10.toBigDecimal()
+                    Unit.CENTIMETER -> length * 100.toBigDecimal()
+                    Unit.MILLIMETER -> length * 1000.toBigDecimal()
+                    else -> null
+                }?.trim()
+            }
+        }
+
+        return null
+    }
+
+    val length: Int?
+        get() {
+            return length(Unit.MILLIMETER)?.toInt()
+        }
+
+    fun area(unit: Unit): BigDecimal? {
+        if (unit.dimension == Dimension.AREA) {
+            val area = firstDecimal("314")
+            if (area != null) {
+                return when (unit) {
+                    Unit.SQUARE_METER -> area
+                    Unit.SQUARE_METER_TENTH -> area * 10.toBigDecimal()
+                    Unit.SQUARE_DECIMETER -> area * 100.toBigDecimal()
+                    Unit.SQUARE_DECIMETER_TENTH -> area * 1000.toBigDecimal()
+                    Unit.SQUARE_CENTIMETER -> area * 10000.toBigDecimal()
+                    else -> null
+                }?.trim()
+            }
+        }
+
+        return null
+    }
+
+    val area: Int?
+        get() {
+            return area(Unit.SQUARE_CENTIMETER)?.toInt()
         }
 }

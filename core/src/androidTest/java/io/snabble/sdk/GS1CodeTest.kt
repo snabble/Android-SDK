@@ -3,6 +3,7 @@ package io.snabble.sdk
 import io.snabble.sdk.codes.gs1.GS1Code
 import org.junit.Assert
 import org.junit.Test
+import java.math.BigDecimal
 
 class GS1CodeTest {
     companion object {
@@ -12,19 +13,19 @@ class GS1CodeTest {
     @Test
     fun testInvalidCodes() {
         val code1 = GS1Code("")
-        Assert.assertEquals(code1.identifiers.size, 0)
+        Assert.assertEquals(code1.elements.size, 0)
         Assert.assertEquals(code1.skipped.size, 0)
 
         val code2 = GS1Code("${GS}${GS}")
-        Assert.assertEquals(code2.identifiers.size, 0)
+        Assert.assertEquals(code2.elements.size, 0)
         Assert.assertEquals(code1.skipped.size, 0) // FIXME: different than in iOS SDK - not really important
 
         val code3 = GS1Code("asdfghjklöä")
-        Assert.assertEquals(code3.identifiers.size, 0)
+        Assert.assertEquals(code3.elements.size, 0)
         Assert.assertEquals(code3.skipped.size, 1)
 
         val code4 = GS1Code("   0100000000000000    ")
-        Assert.assertEquals(code4.identifiers.size, 0)
+        Assert.assertEquals(code4.elements.size, 0)
         Assert.assertEquals(code4.skipped.size, 1)
 
         // invalid lot number
@@ -76,15 +77,30 @@ class GS1CodeTest {
     fun testMultivalue() {
         // amount payable, currency=111, value=0123456
         val code1 = GS1Code("39101110123456")
-        Assert.assertEquals(code1.identifiers[0].values.size, 2)
-        Assert.assertEquals(code1.identifiers[0].values[0], "111")
-        Assert.assertEquals(code1.identifiers[0].values[1], "0123456")
+        Assert.assertEquals(code1.elements[0].values.size, 2)
+        Assert.assertEquals(code1.elements[0].values[0], "111")
+        Assert.assertEquals(code1.elements[0].values[1], "0123456")
 
         // amount payable, invalid data
         val code2 = GS1Code("3910aaabbbb")
-        Assert.assertEquals(code2.identifiers.size, 0)
+        Assert.assertEquals(code2.elements.size, 0)
         Assert.assertEquals(code2.skipped.size, 1)
         Assert.assertEquals(code2.skipped[0], "3910aaabbbb")
+    }
+
+    @Test
+    fun testDecimal() {
+        // net weight in kg, no decimal digits
+        val code1 = GS1Code("3100000042")
+        Assert.assertEquals(code1.elements[0].values.size, 1)
+        Assert.assertEquals(code1.elements[0].values[0], "000042")
+        Assert.assertEquals(code1.elements[0].decimal, BigDecimal("42"))
+
+        // net weight in kg, 3 decimal digits
+        val code2 = GS1Code("3103001042")
+        Assert.assertEquals(code2.elements[0].values.size, 1)
+        Assert.assertEquals(code2.elements[0].values[0], "001042")
+        Assert.assertEquals(code2.elements[0].decimal, BigDecimal("1.042"))
     }
 
     @Test
@@ -123,12 +139,82 @@ class GS1CodeTest {
         Assert.assertNull(GS1Code("3902000124").weight(Unit.KILOGRAM))
     }
 
+    @Test
+    fun testLength() {
+        // net length in m, no decimal digits: 1m
+        val code1 = GS1Code("3110000001")
+        val length1 = code1.length(Unit.METER)
+        Assert.assertEquals(length1, BigDecimal(1))
 
+        // net length in m, no decimal digits: 1m
+        val code2 = GS1Code("3110000001")
+        val length2 = code2.length(Unit.MILLIMETER)
+        Assert.assertEquals(length2, BigDecimal(1000))
+
+        // net length in m, 3 decimal digits: 1.02m
+        val code3 = GS1Code("3113001020")
+        val length3 = code3.length(Unit.MILLIMETER)
+        Assert.assertEquals(length3, BigDecimal(1020))
+
+        // net length in m, 2 decimal digits: 1.23m
+        val code4 = GS1Code("3112000123")
+        val length4 = code4.length(Unit.CENTIMETER)
+        Assert.assertEquals(length4, BigDecimal(123))
+
+        // net length in m, 2 decimal digits: 1.24m
+        val code5 = GS1Code("3112000124")
+        val length5 = code5.length(Unit.DECIMETER)
+        Assert.assertEquals(length5, BigDecimal("12.4"))
+
+        Assert.assertEquals(GS1Code("3110000001").length, 1000)
+        Assert.assertEquals(GS1Code("3111000011").length, 1100)
+        Assert.assertEquals(GS1Code("3112000124").length, 1240)
+        Assert.assertEquals(GS1Code("3113001001").length, 1001)
+
+        Assert.assertNull(GS1Code("3102000124").length(Unit.LITER))
+        Assert.assertNull(GS1Code("3902000124").length(Unit.METER))
+    }
+    @Test
+    fun testArea() {
+        // net area in m^2, no decimal digits: 1m^2
+        val code1 = GS1Code("3140000001")
+        val area1 = code1.area(Unit.SQUARE_METER)
+        Assert.assertEquals(area1, BigDecimal(1))
+
+        // net area in m^2, no decimal digits: 1m^2
+        val code2 = GS1Code("3140000001")
+        val area2 = code2.area(Unit.SQUARE_CENTIMETER)
+        Assert.assertEquals(area2, BigDecimal(10000))
+
+        // net area in m^2, 3 decimal digits: 1.02m^2
+        val code3 = GS1Code("3143001020")
+        val area3 = code3.area(Unit.SQUARE_CENTIMETER)
+        Assert.assertEquals(area3, BigDecimal(10200))
+
+        // net area in m^2, 3 decimal digits: 1.23m^2
+        val code4 = GS1Code("3143001230")
+        val area4 = code4.area(Unit.SQUARE_CENTIMETER)
+        Assert.assertEquals(area4, BigDecimal(12300))
+
+        // net area in m^2, 2 decimal digits: 1.24m^2
+        val code5 = GS1Code("3142000124")
+        val area5 = code5.area(Unit.SQUARE_DECIMETER)
+        Assert.assertEquals(area5, BigDecimal(124))
+
+        Assert.assertEquals(GS1Code("3140000001").area, 10000)
+        Assert.assertEquals(GS1Code("3141000011").area, 11000)
+        Assert.assertEquals(GS1Code("3142000124").area, 12400)
+        Assert.assertEquals(GS1Code("3143001001").area, 10010)
+
+        Assert.assertNull(GS1Code("3102000124").area(Unit.LITER))
+        Assert.assertNull(GS1Code("3902000124").area(Unit.SQUARE_CENTIMETER))
+    }
+    
     private fun check(code: String, data: Map<String, String>? = null, skipped: List<String>? = null) {
         val gs1Code = GS1Code(code)
         var validCount = 0
         data?.forEach {
-            gs1Code.identifiers.forEach { it2 ->
+            gs1Code.elements.forEach { it2 ->
                 if (it.key == it2.identifier.prefix) {
                     Assert.assertEquals(it.value, it2.values[0])
                     validCount++
