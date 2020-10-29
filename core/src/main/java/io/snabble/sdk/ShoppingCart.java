@@ -516,10 +516,14 @@ public class ShoppingCart {
         public int getEffectiveQuantity() {
             return scannedCode != null
                     && scannedCode.hasEmbeddedData()
-                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : quantity;
+                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : getQuantity();
         }
 
         public int getQuantity() {
+            if (lineItem != null && lineItem.units != null) {
+                return lineItem.units;
+            }
+
             return quantity;
         }
 
@@ -579,6 +583,10 @@ public class ShoppingCart {
                 return lineItem.totalPrice;
             }
 
+            return getLocalTotalPrice();
+        }
+
+        public int getLocalTotalPrice() {
             if (getUnit() == Unit.PRICE) {
                 return scannedCode.getEmbeddedData();
             }
@@ -621,7 +629,11 @@ public class ShoppingCart {
 
             Unit unit = getUnit();
             if (unit == PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
-                return "1";
+                if (lineItem != null && lineItem.units != null) {
+                    return String.valueOf(lineItem.units);
+                } else {
+                    return "1";
+                }
             }
 
             int q = getEffectiveQuantity();
@@ -665,7 +677,13 @@ public class ShoppingCart {
                                 cart.priceFormatter.format(product, price),
                                 cart.priceFormatter.format(getTotalPrice()));
                     } else {
-                        return cart.priceFormatter.format(getTotalPrice(), true);
+                        if (lineItem.units != null) {
+                            return String.format("\u00D7 %s = %s",
+                                    cart.priceFormatter.format(product, lineItem.price),
+                                    cart.priceFormatter.format(getTotalPrice()));
+                        } else {
+                            return cart.priceFormatter.format(getTotalPrice(), true);
+                        }
                     }
                 }
             }
@@ -677,7 +695,7 @@ public class ShoppingCart {
             if (product.getPrice(cart.project.getCustomerCardId()) > 0 || scannedCode.hasEmbeddedData()) {
                 Unit unit = getUnit();
 
-                if (unit == Unit.PRICE || unit == PIECE) {
+                if ((unit == Unit.PRICE || unit == PIECE) && !(scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() == 0)) {
                     return cart.priceFormatter.format(getTotalPrice());
                 } else if (getEffectiveQuantity() <= 1) {
                     return cart.priceFormatter.format(product);
@@ -811,7 +829,7 @@ public class ShoppingCart {
             if (cartItem.getUnit() == Unit.PIECE) {
                 item.units = cartItem.getEffectiveQuantity();
             } else if (cartItem.getUnit() == Unit.PRICE) {
-                item.price = cartItem.getTotalPrice();
+                item.price = cartItem.getLocalTotalPrice();
             } else if (cartItem.getUnit() != null) {
                 item.weight = cartItem.getEffectiveQuantity();
             } else if (product.getType() == Product.Type.UserWeighed) {
