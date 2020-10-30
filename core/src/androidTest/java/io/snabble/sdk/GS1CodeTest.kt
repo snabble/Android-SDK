@@ -176,6 +176,78 @@ class GS1CodeTest {
     }
 
     @Test
+    fun testLiters() {
+        // net volume in l, no decimal digits: 1l
+        val code1 = GS1Code("3150000001")
+        val liters1 = code1.liters(Unit.LITER)
+        Assert.assertEquals(liters1, BigDecimal("1"))
+
+        // net volume in l, no decimal digits: 1l
+        val code2 = GS1Code("3150000001")
+        val liters2 = code2.liters(Unit.MILLILITER)
+        Assert.assertEquals(liters2, BigDecimal("1000"))
+
+        // net volume in l, 3 decimal digits: 1.02l
+        val code3 = GS1Code("3153001020")
+        val liters3 = code3.liters(Unit.MILLILITER)
+        Assert.assertEquals(liters3, BigDecimal("1020"))
+
+        // net volume in l, 2 decimal digits: 1.23l
+        val code4 = GS1Code("3152000123")
+        val liters4 = code4.liters(Unit.CENTILITER)
+        Assert.assertEquals(liters4, BigDecimal("123"))
+
+        // net volume in l, 2 decimal digits: 1.24l
+        val code5 = GS1Code("3152000124")
+        val liters5 = code5.liters(Unit.DECILITER)
+        Assert.assertEquals(liters5, BigDecimal("12.4"))
+
+        Assert.assertEquals(GS1Code("3150000001").liters, 1000)
+        Assert.assertEquals(GS1Code("3151000011").liters, 1100)
+        Assert.assertEquals(GS1Code("3152000124").liters, 1240)
+        Assert.assertEquals(GS1Code("3153001001").liters, 1001)
+
+        Assert.assertNull(GS1Code("3102000124").length(Unit.SQUARE_CENTIMETER))
+        Assert.assertNull(GS1Code("3902000124").liters(Unit.LITER))
+    }
+
+    @Test
+    fun testVolume() {
+        // net volume in m^3, no decimal digits: 1m^3
+        val code1 = GS1Code("3160000001")
+        val volume1 = code1.volume(Unit.CUBIC_METER)
+        Assert.assertEquals(volume1, BigDecimal("1"))
+
+        // net volume in m^3, no decimal digits: 1m^3
+        val code2 = GS1Code("3160000001")
+        val volume2 = code2.volume(Unit.CUBIC_CENTIMETER)
+        Assert.assertEquals(volume2, BigDecimal("1000000"))
+
+        // net volume in m^3, 3 decimal digits: 1.02m^3
+        val code3 = GS1Code("3163001020")
+        val volume3 = code3.volume(Unit.CUBIC_METER)
+        Assert.assertEquals(volume3, BigDecimal("1.02"))
+
+        // net length in m^3, 3 decimal digits: 1.23m^3
+        val code4 = GS1Code("3163001230")
+        val volume4 = code4.volume(Unit.CUBIC_METER)
+        Assert.assertEquals(volume4, BigDecimal("1.23"))
+
+        // net length in m^3, 2 decimal digits: 1.24m^3
+        val code5 = GS1Code("3162000124")
+        val volume5 = code5.volume(Unit.CUBIC_CENTIMETER)
+        Assert.assertEquals(volume5, BigDecimal("1240000"))
+
+        Assert.assertEquals(GS1Code("3160000001").volume, 1000000)
+        Assert.assertEquals(GS1Code("3161000011").volume, 1100000)
+        Assert.assertEquals(GS1Code("3162000124").volume, 1240000)
+        Assert.assertEquals(GS1Code("3163001001").volume, 1001000)
+
+        Assert.assertNull(GS1Code("3102000124").volume(Unit.LITER))
+        Assert.assertNull(GS1Code("3902000124").volume(Unit.CUBIC_CENTIMETER))
+    }
+
+    @Test
     fun testArea() {
         // net area in m^2, no decimal digits: 1m^2
         val code1 = GS1Code("3140000001")

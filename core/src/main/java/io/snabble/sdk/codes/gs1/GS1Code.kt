@@ -179,6 +179,48 @@ class GS1Code(val code: String) {
             return area(Unit.SQUARE_CENTIMETER)?.toInt()
         }
 
+    fun liters(unit: Unit): BigDecimal? {
+        if (unit.dimension == Dimension.VOLUME) {
+            val liters = firstDecimal("315")
+            if (liters != null) {
+                return when (unit) {
+                    Unit.LITER -> liters
+                    Unit.DECILITER -> liters * 10.toBigDecimal()
+                    Unit.CENTILITER -> liters * 100.toBigDecimal()
+                    Unit.MILLILITER -> liters * 1000.toBigDecimal()
+                    else -> null
+                }?.trim()
+            }
+        }
+
+        return null
+    }
+
+    val liters: Int?
+        get() {
+            return liters(Unit.MILLILITER)?.toInt()
+        }
+
+    fun volume(unit: Unit): BigDecimal? {
+        if (unit.dimension == Dimension.CAPACITY) {
+            val volume = firstDecimal("316")
+            if (volume != null) {
+                return when (unit) {
+                    Unit.CUBIC_METER -> volume
+                    Unit.CUBIC_CENTIMETER -> volume * 1_000_000.toBigDecimal()
+                    else -> null
+                }?.trim()
+            }
+        }
+
+        return null
+    }
+
+    val volume: Int?
+        get() {
+            return volume(Unit.CUBIC_CENTIMETER)?.toInt()
+        }
+
     val gtin: String?
         get() {
             return firstValue("01")
