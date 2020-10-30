@@ -174,6 +174,7 @@ class GS1CodeTest {
         Assert.assertNull(GS1Code("3102000124").length(Unit.LITER))
         Assert.assertNull(GS1Code("3902000124").length(Unit.METER))
     }
+
     @Test
     fun testArea() {
         // net area in m^2, no decimal digits: 1m^2
@@ -209,7 +210,62 @@ class GS1CodeTest {
         Assert.assertNull(GS1Code("3102000124").area(Unit.LITER))
         Assert.assertNull(GS1Code("3902000124").area(Unit.SQUARE_CENTIMETER))
     }
-    
+
+    @Test
+    fun testRawPrice() {
+        // amount payable, no decimal digits: 12
+        val code1 = GS1Code("392012")
+        val price1 = code1.price
+        Assert.assertEquals(price1?.price, BigDecimal("12"))
+        Assert.assertEquals(price1?.currencyCode, null)
+
+        // amount payable, 2 decimal digits: 12.34
+        val code2 = GS1Code("39221234")
+        val price2 = code2.price
+        Assert.assertEquals(price2?.price, BigDecimal("12.34"))
+        Assert.assertEquals(price2?.currencyCode, null)
+
+        // amount payable in EUR (978), no decimal digits: 13
+        val code3 = GS1Code("393097813")
+        val price3 = code3.price
+        Assert.assertEquals(price3?.price, BigDecimal("13"))
+        Assert.assertEquals(price3?.currencyCode, "978")
+
+        // amount payable in EUR (978), 2 decimal digits: 13.45
+        val code4 = GS1Code("39329781345")
+        val price4 = code4.price
+        Assert.assertEquals(price4?.price, BigDecimal("13.45"))
+        Assert.assertEquals(price4?.currencyCode, "978")
+    }
+
+    @Test
+    fun testAmount() {
+        val code1 = GS1Code("3042")
+        Assert.assertEquals(code1.amount, 42)
+
+        val code2 = GS1Code("30xx")
+        Assert.assertEquals(code2.amount, null)
+    }
+
+    @Test
+    fun testRetailerCodes() {
+        // missing a (GS) after AI 30, and has invalid chars in AI 10
+        val code = GS1Code("010000000001234530000000011520101510              CHARGE")
+        Assert.assertEquals(code.gtin, "00000000012345")
+        Assert.assertEquals(code.amount, 1) // works because the regex is greedy and
+        Assert.assertEquals(code.elements[2].identifier.prefix, "15")
+        Assert.assertEquals(code.elements[2].values[0], "201015")
+        Assert.assertEquals(code.skipped, listOf("              CHARGE"))
+
+        // standard conforming version of the same code
+        val code2 = GS1Code("0100000000012345301${GS}1520101510CHARGE")
+        Assert.assertEquals(code2.gtin, "00000000012345")
+        Assert.assertEquals(code2.amount, 1)
+        Assert.assertEquals(code2.elements[2].identifier.prefix, "15")
+        Assert.assertEquals(code2.elements[2].values[0], "201015")
+        Assert.assertEquals(code2.skipped.size, 0)
+    }
+
     private fun check(code: String, data: Map<String, String>? = null, skipped: List<String>? = null) {
         val gs1Code = GS1Code(code)
         var validCount = 0

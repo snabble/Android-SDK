@@ -69,7 +69,7 @@ class GS1Code(val code: String) {
                             elements.add(Element(ai, result.groupValues.drop(1)))
                             val leftover = elementString.removeRange(result.range)
                             if (leftover.isNotEmpty()) {
-                                skipped.add(leftover)
+                                remainingCode = leftover
                             }
                         } else {
                             skipped.add(elementString)
@@ -97,6 +97,10 @@ class GS1Code(val code: String) {
 
     private fun firstDecimal(prefix: String): BigDecimal? {
         return elements.firstOrNull{ it.identifier.prefix.startsWith(prefix) }?.decimal
+    }
+
+    private fun firstElement(prefix: String): Element? {
+        return elements.firstOrNull{ it.identifier.prefix.startsWith(prefix) }
     }
 
     private fun BigDecimal.trim(): BigDecimal {
@@ -173,5 +177,40 @@ class GS1Code(val code: String) {
     val area: Int?
         get() {
             return area(Unit.SQUARE_CENTIMETER)?.toInt()
+        }
+
+    val gtin: String?
+        get() {
+            return firstValue("01")
+        }
+
+    data class Price (val price: BigDecimal,
+                      val currencyCode: String?)
+
+    val price: Price?
+        get() {
+            val p1 = firstDecimal("392")
+            if (p1 != null) {
+                return Price(p1, null)
+            }
+
+            val p2 = firstElement("393")
+            if (p2 != null) {
+                p2.decimal?.let { price ->
+                    return Price(price, p2.values[0])
+                }
+            }
+
+            return null
+        }
+
+//    fun price(digits: Int): Int? {
+//        val price = this.price ?: return null
+//        price.price.
+//    }
+
+    val amount: Int?
+        get() {
+            return firstValue("30")?.toIntOrNull()
         }
 }

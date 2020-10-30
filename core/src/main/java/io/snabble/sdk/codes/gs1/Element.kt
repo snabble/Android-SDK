@@ -9,14 +9,13 @@ class Element(val identifier: ApplicationIdentifier,
             if (identifier.prefix.length == 4) {
                 val decimalPoints = Character.getNumericValue(identifier.prefix[3])
                 val divisor = BigDecimal(10).pow(decimalPoints)
-                val v = values.firstOrNull()
+                val v = values.lastOrNull()
                 if (v != null) {
-                    val bd =  if (divisor.toInt() != 0) {
+                    return if (divisor.toInt() != 0) {
                         BigDecimal(v).divide(divisor)
                     } else {
                         BigDecimal(v)
                     }
-                    return bd
                 }
             }
 
