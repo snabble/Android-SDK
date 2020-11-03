@@ -401,9 +401,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                 Resources res = getResources();
                 StringBuilder sb = new StringBuilder();
                 if (invalidProducts.size() == 1) {
-                    sb.append(res.getString(R.string.Snabble_saleStop_errorMsg_one));
+                    sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg_one));
                 } else {
-                    sb.append(res.getString(R.string.Snabble_saleStop_errorMsg));
+                    sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg));
                 }
 
                 sb.append("\n\n");
