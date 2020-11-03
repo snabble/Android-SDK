@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.29.6]
+
+### Changed
+- Support vendor specific strings for salestop
+
 ## [0.29.5]
 
 ### Fixed
