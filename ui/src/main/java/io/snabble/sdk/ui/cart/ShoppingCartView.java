@@ -420,7 +420,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
                 new AlertDialog.Builder(getContext())
                         .setCancelable(false)
-                        .setTitle(R.string.Snabble_saleStop_errorMsg_title)
+                        .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
                         .setMessage(sb.toString())
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .show();
@@ -442,8 +442,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         } else if (state == Checkout.State.NO_PAYMENT_METHOD_AVAILABLE) {
             new AlertDialog.Builder(getContext())
                     .setCancelable(false)
-                    .setTitle(R.string.Snabble_saleStop_errorMsg_title)
-                    .setMessage(R.string.Snabble_Payment_noMethodAvailable)
+                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
+                    .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Payment_noMethodAvailable))
                     .setPositiveButton(R.string.Snabble_OK, null)
                     .show();
             progressDialog.dismiss();
@@ -525,9 +525,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             Resources res = getResources();
             StringBuilder sb = new StringBuilder();
             if (invalidProducts.size() == 1) {
-                sb.append(res.getString(R.string.Snabble_saleStop_errorMsg_one));
+                sb.append(res.getString(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg_one)));
             } else {
-                sb.append(res.getString(R.string.Snabble_saleStop_errorMsg));
+                sb.append(res.getString(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg)));
             }
 
             sb.append("\n\n");
@@ -544,7 +544,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
             new AlertDialog.Builder(getContext())
                     .setCancelable(false)
-                    .setTitle(R.string.Snabble_saleStop_errorMsg_title)
+                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
                     .setMessage(sb.toString())
                     .setPositiveButton(R.string.Snabble_OK, null)
                     .show();

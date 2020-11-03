@@ -240,8 +240,8 @@ public class SelfScanningView extends FrameLayout {
                     showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
                 })
                 .setOnSaleStopListener(() -> new AlertDialog.Builder(getContext())
-                        .setTitle(R.string.Snabble_saleStop_errorMsg_title)
-                        .setMessage(R.string.Snabble_saleStop_errorMsg_scan)
+                        .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
+                        .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_scan))
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .setOnDismissListener(dialog -> resumeBarcodeScanner())
                         .setCancelable(false)

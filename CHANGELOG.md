@@ -1,6 +1,10 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.29.7]
+
+- More vendor specific strings
+
 ## [0.29.6]
 
 ### Changed
