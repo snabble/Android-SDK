@@ -1,9 +1,8 @@
 package io.snabble.sdk;
 
 import android.app.Application;
-
 import java.util.concurrent.TimeUnit;
-
+import io.snabble.sdk.utils.LetsEncryptCertHelper;
 import io.snabble.sdk.utils.Logger;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
@@ -59,6 +58,8 @@ class OkHttpClientFactory {
 
         if (config.sslSocketFactory != null && config.x509TrustManager != null) {
             builder.sslSocketFactory(config.sslSocketFactory, config.x509TrustManager);
+        } else {
+            LetsEncryptCertHelper.addLetsEncryptCertificatesForMarshmallowOrEarlier(builder);
         }
 
         return builder.build();
