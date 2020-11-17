@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.29.8]
+
+### Changed
+- Add support for lets encrypt certificates on Android versions before 7.1.1
+
 ## [0.29.7]
 
 - More vendor specific strings
