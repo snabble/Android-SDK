@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Unit;
+import io.snabble.sdk.codes.gs1.GS1Code;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 
@@ -151,6 +152,13 @@ public class ScannedCode implements Serializable {
             return scannedCode;
         }
     }
+
+//    public static ScannedCode fromGS1Code(Project project, GS1Code gs1Code) {
+////        return new ScannedCode.Builder("default")
+////                .setScannedCode(gs1Code.getGtin())
+////                .setEmbeddedData(gs1Code.get)
+////                .create();
+//    }
 
     public static ScannedCode parseDefault(Project project, String code) {
         for (CodeTemplate codeTemplate : project.getCodeTemplates()) {

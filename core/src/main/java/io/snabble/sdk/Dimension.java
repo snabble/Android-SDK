@@ -5,5 +5,7 @@ public enum Dimension {
     CAPACITY,
     AREA,
     DISTANCE,
-    MASS
+    MASS,
+    COUNT,
+    AMOUNT
 }

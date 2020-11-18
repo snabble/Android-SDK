@@ -112,7 +112,7 @@ class GS1Code(val code: String) {
         return df.parse(df.format(this)) as BigDecimal
     }
 
-    fun weight(unit: Unit): BigDecimal? {
+    fun getWeight(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.MASS) {
             val weight = firstDecimal("310")
             if (weight != null) {
@@ -131,10 +131,10 @@ class GS1Code(val code: String) {
 
     val weight: Int?
         get() {
-            return weight(Unit.GRAM)?.toInt()
+            return getWeight(Unit.GRAM)?.toInt()
         }
 
-    fun length(unit: Unit): BigDecimal? {
+    fun getLength(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.DISTANCE) {
             val length = firstDecimal("311")
             if (length != null) {
@@ -153,10 +153,10 @@ class GS1Code(val code: String) {
 
     val length: Int?
         get() {
-            return length(Unit.MILLIMETER)?.toInt()
+            return getLength(Unit.MILLIMETER)?.toInt()
         }
 
-    fun area(unit: Unit): BigDecimal? {
+    fun getArea(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.AREA) {
             val area = firstDecimal("314")
             if (area != null) {
@@ -176,10 +176,10 @@ class GS1Code(val code: String) {
 
     val area: Int?
         get() {
-            return area(Unit.SQUARE_CENTIMETER)?.toInt()
+            return getArea(Unit.SQUARE_CENTIMETER)?.toInt()
         }
 
-    fun liters(unit: Unit): BigDecimal? {
+    fun getLiters(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.VOLUME) {
             val liters = firstDecimal("315")
             if (liters != null) {
@@ -198,10 +198,10 @@ class GS1Code(val code: String) {
 
     val liters: Int?
         get() {
-            return liters(Unit.MILLILITER)?.toInt()
+            return getLiters(Unit.MILLILITER)?.toInt()
         }
 
-    fun volume(unit: Unit): BigDecimal? {
+    fun getVolume(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.CAPACITY) {
             val volume = firstDecimal("316")
             if (volume != null) {
@@ -218,7 +218,7 @@ class GS1Code(val code: String) {
 
     val volume: Int?
         get() {
-            return volume(Unit.CUBIC_CENTIMETER)?.toInt()
+            return getVolume(Unit.CUBIC_CENTIMETER)?.toInt()
         }
 
     val gtin: String?
@@ -246,13 +246,25 @@ class GS1Code(val code: String) {
             return null
         }
 
-//    fun price(digits: Int): Int? {
-//        val price = this.price ?: return null
-//        price.price.
-//    }
-
     val amount: Int?
         get() {
             return firstValue("30")?.toIntOrNull()
         }
+
+    fun getEmbeddedData(encodingUnit: Unit?): BigDecimal? {
+        if (encodingUnit == null) {
+            return null
+        }
+
+        return when (encodingUnit.dimension) {
+            Dimension.VOLUME -> getLiters(encodingUnit)
+            Dimension.CAPACITY -> getVolume(encodingUnit)
+            Dimension.AREA -> getArea(encodingUnit)
+            Dimension.DISTANCE -> getLength(encodingUnit)
+            Dimension.MASS -> getWeight(encodingUnit)
+            Dimension.COUNT -> this.amount?.let { BigDecimal(it) }
+            Dimension.AMOUNT -> { this.price?.price }
+            else -> null
+        }
+    }
 }
