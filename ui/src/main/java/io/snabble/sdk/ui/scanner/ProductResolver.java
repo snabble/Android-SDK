@@ -202,7 +202,10 @@ public class ProductResolver {
                     GS1Code newGs1Code = null;
                     for (ScannedCode scannedCode : scannedCodes) {
                         newGs1Code = new GS1Code(scannedCode.getCode());
-                        ScannedCode code = ScannedCode.parseDefault(project, newGs1Code.getGtin());
+                        ScannedCode code = project.getCodeTemplate("default")
+                                .match(newGs1Code.getGtin())
+                                .buildCode();
+
                         if (code != null) {
                             gs1GtinScannedCodes.add(code);
                             break;
@@ -225,20 +228,23 @@ public class ProductResolver {
         Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
 
         BigDecimal gs1EmbeddedData = null;
+        Project project = SnabbleUI.getProject();
         if (gs1Code != null) {
-            gs1EmbeddedData = gs1Code.getEmbeddedData(unit);
+            gs1EmbeddedData = gs1Code.getEmbeddedData(unit,
+                    project.getCurrency().getDefaultFractionDigits(),
+                    project.getRoundingMode());
         }
 
         if (scannedCode.hasEmbeddedDecimalData() || gs1EmbeddedData != null) {
             if (unit != null) {
-                BigDecimal decimal = scannedCode.getEmbeddedDecimalData();
-
-                if (gs1Code != null) {
-                    decimal = gs1Code.getEmbeddedData(unit);
+                BigDecimal decimal;
+                if (gs1EmbeddedData != null) {
+                    decimal = gs1EmbeddedData;
+                } else {
+                    decimal = scannedCode.getEmbeddedDecimalData();
                 }
 
                 if (unit == Unit.PIECE || unit == Unit.PRICE) {
-                    // TODO scale correctly
                     scannedCode.setEmbeddedData(decimal.scaleByPowerOfTen(decimal.scale()).intValue());
                     scannedCode.setEmbeddedUnit(unit);
                 } else {

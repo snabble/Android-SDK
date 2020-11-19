@@ -83,6 +83,11 @@ public class CodeTemplateTest {
     }
 
     @Test
+    public void testBrokenTemplateMatches() {
+        Assert.assertNull(newCodeTemplate("2{code:5}{i}{embed:5}{ec}").match("010262323000000039221234").buildCode());
+    }
+
+    @Test
     public void testTemplateMatcher() {
         Assert.assertNotNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("960000000000000111111222223").buildCode());
 

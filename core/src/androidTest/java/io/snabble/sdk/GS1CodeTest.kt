@@ -4,6 +4,7 @@ import io.snabble.sdk.codes.gs1.GS1Code
 import org.junit.Assert
 import org.junit.Test
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 class GS1CodeTest {
     companion object {
@@ -18,7 +19,7 @@ class GS1CodeTest {
 
         val code2 = GS1Code("${GS}${GS}")
         Assert.assertEquals(code2.elements.size, 0)
-        Assert.assertEquals(code1.skipped.size, 0) // FIXME: different than in iOS SDK - not really important
+        Assert.assertEquals(code1.skipped.size, 0)
 
         val code3 = GS1Code("asdfghjklöä")
         Assert.assertEquals(code3.elements.size, 0)
@@ -336,6 +337,48 @@ class GS1CodeTest {
         Assert.assertEquals(code2.elements[2].identifier.prefix, "15")
         Assert.assertEquals(code2.elements[2].values[0], "201015")
         Assert.assertEquals(code2.skipped.size, 0)
+    }
+
+    // test price conversions for cart, i.e. convert decimals
+    // from the AI into whatever we need in snabble
+    @Test
+    fun testPriceForCart2Decimals() {
+        val decimalDigits = 2
+
+        // amount payable, no decimal digits: 12 -> 1200
+        val code1 = GS1Code("392012")
+        val price1 = code1.getPrice(decimalDigits, RoundingMode.DOWN)
+        Assert.assertEquals(price1?.price, BigDecimal("12.00"))
+
+        // amount payable, 2 decimal digits: 12.34
+        val code2 = GS1Code("39221234")
+        val price2 = code2.getPrice(decimalDigits, RoundingMode.DOWN)
+        Assert.assertEquals(price2?.price, BigDecimal("12.34"))
+
+        // amount payable, 1 decimal digits: 12.4
+        val code3 = GS1Code("3921124")
+        val price3 = code3.getPrice(decimalDigits, RoundingMode.DOWN)
+        Assert.assertEquals(price3?.price, BigDecimal("12.40"))
+
+        // amount payable, 3 decimal digits: 12.456
+        val code4 = GS1Code("392312456")
+        val price4 = code4.getPrice(decimalDigits, RoundingMode.DOWN)
+        Assert.assertEquals(price4?.price, BigDecimal("12.45"))
+    }
+
+    @Test
+    fun testPriceForCart0Decimals() {
+        val decimalDigits = 0
+
+        // amount payable, no decimal digits: 12 -> 12
+        val code1 = GS1Code("392012")
+        val price1 = code1.getPrice(decimalDigits, RoundingMode.DOWN)
+        Assert.assertEquals(price1?.price, BigDecimal("12"))
+
+        // amount payable, 2 decimal digits: 12.00
+        val code2 = GS1Code("39221200")
+        val price2 = code2.getPrice(decimalDigits, RoundingMode.DOWN)
+        Assert.assertEquals(price2?.price, BigDecimal("12"))
     }
 
     private fun check(code: String, data: Map<String, String>? = null, skipped: List<String>? = null) {

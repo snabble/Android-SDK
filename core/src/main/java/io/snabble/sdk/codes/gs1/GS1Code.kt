@@ -3,8 +3,10 @@ package io.snabble.sdk.codes.gs1
 import io.snabble.sdk.Dimension
 import io.snabble.sdk.Unit
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.math.min
+import kotlin.math.round
 
 class GS1Code(val code: String) {
     companion object {
@@ -246,12 +248,21 @@ class GS1Code(val code: String) {
             return null
         }
 
+    fun getPrice(digits: Int, roundingMode: RoundingMode): Price? {
+        return price?.let { price ->
+            return Price(
+                    price = price.price.setScale(digits, roundingMode),
+                    currencyCode = price.currencyCode
+            )
+        }
+    }
+
     val amount: Int?
         get() {
             return firstValue("30")?.toIntOrNull()
         }
 
-    fun getEmbeddedData(encodingUnit: Unit?): BigDecimal? {
+    fun getEmbeddedData(encodingUnit: Unit?, digits: Int?, roundingMode: RoundingMode?): BigDecimal? {
         if (encodingUnit == null) {
             return null
         }
@@ -263,7 +274,13 @@ class GS1Code(val code: String) {
             Dimension.DISTANCE -> getLength(encodingUnit)
             Dimension.MASS -> getWeight(encodingUnit)
             Dimension.COUNT -> this.amount?.let { BigDecimal(it) }
-            Dimension.AMOUNT -> { this.price?.price }
+            Dimension.AMOUNT -> {
+                if (digits != null && roundingMode != null) {
+                    this.getPrice(digits, roundingMode)?.price
+                } else {
+                    this.price?.price
+                }
+            }
             else -> null
         }
     }

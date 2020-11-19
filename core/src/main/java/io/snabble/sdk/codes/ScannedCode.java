@@ -153,13 +153,6 @@ public class ScannedCode implements Serializable {
         }
     }
 
-//    public static ScannedCode fromGS1Code(Project project, GS1Code gs1Code) {
-////        return new ScannedCode.Builder("default")
-////                .setScannedCode(gs1Code.getGtin())
-////                .setEmbeddedData(gs1Code.get)
-////                .create();
-//    }
-
     public static ScannedCode parseDefault(Project project, String code) {
         for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
             ScannedCode scannedCode = codeTemplate.match(code).buildCode();
