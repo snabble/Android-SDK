@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Unit;
+import io.snabble.sdk.codes.gs1.GS1Code;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 

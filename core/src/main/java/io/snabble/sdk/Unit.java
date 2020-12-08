@@ -33,8 +33,8 @@ public enum Unit {
     KILOGRAM("kg", "kg", Dimension.MASS),
     TONNE("t", "t", Dimension.MASS),
 
-    PIECE("piece", "", null),
-    PRICE("price", "", null);
+    PIECE("piece", "", Dimension.COUNT),
+    PRICE("price", "", Dimension.AMOUNT);
 
     private String id;
     private String displayValue;
@@ -71,6 +71,10 @@ public enum Unit {
     }
 
     public Unit getFractionalUnit(int decimal) {
+        if (decimal == 0) {
+            return this;
+        }
+
         for (Conversion conversion : conversions) {
             if (conversion.from == this && conversion.factor == (int)Math.pow(10, decimal)) {
                 return conversion.to;
