@@ -35,20 +35,7 @@ public class PaymentSelectionHelper {
         return instance;
     }
 
-    static List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
 
-    static {
-        paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
-        paymentMethodsSortPriority.add(PaymentMethod.VISA);
-        paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
-        paymentMethodsSortPriority.add(PaymentMethod.AMEX);
-        paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
-        paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
-        paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
-        paymentMethodsSortPriority.add(PaymentMethod.CUSTOMERCARD_POS);
-        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_POS);
-        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_OFFLINE);
-    }
 
     public class Entry implements Serializable {
         String text;
@@ -61,6 +48,7 @@ public class PaymentSelectionHelper {
 
     private Map<PaymentMethod, Integer> icons = new HashMap<>();
     private Map<PaymentMethod, String> names = new HashMap<>();
+    private List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
 
     private Context context;
     private PaymentCredentialsStore paymentCredentialsStore;
@@ -106,6 +94,17 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
+
+        paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
+        paymentMethodsSortPriority.add(PaymentMethod.VISA);
+        paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
+        paymentMethodsSortPriority.add(PaymentMethod.AMEX);
+        paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
+        paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
+        paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
+        paymentMethodsSortPriority.add(PaymentMethod.CUSTOMERCARD_POS);
+        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_POS);
+        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_OFFLINE);
 
         selectedEntry = new MutableLiveData<>();
 
@@ -303,13 +302,7 @@ public class PaymentSelectionHelper {
             int p1 = paymentMethodsSortPriority.indexOf(o1.paymentMethod);
             int p2 = paymentMethodsSortPriority.indexOf(o2.paymentMethod);
 
-            if (p1 < p2) {
-                return -1;
-            } else if (p1 > p2) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return Integer.compare(p1, p2);
         });
 
         this.entries = entries;
