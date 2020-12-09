@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.30.1]
+
+### Changed
+- Prioritize online payment methods over offline methods if available
+- Route to entering payment method if not available
+
 ## [0.30.0]
 
 ### Added
