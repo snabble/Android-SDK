@@ -245,6 +245,7 @@ public class ShoppingCart {
     }
 
     public void invalidate() {
+        id = UUID.randomUUID().toString();
         generateNewUUID();
         clear();
     }

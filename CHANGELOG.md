@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 - Prioritize online payment methods over offline methods if available
 - Route to entering payment method if not available
 
+### Fixed
+- Fixed shopping cart not generating a new id after successful checkout
+
 ## [0.30.0]
 
 ### Added
