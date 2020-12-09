@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.30.1]
 
+### Added
+- Support for UPC-A codes in EAN13 or EAN14 codes
+
 ### Changed
 - Prioritize online payment methods over offline methods if available
 - Route to entering payment method if not available
