@@ -28,11 +28,13 @@ import io.snabble.sdk.utils.Logger;
 import okhttp3.OkHttpClient;
 
 public class Project {
+    private Snabble snabble;
     private String id;
     private String name;
 
     private ProductDatabase productDatabase;
     private Shop[] shops;
+    private Brand brand;
     private Company company;
     private Checkout checkout;
     private ShoppingCartStorage shoppingCartStorage;
@@ -77,7 +79,7 @@ public class Project {
     private boolean displayNetPrice;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
-        Snabble snabble = Snabble.getInstance();
+        snabble = Snabble.getInstance();
 
         parse(jsonObject);
 
@@ -108,6 +110,11 @@ public class Project {
         }
 
         name = JsonUtils.getStringOpt(jsonObject, "name", id);
+
+        String brandId = JsonUtils.getStringOpt(jsonObject, "brandID", null);
+        if (brandId != null) {
+            brand = snabble.getBrands().get(brandId);
+        }
 
         JsonObject links = jsonObject.get("links").getAsJsonObject();
         Set<String> linkKeys = links.keySet();
