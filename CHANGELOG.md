@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.31.0]
+
+### Added
+- Support for Brands
+
 ## [0.30.1]
 
 ### Added
