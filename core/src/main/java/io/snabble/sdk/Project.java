@@ -431,6 +431,10 @@ public class Project {
         return currency;
     }
 
+    public Brand getBrand() {
+        return brand;
+    }
+
     public PriceFormatter getPriceFormatter() {
         return priceFormatter;
     }
