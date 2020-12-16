@@ -1,7 +1,7 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.31.1]
+## [0.31.2]
 
 ### Fixed
 - Unit display when scanning GS1 codes
