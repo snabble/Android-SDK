@@ -207,7 +207,9 @@ public class ProductResolver {
                                 .buildCode();
 
                         if (code != null) {
-                            gs1GtinScannedCodes.add(code);
+                            gs1GtinScannedCodes.add(code.newBuilder()
+                                    .setScannedCode(newGs1Code.getCode())
+                                    .create());
                             break;
                         }
                     }
@@ -248,19 +250,9 @@ public class ProductResolver {
                     scannedCode.setEmbeddedData(decimal.scaleByPowerOfTen(decimal.scale()).intValue());
                     scannedCode.setEmbeddedUnit(unit);
                 } else {
-                    int scale = decimal.scale();
-                    Unit fractionalUnit = unit.getFractionalUnit(scale);
-                    if (fractionalUnit == null) {
-                        fractionalUnit = unit;
-
-                        if (scale > 0) {
-                            decimal = decimal.multiply(new BigDecimal(Math.pow(10, scale)));
-                        }
-                    }
-
-                    BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit);
+                    BigDecimal converted = Unit.convert(decimal, unit, unit.getSmallestUnit());
                     scannedCode.setEmbeddedData(converted.intValue());
-                    scannedCode.setEmbeddedUnit(fractionalUnit);
+                    scannedCode.setEmbeddedUnit(unit.getSmallestUnit());
                 }
             }
         }

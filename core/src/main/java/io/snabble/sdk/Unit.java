@@ -84,6 +84,37 @@ public enum Unit {
         return null;
     }
 
+    public Unit getSmallestUnit() {
+        switch (this) {
+            case MILLILITER:
+            case CENTILITER:
+            case DECILITER:
+            case LITER:
+                return Unit.MILLILITER;
+            case CUBIC_METER:
+            case CUBIC_CENTIMETER:
+            case MILLIMETER:
+            case CENTIMETER:
+            case DECIMETER:
+            case METER:
+                return Unit.MILLIMETER;
+            case SQUARE_METER:
+            case SQUARE_METER_TENTH:
+            case SQUARE_DECIMETER:
+            case SQUARE_DECIMETER_TENTH:
+            case SQUARE_CENTIMETER:
+                return Unit.SQUARE_CENTIMETER;
+            case GRAM:
+            case DECAGRAM:
+            case HECTOGRAM:
+            case KILOGRAM:
+            case TONNE:
+                return Unit.GRAM;
+            default:
+                return null;
+        }
+    }
+
     public static boolean hasDimension(Unit unit) {
         if (unit != null) {
             return unit.dimension != null;
