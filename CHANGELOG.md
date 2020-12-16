@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.31.1]
+
+### Fixed
+- Unit display when scanning GS1 codes
+- Use original code when sending codes scanned from GS1 codes to backend
+
 ## [0.31.0]
 
 ### Added
