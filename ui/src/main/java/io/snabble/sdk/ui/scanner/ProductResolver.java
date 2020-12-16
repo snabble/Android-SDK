@@ -207,7 +207,9 @@ public class ProductResolver {
                                 .buildCode();
 
                         if (code != null) {
-                            gs1GtinScannedCodes.add(code);
+                            gs1GtinScannedCodes.add(code.newBuilder()
+                                    .setScannedCode(newGs1Code.getCode())
+                                    .create());
                             break;
                         }
                     }

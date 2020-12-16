@@ -43,12 +43,6 @@ class GS1CodeTest {
     }
 
     @Test
-    fun testWasgau() {
-        val gs1Code = GS1Code("0102630710000007310300113010 ")
-        Assert.assertTrue(true)
-    }
-
-    @Test
     fun testCodes() {
         // gtin, net weight, empty lot
         check("0102658960000004310300464610",
