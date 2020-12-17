@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:parentTag="androidx.coordinatorlayout.widget.CoordinatorLayout">
 
-    <io.snabble.sdk.ui.scanner.BarcodeScannerView
+    <io.snabble.sdk.ui.scanner.BarcodeScannerView2
         android:id="@+id/barcode_scanner_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
