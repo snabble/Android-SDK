@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.31.4]
+
+### Fixed
+
+- Crash when database and metadata code templates mismatch
+
 ## [0.31.3]
 
 Rerelease of 0.31.2 due to github packages conflict

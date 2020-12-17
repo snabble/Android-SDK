@@ -467,8 +467,8 @@ public class ShoppingCart {
                 this.quantity = 0;
             } else {
                 for (Product.Code code : product.getScannableCodes()) {
-                    if (code.template.equals(scannedCode.getTemplateName())
-                            && code.lookupCode.equals(scannedCode.getLookupCode())) {
+                    if (code.template != null && code.template.equals(scannedCode.getTemplateName())
+                     && code.lookupCode != null && code.lookupCode.equals(scannedCode.getLookupCode())) {
                         this.quantity = code.specifiedQuantity;
                     }
                 }
