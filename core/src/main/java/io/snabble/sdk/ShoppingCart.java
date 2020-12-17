@@ -821,6 +821,10 @@ public class ShoppingCart {
             item.sku = String.valueOf(product.getSku());
             item.scannedCode = scannedCode.getCode();
 
+            if (product.getPrimaryCode() != null) {
+                item.scannedCode = product.getPrimaryCode().lookupCode;
+            }
+
             if (encodingUnit != null) {
                 item.weightUnit = encodingUnit.getId();
             }
