@@ -53,7 +53,7 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
 public class SelfScanningView extends FrameLayout {
-    private BarcodeScannerView2 barcodeScanner;
+    private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
     private ImageView enterBarcode;
@@ -153,7 +153,7 @@ public class SelfScanningView extends FrameLayout {
 
         this.productDatabase = project.getProductDatabase();
 
-        barcodeScanner.setCallback(new BarcodeScannerView2.Callback() {
+        barcodeScanner.setCallback(new BarcodeScannerView.Callback() {
             @Override
             public void onBarcodeDetected(final Barcode barcode) {
                 handleBarcodeDetected(barcode);
