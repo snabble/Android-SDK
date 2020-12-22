@@ -29,10 +29,6 @@ import java.util.concurrent.TimeUnit
 class BarcodeScannerView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), View.OnLayoutChangeListener {
-
-    var restrictScanningToIndicator: Boolean = true
-    var restrictionOvershoot: Float? = 1.0f
-
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var camera: Camera? = null
@@ -44,8 +40,9 @@ class BarcodeScannerView @JvmOverloads constructor(
     private var scanIndicatorView = ScanIndicatorView(context)
 
     private var barcodeDetector: BarcodeDetector
-    var callback: Callback? = null
+
     private var isPaused: Boolean = false
+    var callback: Callback? = null
 
     init {
         previewView.layoutParams = ViewGroup.LayoutParams(
@@ -141,6 +138,7 @@ class BarcodeScannerView @JvmOverloads constructor(
     fun stop() {
         pause()
         cameraExecutor?.shutdown()
+        cameraProvider?.unbindAll()
     }
 
     /**
@@ -149,15 +147,15 @@ class BarcodeScannerView @JvmOverloads constructor(
     fun pause() {
         isPaused = true
 
-        cameraProvider?.unbindAll()
-        cameraProvider = null
+        preview?.setSurfaceProvider(null)
     }
 
     /**
      * Resumes the camera preview and barcode scanning.
      */
     fun resume() {
-        start()
+        isPaused = false
+        preview?.setSurfaceProvider(previewView.surfaceProvider)
     }
 
     private fun startAutoFocus() {
@@ -175,7 +173,7 @@ class BarcodeScannerView @JvmOverloads constructor(
                 || image.format == ImageFormat.YUV_444_888
                 && image.planes.size == 3) {
             val luminanceBytes = image.planes[0].buffer // Y plane of a YUV buffer
-            val rect = if (scanIndicatorView.visibility == View.VISIBLE) {
+            val rect = if (scanIndicatorView.visibility == View.VISIBLE && restrictScanningToIndicator) {
                 val height = image.height / 3
                 val top = (image.height / 2) - height
                 val bottom = (image.height / 2) + height
@@ -262,6 +260,9 @@ class BarcodeScannerView @JvmOverloads constructor(
             scanIndicatorView.setStyle(value)
             field = value
         }
+
+    var restrictScanningToIndicator: Boolean = true
+    var restrictionOvershoot: Float? = 1.0f
 
     /**
      * Sets indicator style in when in normalized style, ignoring all padding's and offsets
