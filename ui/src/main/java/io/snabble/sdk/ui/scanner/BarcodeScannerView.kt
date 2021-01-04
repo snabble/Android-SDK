@@ -176,7 +176,7 @@ class BarcodeScannerView @JvmOverloads constructor(
 
     private fun startAutoFocus() {
         val factory = previewView.meteringPointFactory
-        val point = factory.createPoint((width / 2).toFloat(), (height / 2).toFloat())
+        val point = factory.createPoint(width / 2f, height / 2f)
         val action = FocusMeteringAction.Builder(point)
                 .setAutoCancelDuration(1, TimeUnit.SECONDS)
                 .build()
