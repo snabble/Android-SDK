@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.graphics.Rect
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.*
 import android.widget.FrameLayout
@@ -29,6 +31,7 @@ import java.util.concurrent.TimeUnit
 class BarcodeScannerView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), View.OnLayoutChangeListener {
+
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var camera: Camera? = null
@@ -42,6 +45,10 @@ class BarcodeScannerView @JvmOverloads constructor(
     private var barcodeDetector: BarcodeDetector
 
     private var isPaused: Boolean = false
+    private var pauseHandler = Handler(Looper.getMainLooper())
+    private var isSurfacePaused: Boolean = false
+
+    var restrictScanningToIndicator: Boolean = true
     var callback: Callback? = null
 
     init {
@@ -110,9 +117,8 @@ class BarcodeScannerView @JvmOverloads constructor(
                 .also {
                     cameraExecutor?.let { exec ->
                         it.setAnalyzer(exec, { image ->
-                            if (!isPaused) {
-                                processImage(image)
-                            }
+                            processImage(image)
+                            Thread.sleep(50)
                         })
                     }
                 }
@@ -147,7 +153,13 @@ class BarcodeScannerView @JvmOverloads constructor(
     fun pause() {
         isPaused = true
 
-        preview?.setSurfaceProvider(null)
+        // delay pauses, because reconnecting the surface provider results in a black screen
+        // for a second, if we are to resume directly after we just don't pause at all
+        // to avoid visual artifacts
+        pauseHandler.postDelayed({
+            isSurfacePaused = true
+            preview?.setSurfaceProvider(null)
+        }, 200)
     }
 
     /**
@@ -155,7 +167,12 @@ class BarcodeScannerView @JvmOverloads constructor(
      */
     fun resume() {
         isPaused = false
-        preview?.setSurfaceProvider(previewView.surfaceProvider)
+        pauseHandler.removeCallbacksAndMessages(null)
+
+        if (isSurfacePaused) {
+            isSurfacePaused = false
+            preview?.setSurfaceProvider(previewView.surfaceProvider)
+        }
     }
 
     private fun startAutoFocus() {
@@ -168,6 +185,11 @@ class BarcodeScannerView @JvmOverloads constructor(
     }
 
     private fun processImage(image: ImageProxy) {
+        if (isPaused) {
+            image.close()
+            return
+        }
+
         if (image.format == ImageFormat.YUV_420_888
                 || image.format == ImageFormat.YUV_422_888
                 || image.format == ImageFormat.YUV_444_888
@@ -192,8 +214,9 @@ class BarcodeScannerView @JvmOverloads constructor(
                     }
                 }
             }
-            image.close()
         }
+
+        image.close()
     }
 
     private fun ByteBuffer.toByteArray(): ByteArray {
@@ -260,9 +283,6 @@ class BarcodeScannerView @JvmOverloads constructor(
             scanIndicatorView.setStyle(value)
             field = value
         }
-
-    var restrictScanningToIndicator: Boolean = true
-    var restrictionOvershoot: Float? = 1.0f
 
     /**
      * Sets indicator style in when in normalized style, ignoring all padding's and offsets
