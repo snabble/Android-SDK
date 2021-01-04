@@ -105,7 +105,7 @@ class BarcodeScannerView @JvmOverloads constructor(
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
 
-        val preview = Preview.Builder()
+        this.preview = Preview.Builder()
                 .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .setTargetRotation(rotation)
                 .build()
@@ -124,7 +124,6 @@ class BarcodeScannerView @JvmOverloads constructor(
                 }
 
         cameraProvider?.unbindAll()
-        this.preview = preview
 
         try {
             val activity = UIUtils.getHostFragmentActivity(context)
@@ -133,7 +132,7 @@ class BarcodeScannerView @JvmOverloads constructor(
                     preview,
                     imageAnalyzer)
 
-            preview.setSurfaceProvider(previewView.surfaceProvider)
+            preview?.setSurfaceProvider(previewView.surfaceProvider)
             previewView.addOnLayoutChangeListener(this)
         } catch (e: Exception) {
             cameraUnavailableView.visibility = View.VISIBLE
