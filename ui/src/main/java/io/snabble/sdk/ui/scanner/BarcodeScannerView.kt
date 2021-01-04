@@ -76,6 +76,11 @@ class BarcodeScannerView @JvmOverloads constructor(
         barcodeDetector = BarcodeDetectorFactory.getDefaultBarcodeDetectorFactory().create()
     }
 
+    /**
+     * Starts the camera preview, requires runtime permission to the camera
+     *
+     * @throws RuntimeException if no permission to access the camera is present
+     */
     fun start() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -140,6 +145,9 @@ class BarcodeScannerView @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Stops the camera preview.
+     */
     fun stop() {
         pause()
         cameraExecutor?.shutdown()
@@ -226,12 +234,8 @@ class BarcodeScannerView @JvmOverloads constructor(
     }
 
     /**
-     * @return Returns true if the torch is enabled, false otherwise.
-     */
-    /**
-     * Sets the state of the torch, if available on the device.
-     *
-     * @param enabled true if you want to see the light, otherwise fall into darkness
+     * Enabled or disables the torch on the camera. The state of the torch is bound to the lifecycle
+     * of the BarcodeScannerView.
      */
     var isTorchEnabled: Boolean
         get() = false
@@ -241,7 +245,6 @@ class BarcodeScannerView @JvmOverloads constructor(
 
     /**
      * Adds a [BarcodeFormat] that should get detected.
-     *
      *
      * Note: Scanning for multiple barcode formats has a performance impact.
      *
@@ -260,12 +263,18 @@ class BarcodeScannerView @JvmOverloads constructor(
         supportedBarcodeFormats.remove(format)
     }
 
+    /**
+     * Adjusts the scale of the scan indicator. The default scale is 1.0.
+     */
     var indicatorScale: Float = 1.0f
         set(value) {
             scanIndicatorView.setScale(value)
             field = value
         }
 
+    /**
+     * Enabled or disables the scan indicator.
+     */
     var indicatorEnabled: Boolean = true
         set(value) {
             if (value) {
@@ -277,6 +286,9 @@ class BarcodeScannerView @JvmOverloads constructor(
             field = value
         }
 
+    /**
+     * Sets the style of the scan indicartor. Available style are: RECT, QUAD or NORMALIZED.
+     */
     var indicatorStyle: ScanIndicatorView.Style = ScanIndicatorView.Style.RECT
         set(value) {
             scanIndicatorView.setStyle(value)
@@ -292,6 +304,9 @@ class BarcodeScannerView @JvmOverloads constructor(
         scanIndicatorView.setNormalizedSize(left, top, right, bottom)
     }
 
+    /**
+     * Sets the offset of the scan indicator, in pixels.
+     */
     fun setIndicatorOffset(offsetX: Int, offsetY: Int) {
         scanIndicatorView.setOffset(offsetX, offsetY)
     }
