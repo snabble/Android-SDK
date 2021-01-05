@@ -5,11 +5,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.graphics.Rect
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.view.*
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -21,7 +20,6 @@ import io.snabble.sdk.BarcodeFormat
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Dispatch
-import kotlinx.android.synthetic.main.snabble_item_checkout_offline_qrcode.view.*
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -38,15 +36,14 @@ class BarcodeScannerView @JvmOverloads constructor(
     private var cameraExecutor: ExecutorService? = null
     private val supportedBarcodeFormats: MutableList<BarcodeFormat> = ArrayList()
 
-    private val previewView: PreviewView = PreviewView(context)
+    private val previewView = PreviewView(context)
+    private val fakePauseView = ImageView(context)
     private var cameraUnavailableView = TextView(context)
     private var scanIndicatorView = ScanIndicatorView(context)
 
     private var barcodeDetector: BarcodeDetector
 
     private var isPaused: Boolean = false
-    private var pauseHandler = Handler(Looper.getMainLooper())
-    private var isSurfacePaused: Boolean = false
 
     var restrictScanningToIndicator: Boolean = true
     var callback: Callback? = null
@@ -56,6 +53,11 @@ class BarcodeScannerView @JvmOverloads constructor(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT)
         addView(previewView)
+
+        fakePauseView.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT)
+        addView(fakePauseView)
 
         scanIndicatorView.layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -159,14 +161,8 @@ class BarcodeScannerView @JvmOverloads constructor(
      */
     fun pause() {
         isPaused = true
-
-        // delay pauses, because reconnecting the surface provider results in a black screen
-        // for a second, if we are to resume directly after we just don't pause at all
-        // to avoid visual artifacts
-        pauseHandler.postDelayed({
-            isSurfacePaused = true
-            preview?.setSurfaceProvider(null)
-        }, 200)
+        fakePauseView.setImageBitmap(previewView.bitmap)
+        fakePauseView.visibility = View.VISIBLE
     }
 
     /**
@@ -174,12 +170,7 @@ class BarcodeScannerView @JvmOverloads constructor(
      */
     fun resume() {
         isPaused = false
-        pauseHandler.removeCallbacksAndMessages(null)
-
-        if (isSurfacePaused) {
-            isSurfacePaused = false
-            preview?.setSurfaceProvider(previewView.surfaceProvider)
-        }
+        fakePauseView.visibility = View.GONE
     }
 
     private fun startAutoFocus() {
