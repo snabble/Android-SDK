@@ -94,7 +94,7 @@ class BarcodeScannerView @JvmOverloads constructor(
         isPaused = false
 
         previewView.post {
-            val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> = ProcessCameraProvider.getInstance(context)
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
                 bindPreview(cameraProvider)
