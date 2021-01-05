@@ -229,7 +229,7 @@ class BarcodeScannerView @JvmOverloads constructor(
      * of the BarcodeScannerView.
      */
     var isTorchEnabled: Boolean
-        get() = false
+        get() = camera?.cameraInfo?.torchState?.value == TorchState.ON
         set(enabled) {
             camera?.cameraControl?.enableTorch(enabled)
         }
