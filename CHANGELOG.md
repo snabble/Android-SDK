@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.0]
+
+### Fixed
+- Products with specified quantities are not mergable anymore
+
 ## [0.31.4]
 
 ### Fixed

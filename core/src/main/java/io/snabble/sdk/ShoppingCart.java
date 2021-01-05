@@ -451,6 +451,7 @@ public class ShoppingCart {
         private int quantity;
         private CheckoutApi.LineItem lineItem;
         private String id;
+        private boolean isUsingSpecifiedQuantity;
         private transient ShoppingCart cart;
 
         protected Item() {
@@ -470,6 +471,10 @@ public class ShoppingCart {
                     if (code.template != null && code.template.equals(scannedCode.getTemplateName())
                      && code.lookupCode != null && code.lookupCode.equals(scannedCode.getLookupCode())) {
                         this.quantity = code.specifiedQuantity;
+
+                        if (!code.isPrimary && code.specifiedQuantity > 1) {
+                            isUsingSpecifiedQuantity = true;
+                        }
                     }
                 }
 
@@ -568,7 +573,8 @@ public class ShoppingCart {
             boolean b = product.getType() == Product.Type.Article
                     && getUnit() != PIECE
                     && product.getPrice(cart.project.getCustomerCardId()) != 0
-                    && scannedCode.getEmbeddedData() == 0;
+                    && scannedCode.getEmbeddedData() == 0
+                    && !isUsingSpecifiedQuantity;
             return b;
         }
 
