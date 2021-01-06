@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.graphics.Rect
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
+import android.util.Size
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -15,6 +18,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import io.snabble.sdk.BarcodeFormat
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.UIUtils
@@ -29,6 +35,7 @@ class BarcodeScannerView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), View.OnLayoutChangeListener {
 
+    private var autoFocusHandler: Handler = Handler(Looper.getMainLooper())
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var camera: Camera? = null
@@ -112,19 +119,18 @@ class BarcodeScannerView @JvmOverloads constructor(
                 .build()
 
         this.preview = Preview.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                .setTargetResolution(Size(768, 1024))
                 .setTargetRotation(rotation)
                 .build()
 
         val imageAnalyzer = ImageAnalysis.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                .setTargetResolution(Size(768, 1024))
                 .setTargetRotation(rotation)
                 .build()
                 .also {
                     cameraExecutor?.let { exec ->
                         it.setAnalyzer(exec, { image ->
                             processImage(image)
-                            Thread.sleep(50)
                         })
                     }
                 }
@@ -137,6 +143,18 @@ class BarcodeScannerView @JvmOverloads constructor(
                     cameraSelector,
                     preview,
                     imageAnalyzer)
+
+            activity.lifecycle.addObserver(object : LifecycleObserver {
+                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                fun onResume() {
+                    startAutoFocus()
+                }
+
+                @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+                fun onPause() {
+                    cancelAutoFocus()
+                }
+            })
 
             preview?.setSurfaceProvider(previewView.surfaceProvider)
             previewView.addOnLayoutChangeListener(this)
@@ -173,12 +191,22 @@ class BarcodeScannerView @JvmOverloads constructor(
     }
 
     private fun startAutoFocus() {
+        cancelAutoFocus()
+
         val factory = previewView.meteringPointFactory
         val point = factory.createPoint(width / 2f, height / 2f)
         val action = FocusMeteringAction.Builder(point)
                 .setAutoCancelDuration(1, TimeUnit.SECONDS)
                 .build()
         camera?.cameraControl?.startFocusAndMetering(action)
+
+        autoFocusHandler.postDelayed({
+            startAutoFocus()
+        }, 1000)
+    }
+
+    private fun cancelAutoFocus() {
+        autoFocusHandler.removeCallbacksAndMessages(null)
     }
 
     private fun processImage(image: ImageProxy) {
