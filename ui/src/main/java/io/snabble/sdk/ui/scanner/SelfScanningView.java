@@ -127,7 +127,6 @@ public class SelfScanningView extends FrameLayout {
         });
 
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
-        barcodeScanner.setRestrictionOvershoot(1.15f);
 
         for (BarcodeFormat format : project.getSupportedBarcodeFormats()) {
             barcodeScanner.addBarcodeFormat(format);
@@ -226,8 +225,8 @@ public class SelfScanningView extends FrameLayout {
                 .setOnShowListener(this::pauseBarcodeScanner)
                 .setOnDismissListener(() -> {
                     if (!isShowingHint) {
-                        resumeBarcodeScanner();
                         delayNextScan();
+                        resumeBarcodeScanner();
                     }
                 })
                 .setOnProductNotFoundListener(() -> {
