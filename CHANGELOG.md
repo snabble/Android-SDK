@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.32.0]
 
+### Major Changes
+- Completely rewritten BarcodeScannerView. It now uses the Camera2 API via CameraX. The API surface did not change.
+
 ### Fixed
 - Products with specified quantities are not mergable anymore
 
