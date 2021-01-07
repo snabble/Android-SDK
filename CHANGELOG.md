@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 - Completely rewritten BarcodeScannerView. It now uses the Camera2 API via CameraX. The API surface did not change.
 
 ### Added
-- Added translatatins for German, Hungarian and Slovakian languages.
+- Added translations for German, Hungarian and Slovakian languages.
 
 ### Fixed
 - Products with specified quantities are not mergable anymore
