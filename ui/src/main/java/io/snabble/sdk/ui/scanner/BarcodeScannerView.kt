@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.scanner
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.os.Handler
@@ -63,6 +64,8 @@ class BarcodeScannerView @JvmOverloads constructor(
         fakePauseView.layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT)
+        fakePauseView.setBackgroundColor(Color.BLACK)
+        fakePauseView.visibility = View.GONE
         addView(fakePauseView)
 
         scanIndicatorView.layoutParams = ViewGroup.LayoutParams(
@@ -161,6 +164,10 @@ class BarcodeScannerView @JvmOverloads constructor(
         } catch (e: Exception) {
             cameraUnavailableView.visibility = View.VISIBLE
             scanIndicatorView.visibility = View.GONE
+        }
+
+        if (isPaused) {
+            fakePauseView.visibility = View.VISIBLE
         }
     }
 

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.1]
+
+### Fixed
+- BarcodeScannerView is now paused when initialized after already being paused
+
 ## [0.32.0]
 
 ### Major Changes
