@@ -127,16 +127,13 @@ class ProductConfirmationDialog {
             quantityAnnotation.setVisibility(View.GONE);
         }
 
-        ShoppingCart.Item existingItem = shoppingCart.getByProduct(product);
-        if (existingItem != null && existingItem.isMergeable()) {
+        ShoppingCart.Item existingItem = shoppingCart.getExistingMergeableProduct(product);
+        boolean isMergeable = existingItem != null && existingItem.isMergeable() && cartItem.isMergeable();
+        if (isMergeable) {
             setQuantity(existingItem.getEffectiveQuantity() + 1);
-        } else {
-            setQuantity(cartItem.getEffectiveQuantity());
-        }
-
-        if (existingItem != null && existingItem.isMergeable()) {
             addToCart.setText(R.string.Snabble_Scanner_updateCart);
         } else {
+            setQuantity(cartItem.getEffectiveQuantity());
             addToCart.setText(R.string.Snabble_Scanner_addToCart);
         }
 

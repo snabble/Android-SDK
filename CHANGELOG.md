@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.2]
+
+### Fixed
+- Deep search for mergeable cart items
+- Fix wrong add to cart button message when adding a non-mergeable item
+
 ## [0.32.1]
 
 ### Fixed

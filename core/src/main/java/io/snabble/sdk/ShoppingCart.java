@@ -103,8 +103,8 @@ public class ShoppingCart {
 
     void insert(Item item, int index, boolean update) {
         if (item.isMergeable()) {
-            Item existing = getByProduct(item.getProduct());
-            if (existing != null && existing.isMergeable()) {
+            Item existing = getExistingMergeableProduct(item.getProduct());
+            if (existing != null) {
                 items.remove(existing);
                 items.add(index, item);
                 modCount++;
@@ -141,13 +141,13 @@ public class ShoppingCart {
         return items.get(index);
     }
 
-    public Item getByProduct(Product product) {
+    public Item getExistingMergeableProduct(Product product) {
         if (product == null) {
             return null;
         }
 
         for (Item item : items) {
-            if (product.equals(item.product)) {
+            if (product.equals(item.product) && item.isMergeable()) {
                 return item;
             }
         }
