@@ -217,7 +217,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         item = userWeighedProduct.cartItem();
         item.setQuantity(500);
         lineItem = new CheckoutApi.LineItem();
-        lineItem.amount = 1;
+        lineItem.amount = 500;
         lineItem.price = 1000;
         lineItem.totalPrice = 500;
         item.setLineItem(lineItem);
@@ -245,7 +245,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         item = zeroAmountProduct.cartItem();
         item.setQuantity(4);
         lineItem = new CheckoutApi.LineItem();
-        lineItem.amount = 1;
+        lineItem.amount = 4;
         lineItem.price = 100;
         lineItem.totalPrice = 400;
         item.setLineItem(lineItem);
