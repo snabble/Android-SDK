@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.3]
+
+### Fixed
+- Now using lineItem.amount instead of lineItem.count
+
 ## [0.32.2]
 
 ### Fixed

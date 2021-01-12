@@ -526,8 +526,8 @@ public class ShoppingCart {
         }
 
         public int getQuantity() {
-            if (lineItem != null && lineItem.units != null) {
-                return lineItem.units;
+            if (lineItem != null) {
+                return lineItem.amount;
             }
 
             return quantity;
