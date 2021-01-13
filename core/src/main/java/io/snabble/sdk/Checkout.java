@@ -508,16 +508,22 @@ public class Checkout {
         paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
 
         if (checkoutProcess.paymentState == CheckoutApi.State.SUCCESSFUL) {
-            approve();
-
-            if (areAllFulfillmentsClosed()) {
-                if (checkoutProcess.fulfillments != null) {
-                    notifyFulfillmentDone();
-                }
-                return true;
-            } else {
-                notifyFulfillmentUpdate();
+            if (checkoutProcess.exitToken != null
+                    && (checkoutProcess.exitToken.format == null || checkoutProcess.exitToken.format.equals("")
+                    || checkoutProcess.exitToken.value == null || checkoutProcess.exitToken.value.equals(""))) {
                 return false;
+            } else {
+                approve();
+
+                if (areAllFulfillmentsClosed()) {
+                    if (checkoutProcess.fulfillments != null) {
+                        notifyFulfillmentDone();
+                    }
+                    return true;
+                } else {
+                    notifyFulfillmentUpdate();
+                    return false;
+                }
             }
         } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING) {
             if (hasAnyFulfillmentFailed()) {
