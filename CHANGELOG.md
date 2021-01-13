@@ -1,6 +1,71 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.3]
+
+### Fixed
+- Now using lineItem.amount instead of lineItem.count
+
+## [0.32.2]
+
+### Fixed
+- Deep search for mergeable cart items
+- Fix wrong add to cart button message when adding a non-mergeable item
+
+## [0.32.1]
+
+### Fixed
+- BarcodeScannerView is now paused when initialized after already being paused
+
+## [0.32.0]
+
+### Major Changes
+- Completely rewritten BarcodeScannerView. It now uses the Camera2 API via CameraX. The API surface did not change.
+
+### Added
+- Added translations for German, Hungarian and Slovakian languages.
+
+### Fixed
+- Products with specified quantities are not mergable anymore
+
+## [0.31.4]
+
+### Fixed
+
+- Crash when database and metadata code templates mismatch
+
+## [0.31.3]
+
+Rerelease of 0.31.2 due to github packages conflict
+
+## [0.31.2]
+
+### Fixed
+- Unit display when scanning GS1 codes
+- Use original code when sending codes scanned from GS1 codes to backend
+
+## [0.31.0]
+
+### Added
+- Support for Brands
+
+## [0.30.1]
+
+### Added
+- Support for UPC-A codes in EAN13 or EAN14 codes
+
+### Changed
+- Prioritize online payment methods over offline methods if available
+- Route to entering payment method if not available
+
+### Fixed
+- Fixed shopping cart not generating a new id after successful checkout
+
+## [0.30.0]
+
+### Added
+- Support for GS1 Barcodes
+
 ## [0.29.8]
 
 ### Changed

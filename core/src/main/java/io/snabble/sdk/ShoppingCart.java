@@ -103,8 +103,8 @@ public class ShoppingCart {
 
     void insert(Item item, int index, boolean update) {
         if (item.isMergeable()) {
-            Item existing = getByProduct(item.getProduct());
-            if (existing != null && existing.isMergeable()) {
+            Item existing = getExistingMergeableProduct(item.getProduct());
+            if (existing != null) {
                 items.remove(existing);
                 items.add(index, item);
                 modCount++;
@@ -141,13 +141,13 @@ public class ShoppingCart {
         return items.get(index);
     }
 
-    public Item getByProduct(Product product) {
+    public Item getExistingMergeableProduct(Product product) {
         if (product == null) {
             return null;
         }
 
         for (Item item : items) {
-            if (product.equals(item.product)) {
+            if (product.equals(item.product) && item.isMergeable()) {
                 return item;
             }
         }
@@ -245,6 +245,7 @@ public class ShoppingCart {
     }
 
     public void invalidate() {
+        id = UUID.randomUUID().toString();
         generateNewUUID();
         clear();
     }
@@ -450,6 +451,7 @@ public class ShoppingCart {
         private int quantity;
         private CheckoutApi.LineItem lineItem;
         private String id;
+        private boolean isUsingSpecifiedQuantity;
         private transient ShoppingCart cart;
 
         protected Item() {
@@ -466,9 +468,13 @@ public class ShoppingCart {
                 this.quantity = 0;
             } else {
                 for (Product.Code code : product.getScannableCodes()) {
-                    if (code.template.equals(scannedCode.getTemplateName())
-                            && code.lookupCode.equals(scannedCode.getLookupCode())) {
+                    if (code.template != null && code.template.equals(scannedCode.getTemplateName())
+                     && code.lookupCode != null && code.lookupCode.equals(scannedCode.getLookupCode())) {
                         this.quantity = code.specifiedQuantity;
+
+                        if (!code.isPrimary && code.specifiedQuantity > 1) {
+                            isUsingSpecifiedQuantity = true;
+                        }
                     }
                 }
 
@@ -520,8 +526,8 @@ public class ShoppingCart {
         }
 
         public int getQuantity() {
-            if (lineItem != null && lineItem.units != null) {
-                return lineItem.units;
+            if (lineItem != null) {
+                return lineItem.amount;
             }
 
             return quantity;
@@ -567,7 +573,8 @@ public class ShoppingCart {
             boolean b = product.getType() == Product.Type.Article
                     && getUnit() != PIECE
                     && product.getPrice(cart.project.getCustomerCardId()) != 0
-                    && scannedCode.getEmbeddedData() == 0;
+                    && scannedCode.getEmbeddedData() == 0
+                    && !isUsingSpecifiedQuantity;
             return b;
         }
 
@@ -819,6 +826,10 @@ public class ShoppingCart {
             item.id = cartItem.id;
             item.sku = String.valueOf(product.getSku());
             item.scannedCode = scannedCode.getCode();
+
+            if (product.getPrimaryCode() != null) {
+                item.scannedCode = product.getPrimaryCode().lookupCode;
+            }
 
             if (encodingUnit != null) {
                 item.weightUnit = encodingUnit.getId();

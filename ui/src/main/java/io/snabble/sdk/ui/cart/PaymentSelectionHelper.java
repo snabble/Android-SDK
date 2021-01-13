@@ -13,9 +13,13 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.snabble.sdk.*;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -31,6 +35,8 @@ public class PaymentSelectionHelper {
         return instance;
     }
 
+
+
     public class Entry implements Serializable {
         String text;
         String hint;
@@ -42,6 +48,7 @@ public class PaymentSelectionHelper {
 
     private Map<PaymentMethod, Integer> icons = new HashMap<>();
     private Map<PaymentMethod, String> names = new HashMap<>();
+    private List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
 
     private Context context;
     private PaymentCredentialsStore paymentCredentialsStore;
@@ -87,6 +94,17 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
+
+        paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
+        paymentMethodsSortPriority.add(PaymentMethod.VISA);
+        paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
+        paymentMethodsSortPriority.add(PaymentMethod.AMEX);
+        paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
+        paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
+        paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
+        paymentMethodsSortPriority.add(PaymentMethod.CUSTOMERCARD_POS);
+        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_POS);
+        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_OFFLINE);
 
         selectedEntry = new MutableLiveData<>();
 
@@ -222,6 +240,8 @@ public class PaymentSelectionHelper {
             availablePaymentMethodsList.add(PaymentMethod.fromString(paymentMethodInfo.id));
         }
 
+        Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<PaymentMethod>();
+
         for (final PaymentCredentials pc : Snabble.getInstance().getPaymentCredentialsStore().getAllWithoutKeyStoreValidation()) {
             final Entry e = new Entry();
 
@@ -252,27 +272,43 @@ public class PaymentSelectionHelper {
             if (iconResId != null) {
                 e.iconResId = iconResId;
                 entries.add(e);
+                addedCredentialPaymentMethods.add(e.paymentMethod);
             }
         }
 
         for (PaymentMethod pm : projectPaymentMethods) {
-            if (pm.isOfflineMethod() || !pm.isRequiringCredentials()) {
-                final Entry e = new Entry();
-                e.text = names.get(pm);
-                e.paymentMethod = pm;
-                e.isAvailable = true;
+            if (pm.isRequiringCredentials() && addedCredentialPaymentMethods.contains(pm)) {
+                continue;
+            }
 
-                Integer iconResId = icons.get(pm);
-                if (iconResId != null) {
-                    e.iconResId = iconResId;
-                    entries.add(e);
-                }
+            final Entry e = new Entry();
+
+            e.text = names.get(pm);
+            e.paymentMethod = pm;
+            e.isAvailable = true;
+
+            if (pm.isRequiringCredentials()) {
+                e.hint = context.getString(R.string.Snabble_Shoppingcart_noPaymentData);
+            }
+
+            Integer iconResId = icons.get(pm);
+            if (iconResId != null) {
+                e.iconResId = iconResId;
+                entries.add(e);
             }
         }
+
+        Collections.sort(entries, (o1, o2) -> {
+            int p1 = paymentMethodsSortPriority.indexOf(o1.paymentMethod);
+            int p2 = paymentMethodsSortPriority.indexOf(o2.paymentMethod);
+
+            return Integer.compare(p1, p2);
+        });
 
         this.entries = entries;
         this.isOffline = false;
     }
+
 
     public void select(PaymentSelectionHelper.Entry entry) {
         setSelectedEntry(entry);

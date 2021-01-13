@@ -1276,13 +1276,37 @@ public class ProductDatabase {
             return null;
         }
 
+        Product product = findByCode(scannedCode.getLookupCode(), scannedCode.getTemplateName());
+
+        // try again for upc codes
+        if (product == null) {
+            String upcCode = extractUpcA(scannedCode.getLookupCode());
+            if (upcCode != null) {
+                return findByCode(upcCode, scannedCode.getTemplateName());
+            }
+        }
+
+        return product;
+    }
+
+    private Product findByCode(String lookupCode, String templateName) {
         Cursor cursor = productQuery("JOIN scannableCodes s ON s.sku = p.sku " +
                 "WHERE s.code = ? AND s.template = ? LIMIT 1", new String[]{
-                scannedCode.getLookupCode(),
-                scannedCode.getTemplateName()
+                lookupCode,
+                templateName
         }, false);
 
         return getFirstProductAndClose(cursor);
+    }
+
+    private String extractUpcA(String code) {
+        if (code.length() == 13 && code.startsWith("0")) {
+            return code.substring(1);
+        } else if (code.length() == 14 && code.startsWith("00")) {
+            return code.substring(2);
+        } else {
+            return null;
+        }
     }
 
     private Product[] findBundlesOfProduct(Product product) {

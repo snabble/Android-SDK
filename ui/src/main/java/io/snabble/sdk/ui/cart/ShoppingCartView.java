@@ -51,6 +51,7 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.CheckoutHelper;
+import io.snabble.sdk.ui.payment.PaymentInputViewHelper;
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper;
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -307,19 +308,23 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         } else {
             PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
             if (entry != null) {
-                Telemetry.event(Telemetry.Event.ClickCheckout);
-                SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),
-                        entry.paymentMethod,
-                        new OneShotClickListener() {
-                            @Override
-                            public void click() {
-                                if (entry.paymentMethod.isOfflineMethod()) {
-                                    checkout.checkout(3000);
-                                } else {
-                                    checkout.checkout();
+                if (entry.paymentMethod.isRequiringCredentials() && entry.paymentCredentials == null) {
+                    PaymentInputViewHelper.openPaymentInputView(entry.paymentMethod);
+                } else {
+                    Telemetry.event(Telemetry.Event.ClickCheckout);
+                    SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),
+                            entry.paymentMethod,
+                            new OneShotClickListener() {
+                                @Override
+                                public void click() {
+                                    if (entry.paymentMethod.isOfflineMethod()) {
+                                        checkout.checkout(3000);
+                                    } else {
+                                        checkout.checkout();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }
             } else {
                 boolean hasPaymentMethodThatRequiresCredentials = false;
                 PaymentMethod[] paymentMethods = project.getAvailablePaymentMethods();

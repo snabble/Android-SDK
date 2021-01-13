@@ -33,8 +33,8 @@ public enum Unit {
     KILOGRAM("kg", "kg", Dimension.MASS),
     TONNE("t", "t", Dimension.MASS),
 
-    PIECE("piece", "", null),
-    PRICE("price", "", null);
+    PIECE("piece", "", Dimension.COUNT),
+    PRICE("price", "", Dimension.AMOUNT);
 
     private String id;
     private String displayValue;
@@ -71,6 +71,10 @@ public enum Unit {
     }
 
     public Unit getFractionalUnit(int decimal) {
+        if (decimal == 0) {
+            return this;
+        }
+
         for (Conversion conversion : conversions) {
             if (conversion.from == this && conversion.factor == (int)Math.pow(10, decimal)) {
                 return conversion.to;
@@ -78,6 +82,37 @@ public enum Unit {
         }
 
         return null;
+    }
+
+    public Unit getSmallestUnit() {
+        switch (this) {
+            case MILLILITER:
+            case CENTILITER:
+            case DECILITER:
+            case LITER:
+                return Unit.MILLILITER;
+            case CUBIC_METER:
+            case CUBIC_CENTIMETER:
+            case MILLIMETER:
+            case CENTIMETER:
+            case DECIMETER:
+            case METER:
+                return Unit.MILLIMETER;
+            case SQUARE_METER:
+            case SQUARE_METER_TENTH:
+            case SQUARE_DECIMETER:
+            case SQUARE_DECIMETER_TENTH:
+            case SQUARE_CENTIMETER:
+                return Unit.SQUARE_CENTIMETER;
+            case GRAM:
+            case DECAGRAM:
+            case HECTOGRAM:
+            case KILOGRAM:
+            case TONNE:
+                return Unit.GRAM;
+            default:
+                return null;
+        }
     }
 
     public static boolean hasDimension(Unit unit) {

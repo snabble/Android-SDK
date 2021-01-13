@@ -26,8 +26,10 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +51,7 @@ import okhttp3.OkHttpClient;
 public class Snabble {
     private static Snabble instance = new Snabble();
 
+    private Map<String, Brand> brands;
     private List<Project> projects;
     private TokenRegistry tokenRegistry;
     private Receipts receipts;
@@ -114,7 +117,8 @@ public class Snabble {
         receipts = new Receipts();
         users = new Users(userPreferences);
 
-        projects = Collections.unmodifiableList(new ArrayList<Project>());
+        brands = Collections.unmodifiableMap(new HashMap<>());
+        projects = Collections.unmodifiableList(new ArrayList<>());
 
         if (config.endpointBaseUrl == null) {
             config.endpointBaseUrl = Environment.PRODUCTION.getBaseUrl();
@@ -211,6 +215,10 @@ public class Snabble {
             telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth");
             paydirektAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization");
 
+            if (jsonObject.has("brands")) {
+                parseBrands(jsonObject);
+            }
+
             if (jsonObject.has("projects")) {
                 parseProjects(jsonObject);
             }
@@ -240,6 +248,15 @@ public class Snabble {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private void parseBrands(JsonObject jsonObject) {
+       Brand[] jsonBrands = GsonHolder.get().fromJson(jsonObject.get("brands"), Brand[].class);
+       HashMap<String, Brand> map = new HashMap<>();
+       for (Brand brand : jsonBrands) {
+           map.put(brand.getId(), brand);
+       }
+       brands = Collections.unmodifiableMap(map);
     }
 
     private void parseProjects(JsonObject jsonObject) {
@@ -388,6 +405,10 @@ public class Snabble {
 
     public TermsOfService getTermsOfService() {
         return termsOfService;
+    }
+
+    public Map<String, Brand> getBrands() {
+        return brands;
     }
 
     public List<Project> getProjects() {

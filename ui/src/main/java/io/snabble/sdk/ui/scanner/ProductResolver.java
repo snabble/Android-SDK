@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.view.KeyEvent;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -18,6 +19,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.codes.gs1.GS1Code;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -124,7 +126,7 @@ public class ProductResolver {
         int matchCount;
     }
 
-    private void lookupAndShowProduct(final List<ScannedCode> scannedCodes) {
+    private void lookupAndShowProduct(final List<ScannedCode> scannedCodes, GS1Code gs1Code) {
         productConfirmationDialog.dismiss(false);
         progressDialog.showAfterDelay(300);
 
@@ -140,7 +142,7 @@ public class ProductResolver {
             for (ScannedCode scannedCode : scannedCodes) {
                 Product product = productDatabase.findByCode(scannedCode);
                 if (product != null) {
-                    handleProductAvailable(product, false, scannedCode);
+                    handleProductAvailable(product, false, scannedCode, gs1Code);
                     return;
                 }
             }
@@ -192,41 +194,65 @@ public class ProductResolver {
                 }
 
                 if (result.product != null) {
-                    handleProductAvailable(result.product, result.wasOnlineProduct, result.code);
+                    handleProductAvailable(result.product, result.wasOnlineProduct, result.code, gs1Code);
                 } else if (result.error) {
                     handleProductError();
                 } else {
-                    project.getEvents().productNotFound(scannedCodes);
-                    handleProductNotFound(result.code);
+                    List<ScannedCode> gs1GtinScannedCodes = new ArrayList<>();
+                    GS1Code newGs1Code = null;
+                    for (ScannedCode scannedCode : scannedCodes) {
+                        newGs1Code = new GS1Code(scannedCode.getCode());
+                        ScannedCode code = project.getCodeTemplate("default")
+                                .match(newGs1Code.getGtin())
+                                .buildCode();
+
+                        if (code != null) {
+                            gs1GtinScannedCodes.add(code.newBuilder()
+                                    .setScannedCode(newGs1Code.getCode())
+                                    .create());
+                            break;
+                        }
+                    }
+
+                    if (gs1GtinScannedCodes.size() > 0) {
+                        lookupAndShowProduct(gs1GtinScannedCodes, newGs1Code);
+                    } else {
+                        project.getEvents().productNotFound(scannedCodes);
+                        handleProductNotFound(result.code);
+                    }
                 }
             });
         });
     }
 
-    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannedCode scannedCode) {
+    private void handleProductAvailable(Product product, boolean wasOnlineProduct, ScannedCode scannedCode, GS1Code gs1Code) {
         progressDialog.dismiss();
+        Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
 
-        if (scannedCode.hasEmbeddedDecimalData()) {
-            Unit unit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+        BigDecimal gs1EmbeddedData = null;
+        Project project = SnabbleUI.getProject();
+        if (gs1Code != null) {
+            gs1EmbeddedData = gs1Code.getEmbeddedData(unit,
+                    project.getCurrency().getDefaultFractionDigits(),
+                    project.getRoundingMode());
+        }
+
+        if (scannedCode.hasEmbeddedDecimalData() || gs1EmbeddedData != null) {
             if (unit != null) {
-                BigDecimal decimal = scannedCode.getEmbeddedDecimalData();
+                BigDecimal decimal;
+                if (gs1EmbeddedData != null) {
+                    decimal = gs1EmbeddedData;
+                } else {
+                    decimal = scannedCode.getEmbeddedDecimalData();
+                }
+
                 if (unit == Unit.PIECE || unit == Unit.PRICE) {
-                    scannedCode.setEmbeddedData(decimal.intValue());
+                    scannedCode.setEmbeddedData(decimal.scaleByPowerOfTen(decimal.scale()).intValue());
                     scannedCode.setEmbeddedUnit(unit);
                 } else {
-                    int scale = decimal.scale();
-                    Unit fractionalUnit = unit.getFractionalUnit(scale);
-                    if (fractionalUnit == null) {
-                        fractionalUnit = unit;
-
-                        if (scale > 0) {
-                            decimal = decimal.multiply(new BigDecimal(Math.pow(10, scale)));
-                        }
-                    }
-
-                    BigDecimal converted = Unit.convert(decimal, unit, fractionalUnit);
+                    BigDecimal converted = Unit.convert(decimal, unit, unit.getSmallestUnit());
                     scannedCode.setEmbeddedData(converted.intValue());
-                    scannedCode.setEmbeddedUnit(fractionalUnit);
+                    scannedCode.setEmbeddedUnit(unit.getSmallestUnit());
                 }
             }
         }
@@ -347,7 +373,7 @@ public class ProductResolver {
     }
 
     public void show() {
-        lookupAndShowProduct(scannedCodes);
+        lookupAndShowProduct(scannedCodes, null);
     }
 
     public void dismiss() {

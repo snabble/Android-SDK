@@ -310,6 +310,15 @@ public class Product implements Serializable, Parcelable {
         return null;
     }
 
+    public Product.Code getPrimaryCode() {
+        for (Code code : scannableCodes) {
+            if (code.isPrimary) {
+                return code;
+            }
+        }
+
+        return null;
+    }
     /**
      *
      * @return returns true if this product should not be available for sale anymore.
