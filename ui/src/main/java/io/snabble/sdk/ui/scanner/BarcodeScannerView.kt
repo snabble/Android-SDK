@@ -34,9 +34,7 @@ import java.util.concurrent.TimeUnit
 
 class BarcodeScannerView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), View.OnLayoutChangeListener {
-
-    private var autoFocusHandler: Handler = Handler(Looper.getMainLooper())
+) : FrameLayout(context, attrs, defStyleAttr) {
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var camera: Camera? = null
@@ -147,20 +145,8 @@ class BarcodeScannerView @JvmOverloads constructor(
                     preview,
                     imageAnalyzer)
 
-            activity.lifecycle.addObserver(object : LifecycleObserver {
-                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-                fun onResume() {
-                    startAutoFocus()
-                }
-
-                @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-                fun onPause() {
-                    cancelAutoFocus()
-                }
-            })
-
             preview?.setSurfaceProvider(previewView.surfaceProvider)
-            previewView.addOnLayoutChangeListener(this)
+            startAutoFocus()
         } catch (e: Exception) {
             cameraUnavailableView.visibility = View.VISIBLE
             scanIndicatorView.visibility = View.GONE
@@ -198,22 +184,21 @@ class BarcodeScannerView @JvmOverloads constructor(
     }
 
     private fun startAutoFocus() {
-        cancelAutoFocus()
+        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (measuredWidth > 0 && measuredHeight > 0) {
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-        val factory = previewView.meteringPointFactory
-        val point = factory.createPoint(width / 2f, height / 2f)
-        val action = FocusMeteringAction.Builder(point)
-                .setAutoCancelDuration(1, TimeUnit.SECONDS)
-                .build()
-        camera?.cameraControl?.startFocusAndMetering(action)
-
-        autoFocusHandler.postDelayed({
-            startAutoFocus()
-        }, 1000)
-    }
-
-    private fun cancelAutoFocus() {
-        autoFocusHandler.removeCallbacksAndMessages(null)
+                    val factory = previewView.meteringPointFactory
+                    val point = factory.createPoint(width / 2f, height / 2f)
+                    camera?.cameraControl?.startFocusAndMetering(
+                            FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).apply {
+                                setAutoCancelDuration(2, TimeUnit.SECONDS)
+                            }.build()
+                    )
+                }
+            }
+        })
     }
 
     private fun processImage(image: ImageProxy) {
@@ -338,10 +323,5 @@ class BarcodeScannerView @JvmOverloads constructor(
 
     interface Callback {
         fun onBarcodeDetected(barcode: Barcode?)
-    }
-
-    override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int,
-                                oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
-        startAutoFocus()
     }
 }
