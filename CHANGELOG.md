@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.5]
+
+### Changes
+- Mark BarcodeScannerView as 'open', for compatibility with previous SDK releases
+
 ## [0.32.4]
 
 ### Changes

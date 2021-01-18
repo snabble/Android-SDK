@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class BarcodeScannerView @JvmOverloads constructor(
+open class BarcodeScannerView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private var cameraProvider: ProcessCameraProvider? = null
