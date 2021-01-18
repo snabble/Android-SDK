@@ -83,6 +83,8 @@ class BarcodeScannerView @JvmOverloads constructor(
         addView(cameraUnavailableView)
 
         barcodeDetector = BarcodeDetectorFactory.getDefaultBarcodeDetectorFactory().create()
+
+        startAutoFocus()
     }
 
     /**
@@ -146,7 +148,6 @@ class BarcodeScannerView @JvmOverloads constructor(
                     imageAnalyzer)
 
             preview?.setSurfaceProvider(previewView.surfaceProvider)
-            startAutoFocus()
         } catch (e: Exception) {
             cameraUnavailableView.visibility = View.VISIBLE
             scanIndicatorView.visibility = View.GONE
@@ -186,7 +187,7 @@ class BarcodeScannerView @JvmOverloads constructor(
     private fun startAutoFocus() {
         viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                if (measuredWidth > 0 && measuredHeight > 0) {
+                if (camera != null && measuredWidth > 0 && measuredHeight > 0) {
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
 
                     val factory = previewView.meteringPointFactory
