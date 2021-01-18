@@ -32,7 +32,7 @@
     <string name="Snabble.Checkout.payAtCashRegister">Fizetés a pénztárnál</string>
     <string name="Snabble.Checkout.title">Fizetés</string>
     <string name="Snabble.Checkout.verifying">Igazolja</string>
-    <string name="Snabble.Delete"/>
+    <string name="Snabble.Delete">Törlés</string>
     <string name="Snabble.Done">Kész</string>
     <string name="Snabble.Edit">Szerkesztés</string>
     <string name="Snabble.goToSettings">A beállításokhoz</string>
@@ -64,8 +64,8 @@
     <string name="Snabble.Payment.cancelError.title">A megszakítás nem lehetséges</string>
     <string name="Snabble.Payment.confirm">Bevásárlás jóváhagyása</string>
     <string name="Snabble.Payment.CreditCard">Hitelkártya</string>
-    <string name="Snabble.Payment.CreditCard.error"/>
-    <string name="Snabble.Payment.CreditCard.expireDate"/>
+    <string name="Snabble.Payment.CreditCard.error">A hitelkártyád feldolgozása során hiba történt</string>
+    <string name="Snabble.Payment.CreditCard.expireDate">Lejár: %s</string>
     <string name="Snabble.Payment.delete.message">Tényleg elmented ezt a fizetési módot?</string>
     <string name="Snabble.Payment.emptyState.add">Fizetési mód hozzáadása</string>
     <string name="Snabble.Payment.emptyState.message">Még nem állítottál be fizetési módot.</string>
@@ -145,7 +145,7 @@
     <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Erre a termékre életkori korlátozás vonatkozik. A fizetésnél éppen ezért ellenőrizzük a korod.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Kérlek, mérd le a terméket, és utána olvasd be a matricán található vonalkódot</string>
     <string name="Snabble.Scanner.scanningTitle">Vonalkód szkennelése</string>
-    <string name="Snabble.Scanner.serverError">A terméket nem lehetett lekérdezni.</string>
+    <string name="Snabble.Scanner.serverError">A terméket nem sikerült lekérdezni.</string>
     <string name="Snabble.Scanner.start">Szkenner indítása</string>
     <string name="Snabble.Scanner.title">Szkenner</string>
     <string name="Snabble.Scanner.torchButton">Fény</string>
@@ -158,9 +158,9 @@
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
     <string name="Snabble.Settings">Beállítások</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Termék eltávolítva</string>
-    <string name="Snabble.Shoppingcart.buyProducts">Vásárolj %1$d terméket %2$s -ért</string>
+    <string name="Snabble.Shoppingcart.buyProducts">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Fizetés, most</string>
-    <string name="Snabble.Shoppingcart.buyProducts.one">Vásárolj %1$d terméket %2$s -ért</string>
+    <string name="Snabble.Shoppingcart.buyProducts.one">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.deposit">Betétdíj</string>
     <string name="Snabble.Shoppingcart.discounts">Összes árengedmény</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Termék szkennelése</string>

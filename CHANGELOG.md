@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.4]
+
+### Changes
+- Updates translations
+
+### Fixed
+- Auto focus not always working as expected
+- Checkout now waits for Exit-Code completion
+
 ## [0.32.3]
 
 ### Fixed
