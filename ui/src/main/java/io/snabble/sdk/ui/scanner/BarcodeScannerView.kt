@@ -155,6 +155,8 @@ open class BarcodeScannerView @JvmOverloads constructor(
 
         if (isPaused) {
             fakePauseView.visibility = View.VISIBLE
+        } else {
+            fakePauseView.visibility = View.GONE
         }
     }
 

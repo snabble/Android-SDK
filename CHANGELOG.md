@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.6]
+
+### Fixed
+- React-Native incompatibility with new BarcodeScannerView implementation
+
 ## [0.32.5]
 
 ### Changes
