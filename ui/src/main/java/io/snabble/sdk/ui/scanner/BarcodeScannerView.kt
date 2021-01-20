@@ -112,51 +112,51 @@ open class BarcodeScannerView @JvmOverloads constructor(
     }
 
     private fun bindPreview(cp: ProcessCameraProvider) {
-        val rotation = previewView.display.rotation
+        previewView.display?.rotation?.let { rotation ->
+            cameraProvider = cp
+            cameraExecutor = Executors.newSingleThreadExecutor()
 
-        cameraProvider = cp
-        cameraExecutor = Executors.newSingleThreadExecutor()
+            val cameraSelector = CameraSelector.Builder()
+                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build()
 
-        val cameraSelector = CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build()
+            this.preview = Preview.Builder()
+                    .setTargetResolution(Size(768, 1024))
+                    .setTargetRotation(rotation)
+                    .build()
 
-        this.preview = Preview.Builder()
-                .setTargetResolution(Size(768, 1024))
-                .setTargetRotation(rotation)
-                .build()
-
-        val imageAnalyzer = ImageAnalysis.Builder()
-                .setTargetResolution(Size(768, 1024))
-                .setTargetRotation(rotation)
-                .build()
-                .also {
-                    cameraExecutor?.let { exec ->
-                        it.setAnalyzer(exec, { image ->
-                            processImage(image)
-                        })
+            val imageAnalyzer = ImageAnalysis.Builder()
+                    .setTargetResolution(Size(768, 1024))
+                    .setTargetRotation(rotation)
+                    .build()
+                    .also {
+                        cameraExecutor?.let { exec ->
+                            it.setAnalyzer(exec, { image ->
+                                processImage(image)
+                            })
+                        }
                     }
-                }
 
-        cameraProvider?.unbindAll()
+            cameraProvider?.unbindAll()
 
-        try {
-            val activity = UIUtils.getHostFragmentActivity(context)
-            camera = cameraProvider?.bindToLifecycle(activity,
-                    cameraSelector,
-                    preview,
-                    imageAnalyzer)
+            try {
+                val activity = UIUtils.getHostFragmentActivity(context)
+                camera = cameraProvider?.bindToLifecycle(activity,
+                        cameraSelector,
+                        preview,
+                        imageAnalyzer)
 
-            preview?.setSurfaceProvider(previewView.surfaceProvider)
-        } catch (e: Exception) {
-            cameraUnavailableView.visibility = View.VISIBLE
-            scanIndicatorView.visibility = View.GONE
-        }
+                preview?.setSurfaceProvider(previewView.surfaceProvider)
+            } catch (e: Exception) {
+                cameraUnavailableView.visibility = View.VISIBLE
+                scanIndicatorView.visibility = View.GONE
+            }
 
-        if (isPaused) {
-            fakePauseView.visibility = View.VISIBLE
-        } else {
-            fakePauseView.visibility = View.GONE
+            if (isPaused) {
+                fakePauseView.visibility = View.VISIBLE
+            } else {
+                fakePauseView.visibility = View.GONE
+            }
         }
     }
 

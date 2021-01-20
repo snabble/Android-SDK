@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.9]
+
+### Fixed
+- Fixed another crash in BarcodeScannerView
+
 ## [0.32.8]
 
 ### Fixed
