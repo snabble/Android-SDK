@@ -224,13 +224,15 @@ open class BarcodeScannerView @JvmOverloads constructor(
                 Rect(0, 0, image.width, image.height)
             }
 
-            val barcode = barcodeDetector.detect(luminanceBytes.toByteArray(),
-                    image.width, image.height, 8, rect, previewView.display.rotation)
+            previewView.display?.rotation?.let { rotation ->
+                val barcode = barcodeDetector.detect(luminanceBytes.toByteArray(),
+                        image.width, image.height, 8, rect, rotation)
 
-            if (barcode != null) {
-                Dispatch.mainThread {
-                    if (!isPaused) {
-                        callback?.onBarcodeDetected(barcode)
+                if (barcode != null) {
+                    Dispatch.mainThread {
+                        if (!isPaused) {
+                            callback?.onBarcodeDetected(barcode)
+                        }
                     }
                 }
             }
