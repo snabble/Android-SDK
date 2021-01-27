@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.11]
+
+### Fixed
+- Fixed translation error in qr code checkout screen
+
 ## [0.32.10]
 
 ### Added

@@ -120,7 +120,9 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                     paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
                             SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
                 } else {
-                    paidButton.setText(getResources().getString(R.string.Snabble_QRCode_nextCode));
+                    paidButton.setText(getResources().getString(R.string.Snabble_QRCode_nextCode,
+                            position + 2,
+                            viewPagerAdapter.getItemCount()));
                 }
             }
         });
