@@ -89,6 +89,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
     private View sumContainer;
     private AlertDialog alertDialog;
     private View paymentContainer;
+    private boolean hasAlreadyShownInvalidDeposit;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
 
@@ -508,6 +509,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         updateEmptyState();
         scanForImages();
         checkSaleStop();
+        checkDepositReturnVoucher();
     }
 
     private void updatePaySelector() {
@@ -555,6 +557,18 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     .show();
 
             lastInvalidProducts = invalidProducts;
+        }
+    }
+
+    private void checkDepositReturnVoucher() {
+        if (cart.hasInvalidDepositReturnVoucher() && !hasAlreadyShownInvalidDeposit) {
+            new AlertDialog.Builder(getContext())
+                    .setCancelable(false)
+                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
+                    .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_invalidDepositVoucher_errorMsg))
+                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .show();
+            hasAlreadyShownInvalidDeposit = true;
         }
     }
 

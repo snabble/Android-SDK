@@ -254,6 +254,7 @@ public class CheckoutApi {
         void noShop();
         void invalidProducts(List<Product> products);
         void noAvailablePaymentMethod();
+        void invalidDepositReturnVoucher();
         void unknownError();
         void connectionError();
     }
@@ -403,6 +404,9 @@ public class CheckoutApi {
                         case "bad_shop_id":
                         case "shop_not_found":
                             checkoutInfoResult.noShop();
+                            break;
+                        case "invalid_deposit_return_voucher":
+                            checkoutInfoResult.invalidDepositReturnVoucher();
                             break;
                         default:
                             checkoutInfoResult.unknownError();

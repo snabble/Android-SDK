@@ -99,6 +99,12 @@ class ShoppingCartUpdater {
             }
 
             @Override
+            public void invalidDepositReturnVoucher() {
+                cart.setInvalidDepositReturnVoucher(true);
+                error(true);
+            }
+
+            @Override
             public void unknownError() {
                 error(false);
             }

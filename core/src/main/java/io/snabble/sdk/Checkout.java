@@ -79,7 +79,7 @@ public class Checkout {
          */
         CONNECTION_ERROR,
         /**
-         * Invalid products detected. For example if a sale ∂stop was issued.
+         * Invalid products detected. For example if a sale stop was issued.
          */
         INVALID_PRODUCTS,
         /**
@@ -288,6 +288,11 @@ public class Checkout {
             @Override
             public void noAvailablePaymentMethod() {
                 notifyStateChanged(Checkout.State.NO_PAYMENT_METHOD_AVAILABLE);
+            }
+
+            @Override
+            public void invalidDepositReturnVoucher() {
+                notifyStateChanged(Checkout.State.CONNECTION_ERROR);
             }
 
             @Override

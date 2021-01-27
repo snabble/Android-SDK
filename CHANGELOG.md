@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.32.10]
+
+### Added
+- Added an error message when a deposit return voucher is already redeemed
+
+### Fixed
+- Fixed a crash when scanning deposit return vouchers
+
 ## [0.32.9]
 
 ### Fixed

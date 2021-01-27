@@ -130,6 +130,11 @@ class CheckoutRetryer {
                     }
 
                     @Override
+                    public void invalidDepositReturnVoucher() {
+                        fail();
+                    }
+
+                    @Override
                     public void unknownError() {
                         fail();
                     }

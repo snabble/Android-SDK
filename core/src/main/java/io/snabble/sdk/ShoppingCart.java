@@ -44,6 +44,7 @@ public class ShoppingCart {
     private int oldModCount;
     private long oldCartTimestamp;
     private String oldUUID;
+    private boolean invalidDepositReturnVoucher;
 
     protected ShoppingCart() {
         // for gson
@@ -270,6 +271,7 @@ public class ShoppingCart {
 
     public void invalidateOnlinePrices() {
         invalidProducts = null;
+        invalidDepositReturnVoucher = false;
         onlineTotalPrice = null;
 
         // reverse-order because we are removing items
@@ -329,12 +331,20 @@ public class ShoppingCart {
         this.invalidProducts = invalidProducts;
     }
 
+    void setInvalidDepositReturnVoucher(boolean invalidDepositReturnVoucher) {
+        this.invalidDepositReturnVoucher = invalidDepositReturnVoucher;
+    }
+
     public List<Product> getInvalidProducts() {
         if (invalidProducts == null) {
             return Collections.emptyList();
         }
 
         return invalidProducts;
+    }
+
+    public boolean hasInvalidDepositReturnVoucher() {
+        return invalidDepositReturnVoucher;
     }
 
     public int getTotalPrice() {
@@ -437,7 +447,7 @@ public class ShoppingCart {
 
     public boolean containsScannedCode(ScannedCode scannedCode) {
         for (Item item : items) {
-            if (item.scannedCode.getCode().equals(scannedCode.getCode())) {
+            if (item.scannedCode != null && item.scannedCode.getCode().equals(scannedCode.getCode())) {
                 return true;
             }
         }
