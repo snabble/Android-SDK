@@ -1,7 +1,5 @@
 package io.snabble.sdk.ui.payment;
 
-import android.content.res.ColorStateList;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +25,6 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.UIUtils;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     private List<Entry> entries;
@@ -185,7 +181,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {
-        TextView usableAt;
         TextView text;
         ImageView image;
 
@@ -193,7 +188,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             super(itemView);
 
             text = itemView.findViewById(R.id.text);
-            usableAt = itemView.findViewById(R.id.usable_at);
             image = itemView.findViewById(R.id.helper_image);
         }
     }
@@ -214,11 +208,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }
 
             holder.text.setText(e.text);
-            if (e.usableAt == null) {
-                holder.usableAt.setVisibility(View.GONE);
-            } else {
-                holder.usableAt.setText(e.usableAt);
-            }
             holder.itemView.setOnClickListener(e.onClickListener);
         }
 

@@ -69,6 +69,13 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        v.findViewById(R.id.show_po).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((BaseActivity)getActivity()).showPaymentOptions();
+            }
+        });
+
         v.findViewById(R.id.age_verification).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

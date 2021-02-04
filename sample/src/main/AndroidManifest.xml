@@ -31,6 +31,7 @@
         <activity android:name=".CreditCardInputActivity" />
         <activity android:name=".PaydirektInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />
+        <activity android:name=".PaymentOptionsActivity" />
         <activity android:name=".CheckoutCustomerCardActivity" />
         <activity android:name=".CheckoutOfflineActivity" />
         <activity android:name=".CheckoutGatekeeperActivity" />
