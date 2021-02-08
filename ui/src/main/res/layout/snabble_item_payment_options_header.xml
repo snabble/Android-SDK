@@ -5,6 +5,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
     android:padding="16dp"
     tools:text="Zahlungsmethoden" />

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +29,21 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
+    public static final String ARG_PAYMENT_METHOD_LIST = "paymentMethods";
     private List<Entry> entries;
+    private Set<PaymentMethod> paymentMethods;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            Collection<PaymentMethod> list = (Collection<PaymentMethod>) args.getSerializable(ARG_PAYMENT_METHOD_LIST);
+            paymentMethods = new HashSet<>();
+            paymentMethods.addAll(list);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +55,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         for (Project project : Snabble.getInstance().getProjects()) {
             availablePaymentMethods.addAll(Arrays.asList(project.getAvailablePaymentMethods()));
         }
+
+        if (paymentMethods == null) {
+            paymentMethods = availablePaymentMethods;
+        }
+
+        availablePaymentMethods.retainAll(paymentMethods);
 
         if (availablePaymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_sepa,

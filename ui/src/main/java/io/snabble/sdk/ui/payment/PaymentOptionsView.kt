@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.payment
 
 import android.content.Context
+import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.LayoutInflaterCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -18,6 +19,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.ui.utils.loadAsset
 import java.util.*
@@ -82,12 +84,33 @@ class PaymentOptionsView @JvmOverloads constructor(
         )
 
         projectsWithCreditCards.forEach { project ->
+            val projectsWithSameBrand = Snabble.getInstance().projects.filter {
+                it.brand?.name == project.brand?.name
+            }
+
             projectList.add(
                 Entry(
                     text = project.name,
                     project = project,
                     click = {
-                        executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, project)
+                        if (projectsWithSameBrand.isEmpty()) {
+                            val activity = UIUtils.getHostActivity(context)
+                            if (activity is FragmentActivity) {
+                                val dialogFragment = SelectPaymentMethodFragment()
+                                val args = Bundle()
+                                args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, java.util.ArrayList(listOf(
+                                    PaymentMethod.VISA,
+                                    PaymentMethod.MASTERCARD,
+                                    PaymentMethod.AMEX))
+                                )
+                                dialogFragment.arguments = args
+                                dialogFragment.show(activity.supportFragmentManager, null)
+                            } else {
+                                throw RuntimeException("Host activity needs to be a FragmentActivity")
+                            }
+                        } else {
+                            executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, projectsWithSameBrand)
+                        }
                     }
                 )
             )

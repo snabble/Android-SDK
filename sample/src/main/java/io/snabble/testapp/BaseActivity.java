@@ -10,8 +10,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import java.io.Serializable;
+
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.integration.ProjectPaymentOptionsFragment;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.payment.PaydirektInputView;
@@ -150,6 +153,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_PAYMENT_OPTIONS:
                 showPaymentOptions();
                 break;
+            case SHOW_PROJECT_PAYMENT_OPTIONS:
+                showProjectPaymentOptions((Serializable)data);
+                break;
             case SHOW_AGE_VERIFICATION:
                 showAgeVerification();
                 break;
@@ -244,6 +250,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showPaymentOptions() {
         Intent intent = new Intent(this, PaymentOptionsActivity.class);
+        startActivity(intent);
+    }
+
+    public void showProjectPaymentOptions(Serializable data) {
+        Intent intent = new Intent(this, PaymentOptionsActivity.class);
+        intent.putExtra(ProjectPaymentOptionsFragment.ARG_BRAND, data);
         startActivity(intent);
     }
 

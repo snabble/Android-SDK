@@ -1,0 +1,39 @@
+package io.snabble.sdk.ui.integration
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.ui.payment.SelectProjectPaymentView
+
+class ProjectPaymentOptionsFragment : Fragment() {
+    companion object {
+        const val ARG_BRAND = "brand"
+    }
+
+    var brand: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        brand = arguments?.getString(ARG_BRAND, null)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val v =  inflater.inflate(R.layout.snabble_fragment_select_payment_project, container, false) as SelectProjectPaymentView
+
+        brand?.let { brand ->
+            val projects = ArrayList<Project>()
+            Snabble.getInstance().projects.forEach { project ->
+                if (project.brand.name == brand) {
+                    projects.add(project)
+                }
+            }
+            v.projects = projects
+        }
+
+        return v
+    }
+}
