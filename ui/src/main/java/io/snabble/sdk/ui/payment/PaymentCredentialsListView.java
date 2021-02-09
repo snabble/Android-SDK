@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.payment;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.snabble.sdk.Snabble;
@@ -36,6 +36,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private List<Entry> entries = new ArrayList<>();
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
+    private PaymentCredentials.Type type;
 
     public PaymentCredentialsListView(Context context) {
         super(context);
@@ -54,6 +55,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_payment_credentials_list, this);
+        paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setAdapter(new PaymentCredentialsListView.Adapter());
@@ -86,10 +88,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 }
             }
         });
+    }
 
+    public void show(PaymentCredentials.Type type) {
+        this.type = type;
         entries.clear();
-
-        paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
         onChanged();
     }
 
@@ -137,7 +140,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
         for (PaymentCredentials pm : paymentCredentials) {
-            if (pm.isAvailableInCurrentApp()) {
+            if (pm.isAvailableInCurrentApp() && pm.getType().equals(type)) {
                 switch (pm.getType()) {
                     case SEPA:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));

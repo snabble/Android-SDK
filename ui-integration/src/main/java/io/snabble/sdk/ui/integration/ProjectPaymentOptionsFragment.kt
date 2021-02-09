@@ -21,7 +21,7 @@ class ProjectPaymentOptionsFragment : Fragment() {
         brand = arguments?.getString(ARG_BRAND, null)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v =  inflater.inflate(R.layout.snabble_fragment_select_payment_project, container, false) as SelectProjectPaymentView
 
         brand?.let { brand ->

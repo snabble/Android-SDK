@@ -148,7 +148,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
                 showPaydirektInput();
                 break;
             case SHOW_PAYMENT_CREDENTIALS_LIST:
-                showPaymentCredentialsList();
+                showPaymentCredentialsList(args);
                 break;
             case SHOW_PAYMENT_OPTIONS:
                 showPaymentOptions();
@@ -244,8 +244,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showPaymentCredentialsList() {
+    public void showPaymentCredentialsList(Bundle args) {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 

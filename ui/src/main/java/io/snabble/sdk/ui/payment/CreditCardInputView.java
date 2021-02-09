@@ -158,7 +158,7 @@ public class CreditCardInputView extends FrameLayout {
 
         Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create(null, new byte[0]))
+                .post(RequestBody.create("", null))
                 .build();
 
         okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
