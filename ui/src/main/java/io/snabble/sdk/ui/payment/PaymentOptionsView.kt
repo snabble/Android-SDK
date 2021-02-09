@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import io.snabble.sdk.Brand
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
@@ -83,17 +84,14 @@ class PaymentOptionsView @JvmOverloads constructor(
             )
         )
 
-        projectsWithCreditCards.forEach { project ->
-            val projectsWithSameBrand = Snabble.getInstance().projects.filter {
-                it.brand?.name == project.brand?.name
-            }
-
-            projectList.add(
-                Entry(
-                    text = project.name,
-                    project = project,
-                    click = {
-                        if (projectsWithSameBrand.isEmpty()) {
+        projectsWithCreditCards
+            .filter { it.brand == null }
+            .forEach { project ->
+                projectList.add(
+                    Entry(
+                        text = project.name,
+                        project = project,
+                        click = {
                             val activity = UIUtils.getHostActivity(context)
                             if (activity is FragmentActivity) {
                                 val dialogFragment = SelectPaymentMethodFragment()
@@ -103,14 +101,36 @@ class PaymentOptionsView @JvmOverloads constructor(
                                     PaymentMethod.MASTERCARD,
                                     PaymentMethod.AMEX))
                                 )
+                                args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
                                 dialogFragment.arguments = args
                                 dialogFragment.show(activity.supportFragmentManager, null)
                             } else {
                                 throw RuntimeException("Host activity needs to be a FragmentActivity")
                             }
-                        } else {
-                            executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, projectsWithSameBrand)
                         }
+                    )
+                )
+        }
+
+        val brands = TreeSet<Brand>()
+
+        projectsWithCreditCards
+            .filter { it.brand != null }
+            .forEach {
+                if (!brands.contains(it.brand)) {
+                    brands.add(it.brand)
+                }
+        }
+
+        brands.forEach { brand ->
+            projectList.add(
+                Entry(
+                    text = brand.name,
+                    project = projectsWithCreditCards.firstOrNull { it.brand.id == brand.id},
+                    click = {
+                        val args = Bundle()
+                        args.putString("brandId", brand.id)
+                        executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, args)
                     }
                 )
             )

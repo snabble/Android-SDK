@@ -354,6 +354,10 @@ public class Project {
         return urls.get("resolvedProductLookUp");
     }
 
+    public String getTelecashVaultItemsUrl() {
+        return urls.get("telecashVaultItems");
+    }
+
     public BarcodeFormat[] getSupportedBarcodeFormats() {
         return supportedBarcodeFormats;
     }

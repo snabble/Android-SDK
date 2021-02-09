@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spannable;
@@ -40,6 +41,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.utils.Dispatch;
+import io.snabble.sdk.utils.GsonHolder;
 
 class ProductConfirmationDialog {
     private Context context;
@@ -323,7 +325,9 @@ class ProductConfirmationDialog {
 
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
-            callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, cartItem);
+            Bundle args = new Bundle();
+            args.putString("cartItem", GsonHolder.get().toJson(cartItem));
+            callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, args);
         }
         dismiss(true);
     }

@@ -11,7 +11,7 @@ import io.snabble.sdk.ui.payment.SelectProjectPaymentView
 
 class ProjectPaymentOptionsFragment : Fragment() {
     companion object {
-        const val ARG_BRAND = "brand"
+        const val ARG_BRAND = "brandId"
     }
 
     var brand: String? = null
@@ -27,7 +27,7 @@ class ProjectPaymentOptionsFragment : Fragment() {
         brand?.let { brand ->
             val projects = ArrayList<Project>()
             Snabble.getInstance().projects.forEach { project ->
-                if (project.brand.name == brand) {
+                if (project.brand.id == brand) {
                     projects.add(project)
                 }
             }

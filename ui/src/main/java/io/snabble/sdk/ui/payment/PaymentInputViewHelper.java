@@ -1,24 +1,31 @@
 package io.snabble.sdk.ui.payment;
 
+import android.os.Bundle;
+
 import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.SnabbleUI;
 
 public class PaymentInputViewHelper {
-    public static void openPaymentInputView(PaymentMethod paymentMethod) {
+    public static void openPaymentInputView(PaymentMethod paymentMethod, Project project) {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
+            Bundle args = new Bundle();
             switch (paymentMethod) {
                 case VISA:
-                    CreditCardInputView.type = PaymentMethod.VISA;
-                    callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                    args.putString("projectId", project.getId());
+                    args.putSerializable("paymentType", PaymentMethod.VISA);
+                    callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     break;
                 case AMEX:
-                    CreditCardInputView.type = PaymentMethod.AMEX;
-                    callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                    args.putString("projectId", project.getId());
+                    args.putSerializable("paymentType", PaymentMethod.AMEX);
+                    callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     break;
                 case MASTERCARD:
-                    CreditCardInputView.type = PaymentMethod.MASTERCARD;
-                    callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                    args.putString("projectId", project.getId());
+                    args.putSerializable("paymentType", PaymentMethod.MASTERCARD);
+                    callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     break;
                 case PAYDIREKT:
                     callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null);

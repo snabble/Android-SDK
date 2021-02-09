@@ -7,7 +7,9 @@ import io.snabble.sdk.ui.integration.CreditCardInputFragment;
 public class CreditCardInputActivity extends BaseActivity {
     @Override
     public Fragment onCreateFragment() {
-        return new CreditCardInputFragment();
+        CreditCardInputFragment fragment =  new CreditCardInputFragment();
+        fragment.setArguments(getIntent().getBundleExtra("args"));
+        return fragment;
     }
 }
 

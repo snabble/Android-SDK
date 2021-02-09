@@ -27,11 +27,15 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.ui.utils.ViewExtKt;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     public static final String ARG_PAYMENT_METHOD_LIST = "paymentMethods";
+    public static final String ARG_PROJECT_ID = "projectId";
+
     private List<Entry> entries;
     private Set<PaymentMethod> paymentMethods;
+    private String projectId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +46,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             Collection<PaymentMethod> list = (Collection<PaymentMethod>) args.getSerializable(ARG_PAYMENT_METHOD_LIST);
             paymentMethods = new HashSet<>();
             paymentMethods.addAll(list);
+            projectId = args.getString(ARG_PROJECT_ID, null);
         }
     }
 
@@ -83,10 +88,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.VISA), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    CreditCardInputView.type = PaymentMethod.VISA;
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                        Bundle args = new Bundle();
+                        args.putString("projectId", projectId);
+                        args.putSerializable("paymentType", PaymentMethod.VISA);
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
                     dismissAllowingStateLoss();
@@ -100,10 +107,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.MASTERCARD), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    CreditCardInputView.type = PaymentMethod.MASTERCARD;
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                        Bundle args = new Bundle();
+                        args.putString("projectId", projectId);
+                        args.putSerializable("paymentType", PaymentMethod.MASTERCARD);
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
                     dismissAllowingStateLoss();
@@ -117,10 +126,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.AMEX), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    CreditCardInputView.type = PaymentMethod.AMEX;
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                        Bundle args = new Bundle();
+                        args.putString("projectId", projectId);
+                        args.putSerializable("paymentType", PaymentMethod.AMEX);
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
                     dismissAllowingStateLoss();

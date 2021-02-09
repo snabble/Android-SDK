@@ -1,22 +1,33 @@
-package io.snabble.sdk.ui.integration;
+package io.snabble.sdk.ui.integration
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.ui.payment.CreditCardInputView
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.fragment.app.Fragment;
-
-public class CreditCardInputFragment extends Fragment {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+class CreditCardInputFragment : Fragment() {
+    companion object {
+        const val ARG_PROJECT_ID = "projectId"
+        const val ARG_PAYMENT_METHOD = "paymentType"
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.snabble_fragment_cardinput_creditcard, container, false);
+    var projectId: String? = null
+    var paymentMethod: PaymentMethod? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+
+        projectId = arguments?.getString(ARG_PROJECT_ID, null)
+        paymentMethod = arguments?.getSerializable(ARG_PAYMENT_METHOD) as PaymentMethod?
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val v = inflater.inflate(R.layout.snabble_fragment_cardinput_creditcard, container, false) as CreditCardInputView
+        v.load(projectId, paymentMethod)
+        return v
     }
 }

@@ -103,13 +103,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     public abstract Fragment onCreateFragment();
 
     @Override
-    public void execute(SnabbleUI.Action action, Object data) {
+    public void execute(SnabbleUI.Action action, Bundle args) {
         switch(action) {
             case GO_BACK:
                 onBackPressed();
                 break;
             case SHOW_SCANNER:
-                showScannerWithCode((String)data);
+                showScannerWithCode(args);
                 break;
             case SHOW_SHOPPING_CART:
                 showShoppingCart();
@@ -142,7 +142,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
                 showSEPACardInput();
                 break;
             case SHOW_CREDIT_CARD_INPUT:
-                showCreditCardInput();
+                showCreditCardInput(args);
                 break;
             case SHOW_PAYDIREKT_INPUT:
                 showPaydirektInput();
@@ -154,7 +154,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
                 showPaymentOptions();
                 break;
             case SHOW_PROJECT_PAYMENT_OPTIONS:
-                showProjectPaymentOptions((Serializable)data);
+                showProjectPaymentOptions(args);
                 break;
             case SHOW_AGE_VERIFICATION:
                 showAgeVerification();
@@ -215,10 +215,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showScannerWithCode(String scannableCode) {
+    public void showScannerWithCode(Bundle args) {
         Intent intent = new Intent(this, SelfScanningActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(SelfScanningFragment.ARG_SHOW_PRODUCT_CODE, scannableCode);
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 
@@ -233,8 +233,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showCreditCardInput() {
+    public void showCreditCardInput(Bundle args) {
         Intent intent = new Intent(this, CreditCardInputActivity.class);
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 
@@ -253,9 +254,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showProjectPaymentOptions(Serializable data) {
-        Intent intent = new Intent(this, PaymentOptionsActivity.class);
-        intent.putExtra(ProjectPaymentOptionsFragment.ARG_BRAND, data);
+    public void showProjectPaymentOptions(Bundle args) {
+        Intent intent = new Intent(this, ProjectPaymentOptionsActivity.class);
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 

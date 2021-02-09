@@ -13,7 +13,6 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,6 +21,7 @@ import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
 import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
@@ -31,7 +31,8 @@ import io.snabble.sdk.utils.Utils;
 public class PaymentCredentials {
     public enum Type {
         SEPA(null),
-        CREDIT_CARD(null),
+        CREDIT_CARD(null), // legacy credit card type, not used anmore.
+        CREDIT_CARD_PSD2(null),
         PAYDIREKT(null),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID");
 
@@ -60,6 +61,8 @@ public class PaymentCredentials {
 
     private static class CreditCardData {
         private String hostedDataID;
+        private String schemeTransactionID;
+        private String projectID;
         private String hostedDataStoreID;
         private String cardType;
     }
@@ -139,12 +142,18 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromCreditCardData(String name, Brand brand, String obfuscatedId,
-                                                        String expirationMonth, String expirationYear,
-                                                        String hostedDataId, String storeId) {
+    public static PaymentCredentials fromCreditCardData(String name,
+                                                        Brand brand,
+                                                        String projectId,
+                                                        String obfuscatedId,
+                                                        String expirationMonth,
+                                                        String expirationYear,
+                                                        String hostedDataId,
+                                                        String schemeTransactionId,
+                                                        String storeId) {
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
-        pc.type = Type.CREDIT_CARD;
+        pc.type = Type.CREDIT_CARD_PSD2;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
         if (certificates.size() == 0) {
@@ -159,6 +168,8 @@ public class PaymentCredentials {
 
         CreditCardData creditCardData = new CreditCardData();
         creditCardData.hostedDataID = hostedDataId;
+        creditCardData.projectID = projectId;
+        creditCardData.schemeTransactionID = schemeTransactionId;
         creditCardData.hostedDataStoreID = storeId;
 
         switch (brand) {

@@ -24,7 +24,6 @@ import java.util.*
 class SelectProjectPaymentView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-
     private var adapter: EntryAdapter
 
     var projects: List<Project>? = null
@@ -67,6 +66,7 @@ class SelectProjectPaymentView @JvmOverloads constructor(
                         PaymentMethod.MASTERCARD,
                         PaymentMethod.AMEX))
                     )
+                    args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, entry.id)
                     dialogFragment.arguments = args
                     dialogFragment.show(activity.supportFragmentManager, null)
                 } else {
