@@ -10,14 +10,19 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.recyclerview.widget.*
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.executeUiAction
+import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.loadAsset
 import java.util.*
 
@@ -39,10 +44,26 @@ class SelectProjectPaymentView @JvmOverloads constructor(
         adapter = EntryAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val dividerItemDecoration = DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL)
+        recyclerView.addItemDecoration(dividerItemDecoration)
+        recyclerView.itemAnimator = null
+
+        getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            fun onResume() {
+                adapter.notifyDataSetChanged()
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy() {
+                getFragmentActivity()?.lifecycle?.removeObserver(this)
+            }
+        })
     }
 
     class EntryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.text)
+        val count: TextView = itemView.findViewById(R.id.count)
         val image: ImageView = itemView.findViewById(R.id.helper_image)
     }
 
@@ -53,24 +74,48 @@ class SelectProjectPaymentView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: EntryViewHolder, position: Int) {
-            val entry = getItem(position)
-            holder.text.text = entry.name
-            holder.image.loadAsset(entry.assets, "icon")
+            val project = getItem(position)
+            holder.text.text = project.name
+            holder.image.loadAsset(project.assets, "icon")
+
+            val store = Snabble.getInstance().paymentCredentialsStore
+            val credentials = store.allWithoutKeyStoreValidation
+
+            val count = credentials.count {
+                it.appId == Snabble.getInstance().config.appId &&
+                it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2 &&
+                it.projectId == project.id
+            }
+
+            if (count > 0) {
+                holder.count.visibility = View.VISIBLE
+                holder.count.text = count.toString()
+            } else {
+                holder.count.visibility = View.GONE
+            }
+
             holder.itemView.setOnClickListener {
-                val activity = UIUtils.getHostActivity(context)
-                if (activity is FragmentActivity) {
-                    val dialogFragment = SelectPaymentMethodFragment()
+                if (count > 0) {
                     val args = Bundle()
-                    args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, ArrayList(listOf(
-                        PaymentMethod.VISA,
-                        PaymentMethod.MASTERCARD,
-                        PaymentMethod.AMEX))
-                    )
-                    args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, entry.id)
-                    dialogFragment.arguments = args
-                    dialogFragment.show(activity.supportFragmentManager, null)
+                    args.putSerializable("paymentType", PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                    args.putSerializable("projectId", project.id)
+                    executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                 } else {
-                    throw RuntimeException("Host activity needs to be a FragmentActivity")
+                    val activity = UIUtils.getHostActivity(context)
+                    if (activity is FragmentActivity) {
+                        val dialogFragment = SelectPaymentMethodFragment()
+                        val args = Bundle()
+                        args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, ArrayList(listOf(
+                            PaymentMethod.VISA,
+                            PaymentMethod.MASTERCARD,
+                            PaymentMethod.AMEX))
+                        )
+                        args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
+                        dialogFragment.arguments = args
+                        dialogFragment.show(activity.supportFragmentManager, null)
+                    } else {
+                        throw RuntimeException("Host activity needs to be a FragmentActivity")
+                    }
                 }
             }
         }

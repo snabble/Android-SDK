@@ -491,7 +491,7 @@ public class CheckoutApi {
             checkoutProcessRequest.paymentInformation.originType = paymentCredentials.getType().getOriginType();
             checkoutProcessRequest.paymentInformation.encryptedOrigin = data;
 
-            if (paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD) {
+            if (paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD_PSD2) {
                 Date date = new Date(paymentCredentials.getValidTo());
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                 checkoutProcessRequest.paymentInformation.validUntil = simpleDateFormat.format(date);

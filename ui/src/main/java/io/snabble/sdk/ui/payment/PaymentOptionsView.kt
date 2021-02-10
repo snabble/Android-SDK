@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.payment
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -10,24 +11,27 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.recyclerview.widget.*
 import io.snabble.sdk.Brand
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.executeUiAction
+import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.loadAsset
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class PaymentOptionsView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     init {
@@ -37,7 +41,22 @@ class PaymentOptionsView @JvmOverloads constructor(
         val adapter = EntryAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.itemAnimator = null
+        val dividerItemDecoration = DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL)
+        recyclerView.addItemDecoration(dividerItemDecoration)
         adapter.submitList(getEntries())
+
+        getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            fun onResume() {
+                adapter.submitList(getEntries())
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy() {
+                getFragmentActivity()?.lifecycle?.removeObserver(this)
+            }
+        })
     }
 
     private fun getEntries(): List<Entry> {
@@ -53,25 +72,52 @@ class PaymentOptionsView @JvmOverloads constructor(
             )
         )
 
+        val store = Snabble.getInstance().paymentCredentialsStore
+        val credentials = store.allWithoutKeyStoreValidation
+
         if (paymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
+            val count = credentials.count {
+                it.appId == Snabble.getInstance().config.appId &&
+                it.type == PaymentCredentials.Type.SEPA
+            }
+
             globalList.add(
                 Entry(
-                    text = "SEPA",
+                    text = "SEPA-Lastschrift",
                     icon = R.drawable.snabble_ic_payment_select_sepa,
+                    count = count,
                     click = {
-                        executeUiAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
+                        if (count > 0) {
+                            val args = Bundle()
+                            args.putSerializable("paymentType", PaymentCredentials.Type.SEPA)
+                            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
+                        } else {
+                            executeUiAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
+                        }
                     }
                 )
             )
         }
 
         if (paymentMethods.contains(PaymentMethod.PAYDIREKT)) {
+            val count = credentials.count {
+                it.appId == Snabble.getInstance().config.appId &&
+                it.type == PaymentCredentials.Type.PAYDIREKT
+            }
+
             globalList.add(
                 Entry(
                     text = "Paydirekt",
                     icon = R.drawable.snabble_ic_payment_select_paydirekt,
+                    count = count,
                     click = {
-                        executeUiAction(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
+                        if (count > 0) {
+                            val args = Bundle()
+                            args.putSerializable("paymentType", PaymentCredentials.Type.PAYDIREKT)
+                            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
+                        } else {
+                            executeUiAction(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
+                        }
                     }
                 )
             )
@@ -87,38 +133,65 @@ class PaymentOptionsView @JvmOverloads constructor(
         projectsWithCreditCards
             .filter { it.brand == null }
             .forEach { project ->
+                val count = credentials.count {
+                    it.appId == Snabble.getInstance().config.appId &&
+                    it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2 &&
+                    it.projectId == project.id
+                }
+
                 projectList.add(
                     Entry(
                         text = project.name,
                         project = project,
+                        count = count,
                         click = {
-                            val activity = UIUtils.getHostActivity(context)
-                            if (activity is FragmentActivity) {
-                                val dialogFragment = SelectPaymentMethodFragment()
+                            if (count > 0) {
                                 val args = Bundle()
-                                args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, java.util.ArrayList(listOf(
-                                    PaymentMethod.VISA,
-                                    PaymentMethod.MASTERCARD,
-                                    PaymentMethod.AMEX))
-                                )
-                                args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
-                                dialogFragment.arguments = args
-                                dialogFragment.show(activity.supportFragmentManager, null)
+                                args.putSerializable("paymentType", PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                                args.putSerializable("projectId", project.id)
+                                executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                             } else {
-                                throw RuntimeException("Host activity needs to be a FragmentActivity")
+                                val activity = UIUtils.getHostActivity(context)
+                                if (activity is FragmentActivity) {
+                                    val dialogFragment = SelectPaymentMethodFragment()
+                                    val args = Bundle()
+                                    args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, ArrayList(listOf(
+                                        PaymentMethod.VISA,
+                                        PaymentMethod.MASTERCARD,
+                                        PaymentMethod.AMEX))
+                                    )
+                                    args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
+                                    dialogFragment.arguments = args
+                                    dialogFragment.show(activity.supportFragmentManager, null)
+                                } else {
+                                    throw RuntimeException("Host activity needs to be a FragmentActivity")
+                                }
                             }
                         }
                     )
                 )
         }
 
-        val brands = TreeSet<Brand>()
+        val brands = ArrayList<Brand>()
+        val counts = HashMap<Brand, Int>()
 
         projectsWithCreditCards
             .filter { it.brand != null }
-            .forEach {
-                if (!brands.contains(it.brand)) {
-                    brands.add(it.brand)
+            .forEach { project ->
+                val count = credentials.count {
+                    it.appId == Snabble.getInstance().config.appId
+                    && it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2
+                    && it.projectId == project.id }
+
+                if (!brands.contains(project.brand)) {
+                    brands.add(project.brand)
+                }
+
+                val currentCount = counts[project.brand]
+                if (currentCount == null) {
+                    counts[project.brand] = count
+                } else {
+                    counts[project.brand] = currentCount + count
                 }
         }
 
@@ -126,7 +199,8 @@ class PaymentOptionsView @JvmOverloads constructor(
             projectList.add(
                 Entry(
                     text = brand.name,
-                    project = projectsWithCreditCards.firstOrNull { it.brand.id == brand.id},
+                    project = projectsWithCreditCards.firstOrNull { it.brand.id == brand.id },
+                    count = counts[brand] ?: 0,
                     click = {
                         val args = Bundle()
                         args.putString("brandId", brand.id)
@@ -169,6 +243,7 @@ class PaymentOptionsView @JvmOverloads constructor(
     data class Entry(
         val isSectionHeader: Boolean = false,
         val text: String,
+        val count: Int = 0,
         val icon: Int? = null,
         val project: Project? = null,
         val click: OnClickListener? = null,
@@ -180,6 +255,7 @@ class PaymentOptionsView @JvmOverloads constructor(
 
     class EntryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.text)
+        val count: TextView = itemView.findViewById(R.id.count)
         val image: ImageView = itemView.findViewById(R.id.helper_image)
     }
 
@@ -213,6 +289,13 @@ class PaymentOptionsView @JvmOverloads constructor(
 
                 if (entry.project != null) {
                     holder.image.loadAsset(entry.project.assets, "icon")
+                }
+
+                if (entry.count > 0) {
+                    holder.count.visibility = View.VISIBLE
+                    holder.count.text = entry.count.toString()
+                } else {
+                    holder.count.visibility = View.GONE
                 }
 
                 holder.itemView.setOnClickListener(entry.click)

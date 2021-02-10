@@ -39,7 +39,7 @@
     <string name="Snabble.Hints.closedBags">Len tak ďalej! Prosím, uľahči prácu pokladníkom a nevkladaj svoje produkty priamo do uzavretých tašiek. Ďakujem!</string>
     <string name="Snabble.Hints.continueScanning">Pokračovať v skenovaní</string>
     <string name="Snabble.Hints.title">Poznámka od %s</string>
-    <string name="Snabble.invalidDepositVoucher.errorMsg"/>
+    <string name="Snabble.invalidDepositVoucher.errorMsg">Poukážky za vratné produkty môžu byť uplatnené len jedenkrát.</string>
     <string name="Snabble.Keyguard.message">Tým zabezpečíme, že k tomuto spôsobu platby budeš mať prístup len ty sám/sama</string>
     <string name="Snabble.Keyguard.requireScreenLock">Aby si mohol/mohla priradiť tento spôsob platby, musíš chrániť svoj smartfón uzamknutím displeja.</string>
     <!-- SECTION: Android KeyStore -->
@@ -95,6 +95,9 @@
     <string name="Snabble.PaymentError.title">Vyskytla sa chyba</string>
     <string name="Snabble.PaymentError.tryAgain">Skúsiť znovu</string>
     <string name="Snabble.PaymentMethods.add">Pridať spôsob platby</string>
+    <string name="Snabble.PaymentMethods.choose"/>
+    <string name="Snabble.PaymentMethods.forAllRetailers"/>
+    <string name="Snabble.PaymentMethods.forSingleRetailer"/>
     <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Tvoj iPhone nie je chránený ani kódom, ani funkciou Touch ID/Face ID. V záujme svojej ochrany pred zadaním svojho čísla IBAN najprv nastav túto ochranu.</string>
     <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Tvoj iPhone nie je chránený kódom. V záujme svojej ochrany pred zadaním svojho čísla IBAN najprv nastav túto ochranu.</string>
     <string name="Snabble.PaymentMethods.noDeviceCode">Nepodporovaný iPhone</string>
@@ -108,6 +111,7 @@
     <string name="Snabble.PaymentStatus.step2">Povolenie tvojho nákupu</string>
     <string name="Snabble.PaymentStatus.step3">Povolenie tvojej platby</string>
     <string name="Snabble.pleaseWait">Čakaj, prosím...</string>
+    <string name="Snabble.QRCode.codeXofY">Kód %1$d z %2$d</string>
     <string name="Snabble.QRCode.didPay">Hotovo</string>
     <string name="Snabble.QRCode.entry.title">Kód: %d</string>
     <string name="Snabble.QRCode.message">Predlož QR kód pri pokladni, prosím</string>

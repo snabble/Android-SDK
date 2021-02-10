@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
@@ -37,6 +38,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
     private PaymentCredentials.Type type;
+    private Project project;
 
     public PaymentCredentialsListView(Context context) {
         super(context);
@@ -90,8 +92,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         });
     }
 
-    public void show(PaymentCredentials.Type type) {
+    public void show(PaymentCredentials.Type type, Project project) {
         this.type = type;
+        this.project = project;
+
         entries.clear();
         onChanged();
     }
@@ -140,12 +144,22 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
         for (PaymentCredentials pm : paymentCredentials) {
-            if (pm.isAvailableInCurrentApp() && pm.getType().equals(type)) {
+            boolean sameProject = true;
+            if (project != null) {
+                sameProject = project.getId().equals(pm.getProjectId());
+            }
+
+            boolean sameType = true;
+            if (type != null) {
+                sameType = type.equals(pm.getType());
+            }
+
+            if (pm.isAvailableInCurrentApp() && sameType && sameProject) {
                 switch (pm.getType()) {
                     case SEPA:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));
                         break;
-                    case CREDIT_CARD:
+                    case CREDIT_CARD_PSD2:
                         PaymentCredentials.Brand ccBrand = pm.getBrand();
 
                         int drawableResId = 0;
@@ -220,7 +234,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
                 String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
 
-                if (e.paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD) {
+                if (e.paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD_PSD2) {
                     vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
                     vh.validTo.setVisibility(View.VISIBLE);
                 } else {

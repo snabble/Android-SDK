@@ -2,6 +2,8 @@ package io.snabble.sdk.payment;
 
 import android.util.Base64;
 
+import androidx.annotation.Nullable;
+
 import java.io.InputStream;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -97,6 +99,7 @@ public class PaymentCredentials {
     private Brand brand;
     private String appId;
     private String id;
+    private String projectId;
     private Map<String, String> additionalData;
 
     private PaymentCredentials() {
@@ -194,6 +197,7 @@ public class PaymentCredentials {
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = brand;
         pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.projectId = projectId;
 
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
@@ -308,6 +312,11 @@ public class PaymentCredentials {
         }
 
         return brand;
+    }
+
+    @Nullable
+    public String getProjectId() {
+        return projectId;
     }
 
     public String getAppId() {
@@ -458,11 +467,15 @@ public class PaymentCredentials {
     }
 
     public boolean validate() {
-        if (type == Type.CREDIT_CARD) {
+        if (type == Type.CREDIT_CARD_PSD2) {
             Date date = new Date(validTo);
             if (date.getTime() < System.currentTimeMillis()) {
                 return false;
             }
+        }
+
+        if (type == Type.CREDIT_CARD) {
+            return false;
         }
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
@@ -511,7 +524,7 @@ public class PaymentCredentials {
     public PaymentMethod getPaymentMethod() {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;
-        } else if (type == PaymentCredentials.Type.CREDIT_CARD) {
+        } else if (type == Type.CREDIT_CARD_PSD2) {
             switch (getBrand()) {
                 case VISA: return PaymentMethod.VISA;
                 case AMEX: return PaymentMethod.AMEX;

@@ -249,6 +249,10 @@ public class PaymentSelectionHelper {
                 continue;
             }
 
+            if (pc.getProjectId() != null && !pc.getProjectId().equals(project.getId())) {
+                continue;
+            }
+
             e.paymentMethod = pc.getPaymentMethod();
             if (e.paymentMethod == null || !pc.isAvailableInCurrentApp()) {
                 continue;
