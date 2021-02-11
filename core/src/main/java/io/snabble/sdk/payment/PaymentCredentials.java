@@ -32,20 +32,26 @@ import io.snabble.sdk.utils.Utils;
 
 public class PaymentCredentials {
     public enum Type {
-        SEPA(null),
-        CREDIT_CARD(null), // legacy credit card type, not used anmore.
-        CREDIT_CARD_PSD2(null),
-        PAYDIREKT(null),
-        TEGUT_EMPLOYEE_CARD("tegutEmployeeID");
+        SEPA(null, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
+        CREDIT_CARD(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)), // legacy credit card type, not used anmore.
+        CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
+        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD));
 
         private String originType;
+        private List<PaymentMethod> paymentMethods;
 
-        Type(String originType) {
+        Type(String originType, List<PaymentMethod> paymentMethods) {
             this.originType = originType;
+            this.paymentMethods = paymentMethods;
         }
 
         public String getOriginType() {
             return originType;
+        }
+
+        public List<PaymentMethod> getPaymentMethods() {
+            return paymentMethods;
         }
     }
 
@@ -260,7 +266,7 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber) {
+    public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber, String projectId) {
         if (cardNumber == null || cardNumber.length() != 19
                 || (!cardNumber.startsWith("9280001621")
                 && !cardNumber.startsWith("9280001625")
@@ -289,6 +295,7 @@ public class PaymentCredentials {
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.projectId = projectId;
         pc.canBypassKeyStore = true;
 
         if (pc.encryptedData == null) {

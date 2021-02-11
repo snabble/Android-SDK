@@ -51,7 +51,6 @@ import okhttp3.Response;
 public class CreditCardInputView extends FrameLayout {
     private boolean acceptedKeyguard;
     private WebView webView;
-    private OkHttpClient okHttpClient;
     private Resources resources;
     private HashResponse lastHashResponse;
     private String cancelPreAuthUrl;
@@ -61,6 +60,7 @@ public class CreditCardInputView extends FrameLayout {
 
     private PaymentMethod paymentType;
     private String projectId;
+    private Project lastProject;
 
     public CreditCardInputView(Context context) {
         super(context);
@@ -80,7 +80,6 @@ public class CreditCardInputView extends FrameLayout {
 
         inflate(getContext(), R.layout.snabble_view_cardinput_creditcard, this);
 
-        okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
         resources = getContext().getResources();
 
         progressBar = findViewById(R.id.progress);
@@ -161,7 +160,9 @@ public class CreditCardInputView extends FrameLayout {
                 .post(RequestBody.create("", null))
                 .build();
 
-        okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
+        lastProject = project;
+
+        project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
             @Override
             public void success(final HashResponse hashResponse) {
                 lastHashResponse = hashResponse;
@@ -282,6 +283,11 @@ public class CreditCardInputView extends FrameLayout {
             return;
         }
 
+        if (lastProject == null) {
+            Logger.e("Could not abort pre authorization, no project provided");
+            return;
+        }
+
         url = url.replace("{orderID}", creditCardInfo.transactionId);
 
         Request request = new Request.Builder()
@@ -290,7 +296,7 @@ public class CreditCardInputView extends FrameLayout {
                 .build();
 
         // fire and forget
-        okHttpClient.newCall(request).enqueue(new Callback() {
+        lastProject.getOkHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 // ignore

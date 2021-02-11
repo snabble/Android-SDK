@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.payment;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +18,19 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -77,6 +81,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     Activity activity = UIUtils.getHostActivity(getContext());
                     if (activity instanceof FragmentActivity) {
                         SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
+                        ArrayList<PaymentMethod> types = new ArrayList<>(type.getPaymentMethods());
+                        bundle.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, types);
+                        dialogFragment.setArguments(bundle);
                         dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                     } else {
                         throw new RuntimeException("Host activity needs to be a Fragment Activity");

@@ -109,6 +109,9 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                 Activity activity = UIUtils.getHostActivity(getContext());
                 if (activity instanceof FragmentActivity) {
                     SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
+                    dialogFragment.setArguments(bundle);
                     dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                 } else {
                     throw new RuntimeException("Host activity needs to be a Fragment Activity");
