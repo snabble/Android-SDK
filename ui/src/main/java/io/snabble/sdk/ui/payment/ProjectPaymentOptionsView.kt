@@ -26,7 +26,7 @@ import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.loadAsset
 import java.util.*
 
-open class SelectProjectPaymentView @JvmOverloads constructor(
+open class ProjectPaymentOptionsView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private var adapter: EntryAdapter

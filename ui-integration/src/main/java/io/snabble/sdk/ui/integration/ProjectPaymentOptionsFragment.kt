@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.payment.SelectProjectPaymentView
+import io.snabble.sdk.ui.payment.ProjectPaymentOptionsView
 
 class ProjectPaymentOptionsFragment : Fragment() {
     companion object {
@@ -22,7 +22,7 @@ class ProjectPaymentOptionsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v =  inflater.inflate(R.layout.snabble_fragment_select_payment_project, container, false) as SelectProjectPaymentView
+        val v =  inflater.inflate(R.layout.snabble_fragment_select_payment_project, container, false) as ProjectPaymentOptionsView
 
         brand?.let { brand ->
             val projects = ArrayList<Project>()
