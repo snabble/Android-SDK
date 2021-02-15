@@ -20,6 +20,7 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.UIUtils
@@ -46,15 +47,21 @@ open class PaymentOptionsView @JvmOverloads constructor(
         recyclerView.addItemDecoration(dividerItemDecoration)
         adapter.submitList(getEntries())
 
+        val listener = PaymentCredentialsStore.OnPaymentCredentialsAddedListener {
+            adapter.notifyDataSetChanged()
+        }
+
         getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             fun onResume() {
-                adapter.submitList(getEntries())
+                adapter.notifyDataSetChanged()
+                Snabble.getInstance().paymentCredentialsStore.addOnPaymentCredentialsAddedListener(listener)
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 getFragmentActivity()?.lifecycle?.removeObserver(this)
+                Snabble.getInstance().paymentCredentialsStore.removeOnPaymentCredentialsAddedListener(listener)
             }
         })
     }
