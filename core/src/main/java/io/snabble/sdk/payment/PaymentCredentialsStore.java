@@ -130,6 +130,9 @@ public class PaymentCredentialsStore {
         return data.id;
     }
 
+    /**
+     * @return true if old credit cards before v0.33.0 were added and therefore rendered unusable and deleted
+     */
     public boolean hasRemovedOldCreditCards() {
         return data.removedOldCreditCards;
     }
