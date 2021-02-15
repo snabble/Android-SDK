@@ -42,7 +42,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.itemAnimator = null
-        val dividerItemDecoration = DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL)
+        val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         recyclerView.addItemDecoration(dividerItemDecoration)
         adapter.submitList(getEntries())
 

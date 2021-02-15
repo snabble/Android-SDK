@@ -8,7 +8,9 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="24dp"
         android:layout_gravity="center_vertical"
+        android:scaleType="fitStart"
         android:layout_margin="16dp"
         android:id="@+id/helper_image"
         tools:src="@drawable/snabble_ic_sepa_small" />
