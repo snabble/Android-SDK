@@ -68,7 +68,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
         globalList.add(
             Entry(
                 isSectionHeader = true,
-                text = "Händlerübergreifend",
+                text = resources.getString(R.string.Snabble_PaymentMethods_forAllRetailers),
             )
         )
 
@@ -83,7 +83,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
             globalList.add(
                 Entry(
-                    text = "SEPA-Lastschrift",
+                    text = resources.getString(R.string.Snabble_Payment_SEPA_Title),
                     icon = R.drawable.snabble_ic_payment_select_sepa,
                     count = count,
                     click = {
@@ -126,7 +126,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
         projectList.add(
             Entry(
                 isSectionHeader = true,
-                text = "Für einzelnen Händler",
+                text = resources.getString(R.string.Snabble_PaymentMethods_forSingleRetailer),
             )
         )
 
