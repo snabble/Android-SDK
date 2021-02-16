@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.0-beta02]
+
+### Fixed
+- PaymentOptionsView not always updating
+- Improved layout of PaymentOptionsView
+
 ## [0.33.0-beta01]
 
 ### Breaking Changes
