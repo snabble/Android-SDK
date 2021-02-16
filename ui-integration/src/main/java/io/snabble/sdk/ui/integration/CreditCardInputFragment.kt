@@ -10,8 +10,8 @@ import io.snabble.sdk.ui.payment.CreditCardInputView
 
 class CreditCardInputFragment : Fragment() {
     companion object {
-        const val ARG_PROJECT_ID = "projectId"
-        const val ARG_PAYMENT_METHOD = "paymentType"
+        const val ARG_PROJECT_ID = CreditCardInputView.ARG_PROJECT_ID
+        const val ARG_PAYMENT_TYPE = CreditCardInputView.ARG_PAYMENT_TYPE
     }
 
     var projectId: String? = null
@@ -22,7 +22,7 @@ class CreditCardInputFragment : Fragment() {
         setHasOptionsMenu(true)
 
         projectId = arguments?.getString(ARG_PROJECT_ID, null)
-        paymentMethod = arguments?.getSerializable(ARG_PAYMENT_METHOD) as PaymentMethod?
+        paymentMethod = arguments?.getSerializable(ARG_PAYMENT_TYPE) as PaymentMethod?
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

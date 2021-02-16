@@ -96,7 +96,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     click = {
                         if (count > 0) {
                             val args = Bundle()
-                            args.putSerializable("paymentType", PaymentCredentials.Type.SEPA)
+                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.SEPA)
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
                             executeUiAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
@@ -120,7 +120,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     click = {
                         if (count > 0) {
                             val args = Bundle()
-                            args.putSerializable("paymentType", PaymentCredentials.Type.PAYDIREKT)
+                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.PAYDIREKT)
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
                             executeUiAction(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
@@ -154,8 +154,8 @@ open class PaymentOptionsView @JvmOverloads constructor(
                         click = {
                             if (count > 0) {
                                 val args = Bundle()
-                                args.putSerializable("paymentType", PaymentCredentials.Type.CREDIT_CARD_PSD2)
-                                args.putSerializable("projectId", project.id)
+                                args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                                args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
                                 executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                             } else {
                                 val activity = UIUtils.getHostActivity(context)
@@ -210,7 +210,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     count = counts[brand] ?: 0,
                     click = {
                         val args = Bundle()
-                        args.putString("brandId", brand.id)
+                        args.putString(ProjectPaymentOptionsView.ARG_BRAND, brand.id)
                         executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, args)
                     }
                 )

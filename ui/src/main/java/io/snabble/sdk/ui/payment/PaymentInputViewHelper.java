@@ -13,18 +13,18 @@ public class PaymentInputViewHelper {
             Bundle args = new Bundle();
             switch (paymentMethod) {
                 case VISA:
-                    args.putString("projectId", project.getId());
-                    args.putSerializable("paymentType", PaymentMethod.VISA);
+                    args.putString(CreditCardInputView.ARG_PROJECT_ID, project.getId());
+                    args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA);
                     callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     break;
                 case AMEX:
-                    args.putString("projectId", project.getId());
-                    args.putSerializable("paymentType", PaymentMethod.AMEX);
+                    args.putString(CreditCardInputView.ARG_PROJECT_ID, project.getId());
+                    args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX);
                     callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     break;
                 case MASTERCARD:
-                    args.putString("projectId", project.getId());
-                    args.putSerializable("paymentType", PaymentMethod.MASTERCARD);
+                    args.putString(CreditCardInputView.ARG_PROJECT_ID, project.getId());
+                    args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD);
                     callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     break;
                 case PAYDIREKT:

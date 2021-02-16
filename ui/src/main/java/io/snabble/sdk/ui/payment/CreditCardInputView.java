@@ -49,6 +49,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class CreditCardInputView extends FrameLayout {
+    public static final String ARG_PROJECT_ID = "projectId";
+    public static final String ARG_PAYMENT_TYPE = "paymentType";
+
     private boolean acceptedKeyguard;
     private WebView webView;
     private Resources resources;

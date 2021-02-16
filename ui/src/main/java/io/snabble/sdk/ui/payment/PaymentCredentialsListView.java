@@ -38,6 +38,9 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {
+    public static final String ARG_PAYMENT_TYPE = "paymentType";
+    public static final String ARG_PROJECT_ID = "projectId";
+
     private List<Entry> entries = new ArrayList<>();
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;

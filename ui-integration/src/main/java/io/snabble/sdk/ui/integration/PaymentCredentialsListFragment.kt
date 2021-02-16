@@ -14,8 +14,8 @@ import io.snabble.sdk.ui.payment.PaymentCredentialsListView
 
 class PaymentCredentialsListFragment : Fragment() {
     companion object {
-        const val ARG_PAYMENT_TYPE = "paymentType"
-        const val ARG_PROJECT_ID = "projectId"
+        const val ARG_PAYMENT_TYPE = PaymentCredentialsListView.ARG_PAYMENT_TYPE
+        const val ARG_PROJECT_ID = PaymentCredentialsListView.ARG_PROJECT_ID
     }
 
     var type: PaymentCredentials.Type? = null

@@ -11,7 +11,7 @@ import io.snabble.sdk.ui.payment.ProjectPaymentOptionsView
 
 class ProjectPaymentOptionsFragment : Fragment() {
     companion object {
-        const val ARG_BRAND = "brandId"
+        const val ARG_BRAND = ProjectPaymentOptionsView.ARG_BRAND
     }
 
     var brand: String? = null

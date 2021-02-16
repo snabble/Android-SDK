@@ -27,7 +27,6 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.ViewExtKt;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     public static final String ARG_PAYMENT_METHOD_LIST = "paymentMethods";
@@ -91,8 +90,8 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
                         Bundle args = new Bundle();
-                        args.putString("projectId", projectId);
-                        args.putSerializable("paymentType", PaymentMethod.VISA);
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA);
                         callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
@@ -110,8 +109,8 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
                         Bundle args = new Bundle();
-                        args.putString("projectId", projectId);
-                        args.putSerializable("paymentType", PaymentMethod.MASTERCARD);
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD);
                         callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
@@ -129,8 +128,8 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
                         Bundle args = new Bundle();
-                        args.putString("projectId", projectId);
-                        args.putSerializable("paymentType", PaymentMethod.AMEX);
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX);
                         callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 

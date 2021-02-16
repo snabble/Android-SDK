@@ -30,6 +30,10 @@ import java.util.*
 open class ProjectPaymentOptionsView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+    companion object {
+        const val ARG_BRAND = "brandId"
+    }
+
     private var adapter: EntryAdapter
 
     var projects: List<Project>? = null
@@ -104,8 +108,8 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             holder.itemView.setOnClickListener {
                 if (count > 0) {
                     val args = Bundle()
-                    args.putSerializable("paymentType", PaymentCredentials.Type.CREDIT_CARD_PSD2)
-                    args.putSerializable("projectId", project.id)
+                    args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                    args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
                     executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                 } else {
                     val activity = UIUtils.getHostActivity(context)
