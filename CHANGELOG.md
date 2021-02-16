@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.0-beta03]
+
+### Changes
+- Small bugfixes
+
 ## [0.33.0-beta02]
 
 ### Fixed
