@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.CreditCardInputView
 
-class CreditCardInputFragment : Fragment() {
+open class CreditCardInputFragment : Fragment() {
     companion object {
         const val ARG_PROJECT_ID = CreditCardInputView.ARG_PROJECT_ID
         const val ARG_PAYMENT_TYPE = CreditCardInputView.ARG_PAYMENT_TYPE

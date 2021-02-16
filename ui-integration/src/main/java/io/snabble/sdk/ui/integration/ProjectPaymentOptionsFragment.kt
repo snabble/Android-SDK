@@ -9,7 +9,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.payment.ProjectPaymentOptionsView
 
-class ProjectPaymentOptionsFragment : Fragment() {
+open class ProjectPaymentOptionsFragment : Fragment() {
     companion object {
         const val ARG_BRAND = ProjectPaymentOptionsView.ARG_BRAND
     }

@@ -12,7 +12,7 @@ import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.payment.CreditCardInputView
 import io.snabble.sdk.ui.payment.PaymentCredentialsListView
 
-class PaymentCredentialsListFragment : Fragment() {
+open class PaymentCredentialsListFragment : Fragment() {
     companion object {
         const val ARG_PAYMENT_TYPE = PaymentCredentialsListView.ARG_PAYMENT_TYPE
         const val ARG_PROJECT_ID = PaymentCredentialsListView.ARG_PROJECT_ID
