@@ -109,7 +109,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
                 if (count > 0) {
                     val args = Bundle()
                     args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.CREDIT_CARD_PSD2)
-                    args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
+                    args.putString(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
                     executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                 } else {
                     val activity = UIUtils.getHostActivity(context)

@@ -24,7 +24,7 @@ class PaymentCredentialsListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         type = arguments?.getSerializable(ARG_PAYMENT_TYPE) as PaymentCredentials.Type?
-        val projectId = arguments?.getSerializable(ARG_PROJECT_ID) as String?
+        val projectId = arguments?.getString(ARG_PROJECT_ID)
         project = Snabble.getInstance().projects.firstOrNull { it.id == projectId }
     }
 

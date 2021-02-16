@@ -33,7 +33,8 @@ import io.snabble.sdk.utils.Utils;
 public class PaymentCredentials {
     public enum Type {
         SEPA(null, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
-        CREDIT_CARD(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)), // legacy credit card type, not used anmore.
+        // legacy credit card type, not used anymore.
+        CREDIT_CARD(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD));
