@@ -114,7 +114,7 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                     dialogFragment.setArguments(bundle);
                     dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                 } else {
-                    throw new RuntimeException("Host activity needs to be a Fragment Activity");
+                    throw new RuntimeException("Host activity must be a Fragment Activity");
                 }
                 dismissAllowingStateLoss();
             });

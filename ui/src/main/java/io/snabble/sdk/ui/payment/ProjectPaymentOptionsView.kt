@@ -125,7 +125,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
                         dialogFragment.arguments = args
                         dialogFragment.show(activity.supportFragmentManager, null)
                     } else {
-                        throw RuntimeException("Host activity needs to be a FragmentActivity")
+                        throw RuntimeException("Host activity must be a FragmentActivity")
                     }
                 }
             }

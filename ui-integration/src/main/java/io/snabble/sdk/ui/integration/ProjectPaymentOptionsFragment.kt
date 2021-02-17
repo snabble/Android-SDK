@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.payment.ProjectPaymentOptionsView
+import java.lang.RuntimeException
 
 open class ProjectPaymentOptionsFragment : Fragment() {
     companion object {
@@ -18,7 +19,10 @@ open class ProjectPaymentOptionsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        brand = arguments?.getString(ARG_BRAND, null)
+        brand = arguments?.getString(ARG_BRAND)
+        if (brand == null) {
+            throw IllegalArgumentException("ProjectPaymentOptionsFragment needs a brand id as argument")
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

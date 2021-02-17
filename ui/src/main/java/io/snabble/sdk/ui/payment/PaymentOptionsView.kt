@@ -171,7 +171,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                                     dialogFragment.arguments = args
                                     dialogFragment.show(activity.supportFragmentManager, null)
                                 } else {
-                                    throw RuntimeException("Host activity needs to be a FragmentActivity")
+                                    throw RuntimeException("Host activity must be a FragmentActivity")
                                 }
                             }
                         }
@@ -194,12 +194,8 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     brands.add(project.brand)
                 }
 
-                val currentCount = counts[project.brand]
-                if (currentCount == null) {
-                    counts[project.brand] = count
-                } else {
-                    counts[project.brand] = currentCount + count
-                }
+                val currentCount = counts.getOrPut(project.brand) { 0 }
+                counts[project.brand] = currentCount + count
         }
 
         brands.forEach { brand ->

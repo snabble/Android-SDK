@@ -91,7 +91,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                     } else {
-                        throw new RuntimeException("Host activity needs to be a Fragment Activity");
+                        throw new RuntimeException("Host activity must be a Fragment Activity");
                     }
                 } else {
                     new AlertDialog.Builder(getContext())
@@ -156,17 +156,17 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
         for (PaymentCredentials pm : paymentCredentials) {
-            boolean sameProject = true;
+            boolean sameProjectOrNull = true;
             if (project != null) {
-                sameProject = project.getId().equals(pm.getProjectId());
+                sameProjectOrNull = project.getId().equals(pm.getProjectId());
             }
 
-            boolean sameType = true;
+            boolean sameTypeOrNull = true;
             if (type != null) {
-                sameType = type.equals(pm.getType());
+                sameTypeOrNull = type.equals(pm.getType());
             }
 
-            if (pm.isAvailableInCurrentApp() && sameType && sameProject) {
+            if (pm.isAvailableInCurrentApp() && sameTypeOrNull && sameProjectOrNull) {
                 switch (pm.getType()) {
                     case SEPA:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));
