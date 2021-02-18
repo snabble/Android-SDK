@@ -318,9 +318,7 @@ class ProductConfirmationDialog {
         // warm up the image cache
         String imageUrl = cartItem.getProduct().getImageUrl();
         if (imageUrl != null && imageUrl.length() > 0) {
-            Picasso.with(Snabble.getInstance().getApplication())
-                    .load(cartItem.getProduct().getImageUrl())
-                    .fetch();
+            Picasso.get().load(cartItem.getProduct().getImageUrl()).fetch();
         }
 
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();

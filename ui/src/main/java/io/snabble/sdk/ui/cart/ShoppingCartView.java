@@ -157,7 +157,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
 
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
-        picasso = Picasso.with(getContext());
+        picasso = Picasso.get();
         final Project project = SnabbleUI.getProject();
 
         if (cart != null) {

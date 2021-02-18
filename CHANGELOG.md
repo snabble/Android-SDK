@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.1]
+
+### Fixed
+- Updated picasso dependency, to resolve breaking changes since 2.5
+
 ## [0.33.0]
 
 ### Fixed
