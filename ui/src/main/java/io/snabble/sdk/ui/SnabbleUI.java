@@ -2,6 +2,7 @@ package io.snabble.sdk.ui;
 
 
 import android.app.Activity;
+import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -29,6 +30,8 @@ public class SnabbleUI {
         SHOW_PAYDIREKT_INPUT,
         SHOW_SHOPPING_CART,
         SHOW_PAYMENT_CREDENTIALS_LIST,
+        SHOW_PAYMENT_OPTIONS,
+        SHOW_PROJECT_PAYMENT_OPTIONS,
         SHOW_AGE_VERIFICATION,
         GO_BACK,
         EVENT_PRODUCT_CONFIRMATION_SHOW,
@@ -36,7 +39,7 @@ public class SnabbleUI {
     }
 
     public interface Callback {
-        void execute(Action action, Object data);
+        void execute(Action action, Bundle args);
     }
 
     private static Project currentProject;
@@ -116,9 +119,9 @@ public class SnabbleUI {
         executeAction(action, null);
     }
 
-    public static void executeAction(Action action, Object data) {
+    public static void executeAction(Action action, Bundle args) {
         if (uiCallback != null) {
-            uiCallback.execute(action, data);
+            uiCallback.execute(action, args);
         }
     }
 

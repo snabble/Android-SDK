@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.Response;
 
 public abstract class JsonCallback<T, T2> implements Callback {
@@ -12,6 +13,7 @@ public abstract class JsonCallback<T, T2> implements Callback {
 
     private int responseCode;
     private String rawResponse;
+    private Headers headers;
 
     public JsonCallback(Class<T> successClass, Class<T2> failureClass) {
         this.successClass = successClass;
@@ -29,6 +31,7 @@ public abstract class JsonCallback<T, T2> implements Callback {
 
             responseCode = response.code();
             rawResponse = body;
+            headers = response.headers();
 
             if(response.isSuccessful()) {
                 T obj = GsonHolder.get().fromJson(body, successClass);
@@ -45,6 +48,10 @@ public abstract class JsonCallback<T, T2> implements Callback {
     @Override
     public void onFailure(Call call, IOException e) {
         error(e);
+    }
+
+    public Headers headers() {
+        return headers;
     }
 
     public int responseCode() {

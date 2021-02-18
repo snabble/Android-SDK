@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -310,7 +311,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
             if (entry != null) {
                 if (entry.paymentMethod.isRequiringCredentials() && entry.paymentCredentials == null) {
-                    PaymentInputViewHelper.openPaymentInputView(entry.paymentMethod);
+                    PaymentInputViewHelper.openPaymentInputView(entry.paymentMethod, project);
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout);
                     SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),
@@ -342,6 +343,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
                     Activity activity = UIUtils.getHostActivity(getContext());
                     if (activity instanceof FragmentActivity) {
                         SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
+                        dialogFragment.setArguments(bundle);
                         dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                     }
                 } else {

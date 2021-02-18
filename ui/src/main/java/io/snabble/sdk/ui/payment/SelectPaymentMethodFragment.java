@@ -1,7 +1,5 @@
 package io.snabble.sdk.ui.payment;
 
-import android.content.res.ColorStateList;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.widget.ImageViewCompat;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,10 +27,27 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.UIUtils;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
+    public static final String ARG_PAYMENT_METHOD_LIST = "paymentMethods";
+    public static final String ARG_PROJECT_ID = "projectId";
+
     private List<Entry> entries;
+    private Set<PaymentMethod> paymentMethods;
+    private String projectId;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            Collection<PaymentMethod> list = (Collection<PaymentMethod>) args.getSerializable(ARG_PAYMENT_METHOD_LIST);
+            paymentMethods = new HashSet<>();
+            paymentMethods.addAll(list);
+            projectId = args.getString(ARG_PROJECT_ID, null);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,6 +59,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         for (Project project : Snabble.getInstance().getProjects()) {
             availablePaymentMethods.addAll(Arrays.asList(project.getAvailablePaymentMethods()));
         }
+
+        if (paymentMethods == null) {
+            paymentMethods = availablePaymentMethods;
+        }
+
+        availablePaymentMethods.retainAll(paymentMethods);
 
         if (availablePaymentMethods.contains(PaymentMethod.DE_DIRECT_DEBIT)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_sepa,
@@ -65,10 +87,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.VISA), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    CreditCardInputView.type = PaymentMethod.VISA;
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                        Bundle args = new Bundle();
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA);
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
                     dismissAllowingStateLoss();
@@ -82,10 +106,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.MASTERCARD), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    CreditCardInputView.type = PaymentMethod.MASTERCARD;
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                        Bundle args = new Bundle();
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD);
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
                     dismissAllowingStateLoss();
@@ -99,10 +125,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.AMEX), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    CreditCardInputView.type = PaymentMethod.AMEX;
                     SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
                     if (callback != null) {
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, null);
+                        Bundle args = new Bundle();
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX);
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
                     }
 
                     dismissAllowingStateLoss();
@@ -185,7 +213,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {
-        TextView usableAt;
         TextView text;
         ImageView image;
 
@@ -193,7 +220,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             super(itemView);
 
             text = itemView.findViewById(R.id.text);
-            usableAt = itemView.findViewById(R.id.usable_at);
             image = itemView.findViewById(R.id.helper_image);
         }
     }
@@ -214,11 +240,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }
 
             holder.text.setText(e.text);
-            if (e.usableAt == null) {
-                holder.usableAt.setVisibility(View.GONE);
-            } else {
-                holder.usableAt.setText(e.usableAt);
-            }
             holder.itemView.setOnClickListener(e.onClickListener);
         }
 

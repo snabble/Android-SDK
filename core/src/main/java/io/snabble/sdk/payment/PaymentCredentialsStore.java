@@ -25,6 +25,7 @@ public class PaymentCredentialsStore {
     private class Data {
         private List<PaymentCredentials> credentialsList;
         private String id;
+        private boolean removedOldCreditCards;
         private boolean isKeyguarded;
     }
 
@@ -129,6 +130,13 @@ public class PaymentCredentialsStore {
         return data.id;
     }
 
+    /**
+     * @return true if old credit cards before v0.33.0 were added and therefore rendered unusable and deleted
+     */
+    public boolean hasRemovedOldCreditCards() {
+        return data.removedOldCreditCards;
+    }
+
     public void add(PaymentCredentials credentials) {
         if (credentials == null) {
             return;
@@ -220,6 +228,11 @@ public class PaymentCredentialsStore {
             if (credentials != null) {
                 if (!credentials.validate()) {
                     removals.add(credentials);
+
+                    if (credentials.getType() == PaymentCredentials.Type.CREDIT_CARD) {
+                        data.removedOldCreditCards = true;
+                    }
+
                     changed = true;
                 } else {
                     // app id's were not stored in old versions, if its not there assume the

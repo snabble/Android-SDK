@@ -1,6 +1,32 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.0-beta04]
+
+### Changes
+- Mark all kotlin fragments as open
+
+## [0.33.0-beta03]
+
+### Changes
+- Small bugfixes
+
+## [0.33.0-beta02]
+
+### Fixed
+- PaymentOptionsView not always updating
+- Improved layout of PaymentOptionsView
+
+## [0.33.0-beta01]
+
+### Breaking Changes
+- Added support for PSD2 credit cards. This requires that existing credit cards are invalidated, which
+can be checked using PaymentCredentialsStore.hasRemovedOldCreditCards()
+- 2 new views and there respective fragments related to the new credit card flow have been added: PaymentOptionsView and ProjectPaymentOptionsView.
+ProjectCredentialsListView should not be used as a Overview anymore, the new recommended entry point is now PaymentOptionsView.
+- SnabbleUI.Callback now provides data as a Bundle. This bundle is mostly used for fragment arguments.
+- EVENT_PRODUCT_CONFIRMATION_HIDE now provides its ShoppingCart.Item in the Bundle as a Serializable "cartItem".
+
 ## [0.32.11]
 
 ### Fixed

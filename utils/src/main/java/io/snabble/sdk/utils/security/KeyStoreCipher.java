@@ -19,7 +19,7 @@ public abstract class KeyStoreCipher {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return new KeyStoreCipherMarshmallow(tag, requireUserAuthentication);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
+            } else {
                 return new KeyStoreCipherJellyBeanMR2(context.getApplicationContext(), tag, requireUserAuthentication);
             }
         } catch (Exception e) {

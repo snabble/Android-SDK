@@ -95,8 +95,11 @@
     <string name="Snabble.PaymentError.title">Ein Fehler ist aufgetreten</string>
     <string name="Snabble.PaymentError.tryAgain">Nochmal versuchen</string>
     <string name="Snabble.PaymentMethods.add">Bezahlverfahren hinzufügen</string>
-    <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Dein iPhone ist weder durch einen Code noch durch Touch ID/Face ID geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz sein, bevor du deine IBAN eingibst.</string>
-    <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Dein iPhone ist nicht durch einen Code geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz sein, bevor du deine IBAN eingibst.</string>
+    <string name="Snabble.PaymentMethods.choose">Welches Bezahlverfahren hinzufügen?</string>
+    <string name="Snabble.PaymentMethods.forAllRetailers">Händlerübergreifend</string>
+    <string name="Snabble.PaymentMethods.forSingleRetailer">Für einzelne Händler</string>
+    <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Dein iPhone ist weder durch einen Code noch durch Touch ID/Face ID geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
+    <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Dein iPhone ist nicht durch einen Code geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
     <string name="Snabble.PaymentMethods.noDeviceCode">Ungeschütztes iPhone</string>
     <!-- ********* iOS Payment Methods ********* -->
     <string name="Snabble.PaymentMethods.title">Bezahlverfahren</string>
@@ -108,6 +111,7 @@
     <string name="Snabble.PaymentStatus.step2">Freigabe deines Einkaufs</string>
     <string name="Snabble.PaymentStatus.step3">Freigabe deiner Zahlung</string>
     <string name="Snabble.pleaseWait">Bitte warten…</string>
+    <string name="Snabble.QRCode.codeXofY">Code %1$d von %2$d</string>
     <string name="Snabble.QRCode.didPay">Fertig</string>
     <string name="Snabble.QRCode.entry.title">Code: %d</string>
     <string name="Snabble.QRCode.message">Bitte QR-Code an der Kasse vorhalten</string>

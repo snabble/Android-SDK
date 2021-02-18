@@ -2,6 +2,8 @@ package io.snabble.sdk.payment;
 
 import android.util.Base64;
 
+import androidx.annotation.Nullable;
+
 import java.io.InputStream;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -13,7 +15,6 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,6 +23,7 @@ import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
 import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
@@ -30,19 +32,27 @@ import io.snabble.sdk.utils.Utils;
 
 public class PaymentCredentials {
     public enum Type {
-        SEPA(null),
-        CREDIT_CARD(null),
-        PAYDIREKT(null),
-        TEGUT_EMPLOYEE_CARD("tegutEmployeeID");
+        SEPA(null, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
+        // legacy credit card type, not used anymore.
+        CREDIT_CARD(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
+        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD));
 
         private String originType;
+        private List<PaymentMethod> paymentMethods;
 
-        Type(String originType) {
+        Type(String originType, List<PaymentMethod> paymentMethods) {
             this.originType = originType;
+            this.paymentMethods = paymentMethods;
         }
 
         public String getOriginType() {
             return originType;
+        }
+
+        public List<PaymentMethod> getPaymentMethods() {
+            return paymentMethods;
         }
     }
 
@@ -60,6 +70,8 @@ public class PaymentCredentials {
 
     private static class CreditCardData {
         private String hostedDataID;
+        private String schemeTransactionID;
+        private String projectID;
         private String hostedDataStoreID;
         private String cardType;
     }
@@ -94,6 +106,7 @@ public class PaymentCredentials {
     private Brand brand;
     private String appId;
     private String id;
+    private String projectId;
     private Map<String, String> additionalData;
 
     private PaymentCredentials() {
@@ -139,12 +152,18 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromCreditCardData(String name, Brand brand, String obfuscatedId,
-                                                        String expirationMonth, String expirationYear,
-                                                        String hostedDataId, String storeId) {
+    public static PaymentCredentials fromCreditCardData(String name,
+                                                        Brand brand,
+                                                        String projectId,
+                                                        String obfuscatedId,
+                                                        String expirationMonth,
+                                                        String expirationYear,
+                                                        String hostedDataId,
+                                                        String schemeTransactionId,
+                                                        String storeId) {
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
-        pc.type = Type.CREDIT_CARD;
+        pc.type = Type.CREDIT_CARD_PSD2;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
         if (certificates.size() == 0) {
@@ -159,6 +178,8 @@ public class PaymentCredentials {
 
         CreditCardData creditCardData = new CreditCardData();
         creditCardData.hostedDataID = hostedDataId;
+        creditCardData.projectID = projectId;
+        creditCardData.schemeTransactionID = schemeTransactionId;
         creditCardData.hostedDataStoreID = storeId;
 
         switch (brand) {
@@ -183,6 +204,7 @@ public class PaymentCredentials {
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = brand;
         pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.projectId = projectId;
 
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
@@ -245,7 +267,7 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber) {
+    public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber, String projectId) {
         if (cardNumber == null || cardNumber.length() != 19
                 || (!cardNumber.startsWith("9280001621")
                 && !cardNumber.startsWith("9280001625")
@@ -274,6 +296,7 @@ public class PaymentCredentials {
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.projectId = projectId;
         pc.canBypassKeyStore = true;
 
         if (pc.encryptedData == null) {
@@ -297,6 +320,11 @@ public class PaymentCredentials {
         }
 
         return brand;
+    }
+
+    @Nullable
+    public String getProjectId() {
+        return projectId;
     }
 
     public String getAppId() {
@@ -447,11 +475,15 @@ public class PaymentCredentials {
     }
 
     public boolean validate() {
-        if (type == Type.CREDIT_CARD) {
+        if (type == Type.CREDIT_CARD_PSD2) {
             Date date = new Date(validTo);
             if (date.getTime() < System.currentTimeMillis()) {
                 return false;
             }
+        }
+
+        if (type == Type.CREDIT_CARD) {
+            return false;
         }
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
@@ -500,7 +532,7 @@ public class PaymentCredentials {
     public PaymentMethod getPaymentMethod() {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;
-        } else if (type == PaymentCredentials.Type.CREDIT_CARD) {
+        } else if (type == Type.CREDIT_CARD_PSD2) {
             switch (getBrand()) {
                 case VISA: return PaymentMethod.VISA;
                 case AMEX: return PaymentMethod.AMEX;

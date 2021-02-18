@@ -39,7 +39,7 @@
     <string name="Snabble.Hints.closedBags">Csak így tovább! Kérjük, könnyítsd meg a pénztáros munkáját, és ne csomagold közvetlenül lezárt tasakba a termékedet. Köszönjük!</string>
     <string name="Snabble.Hints.continueScanning">Szkennelés folytatása</string>
     <string name="Snabble.Hints.title">%s megjegyzése</string>
-    <string name="Snabble.invalidDepositVoucher.errorMsg"/>
+    <string name="Snabble.invalidDepositVoucher.errorMsg">Az üvegvisszaváltó blokkot csak egyszer lehet beváltani.</string>
     <string name="Snabble.Keyguard.message">Ezzel garantálható, hogy csak te férj ehhez a fizetési eljáráshoz</string>
     <string name="Snabble.Keyguard.requireScreenLock">E fizetési mód hozzáadásához képernyőzárral kell védened az okostelefonod.</string>
     <!-- SECTION: Android KeyStore -->
@@ -95,6 +95,9 @@
     <string name="Snabble.PaymentError.title">Hiba történt</string>
     <string name="Snabble.PaymentError.tryAgain">Próbálkozz újra</string>
     <string name="Snabble.PaymentMethods.add">Fizetési mód hozzáadása</string>
+    <string name="Snabble.PaymentMethods.choose"/>
+    <string name="Snabble.PaymentMethods.forAllRetailers"/>
+    <string name="Snabble.PaymentMethods.forSingleRetailer"/>
     <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Az iPhone-od nem védi se kód, se Touch ID/Face ID. Biztonságod érdekében először ezt állítsd be, és csak ezt követően add meg IBAN-kódod.</string>
     <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Az iPhone-od nem védi kód. Biztonságod érdekében először ezt állítsd be, és csak ezt követően add meg IBAN-kódod.</string>
     <string name="Snabble.PaymentMethods.noDeviceCode">Védtelen iPhone</string>
@@ -108,6 +111,7 @@
     <string name="Snabble.PaymentStatus.step2">Bevásárlásod engedélyezése</string>
     <string name="Snabble.PaymentStatus.step3">Fizetésed engedélyezése</string>
     <string name="Snabble.pleaseWait">Kérlek, várj...</string>
+    <string name="Snabble.QRCode.codeXofY">%1$d / %2$d kód</string>
     <string name="Snabble.QRCode.didPay">Kész</string>
     <string name="Snabble.QRCode.entry.title">Kód: %d</string>
     <string name="Snabble.QRCode.message">A QR-kódot tartsd készenlétben a kasszánál</string>

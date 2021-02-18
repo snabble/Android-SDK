@@ -17,6 +17,7 @@
                 var arr = event.data.elementArr;
 
                 var hostedDataId;
+                var schemeTransactionId;
                 var cardNumber;
                 var cardHolder;
                 var ccBrand;
@@ -32,6 +33,7 @@
 
                     switch (item.name) {
                         case "hosteddataid": hostedDataId = item.value; break;
+                        case "schemeTransactionId": schemeTransactionId = item.value; break;
                         case "cardnumber": cardNumber = item.value; break;
                         case "bname": cardHolder = item.value; break;
                         case "ccbrand": ccBrand = item.value; break;
@@ -44,9 +46,9 @@
                 }
 
                 if (responseCode == "00") {
-                    if (hostedDataId != null && cardNumber != null && cardHolder != null
+                    if (hostedDataId != null && schemeTransactionId != null && cardNumber != null && cardHolder != null
                     && ccBrand != null && expMonth != null && expYear != null && transactionId != null) {
-                        snabble.saveCard(cardHolder, cardNumber, ccBrand, expMonth, expYear, hostedDataId, transactionId);
+                        snabble.saveCard(cardHolder, cardNumber, ccBrand, expMonth, expYear, hostedDataId, schemeTransactionId, transactionId);
                     } else {
                         snabble.fail();
                     }
@@ -78,8 +80,12 @@
             <input type="hidden" name="responseFailURL" value="about:blank"/>
             <input type="hidden" name="responseSuccessURL" value="about:blank"/>
             <input type="hidden" name="checkoutoption" value="simpleform"/>
-            <input type="hidden" name="assignToken" value="true"/>
+            <input type="hidden" name="assignToken" value="false"/>
             <input type="hidden" name="hostURI" value="*"/>
+            <input type="hidden" name="oid" value="{{orderId}}"/>
+            <input type="hidden" name="hosteddataid" value="{{hostedDataId}}"/>
+            <input type="hidden" name="authenticateTransaction" value="true"/>
+            <input type="hidden" name="threeDSRequestorChallengeIndicator" value="04"/>
         </form>
     </body>
 </html>

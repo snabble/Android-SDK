@@ -10,11 +10,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import java.io.Serializable;
+
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.integration.ProjectPaymentOptionsFragment;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.payment.PaydirektInputView;
+import io.snabble.sdk.ui.payment.PaymentOptionsView;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUI.Callback {
@@ -99,13 +103,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     public abstract Fragment onCreateFragment();
 
     @Override
-    public void execute(SnabbleUI.Action action, Object data) {
+    public void execute(SnabbleUI.Action action, Bundle args) {
         switch(action) {
             case GO_BACK:
                 onBackPressed();
                 break;
             case SHOW_SCANNER:
-                showScannerWithCode((String)data);
+                showScannerWithCode(args);
                 break;
             case SHOW_SHOPPING_CART:
                 showShoppingCart();
@@ -138,13 +142,19 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
                 showSEPACardInput();
                 break;
             case SHOW_CREDIT_CARD_INPUT:
-                showCreditCardInput();
+                showCreditCardInput(args);
                 break;
             case SHOW_PAYDIREKT_INPUT:
                 showPaydirektInput();
                 break;
             case SHOW_PAYMENT_CREDENTIALS_LIST:
-                showPaymentCredentialsList();
+                showPaymentCredentialsList(args);
+                break;
+            case SHOW_PAYMENT_OPTIONS:
+                showPaymentOptions();
+                break;
+            case SHOW_PROJECT_PAYMENT_OPTIONS:
+                showProjectPaymentOptions(args);
                 break;
             case SHOW_AGE_VERIFICATION:
                 showAgeVerification();
@@ -205,10 +215,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showScannerWithCode(String scannableCode) {
+    public void showScannerWithCode(Bundle args) {
         Intent intent = new Intent(this, SelfScanningActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(SelfScanningFragment.ARG_SHOW_PRODUCT_CODE, scannableCode);
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 
@@ -223,8 +233,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showCreditCardInput() {
+    public void showCreditCardInput(Bundle args) {
         Intent intent = new Intent(this, CreditCardInputActivity.class);
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 
@@ -233,8 +244,20 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showPaymentCredentialsList() {
+    public void showPaymentCredentialsList(Bundle args) {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
+        intent.putExtra("args", args);
+        startActivity(intent);
+    }
+
+    public void showPaymentOptions() {
+        Intent intent = new Intent(this, PaymentOptionsActivity.class);
+        startActivity(intent);
+    }
+
+    public void showProjectPaymentOptions(Bundle args) {
+        Intent intent = new Intent(this, ProjectPaymentOptionsActivity.class);
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 

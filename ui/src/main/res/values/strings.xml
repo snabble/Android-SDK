@@ -95,6 +95,9 @@
     <string name="Snabble.PaymentError.title">An error has occurred</string>
     <string name="Snabble.PaymentError.tryAgain">Try again</string>
     <string name="Snabble.PaymentMethods.add">Add payment method</string>
+    <string name="Snabble.PaymentMethods.choose">Which payment method to add?</string>
+    <string name="Snabble.PaymentMethods.forAllRetailers">For all retailers</string>
+    <string name="Snabble.PaymentMethods.forSingleRetailer">For specific retailer</string>
     <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Your iPhone isn\'t protected by a code or Touch ID/Face ID. For your own safety, please assign a code before storing your payment information.</string>
     <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Your iPhone isn\'t protected by a code. For your own safety, please assign a code before storing your payment information.</string>
     <string name="Snabble.PaymentMethods.noDeviceCode">No Code Protection</string>
@@ -108,6 +111,7 @@
     <string name="Snabble.PaymentStatus.step2">Processing your purchase</string>
     <string name="Snabble.PaymentStatus.step3">Processing your payment</string>
     <string name="Snabble.pleaseWait">Please wait…</string>
+    <string name="Snabble.QRCode.codeXofY">Code %1$d of %2$d</string>
     <string name="Snabble.QRCode.didPay">Done</string>
     <string name="Snabble.QRCode.entry.title">Code: %d</string>
     <string name="Snabble.QRCode.message">Please show QR code at the cash desk</string>

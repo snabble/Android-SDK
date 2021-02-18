@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.search;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
@@ -141,7 +142,9 @@ public class ProductSearchView extends FrameLayout {
 
             SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
             if (callback != null) {
-                callback.execute(SnabbleUI.Action.SHOW_SCANNER, scannableCode);
+                Bundle args = new Bundle();
+                args.putString("showProductCode", scannableCode);
+                callback.execute(SnabbleUI.Action.SHOW_SCANNER, args);
             }
         }
     }

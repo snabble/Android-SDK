@@ -1,13 +1,12 @@
 package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
+import io.snabble.sdk.ui.integration.ProjectPaymentOptionsFragment;
 
-import io.snabble.sdk.ui.integration.PaymentCredentialsListFragment;
-
-public class PaymentCredentialsListActivity extends BaseActivity{
+public class ProjectPaymentOptionsActivity extends BaseActivity {
     @Override
     public Fragment onCreateFragment() {
-        Fragment fragment = new PaymentCredentialsListFragment();
+        ProjectPaymentOptionsFragment fragment = new ProjectPaymentOptionsFragment();
         fragment.setArguments(getIntent().getBundleExtra("args"));
         return fragment;
     }
