@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -21,10 +22,7 @@ import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.utils.UIUtils
-import io.snabble.sdk.ui.utils.executeUiAction
-import io.snabble.sdk.ui.utils.getFragmentActivity
-import io.snabble.sdk.ui.utils.loadAsset
+import io.snabble.sdk.ui.utils.*
 import java.util.*
 
 open class ProjectPaymentOptionsView @JvmOverloads constructor(
@@ -113,20 +111,28 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
                     args.putString(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
                     executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                 } else {
-                    val activity = UIUtils.getHostActivity(context)
-                    if (activity is FragmentActivity) {
-                        val dialogFragment = SelectPaymentMethodFragment()
-                        val args = Bundle()
-                        args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, ArrayList(listOf(
-                            PaymentMethod.VISA,
-                            PaymentMethod.MASTERCARD,
-                            PaymentMethod.AMEX))
-                        )
-                        args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
-                        dialogFragment.arguments = args
-                        dialogFragment.show(activity.supportFragmentManager, null)
+                    if (KeyguardUtils.isDeviceSecure()) {
+                        val activity = UIUtils.getHostActivity(context)
+                        if (activity is FragmentActivity) {
+                            val dialogFragment = SelectPaymentMethodFragment()
+                            val args = Bundle()
+                            args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, ArrayList(listOf(
+                                PaymentMethod.VISA,
+                                PaymentMethod.MASTERCARD,
+                                PaymentMethod.AMEX))
+                            )
+                            args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
+                            dialogFragment.arguments = args
+                            dialogFragment.show(activity.supportFragmentManager, null)
+                        } else {
+                            throw RuntimeException("Host activity must be a FragmentActivity")
+                        }
                     } else {
-                        throw RuntimeException("Host activity must be a FragmentActivity")
+                        AlertDialog.Builder(context)
+                            .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
+                            .setPositiveButton(R.string.Snabble_OK, null)
+                            .setCancelable(false)
+                            .show()
                     }
                 }
             }

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.2]
+
+### Fixed
+- Require screen lock for adding secure payment methods
+
 ## [0.33.1]
 
 ### Fixed
