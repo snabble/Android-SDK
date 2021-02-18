@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.0]
+
+### Fixed
+- PaymentOptionsView not always updating its count
+- Now using a subclassed FileProvider to avoid clashes with other libraries
+
 ## [0.33.0-beta04]
 
 ### Changes

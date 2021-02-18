@@ -53,21 +53,22 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
         recyclerView.addItemDecoration(dividerItemDecoration)
         recyclerView.itemAnimator = null
 
-        val listener = PaymentCredentialsStore.OnPaymentCredentialsAddedListener {
+        val listener = PaymentCredentialsStore.Callback {
             adapter.notifyDataSetChanged()
         }
+
+        Snabble.getInstance().paymentCredentialsStore.addCallback(listener)
 
         getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             fun onResume() {
                 adapter.notifyDataSetChanged()
-                Snabble.getInstance().paymentCredentialsStore.addOnPaymentCredentialsAddedListener(listener)
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 getFragmentActivity()?.lifecycle?.removeObserver(this)
-                Snabble.getInstance().paymentCredentialsStore.removeOnPaymentCredentialsAddedListener(listener)
+                Snabble.getInstance().paymentCredentialsStore.removeCallback(listener)
             }
         })
     }
