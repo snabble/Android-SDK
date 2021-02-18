@@ -1,6 +1,10 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.3]
+
+### Fixed
+- Require screen lock for payment methods that require credentials when calling from the shopping cart
 ## [0.33.2]
 
 ### Fixed
