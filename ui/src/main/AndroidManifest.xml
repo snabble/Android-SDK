@@ -7,7 +7,7 @@
 
     <application>
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name="io.snabble.sdk.SnabbleFileProvider"
             android:grantUriPermissions="true"
             android:exported="false"
             android:authorities="${applicationId}.ReceiptFileProvider">
