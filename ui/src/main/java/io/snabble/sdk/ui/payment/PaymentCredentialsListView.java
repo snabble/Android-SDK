@@ -86,7 +86,12 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
                         Bundle bundle = new Bundle();
                         bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
-                        ArrayList<PaymentMethod> types = new ArrayList<>(type.getPaymentMethods());
+                        ArrayList<PaymentMethod> types;
+                        if (type == null) {
+                            types = new ArrayList<>(Arrays.asList(PaymentMethod.values()));
+                        } else {
+                            types = new ArrayList<>(type.getPaymentMethods());
+                        }
                         bundle.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, types);
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);

@@ -21,7 +21,7 @@
     <string name="Snabble.Biometry.TouchId">Touch-ID</string>
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Abbrechen</string>
-    <string name="Snabble.CC.3dsecureHint">Zur Verifizierung deiner Kreditkarte wirst du nach Eingabe der Daten zu deiner Bank weitergeleitet. Dort wirst du gebeten, einer Zahlung von 1,00 € an snabble zuzustimmen. Der Betrag wird dir nach deiner Zustimmung sofort wieder gutgeschrieben.</string>
+    <string name="Snabble.CC.3dsecureHint.retailer">Zur Verifizierung deiner Kreditkarte wirst du nach Eingabe der Daten zu deiner Bank weitergeleitet. Dort wirst du gebeten, einer Zahlung von 1,00 € an %s zuzustimmen. Der Betrag wird dir nach deiner Zustimmung sofort wieder gutgeschrieben.</string>
     <string name="Snabble.CC.cardNumber">Kartennummer</string>
     <string name="Snabble.CC.editingHint">Deine Kreditkarten-Daten werden von uns nur verschlüsselt gespeichert und können daher nicht bearbeitet werden.</string>
     <string name="Snabble.CC.noEntryPossible">Leider können im Moment keine Kreditkarten hinterlegt werden.</string>

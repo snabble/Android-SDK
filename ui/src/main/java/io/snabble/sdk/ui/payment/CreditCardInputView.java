@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Keep;
@@ -23,6 +24,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -120,6 +122,9 @@ public class CreditCardInputView extends FrameLayout {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
+        TextView threeDHint = findViewById(R.id.threed_secure_hint);
+        threeDHint.setText(resources.getString(R.string.Snabble_CC_3dsecureHint_retailer, getProject().getName()));
+
         requestHash();
     }
 
@@ -140,12 +145,7 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void requestHash() {
-        Project project = null;
-        for (Project p : Snabble.getInstance().getProjects()) {
-            if (p.getId().equals(projectId)) {
-                project = p;
-            }
-        }
+        Project project = getProject();
 
         if (project == null) {
             finishWithError();
@@ -178,6 +178,17 @@ public class CreditCardInputView extends FrameLayout {
                 Dispatch.mainThread(() -> finishWithError());
             }
         });
+    }
+
+    @Nullable
+    private Project getProject() {
+        Project project = null;
+        for (Project p : Snabble.getInstance().getProjects()) {
+            if (p.getId().equals(projectId)) {
+                project = p;
+            }
+        }
+        return project;
     }
 
     private void loadForm(HashResponse hashResponse) {

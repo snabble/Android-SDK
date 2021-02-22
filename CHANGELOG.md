@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.4]
+
+### Changed
+- i18n updates
+
+### Fixed
+- Fixed crash when not providing a type to PaymentCredentialsListView
+
 ## [0.33.3]
 
 ### Fixed

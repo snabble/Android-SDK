@@ -21,7 +21,7 @@
     <string name="Snabble.Biometry.TouchId">Touch-ID</string>
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Mégsem</string>
-    <string name="Snabble.CC.3dsecureHint">A hitelkártyád azonosítása érdekében az adatok bevitelét követően átlépsz a bankodhoz. Ott a rendszer arra kér, hogy 1,00 €-t fizess a snabble részére. Hozzájárulásodat követően ezt az összeget azonnal jóváírjuk.</string>
+    <string name="Snabble.CC.3dsecureHint.retailer">A hitelkártyád azonosítása érdekében az adatok bevitelét követően átlépsz a bankodhoz. Ott a rendszer arra kér, hogy 1,00 €-t fizess a %s részére. Hozzájárulásodat követően ezt az összeget azonnal jóváírjuk.</string>
     <string name="Snabble.CC.cardNumber">Kártyaszám</string>
     <string name="Snabble.CC.editingHint">A hitelkártyaadatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.CC.noEntryPossible">Jelenleg sajnos nem tudsz hitelkártyaadatokat elmenteni.</string>
@@ -95,11 +95,11 @@
     <string name="Snabble.PaymentError.title">Hiba történt</string>
     <string name="Snabble.PaymentError.tryAgain">Próbálkozz újra</string>
     <string name="Snabble.PaymentMethods.add">Fizetési mód hozzáadása</string>
-    <string name="Snabble.PaymentMethods.choose"/>
-    <string name="Snabble.PaymentMethods.forAllRetailers"/>
-    <string name="Snabble.PaymentMethods.forSingleRetailer"/>
-    <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Az iPhone-od nem védi se kód, se Touch ID/Face ID. Biztonságod érdekében először ezt állítsd be, és csak ezt követően add meg IBAN-kódod.</string>
-    <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Az iPhone-od nem védi kód. Biztonságod érdekében először ezt állítsd be, és csak ezt követően add meg IBAN-kódod.</string>
+    <string name="Snabble.PaymentMethods.choose">Milyen fizetési módot szeretnél hozzáadni?</string>
+    <string name="Snabble.PaymentMethods.forAllRetailers">Több kereskedőnél érvényes</string>
+    <string name="Snabble.PaymentMethods.forSingleRetailer">Egy kereskedőnél érvényes</string>
+    <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Az iPhone-od nem védi se kód, se Touch ID/Face ID. Biztonságod érdekében először ezt állítsd be, és csak ezt követően add meg az IBAN-kódodat vagy a hitelkártyádat.</string>
+    <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Az iPhone-od nem védi kód. Biztonságod érdekében először ezt állítsd be, és csak ezt követően add meg az IBAN-kódodat vagy a hitelkártyádat.</string>
     <string name="Snabble.PaymentMethods.noDeviceCode">Védtelen iPhone</string>
     <!-- ********* iOS Payment Methods ********* -->
     <string name="Snabble.PaymentMethods.title">Fizetési mód</string>

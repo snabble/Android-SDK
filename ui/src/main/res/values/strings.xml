@@ -21,7 +21,7 @@
     <string name="Snabble.Biometry.TouchId">Touch ID</string>
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Cancel</string>
-    <string name="Snabble.CC.3dsecureHint">In order to verify your credit card, you will be redirected to your bank after entering your data. There you will be asked to approve a payment of € 1.00 to snabble. The amount will be credited to you immediately after your approval.</string>
+    <string name="Snabble.CC.3dsecureHint.retailer">In order to verify your credit card, you will be redirected to your bank after entering your data. There you will be asked to approve a payment of € 1.00 to %s. The amount will be credited to you immediately after your approval.</string>
     <string name="Snabble.CC.cardNumber">Card number</string>
     <string name="Snabble.CC.editingHint">Your credit card data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.CC.noEntryPossible">Unfortunately you can\'t add credit cards at this time.</string>
