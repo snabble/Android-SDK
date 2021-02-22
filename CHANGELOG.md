@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.5]
+
+### Changed
+- Use company name in 3d secure hint
+
 ## [0.33.4]
 
 ### Changed

@@ -123,7 +123,13 @@ public class CreditCardInputView extends FrameLayout {
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
         TextView threeDHint = findViewById(R.id.threed_secure_hint);
-        threeDHint.setText(resources.getString(R.string.Snabble_CC_3dsecureHint_retailer, getProject().getName()));
+
+        Project project = getProject();
+        String companyName = project.getName();
+        if (project.getCompany() != null && project.getCompany().getName() != null) {
+            companyName = project.getCompany().getName();
+        }
+        threeDHint.setText(resources.getString(R.string.Snabble_CC_3dsecureHint_retailer, companyName));
 
         requestHash();
     }
