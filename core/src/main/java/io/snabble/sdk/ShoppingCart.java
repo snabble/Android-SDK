@@ -188,6 +188,10 @@ public class ShoppingCart {
         return items.size();
     }
 
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+
     public void backup() {
         if (items.size() > 0) {
             oldItems = items;
