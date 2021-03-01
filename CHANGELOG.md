@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.6]
+
+### Fixed
+- Fixed a bug that aborted terminal payments could not be retried
+
 ## [0.33.5]
 
 ### Changed
