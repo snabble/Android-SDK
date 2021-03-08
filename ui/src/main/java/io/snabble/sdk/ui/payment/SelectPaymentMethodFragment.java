@@ -44,6 +44,9 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         if (args != null) {
             Collection<PaymentMethod> list = (Collection<PaymentMethod>) args.getSerializable(ARG_PAYMENT_METHOD_LIST);
             paymentMethods = new HashSet<>();
+            if (list == null) {
+                list = Arrays.asList(SnabbleUI.getProject().getAvailablePaymentMethods());
+            }
             paymentMethods.addAll(list);
             projectId = args.getString(ARG_PROJECT_ID, null);
         }

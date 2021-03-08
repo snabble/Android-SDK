@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.7]
+
+### Fixed
+- Fixed a crash when adding a new payment method from the ShoppingCart
+
 ## [0.33.6]
 
 ### Fixed
