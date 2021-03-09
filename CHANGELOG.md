@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.33.7]
 
+### Added
+- Added explanation text for checkout online status screen
+
 ### Fixed
 - Fixed a crash when adding a new payment method from the ShoppingCart
 - Fixed scan dialog update button being cutoff when using the highest font scaling setting
