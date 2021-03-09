@@ -311,7 +311,7 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
             if (entry != null) {
                 if (entry.paymentMethod.isRequiringCredentials() && entry.paymentCredentials == null) {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), entry.paymentMethod, project);
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), entry.paymentMethod, project.getId());
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout);
                     SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),

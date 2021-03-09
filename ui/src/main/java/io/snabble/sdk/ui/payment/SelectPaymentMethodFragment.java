@@ -79,7 +79,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    openUnlocked(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.DE_DIRECT_DEBIT, null);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -91,10 +91,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.VISA), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    Bundle args = new Bundle();
-                    args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
-                    args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA);
-                    openUnlocked(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.VISA, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -106,10 +103,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.MASTERCARD), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    Bundle args = new Bundle();
-                    args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
-                    args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD);
-                    openUnlocked(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.MASTERCARD, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -121,10 +115,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.AMEX), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    Bundle args = new Bundle();
-                    args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
-                    args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX);
-                    openUnlocked(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.AMEX, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -136,7 +127,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.PAYDIREKT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    openUnlocked(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null);
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.PAYDIREKT, null);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -153,31 +144,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         return v;
-    }
-
-    private void openUnlocked(SnabbleUI.Action action, Bundle args) {
-        if(KeyguardUtils.isDeviceSecure()) {
-            Keyguard.unlock(UIUtils.getHostFragmentActivity(getActivity()), new Keyguard.Callback() {
-                @Override
-                public void success() {
-                    SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                    if (callback != null) {
-                        callback.execute(action, args);
-                    }
-                }
-
-                @Override
-                public void error() {
-
-                }
-            });
-        } else {
-            new AlertDialog.Builder(getContext())
-                    .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                    .setPositiveButton(R.string.Snabble_OK, null)
-                    .setCancelable(false)
-                    .show();
-        }
     }
 
     private String getUsableAtText(PaymentMethod...paymentMethods) {
