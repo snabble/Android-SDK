@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed a crash when adding a new payment method from the ShoppingCart
 - Fixed scan dialog update button being cutoff when using the highest font scaling setting
+- Fixed added missing keyguard after payment selection
 
 ## [0.33.6]
 
