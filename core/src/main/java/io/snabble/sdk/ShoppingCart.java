@@ -678,7 +678,7 @@ public class ShoppingCart {
         public String getPriceText() {
             if (lineItem != null) {
                 if (lineItem.price != 0) {
-                    if (product != null && lineItem.amount > 1
+                    if (product != null && lineItem.units != null && lineItem.units > 1
                             || (getUnit() != Unit.PRICE
                             && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
                             && getEffectiveQuantity() > 1)) {

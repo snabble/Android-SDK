@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.9]
+
+### Fixed
+- Fixed incorrect display of units when processing line items from vPOS
+
 ## [0.33.8]
 
 ### Fixed
