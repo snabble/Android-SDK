@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.10]
+
+### Fixed
+- Endless recursion when handling unknown gs1 codes
+
 ## [0.33.9]
 
 ### Fixed
