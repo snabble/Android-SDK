@@ -135,31 +135,25 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
             return;
         }
 
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback == null) {
-            Logger.e("ui action could not be performed: callback is null");
-            return;
-        }
-
         switch (state) {
             case PAYMENT_APPROVED:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
                 }
                 Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
                 break;
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
             case DENIED_BY_SUPERVISOR:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
         }
 

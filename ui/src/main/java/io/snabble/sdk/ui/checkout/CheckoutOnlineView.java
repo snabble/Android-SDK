@@ -163,13 +163,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 }
                 break;
             case PAYMENT_PROCESSING:
-                checkoutIdCode.setVisibility(View.GONE);
-                helperTextNoImage.setVisibility(View.GONE);
-                helperImage.setVisibility(View.GONE);
-                upArrow.setVisibility(View.GONE);
-                progressIndicator.setVisibility(View.VISIBLE);
-                cancel.setVisibility(View.INVISIBLE);
-                cancelProgress.setVisibility(View.INVISIBLE);
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
             case PAYMENT_ABORT_FAILED:
                 cancelProgress.setVisibility(View.INVISIBLE);
@@ -186,24 +180,9 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                         .create()
                         .show();
                 break;
-            case PAYMENT_APPROVED:
-                if (currentState == Checkout.State.PAYMENT_APPROVED) {
-                    break;
-                }
-                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
-                break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
                 callback.execute(SnabbleUI.Action.GO_BACK, null);
-                break;
-            case DENIED_BY_PAYMENT_PROVIDER:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
-                break;
-            case DENIED_BY_SUPERVISOR:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
                 break;
         }
 

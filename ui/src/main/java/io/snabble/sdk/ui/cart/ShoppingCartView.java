@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
@@ -46,7 +45,6 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
-import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
@@ -395,16 +393,16 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
             CheckoutHelper.displayPaymentView(checkout);
             progressDialog.dismiss();
         }  else if (state == Checkout.State.PAYMENT_PROCESSING) {
-            progressDialog.showAfterDelay(300);
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
         } else if (state == Checkout.State.PAYMENT_APPROVED) {
             Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS);
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
         } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
             Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE);
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
         } else if (state == Checkout.State.DENIED_BY_SUPERVISOR) {
             Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE);
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
         } else if (state == Checkout.State.INVALID_PRODUCTS) {
             List<Product> invalidProducts = checkout.getInvalidProducts();
             if (invalidProducts != null && invalidProducts.size() > 0) {

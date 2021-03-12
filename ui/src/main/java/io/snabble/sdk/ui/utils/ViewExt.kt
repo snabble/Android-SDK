@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleObserver
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
