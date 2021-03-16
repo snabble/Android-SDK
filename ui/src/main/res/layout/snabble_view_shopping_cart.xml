@@ -35,11 +35,18 @@
                 android:layout_width="match_parent"
                 android:background="?android:attr/listDivider"/>
 
-            <FrameLayout
+        <io.snabble.sdk.ui.cart.CheckoutBar
+            android:id="@+id/checkout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"/>
+
+            <!--FrameLayout
                 android:id="@+id/sum_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="12dp"
+                android:background="#f00">
                 <TextView
                     android:id="@+id/article_count"
                     android:layout_width="wrap_content"
@@ -67,7 +74,8 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="12dp"
                 android:clipChildren="false"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="#f00">
                 <FrameLayout android:id="@+id/payment_selector"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,7 +133,7 @@
                     app:autoSizeMaxTextSize="16sp"
                     android:maxLines="1"
                     android:text="@string/Snabble.Shoppingcart.buyProducts.now" />
-            </LinearLayout>
+            </LinearLayout-->
         </LinearLayout>
 
         <LinearLayout

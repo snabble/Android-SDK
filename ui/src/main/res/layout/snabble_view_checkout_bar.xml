@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="LinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:orientation="vertical"
+    tools:background="#ededed">
+
+        <FrameLayout
+            android:id="@+id/sum_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+            <TextView
+                android:id="@+id/article_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="15sp"
+                android:enabled="false"
+                tools:text="2 Artikel"/>
+
+            <TextView
+                android:id="@+id/price_sum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                tools:text="13,37 €"/>
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:clipChildren="false"
+            android:orientation="horizontal">
+            <FrameLayout android:id="@+id/payment_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp">
+
+                <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:id="@+id/payment_selector_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:strokeColor="@drawable/snabble_stroke" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_height="48dp">
+                    <ImageView
+                        android:id="@+id/payment_icon"
+                        android:layout_width="48dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:scaleType="centerInside"
+                        tools:src="@drawable/snabble_ic_payment_select_sepa" />
+
+                    <ImageView
+                        android:id="@+id/payment_chevron"
+                        android:layout_width="7dp"
+                        android:layout_height="7dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/snabble_ic_small_chevron_down"
+                        app:tint="?attr/colorOnSurface" />
+                </LinearLayout>
+            </FrameLayout>
+            <Button
+                android:id="@+id/pay"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetLeft="0dp"
+                android:insetBottom="0dp"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="8sp"
+                app:autoSizeMaxTextSize="16sp"
+                android:maxLines="1"
+                android:text="@string/Snabble.Shoppingcart.buyProducts.now" />
+        </LinearLayout>
+
+</merge>

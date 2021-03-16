@@ -3,10 +3,8 @@ package io.snabble.sdk.ui.cart;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -38,23 +36,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import io.snabble.sdk.Checkout;
-import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
-import io.snabble.sdk.payment.PaymentCredentialsStore;
-import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.checkout.CheckoutHelper;
-import io.snabble.sdk.ui.payment.PaymentInputViewHelper;
-import io.snabble.sdk.ui.payment.SEPALegalInfoHelper;
-import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
 import io.snabble.sdk.ui.telemetry.Telemetry;
-import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -62,30 +52,21 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
-public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class ShoppingCartView extends FrameLayout {
     private RecyclerView recyclerView;
     private ShoppingCartAdapter recyclerViewAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ShoppingCart cart;
     private Checkout checkout;
-    private PriceFormatter priceFormatter;
-    private Button pay;
+    private CheckoutBar checkoutBar;
     private View coordinatorLayout;
     private ViewGroup emptyState;
     private View restore;
     private TextView scanProducts;
     private Snackbar snackbar;
-    private DelayedProgressDialog progressDialog;
     private boolean hasAnyImages;
-    private Picasso picasso;
     private List<Product> lastInvalidProducts;
     private PaymentSelectionHelper paymentSelectionHelper;
-    private ImageView payIcon;
-    private View paySelector;
-    private View paySelectorButton;
-    private TextView priceSum;
-    private TextView articleCount;
-    private View sumContainer;
     private AlertDialog alertDialog;
     private View paymentContainer;
     private boolean hasAlreadyShownInvalidDeposit;
@@ -155,7 +136,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
 
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
-        picasso = Picasso.get();
         final Project project = SnabbleUI.getProject();
 
         if (cart != null) {
@@ -164,7 +144,6 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
         cart = project.getShoppingCart();
         checkout = project.getCheckout();
-        priceFormatter = project.getPriceFormatter();
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerViewAdapter = new ShoppingCartAdapter(getContext(), undoHelper);
@@ -186,32 +165,9 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         emptyState = findViewById(R.id.empty_state);
 
-        progressDialog = new DelayedProgressDialog(getContext());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(true);
-        progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
-            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                checkout.abort();
-                dialogInterface.dismiss();
-                return true;
-            }
-            return false;
-        });
+        checkoutBar = findViewById(R.id.checkout);
+        checkoutBar.setCart(cart);
 
-        pay = findViewById(R.id.pay);
-        pay.setOnClickListener(new OneShotClickListener() {
-            @Override
-            public void click() {
-                pay();
-            }
-        });
-        pay.setText(I18nUtils.getIdentifierForProject(getResources(), project, R.string.Snabble_Shoppingcart_buyProducts_now));
-
-        priceSum = findViewById(R.id.price_sum);
-        articleCount = findViewById(R.id.article_count);
-        sumContainer = findViewById(R.id.sum_container);
         paymentContainer = findViewById(R.id.bottom_payment_container);
 
         scanProducts = findViewById(R.id.scan_products);
@@ -225,16 +181,8 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         restore = findViewById(R.id.restore);
         restore.setOnClickListener(v -> cart.restore());
 
-        payIcon = findViewById(R.id.payment_icon);
-        paySelector = findViewById(R.id.payment_selector);
-        paySelectorButton = findViewById(R.id.payment_selector_button);
-
-        payIcon.setImageResource(R.drawable.snabble_ic_payment_select_pos);
-
         paymentSelectionHelper = PaymentSelectionHelper.getInstance();
         paymentSelectionHelper.getSelectedEntry().observe((FragmentActivity)UIUtils.getHostActivity(getContext()), entry -> update());
-
-        paySelectorButton.setOnClickListener(v -> paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(getContext())));
 
         createItemTouchHelper();
         submitList();
@@ -304,176 +252,13 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     };
 
-    private void pay() {
-        Project project = SnabbleUI.getProject();
-
-        if (cart.hasReachedMaxCheckoutLimit()) {
-            String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
-                    project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
-            snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
-            snackbar.show();
-        } else {
-            PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
-            if (entry != null) {
-                if (entry.paymentMethod.isRequiringCredentials() && entry.paymentCredentials == null) {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), entry.paymentMethod, project);
-                } else {
-                    Telemetry.event(Telemetry.Event.ClickCheckout);
-                    SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(getContext(),
-                            entry.paymentMethod,
-                            new OneShotClickListener() {
-                                @Override
-                                public void click() {
-                                    if (entry.paymentMethod.isOfflineMethod()) {
-                                        checkout.checkout(3000);
-                                    } else {
-                                        checkout.checkout();
-                                    }
-                                }
-                            });
-                }
-            } else {
-                boolean hasPaymentMethodThatRequiresCredentials = false;
-                PaymentMethod[] paymentMethods = project.getAvailablePaymentMethods();
-                if (paymentMethods != null && paymentMethods.length > 0) {
-                    for (PaymentMethod pm : paymentMethods) {
-                        if (pm.isRequiringCredentials()) {
-                            hasPaymentMethodThatRequiresCredentials = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (hasPaymentMethodThatRequiresCredentials) {
-                    Activity activity = UIUtils.getHostActivity(getContext());
-                    if (activity instanceof FragmentActivity) {
-                        SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
-                        dialogFragment.setArguments(bundle);
-                        dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
-                    }
-                } else {
-                    Toast.makeText(getContext(), R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onStateChanged(Checkout.State state) {
-        if (state == Checkout.State.HANDSHAKING) {
-            progressDialog.showAfterDelay(300);
-        } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD) {
-            final PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
-
-            if (entry == null) {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            if (entry.paymentCredentials != null) {
-                progressDialog.dismiss();
-
-                if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
-                    checkout.pay(entry.paymentMethod, entry.paymentCredentials);
-                } else {
-                    Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                        @Override
-                        public void success() {
-                            progressDialog.showAfterDelay(300);
-                            checkout.pay(entry.paymentMethod, entry.paymentCredentials);
-                        }
-
-                        @Override
-                        public void error() {
-                            progressDialog.dismiss();
-                        }
-                    });
-                }
-            } else {
-                progressDialog.showAfterDelay(300);
-                checkout.pay(entry.paymentMethod, null);
-            }
-        } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
-            CheckoutHelper.displayPaymentView(checkout);
-            progressDialog.dismiss();
-        }  else if (state == Checkout.State.PAYMENT_PROCESSING) {
-            progressDialog.showAfterDelay(300);
-        } else if (state == Checkout.State.PAYMENT_APPROVED) {
-            Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS);
-        } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
-            Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE);
-        } else if (state == Checkout.State.DENIED_BY_SUPERVISOR) {
-            Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE);
-        } else if (state == Checkout.State.INVALID_PRODUCTS) {
-            List<Product> invalidProducts = checkout.getInvalidProducts();
-            if (invalidProducts != null && invalidProducts.size() > 0) {
-                Resources res = getResources();
-                StringBuilder sb = new StringBuilder();
-                if (invalidProducts.size() == 1) {
-                    sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg_one));
-                } else {
-                    sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg));
-                }
-
-                sb.append("\n\n");
-
-                for(Product product : invalidProducts) {
-                    if (product.getSubtitle() != null) {
-                        sb.append(product.getSubtitle());
-                        sb.append(" ");
-                    }
-
-                    sb.append(product.getName());
-                    sb.append("\n");
-                }
-
-                new AlertDialog.Builder(getContext())
-                        .setCancelable(false)
-                        .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
-                        .setMessage(sb.toString())
-                        .setPositiveButton(R.string.Snabble_OK, null)
-                        .show();
-            } else {
-                UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .show();
-            }
-
-            progressDialog.dismiss();
-        } else if (state == Checkout.State.CONNECTION_ERROR || state == Checkout.State.NO_SHOP) {
-            UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                    .show();
-            progressDialog.dismiss();
-        } else if (state == Checkout.State.PAYMENT_ABORTED) {
-            progressDialog.dismiss();
-        } else if (state == Checkout.State.REQUEST_VERIFY_AGE) {
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_AGE_VERIFICATION);
-            progressDialog.dismiss();
-        } else if (state == Checkout.State.NO_PAYMENT_METHOD_AVAILABLE) {
-            new AlertDialog.Builder(getContext())
-                    .setCancelable(false)
-                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
-                    .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Payment_noMethodAvailable))
-                    .setPositiveButton(R.string.Snabble_OK, null)
-                    .show();
-            progressDialog.dismiss();
-        }
-    }
-
     private void updateEmptyState() {
         if (cart.size() > 0) {
             paymentContainer.setVisibility(View.VISIBLE);
             emptyState.setVisibility(View.GONE);
-            pay.setVisibility(checkout.isAvailable() ? View.VISIBLE : View.GONE);
         } else {
             paymentContainer.setVisibility(View.GONE);
             emptyState.setVisibility(View.VISIBLE);
-            pay.setVisibility(View.GONE);
         }
 
         if (cart.isRestorable() && cart.getBackupTimestamp() > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) {
@@ -485,53 +270,11 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
         }
     }
 
-    private void updatePayText() {
-        if (cart != null) {
-            int quantity = cart.getTotalQuantity();
-            int price = cart.getTotalPrice();
-
-            if (quantity > 0) {
-                Resources res = getContext().getResources();
-                CharSequence articlesText = res.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity);
-                articleCount.setText(String.format(articlesText.toString(), quantity));
-
-                priceSum.setText(priceFormatter.format(price));
-                priceSum.setVisibility(View.VISIBLE);
-                sumContainer.setVisibility(View.VISIBLE);
-
-                boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && cart.getAvailablePaymentMethods().length > 0;
-
-                if (price <= 0 || (!onlinePaymentAvailable && paymentSelectionHelper.getSelectedEntry().getValue() == null)) {
-                    pay.setEnabled(false);
-                } else {
-                    pay.setEnabled(true);
-                }
-            } else {
-                sumContainer.setVisibility(View.GONE);
-            }
-        }
-    }
-
     private void update() {
-        updatePayText();
-        updatePaySelector();
         updateEmptyState();
         scanForImages();
         checkSaleStop();
         checkDepositReturnVoucher();
-    }
-
-    private void updatePaySelector() {
-        PaymentSelectionHelper.Entry entry = paymentSelectionHelper.getSelectedEntry().getValue();
-        if (entry == null) {
-            paySelector.setVisibility(View.GONE);
-        } else {
-            PaymentCredentialsStore pcs = Snabble.getInstance().getPaymentCredentialsStore();
-            boolean hasNoPaymentMethods = pcs.getUsablePaymentCredentialsCount() == 0;
-            boolean isHidden = SnabbleUI.getProject().getAvailablePaymentMethods().length == 1 && hasNoPaymentMethods;
-            paySelector.setVisibility(isHidden ? View.GONE : View.VISIBLE);
-            payIcon.setImageResource(entry.iconResId);
-        }
     }
 
     private void checkSaleStop() {
@@ -606,16 +349,12 @@ public class ShoppingCartView extends FrameLayout implements Checkout.OnCheckout
 
     private void registerListeners() {
         cart.addListener(shoppingCartListener);
-        checkout.addOnCheckoutStateChangedListener(ShoppingCartView.this);
         submitList();
         update();
     }
 
     private void unregisterListeners() {
         cart.removeListener(shoppingCartListener);
-        checkout.removeOnCheckoutStateChangedListener(ShoppingCartView.this);
-
-        progressDialog.dismiss();
     }
 
     @Override
