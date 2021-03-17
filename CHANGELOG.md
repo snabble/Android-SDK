@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.11]
+
+### Fixed
+- Leak of SelfScanningView in SelfScanningFragment when in onResume()
+- Camera black screen on Google Pixel 4a when using multi-window mode
+- Improved camera loading behaviour when calling BarcodeScannerView.start() repeatedly
+
 ## [0.33.10]
 
 ### Fixed
