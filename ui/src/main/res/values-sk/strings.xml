@@ -21,7 +21,7 @@
     <string name="Snabble.Biometry.TouchId">Touch ID</string>
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Zrušiť</string>
-    <string name="Snabble.CC.3dsecureHint.retailer">Za účelom overenia kreditnej karty budeš po zadaní údajov presmerovaný/presmerovaná na tvoju banku. Tam budeš požiadaný o súhlas s platbou 1,00 € pre %s. Po súhlase ti bude suma okamžite opäť pripísaná na účet.</string>
+    <string name="Snabble.CC.3dsecureHint.retailer">Za účelom overenia kreditnej karty budeš po zadaní údajov presmerovaný/presmerovaná na tvoju banku. Tam budeš požiadaný/-á o súhlas s platbou 1,00 € pre %s. Po súhlase ti bude suma okamžite opäť pripísaná na účet.</string>
     <string name="Snabble.CC.cardNumber">Číslo karty</string>
     <string name="Snabble.CC.editingHint">Údaje tvojej kreditnej karty budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.CC.noEntryPossible">Momentálne nemôžete uložiť žiadnu kreditnú kartu.</string>

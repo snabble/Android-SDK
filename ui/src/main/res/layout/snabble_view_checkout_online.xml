@@ -15,10 +15,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:gravity="center">
 
             <TextView
-                android:id="@+id/helper_text"
+                android:id="@+id/helper_text_no_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -32,15 +34,26 @@
                 android:id="@+id/helper_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
                 android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/helper_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:visibility="gone"
+                android:textSize="17sp" />
 
             <ImageView
                 android:id="@+id/arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/snabble_ic_arrow_upward"
-                android:layout_margin="8dp"
+                android:layout_margin="16dp"
                 android:visibility="gone"
                 app:tint="?attr/colorOnSurface" />
 

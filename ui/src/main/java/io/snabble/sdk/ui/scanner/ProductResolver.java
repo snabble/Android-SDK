@@ -214,7 +214,7 @@ public class ProductResolver {
                         }
                     }
 
-                    if (gs1GtinScannedCodes.size() > 0) {
+                    if (gs1GtinScannedCodes.size() > 0 && gs1Code == null) {
                         lookupAndShowProduct(gs1GtinScannedCodes, newGs1Code);
                     } else {
                         project.getEvents().productNotFound(scannedCodes);

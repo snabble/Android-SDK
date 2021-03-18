@@ -97,15 +97,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                             args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.SEPA)
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
-                            if (KeyguardUtils.isDeviceSecure()) {
-                                executeUiAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
-                            } else {
-                                AlertDialog.Builder(context)
-                                    .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                                    .setPositiveButton(R.string.Snabble_OK, null)
-                                    .setCancelable(false)
-                                    .show()
-                            }
+                            PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.DE_DIRECT_DEBIT, null)
                         }
                     }
                 )
@@ -129,15 +121,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                             args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.PAYDIREKT)
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
-                            if (KeyguardUtils.isDeviceSecure()) {
-                                executeUiAction(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
-                            } else {
-                                AlertDialog.Builder(context)
-                                    .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                                    .setPositiveButton(R.string.Snabble_OK, null)
-                                    .setCancelable(false)
-                                    .show()
-                            }
+                            PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.PAYDIREKT, null)
                         }
                     }
                 )

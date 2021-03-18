@@ -26,6 +26,7 @@ import io.snabble.sdk.ui.utils.I18nUtils
 import io.snabble.sdk.ui.utils.OneShotClickListener
 import io.snabble.sdk.ui.utils.UIUtils
 
+
 class CheckoutBar @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
@@ -129,7 +130,7 @@ class CheckoutBar @JvmOverloads constructor(
             val entry = paymentSelectionHelper.selectedEntry.getValue()
             if (entry != null) {
                 if (entry.paymentMethod.isRequiringCredentials && entry.paymentCredentials == null) {
-                    PaymentInputViewHelper.openPaymentInputView(context, entry.paymentMethod, project)
+                    PaymentInputViewHelper.openPaymentInputView(context, entry.paymentMethod, project.id)
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout)
                     SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(context,
@@ -147,7 +148,7 @@ class CheckoutBar @JvmOverloads constructor(
             } else {
                 var hasPaymentMethodThatRequiresCredentials = false
                 val paymentMethods = project.availablePaymentMethods
-                if (paymentMethods != null && paymentMethods.size > 0) {
+                if (paymentMethods != null && paymentMethods.isNotEmpty()) {
                     for (pm in paymentMethods) {
                         if (pm.isRequiringCredentials) {
                             hasPaymentMethodThatRequiresCredentials = true

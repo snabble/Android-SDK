@@ -11,19 +11,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.payment.PaymentCredentials;
-import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 
@@ -32,7 +30,8 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
-    private View helperText;
+    private TextView helperText;
+    private TextView helperTextNoImage;
     private Checkout.State currentState;
     private ImageView helperImage;
     private View upArrow;
@@ -65,6 +64,16 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         cancelProgress = findViewById(R.id.cancel_progress);
 
         helperText = findViewById(R.id.helper_text);
+
+        String text = I18nUtils.getString(getResources(), "Snabble.Payment.Online.message");
+        if (text != null) {
+            helperText.setVisibility(View.VISIBLE);
+            helperText.setText(text);
+        } else {
+            helperText.setVisibility(View.GONE);
+        }
+
+        helperTextNoImage = findViewById(R.id.helper_text_no_image);
         helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
         progressIndicator = findViewById(R.id.progress_indicator);
@@ -155,7 +164,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 break;
             case PAYMENT_PROCESSING:
                 checkoutIdCode.setVisibility(View.GONE);
-                helperText.setVisibility(View.GONE);
+                helperTextNoImage.setVisibility(View.GONE);
                 helperImage.setVisibility(View.GONE);
                 upArrow.setVisibility(View.GONE);
                 progressIndicator.setVisibility(View.VISIBLE);
@@ -206,18 +215,18 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             helperImage.setImageBitmap(bitmap);
             upArrow.setVisibility(View.VISIBLE);
             helperImage.setVisibility(View.VISIBLE);
-            helperText.setVisibility(View.GONE);
+            helperTextNoImage.setVisibility(View.GONE);
             progressIndicator.setVisibility(View.GONE);
         } else {
             upArrow.setVisibility(View.GONE);
             helperImage.setVisibility(View.GONE);
-            helperText.setVisibility(View.VISIBLE);
+            helperTextNoImage.setVisibility(View.VISIBLE);
             progressIndicator.setVisibility(View.GONE);
         }
 
         if (currentState == Checkout.State.PAYMENT_PROCESSING) {
             checkoutIdCode.setVisibility(View.GONE);
-            helperText.setVisibility(View.GONE);
+            helperTextNoImage.setVisibility(View.GONE);
             helperImage.setVisibility(View.GONE);
             upArrow.setVisibility(View.GONE);
             progressIndicator.setVisibility(View.VISIBLE);

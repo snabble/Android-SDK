@@ -1,6 +1,43 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.33.11]
+
+### Fixed
+- Leak of SelfScanningView in SelfScanningFragment when in onResume()
+- Camera black screen on Google Pixel 4a when using multi-window mode
+- Improved camera loading behaviour when calling BarcodeScannerView.start() repeatedly
+
+## [0.33.10]
+
+### Fixed
+- Endless recursion when handling unknown gs1 codes
+
+## [0.33.9]
+
+### Fixed
+- Fixed incorrect display of units when processing line items from vPOS
+
+## [0.33.8]
+
+### Fixed
+- Added more missing keyguard checks
+
+## [0.33.7]
+
+### Added
+- Added explanation text for checkout online status screen
+
+### Fixed
+- Fixed a crash when adding a new payment method from the ShoppingCart
+- Fixed scan dialog update button being cutoff when using the highest font scaling setting
+- Fixed added missing keyguard after payment selection
+
+## [0.33.6]
+
+### Fixed
+- Fixed a bug that aborted terminal payments could not be retried
+
 ## [0.33.5]
 
 ### Changed

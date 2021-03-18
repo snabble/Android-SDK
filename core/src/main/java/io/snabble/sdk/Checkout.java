@@ -1,13 +1,10 @@
 package io.snabble.sdk;
 
-import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
@@ -559,6 +556,7 @@ public class Checkout {
                 Logger.d("Payment denied by payment provider");
                 notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
             }
+            shoppingCart.generateNewUUID();
             return true;
         }
 

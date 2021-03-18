@@ -74,10 +74,11 @@ public class SelfScanningFragment extends Fragment {
     }
 
     private void createSelfScanningView() {
-        selfScanningView = new SelfScanningView(getContext());
-        selfScanningView.setAllowShowingHints(allowShowingHints);
-
-        rootView.addView(selfScanningView, 0);
+        if (selfScanningView == null) {
+            selfScanningView = new SelfScanningView(getContext());
+            selfScanningView.setAllowShowingHints(allowShowingHints);
+            rootView.addView(selfScanningView, 0);
+        }
         permissionContainer.setVisibility(View.GONE);
         canAskAgain = true;
         handleBundleArgs();
