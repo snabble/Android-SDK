@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.KeyEvent;
+import android.view.View;
+
+import androidx.fragment.app.FragmentActivity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
+import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Age;
 import io.snabble.sdk.utils.Dispatch;
 
@@ -49,28 +53,22 @@ public class ProductResolver {
         this.context = context;
 
         productConfirmationDialog = new ProductConfirmationDialog(context, SnabbleUI.getProject());
-        productConfirmationDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (lastProduct != null && productConfirmationDialog.wasAddedToCart()) {
-                    checkMinAge(lastProduct);
-                }
+        productConfirmationDialog.setOnDismissListener(dialog -> {
+            if (lastProduct != null && productConfirmationDialog.wasAddedToCart()) {
+                checkMinAge(lastProduct);
+            }
 
-                if(onDismissListener != null) {
-                    onDismissListener.onDismiss();
-                }
+            if(onDismissListener != null) {
+                onDismissListener.onDismiss();
             }
         });
 
-        productConfirmationDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (onKeyListener != null) {
-                    return onKeyListener.onKey(dialog, keyCode, event);
-                }
-
-                return false;
+        productConfirmationDialog.setOnKeyListener((dialog, keyCode, event) -> {
+            if (onKeyListener != null) {
+                return onKeyListener.onKey(dialog, keyCode, event);
             }
+
+            return false;
         });
 
         progressDialog = new DelayedProgressDialog(context);
@@ -78,15 +76,12 @@ public class ProductResolver {
         progressDialog.setMessage(context.getString(R.string.Snabble_loadingProductInformation));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
-        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    progressDialog.dismiss();
-                    return true;
-                }
-                return false;
+        progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
+            if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                progressDialog.dismiss();
+                return true;
             }
+            return false;
         });
     }
 

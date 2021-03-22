@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,6 +70,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
+    private List<ManualDiscount> manualDiscounts;
     private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
@@ -289,6 +291,12 @@ public class Project {
 
         displayNetPrice = JsonUtils.getBooleanOpt(jsonObject, "displayNetPrice", false);
 
+        List<ManualDiscount> manualDiscounts = new ArrayList<>();
+        manualDiscounts.add(new ManualDiscount("10%", new BigDecimal("0.1"), "foo1"));
+        manualDiscounts.add(new ManualDiscount("20%", new BigDecimal("0.2"), "foo2"));
+        manualDiscounts.add(new ManualDiscount("30%", new BigDecimal("0.3"), "foo3"));
+        this.manualDiscounts = Collections.unmodifiableList(manualDiscounts);
+
         notifyUpdate();
     }
 
@@ -364,6 +372,10 @@ public class Project {
 
     public EncodedCodesOptions getEncodedCodesOptions() {
         return encodedCodesOptions;
+    }
+
+    public List<ManualDiscount> getManualDiscounts() {
+        return manualDiscounts;
     }
 
     public boolean isCheckoutAvailable() {

@@ -26,24 +26,28 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.fragment.app.FragmentActivity;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
+import io.snabble.sdk.ManualDiscount;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
+import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
-class ProductConfirmationDialog {
+public class ProductConfirmationDialog {
     private Context context;
     private Project project;
     private AlertDialog alertDialog;
@@ -62,6 +66,7 @@ class ProductConfirmationDialog {
     private View close;
     private View plus;
     private View minus;
+    private View enterReducedPrice;
 
     private ShoppingCart.Item cartItem;
 
@@ -103,6 +108,7 @@ class ProductConfirmationDialog {
         close = view.findViewById(R.id.close);
         plus = view.findViewById(R.id.plus);
         minus = view.findViewById(R.id.minus);
+        enterReducedPrice = view.findViewById(R.id.enterReducedPrice);
 
         name.setText(product.getName());
 
@@ -140,18 +146,15 @@ class ProductConfirmationDialog {
         }
 
         quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
-        quantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE
-                        || (event.getAction() == KeyEvent.ACTION_DOWN
-                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    addToCart();
-                    return true;
-                }
-
-                return false;
+        quantity.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE
+                    || (event.getAction() == KeyEvent.ACTION_DOWN
+                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                addToCart();
+                return true;
             }
+
+            return false;
         });
 
         quantity.addTextChangedListener(new TextWatcher() {
@@ -189,38 +192,33 @@ class ProductConfirmationDialog {
 
         updatePrice();
 
-        plus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int q = getQuantity();
-                if (q < ShoppingCart.MAX_QUANTITY) {
-                    setQuantity(++q);
-                }
+        List<ManualDiscount> manualDiscounts = project.getManualDiscounts();
+        boolean isVisible = manualDiscounts != null && manualDiscounts.size() > 0;
+        enterReducedPrice.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        enterReducedPrice.setOnClickListener(v -> {
+            FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(context);
+            new SelectReducedPriceDialogFragment(ProductConfirmationDialog.this, cartItem)
+                    .show(fragmentActivity.getSupportFragmentManager(), null);
+        });
+
+        plus.setOnClickListener(v -> {
+            int q = getQuantity();
+            if (q < ShoppingCart.MAX_QUANTITY) {
+                setQuantity(++q);
             }
         });
 
-        minus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int q = getQuantity();
-                setQuantity(--q);
-            }
+        minus.setOnClickListener(v -> {
+            int q = getQuantity();
+            setQuantity(--q);
         });
 
-        addToCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addToCart();
-            }
-        });
+        addToCart.setOnClickListener(v -> addToCart());
 
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Telemetry.event(Telemetry.Event.RejectedProduct, cartItem.getProduct());
-                cartItem = null;
-                dismiss(false);
-            }
+        close.setOnClickListener(v -> {
+            Telemetry.event(Telemetry.Event.RejectedProduct, cartItem.getProduct());
+            cartItem = null;
+            dismiss(false);
         });
 
         Window window = alertDialog.getWindow();
@@ -254,7 +252,7 @@ class ProductConfirmationDialog {
         }
     }
 
-    private void updatePrice() {
+    public void updatePrice() {
         Product product = cartItem.getProduct();
 
         String fullPriceText = cartItem.getFullPriceText();

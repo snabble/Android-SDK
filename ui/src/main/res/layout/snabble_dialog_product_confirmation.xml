@@ -78,11 +78,22 @@
         android:textSize="13sp"
         tools:text="+ 0,45 € deposit" />
 
+    <Button
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:id="@+id/enterReducedPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/depositPrice"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-16dp"
+        android:textSize="15sp"
+        android:text="Reduzierten Preis eingeben" />
+
     <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
         android:id="@+id/minus"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_below="@+id/depositPrice"
+        android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
         android:layout_marginTop="18dp"
@@ -107,7 +118,7 @@
         android:insetBottom="0dp"
         app:hintEnabled="false"
         app:boxStrokeColor="@drawable/snabble_stroke"
-        android:layout_below="@+id/depositPrice"
+        android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp">
 
@@ -127,7 +138,7 @@
         android:id="@+id/plus"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_below="@+id/depositPrice"
+        android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
         android:layout_marginTop="18dp"
