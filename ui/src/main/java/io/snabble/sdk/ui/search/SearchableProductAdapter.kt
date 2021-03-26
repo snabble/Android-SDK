@@ -47,6 +47,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
     interface QuantityManager {
         fun getQuantityFor(product: Product): Int
         fun onQuantityChanged(product: Product, quantity: Int)
+        fun onProductSelected(product: Product)
     }
 
     abstract class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -122,6 +123,9 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
         }
 
         override fun bindTo(product: Product, highlight: String, quantityManager: QuantityManager?) {
+            itemView.setOnClickListener {
+                quantityManager?.onProductSelected(product)
+            }
             plus.setOnClickListener {
                 quantity++
                 quantityManager?.onQuantityChanged(product, quantity)
@@ -223,7 +227,8 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
         }
     }
 
-    private val offset = if(searchType.isFreeText) 1 else 0
+    private val offset
+        get() = if(searchType.isFreeText) 1 else 0
 
     override fun getItemCount() = itemCount + offset
 
