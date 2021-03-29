@@ -21,7 +21,7 @@
                 android:layout_gravity="center_vertical|start"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 android:enabled="false"
                 tools:text="2 Artikel"/>
 
@@ -32,7 +32,7 @@
                 android:layout_gravity="center_vertical|end"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:textSize="26sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 tools:text="13,37 €"/>
         </FrameLayout>
