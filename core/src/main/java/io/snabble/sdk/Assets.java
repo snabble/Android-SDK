@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.Looper;
 import android.util.DisplayMetrics;
@@ -62,6 +63,12 @@ public class Assets {
             this.density = density;
             this.tag = tag;
         }
+    }
+
+    public enum Type {
+        SVG,
+        JPG,
+        WEBP
     }
 
     private class ApiAsset {
@@ -182,7 +189,7 @@ public class Assets {
                     .cacheControl(new CacheControl.Builder()
                             .maxAge(30, TimeUnit.SECONDS)
                             .build())
-                    .url(project.getAssetsUrl() + "?type=svg")
+                    .url(project.getAssetsUrl())
                     .get()
                     .build();
 
@@ -223,12 +230,18 @@ public class Assets {
                 String hash = Utils.sha1Hex(url);
                 hashes.add(hash);
 
-                if (!FilenameUtils.getExtension(apiAsset.name).equals("svg")) {
+                String nightModeFileName = null;
+                if (nonRootIncludedFileName != null) {
+                    nightModeFileName = getNightModeFileName(nonRootIncludedFileName);
+                }
+                boolean forceInclude = FilenameUtils.removeExtension(apiAsset.name).equals(nightModeFileName);
+                String ext = FilenameUtils.getExtension(apiAsset.name);
+                if (!ext.equals("svg") && !forceInclude) {
                     continue;
                 }
 
                 // exclude assets that are not in the root when not explicitly requested
-                if (apiAsset.name.contains("/") && !apiAsset.name.equals(nonRootIncludedFileName)) {
+                if (apiAsset.name.contains("/") && !forceInclude) {
                     continue;
                 }
 
@@ -333,7 +346,28 @@ public class Assets {
         return false;
     }
 
-    private Bitmap getBitmap(String name) {
+    public Bitmap getBitmap(String name) {
+        return getBitmapSVG(name);
+    }
+
+    public Bitmap getBitmap(String name, Type type) {
+        switch (type) {
+            case SVG:
+                return getBitmapSVG(name);
+            case JPG:
+            case WEBP:
+                return getBitmapByType(name, type);
+            default:
+                return null;
+        }
+    }
+
+    private String getNightModeFileName(String fileName) {
+        boolean nightMode = isNightModeActive(Snabble.getInstance().getApplication());
+        return FilenameUtils.removeExtension(fileName) + (nightMode ? "_dark" : "");
+    }
+
+    private Asset getAsset(String name, Type type) {
         // currently a limitation due to asynchronous reads and saves,
         // could be solved with careful locking
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -344,9 +378,19 @@ public class Assets {
             return null;
         }
 
-        boolean nightMode = isNightModeActive(Snabble.getInstance().getApplication());
+        String fileName = getNightModeFileName(name);
 
-        final String fileName = FilenameUtils.removeExtension(name) + (nightMode ? "_dark" : "") + ".svg";
+        switch (type) {
+            case SVG:
+                fileName += ".svg";
+                break;
+            case JPG:
+                fileName += ".jpg";
+                break;
+            case WEBP:
+                fileName += ".webp";
+                break;
+        }
 
         Asset asset = manifest.assets.get(fileName);
         if (asset == null) {
@@ -354,9 +398,29 @@ public class Assets {
             asset = manifest.assets.get(name);
         }
 
+        return asset;
+    }
+
+    private Bitmap getBitmapByType(String name, Type type) {
+        Asset asset = getAsset(name, type);
         if (asset != null) {
             try {
-                Logger.d("render %s/%s", project.getId(), name);
+                Logger.d("render jpg %s/%s", project.getId(), name);
+                return BitmapFactory.decodeStream(new FileInputStream(asset.file));
+            } catch (Exception e) {
+                Logger.d("could not decode " + name + ": " + e.toString());
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    private Bitmap getBitmapSVG(String name) {
+        Asset asset = getAsset(name, Type.SVG);
+        if (asset != null) {
+            try {
+                Logger.d("render svg %s/%s", project.getId(), name);
 
                 Resources res = app.getResources();
                 DisplayMetrics dm = res.getDisplayMetrics();
@@ -382,23 +446,40 @@ public class Assets {
     }
 
     public void get(String name, Callback callback) {
-        final String fileName = FilenameUtils.removeExtension(name) + ".svg";
+        get(name, Type.SVG, callback);
+    }
 
-        Bitmap bitmap = getBitmap(fileName);
+    public void get(String name, Type type, Callback callback) {
+        String fileName = FilenameUtils.removeExtension(name);
+        switch (type) {
+            case SVG:
+                fileName += ".svg";
+                break;
+            case JPG:
+                fileName += ".jpg";
+                break;
+            case WEBP:
+                fileName += ".webp";
+                break;
+        }
+        final String finalFileName = fileName;
+
+        Bitmap bitmap = getBitmap(fileName, type);
         if (bitmap != null) {
             Logger.d("cache hit " + fileName);
             callback.onReceive(bitmap);
         } else {
             Logger.d("cache miss " + fileName);
+
             download(fileName, new DownloadCallback() {
                 @Override
                 public void success() {
-                    Dispatch.mainThread(() -> callback.onReceive(getBitmap(fileName)));
+                    Dispatch.mainThread(() -> callback.onReceive(getBitmap(finalFileName, type)));
                 }
 
                 @Override
                 public void failure() {
-                    Logger.d("fail " + fileName);
+                    Logger.d("fail " + finalFileName);
                     Dispatch.mainThread(() -> callback.onReceive(null));
                 }
             });

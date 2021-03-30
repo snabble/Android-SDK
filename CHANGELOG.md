@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.34.0]
+
+### Added
+- Add support for JPG and WEBP assets
+
 ## [0.33.11]
 
 ### Fixed
