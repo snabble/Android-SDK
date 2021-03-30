@@ -57,7 +57,6 @@ public class ShoppingCartView extends FrameLayout {
     private ShoppingCartAdapter recyclerViewAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ShoppingCart cart;
-    private Checkout checkout;
     private CheckoutBar checkoutBar;
     private View coordinatorLayout;
     private ViewGroup emptyState;
@@ -143,7 +142,6 @@ public class ShoppingCartView extends FrameLayout {
         }
 
         cart = project.getShoppingCart();
-        checkout = project.getCheckout();
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerViewAdapter = new ShoppingCartAdapter(getContext(), undoHelper);
@@ -555,7 +553,7 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView name;
         TextView subtitle;
@@ -759,7 +757,7 @@ public class ShoppingCartView extends FrameLayout {
         private List<Row> list = Collections.emptyList();
         private final Context context;
         private boolean hasAnyImages = false;
-        private UndoHelper undoHelper;
+        private final UndoHelper undoHelper;
 
         public ShoppingCartAdapter(Context context, UndoHelper undoHelper) {
             super();
