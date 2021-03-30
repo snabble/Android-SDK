@@ -16,18 +16,18 @@ class SelectReducedPriceDialogFragment(
 ) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val project = SnabbleUI.getProject()
-        val discounts = project.manualDiscounts
+        val discounts = project.manualCoupons
 
         val adapter = ArrayAdapter(requireContext(),
             R.layout.snabble_item_pricereduction_select,
             R.id.label,
-            discounts.map { it.label }
+            discounts.map { it.name }
         )
 
         return AlertDialog.Builder(requireContext())
             .setTitle("Select price reduction")
             .setAdapter(adapter) { _, which ->
-                cartItem.setManualDiscount(discounts[which])
+                cartItem.setManualCoupon(discounts[which])
                 productConfirmationDialog.updatePrice()
             }
             .create()

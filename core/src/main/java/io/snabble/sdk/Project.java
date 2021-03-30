@@ -10,6 +10,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
@@ -70,7 +72,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
-    private List<ManualDiscount> manualDiscounts;
+    private List<ManualCoupon> manualCoupons;
     private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
@@ -291,11 +293,24 @@ public class Project {
 
         displayNetPrice = JsonUtils.getBooleanOpt(jsonObject, "displayNetPrice", false);
 
-        List<ManualDiscount> manualDiscounts = new ArrayList<>();
-        manualDiscounts.add(new ManualDiscount("10%", new BigDecimal("0.1"), "foo1"));
-        manualDiscounts.add(new ManualDiscount("20%", new BigDecimal("0.2"), "foo2"));
-        manualDiscounts.add(new ManualDiscount("30%", new BigDecimal("0.3"), "foo3"));
-        this.manualDiscounts = Collections.unmodifiableList(manualDiscounts);
+        ArrayList<ManualCoupon> manualCoupons = new ArrayList<>();
+
+        try {
+            if (jsonObject.has("manualCoupons")) {
+                JsonArray jsonArray = jsonObject.get("manualCoupons").getAsJsonArray();
+                for (JsonElement element : jsonArray) {
+                    JsonObject coupon = element.getAsJsonObject();
+                    manualCoupons.add(new ManualCoupon(
+                            coupon.get("id").getAsString(),
+                            coupon.get("name").getAsString()
+                    ));
+                }
+            }
+        } catch (Exception e) {
+            Logger.e("Could not parse manual coupons");
+        }
+
+        this.manualCoupons = Collections.unmodifiableList(manualCoupons);
 
         notifyUpdate();
     }
@@ -374,8 +389,8 @@ public class Project {
         return encodedCodesOptions;
     }
 
-    public List<ManualDiscount> getManualDiscounts() {
-        return manualDiscounts;
+    public List<ManualCoupon> getManualCoupons() {
+        return manualCoupons;
     }
 
     public boolean isCheckoutAvailable() {

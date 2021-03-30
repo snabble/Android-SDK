@@ -132,31 +132,6 @@ public class ShoppingCartTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testManualDiscount() {
-        ShoppingCart.Item item = simpleProduct1.cartItem();
-        assertStrEquals(item.getPriceText(), "3,99 €");
-        assertStrEquals(item.getQuantityText(), "1");
-        assertStrEquals(item.getFullPriceText(), "3,99 €");
-
-        ManualDiscount discount = new ManualDiscount("foo", new BigDecimal("0.5"), "bar");
-        item.setManualDiscount(discount);
-
-        Assert.assertEquals(200, item.getLocalTotalPrice());
-        Assert.assertFalse(item.isMergeable());
-
-        item.setManualDiscount(null);
-        Assert.assertEquals(399, item.getLocalTotalPrice());
-        Assert.assertTrue(item.isMergeable());
-
-        item.setManualDiscount(discount);
-        Assert.assertEquals(200, item.getLocalTotalPrice());
-        Assert.assertFalse(item.isMergeable());
-
-        cart.add(item);
-        Assert.assertEquals(cart.getTotalPrice(), 200);
-    }
-
-    @Test
     public void testPriceText() {
         ShoppingCart.Item item = simpleProduct1.cartItem();
         assertStrEquals(item.getPriceText(), "3,99 €");

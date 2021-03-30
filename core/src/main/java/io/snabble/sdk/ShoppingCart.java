@@ -3,7 +3,6 @@ package io.snabble.sdk;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -464,7 +463,7 @@ public class ShoppingCart {
         private String id;
         private boolean isUsingSpecifiedQuantity;
         private transient ShoppingCart cart;
-        private ManualDiscount manualDiscount;
+        private ManualCoupon manualCoupon;
 
         protected Item() {
             // for gson
@@ -581,7 +580,7 @@ public class ShoppingCart {
 
         public boolean isMergeable() {
             if (product == null && lineItem != null) return false;
-            if (manualDiscount != null) return false;
+            if (manualCoupon != null) return false;
 
             boolean b = product.getType() == Product.Type.Article
                     && getUnit() != PIECE
@@ -615,13 +614,6 @@ public class ShoppingCart {
                     scannedCode,
                     cart.project.getRoundingMode(),
                     cart.project.getCustomerCardId());
-
-            if (manualDiscount != null) {
-                return new BigDecimal(price)
-                        .multiply(manualDiscount.getValue())
-                        .setScale(0, cart.project.getRoundingMode())
-                        .intValue();
-            }
 
             return price;
         }
@@ -752,9 +744,8 @@ public class ShoppingCart {
             return 0;
         }
 
-        public void setManualDiscount(ManualDiscount manualDiscount) {
-            this.manualDiscount = manualDiscount;
-            cart.notifyManualDiscountApplied(cart, this, manualDiscount);
+        public void setManualCoupon(ManualCoupon manualCoupon) {
+            this.manualCoupon = manualCoupon;
         }
 
         void replace(Product product, ScannedCode scannedCode, int quantity) {
@@ -806,6 +797,8 @@ public class ShoppingCart {
         Integer price;
         Integer weight;
         Integer units;
+        String refersTo;
+        String couponID;
     }
 
     BackendCart toBackendCart() {
@@ -899,6 +892,14 @@ public class ShoppingCart {
             }
 
             items.add(item);
+
+            if (cartItem.manualCoupon != null) {
+                BackendCartItem couponItem = new BackendCartItem();
+                couponItem.id = UUID.randomUUID().toString();
+                couponItem.refersTo = item.id;
+                couponItem.couponID = cartItem.manualCoupon.getId();
+                items.add(couponItem);
+            }
         }
 
         backendCart.items = items.toArray(new BackendCartItem[items.size()]);
@@ -934,10 +935,6 @@ public class ShoppingCart {
 
         void onQuantityChanged(ShoppingCart list, Item item);
 
-        void onManualDiscountApplied(ShoppingCart list, Item item, ManualDiscount coupon);
-
-        void onManualDiscountRemoved(ShoppingCart list, Item item, ManualDiscount coupon);
-
         void onCleared(ShoppingCart list);
 
         void onItemRemoved(ShoppingCart list, Item item, int pos);
@@ -966,16 +963,6 @@ public class ShoppingCart {
 
         @Override
         public void onQuantityChanged(ShoppingCart list, Item item) {
-            onChanged(list);
-        }
-
-        @Override
-        public void onManualDiscountApplied(ShoppingCart list, Item item, ManualDiscount coupon) {
-            onChanged(list);
-        }
-
-        @Override
-        public void onManualDiscountRemoved(ShoppingCart list, Item item, ManualDiscount coupon) {
             onChanged(list);
         }
 
@@ -1036,18 +1023,6 @@ public class ShoppingCart {
             if (list.items.contains(item)) {
                 for (ShoppingCartListener listener : listeners) {
                     listener.onQuantityChanged(list, item);
-                }
-            }
-        });
-    }
-
-    private void notifyManualDiscountApplied(final ShoppingCart list, final Item item, final ManualDiscount manualDiscount) {
-        updateTimestamp();
-
-        Dispatch.mainThread(() -> {
-            if (list.items.contains(item)) {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onManualDiscountApplied(list, item, manualDiscount);
                 }
             }
         });

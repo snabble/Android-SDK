@@ -32,7 +32,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import io.snabble.sdk.ManualDiscount;
+import io.snabble.sdk.ManualCoupon;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
@@ -192,8 +192,8 @@ public class ProductConfirmationDialog {
 
         updatePrice();
 
-        List<ManualDiscount> manualDiscounts = project.getManualDiscounts();
-        boolean isVisible = manualDiscounts != null && manualDiscounts.size() > 0;
+        List<ManualCoupon> manualCoupons = project.getManualCoupons();
+        boolean isVisible = manualCoupons != null && manualCoupons.size() > 0;
         enterReducedPrice.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         enterReducedPrice.setOnClickListener(v -> {
             FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(context);
