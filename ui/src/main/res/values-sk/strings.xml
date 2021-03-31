@@ -14,6 +14,7 @@
     <string name="Snabble.Biometry.Alert.title">Aktivovať %s?</string>
     <string name="Snabble.Biometry.enterCode">Zadanie kódu</string>
     <string name="Snabble.Biometry.FaceId">Face ID</string>
+    <string name="Snabble.Biometry.locked">%s je zablokovaná. Zadaj svoj kód na obrazovke uzamknutia, aby si ju znovu aktivoval.</string>
     <!--
   ********* iOS Biometry *********
   iOS only, this is used for the iOS-specific biometry settings views
@@ -32,6 +33,7 @@
     <string name="Snabble.Checkout.payAtCashRegister">Zaplatiť pri pokladni</string>
     <string name="Snabble.Checkout.title">Zaplatiť</string>
     <string name="Snabble.Checkout.verifying">Overujem</string>
+    <string name="Snabble.CreditCard.payNow">Teraz zaplatiť kreditnou kartou</string>
     <string name="Snabble.Delete">Vymazať</string>
     <string name="Snabble.Done">Hotovo</string>
     <string name="Snabble.Edit">Upraviť</string>
@@ -55,6 +57,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Autorizácia sa nepodarila</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Vymazať spôsob platby</string>
     <string name="Snabble.paydirekt.gotoWebsite">Prejsť na paydirekt.de</string>
+    <string name="Snabble.Paydirekt.payNow">Teraz zaplatiť prostredníctvom paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">Autorizácia aplikácie snabble pre paydirekt bola úspešná. Ak chceš autorizáciu zrušiť, musíš sa prihlásiť do svojho konta paydirekt na webovej stránke. Pokiaľ nechceš, aby paydirekt bol v budúcnosti zobrazovaný ako spôsob platby, tu ho môžeš jednoducho odstrániť.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Platobný proces bol prerušený</string>
@@ -158,8 +161,11 @@
     <string name="Snabble.Scanner.updateCart">Aktualizovať košík</string>
     <string name="Snabble.SEPA.editingHint">Tvoje SEPA údaje budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.SEPA.encryptionError">Chyba pri kódovaní</string>
+    <string name="Snabble.SEPA.iAgree">Súhlasím</string>
     <string name="Snabble.SEPA.ibanTransferAlert.message">Chceš uložiť tieto údaje účtu (IBAN: %s) pre nákupy v budúcnosti?</string>
     <string name="Snabble.SEPA.ibanTransferAlert.title">Uložiť údaje účtu</string>
+    <string name="Snabble.SEPA.mandate">Mandát na inkaso v SEPA</string>
+    <string name="Snabble.SEPA.payNow">SEPA platba teraz</string>
     <string name="Snabble.SEPA.scoTransferHint">Ešte zadaj meno uvedené na karte, aby si ju mohol/mohla uložiť pre platby priamo prostredníctvom aplikácie.</string>
     <string name="Snabble.Settings">Nastavenia</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Položka bola odstránená</string>

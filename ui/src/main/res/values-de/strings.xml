@@ -14,6 +14,7 @@
     <string name="Snabble.Biometry.Alert.title">%s aktivieren?</string>
     <string name="Snabble.Biometry.enterCode">Code eingeben</string>
     <string name="Snabble.Biometry.FaceId">Face-ID</string>
+    <string name="Snabble.Biometry.locked">%s ist gesperrt. Bitte gib deinen Code im Sperrbildschirm ein, um es wieder zu aktivieren.</string>
     <!--
   ********* iOS Biometry *********
   iOS only, this is used for the iOS-specific biometry settings views
@@ -32,6 +33,7 @@
     <string name="Snabble.Checkout.payAtCashRegister">An der Kasse zahlen</string>
     <string name="Snabble.Checkout.title">Bezahlen</string>
     <string name="Snabble.Checkout.verifying">Verifiziere</string>
+    <string name="Snabble.CreditCard.payNow">Jetzt mit Kreditkarte bezahlen</string>
     <string name="Snabble.Delete">Löschen</string>
     <string name="Snabble.Done">Fertig</string>
     <string name="Snabble.Edit">Bearbeiten</string>
@@ -55,6 +57,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Autorisierung fehlgeschlagen</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Bezahlmethode löschen</string>
     <string name="Snabble.paydirekt.gotoWebsite">Zu paydirekt.de</string>
+    <string name="Snabble.Paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
     <string name="Snabble.paydirekt.savedAuthorization">Du hast die snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Der Bezahlvorgang wurde abgebrochen</string>
@@ -158,8 +161,11 @@
     <string name="Snabble.Scanner.updateCart">Warenkorb aktualisieren</string>
     <string name="Snabble.SEPA.editingHint">Deine SEPA-Daten werden von uns nur verschlüsselt gespeichert und können daher nicht bearbeitet werden.</string>
     <string name="Snabble.SEPA.encryptionError">Fehler bei der Verschlüsselung</string>
+    <string name="Snabble.SEPA.iAgree">Ich stimme zu</string>
     <string name="Snabble.SEPA.ibanTransferAlert.message">Möchtest du diese Kontodaten (IBAN: %s) für zukünftige Einkäufe speichern?</string>
     <string name="Snabble.SEPA.ibanTransferAlert.title">Kontodaten speichern</string>
+    <string name="Snabble.SEPA.mandate">SEPA-Lastschriftmandat</string>
+    <string name="Snabble.SEPA.payNow">Jetzt mit SEPA bezahlen</string>
     <string name="Snabble.SEPA.scoTransferHint">Bitte gib noch den Namen auf der Karte ein um sie für Zahlungen direkt mit der App speichern zu können.</string>
     <string name="Snabble.Settings">Einstellungen</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Artikel entfernt</string>

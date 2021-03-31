@@ -29,7 +29,7 @@
             android:gravity="center"
             android:textSize="17sp"
             android:textStyle="bold"
-            android:text="@string/Snabble.Payment.SEPA.legalInfo.title"/>
+            android:text="@string/Snabble.SEPA.mandate"/>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -51,5 +51,5 @@
         android:layout_marginTop="24dp"
         android:layout_gravity="bottom"
         android:id="@+id/button"
-        android:text="@string/Snabble.Payment.SEPA.legalInfo.agree" />
+        android:text="@string/Snabble.SEPA.iAgree" />
 </FrameLayout>
