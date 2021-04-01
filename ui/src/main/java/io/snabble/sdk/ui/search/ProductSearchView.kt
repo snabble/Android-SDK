@@ -46,7 +46,7 @@ class ProductSearchView @JvmOverloads constructor(context: Context, attrs: Attri
     var allowAnyCode = false
 
     private var productSelectedListener: OnProductSelectedListener? = null
-    var showSku = true
+    var showSku = false
         set(value) {
             field = value
             searchableProductAdapter.showSku = value
