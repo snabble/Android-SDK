@@ -100,6 +100,8 @@ public class CheckoutApi {
         int amount;
         int price;
         Integer units;
+        Integer weight;
+        String weightUnit;
         int totalPrice;
         LineItemType type;
     }

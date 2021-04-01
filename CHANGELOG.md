@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add support for JPG and WEBP assets
 
+### Fixed
+- Fix vPOS updates with weight information resulting in incorrect quantities
+
 ## [0.33.11]
 
 ### Fixed
