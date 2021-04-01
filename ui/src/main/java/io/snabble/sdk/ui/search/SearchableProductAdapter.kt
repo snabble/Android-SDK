@@ -36,10 +36,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
     private var itemCount = 0
     var showBarcode = true
     private var searchQuery = ""
-    private var nullableProject = SnabbleUI.getProjectAsLiveData().value
-    var project: Project
-        get() = requireNotNull(nullableProject, {"No Project instance set. Use SnabbleUI.registerProject after SDK initialization."})
-        set(value) { nullableProject = value }
+    lateinit var project: Project
     private val productDatabase by lazy { project.productDatabase }
     var showSku = false
     var quantityManager: QuantityManager? = null
@@ -228,7 +225,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
     }
 
     private val offset
-        get() = if(searchType.isFreeText) 1 else 0
+        get() = if(searchType.isFreeText && searchQuery.isNotBlank()) 1 else 0
 
     override fun getItemCount() = itemCount + offset
 
