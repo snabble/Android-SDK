@@ -469,6 +469,13 @@ public class SelfScanningView extends FrameLayout {
         barcodeScanner.removeBarcodeFormat(barcodeFormat);
     }
 
+    /**
+     * Sets the offset of the scan indicator, in pixels.
+     */
+    public void setIndicatorOffset(int offsetX, int offsetY) {
+        barcodeScanner.setIndicatorOffset(offsetX, offsetY);
+    }
+
     private void registerListeners() {
         isRunning = true;
 
