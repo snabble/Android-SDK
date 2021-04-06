@@ -4,20 +4,7 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.view.View
-import android.widget.TextView
 import io.snabble.sdk.utils.StringNormalizer
-
-inline var View.isVisible: Boolean
-    get() = visibility == View.VISIBLE
-    set(value) {
-        visibility = if (value) View.VISIBLE else View.GONE
-    }
-
-fun TextView.setOrHide(text: CharSequence?) {
-    this.isVisible = text.isNotNullOrBlank()
-    this.text = text
-}
 
 fun CharSequence?.isNotNullOrBlank() = !isNullOrBlank()
 

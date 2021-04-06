@@ -11,12 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import io.snabble.sdk.Product
 import io.snabble.sdk.Project
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.*
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.StringNormalizer
@@ -143,7 +143,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
             title.text = product.name.highlight(highlight)
 
             image.setImageDrawable(null)
-            image.isVisible = true//item.shouldShowImage
+            image.isVisible = true
             subtitle.setOrHide(product.description)
             if (product.imageUrl.isNotNullOrBlank()) {
                 Picasso.get()
