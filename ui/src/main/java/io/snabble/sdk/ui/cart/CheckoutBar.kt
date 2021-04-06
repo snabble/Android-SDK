@@ -21,10 +21,7 @@ import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.utils.DelayedProgressDialog
-import io.snabble.sdk.ui.utils.I18nUtils
-import io.snabble.sdk.ui.utils.OneShotClickListener
-import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.*
 
 
 class CheckoutBar @JvmOverloads constructor(
@@ -125,7 +122,7 @@ class CheckoutBar @JvmOverloads constructor(
         if (cart?.hasReachedMaxCheckoutLimit() == true) {
             val message = resources.getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.priceFormatter.format(project.maxCheckoutLimit))
-            //FIXME snackbar = UIUtils.snackbar(coordinatorLayout, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+            UIUtils.snackbar(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
         } else {
             val entry = paymentSelectionHelper.selectedEntry.getValue()
             if (entry != null) {
@@ -253,11 +250,11 @@ class CheckoutBar @JvmOverloads constructor(
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .show()
             } else {
-                //FIXME UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+                UIUtils.snackbar(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             }
             progressDialog.dismiss()
         } else if (state == Checkout.State.CONNECTION_ERROR || state == Checkout.State.NO_SHOP) {
-            //FIXME UIUtils.snackbar(coordinatorLayout, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+            UIUtils.snackbar(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             progressDialog.dismiss()
         } else if (state == Checkout.State.PAYMENT_ABORTED) {
             progressDialog.dismiss()
