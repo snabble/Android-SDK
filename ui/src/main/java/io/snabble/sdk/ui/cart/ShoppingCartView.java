@@ -57,7 +57,6 @@ public class ShoppingCartView extends FrameLayout {
     private ShoppingCartAdapter recyclerViewAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ShoppingCart cart;
-    private CheckoutBar checkoutBar;
     private View coordinatorLayout;
     private ViewGroup emptyState;
     private View restore;
@@ -162,9 +161,6 @@ public class ShoppingCartView extends FrameLayout {
 
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         emptyState = findViewById(R.id.empty_state);
-
-        checkoutBar = findViewById(R.id.checkout);
-        checkoutBar.setCart(cart);
 
         paymentContainer = findViewById(R.id.bottom_payment_container);
 

@@ -35,15 +35,10 @@ class CheckoutBar @JvmOverloads constructor(
     private val priceSum: TextView
     private val paymentSelectionHelper: PaymentSelectionHelper
     private val project = SnabbleUI.getProject()
-
-    var cart: ShoppingCart? = null
-        set(value) {
-            field = value
-            if (value != null) {
-                value.addListener(cartChangeListener)
-                update()
-            }
-        }
+    private var cart: ShoppingCart = project.shoppingCart
+    private val cartChangeListener = object: ShoppingCart.SimpleShoppingCartListener() {
+        override fun onChanged(list: ShoppingCart?) = update()
+    }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_checkout_bar, this, true)
@@ -61,12 +56,15 @@ class CheckoutBar @JvmOverloads constructor(
         payButton.setOneShotClickListener { pay() }
         payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
 
+        cart.addListener(cartChangeListener)
+        update()
+
         progressDialog = DelayedProgressDialog(getContext())
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
         progressDialog.setCancelable(true)
-        progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { dialogInterface: DialogInterface, i: Int, keyEvent: KeyEvent ->
+        progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { dialogInterface: DialogInterface, _, keyEvent: KeyEvent ->
             if (keyEvent.keyCode == KeyEvent.KEYCODE_BACK) {
                 project.checkout.abort()
                 dialogInterface.dismiss()
@@ -74,17 +72,6 @@ class CheckoutBar @JvmOverloads constructor(
             }
             false
         })
-    }
-
-    private val cartChangeListener = object: ShoppingCart.ShoppingCartListener {
-        override fun onItemAdded(list: ShoppingCart?, item: ShoppingCart.Item?) = update()
-        override fun onQuantityChanged(list: ShoppingCart?, item: ShoppingCart.Item?) = update()
-        override fun onCleared(list: ShoppingCart?) = update()
-        override fun onItemRemoved(list: ShoppingCart?, item: ShoppingCart.Item?, pos: Int) = update()
-        override fun onProductsUpdated(list: ShoppingCart?) = update()
-        override fun onPricesUpdated(list: ShoppingCart?) = update()
-        override fun onCheckoutLimitReached(list: ShoppingCart?) = update()
-        override fun onOnlinePaymentLimitReached(list: ShoppingCart?) = update()
     }
 
     private fun update() {
@@ -99,7 +86,7 @@ class CheckoutBar @JvmOverloads constructor(
         } else {
             val pcs = Snabble.getInstance().paymentCredentialsStore
             val hasNoPaymentMethods = pcs.usablePaymentCredentialsCount == 0
-            val isHidden = SnabbleUI.getProject().availablePaymentMethods.size == 1 && hasNoPaymentMethods
+            val isHidden = project.availablePaymentMethods.size == 1 && hasNoPaymentMethods
             paySelector.visibility = if (isHidden) GONE else VISIBLE
             payIcon.setImageResource(entry.iconResId)
         }
