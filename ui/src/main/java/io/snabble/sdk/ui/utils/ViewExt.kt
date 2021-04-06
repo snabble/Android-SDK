@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.utils
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -23,6 +24,12 @@ fun View.getFragmentActivity(): FragmentActivity? =
     UIUtils.getHostFragmentActivity(context)
 
 fun View.requireFragmentActivity() =
+    requireNotNull(getFragmentActivity())
+
+fun Context.getFragmentActivity(): FragmentActivity? =
+    UIUtils.getHostFragmentActivity(this)
+
+fun Context.requireFragmentActivity() =
     requireNotNull(getFragmentActivity())
 
 fun ImageView.loadAsset(assets: Assets, name: String) {
