@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.utils
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.Assets
@@ -21,9 +22,18 @@ fun View.getFragmentActivity(): FragmentActivity? {
 fun ImageView.loadAsset(assets: Assets, name: String) {
     val randomUUID = UUID.randomUUID().toString()
     setTag(R.id.snabble_asset_load_id, randomUUID)
-    assets.get(name, Assets.Callback { bitmap: Bitmap? ->
+    assets.get(name) { bitmap: Bitmap? ->
         if (getTag(R.id.snabble_asset_load_id) === randomUUID) {
             setImageBitmap(bitmap)
         }
-    })
+    }
 }
+
+fun Button.setOneShotClickListener(callback: () -> Unit) =
+    setOnClickListener {
+        object : OneShotClickListener() {
+            override fun click() {
+                callback.invoke()
+            }
+        }
+    }

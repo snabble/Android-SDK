@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -269,17 +268,6 @@ class CheckoutBar @JvmOverloads constructor(
                     .setPositiveButton(R.string.Snabble_OK, null)
                     .show()
             progressDialog.dismiss()
-        }
-    }
-}
-
-fun Button.setOneShotClickListener(callback: () -> Unit) {
-    var lastClickTime: Long = 0
-    setOnClickListener {
-        val time = SystemClock.elapsedRealtime()
-        if (time - lastClickTime > 300) {
-            lastClickTime = SystemClock.elapsedRealtime()
-            callback()
         }
     }
 }
