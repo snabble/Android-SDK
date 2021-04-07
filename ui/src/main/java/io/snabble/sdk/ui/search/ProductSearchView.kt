@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import io.snabble.sdk.Project
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -61,19 +59,6 @@ class ProductSearchView @JvmOverloads constructor(context: Context, attrs: Attri
         set(value) {
             searchBar.inputType = value
         }
-    var searchType: SearchableProductAdapter.SearchType = SearchableProductAdapter.SearchType.BARCODE
-        set(value) {
-            field = value
-            searchableProductAdapter.searchType = value
-            searchBar.inputType = when(value) {
-                SearchableProductAdapter.SearchType.BARCODE -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
-                else -> InputType.TYPE_CLASS_TEXT
-            }
-        }
-
-    var project: Project
-        get() = searchableProductAdapter.project
-        set(value) { searchableProductAdapter.project = value }
 
     init {
         inflate(context, R.layout.snabble_view_search_product, this)
@@ -104,7 +89,6 @@ class ProductSearchView @JvmOverloads constructor(context: Context, attrs: Attri
         searchableProductAdapter = SearchableProductAdapter()
         searchableProductAdapter.showBarcode = true
         searchableProductAdapter.showSku = showSku
-        searchableProductAdapter.searchType = SearchableProductAdapter.SearchType.BARCODE
         searchableProductAdapter.setOnProductSelectedListener(::showScannerWithCode)
         searchableProductAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
@@ -160,8 +144,4 @@ class ProductSearchView @JvmOverloads constructor(context: Context, attrs: Attri
     fun setOnProductSelectedListener(listener: OnProductSelectedListener) {
         productSelectedListener = listener
     }
-
-    var quantityManager: SearchableProductAdapter.QuantityManager?
-        get() = searchableProductAdapter.quantityManager
-        set(value) { searchableProductAdapter.quantityManager = value }
 }
