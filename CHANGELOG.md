@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.34.1]
+
+### Fixed
+- Products with multiple scanned codes now are using the default template when selected from a bundle
+
 ## [0.34.0]
 
 ### Added
