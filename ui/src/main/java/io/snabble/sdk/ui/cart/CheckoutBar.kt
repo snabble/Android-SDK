@@ -100,7 +100,7 @@ class CheckoutBar @JvmOverloads constructor(
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
             val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
-            payButton.isEnabled = price > 0 || onlinePaymentAvailable && paymentSelectionHelper.selectedEntry.value != null
+            payButton.isEnabled = price > 0 && onlinePaymentAvailable && paymentSelectionHelper.selectedEntry.value != null
         }
     }
 
