@@ -14,6 +14,7 @@
     <string name="Snabble.Biometry.Alert.title">Activate %s?</string>
     <string name="Snabble.Biometry.enterCode">Enter code</string>
     <string name="Snabble.Biometry.FaceId">Face ID</string>
+    <string name="Snabble.Biometry.locked">%s is locked. Please enter your code in the lock screen to re-activate it.</string>
     <!--
   ********* iOS Biometry *********
   iOS only, this is used for the iOS-specific biometry settings views
@@ -32,6 +33,7 @@
     <string name="Snabble.Checkout.payAtCashRegister">Pay at cash register</string>
     <string name="Snabble.Checkout.title">Pay</string>
     <string name="Snabble.Checkout.verifying">Verifying</string>
+    <string name="Snabble.CreditCard.payNow">Pay now using Credit card</string>
     <string name="Snabble.Delete">Delete</string>
     <string name="Snabble.Done">Done</string>
     <string name="Snabble.Edit">Edit</string>
@@ -55,6 +57,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Authorization failed</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Delete method</string>
     <string name="Snabble.paydirekt.gotoWebsite">Go to paydirekt.de</string>
+    <string name="Snabble.Paydirekt.payNow">Pay now using paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">You\'ve successfully authorized snabble for paydirekt. To remove this authorization, you need to log in to your paydirekt account. If you do not want to use this payment method anymore, you can remove it here.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Payment process was cancelled</string>
@@ -158,8 +161,11 @@
     <string name="Snabble.Scanner.updateCart">Update cart</string>
     <string name="Snabble.SEPA.editingHint">Your SEPA data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.SEPA.encryptionError">Error encrypting data</string>
+    <string name="Snabble.SEPA.iAgree">I agree</string>
     <string name="Snabble.SEPA.ibanTransferAlert.message">Would you like to save this account information (IBAN: %s) for future purchases?</string>
     <string name="Snabble.SEPA.ibanTransferAlert.title">Save payment data</string>
+    <string name="Snabble.SEPA.mandate">SEPA direct debit mandate</string>
+    <string name="Snabble.SEPA.payNow">Pay now using SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Please enter the name from the card to save it for future payments.</string>
     <string name="Snabble.Settings">Settings</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Product removed</string>

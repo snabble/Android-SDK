@@ -14,6 +14,7 @@
     <string name="Snabble.Biometry.Alert.title">%s aktiválása?</string>
     <string name="Snabble.Biometry.enterCode">Kód megadása</string>
     <string name="Snabble.Biometry.FaceId">Face-ID</string>
+    <string name="Snabble.Biometry.locked">%s zárolva. Aktiválásához add meg a képernyőzár kódját.</string>
     <!--
   ********* iOS Biometry *********
   iOS only, this is used for the iOS-specific biometry settings views
@@ -32,6 +33,7 @@
     <string name="Snabble.Checkout.payAtCashRegister">Fizetés a pénztárnál</string>
     <string name="Snabble.Checkout.title">Fizetés</string>
     <string name="Snabble.Checkout.verifying">Igazolja</string>
+    <string name="Snabble.CreditCard.payNow">Fizetés hitelkártyával</string>
     <string name="Snabble.Delete">Törlés</string>
     <string name="Snabble.Done">Kész</string>
     <string name="Snabble.Edit">Szerkesztés</string>
@@ -55,6 +57,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Nem sikerült az azonosítás</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Fizetési mód törlése</string>
     <string name="Snabble.paydirekt.gotoWebsite">A paydirekt.de oldalra</string>
+    <string name="Snabble.Paydirekt.payNow">Fizetés paydirekttel</string>
     <string name="Snabble.paydirekt.savedAuthorization">A snabble alkalmazást sikeresen bejelentetted a paydirektre. Visszavonásához a paydirekt fiókadataiddal be kell jelentkezned a honlapon. Ha nem szeretnéd, hogy a paydirekt a fizetési lehetőségeid között legyen, akkor itt egyszerűen eltávolíthatod.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Megszakadt a fizetési folyamat</string>
@@ -158,8 +161,11 @@
     <string name="Snabble.Scanner.updateCart">Kosár frissítése</string>
     <string name="Snabble.SEPA.editingHint">A SEPA-adatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.SEPA.encryptionError">Hiba a titkosítás során</string>
+    <string name="Snabble.SEPA.iAgree">Hozzájárulok</string>
     <string name="Snabble.SEPA.ibanTransferAlert.message">Elmented ezeket a számlaadatokat (IBAN: %s) a jövőbeni bevásárlásokhoz?</string>
     <string name="Snabble.SEPA.ibanTransferAlert.title">Számla adatainak mentése</string>
+    <string name="Snabble.SEPA.mandate">SEPA terhelési megbízás</string>
+    <string name="Snabble.SEPA.payNow">Fizetés SEPA segítségével</string>
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
     <string name="Snabble.Settings">Beállítások</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Termék eltávolítva</string>
