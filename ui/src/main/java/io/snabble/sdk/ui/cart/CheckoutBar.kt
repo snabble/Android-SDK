@@ -93,7 +93,7 @@ class CheckoutBar @JvmOverloads constructor(
     }
 
     private fun updatePayText() {
-        cart?.let { cart ->
+        cart.let { cart ->
             val quantity = cart.totalQuantity
             val price = cart.totalPrice
             val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
@@ -105,7 +105,7 @@ class CheckoutBar @JvmOverloads constructor(
     }
 
     private fun pay() {
-        if (cart?.hasReachedMaxCheckoutLimit() == true) {
+        if (cart.hasReachedMaxCheckoutLimit()) {
             val message = resources.getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.priceFormatter.format(project.maxCheckoutLimit))
             UIUtils.snackbar(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
