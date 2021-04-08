@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.34.2]
+
+### Fixed
+- Fix a crash in PaymentOptionsView when a project has no brand
+
 ## [0.34.1]
 
 ### Fixed

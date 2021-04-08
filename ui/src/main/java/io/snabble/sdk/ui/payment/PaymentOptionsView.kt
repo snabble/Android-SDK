@@ -208,7 +208,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
             projectList.add(
                 Entry(
                     text = brand.name,
-                    project = projectsWithCreditCards.firstOrNull { it.brand.id == brand.id },
+                    project = projectsWithCreditCards.firstOrNull { it.brand?.id == brand.id },
                     count = counts[brand] ?: 0,
                     click = {
                         val args = Bundle()
