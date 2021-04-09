@@ -19,22 +19,27 @@ import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import io.snabble.sdk.ui.R;
 import kotlin.Deprecated;
+import kotlin.ReplaceWith;
 
 public class UIUtils {
     public static final int INFO_NEUTRAL = 0;
     public static final int INFO_WARNING = 1;
     public static final int INFO_POSITIVE = 2;
 
+    @BaseTransientBottomBar.Duration
     public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
 
+    @Deprecated(message = "Use Snackbar.make() instead", replaceWith = @ReplaceWith(expression = "Snackbar.make()", imports = "com.google.android.material.snackbar.Snackbar"))
     public static Snackbar snackbar(View view, @StringRes int stringResId, int duration) {
         return Snackbar.make(view, stringResId, duration);
     }
 
+    @Deprecated(message = "Use Snackbar.make() instead", replaceWith = @ReplaceWith(expression = "Snackbar.make()", imports = "com.google.android.material.snackbar.Snackbar"))
     public static Snackbar snackbar(View view, String text, int duration) {
         return Snackbar.make(view, text, duration);
     }

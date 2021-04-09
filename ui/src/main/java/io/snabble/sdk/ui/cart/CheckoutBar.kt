@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.snackbar.Snackbar
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
@@ -236,11 +237,11 @@ class CheckoutBar @JvmOverloads constructor(
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .show()
             } else {
-                UIUtils.snackbar(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+                Snackbar.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             }
             progressDialog.dismiss()
         } else if (state == Checkout.State.CONNECTION_ERROR || state == Checkout.State.NO_SHOP) {
-            UIUtils.snackbar(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+            Snackbar.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             progressDialog.dismiss()
         } else if (state == Checkout.State.PAYMENT_ABORTED) {
             progressDialog.dismiss()
