@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.utils;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -21,6 +22,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import io.snabble.sdk.ui.R;
+import kotlin.Deprecated;
 
 public class UIUtils {
     public static final int INFO_NEUTRAL = 0;
@@ -79,10 +81,11 @@ public class UIUtils {
         context.getTheme().resolveAttribute(attrResId, typedValue, true);
         return typedValue.data;
     }
-    
+
+    @Deprecated(message = "Replace with Snackbar")
     public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, int type) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final TextView info = (TextView)inflater.inflate(R.layout.snabble_view_info, null);
+        final TextView info = (TextView)inflater.inflate(R.layout.snabble_view_info, parent, false);
 
         parent.addView(info, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         info.setVisibility(View.INVISIBLE);
@@ -121,7 +124,26 @@ public class UIUtils {
         infoHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                info.animate().translationY(-info.getHeight()).start();
+                info.animate().translationY(-info.getHeight())
+                        .setListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                parent.removeView(info);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animation) {
+                                parent.removeView(info);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animation) {
+                            }
+                        }).start();
             }
         }, duration);
 
