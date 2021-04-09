@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.34.3]
+
+### Fixed
+- Update CameraX to 1.0.0-rc04 to fix a camera initialization crash on Samsung Galaxy S20 Ultra 5G
+
 ## [0.34.2]
 
 ### Fixed
