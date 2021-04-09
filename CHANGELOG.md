@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.34.4]
+
+### Changes
+- Improved visuals on PaymentOptionsView
+
 ## [0.34.3]
  
 ### Fixed
