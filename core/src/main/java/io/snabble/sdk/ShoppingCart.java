@@ -228,7 +228,7 @@ public class ShoppingCart {
 
     public void restore() {
         if (isRestorable()) {
-            items = oldItems;
+            items = new ArrayList<>(oldItems);
             modCount = oldModCount;
             addCount = oldAddCount;
             uuid = oldUUID;
