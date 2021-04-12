@@ -43,13 +43,13 @@ fun ImageView.loadAsset(assets: Assets, name: String) {
 }
 
 fun Button.setOneShotClickListener(callback: () -> Unit) =
-    setOnClickListener {
+    setOnClickListener(
         object : OneShotClickListener() {
             override fun click() {
                 callback.invoke()
             }
         }
-    }
+    )
 
 inline var View.marginTop: Int
     get() = (layoutParams as? ViewGroup.MarginLayoutParams)?.topMargin ?: 0
