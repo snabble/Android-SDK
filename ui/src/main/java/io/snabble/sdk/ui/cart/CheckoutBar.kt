@@ -22,6 +22,7 @@ import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.*
+import java.util.concurrent.TimeUnit
 
 
 class CheckoutBar @JvmOverloads constructor(
@@ -37,6 +38,7 @@ class CheckoutBar @JvmOverloads constructor(
     private val paymentSelectionHelper: PaymentSelectionHelper
     private val project = SnabbleUI.getProject()
     private var cart: ShoppingCart = project.shoppingCart
+    private var cartRestoreMode = false
     private val cartChangeListener = object: ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
     }
@@ -54,8 +56,14 @@ class CheckoutBar @JvmOverloads constructor(
         paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(getContext()) as FragmentActivity, { update() })
         paySelectorButton.setOnClickListener { paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(getContext())) }
 
-        payButton.setOneShotClickListener { pay() }
-        payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
+        payButton.setOneShotClickListener {
+            if(cartRestoreMode) {
+                cart.restore()
+                update()
+            } else {
+                pay()
+            }
+        }
 
         cart.addListener(cartChangeListener)
         update()
@@ -102,6 +110,14 @@ class CheckoutBar @JvmOverloads constructor(
             priceSum.text = project.priceFormatter.format(price)
             val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
             payButton.isEnabled = price > 0 && onlinePaymentAvailable && paymentSelectionHelper.selectedEntry.value != null
+            if (!payButton.isEnabled && cart.isRestorable && cart.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) {
+                cartRestoreMode = true
+                payButton.isEnabled = true
+                payButton.setText(R.string.Snabble_Shoppingcart_emptyState_restoreButtonTitle)
+            } else {
+                cartRestoreMode = false
+                payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
+            }
         }
     }
 
@@ -109,7 +125,7 @@ class CheckoutBar @JvmOverloads constructor(
         if (cart.hasReachedMaxCheckoutLimit()) {
             val message = resources.getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.priceFormatter.format(project.maxCheckoutLimit))
-            UIUtils.snackbar(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+            Snackbar.make(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
         } else {
             val entry = paymentSelectionHelper.selectedEntry.getValue()
             if (entry != null) {
