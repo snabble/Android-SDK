@@ -230,18 +230,13 @@ public class Assets {
                 String hash = Utils.sha1Hex(url);
                 hashes.add(hash);
 
-                String nightModeFileName = null;
-                if (nonRootIncludedFileName != null) {
-                    nightModeFileName = getNightModeFileName(nonRootIncludedFileName);
-                }
-                boolean forceInclude = FilenameUtils.removeExtension(apiAsset.name).equals(nightModeFileName);
                 String ext = FilenameUtils.getExtension(apiAsset.name);
-                if (!ext.equals("svg") && !forceInclude) {
+                if (!ext.equals("svg") && !ext.equals("jpg") && !ext.equals("webp")) {
                     continue;
                 }
 
                 // exclude assets that are not in the root when not explicitly requested
-                if (apiAsset.name.contains("/") && !forceInclude) {
+                if (apiAsset.name.contains("/") && !apiAsset.name.equals(nonRootIncludedFileName)) {
                     continue;
                 }
 
@@ -362,11 +357,6 @@ public class Assets {
         }
     }
 
-    private String getNightModeFileName(String fileName) {
-        boolean nightMode = isNightModeActive(Snabble.getInstance().getApplication());
-        return FilenameUtils.removeExtension(fileName) + (nightMode ? "_dark" : "");
-    }
-
     private Asset getAsset(String name, Type type) {
         // currently a limitation due to asynchronous reads and saves,
         // could be solved with careful locking
@@ -378,7 +368,9 @@ public class Assets {
             return null;
         }
 
-        String fileName = getNightModeFileName(name);
+        boolean nightMode = isNightModeActive(Snabble.getInstance().getApplication());
+
+        String fileName = FilenameUtils.removeExtension(name) + (nightMode ? "_dark" : "");
 
         switch (type) {
             case SVG:
