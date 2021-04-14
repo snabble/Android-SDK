@@ -41,16 +41,6 @@ public class UIUtils {
     @BaseTransientBottomBar.Duration
     public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
 
-    @Deprecated(message = "Use Snackbar.make() instead", replaceWith = @ReplaceWith(expression = "Snackbar.make()", imports = "com.google.android.material.snackbar.Snackbar"))
-    public static Snackbar snackbar(View view, @StringRes int stringResId, int duration) {
-        return Snackbar.make(view, stringResId, duration);
-    }
-
-    @Deprecated(message = "Use Snackbar.make() instead", replaceWith = @ReplaceWith(expression = "Snackbar.make()", imports = "com.google.android.material.snackbar.Snackbar"))
-    public static Snackbar snackbar(View view, String text, int duration) {
-        return Snackbar.make(view, text, duration);
-    }
-
     public static FragmentActivity getHostFragmentActivity(Context context) {
         while (context instanceof ContextWrapper) {
             if (context instanceof FragmentActivity) {
@@ -95,8 +85,7 @@ public class UIUtils {
     }
 
     @Deprecated(message = "Replace with Snackbar")
-    public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, @InfoLevel int type) {
+    public static void showTopDownInfoBox(ViewGroup parent, String text, int duration, @InfoLevel int type) {
         KotlinExtensionsKt.setGravity(KotlinExtensionsKt.setPriority(Snackbar.make(parent, text, duration), type), Gravity.TOP).show();
-        return null; // null as placeholder
     }
 }
