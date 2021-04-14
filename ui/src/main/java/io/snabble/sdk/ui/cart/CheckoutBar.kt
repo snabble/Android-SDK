@@ -22,11 +22,11 @@ import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.*
-import java.util.concurrent.TimeUnit
+import io.snabble.sdk.utils.Logger
 
 
 class CheckoutBar @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
     private var progressDialog: DelayedProgressDialog
     private val paySelector: View
@@ -38,7 +38,6 @@ class CheckoutBar @JvmOverloads constructor(
     private val paymentSelectionHelper: PaymentSelectionHelper
     private val project = SnabbleUI.getProject()
     private var cart: ShoppingCart = project.shoppingCart
-    private var cartRestoreMode = false
     private val cartChangeListener = object: ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
     }
@@ -57,7 +56,7 @@ class CheckoutBar @JvmOverloads constructor(
         paySelectorButton.setOnClickListener { paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(getContext())) }
 
         payButton.setOneShotClickListener {
-            if(cartRestoreMode) {
+            if(cart.isRestorable) {
                 cart.restore()
                 update()
             } else {
@@ -108,14 +107,14 @@ class CheckoutBar @JvmOverloads constructor(
             val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
+
             val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
-            payButton.isEnabled = price > 0 && onlinePaymentAvailable && paymentSelectionHelper.selectedEntry.value != null
-            if (!payButton.isEnabled && cart.isRestorable && cart.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) {
-                cartRestoreMode = true
+            payButton.isEnabled = price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
+
+            if (cart.isRestorable) {
                 payButton.isEnabled = true
                 payButton.setText(R.string.Snabble_Shoppingcart_emptyState_restoreButtonTitle)
             } else {
-                cartRestoreMode = false
                 payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
             }
         }

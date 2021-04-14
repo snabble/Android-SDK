@@ -21,13 +21,14 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.isNotNullOrBlank
 
-class ProductSearchView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
     private val searchableProductAdapter: SearchableProductAdapter
     private val searchBar: TextInputEditText
     private val searchBarTextInputLayout: TextInputLayout
     private val addCodeAsIs: TextView
     private var lastSearchQuery: String? = null
-    var searchBarEnabled = false
+
+    var searchBarEnabled = true
         set(value) {
             field = value
             if (value) {
@@ -63,6 +64,7 @@ class ProductSearchView @JvmOverloads constructor(context: Context, attrs: Attri
     init {
         inflate(context, R.layout.snabble_view_search_product, this)
         val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
+
         searchBarTextInputLayout = findViewById(R.id.search_bar_layout)
         searchBar = findViewById(R.id.search_bar)
         searchBar.addTextChangedListener(object : TextWatcher {
@@ -98,6 +100,8 @@ class ProductSearchView @JvmOverloads constructor(context: Context, attrs: Attri
         })
         addCodeAsIs.setOnClickListener { showScannerWithCode(lastSearchQuery) }
         recyclerView.adapter = searchableProductAdapter
+
+        searchBarEnabled = true
     }
 
     private fun showScannerWithCode(scannableCode: String?) {

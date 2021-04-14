@@ -257,7 +257,7 @@ public class ShoppingCartView extends FrameLayout {
             emptyState.setVisibility(View.VISIBLE);
         }
 
-        if (cart.isRestorable() && cart.getBackupTimestamp() > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)) {
+        if (cart.isRestorable()) {
             restore.setVisibility(View.VISIBLE);
             scanProducts.setText(R.string.Snabble_Shoppingcart_emptyState_restartButtonTitle);
         } else {

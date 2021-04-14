@@ -22,7 +22,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
     }
 
     private var productSelectedListener: OnProductSelectedListener? = null
-    private var searchType = SearchType.FOLDED_NAME
+    private var searchType = SearchType.BARCODE
     private var cursor: Cursor? = null
     private var cancellationSignal: CancellationSignal? = null
     private var itemCount = 0
