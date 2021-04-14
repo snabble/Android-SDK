@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -24,8 +25,8 @@ import io.snabble.sdk.ui.utils.OneShotClickListener;
 public class SelfScanningFragment extends Fragment {
     public static final String ARG_SHOW_PRODUCT_CODE = "showProductCode";
 
-    private SelfScanningView selfScanningView;
-    private ViewGroup rootView;
+    protected SelfScanningView selfScanningView;
+    protected ViewGroup rootView;
     private View permissionContainer;
     private Button askForPermission;
     private boolean canAskAgain = false;
@@ -34,11 +35,15 @@ public class SelfScanningFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = (ViewGroup)inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false);
+        return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        rootView = (ViewGroup)view;
         permissionContainer = rootView.findViewById(R.id.permission_denied_container);
         askForPermission = rootView.findViewById(R.id.open_settings);
-
-        return rootView;
     }
 
     @Override
@@ -72,9 +77,8 @@ public class SelfScanningFragment extends Fragment {
         if (selfScanningView == null) {
             selfScanningView = new SelfScanningView(getContext());
             selfScanningView.setAllowShowingHints(allowShowingHints);
-            rootView.addView(selfScanningView);
+            rootView.addView(selfScanningView, 0);
         }
-
         permissionContainer.setVisibility(View.GONE);
         canAskAgain = true;
         handleBundleArgs();

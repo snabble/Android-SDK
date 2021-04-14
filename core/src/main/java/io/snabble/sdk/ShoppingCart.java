@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.codes.ScannedCode;
@@ -188,6 +189,10 @@ public class ShoppingCart {
         return items.size();
     }
 
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+
     public void backup() {
         if (items.size() > 0) {
             oldItems = items;
@@ -224,13 +229,14 @@ public class ShoppingCart {
 
     public void restore() {
         if (isRestorable()) {
-            items = oldItems;
+            items = new ArrayList<>(oldItems);
             modCount = oldModCount;
             addCount = oldAddCount;
             uuid = oldUUID;
             onlineTotalPrice = oldOnlineTotalPrice;
             id = oldId;
 
+            clearBackup();
             checkLimits();
             updatePrices(false);
             notifyProductsUpdate(this);
@@ -238,7 +244,7 @@ public class ShoppingCart {
     }
 
     public boolean isRestorable() {
-        return oldItems != null;
+        return oldItems != null && oldCartTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
     }
 
     public long getBackupTimestamp() {
