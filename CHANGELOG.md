@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.1]
+
+### Changes
+- Migration of dependencies to mavenCentral and jitpack
+
 ## [0.35.0]
 
 ### Changes
