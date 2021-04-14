@@ -11,6 +11,9 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.material.snackbar.Snackbar
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.Keyguard
@@ -79,6 +82,18 @@ class CheckoutBar @JvmOverloads constructor(
                 return@OnKeyListener true
             }
             false
+        })
+
+        context.requireFragmentActivity().lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_START)
+            fun onStart() {
+                registerListeners()
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            fun onStop() {
+                unregisterListeners()
+            }
         })
     }
 
@@ -171,15 +186,23 @@ class CheckoutBar @JvmOverloads constructor(
         }
     }
 
+    private fun registerListeners() {
+        project.checkout.addOnCheckoutStateChangedListener(this)
+    }
+
+    private fun unregisterListeners() {
+        project.checkout.removeOnCheckoutStateChangedListener(this)
+        progressDialog.dismiss()
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        project.checkout.addOnCheckoutStateChangedListener(this)
+        registerListeners()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        project.checkout.removeOnCheckoutStateChangedListener(this)
-        progressDialog.dismiss()
+        unregisterListeners();
     }
 
     override fun onStateChanged(state: Checkout.State) {
