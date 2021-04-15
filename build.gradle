@@ -1,9 +1,9 @@
 buildscript {
-    ext.kotlin_version = "1.4.31"
+    ext.kotlin_version = "1.4.32"
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
 
         maven {
             url "https://plugins.gradle.org/m2/"
@@ -25,11 +25,12 @@ plugins {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
     }
 
     project.ext {
-        sdkVersion='0.34.0'
+        sdkVersion='0.35.1'
         versionCode=1
 
         compileSdkVersion=30

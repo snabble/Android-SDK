@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.codes.ScannedCode;
@@ -188,6 +189,10 @@ public class ShoppingCart {
         return items.size();
     }
 
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+
     public void backup() {
         if (items.size() > 0) {
             oldItems = items;
@@ -224,13 +229,14 @@ public class ShoppingCart {
 
     public void restore() {
         if (isRestorable()) {
-            items = oldItems;
+            items = new ArrayList<>(oldItems);
             modCount = oldModCount;
             addCount = oldAddCount;
             uuid = oldUUID;
             onlineTotalPrice = oldOnlineTotalPrice;
             id = oldId;
 
+            clearBackup();
             checkLimits();
             updatePrices(false);
             notifyProductsUpdate(this);
@@ -238,7 +244,7 @@ public class ShoppingCart {
     }
 
     public boolean isRestorable() {
-        return oldItems != null;
+        return oldItems != null && oldCartTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
     }
 
     public long getBackupTimestamp() {
@@ -531,14 +537,28 @@ public class ShoppingCart {
         }
 
         public int getEffectiveQuantity() {
+            return getEffectiveQuantity(false);
+        }
+
+        private int getEffectiveQuantity(boolean ignoreLineItem) {
             return scannedCode != null
                     && scannedCode.hasEmbeddedData()
-                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : getQuantity();
+                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : getQuantity(ignoreLineItem);
         }
 
         public int getQuantity() {
-            if (lineItem != null) {
-                return lineItem.amount;
+            return getQuantity(false);
+        }
+
+        public int getQuantity(boolean ignoreLineItem) {
+            if (lineItem != null && !ignoreLineItem) {
+                if (lineItem.weight != null) {
+                    return lineItem.weight;
+                } else if (lineItem.units != null){
+                    return lineItem.units;
+                } else {
+                    return lineItem.amount;
+                }
             }
 
             return quantity;
@@ -592,6 +612,10 @@ public class ShoppingCart {
 
         public Unit getUnit() {
             if (product == null && lineItem != null) return null;
+
+            if (lineItem != null && lineItem.weightUnit != null) {
+                return Unit.fromString(lineItem.weightUnit);
+            }
 
             return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
                     : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
@@ -690,15 +714,8 @@ public class ShoppingCart {
                             && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
                             && getEffectiveQuantity() > 1)) {
 
-                        int price;
-                        if (lineItem.units != null) {
-                            price = lineItem.units * lineItem.price;
-                        } else {
-                            price = lineItem.price;
-                        }
-
                         return String.format("\u00D7 %s = %s",
-                                cart.priceFormatter.format(product, price),
+                                cart.priceFormatter.format(product, lineItem.price),
                                 cart.priceFormatter.format(getTotalPrice()));
                     } else {
                         if (lineItem.units != null) {
@@ -861,11 +878,11 @@ public class ShoppingCart {
             item.amount = 1;
 
             if (cartItem.getUnit() == Unit.PIECE) {
-                item.units = cartItem.getEffectiveQuantity();
+                item.units = cartItem.getEffectiveQuantity(true);
             } else if (cartItem.getUnit() == Unit.PRICE) {
                 item.price = cartItem.getLocalTotalPrice();
             } else if (cartItem.getUnit() != null) {
-                item.weight = cartItem.getEffectiveQuantity();
+                item.weight = cartItem.getEffectiveQuantity(true);
             } else if (product.getType() == Product.Type.UserWeighed) {
                 item.weight = quantity;
             } else {

@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -98,13 +97,9 @@ public class SelfScanningView extends FrameLayout {
 
         enterBarcode = findViewById(R.id.enter_barcode);
         light = findViewById(R.id.light);
-        light.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                barcodeScanner.setTorchEnabled(!barcodeScanner.isTorchEnabled());
-                updateTorchIcon();
-                Telemetry.event(Telemetry.Event.ToggleTorch);
-            }
+        light.setOnClickListener(v -> {
+            setTorchEnabled(!isTorchEnabled());
+            updateTorchIcon();
         });
 
         goToCart = findViewById(R.id.goto_cart);
@@ -119,12 +114,7 @@ public class SelfScanningView extends FrameLayout {
         updateTorchIcon();
         updateCartButton();
 
-        enterBarcode.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickEnterBarcode();
-            }
-        });
+        enterBarcode.setOnClickListener(v -> searchWithBarcode());
 
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
 
@@ -137,27 +127,19 @@ public class SelfScanningView extends FrameLayout {
         progressDialog.setMessage(getContext().getString(R.string.Snabble_loadingProductInformation));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
-        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    resumeBarcodeScanner();
-                    progressDialog.dismiss();
+        progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                resumeBarcodeScanner();
+                progressDialog.dismiss();
 
-                    return true;
-                }
-                return false;
+                return true;
             }
+            return false;
         });
 
         this.productDatabase = project.getProductDatabase();
 
-        barcodeScanner.setCallback(new BarcodeScannerView.Callback() {
-            @Override
-            public void onBarcodeDetected(final Barcode barcode) {
-                handleBarcodeDetected(barcode);
-            }
-        });
+        barcodeScanner.setCallback(this::handleBarcodeDetected);
 
         isInitialized = true;
         startBarcodeScanner(false);
@@ -296,7 +278,20 @@ public class SelfScanningView extends FrameLayout {
                 UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING));
     }
 
-    private void onClickEnterBarcode() {
+    public void setDefaultButtonVisibility(boolean visible) {
+        findViewById(R.id.bottom_bar).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    public void setTorchEnabled(boolean enabled) {
+        barcodeScanner.setTorchEnabled(enabled);
+        Telemetry.event(Telemetry.Event.ToggleTorch);
+    }
+
+    public boolean isTorchEnabled() {
+        return barcodeScanner.isTorchEnabled();
+    }
+
+    public void searchWithBarcode() {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
@@ -472,6 +467,13 @@ public class SelfScanningView extends FrameLayout {
 
     public void removeBarcodeFormat(BarcodeFormat barcodeFormat) {
         barcodeScanner.removeBarcodeFormat(barcodeFormat);
+    }
+
+    /**
+     * Sets the offset of the scan indicator, in pixels.
+     */
+    public void setIndicatorOffset(int offsetX, int offsetY) {
+        barcodeScanner.setIndicatorOffset(offsetX, offsetY);
     }
 
     private void registerListeners() {

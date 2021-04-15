@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="Snabble.Payment.SEPA.legalInfo.title" translatable="false">SEPA-Lastschriftmandat</string>
-    <string name="Snabble.Payment.SEPA.legalInfo.agree" translatable="false">Ich stimme zu</string>
-</resources>

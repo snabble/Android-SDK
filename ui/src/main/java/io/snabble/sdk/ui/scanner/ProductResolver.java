@@ -321,7 +321,13 @@ public class ProductResolver {
                 if (codes.length > 0 && codes[0].lookupCode != null) {
                     List<ScannedCode> newCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].lookupCode);
                     if (newCodes.size() > 0) {
-                        showProduct(product, newCodes.get(0));
+                        ScannedCode defaultCode = newCodes.get(0);
+                        for (ScannedCode newCode : newCodes) {
+                            if (newCode.getTemplateName().equals("default")) {
+                                defaultCode = newCode;
+                            }
+                        }
+                        showProduct(product, defaultCode);
                     } else {
                         showProduct(product, scannedCode);
                     }

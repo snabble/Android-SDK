@@ -21,7 +21,11 @@ public class Dispatch {
     }
 
     public static void mainThread(Runnable runnable) {
-        handler.post(runnable);
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            runnable.run();
+        } else {
+            handler.post(runnable);
+        }
     }
 
     public static void mainThread(Runnable runnable, long delayMs) {

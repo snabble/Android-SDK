@@ -1,10 +1,44 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.1]
+
+### Changes
+- Migration of dependencies to mavenCentral and jitpack
+
+## [0.35.0]
+
+### Changes
+- Various structural changes
+
+## [0.34.4]
+
+### Changes
+- Improved visuals on PaymentOptionsView
+
+## [0.34.3]
+ 
+### Fixed
+- Fixed night mode confusion in not preloaded assets
+- Update CameraX to 1.0.0-rc04 to fix a camera initialization crash on Samsung Galaxy S20 Ultra 5G
+
+## [0.34.2]
+
+### Fixed
+- Fix a crash in PaymentOptionsView when a project has no brand
+
+## [0.34.1]
+
+### Fixed
+- Products with multiple scanned codes now are using the default template when selected from a bundle
+
 ## [0.34.0]
 
 ### Added
 - Add support for JPG and WEBP assets
+
+### Fixed
+- Fix vPOS updates with weight information resulting in incorrect quantities
 
 ## [0.33.11]
 
