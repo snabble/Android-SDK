@@ -21,13 +21,17 @@ class SelectReducedPriceDialogFragment(
         val adapter = ArrayAdapter(requireContext(),
             R.layout.snabble_item_pricereduction_select,
             R.id.label,
-            discounts.map { it.name }
+            listOf(getString(R.string.Snabble_noDiscount)) + (discounts.map { it.name })
         )
 
         return AlertDialog.Builder(requireContext())
-            .setTitle("Select price reduction")
+            .setTitle(R.string.Snabble_addDiscount)
             .setAdapter(adapter) { _, which ->
-                cartItem.setManualCoupon(discounts[which])
+                if (which == 0) {
+                    cartItem.manualCoupon = null
+                } else {
+                    cartItem.manualCoupon = discounts[which - 1]
+                }
                 productConfirmationDialog.updatePrice()
             }
             .create()

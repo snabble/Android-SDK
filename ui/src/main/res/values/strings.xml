@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="Snabble.addDiscount">Enter discount</string>
     <string name="Snabble.ageVerification.explanation">To purchase certain products like alcoholic beverages, verifying your age is required. Enter the 7-digit Number from the back side of your ID card.</string>
     <string name="Snabble.ageVerification.failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
     <string name="Snabble.ageVerification.failed.title">Age restriction</string>
@@ -52,6 +53,8 @@
     <string name="Snabble.loadingProductInformation">Loading product data…</string>
     <string name="Snabble.networkError">Connection error</string>
     <string name="Snabble.No">No</string>
+    <string name="Snabble.noDiscount">no discount</string>
+    <string name="Snabble.notForSale.errorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier.</string>
     <string name="Snabble.OK">OK</string>
     <string name="Snabble.paydirekt.authorizationFailed.message">Please try again later</string>
     <string name="Snabble.paydirekt.authorizationFailed.title">Authorization failed</string>
@@ -131,7 +134,7 @@
     <string name="Snabble.remove">Remove</string>
     <string name="Snabble.saleStop.errorMsg">These products cannot be paid for using the app, please pay for them at the cashier:</string>
     <string name="Snabble.saleStop.errorMsg.one">This product cannot be paid for using the app, please pay for it at the cashier:</string>
-    <string name="Snabble.saleStop.errorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier:</string>
+    <string name="Snabble.saleStop.errorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier.</string>
     <string name="Snabble.saleStop.errorMsg.title">Sorry</string>
     <string name="Snabble.Save">Save</string>
     <string name="Snabble.Scanner.addCodeAsIs">Add %s as-is</string>
@@ -143,6 +146,8 @@
     <string name="Snabble.Scanner.duplicateDepositScanned">Each deposit slip can only be scanned once.</string>
     <string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
     <string name="Snabble.Scanner.enterCodeButton">Enter\nbarcode</string>
+    <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
+    <string name="Snabble.Scanner.firstScan">Scan your first product. Place the barcode in front of you camera.</string>
     <string name="Snabble.Scanner.goToCart">Cart: %s</string>
     <string name="Snabble.Scanner.goToCart.empty">Cart</string>
     <string name="Snabble.Scanner.introText">Scan product barcodes to add them to your shopping cart.</string>
@@ -189,6 +194,44 @@
     <string name="Snabble.Shoppingcart.removeItem">Really remove %s?</string>
     <string name="Snabble.Shoppingcart.removeItems">Really remove all products from your shopping cart?</string>
     <string name="Snabble.ShoppingCart.title">Shopping Cart</string>
+    <!-- Hinweiß der angezeigt wird wenn ein Artikel der Einkaufsliste hinzugefügt wurde -->
+    <string name="Snabble.ShoppingList.added">%s saved</string>
+    <!-- Der Titel des Dialogs zur Erzeugung einer neuen Einkaufsliste -->
+    <string name="Snabble.ShoppingList.CreateList.title">Create shopping list</string>
+    <!-- Der Löschen-Knopf beim Editieren von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.delete">Delete</string>
+    <!-- Der Speichern-Knopf beim Editieren von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.save">Save</string>
+    <!-- Der Titel des Popups zum bearbeiten von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.title">Edit shopping list</string>
+    <!-- Der Text wird angezeigt wenn man ein Element der Einkaufsliste wegwischt -->
+    <string name="Snabble.ShoppingList.ItemDeleted">%s deleted</string>
+    <!-- Der Call-To-Action wenn man das löschen eines Elements der Einkaufsliste rückgänig machen möchte -->
+    <string name="Snabble.ShoppingList.ItemDeleted.Undo">Undo</string>
+    <!-- Der Inhalt der Snackbar wenn eine Einkaufsliste gelöscht wurde -->
+    <string name="Snabble.ShoppingList.ListDeleted.title">Shopping list deleted</string>
+    <!-- Der Call-To-Action wenn eine Einkaufsliste wiederhergestellt werden soll -->
+    <string name="Snabble.ShoppingList.ListDeleted.undo">Undo</string>
+    <!-- Der Call-To-Action beim Empty-State Text wenn der Einkaufszettel noch leer ist  -->
+    <string name="Snabble.ShoppingList.ListEmpty.add">Add product</string>
+    <!-- Empty-State Text wenn der Einkaufszettel noch leer ist -->
+    <string name="Snabble.ShoppingList.ListEmpty.title">Your shopping list is empty.</string>
+    <!-- Der Call-To-Action beim Empty-State Text wenn noch kein Einkaufszettel angelegt wurde -->
+    <string name="Snabble.ShoppingList.NoLists.add">Create shopping list</string>
+    <!-- Der Empty-State wenn noch kein Einkaufszettel angelegt wurde -->
+    <string name="Snabble.ShoppingList.NoLists.title">You have no shopping lists yet.</string>
+    <!-- Hinweiß der angezeigt wird wenn ein Artikel nicht gefunden wurde -->
+    <string name="Snabble.ShoppingList.notFound">Unknown product</string>
+    <!-- Der Hint der angezeigt wird wenn man einen Artikel per Suche hinzufügen möchte -->
+    <string name="Snabble.ShoppingList.searchHint">Product</string>
+    <!-- Der Titel der übersichtsseite der Einkaufslisten -->
+    <string name="Snabble.ShoppingList.title">Shopping list</string>
+    <!-- Man soll verschiedene Artikel mit einem "und" in die Einkaufsliste legen können. Hier geht es nur um das Wort "und" -->
+    <string name="Snabble.ShoppingList.Voice.connectingWord">and</string>
+    <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
+    <string name="Snabble.ShoppingList.Voice.details">Did you want to add several things to your shopping list? Then combine the individual entries with “and”, like this: Tissues and pasta and yeast</string>
+    <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
+    <string name="Snabble.ShoppingList.Voice.title">Hint</string>
     <string name="Snabble.undo">Undo</string>
     <string name="Snabble.Yes">Yes</string>
 </resources>

@@ -94,6 +94,8 @@ public class CheckoutApi {
     public static class LineItem {
         String id;
         String refersTo;
+        @SerializedName("couponID")
+        String couponId;
         String sku;
         String name;
         String scannedCode;
@@ -104,6 +106,12 @@ public class CheckoutApi {
         String weightUnit;
         int totalPrice;
         LineItemType type;
+        List<PriceModifier> priceModifiers;
+    }
+
+    public static class PriceModifier {
+        String name;
+        int price;
     }
 
     public enum LineItemType {

@@ -592,6 +592,10 @@ public class ShoppingCart {
         }
 
         public boolean isEditable() {
+            if (manualCoupon != null) {
+                return false;
+            }
+
             if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT && !scannedCode.hasEmbeddedData();
 
             return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
@@ -706,6 +710,28 @@ public class ShoppingCart {
             return null;
         }
 
+        private int getTotalPriceModifiers() {
+            int sum = 0;
+            if (lineItem.priceModifiers != null) {
+                for (CheckoutApi.PriceModifier priceModifiers : lineItem.priceModifiers) {
+                    sum += priceModifiers.price;
+                }
+            }
+            return sum;
+        }
+
+        private String getExtendedPriceText() {
+            int totalPriceModifiers = getTotalPriceModifiers();
+            String fmt = "\u00D7 %s = %s";
+            if (totalPriceModifiers != 0) {
+                fmt = "\u00D7 %s = %s (reduziert)"; // TODO i18n
+            }
+
+            return String.format(fmt,
+                    cart.priceFormatter.format(product, lineItem.price + totalPriceModifiers),
+                    cart.priceFormatter.format(getTotalPrice()));
+        }
+
         public String getPriceText() {
             if (lineItem != null) {
                 if (lineItem.price != 0) {
@@ -713,17 +739,13 @@ public class ShoppingCart {
                             || (getUnit() != Unit.PRICE
                             && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
                             && getEffectiveQuantity() > 1)) {
-
-                        return String.format("\u00D7 %s = %s",
-                                cart.priceFormatter.format(product, lineItem.price),
-                                cart.priceFormatter.format(getTotalPrice()));
+                        return getExtendedPriceText();
                     } else {
                         if (lineItem.units != null) {
-                            return String.format("\u00D7 %s = %s",
-                                    cart.priceFormatter.format(product, lineItem.price),
-                                    cart.priceFormatter.format(getTotalPrice()));
+                            return getExtendedPriceText();
                         } else {
-                            return cart.priceFormatter.format(getTotalPrice(), true);
+                            String suffix = getTotalPriceModifiers() < 0 ? " (reduziert)" : "";
+                            return cart.priceFormatter.format(getTotalPrice(), true) + suffix;
                         }
                     }
                 }
@@ -763,6 +785,10 @@ public class ShoppingCart {
 
         public void setManualCoupon(ManualCoupon manualCoupon) {
             this.manualCoupon = manualCoupon;
+        }
+
+        public ManualCoupon getManualCoupon() {
+            return this.manualCoupon;
         }
 
         void replace(Product product, ScannedCode scannedCode, int quantity) {

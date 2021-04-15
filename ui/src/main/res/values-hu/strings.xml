@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="Snabble.addDiscount"/>
     <string name="Snabble.ageVerification.explanation">Meghatározott termékek, mint pl. alkohol vásárlásához igazolnod kell a korod. Ehhez személyazonosító igazolványod hátoldaláról másold be a 7 jegyű számot.</string>
     <string name="Snabble.ageVerification.failed.message">A kosárban olyan termékek is vannak, amelyek életkori korlátozás alá esnek. Ezeket sajnos nem veheted meg.</string>
     <string name="Snabble.ageVerification.failed.title">Nem vagy elég idős</string>
@@ -52,6 +53,8 @@
     <string name="Snabble.loadingProductInformation">Termékinformációk betöltése…</string>
     <string name="Snabble.networkError">Hálózati kapcsolat hiba</string>
     <string name="Snabble.No">Nem</string>
+    <string name="Snabble.noDiscount"/>
+    <string name="Snabble.notForSale.errorMsg.scan">Ezt a terméket jelenleg sajnos nem lehet az alkalmazással kifizetni. Kérlek, fizesd a szokásos módon a kasszánál.</string>
     <string name="Snabble.OK">OK</string>
     <string name="Snabble.paydirekt.authorizationFailed.message">Kérlek, próbáld meg később még egyszer</string>
     <string name="Snabble.paydirekt.authorizationFailed.title">Nem sikerült az azonosítás</string>
@@ -143,6 +146,8 @@
     <string name="Snabble.Scanner.duplicateDepositScanned">Az egyes betétdíjblokkok csak egyszer olvashatók be.</string>
     <string name="Snabble.Scanner.enterBarcode">Vonalkód megadása</string>
     <string name="Snabble.Scanner.enterCodeButton">Vonalkód\nmegadása</string>
+    <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
+    <string name="Snabble.Scanner.firstScan"/>
     <string name="Snabble.Scanner.goToCart">Kosár: %s</string>
     <string name="Snabble.Scanner.goToCart.empty">Kosár</string>
     <string name="Snabble.Scanner.introText">Szkenneld be a termék vonalkódját, és add hozzá a kosaradhoz.</string>
@@ -189,6 +194,44 @@
     <string name="Snabble.Shoppingcart.removeItem">%s tényleg eltávolítod?</string>
     <string name="Snabble.Shoppingcart.removeItems">Az összes terméket eltávolítod a kosárból?</string>
     <string name="Snabble.ShoppingCart.title">Kosár</string>
+    <!-- Hinweiß der angezeigt wird wenn ein Artikel der Einkaufsliste hinzugefügt wurde -->
+    <string name="Snabble.ShoppingList.added"/>
+    <!-- Der Titel des Dialogs zur Erzeugung einer neuen Einkaufsliste -->
+    <string name="Snabble.ShoppingList.CreateList.title"/>
+    <!-- Der Löschen-Knopf beim Editieren von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.delete"/>
+    <!-- Der Speichern-Knopf beim Editieren von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.save"/>
+    <!-- Der Titel des Popups zum bearbeiten von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.title"/>
+    <!-- Der Text wird angezeigt wenn man ein Element der Einkaufsliste wegwischt -->
+    <string name="Snabble.ShoppingList.ItemDeleted"/>
+    <!-- Der Call-To-Action wenn man das löschen eines Elements der Einkaufsliste rückgänig machen möchte -->
+    <string name="Snabble.ShoppingList.ItemDeleted.Undo"/>
+    <!-- Der Inhalt der Snackbar wenn eine Einkaufsliste gelöscht wurde -->
+    <string name="Snabble.ShoppingList.ListDeleted.title"/>
+    <!-- Der Call-To-Action wenn eine Einkaufsliste wiederhergestellt werden soll -->
+    <string name="Snabble.ShoppingList.ListDeleted.undo"/>
+    <!-- Der Call-To-Action beim Empty-State Text wenn der Einkaufszettel noch leer ist  -->
+    <string name="Snabble.ShoppingList.ListEmpty.add"/>
+    <!-- Empty-State Text wenn der Einkaufszettel noch leer ist -->
+    <string name="Snabble.ShoppingList.ListEmpty.title"/>
+    <!-- Der Call-To-Action beim Empty-State Text wenn noch kein Einkaufszettel angelegt wurde -->
+    <string name="Snabble.ShoppingList.NoLists.add"/>
+    <!-- Der Empty-State wenn noch kein Einkaufszettel angelegt wurde -->
+    <string name="Snabble.ShoppingList.NoLists.title"/>
+    <!-- Hinweiß der angezeigt wird wenn ein Artikel nicht gefunden wurde -->
+    <string name="Snabble.ShoppingList.notFound"/>
+    <!-- Der Hint der angezeigt wird wenn man einen Artikel per Suche hinzufügen möchte -->
+    <string name="Snabble.ShoppingList.searchHint"/>
+    <!-- Der Titel der übersichtsseite der Einkaufslisten -->
+    <string name="Snabble.ShoppingList.title"/>
+    <!-- Man soll verschiedene Artikel mit einem "und" in die Einkaufsliste legen können. Hier geht es nur um das Wort "und" -->
+    <string name="Snabble.ShoppingList.Voice.connectingWord"/>
+    <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
+    <string name="Snabble.ShoppingList.Voice.details"/>
+    <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
+    <string name="Snabble.ShoppingList.Voice.title"/>
     <string name="Snabble.undo">Visszavonás</string>
     <string name="Snabble.Yes">Igen</string>
 </resources>

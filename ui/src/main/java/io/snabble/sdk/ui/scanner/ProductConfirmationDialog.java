@@ -22,6 +22,7 @@ import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -66,7 +67,7 @@ public class ProductConfirmationDialog {
     private View close;
     private View plus;
     private View minus;
-    private View enterReducedPrice;
+    private Button enterReducedPrice;
 
     private ShoppingCart.Item cartItem;
 
@@ -192,15 +193,6 @@ public class ProductConfirmationDialog {
 
         updatePrice();
 
-        List<ManualCoupon> manualCoupons = project.getManualCoupons();
-        boolean isVisible = manualCoupons != null && manualCoupons.size() > 0;
-        enterReducedPrice.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-        enterReducedPrice.setOnClickListener(v -> {
-            FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(context);
-            new SelectReducedPriceDialogFragment(ProductConfirmationDialog.this, cartItem)
-                    .show(fragmentActivity.getSupportFragmentManager(), null);
-        });
-
         plus.setOnClickListener(v -> {
             int q = getQuantity();
             if (q < ShoppingCart.MAX_QUANTITY) {
@@ -286,6 +278,21 @@ public class ProductConfirmationDialog {
             depositPrice.setVisibility(View.VISIBLE);
         } else {
             depositPrice.setVisibility(View.GONE);
+        }
+
+        List<ManualCoupon> manualCoupons = project.getManualCoupons();
+        boolean isVisible = manualCoupons != null && manualCoupons.size() > 0;
+        enterReducedPrice.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        enterReducedPrice.setOnClickListener(v -> {
+            FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(context);
+            new SelectReducedPriceDialogFragment(ProductConfirmationDialog.this, cartItem)
+                    .show(fragmentActivity.getSupportFragmentManager(), null);
+        });
+
+        if (cartItem.getManualCoupon() != null) {
+            enterReducedPrice.setText(cartItem.getManualCoupon().getName());
+        } else {
+            enterReducedPrice.setText(R.string.Snabble_addDiscount);
         }
     }
 
