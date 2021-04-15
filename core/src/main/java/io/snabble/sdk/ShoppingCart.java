@@ -720,16 +720,24 @@ public class ShoppingCart {
             return sum;
         }
 
-        private String getExtendedPriceText() {
-            int totalPriceModifiers = getTotalPriceModifiers();
-            String fmt = "\u00D7 %s = %s";
-            if (totalPriceModifiers != 0) {
-                fmt = "\u00D7 %s = %s (reduziert)"; // TODO i18n
+        private String getReducedPriceText() {
+            if (lineItem.priceModifiers != null && lineItem.priceModifiers.size() > 0) {
+                String suffix = getTotalPriceModifiers() < 0 ? " (reduziert)" : "";
+                return cart.priceFormatter.format(getTotalPrice(), true) + suffix;
             }
 
-            return String.format(fmt,
-                    cart.priceFormatter.format(product, lineItem.price + totalPriceModifiers),
-                    cart.priceFormatter.format(getTotalPrice()));
+            return null;
+        }
+
+        private String getExtendedPriceText() {
+            String reducedPriceText = getReducedPriceText();
+            if (reducedPriceText != null) {
+                return getReducedPriceText();
+            } else {
+                return String.format("\u00D7 %s = %s",
+                        cart.priceFormatter.format(product, lineItem.price),
+                        cart.priceFormatter.format(getTotalPrice()));
+            }
         }
 
         public String getPriceText() {
@@ -744,8 +752,12 @@ public class ShoppingCart {
                         if (lineItem.units != null) {
                             return getExtendedPriceText();
                         } else {
-                            String suffix = getTotalPriceModifiers() < 0 ? " (reduziert)" : "";
-                            return cart.priceFormatter.format(getTotalPrice(), true) + suffix;
+                            String reducedPriceText = getReducedPriceText();
+                            if (reducedPriceText != null) {
+                                return reducedPriceText;
+                            } else {
+                                cart.priceFormatter.format(getTotalPrice(), true);
+                            }
                         }
                     }
                 }
