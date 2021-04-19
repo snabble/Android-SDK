@@ -45,7 +45,8 @@ public class UIUtils {
     public static final int INFO_NEUTRAL = 0;
     public static final int INFO_WARNING = 1;
     public static final int INFO_POSITIVE = 2;
-
+    
+    @BaseTransientBottomBar.Duration
     public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
 
     public static FragmentActivity getHostFragmentActivity(Context context) {
