@@ -44,6 +44,9 @@ class CheckoutBar @JvmOverloads constructor(
     private val cartChangeListener = object: ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
     }
+    
+    val priceHeight: Int
+        get() = priceSum.height
 
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_checkout_bar, this, true)
