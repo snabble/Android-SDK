@@ -53,6 +53,7 @@ import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import io.snabble.sdk.utils.Utils;
 
 public class ShoppingCartView extends FrameLayout {
     private RecyclerView recyclerView;
@@ -564,6 +565,7 @@ public class ShoppingCartView extends FrameLayout {
         View controlsDefault;
         View quantityEditApply;
         TextView quantityAnnotation;
+        View sale;
         TextWatcher textWatcher;
         private final UndoHelper undoHelper;
         private final Picasso picasso;
@@ -585,6 +587,7 @@ public class ShoppingCartView extends FrameLayout {
             quantityEdit = itemView.findViewById(R.id.quantity_edit);
             quantityEditApply = itemView.findViewById(R.id.quantity_edit_apply);
             quantityAnnotation = itemView.findViewById(R.id.quantity_annotation);
+            sale = itemView.findViewById(R.id.sale);
         }
 
         @SuppressLint("SetTextI18n")
@@ -596,11 +599,13 @@ public class ShoppingCartView extends FrameLayout {
 
             if (row.imageUrl != null) {
                 image.setVisibility(View.VISIBLE);
-                picasso.load(row.imageUrl).into(image); // FIXME
+                picasso.load(row.imageUrl).into(image);
             } else {
                 image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
                 image.setImageBitmap(null);
             }
+
+            sale.setVisibility(row.item.getManualCoupon() != null ? View.VISIBLE : View.GONE);
 
             String encodingDisplayValue = "g";
             Unit encodingUnit = row.encodingUnit;

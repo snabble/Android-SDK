@@ -147,10 +147,11 @@
     <string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
     <string name="Snabble.Scanner.enterCodeButton">Enter\nbarcode</string>
     <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
-    <string name="Snabble.Scanner.firstScan">Scan your first product. Place the barcode in front of you camera.</string>
+    <string name="Snabble.Scanner.firstScan">Scan your first product. Place the barcode in front of your camera.</string>
     <string name="Snabble.Scanner.goToCart">Cart: %s</string>
     <string name="Snabble.Scanner.goToCart.empty">Cart</string>
     <string name="Snabble.Scanner.introText">Scan product barcodes to add them to your shopping cart.</string>
+    <string name="Snabble.Scanner.manualCouponAdded">You\'ve entered a discounted price for your last item. Please note that an employee will check your purchase.</string>
     <string name="Snabble.Scanner.multiPack">Don\'t forget!</string>
     <string name="Snabble.Scanner.networkError">Could not retrieve product data. Please check your internet connection.</string>
     <string name="Snabble.Scanner.noMatchesFound">Product not found</string>

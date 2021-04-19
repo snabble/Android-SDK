@@ -151,6 +151,7 @@
     <string name="Snabble.Scanner.goToCart">Kosár: %s</string>
     <string name="Snabble.Scanner.goToCart.empty">Kosár</string>
     <string name="Snabble.Scanner.introText">Szkenneld be a termék vonalkódját, és add hozzá a kosaradhoz.</string>
+    <string name="Snabble.Scanner.manualCouponAdded"/>
     <string name="Snabble.Scanner.multiPack">Ne felejtsd el!</string>
     <string name="Snabble.Scanner.networkError">A terméket nem sikerült lekérdezni. Ellenőrizd az internetkapcsolatot.</string>
     <string name="Snabble.Scanner.noMatchesFound">Termék nem található</string>

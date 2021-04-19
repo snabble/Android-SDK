@@ -151,6 +151,7 @@
     <string name="Snabble.Scanner.goToCart">Košík: %s</string>
     <string name="Snabble.Scanner.goToCart.empty">Košík</string>
     <string name="Snabble.Scanner.introText">Naskenuj čiarové kódy produktov a vlož ich do svojho košíka.</string>
+    <string name="Snabble.Scanner.manualCouponAdded"/>
     <string name="Snabble.Scanner.multiPack">Nezabudni!</string>
     <string name="Snabble.Scanner.networkError">Produkt nie je možné nájsť. Prosím, skontroluj svoje internetové pripojenie.</string>
     <string name="Snabble.Scanner.noMatchesFound">Položka nebola nájdená</string>

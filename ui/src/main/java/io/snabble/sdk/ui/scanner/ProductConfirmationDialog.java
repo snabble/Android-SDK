@@ -136,15 +136,7 @@ public class ProductConfirmationDialog {
             quantityAnnotation.setVisibility(View.GONE);
         }
 
-        ShoppingCart.Item existingItem = shoppingCart.getExistingMergeableProduct(product);
-        boolean isMergeable = existingItem != null && existingItem.isMergeable() && cartItem.isMergeable();
-        if (isMergeable) {
-            setQuantity(existingItem.getEffectiveQuantity() + 1);
-            addToCart.setText(R.string.Snabble_Scanner_updateCart);
-        } else {
-            setQuantity(cartItem.getEffectiveQuantity());
-            addToCart.setText(R.string.Snabble_Scanner_addToCart);
-        }
+        updateQuantityText();
 
         quantity.setFilters(new InputFilter[]{new InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY)});
         quantity.setOnEditorActionListener((v, actionId, event) -> {
@@ -241,6 +233,18 @@ public class ProductConfirmationDialog {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_SHOW, null);
+        }
+    }
+
+    public void updateQuantityText() {
+        ShoppingCart.Item existingItem = shoppingCart.getExistingMergeableProduct(cartItem.getProduct());
+        boolean isMergeable = existingItem != null && existingItem.isMergeable() && cartItem.isMergeable();
+        if (isMergeable) {
+            setQuantity(existingItem.getEffectiveQuantity() + 1);
+            addToCart.setText(R.string.Snabble_Scanner_updateCart);
+        } else {
+            setQuantity(cartItem.getEffectiveQuantity());
+            addToCart.setText(R.string.Snabble_Scanner_addToCart);
         }
     }
 
@@ -351,7 +355,7 @@ public class ProductConfirmationDialog {
         }
     }
 
-    private void setQuantity(int number) {
+    public void setQuantity(int number) {
         // its possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
         if (cartItem == null) {
@@ -359,7 +363,7 @@ public class ProductConfirmationDialog {
             return;
         }
 
-        if (cartItem.isEditable()) {
+        if (cartItem.isEditableInDialog()) {
             quantity.setEnabled(true);
 
             if (cartItem.getProduct().getType() == Product.Type.UserWeighed) {

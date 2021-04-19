@@ -11,10 +11,14 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 
 class SelectReducedPriceDialogFragment(
-    private val productConfirmationDialog: ProductConfirmationDialog,
-    private val cartItem: ShoppingCart.Item
+    private val productConfirmationDialog: ProductConfirmationDialog?,
+    private val cartItem: ShoppingCart.Item?
 ) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        if (productConfirmationDialog == null || cartItem == null) {
+            dismissAllowingStateLoss()
+        }
+
         val project = SnabbleUI.getProject()
         val discounts = project.manualCoupons
 
@@ -28,11 +32,13 @@ class SelectReducedPriceDialogFragment(
             .setTitle(R.string.Snabble_addDiscount)
             .setAdapter(adapter) { _, which ->
                 if (which == 0) {
-                    cartItem.manualCoupon = null
+                    cartItem?.manualCoupon = null
                 } else {
-                    cartItem.manualCoupon = discounts[which - 1]
+                    cartItem?.manualCoupon = discounts[which - 1]
                 }
-                productConfirmationDialog.updatePrice()
+                productConfirmationDialog?.setQuantity(1)
+                productConfirmationDialog?.updatePrice()
+                productConfirmationDialog?.updateQuantityText()
             }
             .create()
     }

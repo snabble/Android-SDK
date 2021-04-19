@@ -596,6 +596,10 @@ public class ShoppingCart {
                 return false;
             }
 
+            return isEditableInDialog();
+        }
+
+        public boolean isEditableInDialog() {
             if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT && !scannedCode.hasEmbeddedData();
 
             return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
@@ -722,8 +726,7 @@ public class ShoppingCart {
 
         private String getReducedPriceText() {
             if (lineItem.priceModifiers != null && lineItem.priceModifiers.size() > 0) {
-                String suffix = getTotalPriceModifiers() < 0 ? " (reduziert)" : "";
-                return cart.priceFormatter.format(getTotalPrice(), true) + suffix;
+                return cart.priceFormatter.format(getTotalPrice(), true);
             }
 
             return null;

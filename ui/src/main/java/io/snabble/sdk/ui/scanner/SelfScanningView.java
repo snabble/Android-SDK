@@ -67,6 +67,7 @@ public class SelfScanningView extends FrameLayout {
     private boolean allowShowingHints;
     private boolean isShowingHint;
     private boolean manualCameraControl;
+    private int topDownInfoBoxOffset;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -240,7 +241,7 @@ public class SelfScanningView extends FrameLayout {
                     if (product.getScanMessage() != null) {
                         showScanMessage(product, true);
                     } else {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_notForSale_errorMsg_scan)));
                     }
                 })
                 .create()
@@ -269,17 +270,27 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showInfo(final String text) {
-        Dispatch.mainThread(() -> UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL));
+        Dispatch.mainThread(() -> {
+            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL, topDownInfoBoxOffset);
+        });
     }
 
     private void showWarning(final String text) {
-        Dispatch.mainThread(() -> UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING));
+        Dispatch.mainThread(() -> {
+            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING, topDownInfoBoxOffset);
+        });
     }
 
     public void setDefaultButtonVisibility(boolean visible) {
         findViewById(R.id.bottom_bar).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    public int getTopDownInfoBoxOffset() {
+        return topDownInfoBoxOffset;
+    }
+
+    public void setTopDownInfoBoxOffset(int topDownInfoBoxOffset) {
+        this.topDownInfoBoxOffset = topDownInfoBoxOffset;
     }
 
     public void setTorchEnabled(boolean enabled) {
@@ -520,6 +531,10 @@ public class SelfScanningView extends FrameLayout {
 
             if (list.getAddCount() == 1) {
                 showHints();
+            }
+
+            if (item.getManualCoupon() != null) {
+                showInfo(getResources().getString(R.string.Snabble_Scanner_manualCouponAdded));
             }
         }
 

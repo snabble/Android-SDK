@@ -151,6 +151,7 @@
     <string name="Snabble.Scanner.goToCart">Warenkorb: %s</string>
     <string name="Snabble.Scanner.goToCart.empty">Warenkorb</string>
     <string name="Snabble.Scanner.introText">Scanne Barcodes von Produkten und lege sie in deinen Warenkorb.</string>
+    <string name="Snabble.Scanner.manualCouponAdded">Du hast für deinen letzten Artikel einen rabattierten Preis eingegeben. Bitte habe Verständnis dafür, dass ein*e Mitarbeiter*in deinen Einkauf kontrollieren wird.</string>
     <string name="Snabble.Scanner.multiPack">Nicht vergessen!</string>
     <string name="Snabble.Scanner.networkError">Das Produkt konnte nicht angefragt werden. Bitte überprüfe deine Internetverbindung.</string>
     <string name="Snabble.Scanner.noMatchesFound">Artikel nicht gefunden</string>
