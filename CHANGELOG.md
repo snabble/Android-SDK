@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.2]
+
+### Added
+- Support for manual coupons
+
+### Fixed
+- Long messages being cut off when scanning
+
 ## [0.35.1]
 
 ### Changes
