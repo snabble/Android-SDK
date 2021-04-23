@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.3]
+
+### Changes
+- Migration ProductResolver to kotlin and make it possible to use it without a chooser
+- The show() method was deprecated and replaced by resolve() since it is possible now to use the
+  resolver without visible interaction
+- Empty product image urls will be converted to null
+- The priceHeight property of the CheckoutBar contains now its margin
+
 ## [0.35.2]
 
 ### Added
