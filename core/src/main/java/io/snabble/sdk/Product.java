@@ -497,7 +497,7 @@ public class Product implements Serializable, Parcelable {
         }
 
         public Builder setImageUrl(String imageUrl) {
-            product.imageUrl = imageUrl;
+            product.imageUrl = imageUrl == null || imageUrl.trim().length() == 0 ? null : imageUrl;
             return this;
         }
 
