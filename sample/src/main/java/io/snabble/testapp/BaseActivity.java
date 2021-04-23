@@ -78,7 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             new ProductResolver.Builder(this)
                     .setCodes(ScannedCode.parse(SnabbleUI.getProject(), code))
                     .create()
-                    .show();
+                    .resolve();
 
             return true;
         }
