@@ -233,6 +233,8 @@
     <string name="Snabble.ShoppingList.Voice.details">Did you want to add several things to your shopping list? Then combine the individual entries with “and”, like this: Tissues and pasta and yeast</string>
     <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
     <string name="Snabble.ShoppingList.Voice.title">Hint</string>
+    <!-- Der Titel der übersichtsseite der Einkaufslisten -->
+    <string name="Snabble.ShoppingLists.title">Shopping lists</string>
     <string name="Snabble.undo">Undo</string>
     <string name="Snabble.Yes">Yes</string>
 </resources>
