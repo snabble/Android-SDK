@@ -245,7 +245,7 @@ public class SelfScanningView extends FrameLayout {
                     }
                 })
                 .create()
-                .show();
+                .resolve();
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes) {

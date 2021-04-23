@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -46,8 +47,7 @@ class CheckoutBar @JvmOverloads constructor(
     }
     
     val priceHeight: Int
-        get() = priceSum.height
-
+        get() = priceSum.height + priceSum.marginTop * 2
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_checkout_bar, this, true)
         orientation = VERTICAL
