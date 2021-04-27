@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.5]
+
+### Fixed
+- Removed unnecessary padding in SEPACardInputView
+
 ## [0.35.4]
 
 ### Fixed
