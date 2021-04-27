@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.4]
+
+### Fixed
+- The priceHeight property of the CheckoutBar contains now the outer margin
+
 ## [0.35.3]
 
 ### Changes

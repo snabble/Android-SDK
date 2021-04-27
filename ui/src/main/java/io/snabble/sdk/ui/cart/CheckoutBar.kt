@@ -39,6 +39,7 @@ class CheckoutBar @JvmOverloads constructor(
     private val payButton: Button
     private val articleCount: TextView
     private val priceSum: TextView
+    private val priceContainer: FrameLayout
     private val paymentSelectionHelper: PaymentSelectionHelper
     private val project = SnabbleUI.getProject()
     private var cart: ShoppingCart = project.shoppingCart
@@ -47,7 +48,8 @@ class CheckoutBar @JvmOverloads constructor(
     }
     
     val priceHeight: Int
-        get() = priceSum.height + priceSum.marginTop * 2
+        get() = priceSum.height + priceContainer.marginTop * 2
+
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_checkout_bar, this, true)
         orientation = VERTICAL
@@ -57,6 +59,7 @@ class CheckoutBar @JvmOverloads constructor(
         payButton = findViewById(R.id.pay)
         articleCount = findViewById(R.id.article_count)
         priceSum = findViewById(R.id.price_sum)
+        priceContainer = findViewById(R.id.sum_container)
         paymentSelectionHelper = PaymentSelectionHelper.getInstance()
         paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(getContext()) as FragmentActivity, { update() })
         paySelectorButton.setOnClickListener { paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(getContext())) }
