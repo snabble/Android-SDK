@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.6]
+
+### Changes
+- Improved performance of FTS4 index creation
+- Improved layout of Scan Dialog
+
+### Fixes
+- Fixed line item price being ignored in default cases
+
 ## [0.35.5]
 
 ### Fixed
