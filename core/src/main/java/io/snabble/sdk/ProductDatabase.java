@@ -443,6 +443,19 @@ public class ProductDatabase {
         Logger.d("Full update took %d ms", time2);
     }
 
+    private void dropFTSIndex() {
+        if (generateSearchIndex) {
+            synchronized (dbLock) {
+                db.beginTransaction();
+
+                exec("DROP TABLE IF EXISTS searchByName");
+
+                db.setTransactionSuccessful();
+                db.endTransaction();
+            }
+        }
+    }
+
     private void createFTSIndexIfNecessary() {
         if (generateSearchIndex) {
             long time = SystemClock.elapsedRealtime();
@@ -459,21 +472,8 @@ public class ProductDatabase {
                     db.beginTransaction();
 
                     exec("DROP TABLE IF EXISTS searchByName");
-                    exec("CREATE VIRTUAL TABLE searchByName USING fts4(sku TEXT, foldedName TEXT)");
-
-                    ContentValues contentValues = new ContentValues(2);
-                    cursor = rawQuery("SELECT sku, name FROM products", null, null);
-                    if (cursor != null) {
-                        while (cursor.moveToNext()) {
-                            contentValues.clear();
-                            contentValues.put("sku", cursor.getString(0));
-                            contentValues.put("foldedName", StringNormalizer.normalize(cursor.getString(1)));
-                            db.insert("searchByName", null, contentValues);
-                        }
-                        cursor.close();
-                    } else {
-                        Logger.d("Could not create FTS4 index, no products");
-                    }
+                    exec("CREATE VIRTUAL TABLE searchByName USING fts4(sku TEXT, foldedName TEXT, tokenize=unicode61)");
+                    exec("INSERT INTO searchByName SELECT sku, name FROM products");
 
                     db.setTransactionSuccessful();
                     db.endTransaction();
@@ -675,7 +675,10 @@ public class ProductDatabase {
 
         otherDb.close();
 
-        if (!ok) {
+        if (ok) {
+            otherDb.dropFTSIndex();
+            otherDb.createFTSIndexIfNecessary();
+        } else {
             Logger.e("Could not swap database: malformed database or unknown schema version");
             application.deleteDatabase(otherDbFile.getName());
             return;
