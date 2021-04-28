@@ -759,7 +759,7 @@ public class ShoppingCart {
                             if (reducedPriceText != null) {
                                 return reducedPriceText;
                             } else {
-                                cart.priceFormatter.format(getTotalPrice(), true);
+                                return cart.priceFormatter.format(getTotalPrice(), true);
                             }
                         }
                     }
