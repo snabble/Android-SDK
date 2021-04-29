@@ -53,7 +53,6 @@ import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
-import io.snabble.sdk.utils.Utils;
 
 public class ShoppingCartView extends FrameLayout {
     private RecyclerView recyclerView;
@@ -137,6 +136,7 @@ public class ShoppingCartView extends FrameLayout {
         Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
 
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
+        if(isInEditMode()) return;
         final Project project = SnabbleUI.getProject();
 
         if (cart != null) {
@@ -358,10 +358,12 @@ public class ShoppingCartView extends FrameLayout {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        Application application = (Application) getContext().getApplicationContext();
-        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
+        if(!isInEditMode()) {
+            Application application = (Application) getContext().getApplicationContext();
+            application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
-        registerListeners();
+            registerListeners();
+        }
     }
 
     @Override
