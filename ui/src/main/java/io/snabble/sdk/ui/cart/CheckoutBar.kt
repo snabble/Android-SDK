@@ -26,13 +26,12 @@ import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.*
-import io.snabble.sdk.utils.Logger
 
 
 class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
-    private var progressDialog: DelayedProgressDialog
+    private lateinit var progressDialog: DelayedProgressDialog
     private val paySelector: View
     private val paySelectorButton: View
     private val payIcon: ImageView
@@ -40,13 +39,13 @@ class CheckoutBar @JvmOverloads constructor(
     private val articleCount: TextView
     private val priceSum: TextView
     private val priceContainer: FrameLayout
-    private val paymentSelectionHelper: PaymentSelectionHelper
-    private val project = SnabbleUI.getProject()
-    private var cart: ShoppingCart = project.shoppingCart
-    private val cartChangeListener = object: ShoppingCart.SimpleShoppingCartListener() {
+    private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
+    private val project by lazy { SnabbleUI.getProject() }
+    private val cart: ShoppingCart by lazy { project.shoppingCart }
+    private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
     }
-    
+
     val priceHeight: Int
         get() = priceSum.height + priceContainer.marginTop * 2
 
@@ -60,12 +59,18 @@ class CheckoutBar @JvmOverloads constructor(
         articleCount = findViewById(R.id.article_count)
         priceSum = findViewById(R.id.price_sum)
         priceContainer = findViewById(R.id.sum_container)
-        paymentSelectionHelper = PaymentSelectionHelper.getInstance()
+
+        if (!isInEditMode) {
+            initBusinessLogic()
+        }
+    }
+
+    private fun initBusinessLogic() {
         paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(getContext()) as FragmentActivity, { update() })
         paySelectorButton.setOnClickListener { paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(getContext())) }
 
         payButton.setOneShotClickListener {
-            if(cart.isRestorable) {
+            if (cart.isRestorable) {
                 cart.restore()
                 update()
             } else {
@@ -203,7 +208,9 @@ class CheckoutBar @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        registerListeners()
+        if (!isInEditMode) {
+            registerListeners()
+        }
     }
 
     override fun onDetachedFromWindow() {
