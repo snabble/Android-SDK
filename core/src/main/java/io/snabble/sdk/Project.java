@@ -205,6 +205,9 @@ public class Project {
                 paymentMethodList.add(pm);
             }
         }
+        // TODO FIXME DEBUG remove!!
+        paymentMethodList.add(PaymentMethod.DATATRANS);
+
         availablePaymentMethods = paymentMethodList.toArray(new PaymentMethod[paymentMethodList.size()]);
 
         if (jsonObject.has("shops")) {

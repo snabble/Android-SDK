@@ -1,11 +1,14 @@
 package io.snabble.sdk.ui.checkout;
 
+import android.app.Activity;
+
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.payment.Datatrans;
 import io.snabble.sdk.utils.Logger;
 
 public class CheckoutHelper {
-    public static void displayPaymentView(Checkout checkout) {
+    public static void displayPaymentView(Activity activity, Checkout checkout) {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback == null) {
             Logger.e("ui action could not be performed: callback is null");
@@ -33,6 +36,9 @@ public class CheckoutHelper {
                     break;
                 case QRCODE_OFFLINE:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE, null);
+                    break;
+                case DATATRANS:
+                    Datatrans.pay(activity, checkout.getPriceToPay());
                     break;
             }
         }

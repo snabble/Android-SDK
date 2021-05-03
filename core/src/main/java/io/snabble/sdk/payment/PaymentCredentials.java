@@ -37,7 +37,8 @@ public class PaymentCredentials {
         CREDIT_CARD(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
-        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD));
+        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
+        DATATRANS(null, Collections.singletonList(PaymentMethod.DATATRANS));
 
         private String originType;
         private List<PaymentMethod> paymentMethods;
@@ -60,7 +61,7 @@ public class PaymentCredentials {
         UNKNOWN,
         VISA,
         MASTERCARD,
-        AMEX
+        AMEX,
     }
 
     private static class SepaData {
@@ -80,6 +81,10 @@ public class PaymentCredentials {
         private String clientID;
         private String customerAuthorizationURI;
         private PaydirektAuthorizationData authorizationData;
+    }
+
+    private static class DatatransData {
+        private String token;
     }
 
     public static class PaydirektAuthorizationData {
@@ -259,6 +264,42 @@ public class PaymentCredentials {
         pc.additionalData.put("deviceName", authorizationData.name);
         pc.additionalData.put("deviceFingerprint", authorizationData.fingerprint);
         pc.additionalData.put("deviceIPAddress", authorizationData.ipAddress);
+
+        if (pc.encryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
+    public static PaymentCredentials fromDatatrans(String token, String datatransPaymentMethod) {
+        if (token == null) {
+            return null;
+        }
+
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
+        pc.type = Type.DATATRANS;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        pc.obfuscatedId = "datatrans";
+
+        DatatransData datatransData = new DatatransData();
+        datatransData.token = token;
+
+        String json = GsonHolder.get().toJson(datatransData, PaydirektData.class);
+
+        X509Certificate certificate = certificates.get(0);
+        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.encrypt();
+        pc.signature = pc.sha256Signature(certificate);
+        pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.additionalData = new HashMap<>();
+        pc.additionalData.put("datatransPaymentMethod", datatransPaymentMethod);
 
         if (pc.encryptedData == null) {
             return null;

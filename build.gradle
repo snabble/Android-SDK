@@ -27,6 +27,7 @@ allprojects {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
+        maven { url "https://datatrans.jfrog.io/artifactory/mobile-sdk/"}
     }
 
     project.ext {

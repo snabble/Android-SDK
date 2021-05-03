@@ -83,6 +83,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_payment_select_sco);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_payment_select_pos);
+        icons.put(PaymentMethod.DATATRANS, R.drawable.snabble_ic_datatrans);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -94,11 +95,13 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
+        names.put(PaymentMethod.DATATRANS, "Datatrans CreditCard");
 
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
         paymentMethodsSortPriority.add(PaymentMethod.VISA);
         paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
         paymentMethodsSortPriority.add(PaymentMethod.AMEX);
+        paymentMethodsSortPriority.add(PaymentMethod.DATATRANS);
         paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
         paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
         paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);

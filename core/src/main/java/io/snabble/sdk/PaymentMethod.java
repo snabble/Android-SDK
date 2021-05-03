@@ -22,7 +22,9 @@ public enum PaymentMethod {
     @SerializedName("gatekeeperTerminal")
     GATEKEEPER_TERMINAL(false, false, false, false),
     @SerializedName("paydirektOneKlick")
-    PAYDIREKT(false, true, false, true);
+    PAYDIREKT(false, true, false, true),
+    @SerializedName("datatrans")
+    DATATRANS(false, true, false, true);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;

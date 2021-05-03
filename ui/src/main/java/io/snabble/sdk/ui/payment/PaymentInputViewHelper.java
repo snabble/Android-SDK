@@ -4,9 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
 
 import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -18,7 +18,8 @@ public class PaymentInputViewHelper {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             if (KeyguardUtils.isDeviceSecure()) {
-                Keyguard.unlock(UIUtils.getHostFragmentActivity(context), new Keyguard.Callback() {
+                FragmentActivity activity = UIUtils.getHostFragmentActivity(context);
+                Keyguard.unlock(activity, new Keyguard.Callback() {
                     @Override
                     public void success() {
                         Bundle args = new Bundle();
@@ -40,6 +41,9 @@ public class PaymentInputViewHelper {
                                 break;
                             case PAYDIREKT:
                                 callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null);
+                                break;
+                            case DATATRANS:
+                                Datatrans.registerPaymentInfo(activity);
                                 break;
                             case DE_DIRECT_DEBIT:
                                 callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);

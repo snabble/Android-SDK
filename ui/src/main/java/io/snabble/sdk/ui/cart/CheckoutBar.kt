@@ -249,7 +249,7 @@ class CheckoutBar @JvmOverloads constructor(
                 project.checkout.pay(entry.paymentMethod, null)
             }
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
-            CheckoutHelper.displayPaymentView(project.checkout)
+            CheckoutHelper.displayPaymentView(UIUtils.getHostActivity(context), project.checkout)
             progressDialog.dismiss()
         } else if (state == Checkout.State.PAYMENT_PROCESSING) {
             progressDialog.showAfterDelay(300)
