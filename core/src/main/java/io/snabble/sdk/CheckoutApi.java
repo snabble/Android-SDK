@@ -78,6 +78,11 @@ public class CheckoutApi {
                         }
                     }
 
+                    // TODO FIXME remove!
+                    PaymentMethodInfo info = new PaymentMethodInfo();
+                    info.id = "datatrans";
+                    result.add(info);
+
                     return result.toArray(new PaymentMethodInfo[result.size()]);
                 }
             }

@@ -95,7 +95,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
-        names.put(PaymentMethod.DATATRANS, "Datatrans CreditCard");
+        names.put(PaymentMethod.DATATRANS, "Datatrans");
 
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
         paymentMethodsSortPriority.add(PaymentMethod.VISA);

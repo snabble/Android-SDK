@@ -2,6 +2,8 @@ package io.snabble.sdk.ui.payment
 
 import android.app.Activity
 import android.util.Base64
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
 import ch.datatrans.payment.api.Transaction
 import ch.datatrans.payment.api.TransactionListener
 import ch.datatrans.payment.api.TransactionRegistry
@@ -14,6 +16,8 @@ import io.snabble.sdk.CheckoutApi.SignedCheckoutInfo
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.payment.PaymentCredentialsStore
+import io.snabble.sdk.ui.Keyguard
+import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleJsonCallback
@@ -28,12 +32,14 @@ data class DatatransMobileTokenRequest(
     val currency: String,
     val language: String? = null,
     val paymentMethods: List<String>,
-    val amount : Int?,
+    val amount : Int = 0,
+    val autoSettle: Boolean = true,
     val option : DatatransMobileTokenRequestOptions = DatatransMobileTokenRequestOptions()
 )
 
 data class DatatransMobileTokenRequestOptions (
-    val returnMobileToken: Boolean = true
+    val returnMobileToken: Boolean = true,
+    val createAlias: Boolean = false,
 )
 
 data class DatatransMobileTokenResponse (
@@ -42,22 +48,23 @@ data class DatatransMobileTokenResponse (
 
 class Datatrans {
     companion object {
-        val paymentMethods = listOf("ECA", "VIS", "AMX", "TWI", "PFC")
+        val paymentMethods = listOf("VIS", "PAY")
 
         @JvmStatic
-        fun registerPaymentInfo(activity: Activity) {
+        fun registerCard(activity: FragmentActivity) {
             val data = DatatransMobileTokenRequest(
                 refno = UUID.randomUUID().toString().replace("-", "").take(20),
                 currency = "CHF",
-                amount = 0,
+                language = Locale.getDefault().language,
                 paymentMethods = paymentMethods,
+                option = DatatransMobileTokenRequestOptions(true, true)
             )
 
             makeRequest(activity, data)
         }
 
         @JvmStatic
-        fun pay(activity: Activity, amount: Int) {
+        fun pay(activity: FragmentActivity, amount: Int) {
             val data = DatatransMobileTokenRequest(
                 refno = UUID.randomUUID().toString().replace("-", "").take(20),
                 currency = "CHF",
@@ -68,7 +75,7 @@ class Datatrans {
             makeRequest(activity, data)
         }
 
-        private fun makeRequest(activity: Activity, data: DatatransMobileTokenRequest) {
+        private fun makeRequest(activity: FragmentActivity, data: DatatransMobileTokenRequest) {
             val request: Request = Request.Builder()
                 .url("https://api.sandbox.datatrans.com/v1/transactions")
                 .header("Authorization", "Basic ${Base64.encodeToString("1100029137:btcgYLp7UgeK9URR".toByteArray(), Base64.NO_WRAP)}")
@@ -83,7 +90,7 @@ class Datatrans {
                         mobileToken = response.mobileToken,
                         saveCredentials = data.amount == 0
                     )
-                    Logger.e("Datatrans transaction: ${response.mobileToken}")
+                    Logger.d("Datatrans transaction: ${response.mobileToken}")
                 }
 
                 override fun error(t: Throwable?) {
@@ -92,7 +99,7 @@ class Datatrans {
             })
         }
 
-        private fun startDatatransTransaction(activity: Activity, mobileToken: String, saveCredentials: Boolean = false) {
+        private fun startDatatransTransaction(activity: FragmentActivity, mobileToken: String, saveCredentials: Boolean = false) {
             val transaction = if (saveCredentials) {
                 Transaction(mobileToken)
             } else {
@@ -104,9 +111,29 @@ class Datatrans {
 
             transaction.listener = object : TransactionListener {
                 override fun onTransactionSuccess(result: TransactionSuccess) {
+                    Toast.makeText(activity, "onTransactionSuccess: " + result.paymentMethodToken?.toJson(), Toast.LENGTH_LONG).show()
+                    Logger.e("onTransactionSuccess: " + result.paymentMethodToken?.toJson())
+
                     if (saveCredentials) {
-                        result.paymentMethodToken?.let { token ->
-                            PaymentCredentials.fromDatatrans(token.toJson(), result.paymentMethodType.identifier)
+                        val token = result.paymentMethodToken
+                        if (token != null) {
+                            Keyguard.unlock(activity, object :  Keyguard.Callback {
+                                override fun success() {
+                                    val store = Snabble.getInstance().paymentCredentialsStore
+                                    val credentials = PaymentCredentials.fromDatatrans(
+                                        token.toJson(),
+                                        result.paymentMethodType.identifier,
+                                        result.paymentMethodToken?.getDisplayTitle(activity)
+                                    )
+                                    store.add(credentials)
+                                }
+
+                                override fun error() {
+                                    Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
+                                }
+                            })
+                        } else {
+                            Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
                         }
                     } else {
                         // TODO
@@ -114,7 +141,7 @@ class Datatrans {
                 }
 
                 override fun onTransactionError(exception: TransactionException) {
-                    Logger.e("Datatrans error: ${exception?.message}")
+                    Logger.e("Datatrans error: ${exception.message}")
                 }
             }
             transaction.options.appCallbackScheme = "snabble"

@@ -43,7 +43,7 @@ public class PaymentInputViewHelper {
                                 callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null);
                                 break;
                             case DATATRANS:
-                                Datatrans.registerPaymentInfo(activity);
+                                Datatrans.registerCard(activity);
                                 break;
                             case DE_DIRECT_DEBIT:
                                 callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);

@@ -272,7 +272,7 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromDatatrans(String token, String datatransPaymentMethod) {
+    public static PaymentCredentials fromDatatrans(String token, String datatransPaymentMethod, String obfuscatedId) {
         if (token == null) {
             return null;
         }
@@ -291,7 +291,7 @@ public class PaymentCredentials {
         DatatransData datatransData = new DatatransData();
         datatransData.token = token;
 
-        String json = GsonHolder.get().toJson(datatransData, PaydirektData.class);
+        String json = GsonHolder.get().toJson(datatransData, DatatransData.class);
 
         X509Certificate certificate = certificates.get(0);
         pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
@@ -300,6 +300,7 @@ public class PaymentCredentials {
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.additionalData = new HashMap<>();
         pc.additionalData.put("datatransPaymentMethod", datatransPaymentMethod);
+        pc.obfuscatedId = obfuscatedId;
 
         if (pc.encryptedData == null) {
             return null;
@@ -583,6 +584,8 @@ public class PaymentCredentials {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.PAYDIREKT) {
             return PaymentMethod.PAYDIREKT;
+        } else if (type == Type.DATATRANS) {
+            return PaymentMethod.DATATRANS;
         }
 
         return null;
