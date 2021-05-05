@@ -33,7 +33,7 @@ data class DatatransMobileTokenRequest(
     val language: String? = null,
     val paymentMethods: List<String>,
     val amount : Int = 0,
-    val autoSettle: Boolean = true,
+    val autoSettle: Boolean = false,
     val option : DatatransMobileTokenRequestOptions = DatatransMobileTokenRequestOptions()
 )
 
