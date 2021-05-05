@@ -24,7 +24,9 @@ public enum PaymentMethod {
     @SerializedName("paydirektOneKlick")
     PAYDIREKT(false, true, false, true),
     @SerializedName("datatrans")
-    DATATRANS(false, true, false, true);
+    DATATRANS(false, true, false, true),
+    @SerializedName("googlePay")
+    GOOGLE_PAY(false, false, false, false);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;

@@ -84,6 +84,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.DATATRANS, R.drawable.snabble_ic_datatrans);
+        icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -96,7 +97,9 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.DATATRANS, "Datatrans");
+        names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
 
+        paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
         paymentMethodsSortPriority.add(PaymentMethod.VISA);
         paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
