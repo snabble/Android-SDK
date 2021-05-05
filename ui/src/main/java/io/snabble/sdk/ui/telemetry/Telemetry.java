@@ -42,7 +42,7 @@ public class Telemetry {
         ItemEditText,
         ItemMoved,
         ItemMarkDoneScanner,
-        ItemScanNotFound, // unused
+        ItemScanNotFound,
     }
 
     private static OnEventListener onEventListener;
