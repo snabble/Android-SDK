@@ -33,7 +33,7 @@ data class DatatransMobileTokenRequest(
     val language: String? = null,
     val paymentMethods: List<String>,
     val amount : Int = 0,
-    val autoSettle: Boolean = false,
+    val autoSettle: Boolean = true,
     val option : DatatransMobileTokenRequestOptions = DatatransMobileTokenRequestOptions()
 )
 
@@ -48,7 +48,7 @@ data class DatatransMobileTokenResponse (
 
 class Datatrans {
     companion object {
-        val paymentMethods = listOf("VIS", "PAY")
+        val paymentMethods = listOf("ECA", "VIS", "AMX", "TWI", "PFC")
 
         @JvmStatic
         fun registerCard(activity: FragmentActivity) {
