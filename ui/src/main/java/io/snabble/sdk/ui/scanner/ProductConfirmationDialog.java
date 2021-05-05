@@ -212,10 +212,11 @@ public class ProductConfirmationDialog {
         }
 
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        int marginBottom = Math.round(70 * dm.density);
+        int marginBottom = Math.round(48 * dm.density);
 
         WindowManager.LayoutParams layoutParams = window.getAttributes();
         layoutParams.y = marginBottom;
+        window.setBackgroundDrawableResource(R.drawable.snabble_scanner_dialog_background);
         window.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         window.setAttributes(layoutParams);
         alertDialog.show();
