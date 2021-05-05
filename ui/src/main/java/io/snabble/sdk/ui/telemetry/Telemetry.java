@@ -23,7 +23,26 @@ public class Telemetry {
         CartAmountChanged,
         SelectedBundleProduct,
         PaymentMethodAdded,
-        PaymentMethodDeleted
+        PaymentMethodDeleted,
+
+        // shopping list
+        ListCreated,
+        ListDeleted,
+        ListUndeleted,
+        ListRenamed,
+        ItemAddedSpeech,
+        ItemAddedSearchProduct,
+        ItemAddedSearchText,
+        ItemAddedScan,
+        ItemDeleted,
+        ItemUndeleted,
+        ItemMarkDone,
+        ItemMarkTodo,
+        ItemEditQuantity,
+        ItemEditText,
+        ItemMoved,
+        ItemMarkDoneScanner,
+        ItemScanNotFound, // unused
     }
 
     private static OnEventListener onEventListener;
