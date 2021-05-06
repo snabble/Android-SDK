@@ -154,7 +154,9 @@ class CheckoutBar @JvmOverloads constructor(
         } else {
             val entry = paymentSelectionHelper.selectedEntry.getValue()
             if (entry != null) {
-                if (entry.paymentMethod.isRequiringCredentials && entry.paymentCredentials == null) {
+                if (entry.paymentMethod == PaymentMethod.GOOGLE_PAY) {
+                    project.googlePayHelper.requestPayment(project.shoppingCart.totalPrice)
+                } else if (entry.paymentMethod.isRequiringCredentials && entry.paymentCredentials == null) {
                     PaymentInputViewHelper.openPaymentInputView(context, entry.paymentMethod, project.id)
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout)

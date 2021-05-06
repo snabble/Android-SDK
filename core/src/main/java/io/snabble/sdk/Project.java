@@ -7,10 +7,8 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -19,12 +17,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
@@ -43,6 +41,7 @@ public class Project {
     private ShoppingCartStorage shoppingCartStorage;
     private Events events;
     private Assets assets;
+    private GooglePayHelper googlePayHelper;
 
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
@@ -100,6 +99,7 @@ public class Project {
         checkout = new Checkout(this);
         events = new Events(this);
         assets = new Assets(this);
+        googlePayHelper = new GooglePayHelper(this, Snabble.getInstance().getApplication(), true);
     }
 
     void parse(JsonObject jsonObject) {
@@ -207,6 +207,7 @@ public class Project {
         }
         // TODO FIXME DEBUG remove!!
         paymentMethodList.add(PaymentMethod.DATATRANS);
+        paymentMethodList.add(PaymentMethod.GOOGLE_PAY);
 
         availablePaymentMethods = paymentMethodList.toArray(new PaymentMethod[paymentMethodList.size()]);
 
@@ -503,6 +504,10 @@ public class Project {
 
     public Assets getAssets() {
         return assets;
+    }
+
+    public GooglePayHelper getGooglePayHelper() {
+        return googlePayHelper;
     }
 
     public void logErrorEvent(String format, Object... args) {

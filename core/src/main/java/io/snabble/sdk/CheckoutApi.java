@@ -83,6 +83,10 @@ public class CheckoutApi {
                     info.id = "datatrans";
                     result.add(info);
 
+                    PaymentMethodInfo googlePayInfo = new PaymentMethodInfo();
+                    googlePayInfo.id = "googlePay";
+                    result.add(googlePayInfo);
+
                     return result.toArray(new PaymentMethodInfo[result.size()]);
                 }
             }

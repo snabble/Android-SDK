@@ -1,20 +1,26 @@
 package io.snabble.sdk.googlepay
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.wallet.IsReadyToPayRequest
-import com.google.android.gms.wallet.PaymentsClient
-import com.google.android.gms.wallet.Wallet
-import com.google.android.gms.wallet.WalletConstants
+import com.google.android.gms.wallet.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.GsonHolder
+import io.snabble.sdk.utils.Logger
 
-class GooglePay(
+class GooglePayHelper(
+    val project: Project,
+    val context: Context,
     val useTestEnvironment: Boolean = false,
-    private var googlePayClient: PaymentsClient
 ) {
+    private var googlePayClient: PaymentsClient
+
     init {
         googlePayClient = createPaymentsClient(true)
     }
@@ -56,8 +62,8 @@ class GooglePay(
         return JsonObject().apply {
             addProperty("type", "PAYMENT_GATEWAY")
             add("parameters", JsonObject().apply {
-                addProperty("gateway", "example")
-                addProperty("gatewayMerchantId", "exampleGatewayMerchantId")
+                addProperty("gateway", "firstdata")
+                addProperty("gatewayMerchantId", "3176752955")
             })
         }
     }
@@ -87,8 +93,8 @@ class GooglePay(
         return JsonObject().apply {
             addProperty("totalPrice", price)
             addProperty("totalPriceStatus", "FINAL")
-            addProperty("countryCode", "DE")
-            addProperty("currencyCode", "EUR")
+            addProperty("countryCode", project.currencyLocale.country)
+            addProperty("currencyCode", project.currency.currencyCode)
         }
     }
 
@@ -130,6 +136,53 @@ class GooglePay(
                 completedTask.getResult(ApiException::class.java)?.let { onComplete(it) }
             } catch (exception: ApiException) {
                 onComplete(false)
+            }
+        }
+    }
+
+    fun requestPayment(priceToPay: Int): Boolean {
+        val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
+        val intent = Intent(context, GooglePayHelperActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra(GooglePayHelperActivity.INTENT_EXTRA_PROJECT_ID, project.id)
+        intent.putExtra(GooglePayHelperActivity.INTENT_EXTRA_PAYMENT_PRICE_TO_PAY, priceToPayDecimal.toString())
+        context.startActivity(intent)
+
+        return false
+    }
+
+    fun loadPaymentData(priceToPay: String, activity: Activity, requestCode: Int): Boolean {
+        val paymentDataRequestJson = getPaymentDataRequest(priceToPay)
+        if (paymentDataRequestJson == null) {
+            Logger.e("Could not create google pay request")
+            return false
+        }
+
+        val request = PaymentDataRequest.fromJson(GsonHolder.get().toJson(paymentDataRequestJson))
+        if (request != null) {
+            val task = googlePayClient.loadPaymentData(request)
+            AutoResolveHelper.resolveTask(task, activity, requestCode)
+            return true
+        }
+
+        return false
+    }
+
+    fun onActivityResult(resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            AppCompatActivity.RESULT_OK -> {
+                data?.let { intent ->
+                    val paymentData = PaymentData.getFromIntent(intent)
+                    Toast.makeText(context, "Google Pay Success: ${paymentData?.toJson()}", Toast.LENGTH_LONG).show()
+                }
+            }
+            AppCompatActivity.RESULT_CANCELED -> {
+                // The user cancelled the payment attempt
+            }
+            AutoResolveHelper.RESULT_ERROR -> {
+                AutoResolveHelper.getStatusFromIntent(data)?.let {
+                    Toast.makeText(context, "Google Pay Error ${it.statusCode}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

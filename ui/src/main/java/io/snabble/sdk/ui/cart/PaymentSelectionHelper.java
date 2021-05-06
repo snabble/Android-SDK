@@ -35,8 +35,6 @@ public class PaymentSelectionHelper {
         return instance;
     }
 
-
-
     public class Entry implements Serializable {
         String text;
         String hint;
