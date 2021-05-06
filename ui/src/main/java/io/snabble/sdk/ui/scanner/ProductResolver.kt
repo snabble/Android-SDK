@@ -19,9 +19,9 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.utils.Age
 import io.snabble.sdk.utils.Dispatch
 
-class ProductResolver private constructor(private val context: Context) {
+class ProductResolver private constructor(private val context: Context, private val project: Project) {
     private var resolveBundles = true
-    private val productConfirmationDialog = ProductConfirmationDialog(context, SnabbleUI.getProject())
+    private val productConfirmationDialog = ProductConfirmationDialog(context, project)
     var scannedCodes: List<ScannedCode> = emptyList()
         private set
     private val progressDialog: DelayedProgressDialog
@@ -71,7 +71,6 @@ class ProductResolver private constructor(private val context: Context) {
         progressDialog.showAfterDelay(300)
         onShowListener?.onShow()
 
-        val project = SnabbleUI.getProject()
         val productDatabase = project.productDatabase
 
         // check if its available local first
@@ -156,7 +155,6 @@ class ProductResolver private constructor(private val context: Context) {
         progressDialog.dismiss()
         val unit = product.getEncodingUnit(scannedCode.templateName, scannedCode.lookupCode)
         var gs1EmbeddedData: BigDecimal? = null
-        val project = SnabbleUI.getProject()
 
         if (gs1Code != null) {
             gs1EmbeddedData = gs1Code.getEmbeddedData(unit,
@@ -204,7 +202,7 @@ class ProductResolver private constructor(private val context: Context) {
                 onDismissListener?.onDismiss()
             }
             product.type == Product.Type.DepositReturnVoucher
-                    && SnabbleUI.getProject().shoppingCart.containsScannedCode(scannedCode) -> {
+                    && project.shoppingCart.containsScannedCode(scannedCode) -> {
                 onAlreadyScannedListener?.onAlreadyScanned()
                 progressDialog.dismiss()
                 onDismissListener?.onDismiss()
@@ -230,7 +228,7 @@ class ProductResolver private constructor(private val context: Context) {
                 Telemetry.event(Telemetry.Event.SelectedBundleProduct, product)
                 val codes = product.scannableCodes
                 if (codes.isNotEmpty() && codes[0].lookupCode != null) {
-                    val newCodes = ScannedCode.parse(SnabbleUI.getProject(), codes[0].lookupCode)
+                    val newCodes = ScannedCode.parse(project, codes[0].lookupCode)
                     if (newCodes.size > 0) {
                         var defaultCode = newCodes[0]
                         for (newCode in newCodes) {
@@ -324,8 +322,8 @@ class ProductResolver private constructor(private val context: Context) {
         fun onAlreadyScanned()
     }
 
-    class Builder(context: Context) {
-        private val productResolver: ProductResolver = ProductResolver(context)
+    class Builder @JvmOverloads constructor(context: Context, private val project: Project = SnabbleUI.getProject()) {
+        private val productResolver: ProductResolver = ProductResolver(context, project)
 
         fun setCodes(codes: List<ScannedCode>) = apply {
             productResolver.scannedCodes = codes
@@ -335,7 +333,7 @@ class ProductResolver private constructor(private val context: Context) {
             productResolver.scannedCodes = listOf(code)
         }
 
-        fun setBarcodeOfProject(barcode: Barcode, project: Project) = apply {
+        fun setBarcode(barcode: Barcode) = apply {
             setCodes(ScannedCode.parse(project, barcode.text))
         }
 
