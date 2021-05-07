@@ -1,6 +1,17 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.8]
+
+### Changes
+- Add option to set project of the ProductResolver
+- Changed builder method name from `setBarcodeOfProject(...)` to `setBarcode(...)` to simplify usage
+
+## [0.35.7]
+
+### Changes
+- Extend telemetry for shopping lists
+
 ## [0.35.6]
 
 ### Changes

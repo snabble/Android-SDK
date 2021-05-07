@@ -1,173 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp"
     tools:ignore="RtlHardcoded">
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:id="@+id/anchor" />
 
     <FrameLayout
         android:id="@+id/helper_image_container"
-        android:layout_toRightOf="@+id/anchor"
-        android:layout_marginTop="2dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginBottom="8dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <ImageView
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/helper_image"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_marginStart="4dp"
             android:visibility="gone"
-            android:id="@+id/helper_image" />
+            app:shapeAppearanceOverlay="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners"
+            tools:background="#ccc"
+            tools:visibility="visible" />
 
         <TextView
+            android:id="@+id/sale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/sale"
+            android:background="@drawable/snabble_ic_round_textview"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
-            android:background="@drawable/snabble_ic_round_textview"
-            app:backgroundTint="#ff0000"
-            android:textSize="14dp"
-            android:textColor="#ffffff"
             android:text="%"
+            android:textColor="#ffffff"
+            android:textSize="14sp"
+            app:backgroundTint="#ff0000"
             tools:ignore="HardcodedText" />
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/controls"
         android:layout_toRightOf="@+id/helper_image_container"
-        android:orientation="vertical"
-        android:layout_toLeftOf="@+id/controls">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:textSize="12dp"
-            android:id="@+id/subtitle"
-            tools:text="Wiha"
-            tools:visibility="visible" />
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:textSize="17dp"
-            android:id="@+id/name"
+            android:textSize="17sp"
             tools:text="Schraubendreher Top G" />
 
         <LinearLayout
+            android:id="@+id/price_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="4dp"
-            android:id="@+id/price_container"
+            android:layout_marginRight="8dp"
             android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/quantity"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:layout_marginRight="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/snabble_ic_round_textview"
-                app:backgroundTint="?attr/colorPrimary"
-                android:textSize="12dp"
-                android:textColor="?attr/colorOnPrimary"
-                android:textStyle="bold"
-                tools:text="2" />
 
             <TextView
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:textSize="12dp"
-                tools:text="* 13,99 € = 26,98 €" />
+                android:textSize="12sp"
+                tools:text="26,98 €" />
         </LinearLayout>
-
     </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/controls"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:id="@+id/controls">
+        android:layout_centerVertical="true">
 
         <LinearLayout
+            android:id="@+id/controls_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/controls_default"
-            android:orientation="horizontal"
-            tools:visibility="gone">
+            android:orientation="horizontal">
 
-            <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            <Button
                 android:id="@+id/minus"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
                 android:insetLeft="0dp"
-                android:insetRight="0dp"
                 android:insetTop="0dp"
+                android:insetRight="0dp"
                 android:insetBottom="0dp"
                 android:padding="6dp"
-                app:strokeColor="@drawable/snabble_stroke"
-                app:iconTint="?attr/colorOnSurface"
+                app:icon="@drawable/snabble_ic_minus"
                 app:iconPadding="0dp"
-                app:icon="@drawable/snabble_ic_minus_content" />
+                app:iconTint="?attr/colorOnSurface"
+                app:strokeColor="@drawable/snabble_stroke"
+                tools:background="#ccc" />
 
-            <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            <TextView
+                android:id="@+id/quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:minWidth="36dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:textSize="17sp"
+                tools:text="3" />
+
+            <Button
                 android:id="@+id/plus"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:insetLeft="0dp"
-                android:insetRight="0dp"
                 android:insetTop="0dp"
+                android:insetRight="0dp"
                 android:insetBottom="0dp"
                 android:padding="6dp"
-                app:strokeColor="@drawable/snabble_stroke"
+                app:icon="@drawable/snabble_ic_add"
                 app:iconPadding="0dp"
                 app:iconTint="?attr/colorOnSurface"
-                app:icon="@drawable/snabble_ic_plus_content" />
+                app:strokeColor="@drawable/snabble_stroke"
+                tools:background="#ccc" />
+
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/controls_user_weighed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:minWidth="88dp"
-            android:id="@+id/controls_user_weighed"
-            tools:visibility="visible">
+            android:orientation="horizontal"
+            tools:visibility="gone">
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:id="@+id/quantity_text_input"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="72dp"
                 android:layout_height="44dp"
                 android:insetLeft="0dp"
-                android:insetRight="0dp"
                 android:insetTop="0dp"
+                android:insetRight="0dp"
                 android:insetBottom="0dp"
-                app:hintEnabled="false"
-                app:boxStrokeColor="@drawable/snabble_stroke">
+                app:boxStrokeColor="@drawable/snabble_stroke"
+                app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/quantity_edit"
@@ -177,10 +159,10 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:gravity="right|center_vertical"
-                    android:inputType="number"
                     android:imeOptions="actionDone"
-                    android:textSize="15dp"
-                    android:text="1"  />
+                    android:inputType="number"
+                    android:textSize="15sp"
+                    tools:text="1"  />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -191,23 +173,24 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="4dp"
                 android:gravity="left"
-                android:text="g"
-                android:textSize="15dp" />
+                android:textSize="15sp"
+                tools:text="g" />
 
-            <Button style="@style/Widget.MaterialComponents.Button.Icon"
-                android:id="@+id/quantity_edit_apply"
+            <Button android:id="@+id/quantity_edit_apply"
+                style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
                 android:insetLeft="0dp"
-                android:insetRight="0dp"
                 android:insetTop="0dp"
+                android:insetRight="0dp"
                 android:insetBottom="0dp"
                 android:padding="6dp"
-                android:layout_gravity="center_vertical"
+                app:icon="@drawable/snabble_ic_check_white"
                 app:iconPadding="0dp"
                 app:iconTint="?attr/colorOnPrimary"
-                app:icon="@drawable/snabble_ic_check_white" />
+                tools:background="@drawable/snabble_ic_check_white"
+                tools:backgroundTint="#000"/>
         </LinearLayout>
     </FrameLayout>
-
 </RelativeLayout>

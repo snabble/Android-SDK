@@ -36,7 +36,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
@@ -469,12 +468,12 @@ public class ShoppingCartView extends FrameLayout {
         recyclerViewAdapter.submitList(rows, hasAnyImages);
     }
 
-    private static void setTextOrHide(TextView textView, String text, int hideVisibility) {
+    private static void setTextOrHide(TextView textView, String text) {
         if (text != null) {
             textView.setText(text);
             textView.setVisibility(View.VISIBLE);
         } else {
-            textView.setVisibility(hideVisibility);
+            textView.setVisibility(View.GONE);
         }
     }
 
@@ -594,10 +593,9 @@ public class ShoppingCartView extends FrameLayout {
 
         @SuppressLint("SetTextI18n")
         public void bindTo(final ProductRow row, boolean hasAnyImages) {
-            setTextOrHide(subtitle, row.subtitle, View.GONE);
-            setTextOrHide(name, row.name, View.GONE);
-            setTextOrHide(priceTextView, row.priceText, View.GONE);
-            setTextOrHide(quantityTextView, row.quantityText, View.GONE);
+            setTextOrHide(name, row.name);
+            setTextOrHide(priceTextView, row.priceText);
+            setTextOrHide(quantityTextView, row.quantityText);
 
             if (row.imageUrl != null) {
                 image.setVisibility(View.VISIBLE);
