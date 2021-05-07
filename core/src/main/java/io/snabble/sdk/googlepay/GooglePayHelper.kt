@@ -100,7 +100,7 @@ class GooglePayHelper(
 
     private fun getMerchantInfo(): JsonObject {
         return JsonObject().apply {
-            addProperty("merchantName", "snabble Google Pay Test")
+            addProperty("merchantName", project.company.name)
         }
     }
 
@@ -177,9 +177,10 @@ class GooglePayHelper(
                 }
             }
             AppCompatActivity.RESULT_CANCELED -> {
-                // The user cancelled the payment attempt
+                // project.checkout.abort()
             }
             AutoResolveHelper.RESULT_ERROR -> {
+                // project.checkout.abort()
                 AutoResolveHelper.getStatusFromIntent(data)?.let {
                     Toast.makeText(context, "Google Pay Error ${it.statusCode}", Toast.LENGTH_LONG).show()
                 }

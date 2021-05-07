@@ -5,6 +5,6 @@
 
     <application>
         <activity android:name=".googlepay.GooglePayHelperActivity"
-            android:theme="@style/Theme.Transparent"/>
+            android:theme="@style/Snabble.Theme.GooglePayOverlay"/>
     </application>
 </manifest>
