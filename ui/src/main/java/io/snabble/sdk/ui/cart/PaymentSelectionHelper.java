@@ -14,7 +14,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +58,7 @@ public class PaymentSelectionHelper {
     private boolean isOffline;
     private WeakReference<DialogFragment> existingDialogFragment;
     private PaymentCredentials lastAddedPaymentCredentials;
+    private boolean googlePayIsReady = false;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener =
             new ShoppingCart.SimpleShoppingCartListener() {
@@ -139,6 +139,8 @@ public class PaymentSelectionHelper {
                 update();
             }
         });
+
+        project.getGooglePayHelper().isReadyToPay(isReadyToPay -> this.googlePayIsReady = isReadyToPay);
     }
 
     private void update() {
@@ -188,11 +190,24 @@ public class PaymentSelectionHelper {
             }
 
             // payment credentials or payment method were not available, use defaults
+            Entry preferredDefaultEntry = null;
             for (Entry e : entries) {
                 if (e.isAvailable) {
-                    setSelectedEntry(e);
+                    preferredDefaultEntry = e;
                     break;
                 }
+            }
+
+            // google pay always wins if available and the user did not select anything
+            for (Entry e : entries) {
+                if (e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
+                    preferredDefaultEntry = e;
+                    break;
+                }
+            }
+
+            if (preferredDefaultEntry != null) {
+                setSelectedEntry(preferredDefaultEntry);
             }
         } else {
             setSelectedEntry(null);
@@ -241,7 +256,10 @@ public class PaymentSelectionHelper {
 
         List<PaymentMethod> availablePaymentMethodsList = new ArrayList<>();
         for (final CheckoutApi.PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
-            availablePaymentMethodsList.add(PaymentMethod.fromString(paymentMethodInfo.id));
+            PaymentMethod paymentMethod = PaymentMethod.fromString(paymentMethodInfo.id);
+            if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
+                availablePaymentMethodsList.add(paymentMethod);
+            }
         }
 
         Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<PaymentMethod>();

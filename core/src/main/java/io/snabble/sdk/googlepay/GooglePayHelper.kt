@@ -104,38 +104,33 @@ class GooglePayHelper(
         }
     }
 
-    fun getPaymentDataRequest(price: String): JsonObject? {
+    fun getPaymentDataRequest(price: String): JsonObject {
         return baseRequest.apply {
             add("allowedPaymentMethods", JsonArray().apply {
                 add(cardPaymentMethod())
             })
             add("transactionInfo", getTransactionInfo(price))
             add("merchantInfo", getMerchantInfo())
-//                add("shippingAddressParameters", JsonObject().apply {
-//                    addProperty("phoneNumberRequired", false)
-//                    add("allowedCountryCodes", JsonArray().apply {
-//                        add("DE")
-//                    })
-//                })
-//                addProperty("shippingAddressRequired", true)
         }
     }
 
-    private fun isReadyToPayRequest(): JsonObject? {
+    private fun isReadyToPayRequest(): JsonObject {
         return baseRequest.apply {
             add("allowedPaymentMethods", baseCardPaymentMethod())
         }
     }
 
-    fun isReadyToPay(onComplete: (Boolean) -> Unit) {
+    fun isReadyToPay(isReadyToPayListener: IsReadyToPayListener) {
         val request = IsReadyToPayRequest.fromJson(GsonHolder.get().toJson(isReadyToPayRequest()))
 
         val task = googlePayClient.isReadyToPay(request)
         task.addOnCompleteListener { completedTask ->
             try {
-                completedTask.getResult(ApiException::class.java)?.let { onComplete(it) }
+                completedTask.getResult(ApiException::class.java)?.let {
+                    isReadyToPayListener.isReadyToPay(it)
+                }
             } catch (exception: ApiException) {
-                onComplete(false)
+                isReadyToPayListener.isReadyToPay(false)
             }
         }
     }
@@ -153,10 +148,6 @@ class GooglePayHelper(
 
     fun loadPaymentData(priceToPay: String, activity: Activity, requestCode: Int): Boolean {
         val paymentDataRequestJson = getPaymentDataRequest(priceToPay)
-        if (paymentDataRequestJson == null) {
-            Logger.e("Could not create google pay request")
-            return false
-        }
 
         val request = PaymentDataRequest.fromJson(GsonHolder.get().toJson(paymentDataRequestJson))
         if (request != null) {
@@ -187,4 +178,8 @@ class GooglePayHelper(
             }
         }
     }
+}
+
+interface IsReadyToPayListener {
+    fun isReadyToPay(isReadyToPay: Boolean)
 }
