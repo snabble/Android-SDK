@@ -14,7 +14,8 @@
         android:id="@+id/helper_image_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true">
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true">
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/helper_image"
             android:layout_width="44dp"
@@ -44,7 +45,8 @@
         android:layout_toLeftOf="@+id/controls"
         android:layout_toRightOf="@+id/helper_image_container"
         android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:minHeight="46dp">
 
         <TextView
             android:id="@+id/name"
@@ -53,6 +55,8 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:textSize="17sp"
+            android:maxLines="2"
+            android:ellipsize="end"
             tools:text="Schraubendreher Top G" />
 
         <LinearLayout
