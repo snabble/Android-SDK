@@ -83,6 +83,7 @@
                         app:tint="?attr/colorOnSurface" />
                 </LinearLayout>
             </FrameLayout>
+
             <Button
                 android:id="@+id/pay"
                 android:layout_width="match_parent"
@@ -96,8 +97,16 @@
                 app:autoSizeTextType="uniform"
                 app:autoSizeMinTextSize="8sp"
                 app:autoSizeMaxTextSize="16sp"
+                tools:visibility="gone"
                 android:maxLines="1"
                 android:text="@string/Snabble.Shoppingcart.buyProducts.now" />
+
+            <include android:id="@+id/google_pay_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                layout="@layout/snabble_buy_with_googlepay_button_no_shadow"/>
         </LinearLayout>
 
 </merge>

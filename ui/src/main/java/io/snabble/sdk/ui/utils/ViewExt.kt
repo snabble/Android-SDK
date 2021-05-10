@@ -42,7 +42,7 @@ fun ImageView.loadAsset(assets: Assets, name: String) {
     }
 }
 
-fun Button.setOneShotClickListener(callback: () -> Unit) =
+fun View.setOneShotClickListener(callback: () -> Unit) =
     setOnClickListener(
         object : OneShotClickListener() {
             override fun click() {

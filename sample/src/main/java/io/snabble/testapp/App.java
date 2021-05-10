@@ -35,7 +35,7 @@ public class App extends Application {
 
         // if you are using a light mode theme, disable night mode resources
         // this seems like a bug in android
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     public void initBlocking() {

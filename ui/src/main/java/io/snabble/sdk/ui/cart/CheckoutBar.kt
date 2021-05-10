@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
@@ -36,6 +37,7 @@ class CheckoutBar @JvmOverloads constructor(
     private val paySelectorButton: View
     private val payIcon: ImageView
     private val payButton: Button
+    private val googlePayButton: View
     private val articleCount: TextView
     private val priceSum: TextView
     private val priceContainer: FrameLayout
@@ -56,6 +58,7 @@ class CheckoutBar @JvmOverloads constructor(
         paySelectorButton = findViewById(R.id.payment_selector_button)
         payIcon = findViewById(R.id.payment_icon)
         payButton = findViewById(R.id.pay)
+        googlePayButton = findViewById(R.id.google_pay_button)
         articleCount = findViewById(R.id.article_count)
         priceSum = findViewById(R.id.price_sum)
         priceContainer = findViewById(R.id.sum_container)
@@ -66,16 +69,20 @@ class CheckoutBar @JvmOverloads constructor(
     }
 
     private fun initBusinessLogic() {
-        paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(getContext()) as FragmentActivity, { update() })
-        paySelectorButton.setOnClickListener { paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(getContext())) }
+        paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(context) as FragmentActivity, {
+            update()
+        })
+
+        paySelectorButton.setOnClickListener {
+            paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
+        }
 
         payButton.setOneShotClickListener {
-            if (cart.isRestorable) {
-                cart.restore()
-                update()
-            } else {
-                pay()
-            }
+            payButtonClick()
+        }
+
+        googlePayButton.setOneShotClickListener {
+            payButtonClick()
         }
 
         cart.addListener(cartChangeListener)
@@ -108,9 +115,18 @@ class CheckoutBar @JvmOverloads constructor(
         })
     }
 
+    private fun payButtonClick() {
+        if (cart.isRestorable) {
+            cart.restore()
+            update()
+        } else {
+            pay()
+        }
+    }
+
     private fun update() {
         updatePaySelector()
-        updatePayText()
+        updatePayButtonAndText()
     }
 
     private fun updatePaySelector() {
@@ -126,7 +142,7 @@ class CheckoutBar @JvmOverloads constructor(
         }
     }
 
-    private fun updatePayText() {
+    private fun updatePayButtonAndText() {
         cart.let { cart ->
             val quantity = cart.totalQuantity
             val price = cart.totalPrice
@@ -134,8 +150,19 @@ class CheckoutBar @JvmOverloads constructor(
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
 
+
+
             val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
             payButton.isEnabled = price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
+
+            val entry = paymentSelectionHelper.selectedEntry.value
+            if (entry?.paymentMethod == PaymentMethod.GOOGLE_PAY && price > 0) {
+                payButton.isVisible = false
+                googlePayButton.isVisible = true
+            } else {
+                payButton.isVisible = true
+                googlePayButton.isVisible = false
+            }
 
             if (cart.isRestorable) {
                 payButton.isEnabled = true
@@ -152,7 +179,7 @@ class CheckoutBar @JvmOverloads constructor(
                     project.priceFormatter.format(project.maxCheckoutLimit))
             Snackbar.make(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
         } else {
-            val entry = paymentSelectionHelper.selectedEntry.getValue()
+            val entry = paymentSelectionHelper.selectedEntry.value
             if (entry != null) {
                 if (entry.paymentMethod == PaymentMethod.GOOGLE_PAY) {
                     project.googlePayHelper.requestPayment(project.shoppingCart.totalPrice)
