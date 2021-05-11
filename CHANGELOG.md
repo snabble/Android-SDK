@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.9]
+
+### Fixed
+- Fixed amount for manual coupons 
+
 ## [0.35.8]
 
 ### Changes

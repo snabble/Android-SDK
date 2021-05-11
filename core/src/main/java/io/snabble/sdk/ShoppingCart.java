@@ -959,6 +959,7 @@ public class ShoppingCart {
                 BackendCartItem couponItem = new BackendCartItem();
                 couponItem.id = UUID.randomUUID().toString();
                 couponItem.refersTo = item.id;
+                couponItem.amount = 1;
                 couponItem.couponID = cartItem.manualCoupon.getId();
                 items.add(couponItem);
             }
