@@ -737,7 +737,9 @@ public class ShoppingCart {
             if (reducedPriceText != null) {
                 return getReducedPriceText();
             } else {
-                return cart.priceFormatter.format(getTotalPrice());
+                return String.format("\u00D7 %s = %s",
+                        cart.priceFormatter.format(product, lineItem.price),
+                        cart.priceFormatter.format(getTotalPrice()));
             }
         }
 
@@ -776,7 +778,9 @@ public class ShoppingCart {
                 } else if (getEffectiveQuantity() <= 1) {
                     return cart.priceFormatter.format(product);
                 } else {
-                    return cart.priceFormatter.format(getTotalPrice());
+                    return String.format("\u00D7 %s = %s",
+                            cart.priceFormatter.format(product),
+                            cart.priceFormatter.format(getTotalPrice()));
                 }
             }
 
