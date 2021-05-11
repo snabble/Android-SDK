@@ -842,7 +842,7 @@ public class ShoppingCartView extends FrameLayout {
 
                 row.name = sanitize(item.getDisplayName());
                 row.encodingUnit = item.getUnit();
-                row.priceText = sanitize(item.getPriceText());
+                row.priceText = sanitize(item.getTotalPriceText());
                 row.quantity = quantity;
                 row.quantityText = sanitize(item.getQuantityText());
                 row.editable = item.isEditable();

@@ -743,6 +743,10 @@ public class ShoppingCart {
             }
         }
 
+        public String getTotalPriceText() {
+            return cart.priceFormatter.format(getTotalPrice());
+        }
+
         public String getPriceText() {
             if (lineItem != null) {
                 if (lineItem.price != 0) {
