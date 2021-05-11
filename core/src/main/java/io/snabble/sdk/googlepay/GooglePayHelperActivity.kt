@@ -33,6 +33,7 @@ class GooglePayHelperActivity : AppCompatActivity() {
                 googlePayHelper?.onActivityResult(resultCode, data)
             }
         }
+        finish()
     }
 
     private val googlePayHelper: GooglePayHelper?
