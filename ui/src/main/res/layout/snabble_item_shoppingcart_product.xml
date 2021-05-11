@@ -88,7 +88,7 @@
         <LinearLayout
             android:id="@+id/controls_default"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="38dp"
             android:orientation="horizontal">
 
             <Button
