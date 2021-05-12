@@ -116,7 +116,10 @@ class GooglePayHelper(
 
     private fun isReadyToPayRequest(): JsonObject {
         return baseRequest.apply {
-            add("allowedPaymentMethods", baseCardPaymentMethod())
+            add("allowedPaymentMethods", JsonArray().apply {
+                add(cardPaymentMethod())
+            })
+            addProperty("existingPaymentMethodRequired", false)
         }
     }
 
