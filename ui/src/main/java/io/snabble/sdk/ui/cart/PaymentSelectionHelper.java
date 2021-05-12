@@ -140,7 +140,10 @@ public class PaymentSelectionHelper {
             }
         });
 
-        project.getGooglePayHelper().isReadyToPay(isReadyToPay -> this.googlePayIsReady = isReadyToPay);
+        project.getGooglePayHelper().isReadyToPay(isReadyToPay -> {
+            this.googlePayIsReady = isReadyToPay;
+            update();
+        });
     }
 
     private void update() {
@@ -303,6 +306,10 @@ public class PaymentSelectionHelper {
         }
 
         for (PaymentMethod pm : projectPaymentMethods) {
+            if (pm == PaymentMethod.GOOGLE_PAY && !googlePayIsReady) {
+                continue;
+            }
+
             if (pm.isRequiringCredentials() && addedCredentialPaymentMethods.contains(pm)) {
                 continue;
             }
