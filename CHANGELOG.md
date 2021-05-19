@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.10]
+
+### Fixed
+- Fixed listener leak in CheckoutBar
+
 ## [0.35.9]
 
 ### Fixed

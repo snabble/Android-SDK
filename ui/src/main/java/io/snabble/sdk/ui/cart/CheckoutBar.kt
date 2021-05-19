@@ -98,7 +98,9 @@ class CheckoutBar @JvmOverloads constructor(
         context.requireFragmentActivity().lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             fun onStart() {
-                registerListeners()
+                if (isAttachedToWindow) {
+                    registerListeners()
+                }
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -215,7 +217,7 @@ class CheckoutBar @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        unregisterListeners();
+        unregisterListeners()
     }
 
     override fun onStateChanged(state: Checkout.State) {
