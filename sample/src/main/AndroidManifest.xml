@@ -40,5 +40,6 @@
         <activity android:name=".CheckoutPOSActivity" />
         <activity android:name=".PaymentFailureActivity" />
         <activity android:name=".PaymentSuccessActivity" />
+        <activity android:name=".CouponListActivity" />
     </application>
 </manifest>

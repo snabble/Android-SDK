@@ -2,6 +2,7 @@ package io.snabble.testapp;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,6 +101,14 @@ public class HomeFragment extends Fragment {
                 ActivityManager activityManager = (ActivityManager) requireContext()
                         .getSystemService(Context.ACTIVITY_SERVICE);
                 activityManager.clearApplicationUserData();
+            }
+        });
+
+        v.findViewById(R.id.coupons).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireActivity(), CouponListActivity.class);
+                startActivity(intent);
             }
         });
 

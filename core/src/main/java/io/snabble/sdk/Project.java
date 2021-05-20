@@ -43,6 +43,7 @@ public class Project {
     private ShoppingCartStorage shoppingCartStorage;
     private Events events;
     private Assets assets;
+    private CouponApi couponApi;
 
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
@@ -100,6 +101,7 @@ public class Project {
         checkout = new Checkout(this);
         events = new Events(this);
         assets = new Assets(this);
+        couponApi = new CouponApi(this);
     }
 
     void parse(JsonObject jsonObject) {
@@ -381,6 +383,10 @@ public class Project {
         return urls.get("telecashVaultItems");
     }
 
+    public String getCouponsUrl() {
+        return urls.get("coupons");
+    }
+
     public BarcodeFormat[] getSupportedBarcodeFormats() {
         return supportedBarcodeFormats;
     }
@@ -500,6 +506,10 @@ public class Project {
 
     public Assets getAssets() {
         return assets;
+    }
+
+    public CouponApi getCouponApi() {
+        return couponApi;
     }
 
     public void logErrorEvent(String format, Object... args) {
