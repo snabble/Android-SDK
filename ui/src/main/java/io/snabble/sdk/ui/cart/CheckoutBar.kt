@@ -257,13 +257,13 @@ class CheckoutBar @JvmOverloads constructor(
             progressDialog.showAfterDelay(300)
         } else if (state == Checkout.State.PAYMENT_APPROVED) {
             Telemetry.event(Telemetry.Event.CheckoutSuccessful)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
         } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
             Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
         } else if (state == Checkout.State.DENIED_BY_SUPERVISOR) {
             Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
         } else if (state == Checkout.State.INVALID_PRODUCTS) {
             val invalidProducts = project.checkout.invalidProducts
             if (invalidProducts != null && invalidProducts.size > 0) {
