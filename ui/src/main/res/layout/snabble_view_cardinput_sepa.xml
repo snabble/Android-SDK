@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="276dp"> <!-- helps when adjustPan is set -->
+        android:paddingBottom="16dp"> <!-- helps when adjustPan is set -->
 
         <TextView
             android:id="@+id/hint"

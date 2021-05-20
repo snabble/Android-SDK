@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="Snabble.addDiscount">Zadať zľavu</string>
     <string name="Snabble.ageVerification.explanation">Na kúpu určitých produktov (napr. alkoholických produktov) je potrebné potvrdenie veku. Za týmto účelom zadaj 7-miestne číslo na zadnej strane svojho občianskeho preukazu.</string>
     <string name="Snabble.ageVerification.failed.message">Pre niektoré produkty v tvojom košíku platí vekový limit a tieto žiaľ nemôžeš kúpiť.</string>
     <string name="Snabble.ageVerification.failed.title">Nespĺňaš vekový limit</string>
@@ -14,6 +15,7 @@
     <string name="Snabble.Biometry.Alert.title">Aktivovať %s?</string>
     <string name="Snabble.Biometry.enterCode">Zadanie kódu</string>
     <string name="Snabble.Biometry.FaceId">Face ID</string>
+    <string name="Snabble.Biometry.locked">%s je zablokovaná. Zadaj svoj kód na obrazovke uzamknutia, aby si ju znovu aktivoval.</string>
     <!--
   ********* iOS Biometry *********
   iOS only, this is used for the iOS-specific biometry settings views
@@ -32,6 +34,7 @@
     <string name="Snabble.Checkout.payAtCashRegister">Zaplatiť pri pokladni</string>
     <string name="Snabble.Checkout.title">Zaplatiť</string>
     <string name="Snabble.Checkout.verifying">Overujem</string>
+    <string name="Snabble.CreditCard.payNow">Teraz zaplatiť kreditnou kartou</string>
     <string name="Snabble.Delete">Vymazať</string>
     <string name="Snabble.Done">Hotovo</string>
     <string name="Snabble.Edit">Upraviť</string>
@@ -50,11 +53,14 @@
     <string name="Snabble.loadingProductInformation">Načítanie informácií o produkte…</string>
     <string name="Snabble.networkError">Chyba spojenia</string>
     <string name="Snabble.No">Nie</string>
+    <string name="Snabble.noDiscount">žiadna zľava</string>
+    <string name="Snabble.notForSale.errorMsg.scan">Tento produkt momentálne nie je možné zaplatiť cez aplikáciu. Zaplať ho pri pokladni ako obvykle.</string>
     <string name="Snabble.OK">OK</string>
     <string name="Snabble.paydirekt.authorizationFailed.message">Skús neskôr znovu, prosím</string>
     <string name="Snabble.paydirekt.authorizationFailed.title">Autorizácia sa nepodarila</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Vymazať spôsob platby</string>
     <string name="Snabble.paydirekt.gotoWebsite">Prejsť na paydirekt.de</string>
+    <string name="Snabble.Paydirekt.payNow">Teraz zaplatiť prostredníctvom paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">Autorizácia aplikácie snabble pre paydirekt bola úspešná. Ak chceš autorizáciu zrušiť, musíš sa prihlásiť do svojho konta paydirekt na webovej stránke. Pokiaľ nechceš, aby paydirekt bol v budúcnosti zobrazovaný ako spôsob platby, tu ho môžeš jednoducho odstrániť.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Platobný proces bol prerušený</string>
@@ -140,9 +146,12 @@
     <string name="Snabble.Scanner.duplicateDepositScanned">Každý doklad o zálohe môže byť naskenovaný len raz.</string>
     <string name="Snabble.Scanner.enterBarcode">Zadať čiarový kód</string>
     <string name="Snabble.Scanner.enterCodeButton">Zadať\nčiarový kód</string>
+    <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
+    <string name="Snabble.Scanner.firstScan">Naskenuj prvý produkt. Prilož čiarový kód produktu pod kameru.</string>
     <string name="Snabble.Scanner.goToCart">Košík: %s</string>
     <string name="Snabble.Scanner.goToCart.empty">Košík</string>
     <string name="Snabble.Scanner.introText">Naskenuj čiarové kódy produktov a vlož ich do svojho košíka.</string>
+    <string name="Snabble.Scanner.manualCouponAdded">K poslednej položke si zadal/a zľavnenú cenu. Upozorňujeme, že tvoj nákup bude skontrolovaný pracovníkom/pracovníčkou.</string>
     <string name="Snabble.Scanner.multiPack">Nezabudni!</string>
     <string name="Snabble.Scanner.networkError">Produkt nie je možné nájsť. Prosím, skontroluj svoje internetové pripojenie.</string>
     <string name="Snabble.Scanner.noMatchesFound">Položka nebola nájdená</string>
@@ -158,8 +167,11 @@
     <string name="Snabble.Scanner.updateCart">Aktualizovať košík</string>
     <string name="Snabble.SEPA.editingHint">Tvoje SEPA údaje budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.SEPA.encryptionError">Chyba pri kódovaní</string>
+    <string name="Snabble.SEPA.iAgree">Súhlasím</string>
     <string name="Snabble.SEPA.ibanTransferAlert.message">Chceš uložiť tieto údaje účtu (IBAN: %s) pre nákupy v budúcnosti?</string>
     <string name="Snabble.SEPA.ibanTransferAlert.title">Uložiť údaje účtu</string>
+    <string name="Snabble.SEPA.mandate">Mandát na inkaso v SEPA</string>
+    <string name="Snabble.SEPA.payNow">SEPA platba teraz</string>
     <string name="Snabble.SEPA.scoTransferHint">Ešte zadaj meno uvedené na karte, aby si ju mohol/mohla uložiť pre platby priamo prostredníctvom aplikácie.</string>
     <string name="Snabble.Settings">Nastavenia</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Položka bola odstránená</string>
@@ -183,6 +195,46 @@
     <string name="Snabble.Shoppingcart.removeItem">Naozaj chceš odstrániť %s z košíka?</string>
     <string name="Snabble.Shoppingcart.removeItems">Naozaj chceš odstrániť všetky produkty z košíka?</string>
     <string name="Snabble.ShoppingCart.title">Košík</string>
+    <!-- Hinweiß der angezeigt wird wenn ein Artikel der Einkaufsliste hinzugefügt wurde -->
+    <string name="Snabble.ShoppingList.added">%s uložené</string>
+    <!-- Der Titel des Dialogs zur Erzeugung einer neuen Einkaufsliste -->
+    <string name="Snabble.ShoppingList.CreateList.title">Vytvoriť nový nákupný zoznam</string>
+    <!-- Der Löschen-Knopf beim Editieren von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.delete">Vymazať</string>
+    <!-- Der Speichern-Knopf beim Editieren von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.save">Uložiť</string>
+    <!-- Der Titel des Popups zum bearbeiten von Einkaufslisten -->
+    <string name="Snabble.ShoppingList.EditList.title">Upraviť nákupný zoznam</string>
+    <!-- Der Text wird angezeigt wenn man ein Element der Einkaufsliste wegwischt -->
+    <string name="Snabble.ShoppingList.ItemDeleted">%s vymazané</string>
+    <!-- Der Call-To-Action wenn man das löschen eines Elements der Einkaufsliste rückgänig machen möchte -->
+    <string name="Snabble.ShoppingList.ItemDeleted.Undo">Obnoviť</string>
+    <!-- Der Inhalt der Snackbar wenn eine Einkaufsliste gelöscht wurde -->
+    <string name="Snabble.ShoppingList.ListDeleted.title">Nákupný zoznam bol vymazaný</string>
+    <!-- Der Call-To-Action wenn eine Einkaufsliste wiederhergestellt werden soll -->
+    <string name="Snabble.ShoppingList.ListDeleted.undo">Obnoviť</string>
+    <!-- Der Call-To-Action beim Empty-State Text wenn der Einkaufszettel noch leer ist  -->
+    <string name="Snabble.ShoppingList.ListEmpty.add">Pridať produkt</string>
+    <!-- Empty-State Text wenn der Einkaufszettel noch leer ist -->
+    <string name="Snabble.ShoppingList.ListEmpty.title">Tvoj nákupný zoznam je prázdny.</string>
+    <!-- Der Call-To-Action beim Empty-State Text wenn noch kein Einkaufszettel angelegt wurde -->
+    <string name="Snabble.ShoppingList.NoLists.add">Vytvoriť nákupný zoznam</string>
+    <!-- Der Empty-State wenn noch kein Einkaufszettel angelegt wurde -->
+    <string name="Snabble.ShoppingList.NoLists.title">Ešte si nevytvoril/a žiadny nákupný zoznam.</string>
+    <!-- Hinweiß der angezeigt wird wenn ein Artikel nicht gefunden wurde -->
+    <string name="Snabble.ShoppingList.notFound">Neznámy produkt</string>
+    <!-- Der Hint der angezeigt wird wenn man einen Artikel per Suche hinzufügen möchte -->
+    <string name="Snabble.ShoppingList.searchHint">Produkt</string>
+    <!-- Der Titel der übersichtsseite der Einkaufslisten -->
+    <string name="Snabble.ShoppingList.title">Nákupný zoznam</string>
+    <!-- Man soll verschiedene Artikel mit einem "und" in die Einkaufsliste legen können. Hier geht es nur um das Wort "und" -->
+    <string name="Snabble.ShoppingList.Voice.connectingWord">a</string>
+    <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
+    <string name="Snabble.ShoppingList.Voice.details">Chceš pridať viac vecí do nákupného zoznamu? Tak spoj svoje jednotlivé položky použitím „a“ – napríklad takto: Toaletný papier a cestoviny a droždie</string>
+    <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
+    <string name="Snabble.ShoppingList.Voice.title">Tip</string>
+    <!-- Der Titel der übersichtsseite der Einkaufslisten -->
+    <string name="Snabble.ShoppingLists.title"/>
     <string name="Snabble.undo">Vrátiť späť</string>
     <string name="Snabble.Yes">Áno</string>
 </resources>

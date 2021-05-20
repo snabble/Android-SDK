@@ -31,7 +31,7 @@ open class ProjectPaymentOptionsFragment : Fragment() {
         brand?.let { brand ->
             val projects = ArrayList<Project>()
             Snabble.getInstance().projects.forEach { project ->
-                if (project.brand.id == brand) {
+                if (project.brand?.id == brand) {
                     projects.add(project)
                 }
             }

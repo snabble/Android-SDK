@@ -41,8 +41,8 @@ public class PaymentSelectionHelper {
         String text;
         String hint;
         transient int iconResId;
-        PaymentCredentials paymentCredentials;
-        PaymentMethod paymentMethod;
+        public PaymentCredentials paymentCredentials;
+        public PaymentMethod paymentMethod;
         boolean isAvailable;
     }
 

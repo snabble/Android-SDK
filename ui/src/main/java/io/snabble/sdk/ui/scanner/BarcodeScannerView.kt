@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.Rect
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.util.Size
 import android.view.*
@@ -19,13 +17,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import io.snabble.sdk.BarcodeFormat
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.Logger
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -35,6 +31,7 @@ import java.util.concurrent.TimeUnit
 open class BarcodeScannerView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+    private var startRequested: Boolean = false
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var camera: Camera? = null
@@ -57,6 +54,16 @@ open class BarcodeScannerView @JvmOverloads constructor(
         previewView.layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT)
+
+        // WORKAROUND: prevents black screen issue when resuming from multi-window
+        // (and possible other cases where onresume is used)
+        //
+        // known affected devices:
+        //  - Google Pixel 4a (5G)
+        //
+        // this is a bug in CameraX.
+        // using COMPATIBLE forces the use of TextureView instead of SurfaceView
+        previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         addView(previewView)
 
         fakePauseView.layoutParams = ViewGroup.LayoutParams(
@@ -98,16 +105,22 @@ open class BarcodeScannerView @JvmOverloads constructor(
             throw RuntimeException("Missing camera permission")
         }
 
-        barcodeDetector.reset()
-        barcodeDetector.setup(supportedBarcodeFormats)
-        isPaused = false
+        Logger.d("start")
 
-        previewView.post {
-            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-            cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
-                bindPreview(cameraProvider)
-            }, ContextCompat.getMainExecutor(context))
+        if (!startRequested) {
+            startRequested = true
+            barcodeDetector.reset()
+            barcodeDetector.setup(supportedBarcodeFormats)
+            isPaused = false
+
+            previewView.post {
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+                cameraProviderFuture.addListener({
+                    val cameraProvider = cameraProviderFuture.get()
+                    bindPreview(cameraProvider)
+                    startRequested = false
+                }, ContextCompat.getMainExecutor(context))
+            }
         }
     }
 
@@ -121,21 +134,20 @@ open class BarcodeScannerView @JvmOverloads constructor(
                     .build()
 
             this.preview = Preview.Builder()
-                    .setTargetResolution(Size(480, 640))
+                    .setTargetResolution(Size(768, 1024))
                     .setTargetRotation(rotation)
                     .build()
 
             val imageAnalyzer = ImageAnalysis.Builder()
                     .setTargetResolution(Size(768, 1024))
                     .setTargetRotation(rotation)
-                    .setImageQueueDepth(6)
+                    .setImageQueueDepth(1)
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
                     .also {
                         cameraExecutor?.let { exec ->
                             it.setAnalyzer(exec, { image ->
-                                // processImage(image)
-                                image.close()
+                                processImage(image)
                             })
                         }
                     }
@@ -145,9 +157,9 @@ open class BarcodeScannerView @JvmOverloads constructor(
             try {
                 val activity = UIUtils.getHostFragmentActivity(context)
                 camera = cameraProvider?.bindToLifecycle(activity,
-                        cameraSelector,
-                        preview,
-                        imageAnalyzer)
+                    cameraSelector,
+                    preview,
+                    imageAnalyzer)
 
                 preview?.setSurfaceProvider(previewView.surfaceProvider)
             } catch (e: Exception) {

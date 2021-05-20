@@ -181,7 +181,17 @@ class ShoppingCartUpdater {
                     if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
                         discounts += lineItem.totalPrice;
                     } else {
-                        cart.insert(cart.newItem(lineItem), cart.size(), false);
+                        boolean add = true;
+                        for (ManualCoupon manualCoupon : project.getManualCoupons()) {
+                            if (manualCoupon.getId().equals(lineItem.couponId)) {
+                                add = false;
+                                break;
+                            }
+                        }
+
+                        if (add) {
+                            cart.insert(cart.newItem(lineItem), cart.size(), false);
+                        }
                     }
                 }
             }
@@ -216,6 +226,16 @@ class ShoppingCartUpdater {
         cart.setInvalidProducts(null);
         cart.checkLimits();
         cart.notifyPriceUpdate(cart);
+    }
+
+    private CheckoutApi.LineItem getLineItem(CheckoutApi.CheckoutInfo checkoutInfo, String id) {
+        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
+            if (lineItem.id.equals(id)) {
+                return lineItem;
+            }
+        }
+
+        return null;
     }
 
     private List<String> getToBeReplacedSkus(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo) {

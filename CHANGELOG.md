@@ -1,6 +1,105 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.35.9]
+
+### Fixed
+- Fixed amount for manual coupons 
+- Fixed listener leak in CheckoutBar
+
+## [0.35.8]
+
+### Changes
+- Add option to set project of the ProductResolver
+- Changed builder method name from `setBarcodeOfProject(...)` to `setBarcode(...)` to simplify usage
+
+## [0.35.7]
+
+### Changes
+- Extend telemetry for shopping lists
+
+## [0.35.6]
+
+### Changes
+- Improved performance of FTS4 index creation
+- Improved layout of Scan Dialog
+
+### Fixes
+- Fixed line item price being ignored in default cases
+
+## [0.35.5]
+
+### Fixed
+- Removed unnecessary padding in SEPACardInputView
+
+## [0.35.4]
+
+### Fixed
+- The priceHeight property of the CheckoutBar contains now the outer margin
+
+## [0.35.3]
+
+### Changes
+- Migration ProductResolver to kotlin and make it possible to use it without a chooser
+- The show() method was deprecated and replaced by resolve() since it is possible now to use the
+  resolver without visible interaction
+- Empty product image urls will be converted to null
+- The priceHeight property of the CheckoutBar contains now its margin
+
+## [0.35.2]
+
+### Added
+- Support for manual coupons
+
+### Fixed
+- Long messages being cut off when scanning
+
+## [0.35.1]
+
+### Changes
+- Migration of dependencies to mavenCentral and jitpack
+
+## [0.35.0]
+
+### Changes
+- Various structural changes
+
+## [0.34.4]
+
+### Changes
+- Improved visuals on PaymentOptionsView
+
+## [0.34.3]
+ 
+### Fixed
+- Fixed night mode confusion in not preloaded assets
+- Update CameraX to 1.0.0-rc04 to fix a camera initialization crash on Samsung Galaxy S20 Ultra 5G
+
+## [0.34.2]
+
+### Fixed
+- Fix a crash in PaymentOptionsView when a project has no brand
+
+## [0.34.1]
+
+### Fixed
+- Products with multiple scanned codes now are using the default template when selected from a bundle
+
+## [0.34.0]
+
+### Added
+- Add support for JPG and WEBP assets
+
+### Fixed
+- Fix vPOS updates with weight information resulting in incorrect quantities
+
+## [0.33.11]
+
+### Fixed
+- Leak of SelfScanningView in SelfScanningFragment when in onResume()
+- Camera black screen on Google Pixel 4a when using multi-window mode
+- Improved camera loading behaviour when calling BarcodeScannerView.start() repeatedly
+
 ## [0.33.10]
 
 ### Fixed

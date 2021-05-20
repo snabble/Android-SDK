@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -68,6 +67,7 @@ public class SelfScanningView extends FrameLayout {
     private boolean allowShowingHints;
     private boolean isShowingHint;
     private boolean manualCameraControl;
+    private int topDownInfoBoxOffset;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -98,13 +98,9 @@ public class SelfScanningView extends FrameLayout {
 
         enterBarcode = findViewById(R.id.enter_barcode);
         light = findViewById(R.id.light);
-        light.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                barcodeScanner.setTorchEnabled(!barcodeScanner.isTorchEnabled());
-                updateTorchIcon();
-                Telemetry.event(Telemetry.Event.ToggleTorch);
-            }
+        light.setOnClickListener(v -> {
+            setTorchEnabled(!isTorchEnabled());
+            updateTorchIcon();
         });
 
         goToCart = findViewById(R.id.goto_cart);
@@ -119,12 +115,7 @@ public class SelfScanningView extends FrameLayout {
         updateTorchIcon();
         updateCartButton();
 
-        enterBarcode.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickEnterBarcode();
-            }
-        });
+        enterBarcode.setOnClickListener(v -> searchWithBarcode());
 
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
 
@@ -137,27 +128,19 @@ public class SelfScanningView extends FrameLayout {
         progressDialog.setMessage(getContext().getString(R.string.Snabble_loadingProductInformation));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
-        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    resumeBarcodeScanner();
-                    progressDialog.dismiss();
+        progressDialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                resumeBarcodeScanner();
+                progressDialog.dismiss();
 
-                    return true;
-                }
-                return false;
+                return true;
             }
+            return false;
         });
 
         this.productDatabase = project.getProductDatabase();
 
-        barcodeScanner.setCallback(new BarcodeScannerView.Callback() {
-            @Override
-            public void onBarcodeDetected(final Barcode barcode) {
-                handleBarcodeDetected(barcode);
-            }
-        });
+        barcodeScanner.setCallback(this::handleBarcodeDetected);
 
         isInitialized = true;
         startBarcodeScanner(false);
@@ -258,11 +241,11 @@ public class SelfScanningView extends FrameLayout {
                     if (product.getScanMessage() != null) {
                         showScanMessage(product, true);
                     } else {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_notForSale_errorMsg_scan)));
                     }
                 })
                 .create()
-                .show();
+                .resolve();
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes) {
@@ -287,16 +270,39 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showInfo(final String text) {
-        Dispatch.mainThread(() -> UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL));
+        Dispatch.mainThread(() -> {
+            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL, topDownInfoBoxOffset);
+        });
     }
 
     private void showWarning(final String text) {
-        Dispatch.mainThread(() -> UIUtils.showTopDownInfoBox(SelfScanningView.this, text,
-                UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING));
+        Dispatch.mainThread(() -> {
+            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING, topDownInfoBoxOffset);
+        });
     }
 
-    private void onClickEnterBarcode() {
+    public void setDefaultButtonVisibility(boolean visible) {
+        findViewById(R.id.bottom_bar).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    public int getTopDownInfoBoxOffset() {
+        return topDownInfoBoxOffset;
+    }
+
+    public void setTopDownInfoBoxOffset(int topDownInfoBoxOffset) {
+        this.topDownInfoBoxOffset = topDownInfoBoxOffset;
+    }
+
+    public void setTorchEnabled(boolean enabled) {
+        barcodeScanner.setTorchEnabled(enabled);
+        Telemetry.event(Telemetry.Event.ToggleTorch);
+    }
+
+    public boolean isTorchEnabled() {
+        return barcodeScanner.isTorchEnabled();
+    }
+
+    public void searchWithBarcode() {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback != null) {
             if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
@@ -474,6 +480,13 @@ public class SelfScanningView extends FrameLayout {
         barcodeScanner.removeBarcodeFormat(barcodeFormat);
     }
 
+    /**
+     * Sets the offset of the scan indicator, in pixels.
+     */
+    public void setIndicatorOffset(int offsetX, int offsetY) {
+        barcodeScanner.setIndicatorOffset(offsetX, offsetY);
+    }
+
     private void registerListeners() {
         isRunning = true;
 
@@ -518,6 +531,10 @@ public class SelfScanningView extends FrameLayout {
 
             if (list.getAddCount() == 1) {
                 showHints();
+            }
+
+            if (item.getManualCoupon() != null) {
+                showInfo(getResources().getString(R.string.Snabble_Scanner_manualCouponAdded));
             }
         }
 

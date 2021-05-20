@@ -40,8 +40,6 @@ open class PaymentOptionsView @JvmOverloads constructor(
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.itemAnimator = null
-        val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-        recyclerView.addItemDecoration(dividerItemDecoration)
         adapter.submitList(getEntries())
 
         val listener = PaymentCredentialsStore.Callback {
@@ -110,6 +108,12 @@ open class PaymentOptionsView @JvmOverloads constructor(
                 it.type == PaymentCredentials.Type.PAYDIREKT
             }
 
+            if (globalList.size > 0) {
+                globalList.add(
+                    Entry(isDivider = true)
+                )
+            }
+
             globalList.add(
                 Entry(
                     text = "Paydirekt",
@@ -137,11 +141,17 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
         projectsWithCreditCards
             .filter { it.brand == null }
-            .forEach { project ->
+            .forEachIndexed { i, project ->
                 val count = credentials.count {
                     it.appId == Snabble.getInstance().config.appId &&
                     it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2 &&
                     it.projectId == project.id
+                }
+
+                if (i > 0) {
+                    projectList.add(
+                        Entry(isDivider = true)
+                    )
                 }
 
                 projectList.add(
@@ -208,7 +218,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
             projectList.add(
                 Entry(
                     text = brand.name,
-                    project = projectsWithCreditCards.firstOrNull { it.brand.id == brand.id },
+                    project = projectsWithCreditCards.firstOrNull { it.brand?.id == brand.id },
                     count = counts[brand] ?: 0,
                     click = {
                         val args = Bundle()
@@ -251,12 +261,15 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
     data class Entry(
         val isSectionHeader: Boolean = false,
-        val text: String,
+        val isDivider: Boolean = false,
+        val text: String? = null,
         val count: Int = 0,
         val icon: Int? = null,
         val project: Project? = null,
         val click: OnClickListener? = null,
     )
+
+    class DividerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.text)
@@ -272,15 +285,28 @@ open class PaymentOptionsView @JvmOverloads constructor(
         companion object {
             const val SECTION_HEADER = 0
             const val ENTRY = 1
+            const val DIVIDER = 2
         }
         override fun getItemViewType(position: Int): Int {
-            return if (getItem(position).isSectionHeader) SECTION_HEADER else ENTRY
+            val item = getItem(position)
+            return when {
+                item.isSectionHeader -> {
+                    SECTION_HEADER
+                }
+                item.isDivider -> {
+                    DIVIDER
+                }
+                else -> {
+                    ENTRY
+                }
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             return when(viewType) {
                 SECTION_HEADER -> HeaderViewHolder(inflater.inflate(R.layout.snabble_item_payment_options_header, parent, false))
+                DIVIDER -> DividerViewHolder(inflater.inflate(R.layout.snabble_divider, parent, false))
                 else -> EntryViewHolder(inflater.inflate(R.layout.snabble_item_payment_options_entry, parent, false))
             }
         }

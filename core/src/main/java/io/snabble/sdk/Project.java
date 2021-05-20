@@ -7,8 +7,10 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
@@ -69,6 +72,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
+    private List<ManualCoupon> manualCoupons;
     private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
@@ -289,6 +293,25 @@ public class Project {
 
         displayNetPrice = JsonUtils.getBooleanOpt(jsonObject, "displayNetPrice", false);
 
+        ArrayList<ManualCoupon> manualCoupons = new ArrayList<>();
+
+        try {
+            if (jsonObject.has("manualCoupons")) {
+                JsonArray jsonArray = jsonObject.get("manualCoupons").getAsJsonArray();
+                for (JsonElement element : jsonArray) {
+                    JsonObject coupon = element.getAsJsonObject();
+                    manualCoupons.add(new ManualCoupon(
+                            coupon.get("id").getAsString(),
+                            coupon.get("name").getAsString()
+                    ));
+                }
+            }
+        } catch (Exception e) {
+            Logger.e("Could not parse manual coupons");
+        }
+
+        this.manualCoupons = Collections.unmodifiableList(manualCoupons);
+
         notifyUpdate();
     }
 
@@ -364,6 +387,10 @@ public class Project {
 
     public EncodedCodesOptions getEncodedCodesOptions() {
         return encodedCodesOptions;
+    }
+
+    public List<ManualCoupon> getManualCoupons() {
+        return manualCoupons;
     }
 
     public boolean isCheckoutAvailable() {
