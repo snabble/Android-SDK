@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.gmazzo.sqlite'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion project.compileSdkVersion
