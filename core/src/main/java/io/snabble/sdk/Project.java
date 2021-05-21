@@ -3,10 +3,12 @@ package io.snabble.sdk;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
@@ -43,8 +47,6 @@ public class Project {
     private ShoppingCartStorage shoppingCartStorage;
     private Events events;
     private Assets assets;
-    private CouponApi couponApi;
-
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
     private Currency currency;
@@ -73,7 +75,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
-    private List<ManualCoupon> manualCoupons;
+    private Coupons coupons;
     private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
@@ -101,7 +103,6 @@ public class Project {
         checkout = new Checkout(this);
         events = new Events(this);
         assets = new Assets(this);
-        couponApi = new CouponApi(this);
     }
 
     void parse(JsonObject jsonObject) {
@@ -295,24 +296,20 @@ public class Project {
 
         displayNetPrice = JsonUtils.getBooleanOpt(jsonObject, "displayNetPrice", false);
 
-        ArrayList<ManualCoupon> manualCoupons = new ArrayList<>();
+
+        List<Coupon> couponList = new ArrayList<>();
 
         try {
-            if (jsonObject.has("manualCoupons")) {
-                JsonArray jsonArray = jsonObject.get("manualCoupons").getAsJsonArray();
-                for (JsonElement element : jsonArray) {
-                    JsonObject coupon = element.getAsJsonObject();
-                    manualCoupons.add(new ManualCoupon(
-                            coupon.get("id").getAsString(),
-                            coupon.get("name").getAsString()
-                    ));
-                }
+            if (jsonObject.has("coupons")) {
+                JsonElement couponsJsonObject = jsonObject.get("coupons");
+                Type couponsType = new TypeToken<List<Coupon>>() {}.getType();
+                couponList = GsonHolder.get().fromJson(couponsJsonObject, couponsType);
             }
         } catch (Exception e) {
-            Logger.e("Could not parse manual coupons");
+            Logger.e("Could not parse coupons");
         }
 
-        this.manualCoupons = Collections.unmodifiableList(manualCoupons);
+        this.coupons = new Coupons(couponList);
 
         notifyUpdate();
     }
@@ -383,20 +380,12 @@ public class Project {
         return urls.get("telecashVaultItems");
     }
 
-    public String getCouponsUrl() {
-        return urls.get("coupons");
-    }
-
     public BarcodeFormat[] getSupportedBarcodeFormats() {
         return supportedBarcodeFormats;
     }
 
     public EncodedCodesOptions getEncodedCodesOptions() {
         return encodedCodesOptions;
-    }
-
-    public List<ManualCoupon> getManualCoupons() {
-        return manualCoupons;
     }
 
     public boolean isCheckoutAvailable() {
@@ -508,8 +497,8 @@ public class Project {
         return assets;
     }
 
-    public CouponApi getCouponApi() {
-        return couponApi;
+    public Coupons getCoupons() {
+        return coupons;
     }
 
     public void logErrorEvent(String format, Object... args) {

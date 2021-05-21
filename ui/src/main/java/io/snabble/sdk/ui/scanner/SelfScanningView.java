@@ -32,6 +32,9 @@ import androidx.core.widget.ImageViewCompat;
 import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
+import io.snabble.sdk.Coupon;
+import io.snabble.sdk.CouponCode;
+import io.snabble.sdk.CouponType;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
@@ -213,10 +216,22 @@ public class SelfScanningView extends FrameLayout {
                     }
                 })
                 .setOnProductNotFoundListener(() -> {
-                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                    Coupon coupon = lookupCoupon(scannedCodes);
+                    if (coupon == null) {
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                    } else {
+                        shoppingCart.addCoupon(coupon);
+                        showInfo("Added coupon " + coupon.getName());
+                    }
                 })
                 .setOnNetworkErrorListener(() -> {
-                    showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
+                    Coupon coupon = lookupCoupon(scannedCodes);
+                    if (coupon == null) {
+                        showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
+                    } else {
+                        shoppingCart.addCoupon(coupon);
+                        showInfo("Added coupon " + coupon.getName());
+                    }
                 })
                 .setOnShelfCodeScannedListener(() -> {
                     showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
@@ -246,6 +261,21 @@ public class SelfScanningView extends FrameLayout {
                 })
                 .create()
                 .resolve();
+    }
+
+    private Coupon lookupCoupon(List<ScannedCode> scannedCodes) {
+        Project project = SnabbleUI.getProject();
+        for (Coupon coupon : project.getCoupons().get(CouponType.PRINTED)){
+            for (CouponCode code : coupon.getCodes()) {
+                for (ScannedCode scannedCode : scannedCodes) {
+                    if (scannedCode.getCode().equals(code.getCode()) && scannedCode.getTemplateName().equals(code.getTemplate())) {
+                        return coupon;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes) {

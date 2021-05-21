@@ -27,6 +27,7 @@ public class ShoppingCart {
     private long lastModificationTime;
     private List<Item> oldItems;
     private List<Item> items = new ArrayList<>();
+    private List<Coupon> appliedCoupons = new ArrayList<>();
     private int modCount = 0;
     private int addCount = 0;
     private Integer onlineTotalPrice;
@@ -97,6 +98,21 @@ public class ShoppingCart {
 
     public void add(Item item) {
         insert(item, 0);
+    }
+
+    public void addCoupon(Coupon coupon) {
+        if (!appliedCoupons.contains(coupon)) {
+            appliedCoupons.add(coupon);
+        }
+
+        modCount++;
+        notifyCouponAdded(this, coupon);
+    }
+
+    public void removeCoupon(Coupon coupon) {
+        appliedCoupons.remove(coupon);
+        modCount++;
+        notifyCouponRemoved(this, coupon);
     }
 
     public void insert(Item item, int index) {
@@ -469,7 +485,7 @@ public class ShoppingCart {
         private String id;
         private boolean isUsingSpecifiedQuantity;
         private transient ShoppingCart cart;
-        private ManualCoupon manualCoupon;
+        private Coupon manualCoupon;
 
         protected Item() {
             // for gson
@@ -802,11 +818,15 @@ public class ShoppingCart {
             return 0;
         }
 
-        public void setManualCoupon(ManualCoupon manualCoupon) {
+        public void setManualCoupon(Coupon manualCoupon) {
+            if (manualCoupon.getType() != CouponType.MANUAL) {
+                throw new RuntimeException("Only manual coupons can be added");
+            }
+
             this.manualCoupon = manualCoupon;
         }
 
-        public ManualCoupon getManualCoupon() {
+        public Coupon getManualCoupon() {
             return this.manualCoupon;
         }
 
@@ -965,6 +985,14 @@ public class ShoppingCart {
             }
         }
 
+        for (Coupon coupon : appliedCoupons) {
+            BackendCartItem couponItem = new BackendCartItem();
+            couponItem.id = UUID.randomUUID().toString();
+            couponItem.amount = 1;
+            couponItem.couponID = coupon.getId();
+            items.add(couponItem);
+        }
+
         backendCart.items = items.toArray(new BackendCartItem[items.size()]);
 
         return backendCart;
@@ -1009,6 +1037,10 @@ public class ShoppingCart {
         void onCheckoutLimitReached(ShoppingCart list);
 
         void onOnlinePaymentLimitReached(ShoppingCart list);
+
+        void onCouponAdded(ShoppingCart list, Coupon coupon);
+
+        void onCouponRemoved(ShoppingCart list, Coupon coupon);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -1053,6 +1085,35 @@ public class ShoppingCart {
         public void onOnlinePaymentLimitReached(ShoppingCart list) {
 
         }
+
+        @Override
+        public void onCouponAdded(ShoppingCart list, Coupon coupon) {
+            onChanged(list);
+        }
+
+        @Override
+        public void onCouponRemoved(ShoppingCart list, Coupon coupon) {
+            onChanged(list);
+        }
+    }
+
+    private void notifyCouponAdded(final ShoppingCart list, final Coupon coupon) {
+        updateTimestamp();
+
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onCouponAdded(list, coupon);
+            }
+        });
+    }
+    private void notifyCouponRemoved(final ShoppingCart list, final Coupon coupon) {
+        updateTimestamp();
+
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onCouponRemoved(list, coupon);
+            }
+        });
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Item item) {
