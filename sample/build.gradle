@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.gmazzo.sqlite'
 apply plugin: 'kotlin-android'
 
 android {
