@@ -34,73 +34,32 @@ public class HomeFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.fragment_home, container, false);
 
-        v.findViewById(R.id.scanner).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((BaseActivity)getActivity()).showScanner();
+        v.findViewById(R.id.scanner).setOnClickListener(btn -> ((BaseActivity)getActivity()).showScanner());
+
+        v.findViewById(R.id.cart).setOnClickListener(btn -> ((BaseActivity)getActivity()).showShoppingCart());
+
+        v.findViewById(R.id.update_db).setOnClickListener(btn -> App.get().getProject().getProductDatabase().update());
+
+        v.findViewById(R.id.delete_db).setOnClickListener(btn -> App.get().getProject().getProductDatabase().delete());
+
+        v.findViewById(R.id.show_pm).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentCredentialsList(null));
+
+        v.findViewById(R.id.show_po).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentOptions());
+
+        v.findViewById(R.id.age_verification).setOnClickListener(btn -> ((BaseActivity)getActivity()).showAgeVerification());
+
+        v.findViewById(R.id.clear_cache).setOnClickListener(btn -> {
+            try {
+                FileUtils.deleteDirectory(App.get().getCacheDir());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
 
-        v.findViewById(R.id.cart).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((BaseActivity)getActivity()).showShoppingCart();
-            }
-        });
-
-        v.findViewById(R.id.update_db).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                App.get().getProject().getProductDatabase().update();
-            }
-        });
-
-        v.findViewById(R.id.delete_db).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                App.get().getProject().getProductDatabase().delete();
-            }
-        });
-
-        v.findViewById(R.id.show_pm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((BaseActivity)getActivity()).showPaymentCredentialsList(null);
-            }
-        });
-
-        v.findViewById(R.id.show_po).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((BaseActivity)getActivity()).showPaymentOptions();
-            }
-        });
-
-        v.findViewById(R.id.age_verification).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((BaseActivity)getActivity()).showAgeVerification();
-            }
-        });
-
-        v.findViewById(R.id.clear_cache).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    FileUtils.deleteDirectory(App.get().getCacheDir());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        v.findViewById(R.id.clear_data).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityManager activityManager = (ActivityManager) requireContext()
-                        .getSystemService(Context.ACTIVITY_SERVICE);
-                activityManager.clearApplicationUserData();
-            }
+        v.findViewById(R.id.clear_data).setOnClickListener(btn -> {
+            ActivityManager activityManager = (ActivityManager) requireContext()
+                    .getSystemService(Context.ACTIVITY_SERVICE);
+            activityManager.clearApplicationUserData();
         });
 
         // convenience project switching for debugging - use geofencing or a single project in real apps

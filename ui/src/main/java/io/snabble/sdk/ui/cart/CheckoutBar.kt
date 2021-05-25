@@ -81,7 +81,7 @@ class CheckoutBar @JvmOverloads constructor(
         cart.addListener(cartChangeListener)
         update()
 
-        progressDialog = DelayedProgressDialog(getContext())
+        progressDialog = DelayedProgressDialog(context)
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
