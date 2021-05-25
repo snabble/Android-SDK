@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -216,22 +217,10 @@ public class SelfScanningView extends FrameLayout {
                     }
                 })
                 .setOnProductNotFoundListener(() -> {
-                    Coupon coupon = lookupCoupon(scannedCodes);
-                    if (coupon == null) {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
-                    } else {
-                        shoppingCart.addCoupon(coupon);
-                        showInfo("Added coupon " + coupon.getName());
-                    }
+                    handleCoupon(scannedCodes, getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
                 })
                 .setOnNetworkErrorListener(() -> {
-                    Coupon coupon = lookupCoupon(scannedCodes);
-                    if (coupon == null) {
-                        showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
-                    } else {
-                        shoppingCart.addCoupon(coupon);
-                        showInfo("Added coupon " + coupon.getName());
-                    }
+                    handleCoupon(scannedCodes, getResources().getString(R.string.Snabble_Scanner_networkError));
                 })
                 .setOnShelfCodeScannedListener(() -> {
                     showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
@@ -263,13 +252,24 @@ public class SelfScanningView extends FrameLayout {
                 .resolve();
     }
 
-    private Coupon lookupCoupon(List<ScannedCode> scannedCodes) {
+    private void handleCoupon(List<ScannedCode> scannedCodes, String failureMessage) {
+        Pair<Coupon, ScannedCode> coupon = lookupCoupon(scannedCodes);
+        if (coupon == null) {
+            showWarning(failureMessage);
+        } else {
+            shoppingCart.addCoupon(coupon.first, coupon.second);
+            showInfo(getResources().getString(R.string.Snabble_Scanner_couponAdded, coupon.first.getName()));
+        }
+    }
+
+    private Pair<Coupon, ScannedCode> lookupCoupon(List<ScannedCode> scannedCodes) {
         Project project = SnabbleUI.getProject();
         for (Coupon coupon : project.getCoupons().get(CouponType.PRINTED)){
             for (CouponCode code : coupon.getCodes()) {
                 for (ScannedCode scannedCode : scannedCodes) {
-                    if (scannedCode.getCode().equals(code.getCode()) && scannedCode.getTemplateName().equals(code.getTemplate())) {
-                        return coupon;
+                    if (scannedCode.getCode().equals(code.getCode())
+                     && scannedCode.getTemplateName().equals(code.getTemplate())) {
+                        return new Pair<>(coupon, scannedCode);
                     }
                 }
             }

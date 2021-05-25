@@ -104,14 +104,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        v.findViewById(R.id.coupons).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(requireActivity(), CouponListActivity.class);
-                startActivity(intent);
-            }
-        });
-
         // convenience project switching for debugging - use geofencing or a single project in real apps
         final List<Project> projectList = Snabble.getInstance().getProjects();
         Spinner projects = v.findViewById(R.id.projects);

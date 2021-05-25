@@ -143,6 +143,7 @@
     <string name="Snabble.Scanner.BundleDialog.headline">Choose package</string>
     <string name="Snabble.Scanner.Camera.accessDenied">Camera access denied</string>
     <string name="Snabble.Scanner.Camera.allowAccess">Sorry, we\'ll need to access your camera to scan barcodes. Please allow this in the settings and return here.</string>
+    <string name="Snabble.Scanner.couponAdded">Added coupon \"%s\"</string>
     <string name="Snabble.Scanner.duplicateDepositScanned">Each deposit slip can only be scanned once.</string>
     <string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
     <string name="Snabble.Scanner.enterCodeButton">Enter\nbarcode</string>
@@ -178,6 +179,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">Buy %1$d products for %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Pay now</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Buy %1$d product for %2$s</string>
+    <string name="Snabble.Shoppingcart.coupon">Coupon</string>
     <string name="Snabble.Shoppingcart.deposit">Deposit</string>
     <string name="Snabble.Shoppingcart.discounts">Total discounts</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Scan now</string>
@@ -224,7 +226,7 @@
     <!-- Hinweiß der angezeigt wird wenn ein Artikel nicht gefunden wurde -->
     <string name="Snabble.ShoppingList.notFound">Unknown product</string>
     <!-- Der Hint der angezeigt wird wenn man einen Artikel per Suche hinzufügen möchte -->
-    <string name="Snabble.ShoppingList.searchHint">Product</string>
+    <string name="Snabble.ShoppingList.searchHint">Search or enter directly</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingList.title">Shopping list</string>
     <!-- Man soll verschiedene Artikel mit einem "und" in die Einkaufsliste legen können. Hier geht es nur um das Wort "und" -->

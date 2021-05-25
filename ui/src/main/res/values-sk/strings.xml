@@ -143,6 +143,7 @@
     <string name="Snabble.Scanner.BundleDialog.headline">Výber jednotky balenia</string>
     <string name="Snabble.Scanner.Camera.accessDenied">Prístup k fotoaparátu bol zamietnutý</string>
     <string name="Snabble.Scanner.Camera.allowAccess">Na skenovanie čiarových kódov potrebujeme prístup k fotoaparátu. Povoľ prístup v nastaveniach a vráť sa sem opäť.</string>
+    <string name="Snabble.Scanner.couponAdded"/>
     <string name="Snabble.Scanner.duplicateDepositScanned">Každý doklad o zálohe môže byť naskenovaný len raz.</string>
     <string name="Snabble.Scanner.enterBarcode">Zadať čiarový kód</string>
     <string name="Snabble.Scanner.enterCodeButton">Zadať\nčiarový kód</string>
@@ -178,6 +179,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">Kúpiť %1$d položky/položiek za %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Zaplatiť teraz</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Kúpiť %1$d položku za %2$s</string>
+    <string name="Snabble.Shoppingcart.coupon"/>
     <string name="Snabble.Shoppingcart.deposit">Záloha</string>
     <string name="Snabble.Shoppingcart.discounts">Zľavy celkom</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Skenovať teraz</string>
@@ -224,7 +226,7 @@
     <!-- Hinweiß der angezeigt wird wenn ein Artikel nicht gefunden wurde -->
     <string name="Snabble.ShoppingList.notFound">Neznámy produkt</string>
     <!-- Der Hint der angezeigt wird wenn man einen Artikel per Suche hinzufügen möchte -->
-    <string name="Snabble.ShoppingList.searchHint">Produkt</string>
+    <string name="Snabble.ShoppingList.searchHint">Vyhľadať alebo zadať priamo</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingList.title">Nákupný zoznam</string>
     <!-- Man soll verschiedene Artikel mit einem "und" in die Einkaufsliste legen können. Hier geht es nur um das Wort "und" -->
@@ -234,7 +236,7 @@
     <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
     <string name="Snabble.ShoppingList.Voice.title">Tip</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
-    <string name="Snabble.ShoppingLists.title"/>
+    <string name="Snabble.ShoppingLists.title">Nákupné zoznamy</string>
     <string name="Snabble.undo">Vrátiť späť</string>
     <string name="Snabble.Yes">Áno</string>
 </resources>

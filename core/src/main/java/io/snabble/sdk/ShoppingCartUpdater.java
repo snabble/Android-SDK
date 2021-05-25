@@ -184,13 +184,19 @@ class ShoppingCartUpdater {
                         boolean add = true;
                         for (Coupon coupon : project.getCoupons().get()) {
                             if (coupon.getId().equals(lineItem.couponId)) {
-                                add = false;
+                                add = coupon.getType() != CouponType.MANUAL;
+
+                                if (lineItem.name == null || lineItem.name.equals("")) {
+                                    lineItem.name = coupon.getName();
+                                }
                                 break;
                             }
                         }
 
                         if (add) {
-                            cart.insert(cart.newItem(lineItem), cart.size(), false);
+                            ShoppingCart.Item couponItem = cart.newItem(lineItem);
+                            couponItem.setIsCoupon(true);
+                            cart.insert(couponItem, cart.size(), false);
                         }
                     }
                 }

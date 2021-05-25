@@ -37,9 +37,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.snabble.sdk.Coupon;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
@@ -201,7 +203,7 @@ public class ShoppingCartView extends FrameLayout {
                     return super.getMovementFlags(recyclerView, viewHolder);
                 }
 
-                if (!recyclerViewAdapter.isDismissable(viewHolder.getAdapterPosition())) {
+                if (!recyclerViewAdapter.isDismissable(viewHolder.getBindingAdapterPosition())) {
                     return 0;
                 }
 
@@ -436,6 +438,14 @@ public class ShoppingCartView extends FrameLayout {
                 continue;
             }
 
+            if (item.isCoupon()) {
+                SimpleRow row = new SimpleRow();
+                row.title = getResources().getString(R.string.Snabble_Shoppingcart_coupon);
+                row.text = item.getDisplayName();
+                rows.add(row);
+                continue;
+            }
+
             final ProductRow row = new ProductRow();
             final Product product = item.getProduct();
             final int quantity = item.getQuantity();
@@ -463,6 +473,15 @@ public class ShoppingCartView extends FrameLayout {
             row.imageResId = R.drawable.snabble_ic_deposit;
             row.text = priceFormatter.format(cartTotal);
             rows.add(row);
+        }
+
+        if (!cart.isOnlinePrice() && !cart.isEmpty()) {
+            for (ShoppingCart.CouponItem coupon : cart.getAppliedCoupons()) {
+                SimpleRow row = new SimpleRow();
+                row.title = getResources().getString(R.string.Snabble_Shoppingcart_coupon);
+                row.text = coupon.getCoupon().getName();
+                rows.add(row);
+            }
         }
 
         recyclerViewAdapter.submitList(rows, hasAnyImages);
@@ -778,7 +797,8 @@ public class ShoppingCartView extends FrameLayout {
         }
 
         public boolean isDismissable(int position) {
-            return getItemViewType(position) != TYPE_SIMPLE && !((ProductRow)getItem(position)).item.isOnlyLineItem();
+            ShoppingCart.Item item = ((ProductRow)getItem(position)).item;
+            return getItemViewType(position) != TYPE_SIMPLE && !item.isOnlyLineItem() && !item.isCoupon();
         }
 
         @Override
@@ -831,6 +851,14 @@ public class ShoppingCartView extends FrameLayout {
                     continue;
                 }
 
+                if (item.isCoupon()) {
+                    SimpleRow row = new SimpleRow();
+                    row.title = context.getString(R.string.Snabble_Shoppingcart_coupon);
+                    row.text = item.getDisplayName();
+                    rows.add(row);
+                    continue;
+                }
+
                 final ProductRow row = new ProductRow();
                 final Product product = item.getProduct();
                 final int quantity = item.getQuantity();
@@ -858,6 +886,15 @@ public class ShoppingCartView extends FrameLayout {
                 row.imageResId = R.drawable.snabble_ic_deposit;
                 row.text = priceFormatter.format(cartTotal);
                 rows.add(row);
+            }
+
+            if (!cart.isOnlinePrice() && !cart.isEmpty()) {
+                for (ShoppingCart.CouponItem coupon : cart.getAppliedCoupons()) {
+                    SimpleRow row = new SimpleRow();
+                    row.title = context.getString(R.string.Snabble_Shoppingcart_coupon);
+                    row.text = coupon.getCoupon().getName();
+                    rows.add(row);
+                }
             }
 
             submitList(rows, hasAnyImages);

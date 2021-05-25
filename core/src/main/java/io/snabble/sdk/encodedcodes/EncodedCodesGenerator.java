@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import io.snabble.sdk.Coupon;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Unit;
@@ -47,8 +48,10 @@ public class EncodedCodesGenerator {
 
     public void add(ShoppingCart shoppingCart) {
         List<ProductInfo> productInfos = new ArrayList<>();
+
         for (int i = 0; i < shoppingCart.size(); i++) {
             ShoppingCart.Item item = shoppingCart.get(i);
+
             Product product = item.getProduct();
             if (product == null) {
                 continue;
@@ -70,6 +73,17 @@ public class EncodedCodesGenerator {
 
         addProducts(productInfos, false);
         addProducts(productInfos, true);
+
+        for (ShoppingCart.CouponItem appliedCoupon : shoppingCart.getAppliedCoupons()) {
+            ScannedCode scannedCode = appliedCoupon.getScannedCode();
+            if (scannedCode != null) {
+                add(scannedCode.getCode());
+            } else {
+                if (appliedCoupon.getCoupon().getCodes().size() > 0) {
+                    add(appliedCoupon.getCoupon().getCodes().get(0).getCode());
+                }
+            }
+        }
     }
 
     public void clear() {
