@@ -17,6 +17,7 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -144,6 +145,8 @@ public class SelfScanningView extends FrameLayout {
 
         isInitialized = true;
         startBarcodeScanner(false);
+
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
     private void showShoppingCart() {
