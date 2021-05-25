@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import io.snabble.sdk.Coupon;
+import io.snabble.sdk.CouponCode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Unit;
@@ -39,6 +40,10 @@ public class EncodedCodesGenerator {
     }
 
     public void add(String code) {
+        if (code == null) {
+            return;
+        }
+
         if (options.repeatCodes) {
             addScannableCode(code, false);
         } else {
@@ -52,14 +57,29 @@ public class EncodedCodesGenerator {
         for (int i = 0; i < shoppingCart.size(); i++) {
             ShoppingCart.Item item = shoppingCart.get(i);
 
-            Product product = item.getProduct();
-            if (product == null) {
-                continue;
-            }
+            if (item.getType() == ShoppingCart.ItemType.COUPON) {
+                ScannedCode scannedCode = item.getScannedCode();
+                if (scannedCode != null) {
+                    add(scannedCode.getCode());
+                } else {
+                    Coupon coupon = item.getCoupon();
+                    if (coupon != null) {
+                        List<CouponCode> codes = coupon.getCodes();
+                        if (codes.size() > 0) {
+                            add(codes.get(0).getCode());
+                        }
+                    }
+                }
+            } else {
+                Product product = item.getProduct();
+                if (product == null) {
+                    continue;
+                }
 
-            productInfos.add(new ProductInfo(product,
-                    item.getQuantity(),
-                    item.getScannedCode()));
+                productInfos.add(new ProductInfo(product,
+                        item.getQuantity(),
+                        item.getScannedCode()));
+            }
         }
 
         if (options.sorter != null) {
@@ -73,17 +93,6 @@ public class EncodedCodesGenerator {
 
         addProducts(productInfos, false);
         addProducts(productInfos, true);
-
-        for (ShoppingCart.CouponItem appliedCoupon : shoppingCart.getAppliedCoupons()) {
-            ScannedCode scannedCode = appliedCoupon.getScannedCode();
-            if (scannedCode != null) {
-                add(scannedCode.getCode());
-            } else {
-                if (appliedCoupon.getCoupon().getCodes().size() > 0) {
-                    add(appliedCoupon.getCoupon().getCodes().get(0).getCode());
-                }
-            }
-        }
     }
 
     public void clear() {

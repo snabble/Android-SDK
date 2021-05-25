@@ -295,8 +295,8 @@ public class ProductConfirmationDialog {
                     .show(fragmentActivity.getSupportFragmentManager(), null);
         });
 
-        if (cartItem.getManualCoupon() != null) {
-            enterReducedPrice.setText(cartItem.getManualCoupon().getName());
+        if (cartItem.getCoupon() != null) {
+            enterReducedPrice.setText(cartItem.getCoupon().getName());
         } else {
             enterReducedPrice.setText(R.string.Snabble_addDiscount);
         }

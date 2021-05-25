@@ -37,11 +37,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.snabble.sdk.Coupon;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
@@ -329,7 +327,7 @@ public class ShoppingCartView extends FrameLayout {
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
-            if (item.isOnlyLineItem()) continue;
+            if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
 
             Product product = item.getProduct();
             String url = product.getImageUrl();
@@ -405,86 +403,72 @@ public class ShoppingCartView extends FrameLayout {
                 }
             };
 
-    private String sanitize(String input) {
+    private static String sanitize(String input) {
         if (input != null && input.equals("")) return null;
         return input;
     }
 
-    private void submitList() {
+    public static List<Row> buildRows(Resources resources, ShoppingCart cart) {
         List<Row> rows = new ArrayList<>(cart.size() + 1);
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
 
-            if (item.isOnlyLineItem() && item.getTotalDepositPrice() > 0) {
-                continue;
-            }
-
-            if (item.isDiscount()) {
+            if (item.getType() == ShoppingCart.ItemType.LINE_ITEM) {
+                if (item.isDiscount()) {
+                    SimpleRow row = new SimpleRow();
+                    row.title = resources.getString(R.string.Snabble_Shoppingcart_discounts);
+                    row.imageResId = R.drawable.snabble_ic_percent;
+                    row.text = sanitize(item.getPriceText());
+                    rows.add(row);
+                } else if (item.isGiveaway()) {
+                    SimpleRow row = new SimpleRow();
+                    row.title = item.getDisplayName();
+                    row.imageResId = R.drawable.snabble_ic_gift;
+                    row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway);
+                    rows.add(row);
+                }
+            } else if (item.getType() == ShoppingCart.ItemType.COUPON) {
                 SimpleRow row = new SimpleRow();
-                row.title = getResources().getString(R.string.Snabble_Shoppingcart_discounts);
-                row.imageResId = R.drawable.snabble_ic_percent;
-                row.text = sanitize(item.getPriceText());
-                rows.add(row);
-                continue;
-            }
-
-            if (item.isGiveaway()) {
-                SimpleRow row = new SimpleRow();
-                row.title = item.getDisplayName();
-                row.imageResId = R.drawable.snabble_ic_gift;
-                row.text = getResources().getString(R.string.Snabble_Shoppingcart_giveaway);
-                rows.add(row);
-                continue;
-            }
-
-            if (item.isCoupon()) {
-                SimpleRow row = new SimpleRow();
-                row.title = getResources().getString(R.string.Snabble_Shoppingcart_coupon);
+                row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
                 row.text = item.getDisplayName();
                 rows.add(row);
-                continue;
+            } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
+                final ProductRow row = new ProductRow();
+                final Product product = item.getProduct();
+                final int quantity = item.getQuantity();
+
+                if (product != null) {
+                    row.subtitle = sanitize(product.getSubtitle());
+                    row.imageUrl = sanitize(product.getImageUrl());
+                }
+
+                row.name = sanitize(item.getDisplayName());
+                row.encodingUnit = item.getUnit();
+                row.priceText = sanitize(item.getTotalPriceText());
+                row.quantity = quantity;
+                row.quantityText = sanitize(item.getQuantityText());
+                row.editable = item.isEditable();
+                row.item = item;
+                rows.add(row);
             }
-
-            final ProductRow row = new ProductRow();
-            final Product product = item.getProduct();
-            final int quantity = item.getQuantity();
-
-            if (product != null) {
-                row.subtitle = sanitize(product.getSubtitle());
-                row.imageUrl = sanitize(product.getImageUrl());
-            }
-
-            row.name = sanitize(item.getDisplayName());
-            row.encodingUnit = item.getUnit();
-            row.priceText = sanitize(item.getTotalPriceText());
-            row.quantity = quantity;
-            row.quantityText = sanitize(item.getQuantityText());
-            row.editable = item.isEditable();
-            row.item = item;
-            rows.add(row);
         }
 
         int cartTotal = cart.getTotalDepositPrice();
         if (cartTotal > 0) {
             SimpleRow row = new SimpleRow();
             PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
-            row.title = getResources().getString(R.string.Snabble_Shoppingcart_deposit);
+            row.title = resources.getString(R.string.Snabble_Shoppingcart_deposit);
             row.imageResId = R.drawable.snabble_ic_deposit;
             row.text = priceFormatter.format(cartTotal);
             rows.add(row);
         }
 
-        if (!cart.isOnlinePrice() && !cart.isEmpty()) {
-            for (ShoppingCart.CouponItem coupon : cart.getAppliedCoupons()) {
-                SimpleRow row = new SimpleRow();
-                row.title = getResources().getString(R.string.Snabble_Shoppingcart_coupon);
-                row.text = coupon.getCoupon().getName();
-                rows.add(row);
-            }
-        }
+        return rows;
+    }
 
-        recyclerViewAdapter.submitList(rows, hasAnyImages);
+    private void submitList() {
+        recyclerViewAdapter.submitList(buildRows(getResources(), cart), hasAnyImages);
     }
 
     private static void setTextOrHide(TextView textView, String text) {
@@ -624,7 +608,7 @@ public class ShoppingCartView extends FrameLayout {
                 image.setImageBitmap(null);
             }
 
-            sale.setVisibility(row.item.getManualCoupon() != null ? View.VISIBLE : View.GONE);
+            sale.setVisibility(row.item.getCoupon() != null ? View.VISIBLE : View.GONE);
 
             String encodingDisplayValue = "g";
             Unit encodingUnit = row.encodingUnit;
@@ -798,7 +782,9 @@ public class ShoppingCartView extends FrameLayout {
 
         public boolean isDismissable(int position) {
             ShoppingCart.Item item = ((ProductRow)getItem(position)).item;
-            return getItemViewType(position) != TYPE_SIMPLE && !item.isOnlyLineItem() && !item.isCoupon();
+            return getItemViewType(position) != TYPE_SIMPLE
+                    && (item.getType() == ShoppingCart.ItemType.PRODUCT
+                    || item.getType() == ShoppingCart.ItemType.COUPON);
         }
 
         @Override
@@ -808,13 +794,11 @@ public class ShoppingCartView extends FrameLayout {
 
         // for fetching the data from outside of this view
         public void fetchFrom(ShoppingCart cart) {
-            boolean lastHasAnyImages = hasAnyImages;
-
             hasAnyImages = false;
 
             for (int i = 0; i < cart.size(); i++) {
                 ShoppingCart.Item item = cart.get(i);
-                if (item.isOnlyLineItem()) continue;
+                if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
 
                 Product product = item.getProduct();
                 String url = product.getImageUrl();
@@ -824,80 +808,7 @@ public class ShoppingCartView extends FrameLayout {
                 }
             }
 
-            List<Row> rows = new ArrayList<>(cart.size() + 1);
-
-            for (int i = 0; i < cart.size(); i++) {
-                ShoppingCart.Item item = cart.get(i);
-
-                if (item.isOnlyLineItem() && item.getTotalDepositPrice() > 0) {
-                    continue;
-                }
-
-                if (item.isDiscount()) {
-                    SimpleRow row = new SimpleRow();
-                    row.title = context.getResources().getString(R.string.Snabble_Shoppingcart_discounts);
-                    row.imageResId = R.drawable.snabble_ic_percent;
-                    row.text = sanitize(item.getPriceText());
-                    rows.add(row);
-                    continue;
-                }
-
-                if (item.isGiveaway()) {
-                    SimpleRow row = new SimpleRow();
-                    row.title = item.getDisplayName();
-                    row.imageResId = R.drawable.snabble_ic_gift;
-                    row.text = context.getResources().getString(R.string.Snabble_Shoppingcart_giveaway);
-                    rows.add(row);
-                    continue;
-                }
-
-                if (item.isCoupon()) {
-                    SimpleRow row = new SimpleRow();
-                    row.title = context.getString(R.string.Snabble_Shoppingcart_coupon);
-                    row.text = item.getDisplayName();
-                    rows.add(row);
-                    continue;
-                }
-
-                final ProductRow row = new ProductRow();
-                final Product product = item.getProduct();
-                final int quantity = item.getQuantity();
-
-                if (product != null) {
-                    row.subtitle = sanitize(product.getSubtitle());
-                    row.imageUrl = sanitize(product.getImageUrl());
-                }
-
-                row.name = sanitize(item.getDisplayName());
-                row.encodingUnit = item.getUnit();
-                row.priceText = sanitize(item.getTotalPriceText());
-                row.quantity = quantity;
-                row.quantityText = sanitize(item.getQuantityText());
-                row.editable = item.isEditable();
-                row.item = item;
-                rows.add(row);
-            }
-
-            int cartTotal = cart.getTotalDepositPrice();
-            if (cartTotal > 0) {
-                SimpleRow row = new SimpleRow();
-                PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
-                row.title = context.getResources().getString(R.string.Snabble_Shoppingcart_deposit);
-                row.imageResId = R.drawable.snabble_ic_deposit;
-                row.text = priceFormatter.format(cartTotal);
-                rows.add(row);
-            }
-
-            if (!cart.isOnlinePrice() && !cart.isEmpty()) {
-                for (ShoppingCart.CouponItem coupon : cart.getAppliedCoupons()) {
-                    SimpleRow row = new SimpleRow();
-                    row.title = context.getString(R.string.Snabble_Shoppingcart_coupon);
-                    row.text = coupon.getCoupon().getName();
-                    rows.add(row);
-                }
-            }
-
-            submitList(rows, hasAnyImages);
+            submitList(buildRows(context.getResources(), cart), hasAnyImages);
         }
 
         private String sanitize(String input) {

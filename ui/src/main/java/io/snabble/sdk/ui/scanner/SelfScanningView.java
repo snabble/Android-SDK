@@ -257,7 +257,7 @@ public class SelfScanningView extends FrameLayout {
         if (coupon == null) {
             showWarning(failureMessage);
         } else {
-            shoppingCart.addCoupon(coupon.first, coupon.second);
+            shoppingCart.add(shoppingCart.newItem(coupon.first, coupon.second));
             showInfo(getResources().getString(R.string.Snabble_Scanner_couponAdded, coupon.first.getName()));
         }
     }
@@ -563,7 +563,7 @@ public class SelfScanningView extends FrameLayout {
                 showHints();
             }
 
-            if (item.getManualCoupon() != null) {
+            if (item.getCoupon() != null) {
                 showInfo(getResources().getString(R.string.Snabble_Scanner_manualCouponAdded));
             }
         }

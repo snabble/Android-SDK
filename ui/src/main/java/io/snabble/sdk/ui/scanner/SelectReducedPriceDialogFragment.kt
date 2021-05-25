@@ -33,9 +33,9 @@ class SelectReducedPriceDialogFragment(
             .setTitle(R.string.Snabble_addDiscount)
             .setAdapter(adapter) { _, which ->
                 if (which == 0) {
-                    cartItem?.manualCoupon = null
+                    cartItem?.coupon = null
                 } else {
-                    cartItem?.manualCoupon = discounts[which - 1]
+                    cartItem?.coupon = discounts[which - 1]
                 }
                 productConfirmationDialog?.setQuantity(1)
                 productConfirmationDialog?.updatePrice()
