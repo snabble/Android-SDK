@@ -81,7 +81,7 @@ class CheckoutBar @JvmOverloads constructor(
         cart.addListener(cartChangeListener)
         update()
 
-        progressDialog = DelayedProgressDialog(getContext())
+        progressDialog = DelayedProgressDialog(context)
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
@@ -98,7 +98,9 @@ class CheckoutBar @JvmOverloads constructor(
         context.requireFragmentActivity().lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             fun onStart() {
-                registerListeners()
+                if (isAttachedToWindow) {
+                    registerListeners()
+                }
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -152,7 +154,7 @@ class CheckoutBar @JvmOverloads constructor(
                     project.priceFormatter.format(project.maxCheckoutLimit))
             Snackbar.make(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
         } else {
-            val entry = paymentSelectionHelper.selectedEntry.getValue()
+            val entry = paymentSelectionHelper.selectedEntry.value
             if (entry != null) {
                 if (entry.paymentMethod.isRequiringCredentials && entry.paymentCredentials == null) {
                     PaymentInputViewHelper.openPaymentInputView(context, entry.paymentMethod, project.id)
@@ -215,7 +217,7 @@ class CheckoutBar @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        unregisterListeners();
+        unregisterListeners()
     }
 
     override fun onStateChanged(state: Checkout.State) {

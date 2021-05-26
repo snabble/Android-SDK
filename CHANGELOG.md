@@ -1,6 +1,37 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.36.0]
+
+### Added
+- Support for printed coupons
+
+### Changed
+- Support for new coupon metadata
+- Improved SEPACardInputView for copy pasting IBAN's with prefixes
+- Removed flash and search buttons in SelfScanningView
+- Replaced scan indicator with a barcode image
+
+### Fixed
+- Remove old scan result messages
+
+## [0.35.9]
+
+### Fixed
+- Fixed amount for manual coupons 
+- Fixed listener leak in CheckoutBar
+
+## [0.35.8]
+
+### Changes
+- Add option to set project of the ProductResolver
+- Changed builder method name from `setBarcodeOfProject(...)` to `setBarcode(...)` to simplify usage
+
+## [0.35.7]
+
+### Changes
+- Extend telemetry for shopping lists
+
 ## [0.35.6]
 
 ### Changes

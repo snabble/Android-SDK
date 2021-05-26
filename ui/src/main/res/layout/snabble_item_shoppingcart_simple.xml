@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     tools:ignore="RtlHardcoded">
@@ -11,7 +12,7 @@
     <ImageView
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_centerVertical="true"
         android:src="@drawable/snabble_ic_deposit"
         android:scaleType="fitCenter"
@@ -24,8 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/helper_image"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
         android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"

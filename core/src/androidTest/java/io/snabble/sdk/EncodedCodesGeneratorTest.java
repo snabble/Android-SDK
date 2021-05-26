@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
@@ -227,6 +228,35 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         ArrayList<String> codes = generator.generate();
         Assert.assertEquals(1, codes.size());
         Assert.assertEquals("voucher1\nvoucher2\n8715700421698\n8715700421698\n4008400301020\n4008400301020\n4008400301020\n2030801009061", codes.get(0));
+    }
+
+    @Test
+    @UiThreadTest
+    public void testCoupons() {
+        EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
+                .prefix("")
+                .separator("\n")
+                .suffix("")
+                .nextCode("")
+                .nextCodeWithCheck("")
+                .maxChars(1000)
+                .build();
+
+        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
+
+        Product duplo = project.getProductDatabase().findBySku("49");
+        addToCart(duplo, 1, ScannedCode.parseDefault(project, "4008400301020"));
+
+        ShoppingCart cart = project.getShoppingCart();
+        cart.add(cart.newItem(
+                new Coupon("asdf", "foo", CouponType.PRINTED, Collections.singletonList(new CouponCode("1234", "default"))),
+                ScannedCode.parseDefault(project, "1234")
+        ));
+        generator.add(project.getShoppingCart());
+
+        ArrayList<String> codes = generator.generate();
+        Assert.assertEquals(1, codes.size());
+        Assert.assertEquals("4008400301020\n1234", codes.get(0));
     }
 
     @Test

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply from:'../scripts/maven.gradle'
 
 android {
@@ -54,6 +53,7 @@ dependencies {
     implementation 'org.iban4j:iban4j:3.2.1'
     implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttpVersion}"
     implementation 'com.caverock:androidsvg-aar:1.4'
+    implementation("androidx.datastore:datastore-preferences:1.0.0-beta01")
 
     api "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
     api 'com.google.code.gson:gson:2.8.6'

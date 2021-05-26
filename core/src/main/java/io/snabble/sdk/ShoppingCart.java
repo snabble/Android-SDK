@@ -1,11 +1,14 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +23,12 @@ import static io.snabble.sdk.Unit.PIECE;
 import static io.snabble.sdk.Unit.PRICE;
 
 public class ShoppingCart {
+    public enum ItemType {
+        PRODUCT,
+        LINE_ITEM,
+        COUPON
+    }
+
     public static final int MAX_QUANTITY = 99999;
 
     private String id;
@@ -41,6 +50,7 @@ public class ShoppingCart {
     private transient PriceFormatter priceFormatter;
     private String oldId;
     private Integer oldOnlineTotalPrice;
+    private List<CouponItem> oldAppliedCoupons = new ArrayList<>();
     private int oldAddCount;
     private int oldModCount;
     private long oldCartTimestamp;
@@ -91,6 +101,10 @@ public class ShoppingCart {
         return new Item(this, product, scannedCode);
     }
 
+    public Item newItem(Coupon coupon, ScannedCode scannedCode) {
+        return new Item(this, coupon, scannedCode);
+    }
+
     Item newItem(CheckoutApi.LineItem lineItem) {
         return new Item(this, lineItem);
     }
@@ -132,6 +146,20 @@ public class ShoppingCart {
 
         checkLimits();
         notifyItemAdded(this, item);
+
+        // sort coupons to bottom
+        Collections.sort(items, (o1, o2) -> {
+            ItemType t1 = o1.getType();
+            ItemType t2 = o2.getType();
+
+            if (t2 == ItemType.COUPON && t1 == ItemType.PRODUCT) {
+                return -1;
+            } else if (t1 == ItemType.COUPON && t2 == ItemType.PRODUCT) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
 
         if (update) {
             invalidateOnlinePrices();
@@ -219,6 +247,7 @@ public class ShoppingCart {
 
     public void clearBackup() {
         oldItems = null;
+        oldAppliedCoupons = null;
         oldId = null;
         oldAddCount = 0;
         oldModCount = 0;
@@ -283,7 +312,7 @@ public class ShoppingCart {
         // reverse-order because we are removing items
         for (int i = items.size() - 1; i >= 0; i--) {
             Item item = items.get(i);
-            if (item.isOnlyLineItem()) {
+            if (item.getType() == ItemType.LINE_ITEM) {
                 items.remove(i);
             } else {
                 item.lineItem = null;
@@ -333,6 +362,10 @@ public class ShoppingCart {
         onlineTotalPrice = totalPrice;
     }
 
+    public boolean isOnlinePrice() {
+        return onlineTotalPrice != null;
+    }
+
     void setInvalidProducts(List<Product> invalidProducts) {
         this.invalidProducts = invalidProducts;
     }
@@ -374,7 +407,7 @@ public class ShoppingCart {
         int vPOSsum = 0;
 
         for (Item e : items) {
-            if (e.isOnlyLineItem()) {
+            if (e.getType() == ItemType.LINE_ITEM) {
                 vPOSsum += e.getTotalDepositPrice();
             } else {
                 sum += e.getTotalDepositPrice();
@@ -388,20 +421,20 @@ public class ShoppingCart {
         int sum = 0;
 
         for (Item e : items) {
-            if (e.isOnlyLineItem()) {
+            if (e.getType() == ItemType.LINE_ITEM) {
                 if (e.lineItem.type == CheckoutApi.LineItemType.DEFAULT) {
                     sum += e.lineItem.amount;
                 }
                 continue;
-            }
-
-            Product product = e.product;
-            if (product.getType() == Product.Type.UserWeighed
-                    || product.getType() == Product.Type.PreWeighed
-                    || product.getReferenceUnit() == PIECE) {
-                sum += 1;
-            } else {
-                sum += e.quantity;
+            } else if (e.getType() == ItemType.PRODUCT) {
+                Product product = e.product;
+                if (product.getType() == Product.Type.UserWeighed
+                        || product.getType() == Product.Type.PreWeighed
+                        || product.getReferenceUnit() == PIECE) {
+                    sum += 1;
+                } else {
+                    sum += e.quantity;
+                }
             }
         }
 
@@ -461,6 +494,38 @@ public class ShoppingCart {
         return false;
     }
 
+    public static class CouponItem {
+        private Coupon coupon;
+        private ScannedCode scannedCode;
+
+        public CouponItem(Coupon coupon, ScannedCode scannedCode) {
+            this.coupon = coupon;
+            this.scannedCode = scannedCode;
+        }
+
+        public Coupon getCoupon() {
+            return coupon;
+        }
+
+        public ScannedCode getScannedCode() {
+            return scannedCode;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            CouponItem that = (CouponItem) o;
+            return Objects.equals(coupon, that.coupon) &&
+                    Objects.equals(scannedCode, that.scannedCode);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(coupon, scannedCode);
+        }
+    }
+
     public static class Item {
         private Product product;
         private ScannedCode scannedCode;
@@ -469,10 +534,17 @@ public class ShoppingCart {
         private String id;
         private boolean isUsingSpecifiedQuantity;
         private transient ShoppingCart cart;
-        private ManualCoupon manualCoupon;
+        private Coupon coupon;
 
         protected Item() {
             // for gson
+        }
+
+        private Item(ShoppingCart cart, Coupon coupon, ScannedCode scannedCode) {
+            this.id = UUID.randomUUID().toString();
+            this.cart = cart;
+            this.scannedCode = scannedCode;
+            this.coupon = coupon;
         }
 
         private Item(ShoppingCart cart, Product product, ScannedCode scannedCode) {
@@ -528,6 +600,7 @@ public class ShoppingCart {
             this.lineItem = lineItem;
         }
 
+        @Nullable
         public Product getProduct() {
             return product;
         }
@@ -587,12 +660,20 @@ public class ShoppingCart {
             }
         }
 
-        public boolean isOnlyLineItem() {
-            return product == null && lineItem != null;
+        public ItemType getType() {
+            if (product != null) {
+                return ItemType.PRODUCT;
+            } else if (coupon != null) {
+                return ItemType.COUPON;
+            } else if (lineItem != null) {
+                return ItemType.LINE_ITEM;
+            }
+
+            return null;
         }
 
         public boolean isEditable() {
-            if (manualCoupon != null) {
+            if (coupon != null) {
                 return false;
             }
 
@@ -600,7 +681,8 @@ public class ShoppingCart {
         }
 
         public boolean isEditableInDialog() {
-            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT && !scannedCode.hasEmbeddedData();
+            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT
+                    && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0);
 
             return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
                     product.getPrice(cart.project.getCustomerCardId()) != 0;
@@ -608,7 +690,7 @@ public class ShoppingCart {
 
         public boolean isMergeable() {
             if (product == null && lineItem != null) return false;
-            if (manualCoupon != null) return false;
+            if (coupon != null) return false;
 
             boolean b = product.getType() == Product.Type.Article
                     && getUnit() != PIECE
@@ -619,14 +701,16 @@ public class ShoppingCart {
         }
 
         public Unit getUnit() {
-            if (product == null && lineItem != null) return null;
-
-            if (lineItem != null && lineItem.weightUnit != null) {
-                return Unit.fromString(lineItem.weightUnit);
+            if (getType() == ItemType.PRODUCT) {
+                return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
+                        : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+            } else if (getType() == ItemType.LINE_ITEM) {
+                if (lineItem.weightUnit != null) {
+                    return Unit.fromString(lineItem.weightUnit);
+                }
             }
 
-            return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
-                    : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+            return null;
         }
 
         public int getTotalPrice() {
@@ -638,16 +722,20 @@ public class ShoppingCart {
         }
 
         public int getLocalTotalPrice() {
-            if (getUnit() == Unit.PRICE) {
-                return scannedCode.getEmbeddedData();
+            if (getType() == ItemType.PRODUCT) {
+                if (getUnit() == Unit.PRICE) {
+                    return scannedCode.getEmbeddedData();
+                }
+
+                int price = product.getPriceForQuantity(getEffectiveQuantity(),
+                        scannedCode,
+                        cart.project.getRoundingMode(),
+                        cart.project.getCustomerCardId());
+
+                return price;
+            } else {
+                return 0;
             }
-
-            int price = product.getPriceForQuantity(getEffectiveQuantity(),
-                    scannedCode,
-                    cart.project.getRoundingMode(),
-                    cart.project.getCustomerCardId());
-
-            return price;
         }
 
         public int getTotalDepositPrice() {
@@ -674,12 +762,16 @@ public class ShoppingCart {
             if (lineItem != null) {
                 return lineItem.name;
             } else {
-                return product.getName();
+                if (getType() == ItemType.COUPON) {
+                    return coupon.getName();
+                } else {
+                    return product.getName();
+                }
             }
         }
 
         public String getQuantityText() {
-            if (isOnlyLineItem()) {
+            if (getType() == ItemType.LINE_ITEM) {
                 return String.valueOf(lineItem.amount);
             }
 
@@ -743,6 +835,10 @@ public class ShoppingCart {
             }
         }
 
+        public String getTotalPriceText() {
+            return cart.priceFormatter.format(getTotalPrice());
+        }
+
         public String getPriceText() {
             if (lineItem != null) {
                 if (lineItem.price != 0) {
@@ -798,12 +894,21 @@ public class ShoppingCart {
             return 0;
         }
 
-        public void setManualCoupon(ManualCoupon manualCoupon) {
-            this.manualCoupon = manualCoupon;
+        public void setCoupon(Coupon coupon) {
+            if (coupon == null) {
+                this.coupon = null;
+                return;
+            }
+
+            if (coupon.getType() != CouponType.MANUAL) {
+                throw new RuntimeException("Only manual coupons can be added");
+            }
+
+            this.coupon = coupon;
         }
 
-        public ManualCoupon getManualCoupon() {
-            return this.manualCoupon;
+        public Coupon getCoupon() {
+            return this.coupon;
         }
 
         void replace(Product product, ScannedCode scannedCode, int quantity) {
@@ -890,73 +995,86 @@ public class ShoppingCart {
 
         for (int i = 0; i < size(); i++) {
             ShoppingCart.Item cartItem = get(i);
-            if (cartItem.isOnlyLineItem()) continue;
+            if (cartItem.getType() == ItemType.PRODUCT) {
+                BackendCartItem item = new BackendCartItem();
 
-            BackendCartItem item = new BackendCartItem();
+                Product product = cartItem.getProduct();
+                int quantity = cartItem.getQuantity();
 
-            Product product = cartItem.getProduct();
-            int quantity = cartItem.getQuantity();
+                ScannedCode scannedCode = cartItem.getScannedCode();
+                Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
 
-            ScannedCode scannedCode = cartItem.getScannedCode();
-            Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
+                if (scannedCode.getEmbeddedUnit() != null) {
+                    encodingUnit = scannedCode.getEmbeddedUnit();
+                }
 
-            if (scannedCode.getEmbeddedUnit() != null) {
-                encodingUnit = scannedCode.getEmbeddedUnit();
-            }
+                item.id = cartItem.id;
+                item.sku = String.valueOf(product.getSku());
+                item.scannedCode = scannedCode.getCode();
 
-            item.id = cartItem.id;
-            item.sku = String.valueOf(product.getSku());
-            item.scannedCode = scannedCode.getCode();
+                if (product.getPrimaryCode() != null) {
+                    item.scannedCode = product.getPrimaryCode().lookupCode;
+                }
 
-            if (product.getPrimaryCode() != null) {
-                item.scannedCode = product.getPrimaryCode().lookupCode;
-            }
+                if (encodingUnit != null) {
+                    item.weightUnit = encodingUnit.getId();
+                }
 
-            if (encodingUnit != null) {
-                item.weightUnit = encodingUnit.getId();
-            }
+                item.amount = 1;
 
-            item.amount = 1;
+                if (cartItem.getUnit() == Unit.PIECE) {
+                    item.units = cartItem.getEffectiveQuantity(true);
+                } else if (cartItem.getUnit() == Unit.PRICE) {
+                    item.price = cartItem.getLocalTotalPrice();
+                } else if (cartItem.getUnit() != null) {
+                    item.weight = cartItem.getEffectiveQuantity(true);
+                } else if (product.getType() == Product.Type.UserWeighed) {
+                    item.weight = quantity;
+                } else {
+                    item.amount = quantity;
+                }
 
-            if (cartItem.getUnit() == Unit.PIECE) {
-                item.units = cartItem.getEffectiveQuantity(true);
-            } else if (cartItem.getUnit() == Unit.PRICE) {
-                item.price = cartItem.getLocalTotalPrice();
-            } else if (cartItem.getUnit() != null) {
-                item.weight = cartItem.getEffectiveQuantity(true);
-            } else if (product.getType() == Product.Type.UserWeighed) {
-                item.weight = quantity;
-            } else {
-                item.amount = quantity;
-            }
+                if (item.price == null && scannedCode.hasPrice()) {
+                    item.price = scannedCode.getPrice();
+                }
 
-            if (item.price == null && scannedCode.hasPrice()) {
-                item.price = scannedCode.getPrice();
-            }
+                // reencode user input from scanned code with 0 amount
+                if (cartItem.getUnit() == Unit.PIECE && scannedCode.getEmbeddedData() == 0) {
+                    CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
 
-            // reencode user input from scanned code with 0 amount
-            if (cartItem.getUnit() == Unit.PIECE && scannedCode.getEmbeddedData() == 0) {
-                CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
+                    if (codeTemplate != null) {
+                        ScannedCode newCode = codeTemplate.code(scannedCode.getLookupCode())
+                                .embed(cartItem.getEffectiveQuantity())
+                                .buildCode();
 
-                if (codeTemplate != null) {
-                    ScannedCode newCode = codeTemplate.code(scannedCode.getLookupCode())
-                            .embed(cartItem.getEffectiveQuantity())
-                            .buildCode();
-
-                    if (newCode != null) {
-                        item.scannedCode = newCode.getCode();
+                        if (newCode != null) {
+                            item.scannedCode = newCode.getCode();
+                        }
                     }
                 }
-            }
 
-            items.add(item);
+                items.add(item);
 
-            if (cartItem.manualCoupon != null) {
-                BackendCartItem couponItem = new BackendCartItem();
-                couponItem.id = UUID.randomUUID().toString();
-                couponItem.refersTo = item.id;
-                couponItem.couponID = cartItem.manualCoupon.getId();
-                items.add(couponItem);
+                if (cartItem.coupon != null) {
+                    BackendCartItem couponItem = new BackendCartItem();
+                    couponItem.id = UUID.randomUUID().toString();
+                    couponItem.refersTo = item.id;
+                    couponItem.amount = 1;
+                    couponItem.couponID = cartItem.coupon.getId();
+                    items.add(couponItem);
+                }
+            } else if (cartItem.getType() == ItemType.COUPON) {
+                BackendCartItem item = new BackendCartItem();
+                item.id = UUID.randomUUID().toString();
+                item.amount = 1;
+
+                ScannedCode scannedCode = cartItem.getScannedCode();
+                if (scannedCode != null) {
+                    item.scannedCode = scannedCode.getCode();
+                }
+
+                item.couponID = cartItem.coupon.getId();
+                items.add(item);
             }
         }
 

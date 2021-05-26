@@ -138,8 +138,10 @@ class ShoppingCartUpdater {
 
             for (int i=0; i<cart.size(); i++) {
                 ShoppingCart.Item item = cart.get(i);
-                requiredIds.add(item.getId());
-                referrerIds.add(item.getId());
+                if (item.getType() != ShoppingCart.ItemType.COUPON) {
+                    requiredIds.add(item.getId());
+                    referrerIds.add(item.getId());
+                }
             }
 
             for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
@@ -182,8 +184,8 @@ class ShoppingCartUpdater {
                         discounts += lineItem.totalPrice;
                     } else {
                         boolean add = true;
-                        for (ManualCoupon manualCoupon : project.getManualCoupons()) {
-                            if (manualCoupon.getId().equals(lineItem.couponId)) {
+                        for (Coupon coupon : project.getCoupons().get()) {
+                            if (coupon.getId().equals(lineItem.couponId)) {
                                 add = false;
                                 break;
                             }

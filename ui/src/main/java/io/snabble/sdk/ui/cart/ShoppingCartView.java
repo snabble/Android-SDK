@@ -36,7 +36,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
@@ -202,7 +201,7 @@ public class ShoppingCartView extends FrameLayout {
                     return super.getMovementFlags(recyclerView, viewHolder);
                 }
 
-                if (!recyclerViewAdapter.isDismissable(viewHolder.getAdapterPosition())) {
+                if (!recyclerViewAdapter.isDismissable(viewHolder.getBindingAdapterPosition())) {
                     return 0;
                 }
 
@@ -211,8 +210,10 @@ public class ShoppingCartView extends FrameLayout {
 
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-                ViewHolder holder = (ViewHolder) viewHolder;
-                holder.hideInput();
+                if (viewHolder instanceof ViewHolder) {
+                    ViewHolder holder = (ViewHolder) viewHolder;
+                    holder.hideInput();
+                }
 
                 final int pos = viewHolder.getBindingAdapterPosition();
                 ShoppingCart.Item item = cart.get(pos);
@@ -328,7 +329,7 @@ public class ShoppingCartView extends FrameLayout {
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
-            if (item.isOnlyLineItem()) continue;
+            if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
 
             Product product = item.getProduct();
             String url = product.getImageUrl();
@@ -404,83 +405,90 @@ public class ShoppingCartView extends FrameLayout {
                 }
             };
 
-    private String sanitize(String input) {
+    private static String sanitize(String input) {
         if (input != null && input.equals("")) return null;
         return input;
     }
 
-    private void submitList() {
+    public static List<Row> buildRows(Resources resources, ShoppingCart cart) {
         List<Row> rows = new ArrayList<>(cart.size() + 1);
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
 
-            if (item.isOnlyLineItem() && item.getTotalDepositPrice() > 0) {
-                continue;
-            }
-
-            if (item.isDiscount()) {
+            if (item.getType() == ShoppingCart.ItemType.LINE_ITEM) {
+                if (item.isDiscount()) {
+                    SimpleRow row = new SimpleRow();
+                    row.title = resources.getString(R.string.Snabble_Shoppingcart_discounts);
+                    row.imageResId = R.drawable.snabble_ic_percent;
+                    row.text = sanitize(item.getPriceText());
+                    rows.add(row);
+                } else if (item.isGiveaway()) {
+                    SimpleRow row = new SimpleRow();
+                    row.title = item.getDisplayName();
+                    row.imageResId = R.drawable.snabble_ic_gift;
+                    row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway);
+                    rows.add(row);
+                }
+            } else if (item.getType() == ShoppingCart.ItemType.COUPON) {
                 SimpleRow row = new SimpleRow();
-                row.title = getResources().getString(R.string.Snabble_Shoppingcart_discounts);
-                row.imageResId = R.drawable.snabble_ic_percent;
-                row.text = sanitize(item.getPriceText());
+                row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
+                row.text = item.getDisplayName();
+                row.isDismissable = true;
                 rows.add(row);
-                continue;
-            }
+            } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
+                final ProductRow row = new ProductRow();
+                final Product product = item.getProduct();
+                final int quantity = item.getQuantity();
 
-            if (item.isGiveaway()) {
-                SimpleRow row = new SimpleRow();
-                row.title = item.getDisplayName();
-                row.imageResId = R.drawable.snabble_ic_gift;
-                row.text = getResources().getString(R.string.Snabble_Shoppingcart_giveaway);
+                if (product != null) {
+                    row.subtitle = sanitize(product.getSubtitle());
+                    row.imageUrl = sanitize(product.getImageUrl());
+                }
+
+                row.name = sanitize(item.getDisplayName());
+                row.encodingUnit = item.getUnit();
+                row.priceText = sanitize(item.getTotalPriceText());
+                row.quantity = quantity;
+                row.quantityText = sanitize(item.getQuantityText());
+                row.editable = item.isEditable();
+                row.isDismissable = true;
+                row.item = item;
                 rows.add(row);
-                continue;
             }
-
-            final ProductRow row = new ProductRow();
-            final Product product = item.getProduct();
-            final int quantity = item.getQuantity();
-
-            if (product != null) {
-                row.subtitle = sanitize(product.getSubtitle());
-                row.imageUrl = sanitize(product.getImageUrl());
-            }
-
-            row.name = sanitize(item.getDisplayName());
-            row.encodingUnit = item.getUnit();
-            row.priceText = sanitize(item.getPriceText());
-            row.quantity = quantity;
-            row.quantityText = sanitize(item.getQuantityText());
-            row.editable = item.isEditable();
-            row.item = item;
-            rows.add(row);
         }
 
         int cartTotal = cart.getTotalDepositPrice();
         if (cartTotal > 0) {
             SimpleRow row = new SimpleRow();
             PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
-            row.title = getResources().getString(R.string.Snabble_Shoppingcart_deposit);
+            row.title = resources.getString(R.string.Snabble_Shoppingcart_deposit);
             row.imageResId = R.drawable.snabble_ic_deposit;
             row.text = priceFormatter.format(cartTotal);
             rows.add(row);
         }
 
-        recyclerViewAdapter.submitList(rows, hasAnyImages);
+        return rows;
     }
 
-    private static void setTextOrHide(TextView textView, String text, int hideVisibility) {
+    private void submitList() {
+        recyclerViewAdapter.submitList(buildRows(getResources(), cart), hasAnyImages);
+    }
+
+    private static void setTextOrHide(TextView textView, String text) {
         if (text != null) {
             textView.setText(text);
             textView.setVisibility(View.VISIBLE);
         } else {
-            textView.setVisibility(hideVisibility);
+            textView.setVisibility(View.GONE);
         }
     }
 
-    private interface Row {}
+    private static abstract class Row {
+        boolean isDismissable;
+    }
 
-    private static class ProductRow implements Row {
+    private static class ProductRow extends Row {
         ShoppingCart.Item item;
 
         String name;
@@ -528,7 +536,7 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    private static class SimpleRow implements Row {
+    private static class SimpleRow extends Row {
         String text;
         String title;
         @DrawableRes int imageResId;
@@ -594,10 +602,9 @@ public class ShoppingCartView extends FrameLayout {
 
         @SuppressLint("SetTextI18n")
         public void bindTo(final ProductRow row, boolean hasAnyImages) {
-            setTextOrHide(subtitle, row.subtitle, View.GONE);
-            setTextOrHide(name, row.name, View.GONE);
-            setTextOrHide(priceTextView, row.priceText, View.GONE);
-            setTextOrHide(quantityTextView, row.quantityText, View.GONE);
+            setTextOrHide(name, row.name);
+            setTextOrHide(priceTextView, row.priceText);
+            setTextOrHide(quantityTextView, row.quantityText);
 
             if (row.imageUrl != null) {
                 image.setVisibility(View.VISIBLE);
@@ -607,7 +614,7 @@ public class ShoppingCartView extends FrameLayout {
                 image.setImageBitmap(null);
             }
 
-            sale.setVisibility(row.item.getManualCoupon() != null ? View.VISIBLE : View.GONE);
+            sale.setVisibility(row.item.getCoupon() != null ? View.VISIBLE : View.GONE);
 
             String encodingDisplayValue = "g";
             Unit encodingUnit = row.encodingUnit;
@@ -730,7 +737,7 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    static class SimpleViewHolder extends RecyclerView.ViewHolder {
+    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView text;
         ImageView image;
@@ -780,7 +787,7 @@ public class ShoppingCartView extends FrameLayout {
         }
 
         public boolean isDismissable(int position) {
-            return getItemViewType(position) != TYPE_SIMPLE && !((ProductRow)getItem(position)).item.isOnlyLineItem();
+            return getItem(position).isDismissable;
         }
 
         @Override
@@ -790,13 +797,11 @@ public class ShoppingCartView extends FrameLayout {
 
         // for fetching the data from outside of this view
         public void fetchFrom(ShoppingCart cart) {
-            boolean lastHasAnyImages = hasAnyImages;
-
             hasAnyImages = false;
 
             for (int i = 0; i < cart.size(); i++) {
                 ShoppingCart.Item item = cart.get(i);
-                if (item.isOnlyLineItem()) continue;
+                if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
 
                 Product product = item.getProduct();
                 String url = product.getImageUrl();
@@ -806,63 +811,7 @@ public class ShoppingCartView extends FrameLayout {
                 }
             }
 
-            List<Row> rows = new ArrayList<>(cart.size() + 1);
-
-            for (int i = 0; i < cart.size(); i++) {
-                ShoppingCart.Item item = cart.get(i);
-
-                if (item.isOnlyLineItem() && item.getTotalDepositPrice() > 0) {
-                    continue;
-                }
-
-                if (item.isDiscount()) {
-                    SimpleRow row = new SimpleRow();
-                    row.title = context.getResources().getString(R.string.Snabble_Shoppingcart_discounts);
-                    row.imageResId = R.drawable.snabble_ic_percent;
-                    row.text = sanitize(item.getPriceText());
-                    rows.add(row);
-                    continue;
-                }
-
-                if (item.isGiveaway()) {
-                    SimpleRow row = new SimpleRow();
-                    row.title = item.getDisplayName();
-                    row.imageResId = R.drawable.snabble_ic_gift;
-                    row.text = context.getResources().getString(R.string.Snabble_Shoppingcart_giveaway);
-                    rows.add(row);
-                    continue;
-                }
-
-                final ProductRow row = new ProductRow();
-                final Product product = item.getProduct();
-                final int quantity = item.getQuantity();
-
-                if (product != null) {
-                    row.subtitle = sanitize(product.getSubtitle());
-                    row.imageUrl = sanitize(product.getImageUrl());
-                }
-
-                row.name = sanitize(item.getDisplayName());
-                row.encodingUnit = item.getUnit();
-                row.priceText = sanitize(item.getPriceText());
-                row.quantity = quantity;
-                row.quantityText = sanitize(item.getQuantityText());
-                row.editable = item.isEditable();
-                row.item = item;
-                rows.add(row);
-            }
-
-            int cartTotal = cart.getTotalDepositPrice();
-            if (cartTotal > 0) {
-                SimpleRow row = new SimpleRow();
-                PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
-                row.title = context.getResources().getString(R.string.Snabble_Shoppingcart_deposit);
-                row.imageResId = R.drawable.snabble_ic_deposit;
-                row.text = priceFormatter.format(cartTotal);
-                rows.add(row);
-            }
-
-            submitList(rows, hasAnyImages);
+            submitList(buildRows(context.getResources(), cart), hasAnyImages);
         }
 
         private String sanitize(String input) {
@@ -921,9 +870,15 @@ public class ShoppingCartView extends FrameLayout {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (viewType == TYPE_SIMPLE) {
                 View v = View.inflate(context, R.layout.snabble_item_shoppingcart_simple, null);
+                v.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
                 return new SimpleViewHolder(v);
             } else {
                 View v = View.inflate(context, R.layout.snabble_item_shoppingcart_product, null);
+                v.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
                 return new ViewHolder(v, undoHelper);
             }
         }

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import io.snabble.sdk.CouponType
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -20,7 +21,7 @@ class SelectReducedPriceDialogFragment(
         }
 
         val project = SnabbleUI.getProject()
-        val discounts = project.manualCoupons
+        val discounts = project.coupons.get(CouponType.MANUAL)
 
         val adapter = ArrayAdapter(requireContext(),
             R.layout.snabble_item_pricereduction_select,
@@ -32,9 +33,9 @@ class SelectReducedPriceDialogFragment(
             .setTitle(R.string.Snabble_addDiscount)
             .setAdapter(adapter) { _, which ->
                 if (which == 0) {
-                    cartItem?.manualCoupon = null
+                    cartItem?.coupon = null
                 } else {
-                    cartItem?.manualCoupon = discounts[which - 1]
+                    cartItem?.coupon = discounts[which - 1]
                 }
                 productConfirmationDialog?.setQuantity(1)
                 productConfirmationDialog?.updatePrice()
