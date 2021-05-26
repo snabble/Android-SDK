@@ -679,7 +679,8 @@ public class ShoppingCart {
         }
 
         public boolean isEditableInDialog() {
-            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT && !scannedCode.hasEmbeddedData();
+            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT
+                    && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0);
 
             return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
                     product.getPrice(cart.project.getCustomerCardId()) != 0;
