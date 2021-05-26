@@ -10,14 +10,15 @@ import android.view.*
 import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.scanner.SelfScanningView
-import io.snabble.sdk.ui.utils.OneShotClickListener
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 
 open class SelfScanningFragment : Fragment() {
+    private var optionsMenu: Menu? = null
     private var _selfScanningView: SelfScanningView? = null
     val selfScanningView: SelfScanningView
         get() = requireNotNull(_selfScanningView)
@@ -34,7 +35,10 @@ open class SelfScanningFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false)
+    ): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -133,6 +137,34 @@ open class SelfScanningFragment : Fragment() {
         val uri = Uri.fromParts("package", requireContext().packageName, null)
         intent.data = uri
         startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.snabble_menu_scanner, menu)
+        optionsMenu = menu
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.snabble_action_search -> {
+                selfScanningView.searchWithBarcode()
+            }
+            R.id.snabble_action_torch -> {
+                selfScanningView.isTorchEnabled = !selfScanningView.isTorchEnabled
+                updateTorchIcon()
+            }
+        }
+
+        return true
+    }
+
+    private fun updateTorchIcon() {
+        val menuItem = optionsMenu?.findItem(R.id.snabble_action_torch)
+        if (selfScanningView.isTorchEnabled) {
+            menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)
+        } else {
+            menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_on, null)
+        }
     }
 
     companion object {
