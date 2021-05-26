@@ -8,9 +8,7 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.InputType;
@@ -22,13 +20,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.ImageViewCompat;
 
 import java.util.List;
 
@@ -67,6 +62,7 @@ public class SelfScanningView extends FrameLayout {
     private boolean isShowingHint;
     private boolean manualCameraControl;
     private int topDownInfoBoxOffset;
+    private UIUtils.TopDownInfoBoxController lastMessage;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -160,6 +156,10 @@ public class SelfScanningView extends FrameLayout {
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
+        if (lastMessage != null) {
+            lastMessage.hide();
+            lastMessage = null;
+        }
         new ProductResolver.Builder(getContext())
                 .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
@@ -187,19 +187,18 @@ public class SelfScanningView extends FrameLayout {
                         .setCancelable(false)
                         .create()
                         .show())
-                .setOnAgeNotReachedListener(() -> {
-                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
-                            R.string.Snabble_Scanner_scannedAgeRestrictedProduct)));
-                })
-                .setOnAlreadyScannedListener(() -> {
-                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
-                            R.string.Snabble_Scanner_duplicateDepositScanned)));
-                })
+                .setOnAgeNotReachedListener(() ->
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                                R.string.Snabble_Scanner_scannedAgeRestrictedProduct))))
+                .setOnAlreadyScannedListener(() ->
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                                R.string.Snabble_Scanner_duplicateDepositScanned))))
                 .setOnNotForSaleListener(product -> {
                     if (product.getScanMessage() != null) {
                         showScanMessage(product, true);
                     } else {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_notForSale_errorMsg_scan)));
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                                R.string.Snabble_notForSale_errorMsg_scan)));
                     }
                 })
                 .create()
@@ -228,15 +227,23 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showInfo(final String text) {
-        Dispatch.mainThread(() -> {
-            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL, topDownInfoBoxOffset);
-        });
+        Dispatch.mainThread(() ->
+                lastMessage = UIUtils.showTopDownInfoBox(
+                        SelfScanningView.this,
+                        text,
+                        UIUtils.getDurationByLength(text),
+                        UIUtils.INFO_NEUTRAL,
+                        topDownInfoBoxOffset));
     }
 
     private void showWarning(final String text) {
-        Dispatch.mainThread(() -> {
-            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING, topDownInfoBoxOffset);
-        });
+        Dispatch.mainThread(() ->
+                lastMessage = UIUtils.showTopDownInfoBox(
+                        SelfScanningView.this,
+                        text,
+                        UIUtils.getDurationByLength(text),
+                        UIUtils.INFO_WARNING,
+                        topDownInfoBoxOffset));
     }
 
     public void setDefaultButtonVisibility(boolean visible) {
