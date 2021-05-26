@@ -210,8 +210,10 @@ public class ShoppingCartView extends FrameLayout {
 
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-                ViewHolder holder = (ViewHolder) viewHolder;
-                holder.hideInput();
+                if (viewHolder instanceof ViewHolder) {
+                    ViewHolder holder = (ViewHolder) viewHolder;
+                    holder.hideInput();
+                }
 
                 final int pos = viewHolder.getBindingAdapterPosition();
                 ShoppingCart.Item item = cart.get(pos);
@@ -432,6 +434,7 @@ public class ShoppingCartView extends FrameLayout {
                 SimpleRow row = new SimpleRow();
                 row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
                 row.text = item.getDisplayName();
+                row.isDismissable = true;
                 rows.add(row);
             } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
                 final ProductRow row = new ProductRow();
@@ -449,6 +452,7 @@ public class ShoppingCartView extends FrameLayout {
                 row.quantity = quantity;
                 row.quantityText = sanitize(item.getQuantityText());
                 row.editable = item.isEditable();
+                row.isDismissable = true;
                 row.item = item;
                 rows.add(row);
             }
@@ -480,9 +484,11 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    private interface Row {}
+    private static abstract class Row {
+        boolean isDismissable;
+    }
 
-    private static class ProductRow implements Row {
+    private static class ProductRow extends Row {
         ShoppingCart.Item item;
 
         String name;
@@ -530,7 +536,7 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    private static class SimpleRow implements Row {
+    private static class SimpleRow extends Row {
         String text;
         String title;
         @DrawableRes int imageResId;
@@ -731,7 +737,7 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    static class SimpleViewHolder extends RecyclerView.ViewHolder {
+    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView text;
         ImageView image;
@@ -781,10 +787,7 @@ public class ShoppingCartView extends FrameLayout {
         }
 
         public boolean isDismissable(int position) {
-            ShoppingCart.Item item = ((ProductRow)getItem(position)).item;
-            return getItemViewType(position) != TYPE_SIMPLE
-                    && (item.getType() == ShoppingCart.ItemType.PRODUCT
-                    || item.getType() == ShoppingCart.ItemType.COUPON);
+            return getItem(position).isDismissable;
         }
 
         @Override
@@ -867,9 +870,15 @@ public class ShoppingCartView extends FrameLayout {
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (viewType == TYPE_SIMPLE) {
                 View v = View.inflate(context, R.layout.snabble_item_shoppingcart_simple, null);
+                v.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
                 return new SimpleViewHolder(v);
             } else {
                 View v = View.inflate(context, R.layout.snabble_item_shoppingcart_product, null);
+                v.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
                 return new ViewHolder(v, undoHelper);
             }
         }

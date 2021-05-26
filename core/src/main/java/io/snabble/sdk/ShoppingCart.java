@@ -1,11 +1,12 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -599,6 +600,7 @@ public class ShoppingCart {
             this.lineItem = lineItem;
         }
 
+        @Nullable
         public Product getProduct() {
             return product;
         }
@@ -1120,8 +1122,6 @@ public class ShoppingCart {
         void onCheckoutLimitReached(ShoppingCart list);
 
         void onOnlinePaymentLimitReached(ShoppingCart list);
-
-        void onCouponAdded(ShoppingCart list, Coupon coupon);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -1166,21 +1166,6 @@ public class ShoppingCart {
         public void onOnlinePaymentLimitReached(ShoppingCart list) {
 
         }
-
-        @Override
-        public void onCouponAdded(ShoppingCart list, Coupon coupon) {
-            onChanged(list);
-        }
-    }
-
-    private void notifyCouponAdded(final ShoppingCart list, final Coupon coupon) {
-        updateTimestamp();
-
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onCouponAdded(list, coupon);
-            }
-        });
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Item item) {
