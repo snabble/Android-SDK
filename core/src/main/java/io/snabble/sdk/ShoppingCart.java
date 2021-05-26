@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -144,6 +145,20 @@ public class ShoppingCart {
 
         checkLimits();
         notifyItemAdded(this, item);
+
+        // sort coupons to bottom
+        Collections.sort(items, (o1, o2) -> {
+            ItemType t1 = o1.getType();
+            ItemType t2 = o2.getType();
+
+            if (t2 == ItemType.COUPON && t1 == ItemType.PRODUCT) {
+                return -1;
+            } else if (t1 == ItemType.COUPON && t2 == ItemType.PRODUCT) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
 
         if (update) {
             invalidateOnlinePrices();

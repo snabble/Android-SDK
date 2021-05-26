@@ -66,6 +66,7 @@
     <string name="Snabble.Payment.aborted">Der Bezahlvorgang wurde abgebrochen</string>
     <string name="Snabble.Payment.add">Bezahlverfahren hinzufügen</string>
     <string name="Snabble.Payment.addPaymentOrigin">Zahlungsinformationen in die App übertragen?</string>
+    <string name="Snabble.Payment.backToCart">Zurück zum Warenkorb</string>
     <string name="Snabble.Payment.backToHome">Zurück zur Startseite</string>
     <string name="Snabble.Payment.cancelError.message">Die Zahlung kann jetzt nicht abgebrochen werden.</string>
     <string name="Snabble.Payment.cancelError.title">Abbrechen nicht möglich</string>
@@ -143,7 +144,7 @@
     <string name="Snabble.Scanner.BundleDialog.headline">Verpackungseinheit auswählen</string>
     <string name="Snabble.Scanner.Camera.accessDenied">Kamerazugriff verweigert</string>
     <string name="Snabble.Scanner.Camera.allowAccess">Entschuldigung, wir benötigen Zugriff auf deine Kamera, um mit ihr Barcodes zu scannen. Bitte erlaube die Nutzung in den Einstellungen und kehre dann hierher zurück.</string>
-    <string name="Snabble.Scanner.couponAdded">Gutschein \"%s\" hinzugefügt</string>
+    <string name="Snabble.Scanner.couponAdded">Gutschein „%s“ hinzugefügt</string>
     <string name="Snabble.Scanner.duplicateDepositScanned">Jeder Pfandbon kann nur einmal gescannt werden.</string>
     <string name="Snabble.Scanner.enterBarcode">Barcode eingeben</string>
     <string name="Snabble.Scanner.enterCodeButton">Barcode\neingeben</string>
@@ -180,6 +181,7 @@
     <string name="Snabble.Shoppingcart.buyProducts.now">Jetzt bezahlen</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.coupon">Gutschein</string>
+    <string name="Snabble.Shoppingcart.coupons">Gutscheine</string>
     <string name="Snabble.Shoppingcart.deposit">Pfand</string>
     <string name="Snabble.Shoppingcart.discounts">Rabatte insgesamt</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Jetzt scannen</string>

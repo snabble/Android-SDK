@@ -66,6 +66,7 @@
     <string name="Snabble.Payment.aborted">Platobný proces bol prerušený</string>
     <string name="Snabble.Payment.add">Pridať spôsob platby</string>
     <string name="Snabble.Payment.addPaymentOrigin">Chceš preniesť informácie o platbe do aplikácie?</string>
+    <string name="Snabble.Payment.backToCart"/>
     <string name="Snabble.Payment.backToHome">Späť na úvodnú stránku</string>
     <string name="Snabble.Payment.cancelError.message">Platba teraz nemôže byť prerušená.</string>
     <string name="Snabble.Payment.cancelError.title">Prerušenie nie je možné</string>
@@ -180,6 +181,7 @@
     <string name="Snabble.Shoppingcart.buyProducts.now">Zaplatiť teraz</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Kúpiť %1$d položku za %2$s</string>
     <string name="Snabble.Shoppingcart.coupon"/>
+    <string name="Snabble.Shoppingcart.coupons"/>
     <string name="Snabble.Shoppingcart.deposit">Záloha</string>
     <string name="Snabble.Shoppingcart.discounts">Zľavy celkom</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Skenovať teraz</string>

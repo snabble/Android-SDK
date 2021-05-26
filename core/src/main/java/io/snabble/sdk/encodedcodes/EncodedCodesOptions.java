@@ -29,14 +29,12 @@ public class EncodedCodesOptions {
     public final String countSeparator;
     public final int maxSizeMm;
     public final Project project;
-    public final Sorter sorter;
 
     private EncodedCodesOptions(String prefix, SparseArray<String> prefixMap, String separator, String suffix, int maxChars,
                                 int maxCodes, String finalCode, String nextCode,
                                 String nextCodeWithCheck, boolean repeatCodes, String countSeparator,
                                 int maxSizeMm,
-                                Project project,
-                                Sorter sorter) {
+                                Project project) {
         this.prefix = prefix;
         this.prefixMap = prefixMap;
         this.separator = separator;
@@ -50,7 +48,6 @@ public class EncodedCodesOptions {
         this.countSeparator = countSeparator;
         this.maxSizeMm = maxSizeMm;
         this.project = project;
-        this.sorter = sorter;
     }
 
     public static class Builder {
@@ -67,7 +64,6 @@ public class EncodedCodesOptions {
         private boolean repeatCodes = true;
         private String countSeparator = ";";
         private int maxSizeMm;
-        private Sorter sorter;
 
         public Builder(Project project) {
             this.project = project;
@@ -133,15 +129,10 @@ public class EncodedCodesOptions {
             return this;
         }
 
-        public Builder maxSizeMm(Sorter sorter) {
-            this.sorter = sorter;
-            return this;
-        }
-
         public EncodedCodesOptions build() {
             return new EncodedCodesOptions(prefix, prefixMap, separator, suffix, maxChars, maxCodes,
                     finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator,
-                    maxSizeMm, project, sorter);
+                    maxSizeMm, project);
         }
     }
 
@@ -202,33 +193,7 @@ public class EncodedCodesOptions {
                         .nextCode(JsonUtils.getStringOpt(jsonObject, "nextCode", ""))
                         .nextCodeWithCheck(JsonUtils.getStringOpt(jsonObject, "nextCodeWithCheck", ""))
                         .maxSizeMm(JsonUtils.getIntOpt(jsonObject, "maxSizeMM", -1));
-
-                if (project.getId().contains("knauber")) {
-                    builder.sorter = new Sorter() {
-                        @Override
-                        public int compare(EncodedCodesGenerator.ProductInfo productInfo1,
-                                            EncodedCodesGenerator.ProductInfo productInfo2) {
-                            final String catchAll = "2030801009887";
-
-                            String tc1 = productInfo1.product.getTransmissionCode(
-                                    productInfo1.scannedCode.getTemplateName(),
-                                    productInfo1.scannedCode.getLookupCode());
-
-                            String tc2 = productInfo2.product.getTransmissionCode(
-                                    productInfo2.scannedCode.getTemplateName(),
-                                    productInfo2.scannedCode.getLookupCode());
-
-                            if (catchAll.equals(tc1)) {
-                                return 1;
-                            } else if (catchAll.equals(tc2)) {
-                                return -1;
-                            } else {
-                                return 0;
-                            }
-                        }
-                    };
-                }
-
+                
                 return builder.build();
         }
     }

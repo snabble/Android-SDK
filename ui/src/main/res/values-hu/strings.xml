@@ -66,6 +66,7 @@
     <string name="Snabble.Payment.aborted">Megszakadt a fizetési folyamat</string>
     <string name="Snabble.Payment.add">Fizetési mód hozzáadása</string>
     <string name="Snabble.Payment.addPaymentOrigin">Fizetési információ átadása az alkalmazásnak?</string>
+    <string name="Snabble.Payment.backToCart"/>
     <string name="Snabble.Payment.backToHome">Vissza a kezdőoldalra</string>
     <string name="Snabble.Payment.cancelError.message">A fizetés megszakítása jelenleg nem lehetséges.</string>
     <string name="Snabble.Payment.cancelError.title">A megszakítás nem lehetséges</string>
@@ -180,6 +181,7 @@
     <string name="Snabble.Shoppingcart.buyProducts.now">Fizetés, most</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.coupon"/>
+    <string name="Snabble.Shoppingcart.coupons"/>
     <string name="Snabble.Shoppingcart.deposit">Betétdíj</string>
     <string name="Snabble.Shoppingcart.discounts">Összes árengedmény</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Termék szkennelése</string>

@@ -66,6 +66,7 @@
     <string name="Snabble.Payment.aborted">Payment process was cancelled</string>
     <string name="Snabble.Payment.add">Add payment method</string>
     <string name="Snabble.Payment.addPaymentOrigin">Transfer payment credentials to the app?</string>
+    <string name="Snabble.Payment.backToCart">Back to cart</string>
     <string name="Snabble.Payment.backToHome">Back to start page</string>
     <string name="Snabble.Payment.cancelError.message">Payment cannot be cancelled at this time.</string>
     <string name="Snabble.Payment.cancelError.title">Error cancelling payment</string>
@@ -143,7 +144,7 @@
     <string name="Snabble.Scanner.BundleDialog.headline">Choose package</string>
     <string name="Snabble.Scanner.Camera.accessDenied">Camera access denied</string>
     <string name="Snabble.Scanner.Camera.allowAccess">Sorry, we\'ll need to access your camera to scan barcodes. Please allow this in the settings and return here.</string>
-    <string name="Snabble.Scanner.couponAdded">Added coupon \"%s\"</string>
+    <string name="Snabble.Scanner.couponAdded">Added coupon “%s”</string>
     <string name="Snabble.Scanner.duplicateDepositScanned">Each deposit slip can only be scanned once.</string>
     <string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
     <string name="Snabble.Scanner.enterCodeButton">Enter\nbarcode</string>
@@ -180,6 +181,7 @@
     <string name="Snabble.Shoppingcart.buyProducts.now">Pay now</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Buy %1$d product for %2$s</string>
     <string name="Snabble.Shoppingcart.coupon">Coupon</string>
+    <string name="Snabble.Shoppingcart.coupons">Coupons</string>
     <string name="Snabble.Shoppingcart.deposit">Deposit</string>
     <string name="Snabble.Shoppingcart.discounts">Total discounts</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Scan now</string>
