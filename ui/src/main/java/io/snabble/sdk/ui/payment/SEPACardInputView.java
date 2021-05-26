@@ -132,10 +132,12 @@ public class SEPACardInputView extends FrameLayout {
 
                     String originalInput = s.toString();
 
-                    char[] possibleCountryData = originalInput.substring(0,2).toCharArray();
-                    if (Character.isLetter(possibleCountryData[0]) && Character.isLetter(possibleCountryData[1])) {
-                        ibanCountryCode.setText(originalInput.substring(0, 2));
-                        originalInput = originalInput.substring(2);
+                    if(originalInput.length() >= 2) {
+                        char[] possibleCountryData = originalInput.substring(0, 2).toCharArray();
+                        if (Character.isLetter(possibleCountryData[0]) && Character.isLetter(possibleCountryData[1])) {
+                            ibanCountryCode.setText(originalInput.substring(0, 2));
+                            originalInput = originalInput.substring(2);
+                        }
                     }
 
                     String str = originalInput.replace(" ", "");
