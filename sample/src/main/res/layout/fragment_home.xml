@@ -78,6 +78,6 @@
             android:padding="8dp"
             android:id="@+id/age_verification"
             android:text="Age Verification" />
-        
+
     </LinearLayout>
 </ScrollView>

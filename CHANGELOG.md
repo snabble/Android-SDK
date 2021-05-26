@@ -1,6 +1,20 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.36.0]
+
+### Added
+- Support for printed coupons
+
+### Changed
+- Support for new coupon metadata
+- Improved SEPACardInputView for copy pasting IBAN's with prefixes
+- Removed flash and search buttons in SelfScanningView
+- Replaced scan indicator with a barcode image
+
+### Fixed
+- Remove old scan result messages
+
 ## [0.35.9]
 
 ### Fixed
