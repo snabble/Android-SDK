@@ -57,7 +57,7 @@ open class SelfScanningFragment : Fragment() {
         if (isPermissionGranted) {
             createSelfScanningView()
         } else {
-            rootView.removeView(selfScanningView)
+            rootView.removeView(_selfScanningView)
             _selfScanningView = null
             if (isAdded && isStart) {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA), 0)
