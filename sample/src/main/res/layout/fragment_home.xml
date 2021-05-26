@@ -78,13 +78,6 @@
             android:padding="8dp"
             android:id="@+id/age_verification"
             android:text="Age Verification" />
-
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:id="@+id/coupons"
-            android:text="Coupons" />
+        
     </LinearLayout>
 </ScrollView>
