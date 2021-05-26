@@ -17,6 +17,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import io.snabble.sdk.BarcodeFormat
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.UIUtils
@@ -41,7 +42,12 @@ open class BarcodeScannerView @JvmOverloads constructor(
     private val previewView = PreviewView(context)
     private val fakePauseView = ImageView(context)
     private var cameraUnavailableView = TextView(context)
-    private var scanIndicatorView = ScanIndicatorView(context)
+    private var scanIndicatorView = ImageView(context).apply {
+        setImageResource(R.drawable.snabble_ic_barcode)
+        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+            gravity = Gravity.CENTER
+        }
+    }
 
     private var barcodeDetector: BarcodeDetector
 
@@ -73,9 +79,6 @@ open class BarcodeScannerView @JvmOverloads constructor(
         fakePauseView.visibility = View.GONE
         addView(fakePauseView)
 
-        scanIndicatorView.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
         addView(scanIndicatorView)
 
         cameraUnavailableView.layoutParams = ViewGroup.LayoutParams(
@@ -294,51 +297,20 @@ open class BarcodeScannerView @JvmOverloads constructor(
     }
 
     /**
-     * Adjusts the scale of the scan indicator. The default scale is 1.0.
-     */
-    var indicatorScale: Float = 1.0f
-        set(value) {
-            scanIndicatorView.setScale(value)
-            field = value
-        }
-
-    /**
      * Enabled or disables the scan indicator.
      */
-    var indicatorEnabled: Boolean = true
+    var indicatorEnabled: Boolean
+        get() = scanIndicatorView.isVisible
         set(value) {
-            if (value) {
-                scanIndicatorView.visibility = VISIBLE
-            } else {
-                scanIndicatorView.visibility = GONE
-            }
-
-            field = value
+            scanIndicatorView.isVisible = value
         }
-
-    /**
-     * Sets the style of the scan indicartor. Available style are: RECT, QUAD or NORMALIZED.
-     */
-    var indicatorStyle: ScanIndicatorView.Style = ScanIndicatorView.Style.RECT
-        set(value) {
-            scanIndicatorView.setStyle(value)
-            field = value
-        }
-
-    /**
-     * Sets indicator style in when in normalized style, ignoring all padding's and offsets
-     *
-     * Needs setIndicatorStyle(ScanIndicatorView.Style.NORMALIZED)
-     */
-    fun setIndicatorNormalizedSize(left: Float, top: Float, right: Float, bottom: Float) {
-        scanIndicatorView.setNormalizedSize(left, top, right, bottom)
-    }
 
     /**
      * Sets the offset of the scan indicator, in pixels.
      */
     fun setIndicatorOffset(offsetX: Int, offsetY: Int) {
-        scanIndicatorView.setOffset(offsetX, offsetY)
+        scanIndicatorView.translationX = offsetX.toFloat()
+        scanIndicatorView.translationY = offsetY.toFloat()
     }
 
     interface Callback {

@@ -17,6 +17,7 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -59,8 +60,6 @@ public class SelfScanningView extends FrameLayout {
     private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
-    private ImageView enterBarcode;
-    private ImageView light;
     private Button goToCart;
     private View noPermission;
     private boolean isRunning;
@@ -100,13 +99,6 @@ public class SelfScanningView extends FrameLayout {
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
 
-        enterBarcode = findViewById(R.id.enter_barcode);
-        light = findViewById(R.id.light);
-        light.setOnClickListener(v -> {
-            setTorchEnabled(!isTorchEnabled());
-            updateTorchIcon();
-        });
-
         goToCart = findViewById(R.id.goto_cart);
         goToCart.setOnClickListener(new OneShotClickListener() {
             @Override
@@ -115,11 +107,7 @@ public class SelfScanningView extends FrameLayout {
             }
         });
 
-        updateBarcodeSearchIcon();
-        updateTorchIcon();
         updateCartButton();
-
-        enterBarcode.setOnClickListener(v -> searchWithBarcode());
 
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
 
@@ -148,6 +136,8 @@ public class SelfScanningView extends FrameLayout {
 
         isInitialized = true;
         startBarcodeScanner(false);
+
+        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
     private void showShoppingCart() {
@@ -155,38 +145,6 @@ public class SelfScanningView extends FrameLayout {
         if (callback != null) {
             callback.execute(SnabbleUI.Action.SHOW_SHOPPING_CART, null);
         }
-    }
-
-    private void updateBarcodeSearchIcon() {
-        enterBarcode.setImageResource(R.drawable.snabble_ic_search);
-
-        int color = Color.argb(128, 255, 255, 255);
-        ViewCompat.setBackgroundTintList(enterBarcode, ColorStateList.valueOf(color));
-        ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(color));
-    }
-
-    private int dp2px(float dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
-    }
-
-    private void updateTorchIcon() {
-        if (barcodeScanner.isTorchEnabled()) {
-            light.setImageResource(R.drawable.snabble_ic_torch_active);
-            light.setBackgroundResource(R.drawable.snabble_ic_button_filled_48dp);
-            UIUtils.getColorByAttribute(getContext(), R.attr.colorPrimary);
-            int color = UIUtils.getColorByAttribute(getContext(), R.attr.colorPrimary);
-            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
-        } else {
-            light.setImageResource(R.drawable.snabble_ic_torch);
-            light.setBackgroundResource(R.drawable.snabble_ic_button_outlined_48dp);
-            int color = Color.argb(128, 255, 255, 255);
-            ViewCompat.setBackgroundTintList(light, ColorStateList.valueOf(color));
-            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
-        }
-
-        int dp = dp2px(12);
-        light.setPadding(dp, dp, dp, dp);
     }
 
     private void updateCartButton() {
