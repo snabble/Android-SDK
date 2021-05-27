@@ -667,9 +667,6 @@ public class Checkout {
                 }
             }
 
-            // TODO FIXME remove!!! DEBUG CODE
-            paymentMethods.add(PaymentMethod.DATATRANS);
-
             return paymentMethods.toArray(new PaymentMethod[paymentMethods.size()]);
         }
 

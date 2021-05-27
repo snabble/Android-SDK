@@ -415,6 +415,16 @@ public class Snabble {
         return projects;
     }
 
+    public Project getProjectById(String projectId) {
+        for (Project project : projects) {
+            if (project.getId().equals(projectId)) {
+                return project;
+            }
+        }
+
+        return null;
+    }
+
     public List<X509Certificate> getPaymentSigningCertificates() {
         return Collections.unmodifiableList(paymentCertificates);
     }

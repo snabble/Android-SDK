@@ -38,7 +38,7 @@ public class PaymentCredentials {
         CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
-        DATATRANS(null, Collections.singletonList(PaymentMethod.DATATRANS));
+        DATATRANS(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX, PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD));
 
         private String originType;
         private List<PaymentMethod> paymentMethods;
@@ -62,6 +62,25 @@ public class PaymentCredentials {
         VISA,
         MASTERCARD,
         AMEX,
+        TWINT,
+        POST_FINANCE_CARD;
+
+        public static Brand fromPaymentMethod(PaymentMethod paymentMethod) {
+            switch (paymentMethod) {
+                case AMEX:
+                    return AMEX;
+                case VISA:
+                    return VISA;
+                case MASTERCARD:
+                    return MASTERCARD;
+                case TWINT:
+                    return TWINT;
+                case POST_FINANCE_CARD:
+                    return POST_FINANCE_CARD;
+            }
+
+            return null;
+        }
     }
 
     private static class SepaData {
@@ -84,7 +103,7 @@ public class PaymentCredentials {
     }
 
     private static class DatatransData {
-        private String token;
+        private String alias;
     }
 
     public static class PaydirektAuthorizationData {
@@ -272,7 +291,7 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromDatatrans(String token, String datatransPaymentMethod, String obfuscatedId) {
+    public static PaymentCredentials fromDatatrans(String token, Brand brand, String obfuscatedId) {
         if (token == null) {
             return null;
         }
@@ -286,10 +305,10 @@ public class PaymentCredentials {
             return null;
         }
 
-        pc.obfuscatedId = "datatrans";
+        pc.obfuscatedId = obfuscatedId;
 
         DatatransData datatransData = new DatatransData();
-        datatransData.token = token;
+        datatransData.alias = token;
 
         String json = GsonHolder.get().toJson(datatransData, DatatransData.class);
 
@@ -298,8 +317,7 @@ public class PaymentCredentials {
         pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
-        pc.additionalData = new HashMap<>();
-        pc.additionalData.put("datatransPaymentMethod", datatransPaymentMethod);
+        pc.brand = brand;
         pc.obfuscatedId = obfuscatedId;
 
         if (pc.encryptedData == null) {
@@ -585,7 +603,13 @@ public class PaymentCredentials {
         } else if (type == Type.PAYDIREKT) {
             return PaymentMethod.PAYDIREKT;
         } else if (type == Type.DATATRANS) {
-            return PaymentMethod.DATATRANS;
+            switch (getBrand()) {
+                case VISA: return PaymentMethod.VISA;
+                case AMEX: return PaymentMethod.AMEX;
+                case MASTERCARD: return PaymentMethod.MASTERCARD;
+                case POST_FINANCE_CARD: return PaymentMethod.POST_FINANCE_CARD;
+                case TWINT: return PaymentMethod.TWINT;
+            }
         }
 
         return null;

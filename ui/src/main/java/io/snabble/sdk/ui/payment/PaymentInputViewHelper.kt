@@ -1,69 +1,77 @@
-package io.snabble.sdk.ui.payment;
+package io.snabble.sdk.ui.payment
 
-import android.content.Context;
-import android.os.Bundle;
+import android.content.Context
+import io.snabble.sdk.ui.payment.Datatrans.Companion.registerCard
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.utils.KeyguardUtils
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.ui.utils.UIUtils
+import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
+import io.snabble.sdk.ui.R
+import io.snabble.sdk.utils.Logger
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
-
-import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.ui.Keyguard;
-import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.utils.KeyguardUtils;
-import io.snabble.sdk.ui.utils.UIUtils;
-
-public class PaymentInputViewHelper {
-    public static void openPaymentInputView(Context context, PaymentMethod paymentMethod, String projectId) {
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
+object PaymentInputViewHelper {
+    @JvmStatic
+    fun openPaymentInputView(context: Context?, paymentMethod: PaymentMethod?, projectId: String?) {
+        val callback = SnabbleUI.getUiCallback()
         if (callback != null) {
             if (KeyguardUtils.isDeviceSecure()) {
-                FragmentActivity activity = UIUtils.getHostFragmentActivity(context);
-                Keyguard.unlock(activity, new Keyguard.Callback() {
-                    @Override
-                    public void success() {
-                        Bundle args = new Bundle();
-                        switch (paymentMethod) {
-                            case VISA:
-                                args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
-                                args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA);
-                                callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
-                                break;
-                            case AMEX:
-                                args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
-                                args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX);
-                                callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
-                                break;
-                            case MASTERCARD:
-                                args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId);
-                                args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD);
-                                callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args);
-                                break;
-                            case PAYDIREKT:
-                                callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null);
-                                break;
-                            case DATATRANS:
-                                Datatrans.registerCard(activity);
-                                break;
-                            case DE_DIRECT_DEBIT:
-                                callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null);
-                                break;
+                val project = Snabble.getInstance().getProjectById(projectId)
+                val useDatatrans = project?.availablePaymentMethods?.any {
+                    it == PaymentMethod.TWINT ||
+                    it == PaymentMethod.POST_FINANCE_CARD
+                } ?: false
+
+                val activity = UIUtils.getHostFragmentActivity(context)
+                val args = Bundle()
+                when (paymentMethod) {
+                    PaymentMethod.VISA -> if (useDatatrans) {
+                        registerCard(activity, project, paymentMethod)
+                    } else {
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
+                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                    }
+                    PaymentMethod.AMEX -> {
+                        if (useDatatrans) {
+                            registerCard(activity, project, paymentMethod)
+                        } else {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
+                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
                         }
                     }
-
-                    @Override
-                    public void error() {
-
+                    PaymentMethod.MASTERCARD -> {
+                        if (useDatatrans) {
+                            registerCard(activity, project, paymentMethod)
+                        } else {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
+                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                        }
                     }
-                });
+                    PaymentMethod.PAYDIREKT -> {
+                        callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null)
+                    }
+                    PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD -> {
+                        registerCard(activity, project, paymentMethod)
+                    }
+                    PaymentMethod.DE_DIRECT_DEBIT -> {
+                        callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null)
+                    }
+                    else -> {
+                        Logger.e("Payment method requires not credentials or is unsupported")
+                    }
+                }
             } else {
-                new AlertDialog.Builder(context)
-                        .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                        .setPositiveButton(R.string.Snabble_OK, null)
-                        .setCancelable(false)
-                        .show();
+                AlertDialog.Builder(context!!)
+                    .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
+                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .setCancelable(false)
+                    .show()
             }
-
         }
     }
 }
