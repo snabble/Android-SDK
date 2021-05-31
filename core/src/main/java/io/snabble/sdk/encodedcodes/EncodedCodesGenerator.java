@@ -177,8 +177,10 @@ public class EncodedCodesGenerator {
             } else {
                 int q = productInfo.quantity;
                 String transmissionCode = productInfo.product.getTransmissionCode(
+                        null,
                         productInfo.scannedCode.getTemplateName(),
-                        productInfo.scannedCode.getLookupCode());
+                        productInfo.scannedCode.getLookupCode(),
+                        0);
 
                 if (transmissionCode == null) {
                     transmissionCode = productInfo.scannedCode.getCode();
@@ -190,7 +192,16 @@ public class EncodedCodesGenerator {
                             .code(productInfo.scannedCode.getTransformationCode())
                             .embed(productInfo.scannedCode.getEmbeddedData())
                             .buildCode();
-                    transmissionCode = scannedCode.getCode();
+
+                    transmissionCode = productInfo.product.getTransmissionCode(
+                            options.project,
+                            productInfo.scannedCode.getTemplateName(),
+                            productInfo.scannedCode.getLookupCode(),
+                            productInfo.scannedCode.getEmbeddedData());
+
+                    if (transmissionCode == null) {
+                        transmissionCode = scannedCode.getCode();
+                    }
                 }
 
                 // zero amount products

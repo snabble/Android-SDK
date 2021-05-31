@@ -14,6 +14,7 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.GsonHolder;
 
 /**
@@ -112,6 +113,7 @@ public class Product implements Serializable, Parcelable {
         public final String lookupCode;
         public final String transmissionCode;
         public final String template;
+        public final String transmissionTemplate;
         public final Unit encodingUnit;
         public final boolean isPrimary;
         public final int specifiedQuantity;
@@ -119,12 +121,14 @@ public class Product implements Serializable, Parcelable {
         public Code(String lookupCode,
                     String transmissionCode,
                     String template,
+                    String transmissionTemplate,
                     Unit encodingUnit,
                     boolean isPrimary,
                     int specifiedQuantity) {
             this.lookupCode = lookupCode;
             this.transmissionCode = transmissionCode;
             this.template = template;
+            this.transmissionTemplate = transmissionTemplate;
             this.encodingUnit = encodingUnit;
             this.isPrimary = isPrimary;
             this.specifiedQuantity = specifiedQuantity;
@@ -136,6 +140,7 @@ public class Product implements Serializable, Parcelable {
                     "lookupCode='" + lookupCode + '\'' +
                     ", transmissionCode='" + transmissionCode + '\'' +
                     ", template='" + template + '\'' +
+                    ", transmissionTemplate='" + transmissionTemplate + '\'' +
                     ", encodingUnit=" + encodingUnit +
                     ", isPrimary=" + isPrimary +
                     ", specifiedQuantity=" + specifiedQuantity +
@@ -294,15 +299,21 @@ public class Product implements Serializable, Parcelable {
         return encodingUnit;
     }
 
-    public String getTransmissionCode(String lookupCode) {
-        return getTransmissionCode(null, lookupCode);
-    }
-
-    public String getTransmissionCode(String templateName, String lookupCode) {
+    public String getTransmissionCode(Project project, String templateName, String lookupCode, int embeddedData) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
                 if ((templateName != null && templateName.equals(code.template)) || "default".equals(code.template)) {
-                    return code.transmissionCode;
+                    if (project != null && code.transmissionTemplate != null) {
+                        CodeTemplate codeTemplate = project.getCodeTemplate(code.transmissionTemplate);
+                        if (codeTemplate != null && embeddedData != 0) {
+                            codeTemplate.code(lookupCode).embed(embeddedData).buildCode().getCode();
+                        } else {
+                            return code.transmissionCode;
+                        }
+                    } else {
+                        return code.transmissionCode;
+                    }
+
                 }
             }
         }

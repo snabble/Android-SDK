@@ -770,6 +770,7 @@ public class ProductDatabase {
         int[] codeSpecifiedQuantities = null;
         boolean[] codeIsPrimaryCode = null;
         String[] templates = null;
+        String[] transmissionTemplates = null;
 
         String sku = anyToString(cursor, 0);
 
@@ -868,9 +869,14 @@ public class ProductDatabase {
                     }
                 }
             }
+
+            String transmissionTemplatesStr = cursor.getString(19);
+            if (transmissionTemplatesStr != null) {
+                transmissionTemplates = templatesStr.split(",", -1);
+            }
         }
 
-        String scanMessage = cursor.getString(19);
+        String scanMessage = cursor.getString(20);
         if (scanMessage != null) {
             builder.setScanMessage(scanMessage);
         }
@@ -882,6 +888,7 @@ public class ProductDatabase {
                 String transmissionCode = null;
                 Unit codeEncodingUnit = null;
                 CodeTemplate template = null;
+                CodeTemplate transmissionTemplate = null;
 
                 if (transmissionCodes != null) {
                     String tc = transmissionCodes[i];
@@ -903,6 +910,15 @@ public class ProductDatabase {
                     }
                 }
 
+                if (transmissionTemplates != null) {
+                    String transmissionTemplateStr = transmissionTemplates[i];
+                    for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
+                        if (codeTemplate.getName().equals(transmissionTemplateStr)) {
+                            transmissionTemplate = codeTemplate;
+                        }
+                    }
+                }
+
                 String primaryTransmissionCode = transmissionCode;
                 if (codeIsPrimaryCode != null) {
                     for (int j = 0; j < codeIsPrimaryCode.length; j++) {
@@ -917,9 +933,11 @@ public class ProductDatabase {
                 }
 
                 String templateName = template != null ? template.getName() : null;
+                String transmissionTemplateName = transmissionTemplate != null ? transmissionTemplate.getName() : null;
                 productCodes[i] = new Product.Code(lookupCode,
                         primaryTransmissionCode,
                         templateName,
+                        transmissionTemplateName,
                         codeEncodingUnit,
                         codeIsPrimaryCode != null && codeIsPrimaryCode[i],
                         codeSpecifiedQuantities != null ? codeSpecifiedQuantities[i] : 0);
@@ -928,7 +946,7 @@ public class ProductDatabase {
             builder.setScannableCodes(productCodes);
         }
 
-        int availability = cursor.getInt(20);
+        int availability = cursor.getInt(21);
         Product.Availability[] availabilities = Product.Availability.values();
         if (availability >= 0 && availability < availabilities.length) {
             builder.setAvailability(availabilities[availability]);
@@ -1030,6 +1048,7 @@ public class ProductDatabase {
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(sc.isPrimary, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(sc.specifiedQuantity, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(sc.transmissionTemplate, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
                 ",p.scanMessage" +
                 ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), " + defaultAvailability + ") as availability" +
                 appendFields +
