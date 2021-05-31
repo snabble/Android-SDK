@@ -177,30 +177,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));
                         break;
                     case CREDIT_CARD_PSD2:
-                        PaymentCredentials.Brand ccBrand = pm.getBrand();
-
-                        int drawableResId = 0;
-                        if (ccBrand != null) {
-                            switch (ccBrand) {
-                                case VISA:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_visa;
-                                    break;
-                                case MASTERCARD:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_mastercard;
-                                    break;
-                                case AMEX:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_amex;
-                                    break;
-                            }
-                        }
-
-                        entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
+                    case DATATRANS:
+                        entries.add(new Entry(pm, getDrawableForBrand(pm.getBrand()), pm.getObfuscatedId()));
                         break;
                     case PAYDIREKT:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_paydirekt, pm.getObfuscatedId()));
-                        break;
-                    case DATATRANS:
-                        entries.add(new Entry(pm, R.drawable.snabble_ic_datatrans, pm.getObfuscatedId()));
                         break;
                     case TEGUT_EMPLOYEE_CARD:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_tegut, pm.getObfuscatedId()));
@@ -210,6 +191,31 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    private int getDrawableForBrand(PaymentCredentials.Brand brand) {
+        int drawableResId = 0;
+        if (brand != null) {
+            switch (brand) {
+                case VISA:
+                    drawableResId = R.drawable.snabble_ic_payment_select_visa;
+                    break;
+                case MASTERCARD:
+                    drawableResId = R.drawable.snabble_ic_payment_select_mastercard;
+                    break;
+                case AMEX:
+                    drawableResId = R.drawable.snabble_ic_payment_select_amex;
+                    break;
+                case POST_FINANCE_CARD:
+                    drawableResId = R.drawable.snabble_ic_payment_select_postfinance;
+                    break;
+                case TWINT:
+                    drawableResId = R.drawable.snabble_ic_payment_select_twint;
+                    break;
+            }
+        }
+
+        return drawableResId;
     }
 
     private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

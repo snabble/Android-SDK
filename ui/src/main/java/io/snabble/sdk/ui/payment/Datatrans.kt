@@ -8,7 +8,9 @@ import ch.datatrans.payment.api.TransactionListener
 import ch.datatrans.payment.api.TransactionRegistry
 import ch.datatrans.payment.api.TransactionSuccess
 import ch.datatrans.payment.exception.TransactionException
+import ch.datatrans.payment.paymentmethods.CardToken
 import ch.datatrans.payment.paymentmethods.PaymentMethodToken
+import ch.datatrans.payment.paymentmethods.PostFinanceCardToken
 import com.google.gson.JsonObject
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
@@ -76,6 +78,24 @@ class Datatrans {
             transaction.listener = object : TransactionListener {
                 override fun onTransactionSuccess(result: TransactionSuccess) {
                     val token = result.paymentMethodToken
+                    var month = ""
+                    var year = ""
+
+                    when (token) {
+                        is PostFinanceCardToken -> {
+                            token.cardExpiryDate?.let {
+                                month = it.formattedMonth
+                                year = it.formattedYear
+                            }
+                        }
+                        is CardToken -> {
+                            token.cardExpiryDate?.let {
+                                month = it.formattedMonth
+                                year = it.formattedYear
+                            }
+                        }
+                    }
+
                     if (token != null) {
                         Keyguard.unlock(activity, object :  Keyguard.Callback {
                             override fun success() {
@@ -83,7 +103,9 @@ class Datatrans {
                                 val credentials = PaymentCredentials.fromDatatrans(
                                     token.toJson(),
                                     PaymentCredentials.Brand.fromPaymentMethod(paymentMethod),
-                                    result.paymentMethodToken?.getDisplayTitle(activity)
+                                    result.paymentMethodToken?.getDisplayTitle(activity),
+                                    month,
+                                    year
                                 )
                                 store.add(credentials)
                             }
