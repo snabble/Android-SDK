@@ -1003,14 +1003,14 @@ public class ProductDatabase {
         return in;
     }
 
-    private String productSqlString(String appendSql, boolean distinct) {
+    private String productSqlString(String appendFields, String appendSql, boolean distinct) {
         Shop shop = project.getCheckedInShop();
         String shopId = "0";
         if (shop != null) {
             shopId = shop.getId();
         }
 
-        String sql = "SELECT " + (distinct ? "DISTINCT " : "") +
+        return "SELECT " + (distinct ? "DISTINCT " : "") +
                 "p.sku," +
                 "p.name," +
                 "p.description," +
@@ -1032,14 +1032,17 @@ public class ProductDatabase {
                 ",(SELECT group_concat(ifnull(sc.specifiedQuantity, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
                 ",p.scanMessage" +
                 ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), " + defaultAvailability + ") as availability" +
+                appendFields +
                 " FROM products p "
                 + appendSql;
-
-        return sql;
     }
 
     private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
-        return rawQuery(productSqlString(appendSql, distinct), args, cancellationSignal);
+        return rawQuery(productSqlString("", appendSql, distinct), args, cancellationSignal);
+    }
+
+    private Cursor productQuery(String appendFields, String appendSql, String[] args, CancellationSignal cancellationSignal) {
+        return rawQuery(productSqlString(appendFields, appendSql, true), args, cancellationSignal);
     }
 
     public boolean isAvailableOffline() {
@@ -1371,8 +1374,8 @@ public class ProductDatabase {
      *
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
-    public Cursor searchByFoldedName(String searchString, CancellationSignal cancellationSignal, String attentionalJoins, String attentionalConditions, String... attentionalArgs) {
-        return productQuery("JOIN searchByName ns ON ns.sku = p.sku " +
+    public Cursor searchByFoldedName(String attentionalFields, String searchString, CancellationSignal cancellationSignal, String attentionalJoins, String attentionalConditions, String... attentionalArgs) {
+        return productQuery(attentionalFields, "JOIN searchByName ns ON ns.sku = p.sku " +
                         attentionalJoins + " " +
                         "WHERE ns.foldedName MATCH ? " +
                         "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
@@ -1384,7 +1387,6 @@ public class ProductDatabase {
                 Stream.of(new String[]{
                         searchString + "*"
                 }, attentionalArgs).flatMap(Stream::of).toArray(String[]::new),
-                true,
                 cancellationSignal);
     }
 
@@ -1418,8 +1420,7 @@ public class ProductDatabase {
         sb.append(" AND p.isDeposit = 0 ");
         sb.append(" AND availability != 2");
 
-        String query = productSqlString(sb.toString(), true) +
-                " LIMIT 100";
+        String query = productSqlString("", sb.toString(), true) + " LIMIT 100";
 
         return rawQuery(query, new String[]{ searchString + "*" }, cancellationSignal);
     }
