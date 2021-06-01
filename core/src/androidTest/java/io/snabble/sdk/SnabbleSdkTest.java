@@ -129,14 +129,14 @@ public class SnabbleSdkTest {
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        withDb("test_1_24.sqlite3");
+        withDb("test_1_25.sqlite3");
     }
 
     public void withDb(String testDbName) throws IOException, Snabble.SnabbleException {
-        withDb(testDbName, false);
+        withDb(testDbName, false, null);
     }
 
-    public void withDb(String testDbName, boolean generateSearchIndex) throws IOException, Snabble.SnabbleException {
+    public void withDb(String testDbName, boolean generateSearchIndex, String[] initialSQL) throws IOException, Snabble.SnabbleException {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -152,6 +152,7 @@ public class SnabbleSdkTest {
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
         config.secret = "asdf";
         config.generateSearchIndex = generateSearchIndex;
+        config.initialSQL = initialSQL;
 
         Snabble snabble = Snabble.getInstance();
         snabble.setupBlocking((Application) context.getApplicationContext(), config);

@@ -169,18 +169,28 @@ public class EncodedCodesGenerator {
                     }
                 }
             } else if (productInfo.product.getType() == Product.Type.PreWeighed) {
+                String transmissionCode = productInfo.product.getTransmissionCode(
+                        options.project,
+                        productInfo.scannedCode.getTemplateName(),
+                        productInfo.scannedCode.getLookupCode(),
+                        productInfo.scannedCode.getEmbeddedData());
+
+                if (transmissionCode == null) {
+                    transmissionCode = productInfo.scannedCode.getCode();
+                }
+
                 if (options.repeatCodes) {
-                    addScannableCode(productInfo.scannedCode.getCode(), ageRestricted);
+                    addScannableCode(transmissionCode, ageRestricted);
                 } else {
                     addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(), ageRestricted);
                 }
             } else {
                 int q = productInfo.quantity;
                 String transmissionCode = productInfo.product.getTransmissionCode(
-                        null,
+                        options.project,
                         productInfo.scannedCode.getTemplateName(),
                         productInfo.scannedCode.getLookupCode(),
-                        0);
+                        productInfo.scannedCode.getEmbeddedData());
 
                 if (transmissionCode == null) {
                     transmissionCode = productInfo.scannedCode.getCode();
@@ -192,16 +202,7 @@ public class EncodedCodesGenerator {
                             .code(productInfo.scannedCode.getTransformationCode())
                             .embed(productInfo.scannedCode.getEmbeddedData())
                             .buildCode();
-
-                    transmissionCode = productInfo.product.getTransmissionCode(
-                            options.project,
-                            productInfo.scannedCode.getTemplateName(),
-                            productInfo.scannedCode.getLookupCode(),
-                            productInfo.scannedCode.getEmbeddedData());
-
-                    if (transmissionCode == null) {
-                        transmissionCode = scannedCode.getCode();
-                    }
+                    transmissionCode = scannedCode.getCode();
                 }
 
                 // zero amount products

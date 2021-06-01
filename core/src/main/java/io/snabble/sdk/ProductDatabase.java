@@ -117,7 +117,7 @@ public class ProductDatabase {
                 schemaVersionMajor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MAJOR));
                 schemaVersionMinor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MINOR));
 
-                if (schemaVersionMajor == 1 && schemaVersionMinor < 24) {
+                if (schemaVersionMajor == 1 && schemaVersionMinor < 25) {
                     Logger.d("Database has incompatible schema, deleting local database");
                     delete();
                     return false;
@@ -872,7 +872,7 @@ public class ProductDatabase {
 
             String transmissionTemplatesStr = cursor.getString(19);
             if (transmissionTemplatesStr != null) {
-                transmissionTemplates = templatesStr.split(",", -1);
+                transmissionTemplates = transmissionTemplatesStr.split(",", -1);
             }
         }
 
@@ -966,7 +966,7 @@ public class ProductDatabase {
 
         String priceQuery;
 
-        if (schemaVersionMinor >= 22 && shop != null) {
+        if (shop != null) {
             priceQuery = "SELECT listPrice, discountedPrice, customerCardPrice, basePrice FROM prices " +
                     "JOIN shops ON shops.pricingCategory = prices.pricingCategory " +
                     "WHERE shops.id = ? AND sku = ? " +

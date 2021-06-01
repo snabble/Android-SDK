@@ -306,7 +306,7 @@ public class Product implements Serializable, Parcelable {
                     if (project != null && code.transmissionTemplate != null) {
                         CodeTemplate codeTemplate = project.getCodeTemplate(code.transmissionTemplate);
                         if (codeTemplate != null && embeddedData != 0) {
-                            codeTemplate.code(lookupCode).embed(embeddedData).buildCode().getCode();
+                            return codeTemplate.code(lookupCode).embed(embeddedData).buildCode().getCode();
                         } else {
                             return code.transmissionCode;
                         }
