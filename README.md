@@ -18,13 +18,15 @@ androidx and a material components theme for ui components
 
 #### Using the snabble github Repository
 
-Add the snabble Repository to your gradle Repositories
+Add the snabble and Datatrans Repository to your gradle Repositories
 
 ```
 repositories {
     maven {
         url 'https://raw.githubusercontent.com/snabble/maven-repository/releases'
     }
+
+    maven { url "https://datatrans.jfrog.io/artifactory/mobile-sdk/"}
 }
 ```
 

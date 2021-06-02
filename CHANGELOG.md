@@ -3,8 +3,17 @@ All notable changes to this project will be documented in this file.
 
 ## [0.37.0]
 
+### Important notice
+
+Due to the use of the Datatrans SDK you need to add the following Repository to
+your repositores aswell.
+
+    maven { url "https://datatrans.jfrog.io/artifactory/mobile-sdk/"}
+
 ### Added
 - Support for transmission templates
+- Added support for TWINT and PostFinance Payments using Datatrans
+- searchByCode now also searches in SKU's
 
 ### Changes
 - Increased the minimum required database revision to 1.25
