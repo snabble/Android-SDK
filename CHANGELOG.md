@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.2]
+
+### Fixed
+- Fix VISA credit card input not opening
+
 ## [0.37.1]
 
 ### Fixed

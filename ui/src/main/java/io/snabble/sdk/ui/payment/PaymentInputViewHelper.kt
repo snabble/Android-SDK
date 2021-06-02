@@ -27,7 +27,7 @@ object PaymentInputViewHelper {
                 val activity = UIUtils.getHostFragmentActivity(context)
                 val args = Bundle()
                 when (paymentMethod) {
-                    PaymentMethod.VISA -> if (useDatatrans) {
+                    PaymentMethod.VISA -> {
                         args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                         args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
                         callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
