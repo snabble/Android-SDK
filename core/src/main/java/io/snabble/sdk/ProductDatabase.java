@@ -1411,7 +1411,8 @@ public class ProductDatabase {
     }
 
     /**
-     * Returns a {@link Cursor} which can be iterated for items containing the given scannable code.
+     * Returns a {@link Cursor} which can be iterated for items containing the given scannable code
+     * or sku.
      * <p>
      * Allows for partial matching. "978" finds products containing "978020137962".
      *
@@ -1419,7 +1420,7 @@ public class ProductDatabase {
      */
     public Cursor searchByCode(String searchString, CancellationSignal cancellationSignal) {
         StringBuilder sb = new StringBuilder();
-        sb.append("JOIN scannableCodes s ON s.sku = p.sku WHERE s.code GLOB ? AND (");
+        sb.append("JOIN scannableCodes s ON s.sku = p.sku WHERE (s.code GLOB ? OR p.sku GLOB ?) AND (");
 
         int count = 0;
         for (String searchTemplate : project.getSearchableTemplates()) {
@@ -1442,7 +1443,7 @@ public class ProductDatabase {
 
         String query = productSqlString("", sb.toString(), true) + " LIMIT 100";
 
-        return rawQuery(query, new String[]{ searchString + "*" }, cancellationSignal);
+        return rawQuery(query, new String[]{ searchString + "*", searchString + "*" }, cancellationSignal);
     }
 
     private void notifyOnDatabaseUpdated() {
