@@ -64,6 +64,7 @@ class ProductApi {
         String code;
         String template;
         String transmissionCode;
+        String transmissionTemplate;
         String encodingUnit;
         boolean isPrimary;
         int specifiedQuantity;
@@ -238,6 +239,7 @@ class ProductApi {
                 Product.Code code = new Product.Code(apiScannableCode.code,
                         primaryTransmissionCode,
                         apiScannableCode.template,
+                        apiScannableCode.transmissionTemplate,
                         Unit.fromString(apiScannableCode.encodingUnit),
                         apiScannableCode.isPrimary,
                         apiScannableCode.specifiedQuantity);

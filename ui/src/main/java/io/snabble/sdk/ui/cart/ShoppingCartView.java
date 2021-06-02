@@ -33,6 +33,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +72,7 @@ public class ShoppingCartView extends FrameLayout {
     private View paymentContainer;
     private boolean hasAlreadyShownInvalidDeposit;
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
 
         @Override
         public void onChanged(ShoppingCart cart) {
@@ -189,14 +191,14 @@ public class ShoppingCartView extends FrameLayout {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(RecyclerView recyclerView,
-                                  RecyclerView.ViewHolder viewHolder,
-                                  RecyclerView.ViewHolder target) {
+            public boolean onMove(@NotNull RecyclerView recyclerView,
+                                  @NotNull RecyclerView.ViewHolder viewHolder,
+                                  @NotNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            public int getMovementFlags(@NotNull RecyclerView recyclerView, @NotNull RecyclerView.ViewHolder viewHolder) {
                 if (viewHolder.getBindingAdapterPosition() == -1) {
                     return super.getMovementFlags(recyclerView, viewHolder);
                 }
@@ -209,7 +211,7 @@ public class ShoppingCartView extends FrameLayout {
             }
 
             @Override
-            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(@NotNull final RecyclerView.ViewHolder viewHolder, int direction) {
                 if (viewHolder instanceof ViewHolder) {
                     ViewHolder holder = (ViewHolder) viewHolder;
                     holder.hideInput();
@@ -385,7 +387,7 @@ public class ShoppingCartView extends FrameLayout {
         update();
     }
 
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityStarted(Activity activity) {
@@ -691,18 +693,15 @@ public class ShoppingCartView extends FrameLayout {
             updateQuantityEditApplyVisibility(row.quantity);
 
             quantityEdit.addTextChangedListener(textWatcher);
-            quantityEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE
-                            || (event.getAction() == KeyEvent.ACTION_DOWN
-                            && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                        quantityEditApply.callOnClick();
-                        return true;
-                    }
-
-                    return false;
+            quantityEdit.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == EditorInfo.IME_ACTION_DONE
+                        || (event.getAction() == KeyEvent.ACTION_DOWN
+                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    quantityEditApply.callOnClick();
+                    return true;
                 }
+
+                return false;
             });
 
             quantityEdit.setFilters(new InputFilter[]{ new InputFilterMinMax(0, ShoppingCart.MAX_QUANTITY) });
@@ -866,8 +865,9 @@ public class ShoppingCartView extends FrameLayout {
             return list.get(position);
         }
 
+        @NotNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
             if (viewType == TYPE_SIMPLE) {
                 View v = View.inflate(context, R.layout.snabble_item_shoppingcart_simple, null);
                 v.setLayoutParams(new ViewGroup.LayoutParams(
@@ -884,7 +884,7 @@ public class ShoppingCartView extends FrameLayout {
         }
 
         @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NotNull final RecyclerView.ViewHolder holder, final int position) {
             int type = getItemViewType(position);
 
             if (type == TYPE_PRODUCT) {

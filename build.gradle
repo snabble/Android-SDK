@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.5.0"
+    ext.kotlin_version = "1.5.10"
 
     repositories {
         google()
@@ -31,7 +31,7 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.36.0'
+        sdkVersion='0.37.0'
         versionCode=1
 
         compileSdkVersion=30

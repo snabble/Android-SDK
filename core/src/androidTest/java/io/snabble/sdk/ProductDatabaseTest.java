@@ -16,9 +16,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -42,7 +44,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTextSearchNoFTS() throws IOException, Snabble.SnabbleException {
-        withDb("test_1_24.sqlite3", true);
+        withDb("test_1_25.sqlite3", true, null);
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
@@ -132,12 +134,12 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         final Product product = findBySkuBlocking(productDatabase, "1");
         assertEquals(product.getSku(), "1");
         containsCode(product, "4008258510001");
-        assertEquals(product.getTransmissionCode("0"), null);
+        assertEquals(product.getTransmissionCode(project, "default", "0", 0), null);
 
         final Product product2 = findBySkuBlocking(productDatabase, "2");
         assertEquals(product2.getSku(), "2");
         containsCode(product2, "asdf123");
-        assertEquals(product2.getTransmissionCode("asdf123"), "trans123");
+        assertEquals(product2.getTransmissionCode(project, "default", "asdf123", 0), "trans123");
 
         assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
     }
@@ -276,7 +278,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdate() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        productDatabase.applyFullUpdate(context.getAssets().open("update_1_24.sqlite3"));
+        productDatabase.applyFullUpdate(context.getAssets().open("update_1_25.sqlite3"));
 
         Product product = productDatabase.findBySku("1337");
 
@@ -290,7 +292,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnCorruptedFile() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("update_1_24.sqlite3"));
+        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("update_1_25.sqlite3"));
         for (int i = 0; i < bytes.length; i++) {
             if (i % 4 == 0) {
                 bytes[i] = 42;
@@ -309,12 +311,12 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnWrongMajorVersion() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        InputStream is = context.getResources().getAssets().open("update_1_24.sqlite3");
-        File outputFile = context.getDatabasePath("update_1_24.sqlite3");
+        InputStream is = context.getResources().getAssets().open("update_1_25.sqlite3");
+        File outputFile = context.getDatabasePath("update_1_25.sqlite3");
         FileOutputStream fos = new FileOutputStream(outputFile);
         IOUtils.copy(is, fos);
 
-        SQLiteDatabase db = context.openOrCreateDatabase("update_1_24.sqlite3", Context.MODE_PRIVATE, null);
+        SQLiteDatabase db = context.openOrCreateDatabase("update_1_25.sqlite3", Context.MODE_PRIVATE, null);
         db.execSQL("UPDATE metadata SET value = 2 WHERE metadata.key = 'schemaVersionMajor'");
         db.close();
 
@@ -374,7 +376,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         withDb("corrupt.sqlite3");
         Assert.assertNull(project.getProductDatabase().findBySku("1"));
 
-        prepareUpdateDb("test_1_24.sqlite3");
+        prepareUpdateDb("test_1_25.sqlite3");
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
             @Override
@@ -398,7 +400,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testMultiplePricingCategories() throws IOException, Snabble.SnabbleException {
-        withDb("test_1_24.sqlite3");
+        withDb("test_1_25.sqlite3");
         project.setCheckedInShop(project.getShops()[3]);
 
         ProductDatabase productDatabase = project.getProductDatabase();
@@ -412,5 +414,18 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         product = productDatabase.findBySku("multiple-categories");
         Assert.assertNotNull(product);
         Assert.assertEquals(product.getListPrice(), 49);
+    }
+
+    @Test
+    public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
+        String[] sql = IOUtils.readLines(context.getAssets().open("transmission_template.sql")).toArray(new String[0]);
+        withDb("test_1_25.sqlite3", false, sql);
+
+        ProductDatabase productDatabase = project.getProductDatabase();
+        Product product = productDatabase.findBySku("34-tt");
+        Assert.assertNotNull(product);
+
+        String transmissionCode = product.getTransmissionCode(project, "ean13_instore", "12345", 567);
+        Assert.assertEquals("TEST_00567_12345", transmissionCode);
     }
 }

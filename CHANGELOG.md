@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.0]
+
+### Added
+- Support for transmission templates
+
+### Changes
+- Increased the minimum required database revision to 1.25
+
 ## [0.36.0]
 
 ### Added

@@ -169,16 +169,28 @@ public class EncodedCodesGenerator {
                     }
                 }
             } else if (productInfo.product.getType() == Product.Type.PreWeighed) {
+                String transmissionCode = productInfo.product.getTransmissionCode(
+                        options.project,
+                        productInfo.scannedCode.getTemplateName(),
+                        productInfo.scannedCode.getLookupCode(),
+                        productInfo.scannedCode.getEmbeddedData());
+
+                if (transmissionCode == null) {
+                    transmissionCode = productInfo.scannedCode.getCode();
+                }
+
                 if (options.repeatCodes) {
-                    addScannableCode(productInfo.scannedCode.getCode(), ageRestricted);
+                    addScannableCode(transmissionCode, ageRestricted);
                 } else {
                     addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(), ageRestricted);
                 }
             } else {
                 int q = productInfo.quantity;
                 String transmissionCode = productInfo.product.getTransmissionCode(
+                        options.project,
                         productInfo.scannedCode.getTemplateName(),
-                        productInfo.scannedCode.getLookupCode());
+                        productInfo.scannedCode.getLookupCode(),
+                        productInfo.scannedCode.getEmbeddedData());
 
                 if (transmissionCode == null) {
                     transmissionCode = productInfo.scannedCode.getCode();
