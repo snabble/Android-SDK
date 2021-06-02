@@ -1393,7 +1393,8 @@ public class ProductDatabase {
      *
      * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
      */
-    public Cursor searchByFoldedName(String attentionalFields, String searchString, CancellationSignal cancellationSignal, String attentionalJoins, String attentionalConditions, String... attentionalArgs) {
+    public Cursor searchByFoldedName(String attentionalFields, String searchString, CancellationSignal cancellationSignal,
+                                     String attentionalJoins, String attentionalConditions, String... attentionalArgs) {
         return productQuery(attentionalFields, "JOIN searchByName ns ON ns.sku = p.sku " +
                         attentionalJoins + " " +
                         "WHERE ns.foldedName MATCH ? " +
