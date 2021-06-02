@@ -25,7 +25,7 @@ fun CharSequence?.isNotNullOrBlank() = !isNullOrBlank()
 fun String.highlight(query: String): SpannableString {
     val normalizedText = StringNormalizer.normalize(lowercase())
     val sb = SpannableString(this)
-    query.lowercase()
+    StringNormalizer.normalize(query.lowercase())
         .split(" ")
         .filter { it.isNotEmpty() }
         .forEach { q ->
