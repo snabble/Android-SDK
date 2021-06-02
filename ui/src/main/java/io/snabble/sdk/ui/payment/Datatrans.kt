@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.payment
 
-import android.util.Base64
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import ch.datatrans.payment.api.Transaction
@@ -9,15 +8,14 @@ import ch.datatrans.payment.api.TransactionRegistry
 import ch.datatrans.payment.api.TransactionSuccess
 import ch.datatrans.payment.exception.TransactionException
 import ch.datatrans.payment.paymentmethods.CardToken
-import ch.datatrans.payment.paymentmethods.PaymentMethodToken
 import ch.datatrans.payment.paymentmethods.PostFinanceCardToken
-import com.google.gson.JsonObject
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -63,14 +61,30 @@ class Datatrans {
 
                 override fun error(t: Throwable?) {
                     Dispatch.mainThread {
-                        if (!activity.isDestroyed) {
-                            Toast.makeText(activity, R.string.Snabble_Payment_CreditCard_error, Toast.LENGTH_LONG).show()
-                        }
+                        showError(activity, paymentMethod)
                     }
 
                     Logger.e("Datatrans error: ${t?.message}")
                 }
             })
+        }
+
+        private fun showError(activity: FragmentActivity, paymentMethod: PaymentMethod) {
+            if (!activity.isDestroyed) {
+                val err = when (paymentMethod) {
+                    PaymentMethod.TWINT -> {
+                        R.string.Snabble_Payment_Twint_error
+                    }
+                    PaymentMethod.POST_FINANCE_CARD -> {
+                        R.string.Snabble_Payment_PostFinanceCard_error
+                    }
+                    else -> {
+                        R.string.Snabble_Payment_CreditCard_error
+                    }
+                }
+
+                Toast.makeText(activity, err, Toast.LENGTH_LONG).show()
+            }
         }
 
         private fun startDatatransTransaction(activity: FragmentActivity, tokenizationResponse: DatatransTokenizationResponse, paymentMethod: PaymentMethod) {
@@ -101,7 +115,7 @@ class Datatrans {
                             override fun success() {
                                 val store = Snabble.getInstance().paymentCredentialsStore
                                 val credentials = PaymentCredentials.fromDatatrans(
-                                    token.toJson(),
+                                    token.token,
                                     PaymentCredentials.Brand.fromPaymentMethod(paymentMethod),
                                     result.paymentMethodToken?.getDisplayTitle(activity),
                                     month,
@@ -120,7 +134,10 @@ class Datatrans {
                 }
 
                 override fun onTransactionError(exception: TransactionException) {
-                    Logger.e("Datatrans error: ${exception.message}")
+                    Dispatch.mainThread {
+                        SnabbleUI.getProject().events.logError("Datatrans TransactionException: " + exception.message)
+                        showError(activity, paymentMethod)
+                    }
                 }
             }
             transaction.options.appCallbackScheme = "snabble"

@@ -84,6 +84,7 @@
     <string name="Snabble.Payment.payAtSCO">Karta na EC termináli</string>
     <string name="Snabble.Payment.payUsingCustomerCard">so zákazníckou kartou</string>
     <string name="Snabble.Payment.payViaInvoice">na faktúru</string>
+    <string name="Snabble.Payment.PostFinanceCard.error"/>
     <string name="Snabble.Payment.presentCode">Za účelom potvrdenia nákupu prilož tento kód pred snabble monitor alebo ho ukáž zamestnancovi.</string>
     <string name="Snabble.Payment.SEPA.hint">Poznámka: Za účelom tvojej ochrany a ochrany našich obchodníkov pred zneužitím si obchodník pri tvojej prvej platbe prostredníctvom SEPA inkasa vyžiada tvoju bankovú kartu.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
@@ -97,8 +98,10 @@
   -->
     <string name="Snabble.Payment.SEPA.Title">SEPA inkaso</string>
     <string name="Snabble.Payment.success">Ďakujeme za tvoj nákup</string>
+    <string name="Snabble.Payment.Twint.error"/>
     <string name="Snabble.Payment.usableAt">Použiteľné tu: %s</string>
     <string name="Snabble.Payment.waiting">Čakanie na potvrdenie</string>
+    <string name="Snabble.PaymentCard.editingHint">Údaje tvojej kreditnej karty budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.PaymentError.title">Vyskytla sa chyba</string>
     <string name="Snabble.PaymentError.tryAgain">Skúsiť znovu</string>
     <string name="Snabble.PaymentMethods.add">Pridať spôsob platby</string>
@@ -118,6 +121,7 @@
     <string name="Snabble.PaymentStatus.step2">Povolenie tvojho nákupu</string>
     <string name="Snabble.PaymentStatus.step3">Povolenie tvojej platby</string>
     <string name="Snabble.pleaseWait">Čakaj, prosím...</string>
+    <string name="Snabble.PostFinanceCard.payNow"/>
     <string name="Snabble.QRCode.codeXofY">Kód %1$d z %2$d</string>
     <string name="Snabble.QRCode.didPay">Hotovo</string>
     <string name="Snabble.QRCode.entry.title">Kód: %d</string>
@@ -239,6 +243,7 @@
     <string name="Snabble.ShoppingList.Voice.title">Tip</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Nákupné zoznamy</string>
+    <string name="Snabble.TWINT.payNow"/>
     <string name="Snabble.undo">Vrátiť späť</string>
     <string name="Snabble.Yes">Áno</string>
 </resources>

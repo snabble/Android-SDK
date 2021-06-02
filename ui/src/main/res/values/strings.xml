@@ -84,6 +84,7 @@
     <string name="Snabble.Payment.payAtSCO">Card at EC terminal</string>
     <string name="Snabble.Payment.payUsingCustomerCard">with Customer Card</string>
     <string name="Snabble.Payment.payViaInvoice">via Invoice</string>
+    <string name="Snabble.Payment.PostFinanceCard.error">There was an error processing your postfinance card</string>
     <string name="Snabble.Payment.presentCode">Show this code at a snabble monitor or to a cashier to confirm your purchase.</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
@@ -97,8 +98,10 @@
   -->
     <string name="Snabble.Payment.SEPA.Title">SEPA direct debit</string>
     <string name="Snabble.Payment.success">Thank you for shopping</string>
+    <string name="Snabble.Payment.Twint.error">There was an error processing your TWINT account</string>
     <string name="Snabble.Payment.usableAt">Usable at: %s</string>
     <string name="Snabble.Payment.waiting">Waiting for confirmation</string>
+    <string name="Snabble.PaymentCard.editingHint">Your card data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.PaymentError.title">An error has occurred</string>
     <string name="Snabble.PaymentError.tryAgain">Try again</string>
     <string name="Snabble.PaymentMethods.add">Add payment method</string>
@@ -118,6 +121,7 @@
     <string name="Snabble.PaymentStatus.step2">Processing your purchase</string>
     <string name="Snabble.PaymentStatus.step3">Processing your payment</string>
     <string name="Snabble.pleaseWait">Please wait…</string>
+    <string name="Snabble.PostFinanceCard.payNow">Pay now using PostFinance Card</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d of %2$d</string>
     <string name="Snabble.QRCode.didPay">Done</string>
     <string name="Snabble.QRCode.entry.title">Code: %d</string>
@@ -239,6 +243,7 @@
     <string name="Snabble.ShoppingList.Voice.title">Hint</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Shopping lists</string>
+    <string name="Snabble.TWINT.payNow">Pay now using TWINT</string>
     <string name="Snabble.undo">Undo</string>
     <string name="Snabble.Yes">Yes</string>
 </resources>

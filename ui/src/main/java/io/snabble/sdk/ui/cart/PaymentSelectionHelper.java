@@ -44,6 +44,7 @@ public class PaymentSelectionHelper {
         public PaymentCredentials paymentCredentials;
         public PaymentMethod paymentMethod;
         boolean isAvailable;
+        boolean isAdded = true;
     }
 
     private Map<PaymentMethod, Integer> icons = new HashMap<>();
@@ -296,6 +297,7 @@ public class PaymentSelectionHelper {
             e.text = names.get(pm);
             e.paymentMethod = pm;
             e.isAvailable = true;
+            e.isAdded = !pm.isRequiringCredentials();
 
             if (pm.isRequiringCredentials()) {
                 e.hint = context.getString(R.string.Snabble_Shoppingcart_noPaymentData);

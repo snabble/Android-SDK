@@ -84,6 +84,7 @@
     <string name="Snabble.Payment.payAtSCO">Kártya az EC-terminálra</string>
     <string name="Snabble.Payment.payUsingCustomerCard">ügyfélkártyával</string>
     <string name="Snabble.Payment.payViaInvoice">számlára</string>
+    <string name="Snabble.Payment.PostFinanceCard.error"/>
     <string name="Snabble.Payment.presentCode">A bevásárlás nyugtázásához tartsd ezt a kódot egy snabble-monitor elé, vagy mutasd meg egy alkalmazottnak.</string>
     <string name="Snabble.Payment.SEPA.hint">Megjegyzés: A te és a kereskedőink visszaélésekkel szembeni védelme érdekében az első SEPA terhelési megbízásos fizetésednél a kereskedőnél megjelenik a bankkártyád.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
@@ -97,8 +98,10 @@
   -->
     <string name="Snabble.Payment.SEPA.Title">SEPA terhelési megbízás</string>
     <string name="Snabble.Payment.success">Köszönjük a vásárlásodat</string>
+    <string name="Snabble.Payment.Twint.error"/>
     <string name="Snabble.Payment.usableAt">Itt használható: %s</string>
     <string name="Snabble.Payment.waiting">Várj a nyugtázásra</string>
+    <string name="Snabble.PaymentCard.editingHint">A hitelkártyaadatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.PaymentError.title">Hiba történt</string>
     <string name="Snabble.PaymentError.tryAgain">Próbálkozz újra</string>
     <string name="Snabble.PaymentMethods.add">Fizetési mód hozzáadása</string>
@@ -118,6 +121,7 @@
     <string name="Snabble.PaymentStatus.step2">Bevásárlásod engedélyezése</string>
     <string name="Snabble.PaymentStatus.step3">Fizetésed engedélyezése</string>
     <string name="Snabble.pleaseWait">Kérlek, várj...</string>
+    <string name="Snabble.PostFinanceCard.payNow"/>
     <string name="Snabble.QRCode.codeXofY">%1$d / %2$d kód</string>
     <string name="Snabble.QRCode.didPay">Kész</string>
     <string name="Snabble.QRCode.entry.title">Kód: %d</string>
@@ -239,6 +243,7 @@
     <string name="Snabble.ShoppingList.Voice.title">Ötlet</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Bevásárlólisták</string>
+    <string name="Snabble.TWINT.payNow"/>
     <string name="Snabble.undo">Visszavonás</string>
     <string name="Snabble.Yes">Igen</string>
 </resources>
