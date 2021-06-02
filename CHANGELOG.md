@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.1]
+
+### Fixed
+- TWINT and PostFinance payment methods are now listed in their project specific lists
+
 ## [0.37.0]
 
 ### Added

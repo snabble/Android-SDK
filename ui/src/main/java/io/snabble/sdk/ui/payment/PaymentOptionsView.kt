@@ -92,7 +92,9 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     click = {
                         if (count > 0) {
                             val args = Bundle()
-                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.SEPA)
+                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, ArrayList<PaymentCredentials.Type>().apply {
+                                add(PaymentCredentials.Type.SEPA)
+                            })
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
                             PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.DE_DIRECT_DEBIT, null)
@@ -122,7 +124,9 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     click = {
                         if (count > 0) {
                             val args = Bundle()
-                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.PAYDIREKT)
+                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, ArrayList<PaymentCredentials.Type>().apply {
+                                add(PaymentCredentials.Type.PAYDIREKT)
+                            })
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
                             PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.PAYDIREKT, null)
@@ -131,6 +135,68 @@ open class PaymentOptionsView @JvmOverloads constructor(
                 )
             )
         }
+
+//        if (paymentMethods.contains(PaymentMethod.TWINT)) {
+//            val count = credentials.count {
+//                it.appId == Snabble.getInstance().config.appId &&
+//                    it.type == PaymentCredentials.Type.DATATRANS &&
+//                    it.brand == PaymentCredentials.Brand.TWINT
+//            }
+//
+//            if (globalList.size > 0) {
+//                globalList.add(
+//                    Entry(isDivider = true)
+//                )
+//            }
+//
+//            globalList.add(
+//                Entry(
+//                    text = "TWINT",
+//                    icon = R.drawable.snabble_ic_payment_select_twint,
+//                    count = count,
+//                    click = {
+//                        if (count > 0) {
+//                            val args = Bundle()
+//                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.DATATRANS)
+//                            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
+//                        } else {
+//                            PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.TWINT, null)
+//                        }
+//                    }
+//                )
+//            )
+//        }
+//
+//        if (paymentMethods.contains(PaymentMethod.POST_FINANCE_CARD)) {
+//            val count = credentials.count {
+//                it.appId == Snabble.getInstance().config.appId &&
+//                    it.type == PaymentCredentials.Type.DATATRANS &&
+//                    it.brand == PaymentCredentials.Brand.POST_FINANCE_CARD
+//            }
+//
+//            if (globalList.size > 0) {
+//                globalList.add(
+//                    Entry(isDivider = true)
+//                )
+//            }
+//
+//            globalList.add(
+//                Entry(
+//                    text = "PostFinance Card",
+//                    icon = R.drawable.snabble_ic_payment_select_postfinance,
+//                    count = count,
+//                    click = {
+//                        if (count > 0) {
+//                            val args = Bundle()
+//                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.DATATRANS)
+//                            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
+//                        } else {
+//                            PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.POST_FINANCE_CARD, null)
+//                        }
+//                    }
+//                )
+//            )
+//        }
 
         projectList.add(
             Entry(
@@ -162,7 +228,9 @@ open class PaymentOptionsView @JvmOverloads constructor(
                         click = {
                             if (count > 0) {
                                 val args = Bundle()
-                                args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                                args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, ArrayList<PaymentCredentials.Type>().apply {
+                                    add(PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                                })
                                 args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
                                 executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                             } else {
@@ -203,7 +271,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
             .forEach { project ->
                 val count = credentials.count {
                     it.appId == Snabble.getInstance().config.appId
-                    && it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2
+                    && (it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2 || it.type == PaymentCredentials.Type.DATATRANS)
                     && it.projectId == project.id }
 
                 if (!brands.contains(project.brand)) {

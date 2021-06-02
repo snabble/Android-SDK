@@ -56,7 +56,7 @@ class Datatrans {
             val okClient = project.okHttpClient
             okClient.newCall(request).enqueue(object : SimpleJsonCallback<DatatransTokenizationResponse>(DatatransTokenizationResponse::class.java), Callback {
                 override fun success(response: DatatransTokenizationResponse) {
-                    startDatatransTransaction(activity, response, paymentMethod)
+                    startDatatransTransaction(activity, response, paymentMethod, project)
                 }
 
                 override fun error(t: Throwable?) {
@@ -87,7 +87,7 @@ class Datatrans {
             }
         }
 
-        private fun startDatatransTransaction(activity: FragmentActivity, tokenizationResponse: DatatransTokenizationResponse, paymentMethod: PaymentMethod) {
+        private fun startDatatransTransaction(activity: FragmentActivity, tokenizationResponse: DatatransTokenizationResponse, paymentMethod: PaymentMethod, project: Project) {
             val transaction = Transaction(tokenizationResponse.mobileToken)
             transaction.listener = object : TransactionListener {
                 override fun onTransactionSuccess(result: TransactionSuccess) {
@@ -119,7 +119,8 @@ class Datatrans {
                                     PaymentCredentials.Brand.fromPaymentMethod(paymentMethod),
                                     result.paymentMethodToken?.getDisplayTitle(activity),
                                     month,
-                                    year
+                                    year,
+                                    project.id,
                                 )
                                 store.add(credentials)
                             }

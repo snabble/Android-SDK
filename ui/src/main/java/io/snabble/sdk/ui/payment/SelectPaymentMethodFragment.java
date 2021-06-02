@@ -135,7 +135,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         if (availablePaymentMethods.contains(PaymentMethod.TWINT)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_twint,
-                    "Twint",
+                    "TWINT",
                     getUsableAtText(PaymentMethod.TWINT), new OneShotClickListener() {
                 @Override
                 public void click() {

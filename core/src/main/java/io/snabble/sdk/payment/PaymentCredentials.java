@@ -301,7 +301,8 @@ public class PaymentCredentials {
     }
 
     public static PaymentCredentials fromDatatrans(String token, Brand brand, String obfuscatedId,
-                                                   String expirationMonth, String expirationYear) {
+                                                   String expirationMonth, String expirationYear,
+                                                   String projectId) {
         if (token == null) {
             return null;
         }
@@ -309,6 +310,7 @@ public class PaymentCredentials {
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
         pc.type = Type.DATATRANS;
+        pc.projectId = projectId;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
         if (certificates.size() == 0) {
