@@ -628,7 +628,13 @@ public class ShoppingCartView extends FrameLayout {
             if (hasCoupon) {
                 redLabel.setText("%");
             } else {
-                redLabel.setText("18");
+                long age = row.item.getProduct().getSaleRestriction().getValue();
+
+                if (age > 0) {
+                    redLabel.setText(String.valueOf(age));
+                } else {
+                    redLabel.setVisibility(View.GONE);
+                }
             }
 
             String encodingDisplayValue = "g";
