@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.4]
+
+### Changed
+- Not showing cart restoration after successful online checkout
+
 ## [0.37.3]
 
 ### Added
