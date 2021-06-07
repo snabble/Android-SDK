@@ -577,7 +577,7 @@ public class ShoppingCartView extends FrameLayout {
         View controlsDefault;
         View quantityEditApply;
         TextView quantityAnnotation;
-        View sale;
+        TextView redLabel;
         TextWatcher textWatcher;
         private final UndoHelper undoHelper;
         private final Picasso picasso;
@@ -599,7 +599,7 @@ public class ShoppingCartView extends FrameLayout {
             quantityEdit = itemView.findViewById(R.id.quantity_edit);
             quantityEditApply = itemView.findViewById(R.id.quantity_edit_apply);
             quantityAnnotation = itemView.findViewById(R.id.quantity_annotation);
-            sale = itemView.findViewById(R.id.sale);
+            redLabel = itemView.findViewById(R.id.red_label);
         }
 
         @SuppressLint("SetTextI18n")
@@ -616,7 +616,20 @@ public class ShoppingCartView extends FrameLayout {
                 image.setImageBitmap(null);
             }
 
-            sale.setVisibility(row.item.getCoupon() != null ? View.VISIBLE : View.GONE);
+            boolean hasCoupon = row.item.getCoupon() != null;
+            boolean isAgeRestricted = false;
+
+            if (row.item.getProduct() != null) {
+                isAgeRestricted = row.item.getProduct().getSaleRestriction().isAgeRestriction();
+            }
+
+            redLabel.setVisibility(hasCoupon || isAgeRestricted ? View.VISIBLE : View.GONE);
+
+            if (hasCoupon) {
+                redLabel.setText("%");
+            } else {
+                redLabel.setText("18");
+            }
 
             String encodingDisplayValue = "g";
             Unit encodingUnit = row.encodingUnit;

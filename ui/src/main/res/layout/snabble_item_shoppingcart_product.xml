@@ -27,18 +27,19 @@
             tools:background="#ccc"
             tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/sale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/red_label"
+            android:layout_width="20dp"
+            android:layout_height="18dp"
             android:background="@drawable/snabble_ic_round_textview"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
             android:layout_marginEnd="8dp"
             android:text="%"
             android:textColor="#ffffff"
-            android:textSize="14sp"
+            android:gravity="center"
             app:backgroundTint="#ff0000"
+            app:autoSizeMinTextSize="8dp"
+            app:autoSizeMaxTextSize="12dp"
+            app:autoSizeTextType="uniform"
             tools:ignore="HardcodedText" />
     </FrameLayout>
 
