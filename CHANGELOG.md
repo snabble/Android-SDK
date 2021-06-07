@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.3]
+
+### Added
+- Added age restriction indicator in shopping cart items
+
 ## [0.37.2]
 
 ### Fixed
