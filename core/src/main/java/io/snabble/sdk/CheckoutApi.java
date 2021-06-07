@@ -249,14 +249,6 @@ public class CheckoutApi {
             }
             return null;
         }
-
-        public String getReceiptLink() {
-            Href link = links.get("receipt");
-            if (link != null && link.href != null) {
-                return link.href;
-            }
-            return null;
-        }
     }
 
     public interface CheckoutInfoResult {
