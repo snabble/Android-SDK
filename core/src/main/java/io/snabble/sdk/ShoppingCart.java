@@ -672,6 +672,14 @@ public class ShoppingCart {
             return null;
         }
 
+        public boolean isManualCouponApplied() {
+            if (lineItem != null) {
+                return lineItem.priceModifiers.size() > 0; // TODO that is not correct
+            }
+
+            return false;
+        }
+
         public boolean isEditable() {
             if (coupon != null) {
                 return false;
