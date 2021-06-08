@@ -750,5 +750,8 @@ public class Snabble {
 
         /** SQL queries that will get executed in order on the product database **/
         public String[] initialSQL = null;
+
+        /** Vibrate while adding a product to the cart, by default false */
+        public boolean vibrateToConfirmCartFilled = false;
     }
 }

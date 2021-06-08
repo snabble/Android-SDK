@@ -1,10 +1,13 @@
 package io.snabble.sdk.ui.scanner;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spannable;
@@ -27,6 +30,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.squareup.picasso.Picasso;
@@ -39,6 +43,7 @@ import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
@@ -339,6 +344,14 @@ public class ProductConfirmationDialog {
             callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, args);
         }
         dismiss(true);
+
+        if (Snabble.getInstance().getConfig().vibrateToConfirmCartFilled &&
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.VIBRATE)
+                        == PackageManager.PERMISSION_GRANTED) {
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            // noinspection MissingPermission, check is above
+            vibrator.vibrate(200L);
+        }
     }
 
     private void shake() {
