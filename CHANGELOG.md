@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.6]
+
+### Added
+- Added option to vibrate when item was added to the cart
+
 ## [0.37.5]
 
 ### Fixed
