@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.5]
+
+### Fixed
+- Fixed price override codes
+
 ## [0.37.4]
 
 ### Changed
