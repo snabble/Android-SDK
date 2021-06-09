@@ -34,6 +34,7 @@ class Datatrans {
 
         data class DatatransTokenizationResponse(
             val mobileToken: String,
+            val isTesting: Boolean?,
         )
 
         val datatransPaymentMethods = mapOf(
@@ -142,7 +143,7 @@ class Datatrans {
                 }
             }
             transaction.options.appCallbackScheme = "snabble"
-            transaction.options.isTesting = true
+            transaction.options.isTesting = tokenizationResponse.isTesting ?: false
             transaction.options.useCertificatePinning = true
             TransactionRegistry.startTransaction(activity, transaction)
         }
