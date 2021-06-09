@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.7]
+
+### Added
+- Support for switching Datatrans environments
+- CreditCardInputView's 3d secure hint now used project specific i18n
+
 ## [0.37.6]
 
 ### Added
