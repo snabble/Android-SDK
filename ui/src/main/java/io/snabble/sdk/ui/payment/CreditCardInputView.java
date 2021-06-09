@@ -38,6 +38,7 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
@@ -129,7 +130,7 @@ public class CreditCardInputView extends FrameLayout {
         if (project.getCompany() != null && project.getCompany().getName() != null) {
             companyName = project.getCompany().getName();
         }
-        threeDHint.setText(resources.getString(R.string.Snabble_CC_3dsecureHint_retailer, companyName));
+        threeDHint.setText(resources.getString(I18nUtils.getIdentifier(resources, R.string.Snabble_CC_3dsecureHint_retailer), companyName));
 
         requestHash();
     }

@@ -832,11 +832,6 @@ public class ShoppingCartView extends FrameLayout {
             submitList(buildRows(context.getResources(), cart), hasAnyImages);
         }
 
-        private String sanitize(String input) {
-            if (input != null && input.equals("")) return null;
-            return input;
-        }
-
         public void submitList(final List<Row> newList, boolean hasAnyImages) {
             this.hasAnyImages = hasAnyImages;
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
