@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.8]
+
+### Fixed
+- Only update cart when it actually changed
+
 ## [0.37.7]
 
 ### Added

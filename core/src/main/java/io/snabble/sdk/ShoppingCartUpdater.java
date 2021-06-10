@@ -27,6 +27,7 @@ class ShoppingCartUpdater {
     private Handler handler;
     private CheckoutApi.PaymentMethodInfo[] lastAvailablePaymentMethods;
     private boolean isUpdated;
+    private int successfulModCount = -1;
 
     ShoppingCartUpdater(Project project, ShoppingCart shoppingCart) {
         this.project = project;
@@ -56,6 +57,10 @@ class ShoppingCartUpdater {
         }
 
         final int modCount = cart.getModCount();
+        if (modCount == successfulModCount) {
+            return;
+        }
+
         Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
             public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
@@ -213,6 +218,8 @@ class ShoppingCartUpdater {
             } else {
                 cart.setOnlineTotalPrice(checkoutInfo.price.price);
             }
+
+            successfulModCount = modCount;
 
             Logger.d("Successfully updated prices");
         } catch (Exception e) {

@@ -137,13 +137,10 @@ public class ShoppingCart {
             }
         }
 
-        addCount++;
-        modCount++;
-        generateNewUUID();
+
         items.add(index, item);
 
         clearBackup();
-
         checkLimits();
         notifyItemAdded(this, item);
 
@@ -162,6 +159,9 @@ public class ShoppingCart {
         });
 
         if (update) {
+            addCount++;
+            modCount++;
+            generateNewUUID();
             invalidateOnlinePrices();
             updatePrices(true);
         }
