@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -33,8 +34,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +44,7 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
+import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -60,14 +60,11 @@ public class ShoppingCartView extends FrameLayout {
     private ShoppingCartAdapter recyclerViewAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ShoppingCart cart;
-    private View coordinatorLayout;
     private ViewGroup emptyState;
     private View restore;
     private TextView scanProducts;
-    private Snackbar snackbar;
     private boolean hasAnyImages;
     private List<Product> lastInvalidProducts;
-    private PaymentSelectionHelper paymentSelectionHelper;
     private AlertDialog alertDialog;
     private View paymentContainer;
     private boolean hasAlreadyShownInvalidDeposit;
@@ -147,7 +144,7 @@ public class ShoppingCartView extends FrameLayout {
         cart = project.getShoppingCart();
 
         recyclerView = findViewById(R.id.recycler_view);
-        recyclerViewAdapter = new ShoppingCartAdapter(getContext(), undoHelper);
+        recyclerViewAdapter = new ShoppingCartAdapter(recyclerView, cart);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -163,7 +160,6 @@ public class ShoppingCartView extends FrameLayout {
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(() -> cart.updatePrices(false));
 
-        coordinatorLayout = findViewById(R.id.coordinator_layout);
         emptyState = findViewById(R.id.empty_state);
 
         paymentContainer = findViewById(R.id.bottom_payment_container);
@@ -179,39 +175,20 @@ public class ShoppingCartView extends FrameLayout {
         restore = findViewById(R.id.restore);
         restore.setOnClickListener(v -> cart.restore());
 
-        paymentSelectionHelper = PaymentSelectionHelper.getInstance();
-        paymentSelectionHelper.getSelectedEntry().observe((FragmentActivity)UIUtils.getHostActivity(getContext()), entry -> update());
+        PaymentSelectionHelper
+                .getInstance()
+                .getSelectedEntry()
+                .observe((FragmentActivity)UIUtils.getHostActivity(getContext()), entry -> update());
 
-        createItemTouchHelper();
+        createItemTouchHelper(context.getResources());
         submitList();
         update();
     }
 
-    private void createItemTouchHelper() {
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+    private void createItemTouchHelper(Resources resources) {
+        GestureHandler<Void> gestureHandler = new GestureHandler<Void>(resources) {
             @Override
-            public boolean onMove(@NotNull RecyclerView recyclerView,
-                                  @NotNull RecyclerView.ViewHolder viewHolder,
-                                  @NotNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public int getMovementFlags(@NotNull RecyclerView recyclerView, @NotNull RecyclerView.ViewHolder viewHolder) {
-                if (viewHolder.getBindingAdapterPosition() == -1) {
-                    return super.getMovementFlags(recyclerView, viewHolder);
-                }
-
-                if (!recyclerViewAdapter.isDismissable(viewHolder.getBindingAdapterPosition())) {
-                    return 0;
-                }
-
-                return super.getMovementFlags(recyclerView, viewHolder);
-            }
-
-            @Override
-            public void onSwiped(@NotNull final RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 if (viewHolder instanceof ViewHolder) {
                     ViewHolder holder = (ViewHolder) viewHolder;
                     holder.hideInput();
@@ -219,38 +196,13 @@ public class ShoppingCartView extends FrameLayout {
 
                 final int pos = viewHolder.getBindingAdapterPosition();
                 ShoppingCart.Item item = cart.get(pos);
-                undoHelper.removeAndShowUndoSnackbar(pos, item);
+                recyclerViewAdapter.removeAndShowUndoSnackbar(pos, item);
             }
-        });
-
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(gestureHandler);
+        gestureHandler.setItemTouchHelper(itemTouchHelper);
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
-
-    public interface UndoHelper {
-        void removeAndShowUndoSnackbar(final int adapterPosition, final ShoppingCart.Item item);
-    }
-
-    private final UndoHelper undoHelper = new UndoHelper() {
-        @Override
-        public void removeAndShowUndoSnackbar(int adapterPosition, ShoppingCart.Item item) {
-            if (adapterPosition == -1) {
-                Logger.d("Invalid adapter position, ignoring");
-                return;
-            }
-
-            cart.remove(adapterPosition);
-            Telemetry.event(Telemetry.Event.DeletedFromCart, item.getProduct());
-
-            snackbar = Snackbar.make(coordinatorLayout,
-                    R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
-            snackbar.setAction(R.string.Snabble_undo, v -> {
-                cart.insert(item, adapterPosition);
-                Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
-            });
-
-            snackbar.show();
-        }
-    };
 
     private void updateEmptyState() {
         if (cart.size() > 0) {
@@ -436,7 +388,7 @@ public class ShoppingCartView extends FrameLayout {
                 SimpleRow row = new SimpleRow();
                 row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
                 row.text = item.getDisplayName();
-                row.isDismissable = true;
+                row.isDismissible = true;
                 rows.add(row);
             } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
                 final ProductRow row = new ProductRow();
@@ -454,7 +406,7 @@ public class ShoppingCartView extends FrameLayout {
                 row.quantity = quantity;
                 row.quantityText = sanitize(item.getQuantityText());
                 row.editable = item.isEditable();
-                row.isDismissable = true;
+                row.isDismissible = true;
                 row.item = item;
                 rows.add(row);
             }
@@ -487,7 +439,7 @@ public class ShoppingCartView extends FrameLayout {
     }
 
     private static abstract class Row {
-        boolean isDismissable;
+        boolean isDismissible;
     }
 
     private static class ProductRow extends Row {
@@ -781,18 +733,21 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    public static class ShoppingCartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static class ShoppingCartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+            implements UndoHelper, GestureHandler.DismissibleAdapter {
         private static final int TYPE_PRODUCT = 0;
         private static final int TYPE_SIMPLE = 1;
         private List<Row> list = Collections.emptyList();
         private final Context context;
+        private final ShoppingCart cart;
+        private final View parentView;
         private boolean hasAnyImages = false;
-        private final UndoHelper undoHelper;
 
-        public ShoppingCartAdapter(Context context, UndoHelper undoHelper) {
+        public ShoppingCartAdapter(View parentView, ShoppingCart cart) {
             super();
-            this.context = context;
-            this.undoHelper = undoHelper;
+            this.context = parentView.getContext();
+            this.parentView = parentView;
+            this.cart = cart;
         }
 
         @Override
@@ -804,8 +759,9 @@ public class ShoppingCartView extends FrameLayout {
             return TYPE_PRODUCT;
         }
 
-        public boolean isDismissable(int position) {
-            return getItem(position).isDismissable;
+        @Override
+        public boolean isDismissible(int position) {
+            return getItem(position).isDismissible;
         }
 
         @Override
@@ -879,9 +835,9 @@ public class ShoppingCartView extends FrameLayout {
             return list.get(position);
         }
 
-        @NotNull
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             if (viewType == TYPE_SIMPLE) {
                 View v = View.inflate(context, R.layout.snabble_item_shoppingcart_simple, null);
                 v.setLayoutParams(new ViewGroup.LayoutParams(
@@ -893,12 +849,12 @@ public class ShoppingCartView extends FrameLayout {
                 v.setLayoutParams(new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
-                return new ViewHolder(v, undoHelper);
+                return new ViewHolder(v, this);
             }
         }
 
         @Override
-        public void onBindViewHolder(@NotNull final RecyclerView.ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
             int type = getItemViewType(position);
 
             if (type == TYPE_PRODUCT) {
@@ -908,6 +864,26 @@ public class ShoppingCartView extends FrameLayout {
                 SimpleViewHolder viewHolder = (SimpleViewHolder) holder;
                 viewHolder.update((SimpleRow) getItem(position), hasAnyImages);
             }
+        }
+
+        @Override
+        public void removeAndShowUndoSnackbar(int adapterPosition, ShoppingCart.Item item) {
+            if (adapterPosition == -1) {
+                Logger.d("Invalid adapter position, ignoring");
+                return;
+            }
+
+            cart.remove(adapterPosition);
+            Telemetry.event(Telemetry.Event.DeletedFromCart, item.getProduct());
+
+            Snackbar snackbar = Snackbar.make(parentView,
+                    R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
+            snackbar.setAction(R.string.Snabble_undo, v -> {
+                cart.insert(item, adapterPosition);
+                Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
+            });
+
+            snackbar.show();
         }
     }
 }
