@@ -136,68 +136,6 @@ open class PaymentOptionsView @JvmOverloads constructor(
             )
         }
 
-//        if (paymentMethods.contains(PaymentMethod.TWINT)) {
-//            val count = credentials.count {
-//                it.appId == Snabble.getInstance().config.appId &&
-//                    it.type == PaymentCredentials.Type.DATATRANS &&
-//                    it.brand == PaymentCredentials.Brand.TWINT
-//            }
-//
-//            if (globalList.size > 0) {
-//                globalList.add(
-//                    Entry(isDivider = true)
-//                )
-//            }
-//
-//            globalList.add(
-//                Entry(
-//                    text = "TWINT",
-//                    icon = R.drawable.snabble_ic_payment_select_twint,
-//                    count = count,
-//                    click = {
-//                        if (count > 0) {
-//                            val args = Bundle()
-//                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.DATATRANS)
-//                            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
-//                        } else {
-//                            PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.TWINT, null)
-//                        }
-//                    }
-//                )
-//            )
-//        }
-//
-//        if (paymentMethods.contains(PaymentMethod.POST_FINANCE_CARD)) {
-//            val count = credentials.count {
-//                it.appId == Snabble.getInstance().config.appId &&
-//                    it.type == PaymentCredentials.Type.DATATRANS &&
-//                    it.brand == PaymentCredentials.Brand.POST_FINANCE_CARD
-//            }
-//
-//            if (globalList.size > 0) {
-//                globalList.add(
-//                    Entry(isDivider = true)
-//                )
-//            }
-//
-//            globalList.add(
-//                Entry(
-//                    text = "PostFinance Card",
-//                    icon = R.drawable.snabble_ic_payment_select_postfinance,
-//                    count = count,
-//                    click = {
-//                        if (count > 0) {
-//                            val args = Bundle()
-//                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.DATATRANS)
-//                            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
-//                        } else {
-//                            PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.POST_FINANCE_CARD, null)
-//                        }
-//                    }
-//                )
-//            )
-//        }
-
         projectList.add(
             Entry(
                 isSectionHeader = true,
@@ -323,7 +261,10 @@ open class PaymentOptionsView @JvmOverloads constructor(
             project.availablePaymentMethods.any {
                     it == PaymentMethod.VISA
                  || it == PaymentMethod.MASTERCARD
-                 || it == PaymentMethod.AMEX }
+                 || it == PaymentMethod.AMEX
+                 || it == PaymentMethod.TWINT
+                 || it == PaymentMethod.POST_FINANCE_CARD
+            }
         }
     }
 

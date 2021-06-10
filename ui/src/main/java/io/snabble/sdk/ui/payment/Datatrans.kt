@@ -143,7 +143,7 @@ class Datatrans {
                 }
             }
             transaction.options.appCallbackScheme = "snabble"
-            transaction.options.isTesting = tokenizationResponse.isTesting ?: true
+            transaction.options.isTesting = tokenizationResponse.isTesting ?: false
             transaction.options.useCertificatePinning = true
             TransactionRegistry.startTransaction(activity, transaction)
         }

@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.10]
+
+### Changed
+- Changed default Datatrans environment to Production
+
+### Fixed
+- Fixed listing of TWINT and PostFinace Card payment methods when no credit card payment
+methods are available
+
 ## [0.37.9]
 
 ### Changed
