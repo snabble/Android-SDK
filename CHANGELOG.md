@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.11]
+
+### Fixed
+- Fixed crash when no TWINT or PostFinance payment method could be added
+
 ## [0.37.10]
 
 ### Changed

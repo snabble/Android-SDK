@@ -137,7 +137,7 @@ class Datatrans {
 
                 override fun onTransactionError(exception: TransactionException) {
                     Dispatch.mainThread {
-                        SnabbleUI.getProject().events.logError("Datatrans TransactionException: " + exception.message)
+                        project.events.logError("Datatrans TransactionException: " + exception.message)
                         showError(activity, paymentMethod)
                     }
                 }
