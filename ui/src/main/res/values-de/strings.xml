@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="release.safety.catch">Bitte entferne (wenn vorhanden) die Flaschenhalssicherung an der dafür vorgesehenen Station am Ausgang.</string>
     <string name="Snabble.addDiscount">Rabatt eingeben</string>
     <string name="Snabble.ageVerification.explanation">Für den Kauf bestimmter Artikel, wie z.B. Alkohol, ist ein Altersnachweis notwendig. Gib dazu die 7-stellige Zahl von der Rückseite deines Personalausweises ein.</string>
     <string name="Snabble.ageVerification.failed.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung, du darfst sie leider nicht kaufen.</string>
@@ -24,6 +25,7 @@
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Abbrechen</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Zur Verifizierung deiner Kreditkarte wirst du nach Eingabe der Daten zu deiner Bank weitergeleitet. Dort wirst du gebeten, einer Zahlung von 1,00 € an %s zuzustimmen. Der Betrag wird dir nach deiner Zustimmung sofort wieder gutgeschrieben.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Zur Verifizierung deiner Kreditkarte wirst du nach Eingabe der Daten zu deiner Bank weitergeleitet. Dort wirst du gebeten, einer Zahlung von %s an %s zuzustimmen. Der Betrag wird dir nach deiner Zustimmung sofort wieder gutgeschrieben.</string>
     <string name="Snabble.CC.cardNumber">Kartennummer</string>
     <string name="Snabble.CC.editingHint">Deine Kreditkarten-Daten werden von uns nur verschlüsselt gespeichert und können daher nicht bearbeitet werden.</string>
     <string name="Snabble.CC.noEntryPossible">Leider können im Moment keine Kreditkarten hinterlegt werden.</string>
@@ -61,7 +63,7 @@
     <string name="Snabble.paydirekt.deleteAuthorization">Bezahlmethode löschen</string>
     <string name="Snabble.paydirekt.gotoWebsite">Zu paydirekt.de</string>
     <string name="Snabble.Paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
-    <string name="Snabble.paydirekt.savedAuthorization">Du hast die snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
+    <string name="Snabble.paydirekt.savedAuthorization">Du hast die Snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Der Bezahlvorgang wurde abgebrochen</string>
     <string name="Snabble.Payment.add">Bezahlverfahren hinzufügen</string>
@@ -85,7 +87,7 @@
     <string name="Snabble.Payment.payUsingCustomerCard">mit Kundenkarte</string>
     <string name="Snabble.Payment.payViaInvoice">auf Rechnung</string>
     <string name="Snabble.Payment.PostFinanceCard.error">Bei der Verarbeitung deiner Postfinance-Card ist ein Fehler aufgetreten</string>
-    <string name="Snabble.Payment.presentCode">Halte diesen Code an einem snabble-Monitor vor oder zeige ihn einem Mitarbeiter, um deinen Einkauf zu bestätigen.</string>
+    <string name="Snabble.Payment.presentCode">Halte diesen Code an einem Snabble-Monitor vor oder zeige ihn einem Mitarbeiter, um deinen Einkauf zu bestätigen.</string>
     <string name="Snabble.Payment.SEPA.hint">Hinweis: Um dich und unsere Händler vor Missbrauch zu schützen, wird sich der Händler bei deiner ersten Zahlung per SEPA-Lastschrift deine Bankkarte zeigen lassen.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Die eingegebene IBAN ist ungültig.</string>
@@ -133,7 +135,7 @@
     <string name="Snabble.QRCode.title">An der Kasse zahlen</string>
     <string name="Snabble.QRCode.total">Gesamtsumme:\u0020</string>
     <string name="Snabble.Receipts.loading">(wird geladen)</string>
-    <string name="Snabble.Receipts.noReceipts">Du hast noch nicht mit snabble eingekauft</string>
+    <string name="Snabble.Receipts.noReceipts">Du hast noch nicht mit Snabble eingekauft</string>
     <string name="Snabble.Receipts.oClock">Uhr</string>
     <string name="Snabble.Receipts.title">Vorherige Einkäufe</string>
     <string name="Snabble.remove">Entfernen</string>
@@ -195,6 +197,7 @@
     <string name="Snabble.Shoppingcart.emptyState.title">Dein Warenkorb ist noch leer</string>
     <string name="Snabble.Shoppingcart.giveaway">Kostenloses Geschenk</string>
     <string name="Snabble.Shoppingcart.howToPay">Wie möchtest du bezahlen?</string>
+    <string name="Snabble.Shoppingcart.includesDeposit">inkl. Pfand</string>
     <string name="Snabble.Shoppingcart.noPaymentData">Noch nicht hinterlegt</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Für diesen Einkauf nicht verfügbar</string>
     <string name="Snabble.Shoppingcart.notForVendor">Vom Händler nicht unterstützt</string>

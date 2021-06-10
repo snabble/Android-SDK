@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="release.safety.catch"/>
     <string name="Snabble.addDiscount">Zadať zľavu</string>
     <string name="Snabble.ageVerification.explanation">Na kúpu určitých produktov (napr. alkoholických produktov) je potrebné potvrdenie veku. Za týmto účelom zadaj 7-miestne číslo na zadnej strane svojho občianskeho preukazu.</string>
     <string name="Snabble.ageVerification.failed.message">Pre niektoré produkty v tvojom košíku platí vekový limit a tieto žiaľ nemôžeš kúpiť.</string>
@@ -24,6 +25,7 @@
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Zrušiť</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Za účelom overenia kreditnej karty budeš po zadaní údajov presmerovaný/presmerovaná na tvoju banku. Tam budeš požiadaný/-á o súhlas s platbou 1,00 € pre %s. Po súhlase ti bude suma okamžite opäť pripísaná na účet.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Za účelom overenia kreditnej karty budeš po zadaní údajov presmerovaný/presmerovaná na tvoju banku. Tam budeš požiadaný/-á o súhlas s platbou %s pre %s. Po súhlase ti bude suma okamžite opäť pripísaná na účet.</string>
     <string name="Snabble.CC.cardNumber">Číslo karty</string>
     <string name="Snabble.CC.editingHint">Údaje tvojej kreditnej karty budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.CC.noEntryPossible">Momentálne nemôžete uložiť žiadnu kreditnú kartu.</string>
@@ -66,7 +68,7 @@
     <string name="Snabble.Payment.aborted">Platobný proces bol prerušený</string>
     <string name="Snabble.Payment.add">Pridať spôsob platby</string>
     <string name="Snabble.Payment.addPaymentOrigin">Chceš preniesť informácie o platbe do aplikácie?</string>
-    <string name="Snabble.Payment.backToCart"/>
+    <string name="Snabble.Payment.backToCart">Späť na košík</string>
     <string name="Snabble.Payment.backToHome">Späť na úvodnú stránku</string>
     <string name="Snabble.Payment.cancelError.message">Platba teraz nemôže byť prerušená.</string>
     <string name="Snabble.Payment.cancelError.title">Prerušenie nie je možné</string>
@@ -101,7 +103,7 @@
     <string name="Snabble.Payment.Twint.error"/>
     <string name="Snabble.Payment.usableAt">Použiteľné tu: %s</string>
     <string name="Snabble.Payment.waiting">Čakanie na potvrdenie</string>
-    <string name="Snabble.PaymentCard.editingHint">Údaje tvojej kreditnej karty budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
+    <string name="Snabble.PaymentCard.editingHint">Údaje o tvojej karte budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.PaymentError.title">Vyskytla sa chyba</string>
     <string name="Snabble.PaymentError.tryAgain">Skúsiť znovu</string>
     <string name="Snabble.PaymentMethods.add">Pridať spôsob platby</string>
@@ -148,7 +150,7 @@
     <string name="Snabble.Scanner.BundleDialog.headline">Výber jednotky balenia</string>
     <string name="Snabble.Scanner.Camera.accessDenied">Prístup k fotoaparátu bol zamietnutý</string>
     <string name="Snabble.Scanner.Camera.allowAccess">Na skenovanie čiarových kódov potrebujeme prístup k fotoaparátu. Povoľ prístup v nastaveniach a vráť sa sem opäť.</string>
-    <string name="Snabble.Scanner.couponAdded"/>
+    <string name="Snabble.Scanner.couponAdded">Poukážka „%s“ je pridaná</string>
     <string name="Snabble.Scanner.duplicateDepositScanned">Každý doklad o zálohe môže byť naskenovaný len raz.</string>
     <string name="Snabble.Scanner.enterBarcode">Zadať čiarový kód</string>
     <string name="Snabble.Scanner.enterCodeButton">Zadať\nčiarový kód</string>
@@ -184,8 +186,8 @@
     <string name="Snabble.Shoppingcart.buyProducts">Kúpiť %1$d položky/položiek za %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Zaplatiť teraz</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Kúpiť %1$d položku za %2$s</string>
-    <string name="Snabble.Shoppingcart.coupon"/>
-    <string name="Snabble.Shoppingcart.coupons"/>
+    <string name="Snabble.Shoppingcart.coupon">Poukážka</string>
+    <string name="Snabble.Shoppingcart.coupons">Poukážky</string>
     <string name="Snabble.Shoppingcart.deposit">Záloha</string>
     <string name="Snabble.Shoppingcart.discounts">Zľavy celkom</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Skenovať teraz</string>
@@ -195,6 +197,7 @@
     <string name="Snabble.Shoppingcart.emptyState.title">Tvoj košík je ešte prázdny</string>
     <string name="Snabble.Shoppingcart.giveaway">Darček zadarmo</string>
     <string name="Snabble.Shoppingcart.howToPay">Ako chceš zaplatiť?</string>
+    <string name="Snabble.Shoppingcart.includesDeposit"/>
     <string name="Snabble.Shoppingcart.noPaymentData">Údaje ešte nie sú uložené</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Pre tento nákup nie je k dispozícii</string>
     <string name="Snabble.Shoppingcart.notForVendor">Nepodporovaná obchodom</string>

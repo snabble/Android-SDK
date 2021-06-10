@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.9]
+
+### Changed
+- Made credit card 3d secure hint locale aware
+
 ## [0.37.8]
 
 ### Fixed
