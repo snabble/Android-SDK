@@ -37,7 +37,6 @@ class SelectReducedPriceDialogFragment(
                 } else {
                     cartItem?.coupon = discounts[which - 1]
                 }
-                productConfirmationDialog?.setQuantity(1)
                 productConfirmationDialog?.updatePrice()
                 productConfirmationDialog?.updateQuantityText()
             }
