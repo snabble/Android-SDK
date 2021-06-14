@@ -4,9 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 
-import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -17,6 +15,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +33,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 
-@RunWith(AndroidJUnit4.class)
-@LargeTest
+@RunWith(RobolectricTestRunner.class)
 public class SnabbleSdkTest {
     protected Project project;
     protected Context context;
@@ -45,21 +43,21 @@ public class SnabbleSdkTest {
 
     @BeforeClass
     public static void setupMockWebServer() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
-
         mockWebServer = new MockWebServer();
         mockWebServer.start();
+        
+        ClassLoader loader = mockWebServer.getClass().getClassLoader();
 
-        final String metadataJson = IOUtils.toString(context.getAssets().open("metadata.json"), Charset.forName("UTF-8"));
+        final String metadataJson = IOUtils.toString(loader.getResourceAsStream("metadata.json"), Charset.forName("UTF-8"));
 
         final Buffer product1Buffer = new Buffer();
-        product1Buffer.readFrom(context.getAssets().open("product.json"));
+        product1Buffer.readFrom(loader.getResourceAsStream("product.json"));
 
         final Buffer product1OtherPriceBuffer = new Buffer();
-        product1OtherPriceBuffer.readFrom(context.getAssets().open("product_otherprice.json"));
+        product1OtherPriceBuffer.readFrom(loader.getResourceAsStream("product_otherprice.json"));
 
         final Buffer product2Buffer = new Buffer();
-        product2Buffer.readFrom(context.getAssets().open("product2.json"));
+        product2Buffer.readFrom(loader.getResourceAsStream("product2.json"));
 
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
@@ -183,7 +181,7 @@ public class SnabbleSdkTest {
 
     public void prepareUpdateDb(String assetPath) throws IOException {
         productDbBuffer = new Buffer();
-        productDbBuffer.readFrom(context.getAssets().open(assetPath));
+        productDbBuffer.readFrom(productDbBuffer.getClass().getClassLoader().getResourceAsStream(assetPath));
     }
 
     @After

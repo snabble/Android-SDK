@@ -1,11 +1,9 @@
 package io.snabble.sdk;
 
-import androidx.test.filters.LargeTest;
-import androidx.test.runner.AndroidJUnit4;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.IOException;
 
@@ -13,8 +11,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-@RunWith(AndroidJUnit4.class)
-@LargeTest
+@RunWith(RobolectricTestRunner.class)
 public class NetworkTest extends SnabbleSdkTest {
     @Test
     public void testLetsEncrypt() throws IOException {
