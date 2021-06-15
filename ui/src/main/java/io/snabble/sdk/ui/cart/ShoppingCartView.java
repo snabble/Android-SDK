@@ -4,7 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -21,6 +25,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
@@ -619,6 +624,8 @@ public class ShoppingCartView extends FrameLayout {
             boolean hasCoupon = row.item.getCoupon() != null;
             boolean isAgeRestricted = false;
 
+            redLabel.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ff0000")));
+
             if (row.item.getProduct() != null) {
                 isAgeRestricted = row.item.getProduct().getSaleRestriction().isAgeRestriction();
             }
@@ -626,6 +633,10 @@ public class ShoppingCartView extends FrameLayout {
             redLabel.setVisibility(hasCoupon || isAgeRestricted ? View.VISIBLE : View.GONE);
 
             if (hasCoupon) {
+                if (!row.item.isManualCouponApplied()) {
+                    redLabel.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#999999")));
+                }
+
                 redLabel.setText("%");
             } else {
                 long age = row.item.getProduct().getSaleRestriction().getValue();
