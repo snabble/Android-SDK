@@ -174,7 +174,7 @@ class ProductResolver private constructor(private val context: Context, private 
                     scannedCode.embeddedUnit = unit.smallestUnit
                 }
             }
-        } else {
+        } else if (scannedCode.embeddedUnit == null) {
             scannedCode.embeddedUnit = product.getEncodingUnit(scannedCode.templateName, scannedCode.lookupCode)
         }
 

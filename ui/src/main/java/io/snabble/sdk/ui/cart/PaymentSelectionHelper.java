@@ -41,6 +41,7 @@ public class PaymentSelectionHelper {
         public PaymentCredentials paymentCredentials;
         public PaymentMethod paymentMethod;
         boolean isAvailable;
+        boolean isAdded = true;
     }
 
     private Map<PaymentMethod, Integer> icons = new HashMap<>();
@@ -81,7 +82,8 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_payment_select_sco);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_payment_select_pos);
-        icons.put(PaymentMethod.DATATRANS, R.drawable.snabble_ic_datatrans);
+        icons.put(PaymentMethod.POST_FINANCE_CARD, R.drawable.snabble_ic_payment_select_postfinance);
+        icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
         icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
@@ -94,7 +96,8 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
-        names.put(PaymentMethod.DATATRANS, "Datatrans");
+        names.put(PaymentMethod.POST_FINANCE_CARD, "PostFinance Card");
+        names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
 
         paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
@@ -102,7 +105,8 @@ public class PaymentSelectionHelper {
         paymentMethodsSortPriority.add(PaymentMethod.VISA);
         paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
         paymentMethodsSortPriority.add(PaymentMethod.AMEX);
-        paymentMethodsSortPriority.add(PaymentMethod.DATATRANS);
+        paymentMethodsSortPriority.add(PaymentMethod.TWINT);
+        paymentMethodsSortPriority.add(PaymentMethod.POST_FINANCE_CARD);
         paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
         paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
         paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
@@ -319,6 +323,7 @@ public class PaymentSelectionHelper {
             e.text = names.get(pm);
             e.paymentMethod = pm;
             e.isAvailable = true;
+            e.isAdded = !pm.isRequiringCredentials();
 
             if (pm.isRequiringCredentials()) {
                 e.hint = context.getString(R.string.Snabble_Shoppingcart_noPaymentData);

@@ -15,6 +15,7 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -38,7 +39,7 @@ public class PaymentCredentials {
         CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
-        DATATRANS(null, Collections.singletonList(PaymentMethod.DATATRANS));
+        DATATRANS("datatransAlias", Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX, PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD));
 
         private String originType;
         private List<PaymentMethod> paymentMethods;
@@ -62,6 +63,25 @@ public class PaymentCredentials {
         VISA,
         MASTERCARD,
         AMEX,
+        TWINT,
+        POST_FINANCE_CARD;
+
+        public static Brand fromPaymentMethod(PaymentMethod paymentMethod) {
+            switch (paymentMethod) {
+                case AMEX:
+                    return AMEX;
+                case VISA:
+                    return VISA;
+                case MASTERCARD:
+                    return MASTERCARD;
+                case TWINT:
+                    return TWINT;
+                case POST_FINANCE_CARD:
+                    return POST_FINANCE_CARD;
+            }
+
+            return null;
+        }
     }
 
     private static class SepaData {
@@ -84,7 +104,7 @@ public class PaymentCredentials {
     }
 
     private static class DatatransData {
-        private String token;
+        private String alias;
     }
 
     public static class PaydirektAuthorizationData {
@@ -210,25 +230,33 @@ public class PaymentCredentials {
         pc.brand = brand;
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.projectId = projectId;
-
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
-            Date date = simpleDateFormat.parse(expirationMonth + "/" + expirationYear);
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-            pc.validTo = calendar.getTimeInMillis();
-        } catch (Exception e) {
-            return null;
-        }
+        pc.validTo = parseValidTo("MM/yyyy", expirationMonth, expirationYear);
 
         if (pc.encryptedData == null) {
             return null;
         }
 
         return pc;
+    }
+
+    private static long parseValidTo(String format, String expirationMonth, String expirationYear) {
+        if (expirationMonth == null || expirationMonth.equals("")
+         || expirationYear == null || expirationYear.equals("")) {
+            return 0;
+        }
+
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+            Date date = simpleDateFormat.parse(expirationMonth + "/" + expirationYear);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+            return calendar.getTimeInMillis();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public static PaymentCredentials fromPaydirekt(PaydirektAuthorizationData authorizationData, String customerAuthorizationURI) {
@@ -272,7 +300,9 @@ public class PaymentCredentials {
         return pc;
     }
 
-    public static PaymentCredentials fromDatatrans(String token, String datatransPaymentMethod, String obfuscatedId) {
+    public static PaymentCredentials fromDatatrans(String token, Brand brand, String obfuscatedId,
+                                                   String expirationMonth, String expirationYear,
+                                                   String projectId) {
         if (token == null) {
             return null;
         }
@@ -280,16 +310,17 @@ public class PaymentCredentials {
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
         pc.type = Type.DATATRANS;
+        pc.projectId = projectId;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
         if (certificates.size() == 0) {
             return null;
         }
 
-        pc.obfuscatedId = "datatrans";
+        pc.obfuscatedId = obfuscatedId;
 
         DatatransData datatransData = new DatatransData();
-        datatransData.token = token;
+        datatransData.alias = token;
 
         String json = GsonHolder.get().toJson(datatransData, DatatransData.class);
 
@@ -298,9 +329,9 @@ public class PaymentCredentials {
         pc.encrypt();
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
-        pc.additionalData = new HashMap<>();
-        pc.additionalData.put("datatransPaymentMethod", datatransPaymentMethod);
+        pc.brand = brand;
         pc.obfuscatedId = obfuscatedId;
+        pc.validTo = parseValidTo("MM/yy", expirationMonth, expirationYear);
 
         if (pc.encryptedData == null) {
             return null;
@@ -585,7 +616,13 @@ public class PaymentCredentials {
         } else if (type == Type.PAYDIREKT) {
             return PaymentMethod.PAYDIREKT;
         } else if (type == Type.DATATRANS) {
-            return PaymentMethod.DATATRANS;
+            switch (getBrand()) {
+                case VISA: return PaymentMethod.VISA;
+                case AMEX: return PaymentMethod.AMEX;
+                case MASTERCARD: return PaymentMethod.MASTERCARD;
+                case POST_FINANCE_CARD: return PaymentMethod.POST_FINANCE_CARD;
+                case TWINT: return PaymentMethod.TWINT;
+            }
         }
 
         return null;

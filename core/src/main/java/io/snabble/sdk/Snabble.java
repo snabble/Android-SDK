@@ -415,6 +415,16 @@ public class Snabble {
         return projects;
     }
 
+    public Project getProjectById(String projectId) {
+        for (Project project : projects) {
+            if (project.getId().equals(projectId)) {
+                return project;
+            }
+        }
+
+        return null;
+    }
+
     public List<X509Certificate> getPaymentSigningCertificates() {
         return Collections.unmodifiableList(paymentCertificates);
     }
@@ -740,5 +750,8 @@ public class Snabble {
 
         /** SQL queries that will get executed in order on the product database **/
         public String[] initialSQL = null;
+
+        /** Vibrate while adding a product to the cart, by default false */
+        public boolean vibrateToConfirmCartFilled = false;
     }
 }

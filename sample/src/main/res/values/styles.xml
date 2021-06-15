@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.DayNight">
-        <item name="colorOnActionBar">?attr/colorOnPrimary</item>
-        <item name="actionBarTheme">@style/ActionBarTheme</item>
-    </style>
-
-    <style name="ActionBarTheme" parent="@style/SnabbleTheme">
-        <item name="android:textColorPrimary">#ffffff</item>
-    </style>
+    <style name="SnabbleTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar"/>
 </resources>

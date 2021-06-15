@@ -78,15 +78,6 @@ public class CheckoutApi {
                         }
                     }
 
-                    // TODO FIXME remove!
-                    PaymentMethodInfo info = new PaymentMethodInfo();
-                    info.id = "datatrans";
-                    result.add(info);
-
-                    PaymentMethodInfo googlePayInfo = new PaymentMethodInfo();
-                    googlePayInfo.id = "googlePay";
-                    result.add(googlePayInfo);
-
                     return result.toArray(new PaymentMethodInfo[result.size()]);
                 }
             }
@@ -116,6 +107,7 @@ public class CheckoutApi {
         int totalPrice;
         LineItemType type;
         List<PriceModifier> priceModifiers;
+        boolean redeemed;
     }
 
     public static class PriceModifier {
@@ -132,6 +124,8 @@ public class CheckoutApi {
         DISCOUNT,
         @SerializedName("giveaway")
         GIVEAWAY,
+        @SerializedName("coupon")
+        COUPON,
     }
 
     public static class ExitToken {
@@ -253,14 +247,6 @@ public class CheckoutApi {
 
         public String getSelfLink() {
             Href link = links.get("self");
-            if (link != null && link.href != null) {
-                return link.href;
-            }
-            return null;
-        }
-
-        public String getReceiptLink() {
-            Href link = links.get("receipt");
             if (link != null && link.href != null) {
                 return link.href;
             }

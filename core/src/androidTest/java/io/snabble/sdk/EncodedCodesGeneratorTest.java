@@ -4,12 +4,16 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.AndroidJUnit4;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
@@ -231,6 +235,35 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
     @Test
     @UiThreadTest
+    public void testCoupons() {
+        EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
+                .prefix("")
+                .separator("\n")
+                .suffix("")
+                .nextCode("")
+                .nextCodeWithCheck("")
+                .maxChars(1000)
+                .build();
+
+        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
+
+        Product duplo = project.getProductDatabase().findBySku("49");
+        addToCart(duplo, 1, ScannedCode.parseDefault(project, "4008400301020"));
+
+        ShoppingCart cart = project.getShoppingCart();
+        cart.add(cart.newItem(
+                new Coupon("asdf", "foo", CouponType.PRINTED, Collections.singletonList(new CouponCode("1234", "default"))),
+                ScannedCode.parseDefault(project, "1234")
+        ));
+        generator.add(project.getShoppingCart());
+
+        ArrayList<String> codes = generator.generate();
+        Assert.assertEquals(1, codes.size());
+        Assert.assertEquals("4008400301020\n1234", codes.get(0));
+    }
+
+    @Test
+    @UiThreadTest
     public void testEdeka() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("XE")
@@ -386,6 +419,39 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals(2, codes.size());
         Assert.assertEquals("snabble;1;2\n1;asdf123\n1000;8715700421698", codes.get(0));
         Assert.assertEquals("snabble;2;2\n7;4008400301020", codes.get(1));
+    }
+
+    @Test
+    @UiThreadTest
+    public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
+        String[] sql = IOUtils.readLines(context.getAssets().open("transmission_template.sql")).toArray(new String[0]);
+        withDb("test_1_25.sqlite3", false, sql);
+
+        EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
+                .prefix("")
+                .separator(";")
+                .suffix("")
+                .maxCodes(1000)
+                .build();
+
+        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
+
+        Product braeburn = project.getProductDatabase().findBySku("34-tt");
+        List<ScannedCode> scannedCodes = ScannedCode.parse(project, "2123451001002");
+        ScannedCode scannedCode = null;
+        for (ScannedCode code : scannedCodes) {
+            if (code.getTemplateName().equals("ean13_instore")) {
+                scannedCode = code;
+                break;
+            }
+        }
+
+        addToCart(braeburn, 1, scannedCode);
+        generator.add(project.getShoppingCart());
+
+        ArrayList<String> codes = generator.generate();
+        Assert.assertEquals(1, codes.size());
+        Assert.assertEquals("TEST_00100_12345", codes.get(0));
     }
 
     private void addToCart(Product product, int quantity, ScannedCode scannedCode) {

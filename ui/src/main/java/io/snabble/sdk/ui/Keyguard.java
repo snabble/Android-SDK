@@ -18,6 +18,8 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.concurrent.Executors;
 
+import io.snabble.sdk.utils.Dispatch;
+
 public class Keyguard {
     private static final int REQUEST_CODE_AUTHENTICATION = 4613;
 
@@ -30,8 +32,7 @@ public class Keyguard {
 
     @SuppressLint({"WrongConstant", "NewApi"})
     public static void unlock(FragmentActivity activity, Callback callback) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> {
+        Dispatch.mainThread(() -> {
             Keyguard.currentCallback = callback;
 
             boolean supportsBiometricPrompt = false;
@@ -55,24 +56,24 @@ public class Keyguard {
                         .setTitle(activity.getString(R.string.Snabble_Keyguard_title))
                         .setDescription(activity.getString(R.string.Snabble_Keyguard_message))
                         .setNegativeButton(activity.getString(R.string.Snabble_Cancel), Executors.newSingleThreadExecutor(), (dialogInterface, i) -> {
-                            error();
+                            error(callback);
                         })
                         .build()
                         .authenticate(new CancellationSignal(), Executors.newSingleThreadExecutor(),
                                 new BiometricPrompt.AuthenticationCallback() {
                                     @Override
                                     public void onAuthenticationError(int errorCode, CharSequence errString) {
-                                        error();
+                                        error(callback);
                                     }
 
                                     @Override
                                     public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-                                        error();
+                                        error(callback);
                                     }
 
                                     @Override
                                     public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-                                        success();
+                                        success(callback);
                                     }
 
                                     @Override
@@ -98,30 +99,36 @@ public class Keyguard {
 
                     fragment.startActivityForResult(authIntent, REQUEST_CODE_AUTHENTICATION);
                 } else {
-                    success();
+                    success(null);
                 }
             }
         });
     }
 
-    private static void success() {
-        if (currentCallback != null) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> {
+    private static void success(Callback callback) {
+        Dispatch.mainThread(() -> {
+            if (callback != null && currentCallback != callback) {
+                return;
+            }
+
+            if (currentCallback != null) {
                 currentCallback.success();
                 currentCallback = null;
-            });
-        }
+            }
+        });
     }
 
-    private static void error() {
-        if (currentCallback != null) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> {
+    private static void error(Callback callback) {
+        Dispatch.mainThread(() -> {
+            if (callback != null && currentCallback != callback) {
+                return;
+            }
+
+            if (currentCallback != null) {
                 currentCallback.error();
                 currentCallback = null;
-            });
-        }
+            }
+        });
     }
 
     public static final class ActivityResultFragment extends androidx.fragment.app.Fragment {
@@ -137,9 +144,9 @@ public class Keyguard {
             if (requestCode == REQUEST_CODE_AUTHENTICATION) {
                 if (currentCallback != null) {
                     if (resultCode == Activity.RESULT_OK) {
-                        success();
+                        success(null);
                     } else {
-                        error();
+                        error(null);
                     }
                 }
             }

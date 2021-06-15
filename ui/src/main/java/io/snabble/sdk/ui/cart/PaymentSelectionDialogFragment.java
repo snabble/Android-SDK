@@ -1,6 +1,8 @@
 package io.snabble.sdk.ui.cart;
 
 import android.app.Activity;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +61,15 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                             imageView.setImageResource(entry.iconResId);
                         } else {
                             imageView.setVisibility(View.INVISIBLE);
+                        }
+
+                        if (entry.isAdded) {
+                            imageView.setColorFilter(null);
+                        } else {
+                            ColorMatrix matrix = new ColorMatrix();
+                            matrix.setSaturation(0);
+                            ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+                            imageView.setColorFilter(cf);
                         }
 
                         if (entry.text != null) {

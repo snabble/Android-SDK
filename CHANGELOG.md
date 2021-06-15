@@ -1,6 +1,106 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.12]
+
+### Added
+- Added indicator if an manual discount was applied or not
+
+### Fixed
+- Fixed pull to refresh in ShoppingCartView
+- Fixed selecting manual discounts resetting amount, even when no item is already in cart
+- Products with manual discounts are now editable
+
+## [0.37.11]
+
+### Fixed
+- Fixed crash when no TWINT or PostFinance payment method could be added
+
+## [0.37.10]
+
+### Changed
+- Changed default Datatrans environment to Production
+
+### Fixed
+- Fixed listing of TWINT and PostFinace Card payment methods when no credit card payment
+methods are available
+
+## [0.37.9]
+
+### Changed
+- Made credit card 3d secure hint locale aware
+
+## [0.37.8]
+
+### Fixed
+- Only update cart when it actually changed
+
+## [0.37.7]
+
+### Added
+- Support for switching Datatrans environments
+- CreditCardInputView's 3d secure hint now used project specific i18n
+
+## [0.37.6]
+
+### Added
+- Added option to vibrate when item was added to the cart
+
+## [0.37.5]
+
+### Fixed
+- Fixed price override codes
+
+## [0.37.4]
+
+### Changed
+- Not showing cart restoration after successful online checkout
+
+## [0.37.3]
+
+### Added
+- Added age restriction indicator in shopping cart items
+
+## [0.37.2]
+
+### Fixed
+- Fix VISA credit card input not opening
+
+## [0.37.1]
+
+### Fixed
+- TWINT and PostFinance payment methods are now listed in their project specific lists
+
+## [0.37.0]
+
+### Added
+- Support for transmission templates
+- Added support for TWINT and PostFinance Payments using Datatrans
+- searchByCode now also searches in SKU's
+
+### Changes
+- Increased the minimum required database revision to 1.25
+
+## [0.36.0]
+
+### Added
+- Support for printed coupons
+
+### Changed
+- Support for new coupon metadata
+- Improved SEPACardInputView for copy pasting IBAN's with prefixes
+- Removed flash and search buttons in SelfScanningView
+- Replaced scan indicator with a barcode image
+
+### Fixed
+- Remove old scan result messages
+
+## [0.35.9]
+
+### Fixed
+- Fixed amount for manual coupons 
+- Fixed listener leak in CheckoutBar
+
 ## [0.35.8]
 
 ### Changes

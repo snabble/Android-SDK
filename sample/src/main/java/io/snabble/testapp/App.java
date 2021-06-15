@@ -106,7 +106,11 @@ public class App extends Application {
 
             @Override
             public void onError(Snabble.Error error) {
-                callback.error("SdkError: " + error.toString());
+                if(config.appId.equals("<missing app id>") || config.secret.equals("<missing secret>")) {
+                    callback.error("SdkError: You did not setup any secrets yet.\nSee README.md for more details.");
+                } else {
+                    callback.error("SdkError: " + error.toString());
+                }
             }
         });
 

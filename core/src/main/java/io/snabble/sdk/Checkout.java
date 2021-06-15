@@ -566,7 +566,11 @@ public class Checkout {
     private void approve() {
         if (state != Checkout.State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
-            shoppingCart.backup();
+
+            if (paymentMethod.isOfflineMethod()) {
+                shoppingCart.backup();
+            }
+
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
@@ -666,9 +670,6 @@ public class Checkout {
                     paymentMethods.add(pm);
                 }
             }
-
-            // TODO FIXME remove!!! DEBUG CODE
-            paymentMethods.add(PaymentMethod.DATATRANS);
 
             return paymentMethods.toArray(new PaymentMethod[paymentMethods.size()]);
         }

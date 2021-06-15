@@ -11,8 +11,13 @@ import java.util.concurrent.TimeUnit;
 public class Dispatch {
     private static Handler handler = new Handler(Looper.getMainLooper());
     private static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(0);
+    private static ScheduledExecutorService ioScheduler = Executors.newSingleThreadScheduledExecutor();
 
     public static Future<?> background(Runnable runnable) {
+        return executorService.submit(runnable);
+    }
+
+    public static Future<?> io(Runnable runnable) {
         return executorService.submit(runnable);
     }
 

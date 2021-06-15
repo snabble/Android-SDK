@@ -18,12 +18,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.datatrans.payment.paymentmethods.PaymentMethodType;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
@@ -39,12 +39,13 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {
     public static final String ARG_PAYMENT_TYPE = "paymentType";
+    public static final String ARG_BRAND = "brand";
     public static final String ARG_PROJECT_ID = "projectId";
 
     private List<Entry> entries = new ArrayList<>();
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
-    private PaymentCredentials.Type type;
+    private List<PaymentCredentials.Type> types;
     private Project project;
 
     public PaymentCredentialsListView(Context context) {
@@ -87,10 +88,14 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         Bundle bundle = new Bundle();
                         bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
                         ArrayList<PaymentMethod> types;
-                        if (type == null) {
+                        if (PaymentCredentialsListView.this.types == null) {
                             types = new ArrayList<>(Arrays.asList(PaymentMethod.values()));
                         } else {
-                            types = new ArrayList<>(type.getPaymentMethods());
+                            ArrayList<PaymentMethod> methodList = new ArrayList<>();
+                            for (PaymentCredentials.Type type : PaymentCredentialsListView.this.types) {
+                                methodList.addAll(type.getPaymentMethods());
+                            }
+                            types = methodList;
                         }
                         bundle.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, types);
                         dialogFragment.setArguments(bundle);
@@ -109,8 +114,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         });
     }
 
-    public void show(PaymentCredentials.Type type, Project project) {
-        this.type = type;
+    public void show(List<PaymentCredentials.Type> types, Project project) {
+        this.types = types;
         this.project = project;
 
         entries.clear();
@@ -167,8 +172,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             }
 
             boolean sameTypeOrNull = true;
-            if (type != null) {
-                sameTypeOrNull = type.equals(pm.getType());
+            if (types != null) {
+                sameTypeOrNull = types.contains(pm.getType());
             }
 
             if (pm.isAvailableInCurrentApp() && sameTypeOrNull && sameProjectOrNull) {
@@ -177,30 +182,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));
                         break;
                     case CREDIT_CARD_PSD2:
-                        PaymentCredentials.Brand ccBrand = pm.getBrand();
-
-                        int drawableResId = 0;
-                        if (ccBrand != null) {
-                            switch (ccBrand) {
-                                case VISA:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_visa;
-                                    break;
-                                case MASTERCARD:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_mastercard;
-                                    break;
-                                case AMEX:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_amex;
-                                    break;
-                            }
-                        }
-
-                        entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
+                    case DATATRANS:
+                        entries.add(new Entry(pm, getDrawableForBrand(pm.getBrand()), pm.getObfuscatedId()));
                         break;
                     case PAYDIREKT:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_paydirekt, pm.getObfuscatedId()));
-                        break;
-                    case DATATRANS:
-                        entries.add(new Entry(pm, R.drawable.snabble_ic_datatrans, pm.getObfuscatedId()));
                         break;
                     case TEGUT_EMPLOYEE_CARD:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_tegut, pm.getObfuscatedId()));
@@ -210,6 +196,31 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    private int getDrawableForBrand(PaymentCredentials.Brand brand) {
+        int drawableResId = 0;
+        if (brand != null) {
+            switch (brand) {
+                case VISA:
+                    drawableResId = R.drawable.snabble_ic_payment_select_visa;
+                    break;
+                case MASTERCARD:
+                    drawableResId = R.drawable.snabble_ic_payment_select_mastercard;
+                    break;
+                case AMEX:
+                    drawableResId = R.drawable.snabble_ic_payment_select_amex;
+                    break;
+                case POST_FINANCE_CARD:
+                    drawableResId = R.drawable.snabble_ic_payment_select_postfinance;
+                    break;
+                case TWINT:
+                    drawableResId = R.drawable.snabble_ic_payment_select_twint;
+                    break;
+            }
+        }
+
+        return drawableResId;
     }
 
     private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -254,7 +265,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
                 String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
 
-                if (e.paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD_PSD2) {
+                if (e.paymentCredentials.getValidTo() != 0) {
                     vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
                     vh.validTo.setVisibility(View.VISIBLE);
                 } else {

@@ -1,7 +1,5 @@
 package io.snabble.sdk.ui.checkout;
 
-import android.app.Activity;
-
 import androidx.fragment.app.FragmentActivity;
 
 import io.snabble.sdk.Checkout;
@@ -25,6 +23,8 @@ public class CheckoutHelper {
                 case MASTERCARD:
                 case AMEX:
                 case PAYDIREKT:
+                case TWINT:
+                case POST_FINANCE_CARD:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_ONLINE, null);
                     break;
                 case GATEKEEPER_TERMINAL:
@@ -38,9 +38,6 @@ public class CheckoutHelper {
                     break;
                 case QRCODE_OFFLINE:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE, null);
-                    break;
-                case DATATRANS:
-                    Datatrans.pay(activity, checkout.getPriceToPay());
                     break;
             }
         }

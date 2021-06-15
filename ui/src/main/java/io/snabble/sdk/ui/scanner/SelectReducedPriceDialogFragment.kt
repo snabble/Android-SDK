@@ -6,13 +6,16 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import io.snabble.sdk.CouponType
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import java.security.PrivateKey
 
 class SelectReducedPriceDialogFragment(
     private val productConfirmationDialog: ProductConfirmationDialog?,
-    private val cartItem: ShoppingCart.Item?
+    private val cartItem: ShoppingCart.Item?,
+    private val shoppingCart: ShoppingCart?
 ) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         if (productConfirmationDialog == null || cartItem == null) {
@@ -20,7 +23,10 @@ class SelectReducedPriceDialogFragment(
         }
 
         val project = SnabbleUI.getProject()
-        val discounts = project.manualCoupons
+        val discounts = project.coupons.get(CouponType.MANUAL)
+        val dialog = productConfirmationDialog
+        val item = cartItem
+        val cart = shoppingCart
 
         val adapter = ArrayAdapter(requireContext(),
             R.layout.snabble_item_pricereduction_select,
@@ -32,13 +38,18 @@ class SelectReducedPriceDialogFragment(
             .setTitle(R.string.Snabble_addDiscount)
             .setAdapter(adapter) { _, which ->
                 if (which == 0) {
-                    cartItem?.manualCoupon = null
+                    item?.coupon = null
                 } else {
-                    cartItem?.manualCoupon = discounts[which - 1]
+                    item?.coupon = discounts[which - 1]
                 }
-                productConfirmationDialog?.setQuantity(1)
-                productConfirmationDialog?.updatePrice()
-                productConfirmationDialog?.updateQuantityText()
+
+                val existingItem = cart?.getExistingMergeableProduct(item?.product)
+                if (existingItem?.isMergeable == true) {
+                    dialog?.setQuantity(1)
+                }
+
+                dialog?.updatePrice()
+                dialog?.updateQuantityText()
             }
             .create()
     }

@@ -92,7 +92,9 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     click = {
                         if (count > 0) {
                             val args = Bundle()
-                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.SEPA)
+                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, ArrayList<PaymentCredentials.Type>().apply {
+                                add(PaymentCredentials.Type.SEPA)
+                            })
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
                             PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.DE_DIRECT_DEBIT, null)
@@ -122,7 +124,9 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     click = {
                         if (count > 0) {
                             val args = Bundle()
-                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.PAYDIREKT)
+                            args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, ArrayList<PaymentCredentials.Type>().apply {
+                                add(PaymentCredentials.Type.PAYDIREKT)
+                            })
                             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                         } else {
                             PaymentInputViewHelper.openPaymentInputView(context, PaymentMethod.PAYDIREKT, null)
@@ -162,7 +166,9 @@ open class PaymentOptionsView @JvmOverloads constructor(
                         click = {
                             if (count > 0) {
                                 val args = Bundle()
-                                args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                                args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, ArrayList<PaymentCredentials.Type>().apply {
+                                    add(PaymentCredentials.Type.CREDIT_CARD_PSD2)
+                                })
                                 args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
                                 executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                             } else {
@@ -203,7 +209,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
             .forEach { project ->
                 val count = credentials.count {
                     it.appId == Snabble.getInstance().config.appId
-                    && it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2
+                    && (it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2 || it.type == PaymentCredentials.Type.DATATRANS)
                     && it.projectId == project.id }
 
                 if (!brands.contains(project.brand)) {
@@ -255,7 +261,10 @@ open class PaymentOptionsView @JvmOverloads constructor(
             project.availablePaymentMethods.any {
                     it == PaymentMethod.VISA
                  || it == PaymentMethod.MASTERCARD
-                 || it == PaymentMethod.AMEX }
+                 || it == PaymentMethod.AMEX
+                 || it == PaymentMethod.TWINT
+                 || it == PaymentMethod.POST_FINANCE_CARD
+            }
         }
     }
 

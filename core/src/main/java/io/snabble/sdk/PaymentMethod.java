@@ -23,8 +23,10 @@ public enum PaymentMethod {
     GATEKEEPER_TERMINAL(false, false, false, false),
     @SerializedName("paydirektOneKlick")
     PAYDIREKT(false, true, false, true),
-    @SerializedName("datatrans")
-    DATATRANS(false, true, false, true),
+    @SerializedName("postFinanceCard")
+    POST_FINANCE_CARD(false, true, false, true),
+    @SerializedName("twint")
+    TWINT(false, true, false, true),
     @SerializedName("googlePay")
     GOOGLE_PAY(false, false, false, false);
 

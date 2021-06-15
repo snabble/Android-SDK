@@ -133,13 +133,25 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }));
         }
 
-        if (availablePaymentMethods.contains(PaymentMethod.DATATRANS)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_datatrans,
-                    "Datatrans",
-                    getUsableAtText(PaymentMethod.DATATRANS), new OneShotClickListener() {
+        if (availablePaymentMethods.contains(PaymentMethod.TWINT)) {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_twint,
+                    "TWINT",
+                    getUsableAtText(PaymentMethod.TWINT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.DATATRANS, null);
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.TWINT, projectId);
+                    dismissAllowingStateLoss();
+                }
+            }));
+        }
+
+        if (availablePaymentMethods.contains(PaymentMethod.POST_FINANCE_CARD)) {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_postfinance,
+                    "PostFinance Card",
+                    getUsableAtText(PaymentMethod.TWINT), new OneShotClickListener() {
+                @Override
+                public void click() {
+                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.POST_FINANCE_CARD, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
