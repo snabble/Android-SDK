@@ -19,7 +19,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -41,23 +41,27 @@ public class SnabbleSdkTest {
 
     protected static Buffer productDbBuffer;
 
+    protected static Buffer loadBuffer(String name) throws IOException {
+        final Buffer buffer = new Buffer();
+        try(InputStream stream = buffer.getClass().getClassLoader().getResourceAsStream(name)) {
+            buffer.readFrom(stream);
+        }
+        return buffer;
+    }
+
+    protected InputStream getInputStream(String name) {
+        return getClass().getClassLoader().getResourceAsStream(name);
+    }
+
     @BeforeClass
     public static void setupMockWebServer() throws Exception {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
-        
-        ClassLoader loader = mockWebServer.getClass().getClassLoader();
 
-        final String metadataJson = IOUtils.toString(loader.getResourceAsStream("metadata.json"), Charset.forName("UTF-8"));
-
-        final Buffer product1Buffer = new Buffer();
-        product1Buffer.readFrom(loader.getResourceAsStream("product.json"));
-
-        final Buffer product1OtherPriceBuffer = new Buffer();
-        product1OtherPriceBuffer.readFrom(loader.getResourceAsStream("product_otherprice.json"));
-
-        final Buffer product2Buffer = new Buffer();
-        product2Buffer.readFrom(loader.getResourceAsStream("product2.json"));
+        final Buffer metadataJson = loadBuffer("metadata.json");
+        final Buffer product1Buffer = loadBuffer("product.json");
+        final Buffer product1OtherPriceBuffer = loadBuffer("product_otherprice.json");
+        final Buffer product2Buffer = loadBuffer("product2.json");
 
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
@@ -180,8 +184,7 @@ public class SnabbleSdkTest {
     }
 
     public void prepareUpdateDb(String assetPath) throws IOException {
-        productDbBuffer = new Buffer();
-        productDbBuffer.readFrom(productDbBuffer.getClass().getClassLoader().getResourceAsStream(assetPath));
+        productDbBuffer = loadBuffer(assetPath);
     }
 
     @After

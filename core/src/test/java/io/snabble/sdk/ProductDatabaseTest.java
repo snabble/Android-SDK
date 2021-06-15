@@ -4,23 +4,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import androidx.test.filters.LargeTest;
-import androidx.test.runner.AndroidJUnit4;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -31,8 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
-@LargeTest
+@RunWith(RobolectricTestRunner.class)
 public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
@@ -129,32 +126,61 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testFindBySkuOnline() {
-        ProductDatabase productDatabase = project.getProductDatabase();
-        final Product product = findBySkuBlocking(productDatabase, "1");
-        assertEquals(product.getSku(), "1");
-        containsCode(product, "4008258510001");
-        assertEquals(product.getTransmissionCode(project, "default", "0", 0), null);
+    public void testFindBySkuOnline() throws Throwable {
+        runAsyncHandlerCode(() -> {
+            ProductDatabase productDatabase = project.getProductDatabase();
+            final Product product = findBySkuBlocking(productDatabase, "1");
+            assertEquals(product.getSku(), "1");
+            containsCode(product, "4008258510001");
+            assertEquals(product.getTransmissionCode(project, "default", "0", 0), null);
 
-        final Product product2 = findBySkuBlocking(productDatabase, "2");
-        assertEquals(product2.getSku(), "2");
-        containsCode(product2, "asdf123");
-        assertEquals(product2.getTransmissionCode(project, "default", "asdf123", 0), "trans123");
+            final Product product2 = findBySkuBlocking(productDatabase, "2");
+            assertEquals(product2.getSku(), "2");
+            containsCode(product2, "asdf123");
+            assertEquals(product2.getTransmissionCode(project, "default", "asdf123", 0), "trans123");
 
-        assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
+            assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
+        });
+    }
+
+    private boolean working = false;
+    private Throwable error = null;
+    private void runAsyncHandlerCode(Runnable runnable) throws Throwable {
+        assertFalse("There must be no other running test", working);
+        working = true;
+        error = null;
+        new Thread(() -> {
+            try {
+                runnable.run();
+            } catch (Throwable throwable) {
+                error = throwable;
+            } finally {
+                working = false;
+            }
+        }).start();
+        while (working) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+            Robolectric.flushForegroundThreadScheduler();
+        }
+        if(error != null) throw error;
     }
 
     @Test
-    public void testFindBySkuOnlineWithShopSpecificPrice() {
-        ProductDatabase productDatabase = project.getProductDatabase();
-        final Product product = findBySkuBlocking(productDatabase, "1");
-        assertEquals(product.getSku(), "1");
-        assertEquals(product.getListPrice(), 399);
+    public void testFindBySkuOnlineWithShopSpecificPrice() throws Throwable {
+        runAsyncHandlerCode(() -> {
+            ProductDatabase productDatabase = project.getProductDatabase();
+            final Product product = findBySkuBlocking(productDatabase, "1");
+            assertEquals(product.getSku(), "1");
+            assertEquals(product.getListPrice(), 399);
 
-        project.setCheckedInShop(project.getShops()[1]);
-        final Product product2 = findBySkuBlocking(productDatabase, "1");
-        assertEquals(product2.getSku(), "1");
-        assertEquals(product2.getListPrice(), 299);
+            project.setCheckedInShop(project.getShops()[1]);
+            final Product product2 = findBySkuBlocking(productDatabase, "1");
+            assertEquals(product2.getSku(), "1");
+            assertEquals(product2.getListPrice(), 299);
+        });
     }
 
     @Test
@@ -278,7 +304,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdate() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        productDatabase.applyFullUpdate(context.getAssets().open("update_1_25.sqlite3"));
+        productDatabase.applyFullUpdate(getInputStream("update_1_25.sqlite3"));
 
         Product product = productDatabase.findBySku("1337");
 
@@ -292,7 +318,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnCorruptedFile() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        byte[] bytes = IOUtils.toByteArray(context.getAssets().open("update_1_25.sqlite3"));
+        byte[] bytes = IOUtils.toByteArray(getInputStream("update_1_25.sqlite3"));
         for (int i = 0; i < bytes.length; i++) {
             if (i % 4 == 0) {
                 bytes[i] = 42;
@@ -311,7 +337,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFullUpdateDoesNotModifyOnWrongMajorVersion() throws IOException {
         ProductDatabase productDatabase = project.getProductDatabase();
-        InputStream is = context.getResources().getAssets().open("update_1_25.sqlite3");
+        InputStream is = getInputStream("update_1_25.sqlite3");
         File outputFile = context.getDatabasePath("update_1_25.sqlite3");
         FileOutputStream fos = new FileOutputStream(outputFile);
         IOUtils.copy(is, fos);
@@ -418,7 +444,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
-        String[] sql = IOUtils.readLines(context.getAssets().open("transmission_template.sql")).toArray(new String[0]);
+        String[] sql = loadBuffer("transmission_template.sql").readString(StandardCharsets.UTF_8).split("\n");
         withDb("test_1_25.sqlite3", false, sql);
 
         ProductDatabase productDatabase = project.getProductDatabase();
