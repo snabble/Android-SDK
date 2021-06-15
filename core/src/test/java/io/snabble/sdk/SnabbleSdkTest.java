@@ -7,7 +7,6 @@ import android.os.StrictMode;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
