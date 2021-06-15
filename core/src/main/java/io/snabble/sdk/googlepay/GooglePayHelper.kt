@@ -53,9 +53,11 @@ class GooglePayHelper(
         add("CRYPTOGRAM_3DS")
     }
 
-    private val baseRequest = JsonObject().apply {
-        addProperty("apiVersion", 2)
-        addProperty("apiVersionMinor", 0)
+    private fun baseRequest() : JsonObject {
+        return JsonObject().apply {
+            addProperty("apiVersion", 2)
+            addProperty("apiVersionMinor", 0)
+        }
     }
 
     private fun gatewayTokenizationSpecification(): JsonObject {
@@ -105,7 +107,7 @@ class GooglePayHelper(
     }
 
     fun getPaymentDataRequest(price: String): JsonObject {
-        return baseRequest.apply {
+        return baseRequest().apply {
             add("allowedPaymentMethods", JsonArray().apply {
                 add(cardPaymentMethod())
             })
@@ -115,7 +117,7 @@ class GooglePayHelper(
     }
 
     private fun isReadyToPayRequest(): JsonObject {
-        return baseRequest.apply {
+        return baseRequest().apply {
             add("allowedPaymentMethods", JsonArray().apply {
                 add(cardPaymentMethod())
             })
