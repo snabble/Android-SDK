@@ -296,7 +296,7 @@ public class ProductConfirmationDialog {
         enterReducedPrice.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         enterReducedPrice.setOnClickListener(v -> {
             FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(context);
-            new SelectReducedPriceDialogFragment(ProductConfirmationDialog.this, cartItem)
+            new SelectReducedPriceDialogFragment(ProductConfirmationDialog.this, cartItem, shoppingCart)
                     .show(fragmentActivity.getSupportFragmentManager(), null);
         });
 

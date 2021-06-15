@@ -316,6 +316,7 @@ public class ShoppingCart {
                 items.remove(i);
             } else {
                 item.lineItem = null;
+                item.isManualCouponApplied = false;
             }
         }
 
@@ -327,7 +328,7 @@ public class ShoppingCart {
         if(debounce) {
             updater.dispatchUpdate();
         } else {
-            updater.update();
+            updater.update(true);
         }
     }
 
@@ -534,6 +535,7 @@ public class ShoppingCart {
         private String id;
         private boolean isUsingSpecifiedQuantity;
         private transient ShoppingCart cart;
+        private boolean isManualCouponApplied;
         private Coupon coupon;
 
         protected Item() {
@@ -672,16 +674,16 @@ public class ShoppingCart {
             return null;
         }
 
-        public boolean isManualCouponApplied() {
-            if (lineItem != null) {
-                return lineItem.priceModifiers.size() > 0; // TODO that is not correct
-            }
+        public void setManualCouponApplied(boolean manualCouponApplied) {
+            isManualCouponApplied = manualCouponApplied;
+        }
 
-            return false;
+        public boolean isManualCouponApplied() {
+            return isManualCouponApplied;
         }
 
         public boolean isEditable() {
-            if (coupon != null) {
+            if (coupon != null && coupon.getType() != CouponType.MANUAL) {
                 return false;
             }
 

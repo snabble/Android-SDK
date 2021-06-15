@@ -107,6 +107,7 @@ public class CheckoutApi {
         int totalPrice;
         LineItemType type;
         List<PriceModifier> priceModifiers;
+        boolean redeemed;
     }
 
     public static class PriceModifier {
@@ -123,6 +124,8 @@ public class CheckoutApi {
         DISCOUNT,
         @SerializedName("giveaway")
         GIVEAWAY,
+        @SerializedName("coupon")
+        COUPON,
     }
 
     public static class ExitToken {

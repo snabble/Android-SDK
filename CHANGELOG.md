@@ -1,6 +1,16 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.37.12]
+
+### Added
+- Added indicator if an manual discount was applied or not
+
+### Fixed
+- Fixed pull to refresh in ShoppingCartView
+- Fixed selecting manual discounts resetting amount, even when no item is already in cart
+- Products with manual discounts are now editable
+
 ## [0.37.11]
 
 ### Fixed

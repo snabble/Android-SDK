@@ -39,7 +39,7 @@ class ShoppingCartUpdater {
     private Runnable updatePriceRunnable = new Runnable() {
         @Override
         public void run() {
-            update();
+            update(false);
         }
     };
 
@@ -47,7 +47,7 @@ class ShoppingCartUpdater {
         return lastAvailablePaymentMethods;
     }
 
-    public void update() {
+    public void update(boolean force) {
         Logger.d("Updating prices...");
 
         if (cart.size() == 0) {
@@ -57,7 +57,7 @@ class ShoppingCartUpdater {
         }
 
         final int modCount = cart.getModCount();
-        if (modCount == successfulModCount) {
+        if (modCount == successfulModCount && !force) {
             return;
         }
 
@@ -198,6 +198,11 @@ class ShoppingCartUpdater {
 
                         if (add) {
                             cart.insert(cart.newItem(lineItem), cart.size(), false);
+                        }
+
+                        if (lineItem.type == CheckoutApi.LineItemType.COUPON) {
+                            ShoppingCart.Item refersTo = cart.getByItemId(lineItem.refersTo);
+                            refersTo.setManualCouponApplied(lineItem.redeemed);
                         }
                     }
                 }
