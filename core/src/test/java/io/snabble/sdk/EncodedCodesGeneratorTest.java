@@ -1,14 +1,11 @@
 package io.snabble.sdk;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.LargeTest;
-import androidx.test.runner.AndroidJUnit4;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,11 +16,9 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 
-@RunWith(AndroidJUnit4.class)
-@LargeTest
+@RunWith(RobolectricTestRunner.class)
 public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     @Test
-    @UiThreadTest
     public void testGeneration() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("+")
@@ -43,7 +38,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testSplitAtMaxChars() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("+")
@@ -66,7 +60,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testSplitAtMaxCodes() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("+")
@@ -89,7 +82,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testSplitAgeRestrictedProducts() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("+")
@@ -117,7 +109,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testSplitAgeRestrictedProductsInMultipleCodes() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("+")
@@ -146,7 +137,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testSplitAgeRestrictedProductsInMultipleCodes2() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("+")
@@ -178,7 +168,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testSplitWithOnlyOneRestrictedProduct() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("+")
@@ -204,7 +193,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testKnauber() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("")
@@ -234,7 +222,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testCoupons() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("")
@@ -263,7 +250,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testEdeka() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("XE")
@@ -288,7 +274,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testEdekaWithOverflow() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("XE")
@@ -314,7 +299,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testEdekaWithRestrictedProduct() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("XE")
@@ -343,7 +327,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testExpensiveItemsSortedToBottom() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("")
@@ -367,7 +350,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testCSVFormat() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("snabble;\n")
@@ -394,7 +376,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testCSVv2Format() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("snabble;{qrCodeIndex};{qrCodeCount}\n")
@@ -422,9 +403,8 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    @UiThreadTest
     public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
-        String[] sql = IOUtils.readLines(context.getAssets().open("transmission_template.sql")).toArray(new String[0]);
+        String[] sql = loadSql("transmission_template").split("\n");
         withDb("test_1_25.sqlite3", false, sql);
 
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)

@@ -20,6 +20,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +48,10 @@ public class SnabbleSdkTest {
             buffer.readFrom(stream);
         }
         return buffer;
+    }
+
+    protected static String loadSql(String name) throws IOException {
+        return loadBuffer(name + ".sql").readString(StandardCharsets.UTF_8);
     }
 
     protected InputStream getInputStream(String name) {

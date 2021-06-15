@@ -444,7 +444,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
-        String[] sql = loadBuffer("transmission_template.sql").readString(StandardCharsets.UTF_8).split("\n");
+        String[] sql = loadSql("transmission_template").split("\n");
         withDb("test_1_25.sqlite3", false, sql);
 
         ProductDatabase productDatabase = project.getProductDatabase();
