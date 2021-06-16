@@ -134,6 +134,9 @@ public class SnabbleSdkTest {
 
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
+        // Disable close guard warnings
+        StrictMode.enableDefaults();
+
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         withDb("test_1_25.sqlite3");
     }
