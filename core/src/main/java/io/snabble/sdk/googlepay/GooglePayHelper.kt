@@ -3,6 +3,7 @@ package io.snabble.sdk.googlepay
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Base64
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.ApiException
@@ -13,6 +14,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
+import java.lang.Exception
 
 class GooglePayHelper(
     val project: Project,
@@ -168,15 +170,32 @@ class GooglePayHelper(
         when (resultCode) {
             AppCompatActivity.RESULT_OK -> {
                 data?.let { intent ->
-                    val paymentData = PaymentData.getFromIntent(intent)
-                    Toast.makeText(context, "Google Pay Success: ${paymentData?.toJson()}", Toast.LENGTH_LONG).show()
+                    try {
+                        val paymentData = PaymentData.getFromIntent(intent)?.toJson()
+                        val jsonPaymentData = GsonHolder.get().fromJson(paymentData, JsonObject::class.java)
+
+                        val token = jsonPaymentData.get("paymentMethodData")
+                            ?.asJsonObject?.get("tokenizationData")
+                            ?.asJsonObject?.get("token")
+                            ?.asString
+
+                        if (token == null) {
+                            project.checkout.abortError()
+                        } else {
+                            val base64Token = String(Base64.encode(token.toByteArray(), Base64.NO_WRAP))
+                            project.checkout.authorizePayment(base64Token)
+                        }
+                    } catch (e: Exception) {
+                        project.checkout.abortError()
+                    }
                 }
             }
             AppCompatActivity.RESULT_CANCELED -> {
-                // project.checkout.abort()
+                project.checkout.abort()
             }
             AutoResolveHelper.RESULT_ERROR -> {
-                // project.checkout.abort()
+                project.checkout.abortError()
+
                 AutoResolveHelper.getStatusFromIntent(data)?.let {
                     Toast.makeText(context, "Google Pay Error ${it.statusCode}", Toast.LENGTH_LONG).show()
                 }

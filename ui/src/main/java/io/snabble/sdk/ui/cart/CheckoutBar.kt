@@ -183,9 +183,7 @@ class CheckoutBar @JvmOverloads constructor(
         } else {
             val entry = paymentSelectionHelper.selectedEntry.value
             if (entry != null) {
-                if (entry.paymentMethod == PaymentMethod.GOOGLE_PAY) {
-                    project.googlePayHelper.requestPayment(project.shoppingCart.totalPrice)
-                } else if (entry.paymentMethod.isRequiringCredentials && entry.paymentCredentials == null) {
+                if (entry.paymentMethod.isRequiringCredentials && entry.paymentCredentials == null) {
                     PaymentInputViewHelper.openPaymentInputView(context, entry.paymentMethod, project.id)
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout)
@@ -322,7 +320,9 @@ class CheckoutBar @JvmOverloads constructor(
                 Snackbar.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             }
             progressDialog.dismiss()
-        } else if (state == Checkout.State.CONNECTION_ERROR || state == Checkout.State.NO_SHOP) {
+        } else if (state == Checkout.State.CONNECTION_ERROR
+            || state == Checkout.State.NO_SHOP
+            || state == Checkout.State.PAYMENT_PROCESSING_ERROR) {
             Snackbar.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             progressDialog.dismiss()
         } else if (state == Checkout.State.PAYMENT_ABORTED) {

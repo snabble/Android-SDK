@@ -25,6 +25,7 @@ public class CheckoutHelper {
                 case PAYDIREKT:
                 case TWINT:
                 case POST_FINANCE_CARD:
+                case GOOGLE_PAY:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_ONLINE, null);
                     break;
                 case GATEKEEPER_TERMINAL:

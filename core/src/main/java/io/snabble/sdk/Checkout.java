@@ -1,6 +1,7 @@
 package io.snabble.sdk;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -40,6 +41,13 @@ public class Checkout {
          */
         REQUEST_VERIFY_AGE,
         /**
+         * Request a payment authorization token.
+         *
+         * For example a Google Pay payment token that needs to get sent back to
+         * the snabble Backend.
+         */
+        REQUEST_PAYMENT_AUTHORIZATION_TOKEN,
+        /**
          * Payment was received by the backend and we are waiting for confirmation of the payment provider
          */
         WAIT_FOR_APPROVAL,
@@ -71,6 +79,10 @@ public class Checkout {
          * The payment could not be aborted.
          */
         PAYMENT_ABORT_FAILED,
+        /**
+         * There was a unrecoverable payment processing error.
+         */
+        PAYMENT_PROCESSING_ERROR,
         /**
          * There was a unrecoverable connection error.
          */
@@ -121,11 +133,18 @@ public class Checkout {
         this.paymentOriginCandidateHelper = new PaymentOriginCandidateHelper(project);
     }
 
+    public void abortError() {
+        abort(true);
+    }
+
+    public void abort() {
+        abort(false);
+    }
     /**
      * Aborts outstanding http calls and notifies the backend that the checkout process
      * was cancelled
      */
-    public void abort() {
+    public void abort(boolean error) {
         cancelOutstandingCalls();
 
         if (state != Checkout.State.PAYMENT_APPROVED
@@ -136,7 +155,11 @@ public class Checkout {
                 @Override
                 public void success() {
                     synchronized (Checkout.this) {
-                        notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+                        if (error) {
+                            notifyStateChanged(Checkout.State.PAYMENT_PROCESSING_ERROR);
+                        } else {
+                            notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+                        }
 
                         invalidProducts = null;
                         paymentMethod = null;
@@ -147,7 +170,11 @@ public class Checkout {
 
                 @Override
                 public void error() {
-                    notifyStateChanged(Checkout.State.PAYMENT_ABORT_FAILED);
+                    if (error) {
+                        notifyStateChanged(Checkout.State.PAYMENT_PROCESSING_ERROR);
+                    } else {
+                        notifyStateChanged(Checkout.State.PAYMENT_ABORT_FAILED);
+                    }
                 }
             });
 
@@ -374,6 +401,25 @@ public class Checkout {
         }
     }
 
+    public void authorizePayment(String encryptedOrigin) {
+        CheckoutApi.AuthorizePaymentRequest authorizePaymentRequest = new CheckoutApi.AuthorizePaymentRequest();
+        authorizePaymentRequest.encryptedOrigin = encryptedOrigin;
+
+        checkoutApi.authorizePayment(checkoutProcess,
+                authorizePaymentRequest,
+                new CheckoutApi.AuthorizePaymentResult() {
+            @Override
+            public void success() {
+                // ignore
+            }
+
+            @Override
+            public void error() {
+                abort(); // TODO maybe should try again or ask user?
+            }
+        });
+    }
+
     private boolean runChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
         boolean allChecksOk = true;
 
@@ -494,13 +540,17 @@ public class Checkout {
             }
         });
 
-        if (state == Checkout.State.WAIT_FOR_APPROVAL || state == Checkout.State.PAYMENT_PROCESSING
-        || (state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
+        if (state == Checkout.State.WAIT_FOR_APPROVAL
+                || state == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
+                || state == Checkout.State.PAYMENT_PROCESSING
+                || (state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
             scheduleNextPoll();
         }
     }
 
     private boolean handleProcessResponse() {
+        Logger.d("poll");
+
         if (checkoutProcess.aborted) {
             Logger.d("Payment aborted");
             notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
@@ -508,6 +558,12 @@ public class Checkout {
         }
 
         paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
+
+        String authorizePaymentUrl = checkoutProcess.getAuthorizePaymentLink();
+        if (authorizePaymentUrl != null) {
+            notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN);
+            return false;
+        }
 
         if (checkoutProcess.paymentState == CheckoutApi.State.SUCCESSFUL) {
             if (checkoutProcess.exitToken != null
@@ -647,6 +703,21 @@ public class Checkout {
 
     public int getPriceToPay() {
         return priceToPay;
+    }
+
+    public int getVerifiedOnlinePrice() {
+        try {
+            if (checkoutProcess != null) {
+                return checkoutProcess.checkoutInfo.get("price")
+                        .getAsJsonObject()
+                        .get("price")
+                        .getAsInt();
+            }
+        } catch (Exception e) {
+            return -1;
+        }
+
+        return -1;
     }
 
     public List<Product> getInvalidProducts() {

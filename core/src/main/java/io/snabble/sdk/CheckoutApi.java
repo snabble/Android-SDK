@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -168,6 +170,15 @@ public class CheckoutApi {
         public String failureCause;
     }
 
+    public static class AuthorizePaymentRequest {
+        public String encryptedOrigin;
+    }
+
+    public interface AuthorizePaymentResult {
+        void success();
+        void error();
+    }
+
     public enum State {
         @SerializedName("pending")
         PENDING,
@@ -247,6 +258,14 @@ public class CheckoutApi {
 
         public String getSelfLink() {
             Href link = links.get("self");
+            if (link != null && link.href != null) {
+                return link.href;
+            }
+            return null;
+        }
+
+        public String getAuthorizePaymentLink() {
+            Href link = links.get("authorizePayment");
             if (link != null && link.href != null) {
                 return link.href;
             }
@@ -542,6 +561,39 @@ public class CheckoutApi {
                     updatePaymentProcess(finalUrl, paymentProcessResult);
                 } else {
                     paymentProcessResult.error();
+                }
+            }
+        });
+    }
+
+    public void authorizePayment(final CheckoutProcessResponse checkoutProcessResponse,
+                                 final AuthorizePaymentRequest authorizePaymentRequest,
+                                 final AuthorizePaymentResult authorizePaymentResult) {
+        String url = checkoutProcessResponse.getAuthorizePaymentLink();
+        if (url == null) {
+            authorizePaymentResult.error();
+            return;
+        }
+
+        String json = GsonHolder.get().toJson(authorizePaymentRequest);
+        final Request request = new Request.Builder()
+                .url(Snabble.getInstance().absoluteUrl(url))
+                .post(RequestBody.create(JSON, json))
+                .build();
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                authorizePaymentResult.error();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) {
+                    authorizePaymentResult.success();
+                } else {
+                    authorizePaymentResult.error();
                 }
             }
         });

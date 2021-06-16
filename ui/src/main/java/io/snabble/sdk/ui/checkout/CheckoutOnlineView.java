@@ -11,12 +11,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.googlepay.GooglePayHelper;
+import io.snabble.sdk.googlepay.GooglePayHelperActivity;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
@@ -36,6 +39,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
     private ImageView helperImage;
     private View upArrow;
     private View progressIndicator;
+    private Project project;
 
     public CheckoutOnlineView(Context context) {
         super(context);
@@ -57,7 +61,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
 
         inflate(getContext(), R.layout.snabble_view_checkout_online, this);
 
-        Project project = SnabbleUI.getProject();
+        project = SnabbleUI.getProject();
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
         cancel = findViewById(R.id.cancel);
@@ -186,6 +190,14 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                         .create()
                         .show();
                 break;
+            case REQUEST_PAYMENT_AUTHORIZATION_TOKEN:
+                int price = checkout.getVerifiedOnlinePrice();
+                if (price != -1) {
+                    project.getGooglePayHelper().requestPayment(price);
+                } else {
+                    checkout.abort();
+                }
+                break;
             case PAYMENT_APPROVED:
                 if (currentState == Checkout.State.PAYMENT_APPROVED) {
                     break;
@@ -195,6 +207,9 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
+                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                break;
+            case PAYMENT_PROCESSING_ERROR:
                 callback.execute(SnabbleUI.Action.GO_BACK, null);
                 break;
             case DENIED_BY_PAYMENT_PROVIDER:
