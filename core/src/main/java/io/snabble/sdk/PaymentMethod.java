@@ -80,5 +80,16 @@ public enum PaymentMethod {
         return null;
     }
 
+    public String id() {
+        try {
+            SerializedName serializedName = PaymentMethod.class.getField(name()).getAnnotation(SerializedName.class);
+            if (serializedName != null) {
+                return serializedName.value();
+            }
+        } catch (Exception e) {
 
+        }
+
+        return null;
+    }
 }

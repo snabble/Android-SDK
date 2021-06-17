@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.snabble.sdk.*;
+import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
@@ -143,14 +144,11 @@ public class PaymentSelectionHelper {
                 update();
             }
         });
-
-        project.getGooglePayHelper().isReadyToPay(isReadyToPay -> {
-            this.googlePayIsReady = isReadyToPay;
-            update();
-        });
     }
 
     private void update() {
+        updateGooglePayIsReadyToPay();
+
         paymentCredentials = paymentCredentialsStore.getAllWithoutKeyStoreValidation();
         updateEntries();
 
@@ -221,6 +219,36 @@ public class PaymentSelectionHelper {
         }
     }
 
+    private void updateGooglePayIsReadyToPay() {
+        if (cart != null) {
+            CheckoutApi.PaymentMethodInfo[] infos = cart.getAvailablePaymentMethods();
+            if (infos != null) {
+                GooglePayHelper googlePayHelper = project.getGooglePayHelper();
+                if (googlePayHelper != null) {
+                    for (CheckoutApi.PaymentMethodInfo info : cart.getAvailablePaymentMethods()) {
+                        if (info.id.equals(PaymentMethod.GOOGLE_PAY.id())) {
+                            googlePayHelper.setUseTestEnvironment(info.isTesting);
+                            break;
+                        }
+                    }
+
+                    project.getGooglePayHelper().isReadyToPay(isReadyToPay -> {
+                        if (googlePayIsReady != isReadyToPay) {
+                            googlePayIsReady = isReadyToPay;
+                            update();
+                        }
+                    });
+                } else {
+                    googlePayIsReady = false;
+                }
+            } else {
+                googlePayIsReady = false;
+            }
+        } else {
+            googlePayIsReady = false;
+        }
+    }
+
     private void save(Entry e) {
         String json = GsonHolder.get().toJson(e);
 
@@ -265,6 +293,8 @@ public class PaymentSelectionHelper {
         for (final CheckoutApi.PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
             PaymentMethod paymentMethod = PaymentMethod.fromString(paymentMethodInfo.id);
             if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
+                availablePaymentMethodsList.add(paymentMethod);
+            } else if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
                 availablePaymentMethodsList.add(paymentMethod);
             }
         }

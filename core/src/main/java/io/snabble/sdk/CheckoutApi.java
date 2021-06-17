@@ -162,6 +162,7 @@ public class CheckoutApi {
 
     public static class PaymentMethodInfo {
         public String id;
+        public boolean isTesting = true; // TODO: false
         public String[] acceptedOriginTypes;
     }
 
@@ -180,6 +181,8 @@ public class CheckoutApi {
     }
 
     public enum State {
+        @SerializedName("unauthorized")
+        UNAUTHORIZED,
         @SerializedName("pending")
         PENDING,
         @SerializedName("processing")

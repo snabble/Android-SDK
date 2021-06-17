@@ -19,15 +19,12 @@ import java.lang.Exception
 class GooglePayHelper(
     val project: Project,
     val context: Context,
-    val useTestEnvironment: Boolean = false,
 ) {
-    private var googlePayClient: PaymentsClient
+    private var googlePayClient: PaymentsClient = createPaymentsClient(false)
 
-    init {
-        googlePayClient = createPaymentsClient(true)
-    }
+    private fun createPaymentsClient(useTestEnvironment: Boolean): PaymentsClient {
+        Logger.d("Create PaymentsClient for project: ${project.name}, ${if (useTestEnvironment) "TESTING" else ""}")
 
-    private fun createPaymentsClient(useTestEnvironment: Boolean = false): PaymentsClient {
         val env = if (useTestEnvironment) {
             WalletConstants.ENVIRONMENT_TEST
         } else {
@@ -39,6 +36,13 @@ class GooglePayHelper(
             .build()
 
         return Wallet.getPaymentsClient(Snabble.getInstance().application, walletOptions)
+    }
+
+    fun setUseTestEnvironment(boolean: Boolean) {
+        val isUsingTestEnvironment = googlePayClient.apiOptions.environment == WalletConstants.ENVIRONMENT_TEST
+        if (isUsingTestEnvironment != boolean) {
+            googlePayClient = createPaymentsClient(boolean)
+        }
     }
 
     private val allowedCardNetworks = JsonArray().apply {
@@ -130,15 +134,20 @@ class GooglePayHelper(
     fun isReadyToPay(isReadyToPayListener: IsReadyToPayListener) {
         val request = IsReadyToPayRequest.fromJson(GsonHolder.get().toJson(isReadyToPayRequest()))
 
-        val task = googlePayClient.isReadyToPay(request)
-        task.addOnCompleteListener { completedTask ->
-            try {
-                completedTask.getResult(ApiException::class.java)?.let {
-                    isReadyToPayListener.isReadyToPay(it)
+        val googlePayClient = googlePayClient
+        if (googlePayClient != null) {
+            val task = googlePayClient.isReadyToPay(request)
+            task.addOnCompleteListener { completedTask ->
+                try {
+                    completedTask.getResult(ApiException::class.java)?.let {
+                        isReadyToPayListener.isReadyToPay(it)
+                    }
+                } catch (exception: ApiException) {
+                    isReadyToPayListener.isReadyToPay(false)
                 }
-            } catch (exception: ApiException) {
-                isReadyToPayListener.isReadyToPay(false)
             }
+        } else {
+            isReadyToPayListener.isReadyToPay(false)
         }
     }
 
@@ -157,7 +166,8 @@ class GooglePayHelper(
         val paymentDataRequestJson = getPaymentDataRequest(priceToPay)
 
         val request = PaymentDataRequest.fromJson(GsonHolder.get().toJson(paymentDataRequestJson))
-        if (request != null) {
+        val googlePayClient = googlePayClient
+        if (request != null && googlePayClient != null) {
             val task = googlePayClient.loadPaymentData(request)
             AutoResolveHelper.resolveTask(task, activity, requestCode)
             return true

@@ -549,8 +549,6 @@ public class Checkout {
     }
 
     private boolean handleProcessResponse() {
-        Logger.d("poll");
-
         if (checkoutProcess.aborted) {
             Logger.d("Payment aborted");
             notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
@@ -583,7 +581,8 @@ public class Checkout {
                     return false;
                 }
             }
-        } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING) {
+        } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING
+                || checkoutProcess.paymentState == CheckoutApi.State.UNAUTHORIZED) {
             if (hasAnyFulfillmentFailed()) {
                 checkoutApi.abort(checkoutProcess, null);
                 notifyStateChanged(State.PAYMENT_ABORTED);
@@ -593,10 +592,12 @@ public class Checkout {
 
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
+                shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
                 return true;
             } else if (checkoutProcess.paymentApproval != null && !checkoutProcess.paymentApproval) {
                 Logger.d("Payment denied by payment provider");
+                shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
                 return true;
             }

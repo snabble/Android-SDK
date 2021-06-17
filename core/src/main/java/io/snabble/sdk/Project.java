@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -103,7 +105,13 @@ public class Project {
         checkout = new Checkout(this);
         events = new Events(this);
         assets = new Assets(this);
-        googlePayHelper = new GooglePayHelper(this, Snabble.getInstance().getApplication(), true);
+
+        for (PaymentMethod paymentMethod : getAvailablePaymentMethods()) {
+            if (paymentMethod == PaymentMethod.GOOGLE_PAY) {
+                googlePayHelper = new GooglePayHelper(this, Snabble.getInstance().getApplication());
+                break;
+            }
+        }
     }
 
     void parse(JsonObject jsonObject) {
@@ -507,6 +515,7 @@ public class Project {
         return coupons;
     }
 
+    @Nullable
     public GooglePayHelper getGooglePayHelper() {
         return googlePayHelper;
     }
