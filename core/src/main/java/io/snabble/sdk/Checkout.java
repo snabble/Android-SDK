@@ -222,7 +222,7 @@ public class Checkout {
     }
 
     public void resume() {
-        if (lastState == Checkout.State.WAIT_FOR_APPROVAL) {
+        if (lastState == Checkout.State.WAIT_FOR_APPROVAL || lastState == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN) {
             notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
             pollForResult();
         }
@@ -264,6 +264,7 @@ public class Checkout {
         paymentMethod = null;
         priceToPay = 0;
         invalidProducts = null;
+        storedAuthorizePaymentRequest = null;
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
 
@@ -566,7 +567,11 @@ public class Checkout {
                 authorizePaymentRequestFailed = false;
                 authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin);
             } else {
-                notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN);
+                if (storedAuthorizePaymentRequest != null) {
+                    authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin);
+                } else {
+                    notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN);
+                }
             }
 
             return false;
