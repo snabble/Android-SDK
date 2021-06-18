@@ -4,12 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 
-import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -17,10 +14,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -34,8 +33,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 
-@RunWith(AndroidJUnit4.class)
-@LargeTest
+@RunWith(RobolectricTestRunner.class)
 public class SnabbleSdkTest {
     protected Project project;
     protected Context context;
@@ -43,23 +41,31 @@ public class SnabbleSdkTest {
 
     protected static Buffer productDbBuffer;
 
+    protected static Buffer loadBuffer(String name) throws IOException {
+        final Buffer buffer = new Buffer();
+        try(InputStream stream = buffer.getClass().getClassLoader().getResourceAsStream(name)) {
+            buffer.readFrom(stream);
+        }
+        return buffer;
+    }
+
+    protected static String loadSql(String name) throws IOException {
+        return loadBuffer(name + ".sql").readString(StandardCharsets.UTF_8);
+    }
+
+    protected InputStream getInputStream(String name) {
+        return getClass().getClassLoader().getResourceAsStream(name);
+    }
+
     @BeforeClass
     public static void setupMockWebServer() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
-
         mockWebServer = new MockWebServer();
         mockWebServer.start();
 
-        final String metadataJson = IOUtils.toString(context.getAssets().open("metadata.json"), Charset.forName("UTF-8"));
-
-        final Buffer product1Buffer = new Buffer();
-        product1Buffer.readFrom(context.getAssets().open("product.json"));
-
-        final Buffer product1OtherPriceBuffer = new Buffer();
-        product1OtherPriceBuffer.readFrom(context.getAssets().open("product_otherprice.json"));
-
-        final Buffer product2Buffer = new Buffer();
-        product2Buffer.readFrom(context.getAssets().open("product2.json"));
+        final Buffer metadataJson = loadBuffer("metadata.json");
+        final Buffer product1Buffer = loadBuffer("product.json");
+        final Buffer product1OtherPriceBuffer = loadBuffer("product_otherprice.json");
+        final Buffer product2Buffer = loadBuffer("product2.json");
 
         final Dispatcher dispatcher = new Dispatcher() {
             @Override
@@ -128,6 +134,9 @@ public class SnabbleSdkTest {
 
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
+        // Disable close guard warnings
+        StrictMode.enableDefaults();
+
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         withDb("test_1_25.sqlite3");
     }
@@ -182,8 +191,7 @@ public class SnabbleSdkTest {
     }
 
     public void prepareUpdateDb(String assetPath) throws IOException {
-        productDbBuffer = new Buffer();
-        productDbBuffer.readFrom(context.getAssets().open(assetPath));
+        productDbBuffer = loadBuffer(assetPath);
     }
 
     @After
