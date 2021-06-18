@@ -124,6 +124,8 @@ public class Checkout {
     private final CheckoutRetryer checkoutRetryer;
     private Future<?> currentPollFuture;
     private final PaymentOriginCandidateHelper paymentOriginCandidateHelper;
+    private CheckoutApi.AuthorizePaymentRequest storedAuthorizePaymentRequest;
+    private boolean authorizePaymentRequestFailed;
 
     Checkout(Project project) {
         this.project = project;
@@ -404,18 +406,19 @@ public class Checkout {
     public void authorizePayment(String encryptedOrigin) {
         CheckoutApi.AuthorizePaymentRequest authorizePaymentRequest = new CheckoutApi.AuthorizePaymentRequest();
         authorizePaymentRequest.encryptedOrigin = encryptedOrigin;
+        storedAuthorizePaymentRequest = authorizePaymentRequest;
 
         checkoutApi.authorizePayment(checkoutProcess,
                 authorizePaymentRequest,
                 new CheckoutApi.AuthorizePaymentResult() {
-            @Override
+                    @Override
             public void success() {
                 // ignore
             }
 
             @Override
             public void error() {
-                abort(); // TODO maybe should try again or ask user?
+                authorizePaymentRequestFailed = true;
             }
         });
     }
@@ -559,7 +562,13 @@ public class Checkout {
 
         String authorizePaymentUrl = checkoutProcess.getAuthorizePaymentLink();
         if (authorizePaymentUrl != null) {
-            notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN);
+            if (authorizePaymentRequestFailed) {
+                authorizePaymentRequestFailed = false;
+                authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin);
+            } else {
+                notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN);
+            }
+
             return false;
         }
 
@@ -819,8 +828,12 @@ public class Checkout {
     }
 
     private void notifyStateChanged(final State state) {
+        notifyStateChanged(state, false);
+    }
+
+    private void notifyStateChanged(final State state, boolean repeat) {
         synchronized (Checkout.this) {
-            if (this.state != state) {
+            if (this.state != state || repeat) {
                 this.lastState = this.state;
                 this.state = state;
 

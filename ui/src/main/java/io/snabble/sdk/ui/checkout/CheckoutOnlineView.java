@@ -83,9 +83,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         progressIndicator = findViewById(R.id.progress_indicator);
 
         cancel.setOnClickListener(v -> {
-            checkout.abort();
-            cancelProgress.setVisibility(View.VISIBLE);
-            cancel.setEnabled(false);
+            abort();
         });
 
         if (SnabbleUI.getActionBar() != null) {
@@ -146,6 +144,12 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         }
     }
 
+    private void abort() {
+        checkout.abort();
+        cancelProgress.setVisibility(View.VISIBLE);
+        cancel.setEnabled(false);
+    }
+
     @Override
     public void onStateChanged(Checkout.State state) {
         if (state == currentState) {
@@ -193,9 +197,14 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             case REQUEST_PAYMENT_AUTHORIZATION_TOKEN:
                 int price = checkout.getVerifiedOnlinePrice();
                 if (price != -1) {
-                    project.getGooglePayHelper().requestPayment(price);
+                    GooglePayHelper googlePayHelper = project.getGooglePayHelper();
+                    if (googlePayHelper != null) {
+                        project.getGooglePayHelper().requestPayment(price);
+                    } else {
+                        abort();
+                    }
                 } else {
-                    checkout.abort();
+                    abort();
                 }
                 break;
             case PAYMENT_APPROVED:
