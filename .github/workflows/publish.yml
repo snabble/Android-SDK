@@ -16,8 +16,6 @@ jobs:
           java-version: 12
       - name: Build
         run: ./gradlew build
-      - name: Tests
-        run: ./gradlew test
       - name: Publish to Maven Repository
         run: |
           eval $(ssh-agent -s)

@@ -18,5 +18,3 @@ jobs:
           java-version: 12
       - name: Build
         run: ./gradlew build
-      - name: Tests
-        run: ./gradlew test
