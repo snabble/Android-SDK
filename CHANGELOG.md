@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.38.0]
+
+### Added
+- Added stackable scan messages with a new Style
+
+### Deprecated
+- Deprecated UIUtils.showTopDownInfoBox
+
 ## [0.37.12]
 
 ### Added

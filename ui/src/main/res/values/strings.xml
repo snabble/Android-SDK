@@ -152,7 +152,7 @@
     <string name="Snabble.Scanner.Camera.allowAccess">Sorry, we\'ll need to access your camera to scan barcodes. Please allow this in the settings and return here.</string>
     <string name="Snabble.Scanner.couponAdded">Added coupon “%s”</string>
     <string name="Snabble.Scanner.duplicateDepositScanned">Each deposit slip can only be scanned once.</string>
-    <string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
+    <string name="Snabble.Scanner.enterBarcode">Enter code</string>
     <string name="Snabble.Scanner.enterCodeButton">Enter\nbarcode</string>
     <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
     <string name="Snabble.Scanner.firstScan">Scan your first product. Place the barcode in front of your camera.</string>
@@ -189,7 +189,7 @@
     <string name="Snabble.Shoppingcart.coupon">Coupon</string>
     <string name="Snabble.Shoppingcart.coupons">Coupons</string>
     <string name="Snabble.Shoppingcart.deposit">Deposit</string>
-    <string name="Snabble.Shoppingcart.discounts">Total discounts</string>
+    <string name="Snabble.Shoppingcart.discounts">Discounts</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Scan now</string>
     <string name="Snabble.Shoppingcart.emptyState.description">Visit a store that supports Snabble and scan the barcodes of products you wish to purchase.</string>
     <string name="Snabble.Shoppingcart.emptyState.restartButtonTitle">Start new shopping trip</string>

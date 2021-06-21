@@ -80,7 +80,7 @@ public class UIUtils {
     }
 
     public static int getDurationByLength(String text) {
-        return Math.max(Math.min(text.length() * 70, 2000), 7000);
+        return Math.min(Math.max(text.length() * 70, 4000), 7000);
     }
 
     public static int getColorByAttribute(Context context, @AttrRes int attrResId) {
@@ -89,6 +89,7 @@ public class UIUtils {
         return typedValue.data;
     }
 
+    @Deprecated
     public static TopDownInfoBoxController showTopDownInfoBox(ViewGroup parent, String text, int duration, int type, int offsetY) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final TextView info = (TextView)inflater.inflate(R.layout.snabble_view_info, parent, false);
