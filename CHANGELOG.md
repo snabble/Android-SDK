@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.38.1]
+
+### Updated
+- Updated Datatrans SDK to v1.4.0
+
+### Fixed
+- Product searches of sku's are now also working on pressing the imeActionDone.
+
 ## [0.38.0]
 
 ### Added
