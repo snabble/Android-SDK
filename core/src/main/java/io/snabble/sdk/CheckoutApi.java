@@ -254,6 +254,7 @@ public class CheckoutApi {
         public PaymentMethod paymentMethod;
         public boolean modified;
         public PaymentInformation paymentInformation;
+        public JsonObject paymentPreauthInformation;
         public ExitToken exitToken;
         public State paymentState;
         public PaymentResult paymentResult;
