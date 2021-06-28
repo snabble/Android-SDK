@@ -202,7 +202,9 @@ class ShoppingCartUpdater {
 
                         if (lineItem.type == CheckoutApi.LineItemType.COUPON) {
                             ShoppingCart.Item refersTo = cart.getByItemId(lineItem.refersTo);
-                            refersTo.setManualCouponApplied(lineItem.redeemed);
+                            if (refersTo != null) {
+                                refersTo.setManualCouponApplied(lineItem.redeemed);
+                            }
                         }
                     }
                 }
