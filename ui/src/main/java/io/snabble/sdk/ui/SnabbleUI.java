@@ -61,8 +61,6 @@ public class SnabbleUI {
             }
         }
 
-        
-
         currentProject = project;
         projectLiveData.postValue(project);
 

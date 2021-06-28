@@ -11,15 +11,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.googlepay.GooglePayHelper;
-import io.snabble.sdk.googlepay.GooglePayHelperActivity;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
@@ -28,7 +30,7 @@ import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 
-public class CheckoutOnlineView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutOnlineView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener, LifecycleObserver {
     private Checkout checkout;
     private BarcodeView checkoutIdCode;
     private View cancel;
@@ -104,6 +106,11 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         onStateChanged(checkout.getState());
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    public void onResume() {
+        onStateChanged(checkout.getState());
+    }
+
     @SuppressLint("DrawAllocation")
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -133,6 +140,11 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         if (checkout != null) {
             checkout.addOnCheckoutStateChangedListener(this);
         }
+
+        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
+        if (fragmentActivity != null) {
+            fragmentActivity.getLifecycle().addObserver(this);
+        }
     }
 
     @Override
@@ -141,6 +153,11 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
 
         if (checkout != null) {
             checkout.removeOnCheckoutStateChangedListener(this);
+        }
+
+        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
+        if (fragmentActivity != null) {
+            fragmentActivity.getLifecycle().removeObserver(this);
         }
     }
 

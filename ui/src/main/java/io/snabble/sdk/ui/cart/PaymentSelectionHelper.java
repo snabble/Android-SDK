@@ -221,11 +221,11 @@ public class PaymentSelectionHelper {
 
     private void updateGooglePayIsReadyToPay() {
         if (cart != null) {
-            CheckoutApi.PaymentMethodInfo[] infos = cart.getAvailablePaymentMethods();
-            if (infos != null) {
+            CheckoutApi.PaymentMethodInfo[] availablePaymentMethods = cart.getAvailablePaymentMethods();
+            if (availablePaymentMethods != null) {
                 GooglePayHelper googlePayHelper = project.getGooglePayHelper();
                 if (googlePayHelper != null) {
-                    for (CheckoutApi.PaymentMethodInfo info : cart.getAvailablePaymentMethods()) {
+                    for (CheckoutApi.PaymentMethodInfo info : availablePaymentMethods) {
                         if (info.id.equals(PaymentMethod.GOOGLE_PAY.id())) {
                             googlePayHelper.setUseTestEnvironment(info.isTesting);
                             break;
@@ -340,6 +340,10 @@ public class PaymentSelectionHelper {
         }
 
         for (PaymentMethod pm : projectPaymentMethods) {
+            if (!availablePaymentMethodsList.contains(pm)) {
+                continue;
+            }
+
             if (pm == PaymentMethod.GOOGLE_PAY && !googlePayIsReady) {
                 continue;
             }

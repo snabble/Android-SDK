@@ -162,7 +162,7 @@ public class CheckoutApi {
 
     public static class PaymentMethodInfo {
         public String id;
-        public boolean isTesting = true; // TODO: false
+        public boolean isTesting = false;
         public String[] acceptedOriginTypes;
     }
 

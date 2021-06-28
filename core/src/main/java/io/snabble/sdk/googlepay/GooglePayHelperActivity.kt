@@ -1,6 +1,5 @@
 package io.snabble.sdk.googlepay
 
-import android.app.Instrumentation
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
