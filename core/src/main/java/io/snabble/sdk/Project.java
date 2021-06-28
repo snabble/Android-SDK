@@ -394,6 +394,10 @@ public class Project {
         return urls.get("datatransTokenization");
     }
 
+    public String getShoppingListDbUrl() {
+        return urls.get("shoppingListDB");
+    }
+
     public BarcodeFormat[] getSupportedBarcodeFormats() {
         return supportedBarcodeFormats;
     }

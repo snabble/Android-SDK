@@ -12,6 +12,15 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <io.snabble.sdk.ui.views.MessageBoxStackView
+        android:id="@+id/messages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

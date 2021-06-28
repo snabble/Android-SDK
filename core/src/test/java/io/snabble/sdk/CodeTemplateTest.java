@@ -2,12 +2,15 @@ package io.snabble.sdk;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.math.BigDecimal;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
+@RunWith(RobolectricTestRunner.class)
 public class CodeTemplateTest {
     @Test
     public void testTemplateParser() {
