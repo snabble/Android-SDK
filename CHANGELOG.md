@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.0]
+
+### Added
+- Added support for Google Pay
+
 ## [0.38.1]
 
 ### Updated
