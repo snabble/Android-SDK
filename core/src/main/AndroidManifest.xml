@@ -7,4 +7,8 @@
         <activity android:name=".googlepay.GooglePayHelperActivity"
             android:theme="@style/Snabble.Theme.GooglePayOverlay"/>
     </application>
+
+    <queries>
+        <package android:name="com.google.android.apps.walletnfcrel" />
+    </queries>
 </manifest>

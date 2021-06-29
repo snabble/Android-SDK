@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.2]
+
+### Fixed
+- Added package query for Android 11+
+
 ## [0.39.1]
 
 ### Added
