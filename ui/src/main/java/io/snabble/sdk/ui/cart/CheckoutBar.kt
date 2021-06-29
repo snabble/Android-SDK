@@ -1,8 +1,12 @@
 package io.snabble.sdk.ui.cart
 
 import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.KeyEvent
@@ -82,7 +86,20 @@ class CheckoutBar @JvmOverloads constructor(
         }
 
         googlePayButton.setOneShotClickListener {
-            payButtonClick()
+            val packageName = "com.google.android.apps.walletnfcrel"
+            val pm = context.packageManager
+            try {
+                pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+                payButtonClick()
+            } catch (e: PackageManager.NameNotFoundException) {
+                try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=$packageName")))
+                } catch (e: ActivityNotFoundException) {
+                    context.startActivity(Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
+                }
+            }
         }
 
         cart.addListener(cartChangeListener)
