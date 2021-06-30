@@ -1111,7 +1111,7 @@ public class ProductDatabase {
         }
     }
 
-    private String bindArgs(String sql, String[] args) {
+    public static String bindArgs(String sql, String[] args) {
         if (args == null) {
             return sql;
         }

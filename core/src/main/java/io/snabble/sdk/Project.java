@@ -99,6 +99,10 @@ public class Project {
                 .build();
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
+        // Generate FTS if the shopping list is used and there is no shopping list database
+        if (snabble.getConfig().isUsingShoppingList && getShoppingListDbUrl() == null) {
+            generateSearchIndex = true;
+        }
 
         productDatabase = new ProductDatabase(this, id + ".sqlite3", generateSearchIndex);
         shoppingCartStorage = new ShoppingCartStorage(this);
