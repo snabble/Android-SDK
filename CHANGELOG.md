@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.3]
+
+### Fixed
+- Fixed checkouts not aborting when age verification check is not passing
+
 ## [0.39.2]
 
 ### Fixed

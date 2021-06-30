@@ -433,6 +433,10 @@ public class Checkout {
                     continue;
                 }
 
+                if (check.state == CheckoutApi.State.FAILED) {
+                    return false;
+                }
+
                 if (check.performedBy == CheckoutApi.Performer.APP) {
                     if (check.type == CheckoutApi.CheckType.MIN_AGE) {
                         Logger.d("Verifying age...");
@@ -602,6 +606,12 @@ public class Checkout {
                 notifyStateChanged(State.PAYMENT_ABORTED);
                 notifyFulfillmentDone();
                 return true;
+            }
+
+            if (!runChecks(checkoutProcess)) {
+                Logger.d("Payment denied by supervisor");
+                shoppingCart.generateNewUUID();
+                notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
             }
 
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
