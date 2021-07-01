@@ -400,10 +400,11 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testRecoverFromFileCorruptions() throws IOException, Snabble.SnabbleException, InterruptedException {
         withDb("corrupt.sqlite3");
-        Assert.assertNull(project.getProductDatabase().findBySku("1"));
+        Assert.assertNotNull(project.getProductDatabase().findBySku("1"));
 
         prepareUpdateDb("test_1_25.sqlite3");
         final CountDownLatch countDownLatch = new CountDownLatch(1);
+        boolean[] fail = new boolean[] {false};
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
             @Override
             public void success() {
@@ -412,11 +413,13 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
             @Override
             public void error() {
-                Assert.fail();
+                fail[0] = true;
+                countDownLatch.countDown();
             }
         });
 
         countDownLatch.await();
+        if(fail[0]) Assert.fail();
 
         Product product = project.getProductDatabase().findBySku("1");
 

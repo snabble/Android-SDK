@@ -433,7 +433,9 @@ public class ProductDatabase {
         tempDbFile.getParentFile().mkdirs();
 
         try {
-            IOUtils.copy(inputStream, new FileOutputStream(tempDbFile));
+            FileOutputStream fos = new FileOutputStream(tempDbFile);
+            IOUtils.copy(inputStream, fos);
+            fos.close();
             swap(tempDbFile);
         } catch (IOException e) {
             project.logErrorEvent("Could not apply full update: %s", e.getMessage());
@@ -665,8 +667,6 @@ public class ProductDatabase {
 
         ProductDatabase otherDb = new ProductDatabase(project, otherDbFile.getName());
         try {
-            otherDb.open();
-
             if (!otherDb.verify()) {
                 ok = false;
             }
@@ -674,16 +674,17 @@ public class ProductDatabase {
             ok = false;
         }
 
-        otherDb.close();
-
         if (ok) {
             otherDb.dropFTSIndex();
             otherDb.createFTSIndexIfNecessary();
         } else {
+            otherDb.close();
             Logger.e("Could not swap database: malformed database or unknown schema version");
             application.deleteDatabase(otherDbFile.getName());
             return;
         }
+
+        otherDb.close();
 
         synchronized (dbLock) {
             close();

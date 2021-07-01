@@ -153,9 +153,6 @@ public class SnabbleSdkTest {
 
         prepareUpdateDb(testDbName);
 
-        FileUtils.deleteQuietly(context.getFilesDir());
-        FileUtils.deleteQuietly(new File(context.getFilesDir().getParentFile(), "/databases/"));
-
         final Snabble.Config config = new Snabble.Config();
         config.appId = "test";
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
