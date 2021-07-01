@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.4]
+
+### Added
+- Add configuration flag `isUsingShoppingList` to avoid creating a FTS when not required
+
 ## [0.39.3]
 
 ### Fixed
