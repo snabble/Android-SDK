@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.5]
+
+### Fixed
+- QR codes being cutoff when maxSizeMM is higher than available view space
+- Payment methods being shown to project that are not part of the project
+
+### Updated
+- Updated Datatrans SDK to v1.4.1
+
 ## [0.39.4]
 
 ### Added
