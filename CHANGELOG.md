@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.6]
+
+### Added
+- Added support for "manualDiscountFinalCode"
+
 ## [0.39.5]
 
 ### Fixed
