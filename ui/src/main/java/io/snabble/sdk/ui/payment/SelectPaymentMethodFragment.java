@@ -65,7 +65,9 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         Set<PaymentMethod> availablePaymentMethods = new HashSet<>();
         for (Project project : Snabble.getInstance().getProjects()) {
-            availablePaymentMethods.addAll(Arrays.asList(project.getAvailablePaymentMethods()));
+            if (project.getId().equals(projectId)) {
+                availablePaymentMethods.addAll(Arrays.asList(project.getAvailablePaymentMethods()));
+            }
         }
 
         if (paymentMethods == null) {
