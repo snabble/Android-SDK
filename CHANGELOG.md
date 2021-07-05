@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.7]
+
+### Fixed
+- Reversed camera torch drawable
+
 ## [0.39.6]
 
 ### Added

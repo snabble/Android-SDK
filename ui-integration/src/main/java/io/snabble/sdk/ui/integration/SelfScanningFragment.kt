@@ -161,9 +161,9 @@ open class SelfScanningFragment : Fragment() {
     private fun updateTorchIcon() {
         val menuItem = optionsMenu?.findItem(R.id.snabble_action_torch)
         if (selfScanningView.isTorchEnabled) {
-            menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)
-        } else {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_on, null)
+        } else {
+            menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)
         }
     }
 
