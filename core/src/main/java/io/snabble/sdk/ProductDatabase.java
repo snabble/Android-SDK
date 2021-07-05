@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Stream;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
@@ -1379,36 +1378,6 @@ public class ProductDatabase {
                 "LIMIT 100", new String[]{
                 searchString + "*"
         }, true, cancellationSignal);
-    }
-
-    /**
-     * This function needs config value generateSearchIndex set to true
-     * <p>
-     * Returns a {@link Cursor} which can be iterated for items containing the given search
-     * string at the start of a word.
-     * <p>
-     * Matching is normalized, so "appl" finds products containing
-     * "Apple", "apple" and "Super apple", but not "Superapple".
-     *
-     * With this implementation you can JOIN own tables or add conditions and inject orders
-     *
-     * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
-     */
-    public Cursor searchByFoldedName(String attentionalFields, String searchString, CancellationSignal cancellationSignal,
-                                     String attentionalJoins, String attentionalConditions, String... attentionalArgs) {
-        return productQuery(attentionalFields, "JOIN searchByName ns ON ns.sku = p.sku " +
-                        attentionalJoins + " " +
-                        "WHERE ns.foldedName MATCH ? " +
-                        "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
-                        "AND p.weighing != " + Product.Type.DepositReturnVoucher.getDatabaseValue() + " " +
-                        "AND p.isDeposit = 0 " +
-                        "AND availability != 2 " +
-                        attentionalConditions + " " +
-                        "LIMIT 100",
-                Stream.of(new String[]{
-                        searchString + "*"
-                }, attentionalArgs).flatMap(Stream::of).toArray(String[]::new),
-                cancellationSignal);
     }
 
     /**
