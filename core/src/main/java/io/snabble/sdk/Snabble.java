@@ -725,15 +725,6 @@ public class Snabble {
         public boolean generateSearchIndex;
 
         /**
-         * If set to true, the SDK downloads the shopping list meta data are present or creates an
-         * full text index for the product data.
-         * <p>
-         * Note that this increases setup time of the ProductDatabase when there are no shopping
-         * list meta data, and it may not be immediately available offline.
-         */
-        public boolean isUsingShoppingList;
-
-        /**
          * The time that the database is allowed to be out of date. After the specified time in
          * milliseconds the database only uses online requests for asynchronous requests.
          *
