@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -49,6 +50,7 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.ui.views.MessageBoxStackView;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
@@ -68,7 +70,7 @@ public class SelfScanningView extends FrameLayout {
     private boolean isShowingHint;
     private boolean manualCameraControl;
     private int topDownInfoBoxOffset;
-    private UIUtils.TopDownInfoBoxController lastMessage;
+    private MessageBoxStackView messages;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -94,6 +96,7 @@ public class SelfScanningView extends FrameLayout {
 
         shoppingCart = project.getShoppingCart();
 
+        messages = findViewById(R.id.messages);
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
 
@@ -135,7 +138,10 @@ public class SelfScanningView extends FrameLayout {
         isInitialized = true;
         startBarcodeScanner(false);
 
-        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT)
+        );
     }
 
     private void showShoppingCart() {
@@ -162,10 +168,6 @@ public class SelfScanningView extends FrameLayout {
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
-        if (lastMessage != null) {
-            lastMessage.hide();
-            lastMessage = null;
-        }
         new ProductResolver.Builder(getContext())
                 .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
@@ -262,23 +264,21 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showInfo(final String text) {
-        Dispatch.mainThread(() ->
-                lastMessage = UIUtils.showTopDownInfoBox(
-                        SelfScanningView.this,
-                        text,
-                        UIUtils.getDurationByLength(text),
-                        UIUtils.INFO_NEUTRAL,
-                        topDownInfoBoxOffset));
+        Dispatch.mainThread(() -> messages.show(
+                text,
+                UIUtils.getDurationByLength(text),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoColor, null),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoTextColor, null)
+                ));
     }
 
     private void showWarning(final String text) {
-        Dispatch.mainThread(() ->
-                lastMessage = UIUtils.showTopDownInfoBox(
-                        SelfScanningView.this,
-                        text,
-                        UIUtils.getDurationByLength(text),
-                        UIUtils.INFO_WARNING,
-                        topDownInfoBoxOffset));
+        Dispatch.mainThread(() -> messages.show(
+                text,
+                UIUtils.getDurationByLength(text),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoColorWarning, null),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoTextColorWarning, null)
+        ));
     }
 
     public void setDefaultButtonVisibility(boolean visible) {

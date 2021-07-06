@@ -137,13 +137,13 @@ class Datatrans {
 
                 override fun onTransactionError(exception: TransactionException) {
                     Dispatch.mainThread {
-                        SnabbleUI.getProject().events.logError("Datatrans TransactionException: " + exception.message)
+                        project.events.logError("Datatrans TransactionException: " + exception.message)
                         showError(activity, paymentMethod)
                     }
                 }
             }
             transaction.options.appCallbackScheme = "snabble"
-            transaction.options.isTesting = tokenizationResponse.isTesting ?: true
+            transaction.options.isTesting = tokenizationResponse.isTesting ?: false
             transaction.options.useCertificatePinning = true
             TransactionRegistry.startTransaction(activity, transaction)
         }

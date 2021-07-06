@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Stream;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
@@ -433,7 +432,9 @@ public class ProductDatabase {
         tempDbFile.getParentFile().mkdirs();
 
         try {
-            IOUtils.copy(inputStream, new FileOutputStream(tempDbFile));
+            FileOutputStream fos = new FileOutputStream(tempDbFile);
+            IOUtils.copy(inputStream, fos);
+            fos.close();
             swap(tempDbFile);
         } catch (IOException e) {
             project.logErrorEvent("Could not apply full update: %s", e.getMessage());
@@ -665,8 +666,6 @@ public class ProductDatabase {
 
         ProductDatabase otherDb = new ProductDatabase(project, otherDbFile.getName());
         try {
-            otherDb.open();
-
             if (!otherDb.verify()) {
                 ok = false;
             }
@@ -674,16 +673,17 @@ public class ProductDatabase {
             ok = false;
         }
 
-        otherDb.close();
-
         if (ok) {
             otherDb.dropFTSIndex();
             otherDb.createFTSIndexIfNecessary();
         } else {
+            otherDb.close();
             Logger.e("Could not swap database: malformed database or unknown schema version");
             application.deleteDatabase(otherDbFile.getName());
             return;
         }
+
+        otherDb.close();
 
         synchronized (dbLock) {
             close();
@@ -1111,7 +1111,7 @@ public class ProductDatabase {
         }
     }
 
-    private String bindArgs(String sql, String[] args) {
+    public static String bindArgs(String sql, String[] args) {
         if (args == null) {
             return sql;
         }
@@ -1378,36 +1378,6 @@ public class ProductDatabase {
                 "LIMIT 100", new String[]{
                 searchString + "*"
         }, true, cancellationSignal);
-    }
-
-    /**
-     * This function needs config value generateSearchIndex set to true
-     * <p>
-     * Returns a {@link Cursor} which can be iterated for items containing the given search
-     * string at the start of a word.
-     * <p>
-     * Matching is normalized, so "appl" finds products containing
-     * "Apple", "apple" and "Super apple", but not "Superapple".
-     *
-     * With this implementation you can JOIN own tables or add conditions and inject orders
-     *
-     * @param cancellationSignal Calls can be cancelled with a {@link CancellationSignal}. Can be null.
-     */
-    public Cursor searchByFoldedName(String attentionalFields, String searchString, CancellationSignal cancellationSignal,
-                                     String attentionalJoins, String attentionalConditions, String... attentionalArgs) {
-        return productQuery(attentionalFields, "JOIN searchByName ns ON ns.sku = p.sku " +
-                        attentionalJoins + " " +
-                        "WHERE ns.foldedName MATCH ? " +
-                        "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
-                        "AND p.weighing != " + Product.Type.DepositReturnVoucher.getDatabaseValue() + " " +
-                        "AND p.isDeposit = 0 " +
-                        "AND availability != 2 " +
-                        attentionalConditions + " " +
-                        "LIMIT 100",
-                Stream.of(new String[]{
-                        searchString + "*"
-                }, attentionalArgs).flatMap(Stream::of).toArray(String[]::new),
-                cancellationSignal);
     }
 
     /**

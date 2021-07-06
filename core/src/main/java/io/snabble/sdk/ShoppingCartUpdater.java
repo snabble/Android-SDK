@@ -27,6 +27,7 @@ class ShoppingCartUpdater {
     private Handler handler;
     private CheckoutApi.PaymentMethodInfo[] lastAvailablePaymentMethods;
     private boolean isUpdated;
+    private int successfulModCount = -1;
 
     ShoppingCartUpdater(Project project, ShoppingCart shoppingCart) {
         this.project = project;
@@ -38,7 +39,7 @@ class ShoppingCartUpdater {
     private Runnable updatePriceRunnable = new Runnable() {
         @Override
         public void run() {
-            update();
+            update(false);
         }
     };
 
@@ -46,7 +47,7 @@ class ShoppingCartUpdater {
         return lastAvailablePaymentMethods;
     }
 
-    public void update() {
+    public void update(boolean force) {
         Logger.d("Updating prices...");
 
         if (cart.size() == 0) {
@@ -56,6 +57,10 @@ class ShoppingCartUpdater {
         }
 
         final int modCount = cart.getModCount();
+        if (modCount == successfulModCount && !force) {
+            return;
+        }
+
         Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
             @Override
             public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
@@ -194,6 +199,13 @@ class ShoppingCartUpdater {
                         if (add) {
                             cart.insert(cart.newItem(lineItem), cart.size(), false);
                         }
+
+                        if (lineItem.type == CheckoutApi.LineItemType.COUPON) {
+                            ShoppingCart.Item refersTo = cart.getByItemId(lineItem.refersTo);
+                            if (refersTo != null) {
+                                refersTo.setManualCouponApplied(lineItem.redeemed);
+                            }
+                        }
                     }
                 }
             }
@@ -213,6 +225,8 @@ class ShoppingCartUpdater {
             } else {
                 cart.setOnlineTotalPrice(checkoutInfo.price.price);
             }
+
+            successfulModCount = modCount;
 
             Logger.d("Successfully updated prices");
         } catch (Exception e) {

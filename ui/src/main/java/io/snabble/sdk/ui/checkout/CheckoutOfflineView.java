@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.checkout;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -48,6 +49,7 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
     private View upArrow;
     private CodeListViewAdapter viewPagerAdapter;
     private boolean isSmallDevice;
+    private View viewPagerContainer;
 
     public CheckoutOfflineView(Context context) {
         super(context);
@@ -71,11 +73,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
         inflate(getContext(), R.layout.snabble_view_checkout_offline, this);
 
         maxSizeMm = options.maxSizeMm;
-
-        // too large, use normal scaling too save memory
-        if (maxSizeMm > 100) {
-            maxSizeMm = 0;
-        }
 
         encodedCodesGenerator = new EncodedCodesGenerator(options);
 
@@ -111,6 +108,8 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
         upArrow = findViewById(R.id.arrow);
 
         viewPager = findViewById(R.id.view_pager);
+        viewPagerContainer = findViewById(R.id.view_pager_container);
+
         viewPagerAdapter = new CodeListViewAdapter();
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -148,8 +147,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
             checkoutId.setVisibility(View.GONE);
         }
 
-        project.getAssets().get("checkout-offline", this::setHelperImage);
-
         checkout = SnabbleUI.getProject().getCheckout();
         onStateChanged(checkout.getState());
     }
@@ -174,6 +171,8 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                     project.getAssets().get("checkout-offline", this::setHelperImage);
                 });
             }
+
+            viewPagerAdapter.notifyDataSetChanged();
         }
     }
 
@@ -279,15 +278,25 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             int margin = Math.round(16 * getResources().getDisplayMetrics().density);
             if (maxSizeMm > 0) {
-                // TODO what if maxSizeMm is bigger than screen?
                 DisplayMetrics dm = getResources().getDisplayMetrics();
                 float pixelsPerMmX = dm.xdpi / 25.4f;
+
                 int size = (int) (pixelsPerMmX * maxSizeMm);
+                Rect rect = new Rect();
+                viewPagerContainer.getGlobalVisibleRect(rect);
+
+                int w = rect.width();
+                int h = rect.height();
+
+                if (size > w || size > h) {
+                    size = ViewGroup.LayoutParams.MATCH_PARENT;
+                }
 
                 FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         size,
                         Gravity.CENTER);
+
                 lp.leftMargin = margin;
                 lp.rightMargin = margin;
                 holder.barcodeView.setLayoutParams(lp);

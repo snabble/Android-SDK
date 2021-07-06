@@ -1,6 +1,103 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.7]
+
+### Fixed
+- Reversed camera torch drawable
+
+## [0.39.6]
+
+### Added
+- Added support for "manualDiscountFinalCode"
+
+## [0.39.5]
+
+### Fixed
+- QR codes being cutoff when maxSizeMM is higher than available view space
+- Payment methods being shown to project that are not part of the project
+
+### Updated
+- Updated Datatrans SDK to v1.4.1
+
+## [0.39.4]
+
+### Added
+- Add configuration flag `isUsingShoppingList` to avoid creating a FTS when not required
+
+## [0.39.3]
+
+### Fixed
+- Fixed checkouts not aborting when age verification check is not passing
+
+## [0.39.2]
+
+### Fixed
+- Added package query for Android 11+
+
+## [0.39.1]
+
+### Added
+- Jump to play store if google pay is not installed
+
+## [0.39.0]
+
+### Added
+- Added support for Google Pay
+
+### Fixed
+- Fixed exceptions when using coupons that affect the whole cart
+
+## [0.38.1]
+
+### Updated
+- Updated Datatrans SDK to v1.4.0
+
+### Fixed
+- Product searches of sku's are now also working on pressing the imeActionDone.
+
+## [0.38.0]
+
+### Added
+- Added stackable scan messages with a new Style
+
+### Deprecated
+- Deprecated UIUtils.showTopDownInfoBox
+
+## [0.37.12]
+
+### Added
+- Added indicator if an manual discount was applied or not
+
+### Fixed
+- Fixed pull to refresh in ShoppingCartView
+- Fixed selecting manual discounts resetting amount, even when no item is already in cart
+- Products with manual discounts are now editable
+
+## [0.37.11]
+
+### Fixed
+- Fixed crash when no TWINT or PostFinance payment method could be added
+
+## [0.37.10]
+
+### Changed
+- Changed default Datatrans environment to Production
+
+### Fixed
+- Fixed listing of TWINT and PostFinace Card payment methods when no credit card payment
+methods are available
+
+## [0.37.9]
+
+### Changed
+- Made credit card 3d secure hint locale aware
+
+## [0.37.8]
+
+### Fixed
+- Only update cart when it actually changed
+
 ## [0.37.7]
 
 ### Added

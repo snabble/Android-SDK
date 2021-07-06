@@ -12,6 +12,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_alignParentTop="true"
         android:orientation="vertical">
 
         <ImageView
@@ -43,12 +44,17 @@
             android:textSize="17sp"/>
     </LinearLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager"
+    <FrameLayout
+        android:id="@+id/view_pager_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/helper_container"
-        android:layout_above="@+id/checkout_id" />
+        android:layout_above="@+id/checkout_id">
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/checkout_id"

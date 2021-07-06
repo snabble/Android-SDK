@@ -19,11 +19,16 @@ public class EncodedCodesGenerator {
         Product product;
         int quantity;
         ScannedCode scannedCode;
+        boolean hasManualDiscount;
 
-        public ProductInfo(Product product, int quantity, ScannedCode scannedCode) {
+        public ProductInfo(Product product,
+                           int quantity,
+                           ScannedCode scannedCode,
+                           boolean hasManualDiscount) {
             this.product = product;
             this.quantity = quantity;
             this.scannedCode = scannedCode;
+            this.hasManualDiscount = hasManualDiscount;
         }
     }
 
@@ -32,6 +37,7 @@ public class EncodedCodesGenerator {
     private ArrayList<String> encodedCodes;
     private int codeCount;
     private boolean hasAgeRestrictedCode;
+    private boolean hasAppliedManualDiscount;
 
     public EncodedCodesGenerator(EncodedCodesOptions encodedCodesOptions) {
         encodedCodes = new ArrayList<>();
@@ -45,9 +51,9 @@ public class EncodedCodesGenerator {
         }
 
         if (options.repeatCodes) {
-            addScannableCode(code, false);
+            addScannableCode(code, false, false);
         } else {
-            addScannableCode("1" + options.countSeparator + code, false);
+            addScannableCode("1" + options.countSeparator + code, false, false);
         }
     }
 
@@ -71,7 +77,6 @@ public class EncodedCodesGenerator {
                         }
                     }
                 }
-
             } else {
                 Product product = item.getProduct();
                 if (product == null) {
@@ -80,7 +85,8 @@ public class EncodedCodesGenerator {
 
                 productInfos.add(new ProductInfo(product,
                         item.getQuantity(),
-                        item.getScannedCode()));
+                        item.getScannedCode(),
+                        item.isManualCouponApplied()));
             }
         }
 
@@ -98,8 +104,20 @@ public class EncodedCodesGenerator {
     }
 
     public ArrayList<String> generate() {
-        if (options.finalCode != null && options.finalCode.length() != 0) {
-            append(options.finalCode);
+        if (options.finalCode != null && !options.finalCode.isEmpty()) {
+            if (getCountSeparatorLength() > 0) {
+                append("1" + options.countSeparator + options.finalCode);
+            } else {
+                append(options.finalCode);
+            }
+        }
+
+        if (hasAppliedManualDiscount) {
+            if (getCountSeparatorLength() > 0) {
+                append("1" + options.countSeparator + options.manualDiscountFinalCode);
+            } else {
+                append(options.manualDiscountFinalCode);
+            }
         }
 
         finishCode();
@@ -161,9 +179,13 @@ public class EncodedCodesGenerator {
                                 .buildCode();
 
                         if (options.repeatCodes) {
-                            addScannableCode(scannedCode.getCode(), ageRestricted);
+                            addScannableCode(scannedCode.getCode(),
+                                    ageRestricted,
+                                    productInfo.hasManualDiscount);
                         } else {
-                            addScannableCode("1" + options.countSeparator + scannedCode.getCode(), ageRestricted);
+                            addScannableCode("1" + options.countSeparator + scannedCode.getCode(),
+                                    ageRestricted,
+                                    productInfo.hasManualDiscount);
                         }
                         break;
                     }
@@ -180,9 +202,13 @@ public class EncodedCodesGenerator {
                 }
 
                 if (options.repeatCodes) {
-                    addScannableCode(transmissionCode, ageRestricted);
+                    addScannableCode(transmissionCode,
+                            ageRestricted,
+                            productInfo.hasManualDiscount);
                 } else {
-                    addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(), ageRestricted);
+                    addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(),
+                            ageRestricted,
+                            productInfo.hasManualDiscount);
                 }
             } else {
                 int q = productInfo.quantity;
@@ -227,10 +253,14 @@ public class EncodedCodesGenerator {
 
                 if (options.repeatCodes) {
                     for (int j = 0; j < q; j++) {
-                        addScannableCode(transmissionCode, ageRestricted);
+                        addScannableCode(transmissionCode,
+                                ageRestricted,
+                                productInfo.hasManualDiscount);
                     }
                 } else {
-                    addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
+                    addScannableCode(q + options.countSeparator + transmissionCode,
+                            ageRestricted,
+                            productInfo.hasManualDiscount);
                 }
             }
         }
@@ -243,9 +273,18 @@ public class EncodedCodesGenerator {
         encodedCodes.add(code);
         stringBuilder = new StringBuilder();
         codeCount = 0;
+        hasAppliedManualDiscount = false;
     }
 
-    private void addScannableCode(String scannableCode, boolean isAgeRestricted) {
+    private int getCountSeparatorLength() {
+        if (options.repeatCodes) {
+            return 0;
+        } else {
+            return options.countSeparator.length();
+        }
+    }
+
+    private void addScannableCode(String scannableCode, boolean isAgeRestricted, boolean hasManualDiscount) {
         String nextCode = hasAgeRestrictedCode ? options.nextCodeWithCheck : options.nextCode;
 
         if (isAgeRestricted
@@ -257,8 +296,29 @@ public class EncodedCodesGenerator {
         }
 
         int charsLeft = options.maxChars - stringBuilder.length();
-        int suffixCodeLength = Math.max(nextCode.length(), options.finalCode.length());
-        int codesNeeded = (suffixCodeLength > 0 ? 2 : 1);
+        int manualDiscountLength = hasManualDiscount ? options.manualDiscountFinalCode.length() : 0;
+        int suffixCodeLength = Math.max(nextCode.length(), options.finalCode.length() + manualDiscountLength);
+
+        if (options.finalCode.length() > 0 && getCountSeparatorLength() > 0) {
+            suffixCodeLength += getCountSeparatorLength() + 1;
+        }
+
+        if (options.manualDiscountFinalCode.length() > 0 && getCountSeparatorLength() > 0) {
+            suffixCodeLength += getCountSeparatorLength() + 1;
+        }
+
+        int suffixCodes = 0;
+
+        if (options.finalCode.length() > 0) {
+            suffixCodes++;
+        }
+
+        if (manualDiscountLength > 0){
+            suffixCodes++;
+            hasAppliedManualDiscount = true;
+        }
+
+        int codesNeeded = 1 + suffixCodes;
         int requiredLength = scannableCode.length()
                 + suffixCodeLength
                 + options.separator.length() * codesNeeded

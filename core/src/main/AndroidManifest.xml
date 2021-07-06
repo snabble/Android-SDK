@@ -2,4 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.snabble.sdk">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application>
+        <activity android:name=".googlepay.GooglePayHelperActivity"
+            android:theme="@style/Snabble.Theme.GooglePayOverlay"/>
+    </application>
+
+    <queries>
+        <package android:name="com.google.android.apps.walletnfcrel" />
+    </queries>
 </manifest>

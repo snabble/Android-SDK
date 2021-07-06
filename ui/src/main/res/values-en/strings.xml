@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="release.safety.catch">Please remove the bottle\'s security device (if present) at the designated station at the exit.</string>
     <string name="Snabble.addDiscount">Enter discount</string>
     <string name="Snabble.ageVerification.explanation">To purchase certain products like alcoholic beverages, verifying your age is required. Enter the 7-digit Number from the back side of your ID card.</string>
     <string name="Snabble.ageVerification.failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
@@ -24,6 +25,7 @@
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Cancel</string>
     <string name="Snabble.CC.3dsecureHint.retailer">In order to verify your credit card, you will be redirected to your bank after entering your data. There you will be asked to approve a payment of € 1.00 to %s. The amount will be credited to you immediately after your approval.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">In order to verify your credit card, you will be redirected to your bank after entering your data. There you will be asked to approve a payment of %s to %s. The amount will be credited to you immediately after your approval.</string>
     <string name="Snabble.CC.cardNumber">Card number</string>
     <string name="Snabble.CC.editingHint">Your credit card data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.CC.noEntryPossible">Unfortunately you can\'t add credit cards at this time.</string>
@@ -61,7 +63,7 @@
     <string name="Snabble.paydirekt.deleteAuthorization">Delete method</string>
     <string name="Snabble.paydirekt.gotoWebsite">Go to paydirekt.de</string>
     <string name="Snabble.Paydirekt.payNow">Pay now using paydirekt</string>
-    <string name="Snabble.paydirekt.savedAuthorization">You\'ve successfully authorized snabble for paydirekt. To remove this authorization, you need to log in to your paydirekt account. If you do not want to use this payment method anymore, you can remove it here.</string>
+    <string name="Snabble.paydirekt.savedAuthorization">You\'ve successfully authorized Snabble for paydirekt. To remove this authorization, you need to log in to your paydirekt account. If you do not want to use this payment method anymore, you can remove it here.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Payment process was cancelled</string>
     <string name="Snabble.Payment.add">Add payment method</string>
@@ -85,7 +87,7 @@
     <string name="Snabble.Payment.payUsingCustomerCard">with Customer Card</string>
     <string name="Snabble.Payment.payViaInvoice">via Invoice</string>
     <string name="Snabble.Payment.PostFinanceCard.error">There was an error processing your postfinance card</string>
-    <string name="Snabble.Payment.presentCode">Show this code at a snabble monitor or to a cashier to confirm your purchase.</string>
+    <string name="Snabble.Payment.presentCode">Show this code at a Snabble monitor or to a cashier to confirm your purchase.</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
@@ -150,7 +152,7 @@
     <string name="Snabble.Scanner.Camera.allowAccess">Sorry, we\'ll need to access your camera to scan barcodes. Please allow this in the settings and return here.</string>
     <string name="Snabble.Scanner.couponAdded">Added coupon “%s”</string>
     <string name="Snabble.Scanner.duplicateDepositScanned">Each deposit slip can only be scanned once.</string>
-    <string name="Snabble.Scanner.enterBarcode">Enter Barcode</string>
+    <string name="Snabble.Scanner.enterBarcode">Enter code</string>
     <string name="Snabble.Scanner.enterCodeButton">Enter\nbarcode</string>
     <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
     <string name="Snabble.Scanner.firstScan">Scan your first product. Place the barcode in front of your camera.</string>
@@ -187,14 +189,15 @@
     <string name="Snabble.Shoppingcart.coupon">Coupon</string>
     <string name="Snabble.Shoppingcart.coupons">Coupons</string>
     <string name="Snabble.Shoppingcart.deposit">Deposit</string>
-    <string name="Snabble.Shoppingcart.discounts">Total discounts</string>
+    <string name="Snabble.Shoppingcart.discounts">Discounts</string>
     <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Scan now</string>
-    <string name="Snabble.Shoppingcart.emptyState.description">Visit a store that supports snabble and scan the barcodes of products you wish to purchase.</string>
+    <string name="Snabble.Shoppingcart.emptyState.description">Visit a store that supports Snabble and scan the barcodes of products you wish to purchase.</string>
     <string name="Snabble.Shoppingcart.emptyState.restartButtonTitle">Start new shopping trip</string>
     <string name="Snabble.Shoppingcart.emptyState.restoreButtonTitle">Restore previous cart</string>
     <string name="Snabble.Shoppingcart.emptyState.title">Your shopping cart is empty</string>
     <string name="Snabble.Shoppingcart.giveaway">Free gift</string>
     <string name="Snabble.Shoppingcart.howToPay">How would you like to pay?</string>
+    <string name="Snabble.Shoppingcart.includesDeposit">incl. deposit</string>
     <string name="Snabble.Shoppingcart.noPaymentData">Not yet entered</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Not available for this purchase</string>
     <string name="Snabble.Shoppingcart.notForVendor">Not supported by this retailer</string>

@@ -14,7 +14,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.snabble.sdk.*;
+import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
@@ -34,8 +34,6 @@ public class PaymentSelectionHelper {
     public static PaymentSelectionHelper getInstance() {
         return instance;
     }
-
-
 
     public class Entry implements Serializable {
         String text;
@@ -62,6 +60,7 @@ public class PaymentSelectionHelper {
     private boolean isOffline;
     private WeakReference<DialogFragment> existingDialogFragment;
     private PaymentCredentials lastAddedPaymentCredentials;
+    private boolean googlePayIsReady = false;
 
     private ShoppingCart.ShoppingCartListener shoppingCartListener =
             new ShoppingCart.SimpleShoppingCartListener() {
@@ -86,6 +85,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.POST_FINANCE_CARD, R.drawable.snabble_ic_payment_select_postfinance);
         icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
+        icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -99,7 +99,9 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.POST_FINANCE_CARD, "PostFinance Card");
         names.put(PaymentMethod.TWINT, "Twint");
+        names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
 
+        paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
         paymentMethodsSortPriority.add(PaymentMethod.VISA);
         paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
@@ -145,6 +147,8 @@ public class PaymentSelectionHelper {
     }
 
     private void update() {
+        updateGooglePayIsReadyToPay();
+
         paymentCredentials = paymentCredentialsStore.getAllWithoutKeyStoreValidation();
         updateEntries();
 
@@ -191,14 +195,57 @@ public class PaymentSelectionHelper {
             }
 
             // payment credentials or payment method were not available, use defaults
+            Entry preferredDefaultEntry = null;
             for (Entry e : entries) {
                 if (e.isAvailable) {
-                    setSelectedEntry(e);
+                    preferredDefaultEntry = e;
                     break;
                 }
             }
+
+            // google pay always wins if available and the user did not select anything
+            for (Entry e : entries) {
+                if (e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
+                    preferredDefaultEntry = e;
+                    break;
+                }
+            }
+
+            if (preferredDefaultEntry != null) {
+                setSelectedEntry(preferredDefaultEntry);
+            }
         } else {
             setSelectedEntry(null);
+        }
+    }
+
+    private void updateGooglePayIsReadyToPay() {
+        if (cart != null) {
+            CheckoutApi.PaymentMethodInfo[] availablePaymentMethods = cart.getAvailablePaymentMethods();
+            if (availablePaymentMethods != null) {
+                GooglePayHelper googlePayHelper = project.getGooglePayHelper();
+                if (googlePayHelper != null) {
+                    for (CheckoutApi.PaymentMethodInfo info : availablePaymentMethods) {
+                        if (info.id.equals(PaymentMethod.GOOGLE_PAY.id())) {
+                            googlePayHelper.setUseTestEnvironment(info.isTesting);
+                            break;
+                        }
+                    }
+
+                    project.getGooglePayHelper().isReadyToPay(isReadyToPay -> {
+                        if (googlePayIsReady != isReadyToPay) {
+                            googlePayIsReady = isReadyToPay;
+                            update();
+                        }
+                    });
+                } else {
+                    googlePayIsReady = false;
+                }
+            } else {
+                googlePayIsReady = false;
+            }
+        } else {
+            googlePayIsReady = false;
         }
     }
 
@@ -244,7 +291,12 @@ public class PaymentSelectionHelper {
 
         List<PaymentMethod> availablePaymentMethodsList = new ArrayList<>();
         for (final CheckoutApi.PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
-            availablePaymentMethodsList.add(PaymentMethod.fromString(paymentMethodInfo.id));
+            PaymentMethod paymentMethod = PaymentMethod.fromString(paymentMethodInfo.id);
+            if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
+                availablePaymentMethodsList.add(paymentMethod);
+            } else if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
+                availablePaymentMethodsList.add(paymentMethod);
+            }
         }
 
         Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<PaymentMethod>();
@@ -288,6 +340,14 @@ public class PaymentSelectionHelper {
         }
 
         for (PaymentMethod pm : projectPaymentMethods) {
+            if (!availablePaymentMethodsList.contains(pm)) {
+                continue;
+            }
+
+            if (pm == PaymentMethod.GOOGLE_PAY && !googlePayIsReady) {
+                continue;
+            }
+
             if (pm.isRequiringCredentials() && addedCredentialPaymentMethods.contains(pm)) {
                 continue;
             }

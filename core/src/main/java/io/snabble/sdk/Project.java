@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,7 +14,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
+import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
@@ -47,6 +48,7 @@ public class Project {
     private ShoppingCartStorage shoppingCartStorage;
     private Events events;
     private Assets assets;
+    private GooglePayHelper googlePayHelper;
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
     private Currency currency;
@@ -103,6 +105,13 @@ public class Project {
         checkout = new Checkout(this);
         events = new Events(this);
         assets = new Assets(this);
+
+        for (PaymentMethod paymentMethod : getAvailablePaymentMethods()) {
+            if (paymentMethod == PaymentMethod.GOOGLE_PAY) {
+                googlePayHelper = new GooglePayHelper(this, Snabble.getInstance().getApplication());
+                break;
+            }
+        }
     }
 
     void parse(JsonObject jsonObject) {
@@ -504,6 +513,11 @@ public class Project {
 
     public Coupons getCoupons() {
         return coupons;
+    }
+
+    @Nullable
+    public GooglePayHelper getGooglePayHelper() {
+        return googlePayHelper;
     }
 
     public void logErrorEvent(String format, Object... args) {

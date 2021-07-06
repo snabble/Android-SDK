@@ -3,7 +3,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/snabble_action_torch"
-        android:icon="@drawable/snabble_ic_flashlight_on"
+        android:icon="@drawable/snabble_ic_flashlight_off"
         android:title="@string/Snabble.Scanner.torchButton"
         app:iconTint="?attr/colorOnSurface"
         app:showAsAction="always"/>
