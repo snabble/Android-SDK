@@ -20,7 +20,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.google.android.material.snackbar.Snackbar
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
@@ -196,7 +195,7 @@ class CheckoutBar @JvmOverloads constructor(
         if (cart.hasReachedMaxCheckoutLimit()) {
             val message = resources.getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.priceFormatter.format(project.maxCheckoutLimit))
-            Snackbar.make(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+            SnackbarUtils.make(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
         } else {
             val entry = paymentSelectionHelper.selectedEntry.value
             if (entry != null) {
@@ -334,13 +333,13 @@ class CheckoutBar @JvmOverloads constructor(
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .show()
             } else {
-                Snackbar.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+                SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             }
             progressDialog.dismiss()
         } else if (state == Checkout.State.CONNECTION_ERROR
             || state == Checkout.State.NO_SHOP
             || state == Checkout.State.PAYMENT_PROCESSING_ERROR) {
-            Snackbar.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+            SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
             progressDialog.dismiss()
         } else if (state == Checkout.State.PAYMENT_ABORTED) {
             progressDialog.dismiss()

@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -26,7 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.widget.TextViewCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
@@ -56,6 +54,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.InputFilterMinMax;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.ui.utils.SnackbarUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -887,13 +886,12 @@ public class ShoppingCartView extends FrameLayout {
             cart.remove(adapterPosition);
             Telemetry.event(Telemetry.Event.DeletedFromCart, item.getProduct());
 
-            Snackbar snackbar = Snackbar.make(parentView,
+            Snackbar snackbar = SnackbarUtils.make(parentView,
                     R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
             snackbar.setAction(R.string.Snabble_undo, v -> {
                 cart.insert(item, adapterPosition);
                 Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
             });
-
             snackbar.show();
         }
     }
