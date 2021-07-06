@@ -506,7 +506,7 @@ public class ProductDatabase {
                 long time2 = SystemClock.elapsedRealtime() - time;
                 if (time2 >= 16) {
                     Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
-                            time2, count, bindArgs(sql, args));
+                            time2, count, DatabaseUtils.bindArgs(sql, args));
                 }
             } catch (Exception e) {
                 // query could not be executed
@@ -1111,23 +1111,12 @@ public class ProductDatabase {
         }
     }
 
-    public static String bindArgs(String sql, String[] args) {
-        if (args == null) {
-            return sql;
-        }
-
-        String printSql = sql;
-        for (String arg : args) {
-            printSql = printSql.replaceFirst("\\?", "'" + arg + "'");
-        }
-        return printSql;
-    }
-
     /**
      * Deprecated. Will be removed in a future version of the SDK.
      * <p>
      * Returns products that have a discounted price and a valid image url.
      */
+    @Deprecated
     public Product[] getDiscountedProducts() {
         Shop shop = project.getCheckedInShop();
 
