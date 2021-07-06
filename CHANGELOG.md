@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.8]
+
+### Fixed
+- Removed additional padding on Snackbars when using Android 11 + OnApplyWindowInsetListener
+
 ## [0.39.7]
 
 ### Fixed
