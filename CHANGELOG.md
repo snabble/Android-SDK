@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.9]
+
+### Fixed
+- Fixed crash on adding a second payment method on the same project
+
 ## [0.39.8]
 
 ### Fixed
