@@ -34,6 +34,7 @@ public class Telemetry {
         ItemAddedSearchProduct,
         ItemAddedSearchText,
         ItemAddedScan,
+        ItemAddedTag,
         ItemDeleted,
         ItemUndeleted,
         ItemMarkDone,
@@ -43,6 +44,8 @@ public class Telemetry {
         ItemMoved,
         ItemMarkDoneScanner,
         ItemScanNotFound,
+        TagMarkDoneScanner,
+        TagAddedSpeech,
     }
 
     private static OnEventListener onEventListener;
