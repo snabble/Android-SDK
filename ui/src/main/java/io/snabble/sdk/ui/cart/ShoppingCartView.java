@@ -40,6 +40,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
@@ -411,6 +412,7 @@ public class ShoppingCartView extends FrameLayout {
                 row.quantityText = sanitize(item.getQuantityText());
                 row.editable = item.isEditable();
                 row.isDismissible = true;
+                row.manualDiscountApplied = item.isManualCouponApplied();
                 row.item = item;
                 rows.add(row);
             }
@@ -447,6 +449,7 @@ public class ShoppingCartView extends FrameLayout {
     }
 
     private static class ProductRow extends Row {
+
         ShoppingCart.Item item;
 
         String name;
@@ -457,40 +460,28 @@ public class ShoppingCartView extends FrameLayout {
         String quantityText;
         int quantity;
         boolean editable;
+        boolean manualDiscountApplied;
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-
             ProductRow that = (ProductRow) o;
-
-            if (quantity != that.quantity) return false;
-            if (editable != that.editable) return false;
-            if (item != null ? !item.equals(that.item) : that.item != null) return false;
-            if (name != null ? !name.equals(that.name) : that.name != null) return false;
-            if (subtitle != null ? !subtitle.equals(that.subtitle) : that.subtitle != null)
-                return false;
-            if (imageUrl != null ? !imageUrl.equals(that.imageUrl) : that.imageUrl != null)
-                return false;
-            if (encodingUnit != that.encodingUnit) return false;
-            if (priceText != null ? !priceText.equals(that.priceText) : that.priceText != null)
-                return false;
-            return quantityText != null ? quantityText.equals(that.quantityText) : that.quantityText == null;
+            return quantity == that.quantity &&
+                    editable == that.editable &&
+                    manualDiscountApplied == that.manualDiscountApplied &&
+                    Objects.equals(item, that.item) &&
+                    Objects.equals(name, that.name) &&
+                    Objects.equals(subtitle, that.subtitle) &&
+                    Objects.equals(imageUrl, that.imageUrl) &&
+                    encodingUnit == that.encodingUnit &&
+                    Objects.equals(priceText, that.priceText) &&
+                    Objects.equals(quantityText, that.quantityText);
         }
 
         @Override
         public int hashCode() {
-            int result = item != null ? item.hashCode() : 0;
-            result = 31 * result + (name != null ? name.hashCode() : 0);
-            result = 31 * result + (subtitle != null ? subtitle.hashCode() : 0);
-            result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
-            result = 31 * result + (encodingUnit != null ? encodingUnit.hashCode() : 0);
-            result = 31 * result + (priceText != null ? priceText.hashCode() : 0);
-            result = 31 * result + (quantityText != null ? quantityText.hashCode() : 0);
-            result = 31 * result + quantity;
-            result = 31 * result + (editable ? 1 : 0);
-            return result;
+            return Objects.hash(item, name, subtitle, imageUrl, encodingUnit, priceText, quantityText, quantity, editable, manualDiscountApplied);
         }
     }
 
@@ -584,7 +575,7 @@ public class ShoppingCartView extends FrameLayout {
             redLabel.setVisibility(hasCoupon || isAgeRestricted ? View.VISIBLE : View.GONE);
 
             if (hasCoupon) {
-                if (!row.item.isManualCouponApplied()) {
+                if (!row.manualDiscountApplied) {
                     redLabel.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#999999")));
                 }
 

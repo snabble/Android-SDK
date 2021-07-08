@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.11]
+
+### Fixed
+- ShoppingCart items not updating correctly when only the manual coupon state changes
+
 ## [0.39.10]
 
 ### Changed
