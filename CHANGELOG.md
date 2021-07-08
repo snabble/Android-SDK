@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.12]
+
+### Added
+- Telemetry for shopping list tags
+
 ## [0.39.11]
 
 ### Fixed
