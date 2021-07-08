@@ -78,5 +78,5 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation 'com.github.rekire:lazyWorker:v2-SNAPSHOT'
+    implementation 'eu.rekisoft.andorid.util:lazyWorker:2.0.0'
 }
