@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.10]
+
+### Changed
+- Remove dependency on gitter and migrate it to maven central.
+
 ## [0.39.9]
 
 ### Fixed
