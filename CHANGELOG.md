@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.39.13]
+
+### Fixed
+- Fixed crash when using standalone PaymentCredentialsListView
+
 ## [0.39.12]
 
 ### Added

@@ -29,6 +29,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -84,7 +85,13 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     if (activity instanceof FragmentActivity) {
                         SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
                         Bundle bundle = new Bundle();
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.getId());
+
+                        Project p = project;
+                        if (p == null) {
+                            p = SnabbleUI.getProject();
+                        }
+
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, p.getId());
                         ArrayList<PaymentMethod> types;
                         if (PaymentCredentialsListView.this.types == null) {
                             types = new ArrayList<>(Arrays.asList(PaymentMethod.values()));
