@@ -176,7 +176,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
             assertEquals(product.getSku(), "1");
             assertEquals(product.getListPrice(), 399);
 
-            project.setCheckedInShop(project.getShops()[1]);
+            project.setCheckedInShop(project.getShops().get(1));
             final Product product2 = findBySkuBlocking(productDatabase, "1");
             assertEquals(product2.getSku(), "1");
             assertEquals(product2.getListPrice(), 299);
@@ -190,7 +190,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         assertEquals(product.getSku(), "salfter-classic");
         assertEquals(product.getListPrice(), 100);
 
-        project.setCheckedInShop(project.getShops()[2]);
+        project.setCheckedInShop(project.getShops().get(2));
         final Product product2 = productDatabase.findBySku("salfter-classic");
         assertEquals(product2.getSku(), "salfter-classic");
         assertEquals(product2.getListPrice(), 200);
@@ -430,14 +430,14 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testMultiplePricingCategories() throws IOException, Snabble.SnabbleException {
         withDb("test_1_25.sqlite3");
-        project.setCheckedInShop(project.getShops()[3]);
+        project.setCheckedInShop(project.getShops().get(3));
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("multiple-categories");
         Assert.assertNotNull(product);
         Assert.assertEquals(product.getListPrice(), 83);
 
-        project.setCheckedInShop(project.getShops()[1]);
+        project.setCheckedInShop(project.getShops().get(1));
 
         productDatabase = project.getProductDatabase();
         product = productDatabase.findBySku("multiple-categories");

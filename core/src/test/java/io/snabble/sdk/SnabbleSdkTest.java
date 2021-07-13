@@ -203,6 +203,6 @@ public class SnabbleSdkTest {
 
         Assert.assertNotNull(appDbUrl);
         Assert.assertTrue(project.getProductDatabase().getRevisionId() > 0);
-        Assert.assertTrue(project.getShops().length > 0);
+        Assert.assertTrue(project.getShops().size() > 0);
     }
 }
