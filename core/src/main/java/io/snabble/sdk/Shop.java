@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -117,6 +118,7 @@ public class Shop implements Serializable, Parcelable {
     private String country;
     private String state;
     private String phone;
+    private boolean isPreLaunch;
     private Map<String, Href> links;
     @SerializedName("lat")
     private double latitude;
@@ -182,6 +184,10 @@ public class Shop implements Serializable, Parcelable {
         return name;
     }
 
+    public boolean getIsPreLaunch() {
+        return isPreLaunch;
+    }
+
     public CustomerNetwork[] getCustomerNetworks() {
         return customerNetworks;
     }
@@ -204,18 +210,36 @@ public class Shop implements Serializable, Parcelable {
     }
 
     @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Shop shop = (Shop) o;
+        return isPreLaunch == shop.isPreLaunch &&
+                Double.compare(shop.latitude, latitude) == 0 &&
+                Double.compare(shop.longitude, longitude) == 0 &&
+                Objects.equals(id, shop.id) &&
+                Objects.equals(externalId, shop.externalId) &&
+                Objects.equals(name, shop.name) &&
+                Arrays.equals(services, shop.services) &&
+                Objects.equals(street, shop.street) &&
+                Objects.equals(zipCode, shop.zipCode) &&
+                Objects.equals(city, shop.city) &&
+                Objects.equals(country, shop.country) &&
+                Objects.equals(state, shop.state) &&
+                Objects.equals(phone, shop.phone) &&
+                Objects.equals(links, shop.links) &&
+                Arrays.equals(customerNetworks, shop.customerNetworks) &&
+                Arrays.equals(openingHoursSpecification, shop.openingHoursSpecification) &&
+                Objects.equals(external, shop.external);
+    }
 
-        return id.equals(shop.id);
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, externalId, name, street, zipCode, city, country, state, phone, isPreLaunch, links, latitude, longitude, external);
+        result = 31 * result + Arrays.hashCode(services);
+        result = 31 * result + Arrays.hashCode(customerNetworks);
+        result = 31 * result + Arrays.hashCode(openingHoursSpecification);
+        return result;
     }
 
     public String toShortString() {
@@ -238,6 +262,7 @@ public class Shop implements Serializable, Parcelable {
                 ", country='" + country + '\'' +
                 ", state='" + state + '\'' +
                 ", phone='" + phone + '\'' +
+                ", isPreLaunch=" + isPreLaunch +
                 ", links=" + links +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +

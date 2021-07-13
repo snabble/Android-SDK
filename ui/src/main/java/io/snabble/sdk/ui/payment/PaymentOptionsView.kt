@@ -180,7 +180,9 @@ open class PaymentOptionsView @JvmOverloads constructor(
                                         args.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, ArrayList(listOf(
                                             PaymentMethod.VISA,
                                             PaymentMethod.MASTERCARD,
-                                            PaymentMethod.AMEX))
+                                            PaymentMethod.AMEX,
+                                            PaymentMethod.POST_FINANCE_CARD,
+                                            PaymentMethod.TWINT))
                                         )
                                         args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
                                         dialogFragment.arguments = args

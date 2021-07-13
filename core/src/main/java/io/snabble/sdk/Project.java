@@ -11,9 +11,9 @@ import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
@@ -22,9 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
 import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
@@ -33,7 +31,11 @@ import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class Project {
     private Snabble snabble;
@@ -41,7 +43,7 @@ public class Project {
     private String name;
 
     private ProductDatabase productDatabase;
-    private Shop[] shops;
+    private ArrayList<Shop> shops;
     private Brand brand;
     private Company company;
     private Checkout checkout;
@@ -90,13 +92,13 @@ public class Project {
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         snabble = Snabble.getInstance();
 
-        parse(jsonObject);
-
         internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
         okHttpClient = Snabble.getInstance().getOkHttpClient()
                 .newBuilder()
                 .addInterceptor(new SnabbleAuthorizationInterceptor(this))
                 .build();
+
+        parse(jsonObject);
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
 
@@ -220,13 +222,7 @@ public class Project {
 
         availablePaymentMethods = paymentMethodList.toArray(new PaymentMethod[paymentMethodList.size()]);
 
-        if (jsonObject.has("shops")) {
-            shops = Shop.fromJson(jsonObject.get("shops"));
-        }
-
-        if (shops == null) {
-            shops = new Shop[0];
-        }
+        parseShops(jsonObject);
 
         if (jsonObject.has("company")) {
             company = GsonHolder.get().fromJson(jsonObject.get("company"), Company.class);
@@ -324,6 +320,51 @@ public class Project {
         notifyUpdate();
     }
 
+    private void parseShops(JsonObject jsonObject) {
+        shops = new ArrayList<>();
+
+        if (jsonObject.has("shops")) {
+            Shop[] jsonShops = Shop.fromJson(jsonObject.get("shops"));
+            if (jsonShops != null) {
+                shops.addAll(Arrays.asList(jsonShops));
+            }
+        }
+    }
+
+    void loadActiveShops(Runnable done) {
+        if (snabble.getConfig().loadActiveShops) {
+            String url = getActiveShopsUrl();
+            if (url != null) {
+                Request request = new Request.Builder()
+                        .get()
+                        .url(getActiveShopsUrl())
+                        .build();
+
+                okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<JsonObject>(JsonObject.class) {
+                    @Override
+                    public void success(JsonObject jsonObject) {
+                        if (jsonObject.has("shops")) {
+                            Shop[] hiddenShops = Shop.fromJson(jsonObject.get("shops"));
+                            if (hiddenShops != null) {
+                                shops.clear();
+                                shops.addAll(Arrays.asList(hiddenShops));
+
+                                if (done != null) {
+                                    done.run();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void error(Throwable t) {
+                        Logger.e("Failed to load hidden shops, statusCode: %d", responseCode());
+                    }
+                });
+            }
+        }
+    }
+
     public File getInternalStorageDirectory() {
         return internalStorageDirectory;
     }
@@ -394,6 +435,9 @@ public class Project {
         return urls.get("datatransTokenization");
     }
 
+    public String getActiveShopsUrl() {
+        return urls.get("activeShops");
+    }
     public BarcodeFormat[] getSupportedBarcodeFormats() {
         return supportedBarcodeFormats;
     }
@@ -455,8 +499,8 @@ public class Project {
     /**
      * @return The available shops. Empty if no shops are defined.
      */
-    public Shop[] getShops() {
-        return shops;
+    public List<Shop> getShops() {
+        return Collections.unmodifiableList(shops);
     }
 
     public Company getCompany() {

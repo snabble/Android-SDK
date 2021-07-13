@@ -1,6 +1,17 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.40.0]
+
+### Breaking Changes
+- Project.getShops now returns a List instead of an Array
+
+### Added
+- Added support for "activeShops"
+
+### Fixed
+- Fixed PostFinance and Twint not selectable when skipping over project specific payment methods
+
 ## [0.39.13]
 
 ### Fixed

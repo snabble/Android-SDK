@@ -99,8 +99,8 @@ public class HomeFragment extends Fragment {
 
                 updateShops(v);
 
-                if (project.getShops().length > 0) {
-                    project.setCheckedInShop(project.getShops()[0]);
+                if (project.getShops().size() > 0) {
+                    project.setCheckedInShop(project.getShops().get(0));
                 }
             }
 
@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment {
 
     private void updateShops(View v) {
         Project project = SnabbleUI.getProject();
-        final List<Shop> shopList = Arrays.asList(project.getShops());
+        final List<Shop> shopList = project.getShops();
         Spinner shops = v.findViewById(R.id.shops);
         shops.setAdapter(new ArrayAdapter<Shop>(requireContext(), R.layout.item_dropdown, shopList) {
             @NonNull

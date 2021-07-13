@@ -83,8 +83,8 @@ public class App extends Application {
                 SnabbleUI.useProject(project);
 
                 // select the first shop for demo purposes
-                if (project.getShops().length > 0) {
-                    project.setCheckedInShop(project.getShops()[0]);
+                if (project.getShops().size() > 0) {
+                    project.setCheckedInShop(project.getShops().get(0));
                 }
 
                 // you can update the local database asynchronously, you can still query
