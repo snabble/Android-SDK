@@ -43,8 +43,13 @@ open class SelfScanningFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         rootView = view as ViewGroup
+        _selfScanningView = null
         permissionContainer = rootView.findViewById(R.id.permission_denied_container)
         askForPermission = rootView.findViewById(R.id.open_settings)
+
+        if (isPermissionGranted) {
+            createSelfScanningView()
+        }
     }
 
     override fun onStart() {

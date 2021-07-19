@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.40.1]
+
+### Fixed
+- Fixed SelfScanningFragment being out of sync with SelfScanningView
+
 ## [0.40.0]
 
 ### Breaking Changes
