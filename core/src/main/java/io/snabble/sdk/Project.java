@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 
 import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
@@ -34,8 +35,6 @@ import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class Project {
     private Snabble snabble;
@@ -67,7 +66,6 @@ public class Project {
     private Shop checkedInShop;
     private CustomerCardInfo[] acceptedCustomerCardInfos;
     private CustomerCardInfo requiredCustomerCardInfo;
-    private PaymentMethod[] availablePaymentMethods;
 
     private Map<String, String> urls;
 
@@ -88,6 +86,7 @@ public class Project {
     private String tokensUrl;
     private String appUserUrl;
     private boolean displayNetPrice;
+    private List<PaymentMethodDescriptor> paymentMethodDescriptors;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         snabble = Snabble.getInstance();
@@ -108,8 +107,8 @@ public class Project {
         events = new Events(this);
         assets = new Assets(this);
 
-        for (PaymentMethod paymentMethod : getAvailablePaymentMethods()) {
-            if (paymentMethod == PaymentMethod.GOOGLE_PAY) {
+        for (PaymentMethodDescriptor descriptor : getPaymentMethodDescriptors()) {
+            if (descriptor.getPaymentMethod() == PaymentMethod.GOOGLE_PAY) {
                 googlePayHelper = new GooglePayHelper(this, Snabble.getInstance().getApplication());
                 break;
             }
@@ -211,16 +210,14 @@ public class Project {
             requiredCustomerCardInfo = new CustomerCardInfo(requiredCustomerCard, true);
         }
 
-        List<PaymentMethod> paymentMethodList = new ArrayList<>();
-        String[] paymentMethods = JsonUtils.getStringArrayOpt(jsonObject, "paymentMethods", new String[0]);
-        for (String paymentMethod : paymentMethods) {
-            PaymentMethod pm = PaymentMethod.fromString(paymentMethod);
-            if (pm != null) {
-                paymentMethodList.add(pm);
-            }
+        JsonElement descriptors = jsonObject.get("paymentMethodDescriptors");
+        if (descriptors != null) {
+            Type t = new TypeToken<List<PaymentMethodDescriptor>>() {}.getType();
+            List<PaymentMethodDescriptor> paymentMethodDescriptors = GsonHolder.get().fromJson(descriptors, t);
+            paymentMethodDescriptors.removeIf(paymentMethodDescriptor ->
+                    PaymentMethod.fromString(paymentMethodDescriptor.getId()) == null);
+            this.paymentMethodDescriptors = Collections.unmodifiableList(paymentMethodDescriptors);
         }
-
-        availablePaymentMethods = paymentMethodList.toArray(new PaymentMethod[paymentMethodList.size()]);
 
         parseShops(jsonObject);
 
@@ -301,7 +298,6 @@ public class Project {
         }
 
         displayNetPrice = JsonUtils.getBooleanOpt(jsonObject, "displayNetPrice", false);
-
 
         List<Coupon> couponList = new ArrayList<>();
 
@@ -586,8 +582,16 @@ public class Project {
         return loyaltyCardId;
     }
 
-    public PaymentMethod[] getAvailablePaymentMethods() {
-        return availablePaymentMethods;
+    public List<PaymentMethodDescriptor> getPaymentMethodDescriptors() {
+        return paymentMethodDescriptors;
+    }
+
+    public List<PaymentMethod> getAvailablePaymentMethods() {
+        List<PaymentMethod> list = new ArrayList<>();
+        for (PaymentMethodDescriptor descriptor : paymentMethodDescriptors) {
+            list.add(descriptor.getPaymentMethod());
+        }
+        return list;
     }
 
     public CodeTemplate getDefaultCodeTemplate() {

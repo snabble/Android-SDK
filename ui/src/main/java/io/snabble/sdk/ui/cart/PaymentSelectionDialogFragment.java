@@ -17,8 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 
-import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.Snabble;
+import io.snabble.sdk.PaymentMethodDescriptor;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
@@ -107,8 +106,8 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
         }
 
         boolean canAdd = false;
-        for (PaymentMethod pm : SnabbleUI.getProject().getAvailablePaymentMethods()) {
-            if (!pm.isOfflineMethod()) {
+        for (PaymentMethodDescriptor descriptor : SnabbleUI.getProject().getPaymentMethodDescriptors()) {
+            if (!descriptor.getPaymentMethod().isOfflineMethod()) {
                 canAdd = true;
                 break;
             }

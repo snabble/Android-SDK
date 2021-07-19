@@ -1,7 +1,6 @@
 package io.snabble.sdk;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -233,8 +232,9 @@ public class Checkout {
     }
 
     private PaymentMethod getFallbackPaymentMethod() {
-        PaymentMethod[] paymentMethods = project.getAvailablePaymentMethods();
-        for (PaymentMethod pm : paymentMethods) {
+        List<PaymentMethodDescriptor> paymentMethods = project.getPaymentMethodDescriptors();
+        for (PaymentMethodDescriptor descriptor : paymentMethods) {
+            PaymentMethod pm = descriptor.getPaymentMethod();
             if (pm.isOfflineMethod()) {
                 return pm;
             }

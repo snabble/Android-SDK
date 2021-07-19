@@ -252,15 +252,15 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
     private fun paymentMethods(): Set<PaymentMethod> {
         val availablePaymentMethods = HashSet<PaymentMethod>()
-        Snabble.getInstance().projects.forEach {
-            availablePaymentMethods.addAll(it.availablePaymentMethods)
+        Snabble.getInstance().projects.forEach { project ->
+            availablePaymentMethods.addAll(project.paymentMethodDescriptors.map { it.paymentMethod })
         }
         return availablePaymentMethods
     }
 
     private fun projectsWithCreditCards(): List<Project> {
         return Snabble.getInstance().projects.filter { project ->
-            project.availablePaymentMethods.any {
+            project.paymentMethodDescriptors.map { it.paymentMethod }.any {
                     it == PaymentMethod.VISA
                  || it == PaymentMethod.MASTERCARD
                  || it == PaymentMethod.AMEX

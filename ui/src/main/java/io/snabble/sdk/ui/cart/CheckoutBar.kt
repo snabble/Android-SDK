@@ -154,7 +154,7 @@ class CheckoutBar @JvmOverloads constructor(
         } else {
             val pcs = Snabble.getInstance().paymentCredentialsStore
             val hasNoPaymentMethods = pcs.usablePaymentCredentialsCount == 0
-            val isHidden = project.availablePaymentMethods.size == 1 && hasNoPaymentMethods
+            val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             paySelector.visibility = if (isHidden) GONE else VISIBLE
             payIcon.setImageResource(entry.iconResId)
         }
@@ -217,10 +217,10 @@ class CheckoutBar @JvmOverloads constructor(
                 }
             } else {
                 var hasPaymentMethodThatRequiresCredentials = false
-                val paymentMethods = project.availablePaymentMethods
-                if (paymentMethods != null && paymentMethods.isNotEmpty()) {
-                    for (pm in paymentMethods) {
-                        if (pm.isRequiringCredentials) {
+                val paymentMethodsDescriptors = project.paymentMethodDescriptors
+                if (paymentMethodsDescriptors != null && paymentMethodsDescriptors.isNotEmpty()) {
+                    for (descriptor in paymentMethodsDescriptors) {
+                        if (descriptor.paymentMethod.isRequiringCredentials) {
                             hasPaymentMethodThatRequiresCredentials = true
                             break
                         }

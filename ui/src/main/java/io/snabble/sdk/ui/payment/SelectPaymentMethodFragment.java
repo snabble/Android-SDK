@@ -8,16 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.security.Key;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -26,12 +23,9 @@ import java.util.Set;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.UIUtils;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     public static final String ARG_PAYMENT_METHOD_LIST = "paymentMethods";
@@ -50,7 +44,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             Collection<PaymentMethod> list = (Collection<PaymentMethod>) args.getSerializable(ARG_PAYMENT_METHOD_LIST);
             paymentMethods = new HashSet<>();
             if (list == null) {
-                list = Arrays.asList(SnabbleUI.getProject().getAvailablePaymentMethods());
+                list = SnabbleUI.getProject().getAvailablePaymentMethods();
             }
             paymentMethods.addAll(list);
             projectId = args.getString(ARG_PROJECT_ID, null);
@@ -66,7 +60,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         Set<PaymentMethod> availablePaymentMethods = new HashSet<>();
         for (Project project : Snabble.getInstance().getProjects()) {
             if (project.getId().equals(projectId)) {
-                availablePaymentMethods.addAll(Arrays.asList(project.getAvailablePaymentMethods()));
+                availablePaymentMethods.addAll(project.getAvailablePaymentMethods());
             }
         }
 
@@ -182,7 +176,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         int count = 0;
         for (Project project : projects) {
-            List<PaymentMethod> availablePaymentMethods = Arrays.asList(project.getAvailablePaymentMethods());
+            List<PaymentMethod> availablePaymentMethods = project.getAvailablePaymentMethods();
             for (PaymentMethod pm : paymentMethods) {
                 if (availablePaymentMethods.contains(pm)) {
                     if (count > 0 ) {

@@ -19,40 +19,41 @@ object PaymentInputViewHelper {
         if (callback != null) {
             if (KeyguardUtils.isDeviceSecure()) {
                 val project = Snabble.getInstance().getProjectById(projectId)
-                val useDatatrans = project?.availablePaymentMethods?.any {
-                    it == PaymentMethod.TWINT ||
-                    it == PaymentMethod.POST_FINANCE_CARD
-                } ?: false
+                val useDatatrans = project?.paymentMethodDescriptors
+                    ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes
+                    ?.any { it == "datatransAlias" } ?: false
 
                 val activity = UIUtils.getHostFragmentActivity(context)
                 val args = Bundle()
-                when (paymentMethod) {
-                    PaymentMethod.VISA -> {
-                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
-                    }
-                    PaymentMethod.AMEX -> {
-                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
-                    }
-                    PaymentMethod.MASTERCARD -> {
-                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
-                        callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
-                    }
-                    PaymentMethod.PAYDIREKT -> {
-                        callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null)
-                    }
-                    PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD -> {
-                        registerCard(activity, project, paymentMethod)
-                    }
-                    PaymentMethod.DE_DIRECT_DEBIT -> {
-                        callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null)
-                    }
-                    else -> {
-                        Logger.e("Payment method requires no credentials or is unsupported")
+
+                if (useDatatrans && paymentMethod != null) {
+                    registerCard(activity, project, paymentMethod)
+                } else {
+                    when (paymentMethod) {
+                        PaymentMethod.VISA -> {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
+                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                        }
+                        PaymentMethod.AMEX -> {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
+                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                        }
+                        PaymentMethod.MASTERCARD -> {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
+                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                        }
+                        PaymentMethod.PAYDIREKT -> {
+                            callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null)
+                        }
+                        PaymentMethod.DE_DIRECT_DEBIT -> {
+                            callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null)
+                        }
+                        else -> {
+                            Logger.e("Payment method requires no credentials or is unsupported")
+                        }
                     }
                 }
             } else {

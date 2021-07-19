@@ -298,6 +298,7 @@ public class Snabble {
                         Project project = new Project(jsonProject);
                         newProjects.add(project);
                     } catch (IllegalArgumentException e) {
+                        Logger.d(e.getMessage());
                         // malformed project, do nothing
                     }
                 }

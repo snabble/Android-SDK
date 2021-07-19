@@ -12,7 +12,6 @@ import androidx.lifecycle.MutableLiveData;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -266,7 +265,7 @@ public class PaymentSelectionHelper {
             return;
         }
 
-        List<PaymentMethod> projectPaymentMethods = Arrays.asList(project.getAvailablePaymentMethods());
+        List<PaymentMethod> projectPaymentMethods = project.getAvailablePaymentMethods();
         CheckoutApi.PaymentMethodInfo[] availablePaymentMethods = cart.getAvailablePaymentMethods();
         if (availablePaymentMethods == null) {
             for (PaymentMethod paymentMethod : projectPaymentMethods) {
