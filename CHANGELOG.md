@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.40.2]
+
+### Fixed
+- Fix crash when google pay gateway is not configured correctly, showing error message instead
+
 ## [0.40.1]
 
 ### Fixed
