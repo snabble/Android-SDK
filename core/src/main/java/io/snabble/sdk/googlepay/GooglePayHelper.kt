@@ -71,8 +71,8 @@ class GooglePayHelper(
             addProperty("type", "PAYMENT_GATEWAY")
             add("parameters", JsonObject().apply {
                 project.checkout.checkoutProcess?.paymentPreauthInformation?.let {
-                    val gateway = it.get("gateway").asString
-                    val gatewayMerchantId = it.get("gatewayMerchantId").asString
+                    val gateway = it.get("gateway")?.asString
+                    val gatewayMerchantId = it.get("gatewayMerchantId")?.asString
                     addProperty("gateway", gateway)
                     addProperty("gatewayMerchantId", gatewayMerchantId)
                 }
