@@ -33,20 +33,23 @@ import io.snabble.sdk.utils.Utils;
 
 public class PaymentCredentials {
     public enum Type {
-        SEPA(null, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
+        SEPA(null, false, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
         // legacy credit card type, not used anymore.
-        CREDIT_CARD(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
-        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
-        DATATRANS("datatransAlias", Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX, PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD));
+        CREDIT_CARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        CREDIT_CARD_PSD2(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYDIREKT(null, false, Collections.singletonList(PaymentMethod.PAYDIREKT)),
+        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
+        DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
+        DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
 
         private String originType;
+        private boolean requiresProject;
         private List<PaymentMethod> paymentMethods;
 
-        Type(String originType, List<PaymentMethod> paymentMethods) {
+        Type(String originType, boolean requiresProject, List<PaymentMethod> paymentMethods) {
             this.originType = originType;
             this.paymentMethods = paymentMethods;
+            this.requiresProject = requiresProject;
         }
 
         public String getOriginType() {
@@ -55,6 +58,10 @@ public class PaymentCredentials {
 
         public List<PaymentMethod> getPaymentMethods() {
             return paymentMethods;
+        }
+
+        public boolean isProjectDependantType() {
+            return requiresProject;
         }
     }
 
@@ -309,7 +316,11 @@ public class PaymentCredentials {
 
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
-        pc.type = Type.DATATRANS;
+        if (brand == Brand.TWINT || brand == Brand.POST_FINANCE_CARD) {
+            pc.type = Type.DATATRANS;
+        } else {
+            pc.type = Type.DATATRANS_CREDITCARD;
+        }
         pc.projectId = projectId;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
@@ -605,17 +616,13 @@ public class PaymentCredentials {
     public PaymentMethod getPaymentMethod() {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;
-        } else if (type == Type.CREDIT_CARD_PSD2) {
-            switch (getBrand()) {
-                case VISA: return PaymentMethod.VISA;
-                case AMEX: return PaymentMethod.AMEX;
-                case MASTERCARD: return PaymentMethod.MASTERCARD;
-            }
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.PAYDIREKT) {
             return PaymentMethod.PAYDIREKT;
-        } else if (type == Type.DATATRANS) {
+        } else if (type == Type.CREDIT_CARD_PSD2
+                || type == Type.DATATRANS
+                || type == Type.DATATRANS_CREDITCARD) {
             switch (getBrand()) {
                 case VISA: return PaymentMethod.VISA;
                 case AMEX: return PaymentMethod.AMEX;

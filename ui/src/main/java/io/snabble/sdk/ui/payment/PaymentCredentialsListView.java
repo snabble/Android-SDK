@@ -188,6 +188,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         break;
                     case CREDIT_CARD_PSD2:
                     case DATATRANS:
+                    case DATATRANS_CREDITCARD:
                         entries.add(new Entry(pm, getDrawableForBrand(pm.getBrand()), pm.getObfuscatedId()));
                         break;
                     case PAYDIREKT:

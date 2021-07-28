@@ -47,8 +47,28 @@ class Datatrans {
 
         @JvmStatic
         fun registerCard(activity: FragmentActivity, project: Project, paymentMethod: PaymentMethod) {
+            val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
+            if (descriptor == null) {
+                Logger.e("Datatrans error: No payment method descriptor for $paymentMethod")
+
+                Dispatch.mainThread {
+                    showError(activity, paymentMethod)
+                }
+                return
+            }
+
+            val url = descriptor.links?.get("tokenization")
+            if (url == null) {
+                Logger.e("Datatrans error: No tokenization url")
+
+                Dispatch.mainThread {
+                    showError(activity, paymentMethod)
+                }
+                return
+            }
+
             val request: Request = Request.Builder()
-                .url(project.datatransTokenizationUrl)
+                .url(Snabble.getInstance().absoluteUrl(url.href))
                 .post(GsonHolder.get().toJson(
                     DatatransTokenizationRequest(paymentMethod)
                 ).toRequestBody("application/json".toMediaType()))

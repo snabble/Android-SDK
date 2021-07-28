@@ -93,7 +93,9 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
 
             val count = credentials.count {
                 it.appId == Snabble.getInstance().config.appId &&
-                (it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2 || it.type == PaymentCredentials.Type.DATATRANS) &&
+                (it.type == PaymentCredentials.Type.CREDIT_CARD_PSD2
+                        || it.type == PaymentCredentials.Type.DATATRANS
+                        || it.type == PaymentCredentials.Type.DATATRANS_CREDITCARD) &&
                 it.projectId == project.id
             }
 
@@ -107,10 +109,8 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             holder.itemView.setOnClickListener {
                 if (count > 0) {
                     val args = Bundle()
-                    args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE, ArrayList<PaymentCredentials.Type>().apply {
-                        add(PaymentCredentials.Type.CREDIT_CARD_PSD2)
-                        add(PaymentCredentials.Type.DATATRANS)
-                    })
+                    args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE,
+                        ArrayList(PaymentCredentials.Type.values().filter { it.isProjectDependantType }.toList()))
                     args.putString(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
                     executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
                 } else {

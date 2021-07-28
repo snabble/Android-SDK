@@ -21,7 +21,7 @@ object PaymentInputViewHelper {
                 val project = Snabble.getInstance().getProjectById(projectId)
                 val useDatatrans = project?.paymentMethodDescriptors
                     ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes
-                    ?.any { it == "datatransAlias" } ?: false
+                    ?.any { it == "datatransAlias" || it == "datatransCreditCardAlias" } ?: false
 
                 val activity = UIUtils.getHostFragmentActivity(context)
                 val args = Bundle()

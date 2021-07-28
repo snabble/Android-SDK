@@ -99,7 +99,7 @@ public class CreditCardInputView extends FrameLayout {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Dispatch.mainThread(() -> finishWithError());
+                Dispatch.mainThread(() -> finishWithError(null));
             }
         });
 
@@ -154,13 +154,13 @@ public class CreditCardInputView extends FrameLayout {
         Project project = getProject();
 
         if (project == null) {
-            finishWithError();
+            finishWithError("No project");
             return;
         }
 
         String url = project.getTelecashVaultItemsUrl();
         if (url == null) {
-            finishWithError();
+            finishWithError("No vault items url provided");
             return;
         }
 
@@ -181,7 +181,7 @@ public class CreditCardInputView extends FrameLayout {
 
             @Override
             public void error(Throwable t) {
-                Dispatch.mainThread(() -> finishWithError());
+                Dispatch.mainThread(() -> finishWithError(null));
             }
         });
     }
@@ -347,9 +347,14 @@ public class CreditCardInputView extends FrameLayout {
         }
     }
 
-    private void finishWithError() {
+    private void finishWithError(String failReason) {
+        String errorMessage = getContext().getString(R.string.Snabble_Payment_CreditCard_error);
+        if (failReason != null) {
+            errorMessage = errorMessage + ": " + failReason;
+        }
+
         Toast.makeText(getContext(),
-                R.string.Snabble_Payment_CreditCard_error,
+                errorMessage,
                 Toast.LENGTH_SHORT)
                 .show();
 
@@ -467,8 +472,8 @@ public class CreditCardInputView extends FrameLayout {
         }
 
         @JavascriptInterface
-        public void fail() {
-            Dispatch.mainThread(CreditCardInputView.this::finishWithError);
+        public void fail(String failReason) {
+            Dispatch.mainThread(() -> finishWithError(failReason));
         }
 
         @JavascriptInterface
