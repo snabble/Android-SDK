@@ -215,6 +215,8 @@ public class Project {
             paymentMethodDescriptors.removeIf(paymentMethodDescriptor ->
                     PaymentMethod.fromString(paymentMethodDescriptor.getId()) == null);
             this.paymentMethodDescriptors = Collections.unmodifiableList(paymentMethodDescriptors);
+        } else {
+            this.paymentMethodDescriptors = Collections.unmodifiableList(Collections.emptyList());
         }
 
         parseShops(jsonObject);
