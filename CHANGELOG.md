@@ -1,6 +1,15 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.41.0]
+
+### Added
+- Added support for payment method descriptors
+- Added support for credit card payment using Datatrans
+
+### Fixed
+- Fixed internal storage directory sometimes pointing to null
+
 ## [0.40.2]
 
 ### Fixed
