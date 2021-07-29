@@ -500,9 +500,7 @@ public class Snabble {
 
     private void loadActiveShops() {
         for (Project project : projects) {
-            project.loadActiveShops(() -> {
-                notifyMetadataUpdated();
-            });
+            project.loadActiveShops(this::notifyMetadataUpdated);
         }
     }
 

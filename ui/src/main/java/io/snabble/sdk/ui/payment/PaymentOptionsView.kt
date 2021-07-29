@@ -329,6 +329,8 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
                 if (entry.icon != null) {
                     holder.image.setImageResource(entry.icon)
+                } else {
+                    holder.image.setImageBitmap(null)
                 }
 
                 if (entry.project != null) {

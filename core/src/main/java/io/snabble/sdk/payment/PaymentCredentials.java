@@ -15,7 +15,6 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -24,7 +23,6 @@ import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
 import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.Project;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
@@ -112,6 +110,8 @@ public class PaymentCredentials {
 
     private static class DatatransData {
         private String alias;
+        private String expiryMonth;
+        private String expiryYear;
     }
 
     public static class PaydirektAuthorizationData {
@@ -332,6 +332,11 @@ public class PaymentCredentials {
 
         DatatransData datatransData = new DatatransData();
         datatransData.alias = token;
+
+        if (pc.type == Type.DATATRANS_CREDITCARD) {
+            datatransData.expiryMonth = expirationMonth;
+            datatransData.expiryYear = expirationYear;
+        }
 
         String json = GsonHolder.get().toJson(datatransData, DatatransData.class);
 
