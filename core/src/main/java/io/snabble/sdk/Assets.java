@@ -358,12 +358,6 @@ public class Assets {
     }
 
     private Asset getAsset(String name, Type type) {
-        // currently a limitation due to asynchronous reads and saves,
-        // could be solved with careful locking
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw new RuntimeException("Can only be access from the main thread");
-        }
-
         if (manifest == null) {
             return null;
         }
@@ -384,20 +378,22 @@ public class Assets {
                 break;
         }
 
-        Asset asset = manifest.assets.get(fileName);
-        if (asset == null) {
-            // try non night mode version
-            asset = manifest.assets.get(name);
-        }
+        synchronized (this) {
+            Asset asset = manifest.assets.get(fileName);
+            if (asset == null) {
+                // try non night mode version
+                asset = manifest.assets.get(name);
+            }
 
-        return asset;
+            return asset;
+        }
     }
 
     private Bitmap getBitmapByType(String name, Type type) {
         Asset asset = getAsset(name, type);
         if (asset != null) {
             try {
-                Logger.d("render jpg %s/%s", project.getId(), name);
+                Logger.d("render %s %s/%s", type.name(), project.getId(), name);
                 return BitmapFactory.decodeStream(new FileInputStream(asset.file));
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
@@ -412,7 +408,7 @@ public class Assets {
         Asset asset = getAsset(name, Type.SVG);
         if (asset != null) {
             try {
-                Logger.d("render svg %s/%s", project.getId(), name);
+                Logger.d("render SVG %s/%s", project.getId(), name);
 
                 Resources res = app.getResources();
                 DisplayMetrics dm = res.getDisplayMetrics();
@@ -456,25 +452,28 @@ public class Assets {
         }
         final String finalFileName = fileName;
 
-        Bitmap bitmap = getBitmap(fileName, type);
-        if (bitmap != null) {
-            Logger.d("cache hit " + fileName);
-            callback.onReceive(bitmap);
-        } else {
-            Logger.d("cache miss " + fileName);
+        Dispatch.background(() -> {
+            Bitmap bitmap = getBitmap(finalFileName, type);
+            if (bitmap != null) {
+                Logger.d("cache hit " + finalFileName);
+                Dispatch.mainThread(() -> callback.onReceive(bitmap));
+            } else {
+                Logger.d("cache miss " + finalFileName);
 
-            download(fileName, new DownloadCallback() {
-                @Override
-                public void success() {
-                    Dispatch.mainThread(() -> callback.onReceive(getBitmap(finalFileName, type)));
-                }
+                download(finalFileName, new DownloadCallback() {
+                    @Override
+                    public void success() {
+                        Bitmap b = getBitmap(finalFileName, type);
+                        Dispatch.mainThread(() -> callback.onReceive(b));
+                    }
 
-                @Override
-                public void failure() {
-                    Logger.d("fail " + finalFileName);
-                    Dispatch.mainThread(() -> callback.onReceive(null));
-                }
-            });
-        }
+                    @Override
+                    public void failure() {
+                        Logger.d("fail " + finalFileName);
+                        Dispatch.mainThread(() -> callback.onReceive(null));
+                    }
+                });
+            }
+        });
     }
 }
