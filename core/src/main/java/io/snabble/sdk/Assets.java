@@ -434,10 +434,14 @@ public class Assets {
     }
 
     public void get(String name, Callback callback) {
-        get(name, Type.SVG, callback);
+        get(name, Type.SVG, false, callback);
     }
 
-    public void get(String name, Type type, Callback callback) {
+    public void get(String name, boolean async, Callback callback) {
+        get(name, Type.SVG, async, callback);
+    }
+
+    public void get(String name, Type type, boolean async, Callback callback) {
         String fileName = FilenameUtils.removeExtension(name);
         switch (type) {
             case SVG:
@@ -452,28 +456,34 @@ public class Assets {
         }
         final String finalFileName = fileName;
 
-        Dispatch.background(() -> {
-            Bitmap bitmap = getBitmap(finalFileName, type);
-            if (bitmap != null) {
-                Logger.d("cache hit " + finalFileName);
-                Dispatch.mainThread(() -> callback.onReceive(bitmap));
-            } else {
-                Logger.d("cache miss " + finalFileName);
+        if (async) {
+            Dispatch.background(() -> get(finalFileName, type, callback));
+        } else {
+            get(finalFileName, type, callback);
+        }
+    }
 
-                download(finalFileName, new DownloadCallback() {
-                    @Override
-                    public void success() {
-                        Bitmap b = getBitmap(finalFileName, type);
-                        Dispatch.mainThread(() -> callback.onReceive(b));
-                    }
+    private void get(final String name, Type type, Callback callback) {
+        Bitmap bitmap = getBitmap(name, type);
+        if (bitmap != null) {
+            Logger.d("cache hit " + name);
+            Dispatch.mainThread(() -> callback.onReceive(bitmap));
+        } else {
+            Logger.d("cache miss " + name);
 
-                    @Override
-                    public void failure() {
-                        Logger.d("fail " + finalFileName);
-                        Dispatch.mainThread(() -> callback.onReceive(null));
-                    }
-                });
-            }
-        });
+            download(name, new DownloadCallback() {
+                @Override
+                public void success() {
+                    Bitmap b = getBitmap(name, type);
+                    Dispatch.mainThread(() -> callback.onReceive(b));
+                }
+
+                @Override
+                public void failure() {
+                    Logger.d("fail " + name);
+                    Dispatch.mainThread(() -> callback.onReceive(null));
+                }
+            });
+        }
     }
 }
