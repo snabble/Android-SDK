@@ -532,10 +532,6 @@ public class SelfScanningView extends FrameLayout {
             if (list.getAddCount() == 1) {
                 showHints();
             }
-
-            if (item.getCoupon() != null && item.getCoupon().getType() == CouponType.MANUAL) {
-                showInfo(getResources().getString(R.string.Snabble_Scanner_manualCouponAdded));
-            }
         }
 
         @Override
