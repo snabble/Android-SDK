@@ -1,6 +1,13 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.42.0]
+
+### Changed
+- Removed manual discount message
+- Added in memory lru cache for asset decoding
+- Added async parameter for asset loading
+
 ## [0.41.0]
 
 ### Added

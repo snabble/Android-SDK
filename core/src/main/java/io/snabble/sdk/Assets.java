@@ -45,6 +45,20 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class Assets {
+    private static LruCache<String, Bitmap> memoryCache;
+
+    static {
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+        Logger.d("setup lru cache " + (cacheSize / 1024) + " MB");
+        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+    }
+
     private enum Variant {
         @SerializedName("1x")
         MDPI("1x", 1.0f),
@@ -109,7 +123,6 @@ public class Assets {
     private Project project;
     private File manifestFile;
     private Manifest manifest;
-    private LruCache<String, Bitmap> memoryCache;
 
     Assets(Project project) {
         this.app = Snabble.getInstance().getApplication();
@@ -117,16 +130,6 @@ public class Assets {
         this.manifestFile = new File(project.getInternalStorageDirectory(), "assets.json");
         this.assetDir = new File(project.getInternalStorageDirectory(), "assets/");
         this.assetDir.mkdirs();
-
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 16;
-        Logger.d("setup lru cache " + (cacheSize / 1024) + " MB");
-        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                return bitmap.getByteCount() / 1024;
-            }
-        };
 
         loadManifest();
     }
@@ -354,19 +357,26 @@ public class Assets {
     }
 
     public Bitmap getBitmap(String name) {
-        return getBitmapSVG(name);
+        return getBitmap(name, Type.SVG);
     }
 
     public Bitmap getBitmap(String name, Type type) {
+        Bitmap bitmap;
+
         switch (type) {
             case SVG:
-                return getBitmapSVG(name);
+                bitmap = getBitmapSVG(name);
+                break;
             case JPG:
             case WEBP:
-                return getBitmapByType(name, type);
+                bitmap = getBitmapByType(name, type);
+                break;
             default:
-                return null;
+                bitmap = null;
+                break;
         }
+
+        return bitmap;
     }
 
     private Asset getAsset(String name, Type type) {
@@ -390,15 +400,13 @@ public class Assets {
                 break;
         }
 
-        synchronized (this) {
-            Asset asset = manifest.assets.get(fileName);
-            if (asset == null) {
-                // try non night mode version
-                asset = manifest.assets.get(name);
-            }
-
-            return asset;
+        Asset asset = manifest.assets.get(fileName);
+        if (asset == null) {
+            // try non night mode version
+            asset = manifest.assets.get(name);
         }
+
+        return asset;
     }
 
     private Bitmap getBitmapByType(String name, Type type) {
@@ -406,15 +414,7 @@ public class Assets {
         if (asset != null) {
             try {
                 Logger.d("render %s %s/%s", type.name(), project.getId(), name);
-                String cacheKey = asset.hash;
-                Bitmap cachedBitmap = getBitmapFromMemCache(cacheKey);
-                if (cachedBitmap != null) {
-                    return cachedBitmap;
-                }
-
-                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(asset.file));
-                addBitmapToMemoryCache(cacheKey, bitmap);
-                return bitmap;
+                return BitmapFactory.decodeStream(new FileInputStream(asset.file));
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
                 return null;
@@ -440,16 +440,9 @@ public class Assets {
                 svg.setDocumentWidth(width);
                 svg.setDocumentHeight(height);
 
-                String cacheKey = asset.hash;
-                Bitmap cachedBitmap = getBitmapFromMemCache(cacheKey);
-                if (cachedBitmap != null) {
-                    return cachedBitmap;
-                }
-
                 Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 svg.renderToCanvas(canvas);
-                addBitmapToMemoryCache(cacheKey, bitmap);
                 return bitmap;
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
@@ -483,17 +476,35 @@ public class Assets {
         }
         final String finalFileName = fileName;
 
+        Asset asset = getAsset(name, type);
+        if (asset != null) {
+            String cacheKey = asset.hash;
+            Bitmap cachedBitmap = getBitmapFromMemCache(cacheKey);
+            if (cachedBitmap != null) {
+                callback.onReceive(cachedBitmap);
+                return;
+            }
+        }
+
         if (async) {
-            Dispatch.background(() -> get(finalFileName, type, callback));
+            Dispatch.background(() -> {
+                get(finalFileName, type, callback);
+            });
         } else {
             get(finalFileName, type, callback);
         }
     }
 
-    private void get(final String name, Type type, Callback callback) {
+    private void get(String name, Type type, Callback callback) {
         Bitmap bitmap = getBitmap(name, type);
         if (bitmap != null) {
             Logger.d("cache hit " + name);
+            Asset asset = getAsset(name, type);
+            if (asset != null) {
+                String cacheKey = asset.hash;
+                addBitmapToMemoryCache(cacheKey, bitmap);
+            }
+
             Dispatch.mainThread(() -> callback.onReceive(bitmap));
         } else {
             Logger.d("cache miss " + name);
@@ -502,6 +513,12 @@ public class Assets {
                 @Override
                 public void success() {
                     Bitmap b = getBitmap(name, type);
+                    Asset asset = getAsset(name, type);
+                    if (asset != null) {
+                        String cacheKey = asset.hash;
+                        addBitmapToMemoryCache(cacheKey, b);
+                    }
+
                     Dispatch.mainThread(() -> callback.onReceive(b));
                 }
 
@@ -514,14 +531,14 @@ public class Assets {
         }
     }
 
-    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
         if (getBitmapFromMemCache(key) == null) {
-            Logger.d("put lru cache " + key);
+            Logger.d("put lru cache %d / %d MB %s", memoryCache.size() / 1024, memoryCache.maxSize() / 1024, key);
             memoryCache.put(key, bitmap);
         }
     }
 
-    public Bitmap getBitmapFromMemCache(String key) {
+    public static Bitmap getBitmapFromMemCache(String key) {
         Bitmap bitmap = memoryCache.get(key);
         Logger.d("get lru cache %s %s", bitmap != null ? "HIT" : "MISS", key);
         return bitmap;
