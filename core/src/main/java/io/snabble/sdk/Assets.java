@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.collection.LruCache;
 
 import com.caverock.androidsvg.SVG;
 import com.google.gson.annotations.SerializedName;
@@ -108,6 +109,7 @@ public class Assets {
     private Project project;
     private File manifestFile;
     private Manifest manifest;
+    private LruCache<String, Bitmap> memoryCache;
 
     Assets(Project project) {
         this.app = Snabble.getInstance().getApplication();
@@ -115,6 +117,16 @@ public class Assets {
         this.manifestFile = new File(project.getInternalStorageDirectory(), "assets.json");
         this.assetDir = new File(project.getInternalStorageDirectory(), "assets/");
         this.assetDir.mkdirs();
+
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 16;
+        Logger.d("setup lru cache " + (cacheSize / 1024) + " MB");
+        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
 
         loadManifest();
     }
@@ -394,7 +406,15 @@ public class Assets {
         if (asset != null) {
             try {
                 Logger.d("render %s %s/%s", type.name(), project.getId(), name);
-                return BitmapFactory.decodeStream(new FileInputStream(asset.file));
+                String cacheKey = asset.hash;
+                Bitmap cachedBitmap = getBitmapFromMemCache(cacheKey);
+                if (cachedBitmap != null) {
+                    return cachedBitmap;
+                }
+
+                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(asset.file));
+                addBitmapToMemoryCache(cacheKey, bitmap);
+                return bitmap;
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
                 return null;
@@ -420,9 +440,16 @@ public class Assets {
                 svg.setDocumentWidth(width);
                 svg.setDocumentHeight(height);
 
+                String cacheKey = asset.hash;
+                Bitmap cachedBitmap = getBitmapFromMemCache(cacheKey);
+                if (cachedBitmap != null) {
+                    return cachedBitmap;
+                }
+
                 Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 svg.renderToCanvas(canvas);
+                addBitmapToMemoryCache(cacheKey, bitmap);
                 return bitmap;
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
@@ -485,5 +512,18 @@ public class Assets {
                 }
             });
         }
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            Logger.d("put lru cache " + key);
+            memoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        Bitmap bitmap = memoryCache.get(key);
+        Logger.d("get lru cache %s %s", bitmap != null ? "HIT" : "MISS", key);
+        return bitmap;
     }
 }
