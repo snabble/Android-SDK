@@ -352,7 +352,7 @@ class CheckoutBar @JvmOverloads constructor(
             val dialog = AlertDialog.Builder(context)
                 .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
                 .setAdapter(
-                    ArrayAdapter(context, R.layout.item_taxation, listOf(
+                    ArrayAdapter(context, R.layout.snabble_item_taxation, listOf(
                         context.getString(R.string.Snabble_Taxation_consume_inhouse),
                         context.getString(R.string.Snabble_Taxation_consume_takeaway)
                     ))
