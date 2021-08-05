@@ -483,7 +483,10 @@ public class Project {
      * payment process.
      */
     public void setCheckedInShop(Shop checkedInShop) {
-        if (this.checkedInShop == null || !this.checkedInShop.getId().equals(checkedInShop.getId())) {
+        String currentShopId = this.checkedInShop != null ? this.checkedInShop.getId() : "";
+        String newShopId = checkedInShop != null ? checkedInShop.getId() : "";
+
+        if (!currentShopId.equals(newShopId)) {
             this.checkedInShop = checkedInShop;
             events.updateShop(checkedInShop);
             getShoppingCart().updatePrices(false);
