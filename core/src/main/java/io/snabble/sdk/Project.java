@@ -483,9 +483,11 @@ public class Project {
      * payment process.
      */
     public void setCheckedInShop(Shop checkedInShop) {
-        this.checkedInShop = checkedInShop;
-        events.updateShop(checkedInShop);
-        getShoppingCart().updatePrices(false);
+        if (this.checkedInShop == null || !this.checkedInShop.getId().equals(checkedInShop.getId())) {
+            this.checkedInShop = checkedInShop;
+            events.updateShop(checkedInShop);
+            getShoppingCart().updatePrices(false);
+        }
     }
 
     public Shop getCheckedInShop() {
