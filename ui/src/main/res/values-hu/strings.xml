@@ -62,7 +62,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Nem sikerült az azonosítás</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Fizetési mód törlése</string>
     <string name="Snabble.paydirekt.gotoWebsite">A paydirekt.de oldalra</string>
-    <string name="Snabble.Paydirekt.payNow">Fizetés paydirekttel</string>
+    <string name="Snabble.paydirekt.payNow">Fizetés paydirekttel</string>
     <string name="Snabble.paydirekt.savedAuthorization">A Snabble alkalmazást sikeresen bejelentetted a paydirektre. Visszavonásához a paydirekt fiókadataiddal be kell jelentkezned a honlapon. Ha nem szeretnéd, hogy a paydirekt a fizetési lehetőségeid között legyen, akkor itt egyszerűen eltávolíthatod.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Megszakadt a fizetési folyamat</string>
@@ -133,7 +133,7 @@
     <string name="Snabble.QRCode.showTheseCodes">Kérlek, mutasd meg ezeket a %d kódokat egymás után a pénztárnál</string>
     <string name="Snabble.QRCode.showThisCode">Kérlek, mutasd meg ezt a kódot a pénztárnál</string>
     <string name="Snabble.QRCode.title">Fizetés a pénztárnál</string>
-    <string name="Snabble.QRCode.total">Teljes összeg:\u0020</string>
+    <string name="Snabble.QRCode.total">Teljes összeg:</string>
     <string name="Snabble.Receipts.loading">(Betöltés alatt)</string>
     <string name="Snabble.Receipts.noReceipts">Még nem vásároltál a Snabble segítségével</string>
     <string name="Snabble.Receipts.oClock">Óra</string>
@@ -164,7 +164,7 @@
     <string name="Snabble.Scanner.networkError">A terméket nem sikerült lekérdezni. Ellenőrizd az internetkapcsolatot.</string>
     <string name="Snabble.Scanner.noMatchesFound">Termék nem található</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s betétdíj</string>
-    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Erre a termékre életkori korlátozás vonatkozik. A fizetésnél éppen ezért ellenőrizzük a korod.</string>
+    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">A fizetésnél egyszeri alkalommal ellenőrizzük a korodat.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Kérlek, mérd le a terméket, és utána olvasd be a matricán található vonalkódot</string>
     <string name="Snabble.Scanner.scanningTitle">Vonalkód szkennelése</string>
     <string name="Snabble.Scanner.serverError">A terméket nem sikerült lekérdezni.</string>
@@ -246,6 +246,10 @@
     <string name="Snabble.ShoppingList.Voice.title">Ötlet</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Bevásárlólisták</string>
+    <string name="Snabble.Taxation.consume.inhouse"/>
+    <string name="Snabble.Taxation.consume.takeaway"/>
+    <string name="Snabble.Taxation.consumeWhere"/>
+    <string name="Snabble.Taxation.pleaseChoose"/>
     <string name="Snabble.TWINT.payNow">Fizetés TWINT segítségével</string>
     <string name="Snabble.undo">Visszavonás</string>
     <string name="Snabble.Yes">Igen</string>

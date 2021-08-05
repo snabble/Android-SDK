@@ -62,7 +62,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Authorization failed</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Delete method</string>
     <string name="Snabble.paydirekt.gotoWebsite">Go to paydirekt.de</string>
-    <string name="Snabble.Paydirekt.payNow">Pay now using paydirekt</string>
+    <string name="Snabble.paydirekt.payNow">Pay now using paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">You\'ve successfully authorized Snabble for paydirekt. To remove this authorization, you need to log in to your paydirekt account. If you do not want to use this payment method anymore, you can remove it here.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Payment process was cancelled</string>
@@ -133,7 +133,7 @@
     <string name="Snabble.QRCode.showTheseCodes">Please show these %d codes at the register, one after the other</string>
     <string name="Snabble.QRCode.showThisCode">Please show this code at the register</string>
     <string name="Snabble.QRCode.title">Pay at cash desk</string>
-    <string name="Snabble.QRCode.total">Total:\u0020</string>
+    <string name="Snabble.QRCode.total">"Total: "</string>
     <string name="Snabble.Receipts.loading">(loading)</string>
     <string name="Snabble.Receipts.noReceipts">No Receipts found</string>
     <string name="Snabble.Receipts.oClock">o\'clock</string>
@@ -164,7 +164,7 @@
     <string name="Snabble.Scanner.networkError">Could not retrieve product data. Please check your internet connection.</string>
     <string name="Snabble.Scanner.noMatchesFound">Product not found</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s deposit</string>
-    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">This is an age-restricted product, your age will be verified during checkout.</string>
+    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Your age will be checked once at the time of payment.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Please weigh the product, then scan the barcode from the sticker</string>
     <string name="Snabble.Scanner.scanningTitle">Scan Barcode</string>
     <string name="Snabble.Scanner.serverError">Could not retrieve product data.</string>
@@ -246,6 +246,10 @@
     <string name="Snabble.ShoppingList.Voice.title">Hint</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Shopping lists</string>
+    <string name="Snabble.Taxation.consume.inhouse">Eat here</string>
+    <string name="Snabble.Taxation.consume.takeaway">Take with me</string>
+    <string name="Snabble.Taxation.consumeWhere">Will you be eating here or is this to go?</string>
+    <string name="Snabble.Taxation.pleaseChoose">Please choose</string>
     <string name="Snabble.TWINT.payNow">Pay now using TWINT</string>
     <string name="Snabble.undo">Undo</string>
     <string name="Snabble.Yes">Yes</string>

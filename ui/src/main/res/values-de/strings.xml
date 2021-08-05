@@ -62,7 +62,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Autorisierung fehlgeschlagen</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Bezahlmethode löschen</string>
     <string name="Snabble.paydirekt.gotoWebsite">Zu paydirekt.de</string>
-    <string name="Snabble.Paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
+    <string name="Snabble.paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
     <string name="Snabble.paydirekt.savedAuthorization">Du hast die Snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Der Bezahlvorgang wurde abgebrochen</string>
@@ -133,7 +133,7 @@
     <string name="Snabble.QRCode.showTheseCodes">Bitte zeige diese %d Codes nacheinander an der Kasse</string>
     <string name="Snabble.QRCode.showThisCode">Bitte zeige diesen Code an der Kasse</string>
     <string name="Snabble.QRCode.title">An der Kasse zahlen</string>
-    <string name="Snabble.QRCode.total">Gesamtsumme:\u0020</string>
+    <string name="Snabble.QRCode.total">"Gesamtsumme: "</string>
     <string name="Snabble.Receipts.loading">(wird geladen)</string>
     <string name="Snabble.Receipts.noReceipts">Du hast noch nicht mit Snabble eingekauft</string>
     <string name="Snabble.Receipts.oClock">Uhr</string>
@@ -164,7 +164,7 @@
     <string name="Snabble.Scanner.networkError">Das Produkt konnte nicht angefragt werden. Bitte überprüfe deine Internetverbindung.</string>
     <string name="Snabble.Scanner.noMatchesFound">Artikel nicht gefunden</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s Pfand</string>
-    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Dieses Produkt unterliegt einer Altersbeschränkung. Dein Alter wird daher bei der Zahlung überprüft werden.</string>
+    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Dein Alter wird einmalig bei der Zahlung überprüft werden.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Bitte wiege das Produkt und scanne dann den Barcode auf dem Aufkleber</string>
     <string name="Snabble.Scanner.scanningTitle">Barcode scannen</string>
     <string name="Snabble.Scanner.serverError">Das Produkt konnte nicht angefragt werden.</string>
@@ -246,6 +246,10 @@
     <string name="Snabble.ShoppingList.Voice.title">Tipp</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Einkaufslisten</string>
+    <string name="Snabble.Taxation.consume.inhouse">Hier Essen</string>
+    <string name="Snabble.Taxation.consume.takeaway">Mitnehmen</string>
+    <string name="Snabble.Taxation.consumeWhere">Zum hier Essen oder zum Mitnehmen?</string>
+    <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
     <string name="Snabble.TWINT.payNow">Jetzt mit TWINT bezahlen</string>
     <string name="Snabble.undo">Rückgängig</string>
     <string name="Snabble.Yes">Ja</string>

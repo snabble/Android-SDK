@@ -81,6 +81,7 @@ class CheckoutBar @JvmOverloads constructor(
         }
 
         payButton.setOneShotClickListener {
+            cart.taxation = ShoppingCart.Taxation.UNDECIDED
             payButtonClick()
         }
 
@@ -346,6 +347,26 @@ class CheckoutBar @JvmOverloads constructor(
         } else if (state == Checkout.State.REQUEST_VERIFY_AGE) {
             SnabbleUI.executeAction(SnabbleUI.Action.SHOW_AGE_VERIFICATION)
             progressDialog.dismiss()
+        } else if (state == Checkout.State.REQUEST_TAXATION) {
+            progressDialog.dismiss()
+            val dialog = AlertDialog.Builder(context)
+                .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
+                .setAdapter(
+                    ArrayAdapter(context, R.layout.item_taxation, listOf(
+                        context.getString(R.string.Snabble_Taxation_consume_inhouse),
+                        context.getString(R.string.Snabble_Taxation_consume_takeaway)
+                    ))
+                ) { dialog, which ->
+                    if (which == 0) {
+                        cart.taxation = ShoppingCart.Taxation.IN_HOUSE
+                    } else {
+                        cart.taxation = ShoppingCart.Taxation.TAKEAWAY
+                    }
+                    dialog.dismiss()
+                    project.checkout.checkout()
+                }
+                .create()
+                .show()
         } else if (state == Checkout.State.NO_PAYMENT_METHOD_AVAILABLE) {
             AlertDialog.Builder(context)
                     .setCancelable(false)

@@ -29,6 +29,22 @@ public class ShoppingCart {
         COUPON
     }
 
+    public enum Taxation {
+        UNDECIDED("undecided"),
+        IN_HOUSE("inHouse"),
+        TAKEAWAY("takeaway");
+
+        private String value;
+
+        Taxation(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
     public static final int MAX_QUANTITY = 99999;
 
     private String id;
@@ -40,6 +56,7 @@ public class ShoppingCart {
     private int addCount = 0;
     private Integer onlineTotalPrice;
     private List<Product> invalidProducts;
+    private Taxation taxation = Taxation.UNDECIDED;
 
     private boolean hasRaisedMaxCheckoutLimit;
     private boolean hasRaisedMaxOnlinePaymentLimit;
@@ -270,6 +287,19 @@ public class ShoppingCart {
             updatePrices(false);
             notifyProductsUpdate(this);
         }
+    }
+
+    public Taxation getTaxation() {
+        // migration for old shopping carts
+        if (taxation == null) {
+            return Taxation.UNDECIDED;
+        }
+        return taxation;
+    }
+
+    public void setTaxation(Taxation taxation) {
+        this.taxation = taxation;
+        notifyTaxationChanged(this, taxation);
     }
 
     public boolean isRestorable() {
@@ -950,6 +980,7 @@ public class ShoppingCart {
         String appUserId;
         BackendCartCustomer customer;
         BackendCartItem[] items;
+        List<BackendCartRequiredInformation> requiredInformation;
 
         @Override
         public Events.EventType getEventType() {
@@ -959,6 +990,11 @@ public class ShoppingCart {
 
     public static class BackendCartCustomer {
         String loyaltyCard;
+    }
+
+    public static class BackendCartRequiredInformation {
+        String id;
+        String value;
     }
 
     public static class BackendCartItem {
@@ -991,6 +1027,17 @@ public class ShoppingCart {
         if (loyaltyCardId != null) {
             backendCart.customer = new BackendCartCustomer();
             backendCart.customer.loyaltyCard = loyaltyCardId;
+        }
+
+        if (backendCart.requiredInformation == null) {
+            backendCart.requiredInformation = new ArrayList<>();
+        }
+
+        if (taxation != Taxation.UNDECIDED) {
+            BackendCartRequiredInformation requiredInformation = new BackendCartRequiredInformation();
+            requiredInformation.id = "taxation";
+            requiredInformation.value = taxation.getValue();
+            backendCart.requiredInformation.add(requiredInformation);
         }
 
         Shop shop = project.getCheckedInShop();
@@ -1132,6 +1179,8 @@ public class ShoppingCart {
         void onCheckoutLimitReached(ShoppingCart list);
 
         void onOnlinePaymentLimitReached(ShoppingCart list);
+
+        void onTaxationChanged(ShoppingCart list, Taxation taxation);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -1164,6 +1213,11 @@ public class ShoppingCart {
 
         @Override
         public void onPricesUpdated(ShoppingCart list) {
+            onChanged(list);
+        }
+
+        @Override
+        public void onTaxationChanged(ShoppingCart list, Taxation taxation) {
             onChanged(list);
         }
 
@@ -1226,6 +1280,14 @@ public class ShoppingCart {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
                 listener.onPricesUpdated(list);
+            }
+        });
+    }
+
+    void notifyTaxationChanged(final ShoppingCart list, final Taxation taxation) {
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onTaxationChanged(list, taxation);
             }
         });
     }

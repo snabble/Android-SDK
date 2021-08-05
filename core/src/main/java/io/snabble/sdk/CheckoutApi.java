@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -54,6 +55,24 @@ public class CheckoutApi {
                 return checkoutProcess.href;
             }
             return null;
+        }
+
+        public boolean isRequiringTaxation() {
+            try {
+                if (checkoutInfo != null && checkoutInfo.has("requiredInformation")) {
+                    JsonArray jsonArray = checkoutInfo.get("requiredInformation").getAsJsonArray();
+                    for (JsonElement element : jsonArray) {
+                        String id = element.getAsJsonObject().get("id").getAsString();
+                        if (id.equals("taxation")) {
+                            return true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                return false;
+            }
+
+            return false;
         }
 
         public PaymentMethodInfo[] getAvailablePaymentMethods(PaymentMethod[] clientAcceptedPaymentMethods) {

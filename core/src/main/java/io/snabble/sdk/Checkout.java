@@ -40,6 +40,10 @@ public class Checkout {
          */
         REQUEST_VERIFY_AGE,
         /**
+         * Ask the user for the taxation method.
+         */
+        REQUEST_TAXATION,
+        /**
          * Request a payment authorization token.
          *
          * For example a Google Pay payment token that needs to get sent back to
@@ -285,6 +289,13 @@ public class Checkout {
                                 int onlinePrice,
                                 CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
                 signedCheckoutInfo = checkoutInfo;
+
+                if (shoppingCart.getTaxation() == ShoppingCart.Taxation.UNDECIDED && signedCheckoutInfo.isRequiringTaxation()) {
+                    Logger.d("Taxation requested");
+                    notifyStateChanged(State.REQUEST_TAXATION);
+                    return;
+                }
+
                 priceToPay = shoppingCart.getTotalPrice();
 
                 if (availablePaymentMethods.length == 1) {

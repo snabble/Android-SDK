@@ -62,7 +62,7 @@
     <string name="Snabble.paydirekt.authorizationFailed.title">Autorizácia sa nepodarila</string>
     <string name="Snabble.paydirekt.deleteAuthorization">Vymazať spôsob platby</string>
     <string name="Snabble.paydirekt.gotoWebsite">Prejsť na paydirekt.de</string>
-    <string name="Snabble.Paydirekt.payNow">Teraz zaplatiť prostredníctvom paydirekt</string>
+    <string name="Snabble.paydirekt.payNow">Teraz zaplatiť prostredníctvom paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">Autorizácia aplikácie Snabble pre paydirekt bola úspešná. Ak chceš autorizáciu zrušiť, musíš sa prihlásiť do svojho konta paydirekt na webovej stránke. Pokiaľ nechceš, aby paydirekt bol v budúcnosti zobrazovaný ako spôsob platby, tu ho môžeš jednoducho odstrániť.</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Platobný proces bol prerušený</string>
@@ -133,7 +133,7 @@
     <string name="Snabble.QRCode.showTheseCodes">Ukáž po sebe tieto %d kódy pri pokladni</string>
     <string name="Snabble.QRCode.showThisCode">Ukáž tento kód pri pokladni</string>
     <string name="Snabble.QRCode.title">Zaplatiť pri pokladni</string>
-    <string name="Snabble.QRCode.total">Celková suma:\u0020</string>
+    <string name="Snabble.QRCode.total">Celková suma:</string>
     <string name="Snabble.Receipts.loading">(načítava sa)</string>
     <string name="Snabble.Receipts.noReceipts">Ešte si nenakupoval/a s aplikáciou Snabble</string>
     <string name="Snabble.Receipts.oClock">Čas</string>
@@ -164,7 +164,7 @@
     <string name="Snabble.Scanner.networkError">Produkt nie je možné nájsť. Prosím, skontroluj svoje internetové pripojenie.</string>
     <string name="Snabble.Scanner.noMatchesFound">Položka nebola nájdená</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s záloha</string>
-    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Na tento produkt sa vzťahuje vekový limit. Preto bude tvoj vek pri platbe skontrolovaný.</string>
+    <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Preto bude tvoj vek pri platbe jednorazovo skontrolovaný.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Odváž produkt a naskenuj čiarový kód na etikete</string>
     <string name="Snabble.Scanner.scanningTitle">Naskenovať čiarový kód</string>
     <string name="Snabble.Scanner.serverError">Produkt nie je možné nájsť.</string>
@@ -246,6 +246,10 @@
     <string name="Snabble.ShoppingList.Voice.title">Tip</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Nákupné zoznamy</string>
+    <string name="Snabble.Taxation.consume.inhouse"/>
+    <string name="Snabble.Taxation.consume.takeaway"/>
+    <string name="Snabble.Taxation.consumeWhere"/>
+    <string name="Snabble.Taxation.pleaseChoose"/>
     <string name="Snabble.TWINT.payNow">Zaplatiť cez TWINT teraz</string>
     <string name="Snabble.undo">Vrátiť späť</string>
     <string name="Snabble.Yes">Áno</string>
