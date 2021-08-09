@@ -63,7 +63,8 @@ public class CheckoutApi {
                     JsonArray jsonArray = checkoutInfo.get("requiredInformation").getAsJsonArray();
                     for (JsonElement element : jsonArray) {
                         String id = element.getAsJsonObject().get("id").getAsString();
-                        if (id.equals("taxation")) {
+                        boolean hasValue = element.getAsJsonObject().has("value");
+                        if (id.equals("taxation") && !hasValue) {
                             return true;
                         }
                     }

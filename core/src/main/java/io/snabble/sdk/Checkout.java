@@ -290,7 +290,7 @@ public class Checkout {
                                 CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
                 signedCheckoutInfo = checkoutInfo;
 
-                if (shoppingCart.getTaxation() == ShoppingCart.Taxation.UNDECIDED && signedCheckoutInfo.isRequiringTaxation()) {
+                if (signedCheckoutInfo.isRequiringTaxation()) {
                     Logger.d("Taxation requested");
                     notifyStateChanged(State.REQUEST_TAXATION);
                     return;
