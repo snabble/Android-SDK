@@ -246,10 +246,10 @@
     <string name="Snabble.ShoppingList.Voice.title">Ötlet</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Bevásárlólisták</string>
-    <string name="Snabble.Taxation.consume.inhouse"/>
-    <string name="Snabble.Taxation.consume.takeaway"/>
-    <string name="Snabble.Taxation.consumeWhere"/>
-    <string name="Snabble.Taxation.pleaseChoose"/>
+    <string name="Snabble.Taxation.consume.inhouse">itt elfogyasztani</string>
+    <string name="Snabble.Taxation.consume.takeaway">magaddal vinni</string>
+    <string name="Snabble.Taxation.consumeWhere">Szeretnéd a bevásárlásodat</string>
+    <string name="Snabble.Taxation.pleaseChoose">Kérlek, válassz</string>
     <string name="Snabble.TWINT.payNow">Fizetés TWINT segítségével</string>
     <string name="Snabble.undo">Visszavonás</string>
     <string name="Snabble.Yes">Igen</string>

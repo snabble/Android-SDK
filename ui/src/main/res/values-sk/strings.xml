@@ -246,10 +246,10 @@
     <string name="Snabble.ShoppingList.Voice.title">Tip</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Nákupné zoznamy</string>
-    <string name="Snabble.Taxation.consume.inhouse"/>
-    <string name="Snabble.Taxation.consume.takeaway"/>
-    <string name="Snabble.Taxation.consumeWhere"/>
-    <string name="Snabble.Taxation.pleaseChoose"/>
+    <string name="Snabble.Taxation.consume.inhouse">konzumovať tu</string>
+    <string name="Snabble.Taxation.consume.takeaway">zobrať so sebou</string>
+    <string name="Snabble.Taxation.consumeWhere">Chceš svoj nákup</string>
+    <string name="Snabble.Taxation.pleaseChoose">Vyber niektorú možnosť</string>
     <string name="Snabble.TWINT.payNow">Zaplatiť cez TWINT teraz</string>
     <string name="Snabble.undo">Vrátiť späť</string>
     <string name="Snabble.Yes">Áno</string>
