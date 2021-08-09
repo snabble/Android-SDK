@@ -1,7 +1,7 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
-## [0.42.3]
+## [0.43.0]
 
 ### Added
 - Added support for taxation
