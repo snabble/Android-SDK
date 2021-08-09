@@ -1,6 +1,16 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.42.2]
+
+### Fixed
+- Fixed NullPointerException introduced in 0.42.1
+
+## [0.42.1]
+
+### Fixed
+- Only update prices when the shop differs, not always when setCheckedInShop is called
+
 ## [0.42.0]
 
 ### Changed
