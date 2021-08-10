@@ -383,6 +383,7 @@ public class ShoppingCart {
 
     public void generateNewUUID() {
         uuid = UUID.randomUUID().toString();
+        notifyProductsUpdate(this);
     }
     
     public String getUUID() {

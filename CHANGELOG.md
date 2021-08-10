@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.43.1]
+
+### Fixed
+- Persist shopping list on new uuid's
+
 ## [0.43.0]
 
 ### Added
