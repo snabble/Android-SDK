@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.43.2]
+
+### Added
+- Added an icon to the payment credentials list empty state
+
+### Fixed
+- PaymentOptionsView not updating when adding a credit card via datatrans
+
 ## [0.43.1]
 
 ### Fixed

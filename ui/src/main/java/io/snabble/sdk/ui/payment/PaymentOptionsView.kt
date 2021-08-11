@@ -43,7 +43,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
         adapter.submitList(getEntries())
 
         val listener = PaymentCredentialsStore.Callback {
-            adapter.notifyDataSetChanged()
+            adapter.submitList(getEntries())
         }
 
         Snabble.getInstance().paymentCredentialsStore.addCallback(listener)

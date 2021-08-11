@@ -46,6 +46,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private RecyclerView recyclerView;
     private List<PaymentCredentials.Type> types;
     private Project project;
+    private View emptyState;
 
     public PaymentCredentialsListView(Context context) {
         super(context);
@@ -117,6 +118,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 }
             }
         });
+
+        emptyState = findViewById(R.id.empty_state);
     }
 
     public void show(List<PaymentCredentials.Type> types, Project project) {
@@ -202,6 +205,14 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
+
+        if (entries.size() == 0) {
+            emptyState.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            emptyState.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     private int getDrawableForBrand(PaymentCredentials.Brand brand) {
@@ -229,74 +240,52 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         return drawableResId;
     }
 
-    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final static int TYPE_EMPTYSTATE = 0;
-        private final static int TYPE_ENTRY = 1;
+    private class Adapter extends RecyclerView.Adapter<EntryViewHolder> {
+        @Override
+        public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
+            return new EntryViewHolder(v);
+        }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == TYPE_EMPTYSTATE) {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_emptystate, parent, false);
-                return new EmptyStateViewHolder(v);
+        public void onBindViewHolder(final EntryViewHolder vh, final int position) {
+            final Entry e = entries.get(position);
+
+            if (e.drawableRes != 0) {
+                vh.icon.setImageResource(e.drawableRes);
+                vh.icon.setVisibility(View.VISIBLE);
             } else {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
-                return new EntryViewHolder(v);
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (entries.size() == 0) {
-                return TYPE_EMPTYSTATE;
+                vh.icon.setVisibility(View.INVISIBLE);
             }
 
-            return TYPE_ENTRY;
-        }
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
+            String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
 
-        @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-            int type = getItemViewType(position);
-
-            if (type == TYPE_ENTRY) {
-                EntryViewHolder vh = (EntryViewHolder) holder;
-                final Entry e = entries.get(position);
-
-                if (e.drawableRes != 0) {
-                    vh.icon.setImageResource(e.drawableRes);
-                    vh.icon.setVisibility(View.VISIBLE);
-                } else {
-                    vh.icon.setVisibility(View.INVISIBLE);
-                }
-
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
-                String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
-
-                if (e.paymentCredentials.getValidTo() != 0) {
-                    vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
-                    vh.validTo.setVisibility(View.VISIBLE);
-                } else {
-                    vh.validTo.setVisibility(View.GONE);
-                }
-
-                vh.text.setText(e.text);
-                vh.delete.setOnClickListener(view -> {
-                    new AlertDialog.Builder(getContext())
-                            .setMessage(R.string.Snabble_Payment_delete_message)
-                            .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
-                                paymentCredentialsStore.remove(e.paymentCredentials);
-                            })
-                            .setNegativeButton(R.string.Snabble_No, null)
-                            .create()
-                            .show();
-
-                    Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
-                });
+            if (e.paymentCredentials.getValidTo() != 0) {
+                vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
+                vh.validTo.setVisibility(View.VISIBLE);
+            } else {
+                vh.validTo.setVisibility(View.GONE);
             }
+
+            vh.text.setText(e.text);
+            vh.delete.setOnClickListener(view -> {
+                new AlertDialog.Builder(getContext())
+                        .setMessage(R.string.Snabble_Payment_delete_message)
+                        .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
+                            paymentCredentialsStore.remove(e.paymentCredentials);
+                        })
+                        .setNegativeButton(R.string.Snabble_No, null)
+                        .create()
+                        .show();
+
+                Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
+            });
         }
 
         @Override
         public int getItemCount() {
-            return Math.max(1, entries.size());
+            return entries.size();
         }
     }
 
