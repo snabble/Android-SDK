@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.44.0]
+
+### Added
+- Added support for DIGITAL coupons with additional fields
+
 ## [0.43.2]
 
 ### Added

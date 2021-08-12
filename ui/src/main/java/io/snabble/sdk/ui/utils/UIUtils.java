@@ -128,7 +128,7 @@ public class UIUtils {
 
         Handler infoHandler = new Handler(Looper.getMainLooper());
         infoHandler.removeCallbacksAndMessages(null);
-        LazyWorker.Job hide = LazyWorker.createLifeCycleAwareJob(parent.getContext(), () -> {
+        LazyWorker.Job hide = LazyWorker.createLifeCycleAwareJob(parent.getContext(), (job) -> {
             if(info.isAttachedToWindow()) {
                 info.animate()
                         .translationY(-offsetY - info.getHeight())

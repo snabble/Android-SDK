@@ -130,6 +130,22 @@ public class ShoppingCart {
         insert(item, 0);
     }
 
+    /**
+     * Adds coupons without adding a scanned code to it, you can use this function to quickly
+     * add DIGITAL coupons that do not have a barcode associated with them
+     */
+    public void addCoupon(Coupon coupon) {
+        add(newItem(coupon, null));
+    }
+
+    /**
+     * Adds coupons with a scanned code to it, you can use this function to quickly
+     * add PRINTED coupons
+     */
+    public void addCoupon(Coupon coupon, ScannedCode scannedCode) {
+        add(newItem(coupon, scannedCode));
+    }
+
     public void insert(Item item, int index) {
         insert(item, index, true);
     }
