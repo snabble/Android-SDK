@@ -239,7 +239,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
 
         ShoppingCart cart = project.getShoppingCart();
         cart.add(cart.newItem(
-                new Coupon("asdf", "foo", CouponType.PRINTED, Collections.singletonList(new CouponCode("1234", "default"))),
+                new Coupon("asdf", "foo", null, null, CouponType.PRINTED, Collections.singletonList(new CouponCode("1234", "default")), null, null, null, null),
                 ScannedCode.parseDefault(project, "1234")
         ));
         generator.add(project.getShoppingCart());
