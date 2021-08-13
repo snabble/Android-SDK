@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.44.1]
+
+### Added
+- Added coupon fields for colors and disclaimer
+
 ## [0.44.0]
 
 ### Added

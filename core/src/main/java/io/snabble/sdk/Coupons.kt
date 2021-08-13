@@ -15,7 +15,9 @@ data class Coupon (
     val code: String?,
     val validFrom: String?,
     val validUntil: String?,
-    val image: CouponImage?
+    val image: CouponImage?,
+    val disclaimer: String?,
+    val colors: Map<String, String>?,
 ) : Parcelable
 
 @Parcelize
