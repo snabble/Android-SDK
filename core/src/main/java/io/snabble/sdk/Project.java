@@ -17,9 +17,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
@@ -212,9 +214,13 @@ public class Project {
         if (descriptors != null) {
             Type t = new TypeToken<List<PaymentMethodDescriptor>>() {}.getType();
             List<PaymentMethodDescriptor> paymentMethodDescriptors = GsonHolder.get().fromJson(descriptors, t);
-            paymentMethodDescriptors.removeIf(paymentMethodDescriptor ->
-                    PaymentMethod.fromString(paymentMethodDescriptor.getId()) == null);
-            this.paymentMethodDescriptors = Collections.unmodifiableList(paymentMethodDescriptors);
+            ArrayList<PaymentMethodDescriptor> filteredDescriptors = new ArrayList<>();
+            for (PaymentMethodDescriptor descriptor : paymentMethodDescriptors) {
+                if (PaymentMethod.fromString(descriptor.getId()) != null) {
+                    filteredDescriptors.add(descriptor);
+                }
+            }
+            this.paymentMethodDescriptors = Collections.unmodifiableList(filteredDescriptors);
         } else {
             this.paymentMethodDescriptors = Collections.unmodifiableList(Collections.emptyList());
         }

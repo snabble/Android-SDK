@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.44.2]
+
+### Fixed
+- Removed usage of removeIf, to support API < 26 without using coreLibraryDesugaring
+
 ## [0.44.1]
 
 ### Added
