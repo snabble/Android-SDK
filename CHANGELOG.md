@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.44.3]
+
+### Fixed 
+- Fixed visual bug in ShoppingCartView when deleting Coupons
+
 ## [0.44.2]
 
 ### Fixed

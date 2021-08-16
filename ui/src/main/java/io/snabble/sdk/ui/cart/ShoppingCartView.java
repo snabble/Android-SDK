@@ -378,12 +378,14 @@ public class ShoppingCartView extends FrameLayout {
             if (item.getType() == ShoppingCart.ItemType.LINE_ITEM) {
                 if (item.isDiscount()) {
                     SimpleRow row = new SimpleRow();
+                    row.item = item;
                     row.title = resources.getString(R.string.Snabble_Shoppingcart_discounts);
                     row.imageResId = R.drawable.snabble_ic_percent;
                     row.text = sanitize(item.getPriceText());
                     rows.add(row);
                 } else if (item.isGiveaway()) {
                     SimpleRow row = new SimpleRow();
+                    row.item = item;
                     row.title = item.getDisplayName();
                     row.imageResId = R.drawable.snabble_ic_gift;
                     row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway);
@@ -391,6 +393,7 @@ public class ShoppingCartView extends FrameLayout {
                 }
             } else if (item.getType() == ShoppingCart.ItemType.COUPON) {
                 SimpleRow row = new SimpleRow();
+                row.item = item;
                 row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
                 row.text = item.getDisplayName();
                 row.isDismissible = true;
@@ -445,13 +448,29 @@ public class ShoppingCartView extends FrameLayout {
     }
 
     private static abstract class Row {
+        ShoppingCart.Item item;
         boolean isDismissible;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Row row = (Row) o;
+
+            if (isDismissible != row.isDismissible) return false;
+            return item != null ? item.equals(row.item) : row.item == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = item != null ? item.hashCode() : 0;
+            result = 31 * result + (isDismissible ? 1 : 0);
+            return result;
+        }
     }
 
     private static class ProductRow extends Row {
-
-        ShoppingCart.Item item;
-
         String name;
         String subtitle;
         String imageUrl;
@@ -466,22 +485,37 @@ public class ShoppingCartView extends FrameLayout {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+
             ProductRow that = (ProductRow) o;
-            return quantity == that.quantity &&
-                    editable == that.editable &&
-                    manualDiscountApplied == that.manualDiscountApplied &&
-                    Objects.equals(item, that.item) &&
-                    Objects.equals(name, that.name) &&
-                    Objects.equals(subtitle, that.subtitle) &&
-                    Objects.equals(imageUrl, that.imageUrl) &&
-                    encodingUnit == that.encodingUnit &&
-                    Objects.equals(priceText, that.priceText) &&
-                    Objects.equals(quantityText, that.quantityText);
+
+            if (quantity != that.quantity) return false;
+            if (editable != that.editable) return false;
+            if (manualDiscountApplied != that.manualDiscountApplied) return false;
+            if (name != null ? !name.equals(that.name) : that.name != null) return false;
+            if (subtitle != null ? !subtitle.equals(that.subtitle) : that.subtitle != null)
+                return false;
+            if (imageUrl != null ? !imageUrl.equals(that.imageUrl) : that.imageUrl != null)
+                return false;
+            if (encodingUnit != that.encodingUnit) return false;
+            if (priceText != null ? !priceText.equals(that.priceText) : that.priceText != null)
+                return false;
+            return quantityText != null ? quantityText.equals(that.quantityText) : that.quantityText == null;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(item, name, subtitle, imageUrl, encodingUnit, priceText, quantityText, quantity, editable, manualDiscountApplied);
+            int result = super.hashCode();
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            result = 31 * result + (subtitle != null ? subtitle.hashCode() : 0);
+            result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
+            result = 31 * result + (encodingUnit != null ? encodingUnit.hashCode() : 0);
+            result = 31 * result + (priceText != null ? priceText.hashCode() : 0);
+            result = 31 * result + (quantityText != null ? quantityText.hashCode() : 0);
+            result = 31 * result + quantity;
+            result = 31 * result + (editable ? 1 : 0);
+            result = 31 * result + (manualDiscountApplied ? 1 : 0);
+            return result;
         }
     }
 
@@ -494,17 +528,21 @@ public class ShoppingCartView extends FrameLayout {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
 
             SimpleRow simpleRow = (SimpleRow) o;
 
             if (imageResId != simpleRow.imageResId) return false;
+            if (item != null ? !item.equals(simpleRow.item) : simpleRow.item != null) return false;
             if (text != null ? !text.equals(simpleRow.text) : simpleRow.text != null) return false;
             return title != null ? title.equals(simpleRow.title) : simpleRow.title == null;
         }
 
         @Override
         public int hashCode() {
-            int result = text != null ? text.hashCode() : 0;
+            int result = super.hashCode();
+            result = 31 * result + (item != null ? item.hashCode() : 0);
+            result = 31 * result + (text != null ? text.hashCode() : 0);
             result = 31 * result + (title != null ? title.hashCode() : 0);
             result = 31 * result + imageResId;
             return result;
@@ -807,16 +845,11 @@ public class ShoppingCartView extends FrameLayout {
                     Row oldRow = list.get(oldItemPosition);
                     Row newRow = newList.get(newItemPosition);
 
-                    if (oldRow instanceof ProductRow && newRow instanceof ProductRow) {
-                        ProductRow productOldRow = (ProductRow) oldRow;
-                        ProductRow productNewRow = (ProductRow) newRow;
-
-                        return productOldRow.item == productNewRow.item;
-                    } else if (oldRow instanceof SimpleRow && newRow instanceof SimpleRow) {
-                        return true;
+                    if (oldRow.item == null || newRow.item == null) {
+                        return false;
                     }
 
-                    return false;
+                    return oldRow.item == newRow.item;
                 }
 
                 @Override
@@ -881,9 +914,11 @@ public class ShoppingCartView extends FrameLayout {
                     R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG);
             snackbar.setAction(R.string.Snabble_undo, v -> {
                 cart.insert(item, adapterPosition);
+                fetchFrom(cart);
                 Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.getProduct());
             });
             snackbar.show();
+            fetchFrom(cart);
         }
     }
 }
