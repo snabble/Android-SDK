@@ -94,7 +94,7 @@
 
             <Button
                 android:id="@+id/minus"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:insetLeft="0dp"
@@ -121,7 +121,7 @@
 
             <Button
                 android:id="@+id/plus"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:insetLeft="0dp"
@@ -185,7 +185,7 @@
 
             <Button
                 android:id="@+id/quantity_edit_apply"
-                style="@style/Widget.MaterialComponents.Button.Icon"
+                style="@style/Snabble.Widget.MaterialComponents.Button.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center_vertical"

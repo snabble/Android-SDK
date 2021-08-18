@@ -49,7 +49,7 @@
                 android:clipChildren="false"
                 android:layout_marginStart="16dp">
 
-                <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <Button style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton"
                     android:id="@+id/payment_selector_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -84,7 +84,7 @@
                 </LinearLayout>
             </FrameLayout>
 
-            <Button
+            <Button style="@style/Snabble.Widget.MaterialComponents.Button"
                 android:id="@+id/pay"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"

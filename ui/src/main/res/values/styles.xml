@@ -4,4 +4,10 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">4dp</item>
     </style>
+
+    <style name="Snabble.Widget.MaterialComponents.Button" parent="Widget.MaterialComponents.Button"  />
+    <style name="Snabble.Widget.MaterialComponents.Button.TextButton" parent="Widget.MaterialComponents.Button.TextButton" />
+    <style name="Snabble.Widget.MaterialComponents.Button.Icon" parent="Widget.MaterialComponents.Button.Icon" />
+    <style name="Snabble.Widget.MaterialComponents.Button.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton" />
+    <style name="Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon" />
 </resources>
