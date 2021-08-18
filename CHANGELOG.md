@@ -3,8 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [0.44.4]
 
+### Added 
+- Added button themes for overriding button themes.
+
 ### Fixed
 - Handle edge case when scanning a user weighed product with a pre weighed barcode
+- Fixed an endless loop that resulted in the app freezing
 
 ## [0.44.3]
 
