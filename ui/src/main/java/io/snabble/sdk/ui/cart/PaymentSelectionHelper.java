@@ -387,11 +387,6 @@ public class PaymentSelectionHelper {
     }
 
     private void setSelectedEntry(Entry entry) {
-        Entry currentEntry = selectedEntry.getValue();
-        if (currentEntry != null && entry != null && currentEntry.paymentMethod != entry.paymentMethod) {
-            cart.generateNewUUID();
-        }
-
         selectedEntry.postValue(entry);
     }
 

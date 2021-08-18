@@ -401,6 +401,8 @@ public class ShoppingCart {
         uuid = UUID.randomUUID().toString();
         notifyProductsUpdate(this);
     }
+
+    
     
     public String getUUID() {
         return uuid;
