@@ -317,7 +317,7 @@ public class ProductConfirmationDialog {
 
         Telemetry.event(Telemetry.Event.ConfirmedProduct, cartItem.getProduct());
 
-        int q = getQuantity();
+        int q = Math.max(getQuantity(), cartItem.getScannedCode().getEmbeddedData());
         if (cartItem.getProduct().getType() == Product.Type.UserWeighed && q == 0) {
             shake();
             return;
@@ -327,7 +327,9 @@ public class ProductConfirmationDialog {
             shoppingCart.add(cartItem);
         }
 
-        cartItem.setQuantity(q);
+        if (cartItem.getProduct().getType() == Product.Type.UserWeighed) {
+            cartItem.setQuantity(q);
+        }
 
         shoppingCart.updatePrices(false);
 

@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.44.4]
+
+### Fixed
+- Handle edge case when scanning a user weighed product with a pre weighed barcode
+
 ## [0.44.3]
 
 ### Fixed 
