@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -129,6 +131,7 @@ public class Checkout {
     private final PaymentOriginCandidateHelper paymentOriginCandidateHelper;
     private CheckoutApi.AuthorizePaymentRequest storedAuthorizePaymentRequest;
     private boolean authorizePaymentRequestFailed;
+    private List<Coupon> redeemedCoupons;
 
     Checkout(Project project) {
         this.project = project;
@@ -271,6 +274,7 @@ public class Checkout {
         storedAuthorizePaymentRequest = null;
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
+        redeemedCoupons = null;
 
         notifyStateChanged(Checkout.State.HANDSHAKING);
 
@@ -663,12 +667,22 @@ public class Checkout {
                 shoppingCart.backup();
             }
 
+            redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(project.getCoupons().get());
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
 
             Snabble.getInstance().getUsers().update();
         }
+    }
+
+    @NonNull
+    public List<Coupon> getRedeemedCoupons() {
+        if (redeemedCoupons == null) {
+            return new ArrayList<>();
+        }
+
+        return redeemedCoupons;
     }
 
     public void approveOfflineMethod() {

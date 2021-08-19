@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.45.0]
+
+### Added
+- Added API to get redeemed coupons 
+
 ## [0.44.4]
 
 ### Added 

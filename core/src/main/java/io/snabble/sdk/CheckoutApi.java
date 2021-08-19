@@ -106,6 +106,29 @@ public class CheckoutApi {
 
             return new PaymentMethodInfo[0];
         }
+
+        public List<Coupon> getRedeemedCoupons(List<Coupon> availableCoupons) {
+            ArrayList<Coupon> redeemedCoupons = new ArrayList<>();
+
+            if (checkoutInfo != null && checkoutInfo.has("lineItems")) {
+                JsonArray jsonArray = checkoutInfo.getAsJsonArray("lineItems");
+                if (jsonArray != null) {
+                    List<LineItem> lineItems = new Gson().fromJson(jsonArray,
+                            new TypeToken<List<LineItem>>() {}.getType());
+                    for (LineItem lineItem : lineItems) {
+                        if (lineItem.type == LineItemType.COUPON && lineItem.redeemed) {
+                            for (Coupon coupon : availableCoupons) {
+                                if (coupon.getId().equals(lineItem.couponId)) {
+                                    redeemedCoupons.add(coupon);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return redeemedCoupons;
+        }
     }
 
     public static class CheckoutInfo {
