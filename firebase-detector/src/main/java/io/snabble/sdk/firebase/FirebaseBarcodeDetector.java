@@ -4,18 +4,17 @@ import android.graphics.Rect;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions;
-import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
+import com.google.mlkit.vision.barcode.Barcode;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.common.InputImage;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.ui.scanner.Barcode;
 import io.snabble.sdk.ui.scanner.BarcodeDetector;
 import io.snabble.sdk.ui.scanner.FalsePositiveFilter;
 import io.snabble.sdk.utils.Logger;
@@ -23,7 +22,7 @@ import io.snabble.sdk.utils.Logger;
 public class FirebaseBarcodeDetector implements BarcodeDetector {
     private byte[] cropBuffer = null;
     private FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter(3);
-    private FirebaseVisionBarcodeDetector detector;
+    private BarcodeScanner detector;
 
     public FirebaseBarcodeDetector() {
 
@@ -38,8 +37,8 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
             formats.add(format);
 
             // EAN13 with 0 prefixes are detected as UPC-A
-            if (format == FirebaseVisionBarcode.FORMAT_EAN_13) {
-                formats.add(FirebaseVisionBarcode.FORMAT_UPC_A);
+            if (format == Barcode.FORMAT_EAN_13) {
+                formats.add(Barcode.FORMAT_UPC_A);
             }
         }
 
@@ -48,11 +47,11 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
             ints[i] = formats.get(i);
         }
 
-        FirebaseVisionBarcodeDetectorOptions options = new FirebaseVisionBarcodeDetectorOptions.Builder()
+        BarcodeScannerOptions options = new BarcodeScannerOptions.Builder()
                 .setBarcodeFormats(ints[0], ints)
                 .build();
 
-        detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
+        detector = BarcodeScanning.getClient(options);
     }
 
     @Override
@@ -61,42 +60,18 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
     }
 
     @Override
-    public Barcode detect(byte[] data, int width, int height, int bitsPerPixel, Rect detectionRect, int displayOrientation) {
+    public io.snabble.sdk.ui.scanner.Barcode detect(byte[] data, int width, int height, int bitsPerPixel, Rect detectionRect, int displayOrientation) {
         byte[] buf = crop(data, width, height, bitsPerPixel, detectionRect);
 
-        int firebaseRotation;
-        switch (displayOrientation) {
-            case 0:
-                firebaseRotation = FirebaseVisionImageMetadata.ROTATION_0;
-                break;
-            case 90:
-                firebaseRotation = FirebaseVisionImageMetadata.ROTATION_90;
-                break;
-            case 180:
-                firebaseRotation = FirebaseVisionImageMetadata.ROTATION_180;
-                break;
-            case 270:
-                firebaseRotation = FirebaseVisionImageMetadata.ROTATION_270;
-                break;
-            default:
-                firebaseRotation = FirebaseVisionImageMetadata.ROTATION_0;
-        }
+        InputImage inputImage = InputImage.fromByteArray(data, width, height, displayOrientation, InputImage.IMAGE_FORMAT_NV21);
 
-        FirebaseVisionImage image = FirebaseVisionImage.fromByteArray(buf, new FirebaseVisionImageMetadata.Builder()
-                .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-                .setRotation(firebaseRotation)
-                .setWidth(detectionRect.width())
-                .setHeight(detectionRect.height())
-                .build());
-
-
-        Task<List<FirebaseVisionBarcode>> result = detector.detectInImage(image);
+        Task<List<Barcode>> result = detector.process(inputImage);
 
         try {
             Tasks.await(result);
-            List<FirebaseVisionBarcode> firebaseBarcodes = result.getResult();
+            List<Barcode> firebaseBarcodes = result.getResult();
             if(firebaseBarcodes != null && firebaseBarcodes.size() > 0) {
-                FirebaseVisionBarcode firebaseVisionBarcode = firebaseBarcodes.get(0);
+                Barcode firebaseVisionBarcode = firebaseBarcodes.get(0);
                 String rawValue = firebaseVisionBarcode.getRawValue();
 
                 if (rawValue == null) {
@@ -104,13 +79,13 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
                 }
 
                 // MLKit decodes all ITF lengths, but we only care about ITF14.
-                if (firebaseVisionBarcode.getFormat() == FirebaseVisionBarcode.FORMAT_ITF) {
+                if (firebaseVisionBarcode.getFormat() == Barcode.FORMAT_ITF) {
                     if (rawValue.length() != 14) {
                         return null;
                     }
                 }
 
-                if (firebaseVisionBarcode.getFormat() == FirebaseVisionBarcode.FORMAT_UPC_A) {
+                if (firebaseVisionBarcode.getFormat() == Barcode.FORMAT_UPC_A) {
                     if (rawValue.length() > 13) {
                         return null;
                     }
@@ -132,9 +107,9 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
                     return null;
                 }
 
-                Barcode barcode = new Barcode(format, rawValue, System.currentTimeMillis());
+                io.snabble.sdk.ui.scanner.Barcode barcode = new io.snabble.sdk.ui.scanner.Barcode(format, rawValue, System.currentTimeMillis());
 
-                Barcode filtered = falsePositiveFilter.filter(barcode);
+                io.snabble.sdk.ui.scanner.Barcode filtered = falsePositiveFilter.filter(barcode);
                 if (filtered != null) {
                     Logger.d("Detected barcode: " + barcode.toString());
                     return filtered;
