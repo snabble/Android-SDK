@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.45.2]
+
+### Fixed
+- CheckoutOnlineView not updating when coming from an activity resumed state
+
 ## [0.45.1]
 
 ### Changes

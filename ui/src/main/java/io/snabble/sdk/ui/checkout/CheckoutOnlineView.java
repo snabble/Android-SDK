@@ -173,6 +173,11 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             return;
         }
 
+        FragmentActivity hostActivity = UIUtils.getHostFragmentActivity(getContext());
+        if (!hostActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+            return;
+        }
+
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback == null) {
             Logger.e("ui action could not be performed: callback is null");
