@@ -2,6 +2,9 @@ package io.snabble.sdk.ui.payment
 
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import ch.datatrans.payment.api.Transaction
 import ch.datatrans.payment.api.TransactionListener
 import ch.datatrans.payment.api.TransactionRegistry
@@ -15,7 +18,6 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -108,55 +110,60 @@ class Datatrans {
             }
         }
 
-        private fun startDatatransTransaction(activity: FragmentActivity, tokenizationResponse: DatatransTokenizationResponse, paymentMethod: PaymentMethod, project: Project) {
+        private fun startDatatransTransaction(activity: FragmentActivity,
+                                              tokenizationResponse: DatatransTokenizationResponse,
+                                              paymentMethod: PaymentMethod,
+                                              project: Project) {
             val transaction = Transaction(tokenizationResponse.mobileToken)
             transaction.listener = object : TransactionListener {
                 override fun onTransactionSuccess(result: TransactionSuccess) {
-                    val token = result.paymentMethodToken
-                    var month = ""
-                    var year = ""
+                    activity.runOnUiThreadWhenResumed {
+                        val token = result.paymentMethodToken
+                        var month = ""
+                        var year = ""
 
-                    when (token) {
-                        is PostFinanceCardToken -> {
-                            token.cardExpiryDate?.let {
-                                month = it.formattedMonth
-                                year = it.formattedYear
+                        when (token) {
+                            is PostFinanceCardToken -> {
+                                token.cardExpiryDate?.let {
+                                    month = it.formattedMonth
+                                    year = it.formattedYear
+                                }
+                            }
+                            is CardToken -> {
+                                token.cardExpiryDate?.let {
+                                    month = it.formattedMonth
+                                    year = it.formattedYear
+                                }
                             }
                         }
-                        is CardToken -> {
-                            token.cardExpiryDate?.let {
-                                month = it.formattedMonth
-                                year = it.formattedYear
-                            }
+
+                        if (token != null) {
+                            Keyguard.unlock(activity, object :  Keyguard.Callback {
+                                override fun success() {
+                                    val store = Snabble.getInstance().paymentCredentialsStore
+                                    val credentials = PaymentCredentials.fromDatatrans(
+                                        token.token,
+                                        PaymentCredentials.Brand.fromPaymentMethod(paymentMethod),
+                                        result.paymentMethodToken?.getDisplayTitle(activity),
+                                        month,
+                                        year,
+                                        project.id,
+                                    )
+                                    store.add(credentials)
+                                }
+
+                                override fun error() {
+                                    Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
+                                }
+                            })
+                        } else {
+                            Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
                         }
-                    }
-
-                    if (token != null) {
-                        Keyguard.unlock(activity, object :  Keyguard.Callback {
-                            override fun success() {
-                                val store = Snabble.getInstance().paymentCredentialsStore
-                                val credentials = PaymentCredentials.fromDatatrans(
-                                    token.token,
-                                    PaymentCredentials.Brand.fromPaymentMethod(paymentMethod),
-                                    result.paymentMethodToken?.getDisplayTitle(activity),
-                                    month,
-                                    year,
-                                    project.id,
-                                )
-                                store.add(credentials)
-                            }
-
-                            override fun error() {
-                                Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
-                            }
-                        })
-                    } else {
-                        Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
                     }
                 }
 
                 override fun onTransactionError(exception: TransactionException) {
-                    Dispatch.mainThread {
+                    activity.runOnUiThreadWhenResumed {
                         project.events.logError("Datatrans TransactionException: " + exception.message)
                         showError(activity, paymentMethod)
                     }
@@ -166,6 +173,26 @@ class Datatrans {
             transaction.options.isTesting = tokenizationResponse.isTesting ?: false
             transaction.options.useCertificatePinning = true
             TransactionRegistry.startTransaction(activity, transaction)
+        }
+    }
+}
+
+fun FragmentActivity.runOnUiThreadWhenResumed(task: () -> Unit) {
+    Dispatch.mainThread {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            Dispatch.mainThread {
+                task()
+            }
+        } else {
+            lifecycle.addObserver(object : LifecycleObserver {
+                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                fun onResume() {
+                    Dispatch.mainThread {
+                        task()
+                    }
+                    lifecycle.removeObserver(this)
+                }
+            })
         }
     }
 }
