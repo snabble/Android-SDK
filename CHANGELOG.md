@@ -1,6 +1,14 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.45.1]
+
+### Changes
+- Upgraded Datatrans SDK to v1.4.2
+
+### Fixed
+- Fixed Datatrans Transaction Listener
+
 ## [0.45.0]
 
 ### Added
