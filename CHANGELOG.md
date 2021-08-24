@@ -1,6 +1,12 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.47.0]
+
+### Changed
+- Updated build tools to 7.0.1
+- Updated firebase detector to use new mlkit on-device api's
+
 ## [0.46.0]
 
 ### Added
