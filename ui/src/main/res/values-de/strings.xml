@@ -82,7 +82,7 @@
     <string name="Snabble.Payment.errorStarting">Fehler beim Anlegen des Bezahlprozesses</string>
     <string name="Snabble.Payment.noMethodAvailable">Leider kann dieser Einkauf nicht mit der App durchgeführt werden.</string>
     <string name="Snabble.Payment.offlineHint">Du bist derzeit offline und einige Zahlungsmethoden sind möglicherweise nicht verfügbar</string>
-    <string name="Snabble.Payment.payAtCashDesk">Kasse</string>
+    <string name="Snabble.Payment.payAtCashDesk">An der Kasse bezahlen</string>
     <string name="Snabble.Payment.payAtSCO">Karte an EC-Terminal</string>
     <string name="Snabble.Payment.payUsingCustomerCard">mit Kundenkarte</string>
     <string name="Snabble.Payment.payViaInvoice">auf Rechnung</string>
@@ -186,6 +186,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Jetzt bezahlen</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">%1$d Artikel für %2$s kaufen</string>
+    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod">Bezahlverfahren wählen</string>
     <string name="Snabble.Shoppingcart.coupon">Gutschein</string>
     <string name="Snabble.Shoppingcart.coupons">Gutscheine</string>
     <string name="Snabble.Shoppingcart.deposit">Pfand</string>
@@ -198,7 +199,7 @@
     <string name="Snabble.Shoppingcart.giveaway">Kostenloses Geschenk</string>
     <string name="Snabble.Shoppingcart.howToPay">Wie möchtest du bezahlen?</string>
     <string name="Snabble.Shoppingcart.includesDeposit">inkl. Pfand</string>
-    <string name="Snabble.Shoppingcart.noPaymentData">Noch nicht hinterlegt</string>
+    <string name="Snabble.Shoppingcart.noPaymentData">Jetzt hinzufügen</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Für diesen Einkauf nicht verfügbar</string>
     <string name="Snabble.Shoppingcart.notForVendor">Vom Händler nicht unterstützt</string>
     <string name="Snabble.Shoppingcart.numberOfItems">%d Artikel</string>
@@ -246,9 +247,9 @@
     <string name="Snabble.ShoppingList.Voice.title">Tipp</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Einkaufslisten</string>
-    <string name="Snabble.Taxation.consume.inhouse">Hier Essen</string>
-    <string name="Snabble.Taxation.consume.takeaway">Mitnehmen</string>
-    <string name="Snabble.Taxation.consumeWhere">Zum hier Essen oder zum Mitnehmen?</string>
+    <string name="Snabble.Taxation.consume.inhouse">hier konsumieren</string>
+    <string name="Snabble.Taxation.consume.takeaway">mitnehmen</string>
+    <string name="Snabble.Taxation.consumeWhere">Möchtest du deinen Einkauf</string>
     <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
     <string name="Snabble.TWINT.payNow">Jetzt mit TWINT bezahlen</string>
     <string name="Snabble.undo">Rückgängig</string>

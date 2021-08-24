@@ -82,7 +82,7 @@
     <string name="Snabble.Payment.errorStarting">Error creating the payment process</string>
     <string name="Snabble.Payment.noMethodAvailable">Unfortunately, this purchase can\'t be made using the app.</string>
     <string name="Snabble.Payment.offlineHint">You are currently offline and some payment methods may not be available</string>
-    <string name="Snabble.Payment.payAtCashDesk">Cash desk</string>
+    <string name="Snabble.Payment.payAtCashDesk">Pay at the cash desk</string>
     <string name="Snabble.Payment.payAtSCO">Card at EC terminal</string>
     <string name="Snabble.Payment.payUsingCustomerCard">with Customer Card</string>
     <string name="Snabble.Payment.payViaInvoice">via Invoice</string>
@@ -186,6 +186,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">Buy %1$d products for %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Pay now</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Buy %1$d product for %2$s</string>
+    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod">Select payment method</string>
     <string name="Snabble.Shoppingcart.coupon">Coupon</string>
     <string name="Snabble.Shoppingcart.coupons">Coupons</string>
     <string name="Snabble.Shoppingcart.deposit">Deposit</string>
@@ -198,7 +199,7 @@
     <string name="Snabble.Shoppingcart.giveaway">Free gift</string>
     <string name="Snabble.Shoppingcart.howToPay">How would you like to pay?</string>
     <string name="Snabble.Shoppingcart.includesDeposit">incl. deposit</string>
-    <string name="Snabble.Shoppingcart.noPaymentData">Not yet entered</string>
+    <string name="Snabble.Shoppingcart.noPaymentData">Add now</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Not available for this purchase</string>
     <string name="Snabble.Shoppingcart.notForVendor">Not supported by this retailer</string>
     <string name="Snabble.Shoppingcart.numberOfItems">%d products</string>

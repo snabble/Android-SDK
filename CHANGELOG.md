@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.46.0]
+
+### Added
+- Translations for fr and it
+
 ## [0.45.2]
 
 ### Fixed

@@ -82,7 +82,7 @@
     <string name="Snabble.Payment.errorStarting">A fizetési folyamat feldolgozása közben hiba lépett fel.</string>
     <string name="Snabble.Payment.noMethodAvailable">Sajnos ez a vásárlás nem végezhető el az alkalmazás segítségével.</string>
     <string name="Snabble.Payment.offlineHint">Jelenleg offline állapotban vagy, így bizonyos fizetési módok adott esetben nem érhetők el</string>
-    <string name="Snabble.Payment.payAtCashDesk">Pénztár</string>
+    <string name="Snabble.Payment.payAtCashDesk">Fizetés a pénztárnál</string>
     <string name="Snabble.Payment.payAtSCO">Kártya az EC-terminálra</string>
     <string name="Snabble.Payment.payUsingCustomerCard">ügyfélkártyával</string>
     <string name="Snabble.Payment.payViaInvoice">számlára</string>
@@ -186,6 +186,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Fizetés, most</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">%1$d termék megvásárlása %2$s-ért</string>
+    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod"/>
     <string name="Snabble.Shoppingcart.coupon">Kupon</string>
     <string name="Snabble.Shoppingcart.coupons">Kuponok</string>
     <string name="Snabble.Shoppingcart.deposit">Betétdíj</string>
@@ -198,7 +199,7 @@
     <string name="Snabble.Shoppingcart.giveaway">Ingyenes ajándék</string>
     <string name="Snabble.Shoppingcart.howToPay">Hogyan szeretnél fizetni?</string>
     <string name="Snabble.Shoppingcart.includesDeposit">betétdíjjal együtt</string>
-    <string name="Snabble.Shoppingcart.noPaymentData">Még nincs beállítva</string>
+    <string name="Snabble.Shoppingcart.noPaymentData">Hozzáadás most</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Ehhez a bevásárláshoz nem áll rendelkezésre</string>
     <string name="Snabble.Shoppingcart.notForVendor">A kereskedő nem támogatja</string>
     <string name="Snabble.Shoppingcart.numberOfItems">%d termék</string>
@@ -246,9 +247,9 @@
     <string name="Snabble.ShoppingList.Voice.title">Ötlet</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Bevásárlólisták</string>
-    <string name="Snabble.Taxation.consume.inhouse">itt elfogyasztani</string>
-    <string name="Snabble.Taxation.consume.takeaway">magaddal vinni</string>
-    <string name="Snabble.Taxation.consumeWhere">Szeretnéd a bevásárlásodat</string>
+    <string name="Snabble.Taxation.consume.inhouse">Étkezés helyben</string>
+    <string name="Snabble.Taxation.consume.takeaway">Elvitelre</string>
+    <string name="Snabble.Taxation.consumeWhere">Helyben étkezel, vagy magaddal viszed?</string>
     <string name="Snabble.Taxation.pleaseChoose">Kérlek, válassz</string>
     <string name="Snabble.TWINT.payNow">Fizetés TWINT segítségével</string>
     <string name="Snabble.undo">Visszavonás</string>

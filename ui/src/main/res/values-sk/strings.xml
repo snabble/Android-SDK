@@ -82,7 +82,7 @@
     <string name="Snabble.Payment.errorStarting">Chyba pri vytvorení platobného procesu</string>
     <string name="Snabble.Payment.noMethodAvailable">Tento nákup nie je možné vykonať pomocou tejto aplikácie.</string>
     <string name="Snabble.Payment.offlineHint">Momentálne si offline a preto niektoré spôsoby platby nemusia byť k dispozícii</string>
-    <string name="Snabble.Payment.payAtCashDesk">Pokladňa</string>
+    <string name="Snabble.Payment.payAtCashDesk">Zaplatiť pri pokladni</string>
     <string name="Snabble.Payment.payAtSCO">Karta na EC termináli</string>
     <string name="Snabble.Payment.payUsingCustomerCard">so zákazníckou kartou</string>
     <string name="Snabble.Payment.payViaInvoice">na faktúru</string>
@@ -186,6 +186,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">Kúpiť %1$d položky/položiek za %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Zaplatiť teraz</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Kúpiť %1$d položku za %2$s</string>
+    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod"/>
     <string name="Snabble.Shoppingcart.coupon">Poukážka</string>
     <string name="Snabble.Shoppingcart.coupons">Poukážky</string>
     <string name="Snabble.Shoppingcart.deposit">Záloha</string>
@@ -198,7 +199,7 @@
     <string name="Snabble.Shoppingcart.giveaway">Darček zadarmo</string>
     <string name="Snabble.Shoppingcart.howToPay">Ako chceš zaplatiť?</string>
     <string name="Snabble.Shoppingcart.includesDeposit">vrátane zálohy</string>
-    <string name="Snabble.Shoppingcart.noPaymentData">Údaje ešte nie sú uložené</string>
+    <string name="Snabble.Shoppingcart.noPaymentData">Pridať teraz</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Pre tento nákup nie je k dispozícii</string>
     <string name="Snabble.Shoppingcart.notForVendor">Nepodporovaná obchodom</string>
     <string name="Snabble.Shoppingcart.numberOfItems">%d položka</string>
@@ -246,9 +247,9 @@
     <string name="Snabble.ShoppingList.Voice.title">Tip</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Nákupné zoznamy</string>
-    <string name="Snabble.Taxation.consume.inhouse">konzumovať tu</string>
-    <string name="Snabble.Taxation.consume.takeaway">zobrať so sebou</string>
-    <string name="Snabble.Taxation.consumeWhere">Chceš svoj nákup</string>
+    <string name="Snabble.Taxation.consume.inhouse">Jesť tu</string>
+    <string name="Snabble.Taxation.consume.takeaway">Zobrať so sebou</string>
+    <string name="Snabble.Taxation.consumeWhere">Budeš jesť tu, alebo zoberieš so sebou?</string>
     <string name="Snabble.Taxation.pleaseChoose">Vyber niektorú možnosť</string>
     <string name="Snabble.TWINT.payNow">Zaplatiť cez TWINT teraz</string>
     <string name="Snabble.undo">Vrátiť späť</string>
