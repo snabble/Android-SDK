@@ -18,8 +18,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 
 import io.snabble.sdk.PaymentMethodDescriptor;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.payment.PaymentInputViewHelper;
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
 import io.snabble.sdk.ui.utils.UIUtils;
 
@@ -47,6 +49,14 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                 PaymentSelectionHelper.Entry selectedEntry = (PaymentSelectionHelper.Entry) args.getSerializable(ARG_SELECTED_ENTRY);
                 ArrayList<PaymentSelectionHelper.Entry> entries = (ArrayList<PaymentSelectionHelper.Entry>) args.getSerializable(ARG_ENTRIES);
                 if (entries != null) {
+                    boolean hasAnyAddedMethods = false;
+                    for (final PaymentSelectionHelper.Entry entry : entries) {
+                        if (entry.isAdded) {
+                            hasAnyAddedMethods = true;
+                            break;
+                        }
+                    }
+
                     for (final PaymentSelectionHelper.Entry entry : entries) {
                         View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select, null);
 
@@ -62,7 +72,7 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                             imageView.setVisibility(View.INVISIBLE);
                         }
 
-                        if (entry.isAdded) {
+                        if (entry.isAdded || !hasAnyAddedMethods) {
                             imageView.setColorFilter(null);
                         } else {
                             ColorMatrix matrix = new ColorMatrix();
@@ -85,8 +95,13 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
 
                         if (entry.isAvailable) {
                             v.setOnClickListener(v1 -> {
-                                PaymentSelectionHelper.getInstance().select(entry);
-                                dismissAllowingStateLoss();
+                                if (entry.isAdded) {
+                                    PaymentSelectionHelper.getInstance().select(entry);
+                                    dismissAllowingStateLoss();
+                                } else {
+                                    PaymentInputViewHelper.openPaymentInputView(getContext(), entry.paymentMethod, SnabbleUI.getProject().getId());
+                                    dismissAllowingStateLoss();
+                                }
                             });
                             name.setEnabled(true);
                         } else {

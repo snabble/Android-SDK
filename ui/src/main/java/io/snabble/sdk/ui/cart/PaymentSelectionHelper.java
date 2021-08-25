@@ -185,7 +185,7 @@ public class PaymentSelectionHelper {
                             }
                         }
                     } else if (lastEntry.paymentMethod == e.paymentMethod) {
-                        if (e.isAvailable) {
+                        if (e.isAvailable && e.isAdded) {
                             setSelectedEntry(e);
                             return;
                         }
@@ -193,15 +193,7 @@ public class PaymentSelectionHelper {
                 }
             }
 
-            // payment credentials or payment method were not available, use defaults
             Entry preferredDefaultEntry = null;
-            for (Entry e : entries) {
-                if (e.isAvailable) {
-                    preferredDefaultEntry = e;
-                    break;
-                }
-            }
-
             // google pay always wins if available and the user did not select anything
             for (Entry e : entries) {
                 if (e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
@@ -386,6 +378,16 @@ public class PaymentSelectionHelper {
         save(entry);
     }
 
+    public boolean shouldShowBigSelector() {
+        for (Entry e : entries) {
+            if (e.isAdded) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void setSelectedEntry(Entry entry) {
         selectedEntry.postValue(entry);
     }
@@ -410,7 +412,7 @@ public class PaymentSelectionHelper {
 
         Entry se = selectedEntry.getValue();
         if (se != null) {
-            args.putSerializable("selectedEntry", se);
+            args.putSerializable(PaymentSelectionDialogFragment.ARG_SELECTED_ENTRY, se);
         }
 
         DialogFragment dialogFragment = new PaymentSelectionDialogFragment();
