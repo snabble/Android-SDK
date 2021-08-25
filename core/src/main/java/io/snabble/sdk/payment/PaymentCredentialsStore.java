@@ -10,10 +10,13 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.Environment;
+import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.UserPreferences;
 import io.snabble.sdk.utils.Dispatch;
@@ -259,6 +262,34 @@ public class PaymentCredentialsStore {
         if (changed) {
             save();
         }
+    }
+
+    public int getCountForProject(Project project) {
+        int count = 0;
+
+        HashSet<PaymentMethod> onlineMethods = new HashSet<>();
+        for (PaymentMethod paymentMethod : project.getAvailablePaymentMethods()) {
+            if (paymentMethod.isRequiringCredentials()) {
+                onlineMethods.add(paymentMethod);
+            }
+        }
+
+        for (PaymentCredentials pc : data.credentialsList) {
+            if (pc.getAppId().equals(Snabble.getInstance().getConfig().appId)) {
+                String projectId = pc.getProjectId();
+                if (projectId != null) {
+                    if (onlineMethods.contains(pc.getPaymentMethod())) {
+                        count++;
+                    }
+                } else {
+                    if (pc.getProjectId().equals(project.getId())) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 
     public int getUsablePaymentCredentialsCount() {

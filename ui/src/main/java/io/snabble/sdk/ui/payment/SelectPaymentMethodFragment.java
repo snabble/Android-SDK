@@ -160,9 +160,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(null);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
         return v;
     }
 
