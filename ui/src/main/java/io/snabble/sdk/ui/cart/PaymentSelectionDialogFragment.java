@@ -120,32 +120,6 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
             }
         }
 
-        boolean canAdd = false;
-        for (PaymentMethodDescriptor descriptor : SnabbleUI.getProject().getPaymentMethodDescriptors()) {
-            if (!descriptor.getPaymentMethod().isOfflineMethod()) {
-                canAdd = true;
-                break;
-            }
-        }
-
-        if (canAdd) {
-            View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select_add, null);
-            v.setOnClickListener(v12 -> {
-                Activity activity = UIUtils.getHostActivity(getContext());
-                if (activity instanceof FragmentActivity) {
-                    SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
-                    dialogFragment.setArguments(bundle);
-                    dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
-                } else {
-                    throw new RuntimeException("Host activity must be a Fragment Activity");
-                }
-                dismissAllowingStateLoss();
-            });
-            options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-
         return view;
     }
 

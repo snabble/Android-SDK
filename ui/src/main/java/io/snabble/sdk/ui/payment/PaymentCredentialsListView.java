@@ -26,6 +26,7 @@ import java.util.List;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.googlepay.IsReadyToPayListener;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
@@ -34,6 +35,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {
@@ -73,9 +75,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(null);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
 
         View fab = findViewById(R.id.fab);
         fab.setOnClickListener(new OneShotClickListener() {
@@ -204,7 +203,9 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             }
         }
 
-        recyclerView.getAdapter().notifyDataSetChanged();
+        if (project != null && project.getGooglePayHelper() != null) {
+            entries.add(0, new Entry(null, R.drawable.snabble_ic_payment_select_gpay, "Google Pay"));
+        }
 
         if (entries.size() == 0) {
             emptyState.setVisibility(View.VISIBLE);
@@ -213,6 +214,9 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             emptyState.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
+
+        recyclerView.getAdapter().notifyDataSetChanged();
+
     }
 
     private int getDrawableForBrand(PaymentCredentials.Brand brand) {
@@ -258,10 +262,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 vh.icon.setVisibility(View.INVISIBLE);
             }
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
-            String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
+            if (e.paymentCredentials != null && e.paymentCredentials.getValidTo() != 0) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
+                String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
 
-            if (e.paymentCredentials.getValidTo() != 0) {
                 vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
                 vh.validTo.setVisibility(View.VISIBLE);
             } else {
@@ -269,18 +273,23 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             }
 
             vh.text.setText(e.text);
-            vh.delete.setOnClickListener(view -> {
-                new AlertDialog.Builder(getContext())
-                        .setMessage(R.string.Snabble_Payment_delete_message)
-                        .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
-                            paymentCredentialsStore.remove(e.paymentCredentials);
-                        })
-                        .setNegativeButton(R.string.Snabble_No, null)
-                        .create()
-                        .show();
 
-                Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
-            });
+            if (e.paymentCredentials != null) {
+                vh.delete.setOnClickListener(view -> {
+                    new AlertDialog.Builder(getContext())
+                            .setMessage(R.string.Snabble_Payment_delete_message)
+                            .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
+                                paymentCredentialsStore.remove(e.paymentCredentials);
+                            })
+                            .setNegativeButton(R.string.Snabble_No, null)
+                            .create()
+                            .show();
+
+                    Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
+                });
+            } else {
+                vh.delete.setVisibility(View.GONE);
+            }
         }
 
         @Override
