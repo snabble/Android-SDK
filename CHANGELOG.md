@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.47.1]
+
+### Added
+- Support for localized coupons
+
 ## [0.47.0]
 
 ### Changed
