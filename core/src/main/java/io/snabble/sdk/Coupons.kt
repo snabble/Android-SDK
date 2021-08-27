@@ -65,6 +65,9 @@ class Coupons (
     coupons: List<Coupon>,
     private val project: Project
 ) : Iterable<Coupon>, LiveData<List<Coupon>>(coupons) {
+    val source: LiveData<CouponSource> = MutableLiveData(CouponSource.Bundled)
+    val isLoading: LiveData<Boolean> = MutableLiveData(false)
+
     init {
         project.addOnUpdateListener {
             if (source.value == CouponSource.Bundled) {
@@ -73,9 +76,6 @@ class Coupons (
         }
         update()
     }
-
-    val source: LiveData<CouponSource> = MutableLiveData(CouponSource.Bundled)
-    val isLoading: LiveData<Boolean> = MutableLiveData(false)
 
     fun filter(type: CouponType): List<Coupon> =
         value?.filter { it.type == type } ?: emptyList()
@@ -90,7 +90,7 @@ class Coupons (
         get() = value?.size ?: 0
 
     fun update() {
-        if(isLoading.value == true) return
+        if (isLoading.value == true) return
         // make an implicit cast with an extension function
         fun <T> LiveData<T>.postValue(value: T) {
             (this as? MutableLiveData<T>)?.postValue(value)
@@ -105,8 +105,8 @@ class Coupons (
             }
 
             val request = Request.Builder()
-                    .url(newsUrl)
-                    .build()
+                .url(newsUrl)
+                .build()
             val couponCall = project.okHttpClient.newCall(request)
             couponCall.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
@@ -118,7 +118,7 @@ class Coupons (
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
                         val localizedResponse = GsonBuilder().create()
-                                .fromJson(response.body?.string(), CouponResponse::class.java)
+                            .fromJson(response.body?.string(), CouponResponse::class.java)
                         postValue(localizedResponse.coupons.filter {
                             it.image != null && it.validFrom != null && it.validUntil != null
                         })
@@ -134,6 +134,6 @@ class Coupons (
 
     @Keep
     private data class CouponResponse(
-            val coupons: List<Coupon>
+        val coupons: List<Coupon>
     )
 }
