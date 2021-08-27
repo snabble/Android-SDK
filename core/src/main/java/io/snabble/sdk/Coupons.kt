@@ -74,7 +74,6 @@ class Coupons (
                 postValue(project.coupons.value)
             }
         }
-        update()
     }
 
     fun filter(type: CouponType): List<Coupon> =

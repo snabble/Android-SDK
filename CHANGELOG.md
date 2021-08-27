@@ -1,6 +1,11 @@
 # Changelog  
 All notable changes to this project will be documented in this file.
 
+## [0.47.2]
+
+### Fixed
+- Initialization error
+
 ## [0.47.1]
 
 ### Added
