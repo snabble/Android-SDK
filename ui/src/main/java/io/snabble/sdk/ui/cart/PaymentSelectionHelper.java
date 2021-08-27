@@ -201,11 +201,8 @@ public class PaymentSelectionHelper {
                 }
             }
 
-            for (Entry e : entries) {
-                if (e.paymentMethod.isOfflineMethod()) {
-                    preferredDefaultEntry = e;
-                    break;
-                }
+            if (entries.size() == 1 && cart.getTotalPrice() > 0) {
+                preferredDefaultEntry = entries.get(0);
             }
 
             // google pay always wins if available and the user did not select anything
@@ -406,7 +403,11 @@ public class PaymentSelectionHelper {
             return false;
         }
 
-        return shouldShowPayButton();
+        if (cart.getTotalPrice() <= 0) {
+            return false;
+        }
+
+        return !shouldShowPayButton();
     }
 
     public boolean shouldShowPayButton() {
