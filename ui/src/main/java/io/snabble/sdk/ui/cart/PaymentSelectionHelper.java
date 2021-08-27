@@ -406,7 +406,17 @@ public class PaymentSelectionHelper {
             return false;
         }
 
-        return true;
+        return shouldShowPayButton();
+    }
+
+    public boolean shouldShowPayButton() {
+        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && cart.getAvailablePaymentMethods().length > 0;
+        return cart.getTotalPrice() > 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
+    }
+
+    public boolean shouldShowGooglePayButton() {
+        Entry entry = selectedEntry.getValue();
+        return entry != null && entry.paymentMethod == PaymentMethod.GOOGLE_PAY && cart.getTotalPrice() > 0;
     }
 
     public boolean shouldShowSmallSelector() {

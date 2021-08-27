@@ -168,14 +168,19 @@ class CheckoutBar @JvmOverloads constructor(
             var showBigSelector = paymentSelectionHelper.shouldShowBigSelector()
             val showSmallSelector = paymentSelectionHelper.shouldShowSmallSelector()
 
-            val entry = paymentSelectionHelper.selectedEntry.value
-            if (entry?.paymentMethod == PaymentMethod.GOOGLE_PAY && price > 0) {
-                showBigSelector = false
-                binding.pay.isVisible = false
-
-                binding.googlePayButtonLayout.root.isVisible = !showBigSelector
+            if (paymentSelectionHelper.shouldShowPayButton()) {
+                binding.pay.isEnabled = true
+                if (paymentSelectionHelper.shouldShowGooglePayButton()) {
+                    showBigSelector = false
+                    binding.pay.isVisible = false
+                    binding.googlePayButtonLayout.root.isVisible = !showBigSelector
+                } else {
+                    binding.pay.isVisible = !showBigSelector
+                    binding.googlePayButtonLayout.root.isVisible = false
+                }
             } else {
-                binding.pay.isVisible = !showBigSelector
+                binding.pay.isVisible = true
+                binding.pay.isEnabled = false
                 binding.googlePayButtonLayout.root.isVisible = false
             }
 
