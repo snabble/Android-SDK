@@ -291,7 +291,7 @@ public class ProductConfirmationDialog {
             depositPrice.setVisibility(View.GONE);
         }
 
-        List<Coupon> manualCoupons = project.getCoupons().get(CouponType.MANUAL);
+        List<Coupon> manualCoupons = project.getCoupons().filter(CouponType.MANUAL);
         boolean isVisible = manualCoupons != null && manualCoupons.size() > 0;
         enterReducedPrice.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         enterReducedPrice.setOnClickListener(v -> {

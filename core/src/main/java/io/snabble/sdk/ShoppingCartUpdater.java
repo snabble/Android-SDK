@@ -189,7 +189,7 @@ class ShoppingCartUpdater {
                         discounts += lineItem.totalPrice;
                     } else {
                         boolean add = true;
-                        for (Coupon coupon : project.getCoupons().get()) {
+                        for (Coupon coupon : project.getCoupons()) {
                             if (coupon.getId().equals(lineItem.couponId)) {
                                 add = false;
                                 break;

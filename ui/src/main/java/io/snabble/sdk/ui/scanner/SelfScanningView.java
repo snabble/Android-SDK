@@ -26,8 +26,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.util.Pair;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.ImageViewCompat;
 
 import java.util.List;
 
@@ -228,7 +226,7 @@ public class SelfScanningView extends FrameLayout {
 
     private Pair<Coupon, ScannedCode> lookupCoupon(List<ScannedCode> scannedCodes) {
         Project project = SnabbleUI.getProject();
-        for (Coupon coupon : project.getCoupons().get(CouponType.PRINTED)){
+        for (Coupon coupon : project.getCoupons().filter(CouponType.PRINTED)){
             for (CouponCode code : coupon.getCodes()) {
                 for (ScannedCode scannedCode : scannedCodes) {
                     if (scannedCode.getCode().equals(code.getCode())

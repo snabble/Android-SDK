@@ -10,7 +10,6 @@ import io.snabble.sdk.CouponType
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import java.security.PrivateKey
 
 class SelectReducedPriceDialogFragment(
     private val productConfirmationDialog: ProductConfirmationDialog?,
@@ -23,7 +22,7 @@ class SelectReducedPriceDialogFragment(
         }
 
         val project = SnabbleUI.getProject()
-        val discounts = project.coupons.get(CouponType.MANUAL)
+        val discounts = project.coupons.filter(CouponType.MANUAL)
         val dialog = productConfirmationDialog
         val item = cartItem
         val cart = shoppingCart

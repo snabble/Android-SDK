@@ -17,20 +17,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Predicate;
 
-import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
@@ -99,6 +96,7 @@ public class Project {
         okHttpClient = Snabble.getInstance().getOkHttpClient()
                 .newBuilder()
                 .addInterceptor(new SnabbleAuthorizationInterceptor(this))
+                .addInterceptor(new AcceptedLanguageInterceptor())
                 .build();
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
@@ -317,7 +315,7 @@ public class Project {
             Logger.e("Could not parse coupons");
         }
 
-        this.coupons = new Coupons(couponList);
+        this.coupons = new Coupons(couponList, this);
 
         notifyUpdate();
     }
