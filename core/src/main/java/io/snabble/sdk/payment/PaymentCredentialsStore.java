@@ -278,15 +278,16 @@ public class PaymentCredentialsStore {
             if (pc.getAppId().equals(Snabble.getInstance().getConfig().appId)) {
                 String projectId = pc.getProjectId();
                 if (projectId != null) {
-                    if (onlineMethods.contains(pc.getPaymentMethod())) {
-                        count++;
-                    }
-                } else {
-                    if (pc.getProjectId().equals(project.getId())) {
+                    if (pc.getProjectId().equals(project.getId()) && onlineMethods.contains(pc.getPaymentMethod())) {
                         count++;
                     }
                 }
             }
+        }
+
+        if (project.getGooglePayHelper() != null
+         && project.getGooglePayHelper().isGooglePayAvailable()) {
+            count++;
         }
 
         return count;

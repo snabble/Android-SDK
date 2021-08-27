@@ -165,7 +165,7 @@ public class PaymentSelectionHelper {
             }
 
             // preserve last payment selection, if its still available
-            String last = sharedPreferences.getString("lastPaymentSelection", null);
+            String last = sharedPreferences.getString(getLastPaymentSelectionKey(), null);
             Entry lastEntry = null;
             if (last != null) {
                 lastEntry = GsonHolder.get().fromJson(last, Entry.class);
@@ -194,6 +194,20 @@ public class PaymentSelectionHelper {
             }
 
             Entry preferredDefaultEntry = null;
+            for (Entry e : entries) {
+                if (e.paymentMethod.isRequiringCredentials() && e.isAdded) {
+                    preferredDefaultEntry = e;
+                    break;
+                }
+            }
+
+            for (Entry e : entries) {
+                if (e.paymentMethod.isOfflineMethod()) {
+                    preferredDefaultEntry = e;
+                    break;
+                }
+            }
+
             // google pay always wins if available and the user did not select anything
             for (Entry e : entries) {
                 if (e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
@@ -202,12 +216,14 @@ public class PaymentSelectionHelper {
                 }
             }
 
-            if (preferredDefaultEntry != null) {
-                setSelectedEntry(preferredDefaultEntry);
-            }
+            setSelectedEntry(preferredDefaultEntry);
         } else {
             setSelectedEntry(null);
         }
+    }
+
+    private String getLastPaymentSelectionKey() {
+        return "lastPaymentSelection_" + project.getId();
     }
 
     private void updateGooglePayIsReadyToPay() {
@@ -244,7 +260,7 @@ public class PaymentSelectionHelper {
         String json = GsonHolder.get().toJson(e);
 
         sharedPreferences.edit()
-                .putString("lastPaymentSelection", json)
+                .putString(getLastPaymentSelectionKey(), json)
                 .apply();
     }
 
@@ -380,12 +396,21 @@ public class PaymentSelectionHelper {
 
     public boolean shouldShowBigSelector() {
         for (Entry e : entries) {
-            if (e.isAdded) {
+            if ((e.paymentMethod.isRequiringCredentials() && e.isAdded)
+              || e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
                 return false;
             }
         }
 
+        if (entries.size() == 1 && entries.get(0).paymentMethod.isOfflineMethod()) {
+            return false;
+        }
+
         return true;
+    }
+
+    public boolean shouldShowSmallSelector() {
+        return entries.size() > 1 && !shouldShowBigSelector();
     }
 
     private void setSelectedEntry(Entry entry) {

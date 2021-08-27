@@ -10,6 +10,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.GsonHolder
@@ -153,6 +154,11 @@ class GooglePayHelper(
         } else {
             isReadyToPayListener.isReadyToPay(false)
         }
+    }
+
+    fun isGooglePayAvailable(): Boolean {
+        // TODO package manager check for google pay!
+        return project.availablePaymentMethods.contains(PaymentMethod.GOOGLE_PAY)
     }
 
     fun requestPayment(priceToPay: Int): Boolean {
