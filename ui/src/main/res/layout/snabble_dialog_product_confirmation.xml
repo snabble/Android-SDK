@@ -179,7 +179,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
         android:text="@string/Snabble.Scanner.addToCart"
-        app:autoSizeMaxTextSize="14sp"
+        app:autoSizeMaxTextSize="16sp"
         app:autoSizeMinTextSize="8sp"
         app:autoSizeTextType="uniform" />
 

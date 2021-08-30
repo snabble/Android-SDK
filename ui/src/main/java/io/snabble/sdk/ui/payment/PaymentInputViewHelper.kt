@@ -9,7 +9,11 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.utils.UIUtils
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.FragmentActivity
+import io.snabble.sdk.Project
+import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.utils.Logger
 
 object PaymentInputViewHelper {
@@ -63,6 +67,37 @@ object PaymentInputViewHelper {
                     .setCancelable(false)
                     .show()
             }
+        }
+    }
+
+    @JvmStatic
+    fun showPaymentList(project: Project) {
+        val args = Bundle()
+        args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE,
+            ArrayList(PaymentCredentials.Type.values().toList()))
+        args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
+        SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
+    }
+
+    @JvmStatic
+    fun showPaymentSelectionForAdding(context: Context, project: Project) {
+        if (KeyguardUtils.isDeviceSecure()) {
+            val activity = UIUtils.getHostActivity(context)
+            if (activity is FragmentActivity) {
+                val dialogFragment = SelectPaymentMethodFragment()
+                val args = Bundle()
+                args.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, project.id)
+                dialogFragment.arguments = args
+                dialogFragment.show(activity.supportFragmentManager, null)
+            } else {
+                throw RuntimeException("Host activity must be a FragmentActivity")
+            }
+        } else {
+            AlertDialog.Builder(context)
+                .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
+                .setPositiveButton(R.string.Snabble_OK, null)
+                .setCancelable(false)
+                .show()
         }
     }
 }

@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -25,6 +24,7 @@ import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.checkout.CheckoutHelper
+import io.snabble.sdk.ui.databinding.SnabbleViewCheckoutBarBinding
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
@@ -36,14 +36,9 @@ class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
     private lateinit var progressDialog: DelayedProgressDialog
-    private val paySelector: View
-    private val paySelectorButton: View
-    private val payIcon: ImageView
-    private val payButton: Button
-    private val googlePayButton: View
-    private val articleCount: TextView
-    private val priceSum: TextView
-    private val priceContainer: FrameLayout
+    
+    private val binding: SnabbleViewCheckoutBarBinding
+    
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
     private val project by lazy { SnabbleUI.getProject() }
     private val cart: ShoppingCart by lazy { project.shoppingCart }
@@ -52,19 +47,13 @@ class CheckoutBar @JvmOverloads constructor(
     }
 
     val priceHeight: Int
-        get() = priceSum.height + priceContainer.marginTop * 2
+        get() = binding.priceSum.height + binding.sumContainer.marginTop * 2
 
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_checkout_bar, this, true)
+        binding = SnabbleViewCheckoutBarBinding.bind(this)
+        
         orientation = VERTICAL
-        paySelector = findViewById(R.id.payment_selector)
-        paySelectorButton = findViewById(R.id.payment_selector_button)
-        payIcon = findViewById(R.id.payment_icon)
-        payButton = findViewById(R.id.pay)
-        googlePayButton = findViewById(R.id.google_pay_button)
-        articleCount = findViewById(R.id.article_count)
-        priceSum = findViewById(R.id.price_sum)
-        priceContainer = findViewById(R.id.sum_container)
 
         if (!isInEditMode) {
             initBusinessLogic()
@@ -76,21 +65,25 @@ class CheckoutBar @JvmOverloads constructor(
             update()
         })
 
-        paySelectorButton.setOnClickListener {
+        binding.paymentSelectorButton.setOnClickListener {
             paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
         }
 
-        payButton.setOneShotClickListener {
-            cart.taxation = ShoppingCart.Taxation.UNDECIDED
-            payButtonClick()
+        binding.paymentSelectorButtonBig.setOnClickListener {
+            paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
         }
 
-        googlePayButton.setOneShotClickListener {
+        binding.pay.setOneShotClickListener {
+            cart.taxation = ShoppingCart.Taxation.UNDECIDED
+            payClick()
+        }
+
+        binding.googlePayButtonLayout.googlePayButton.setOneShotClickListener {
             val packageName = "com.google.android.apps.walletnfcrel"
             val pm = context.packageManager
             try {
                 pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-                payButtonClick()
+                payClick()
             } catch (e: PackageManager.NameNotFoundException) {
                 try {
                     context.startActivity(Intent(Intent.ACTION_VIEW,
@@ -107,7 +100,7 @@ class CheckoutBar @JvmOverloads constructor(
 
         progressDialog = DelayedProgressDialog(context)
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-        progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait))
+        progressDialog.setMessage(context.getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
         progressDialog.setCancelable(true)
         progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { dialogInterface: DialogInterface, _, keyEvent: KeyEvent ->
@@ -134,7 +127,7 @@ class CheckoutBar @JvmOverloads constructor(
         })
     }
 
-    private fun payButtonClick() {
+    private fun payClick() {
         if (cart.isRestorable) {
             cart.restore()
             update()
@@ -144,50 +137,62 @@ class CheckoutBar @JvmOverloads constructor(
     }
 
     private fun update() {
-        updatePaySelector()
-        updatePayButtonAndText()
+        updatePaymentSelector()
+        updatePayAndText()
     }
 
-    private fun updatePaySelector() {
+    private fun updatePaymentSelector() {
         val entry = paymentSelectionHelper.selectedEntry.value
         if (entry == null) {
-            paySelector.visibility = GONE
+            binding.paymentSelector.visibility = GONE
         } else {
             val pcs = Snabble.getInstance().paymentCredentialsStore
             val hasNoPaymentMethods = pcs.usablePaymentCredentialsCount == 0
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
-            paySelector.visibility = if (isHidden) GONE else VISIBLE
-            payIcon.setImageResource(entry.iconResId)
+            binding.paymentSelector.visibility = if (isHidden) GONE else VISIBLE
+            binding.paymentIcon.setImageResource(entry.iconResId)
         }
     }
 
-    private fun updatePayButtonAndText() {
+    private fun updatePayAndText() {
         cart.let { cart ->
             val quantity = cart.totalQuantity
             val price = cart.totalPrice
             val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
-            articleCount.text = String.format(articlesText.toString(), quantity)
-            priceSum.text = project.priceFormatter.format(price)
-
-
+            binding.articleCount.text = String.format(articlesText.toString(), quantity)
+            binding.priceSum.text = project.priceFormatter.format(price)
 
             val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
-            payButton.isEnabled = price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
+            binding.pay.isEnabled = price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
 
-            val entry = paymentSelectionHelper.selectedEntry.value
-            if (entry?.paymentMethod == PaymentMethod.GOOGLE_PAY && price > 0) {
-                payButton.isVisible = false
-                googlePayButton.isVisible = true
+            var showBigSelector = paymentSelectionHelper.shouldShowBigSelector()
+            val showSmallSelector = paymentSelectionHelper.shouldShowSmallSelector()
+
+            if (paymentSelectionHelper.shouldShowPayButton()) {
+                binding.pay.isEnabled = true
+                if (paymentSelectionHelper.shouldShowGooglePayButton()) {
+                    showBigSelector = false
+                    binding.pay.isVisible = false
+                    binding.googlePayButtonLayout.root.isVisible = !showBigSelector
+                } else {
+                    binding.pay.isVisible = !showBigSelector
+                    binding.googlePayButtonLayout.root.isVisible = false
+                }
             } else {
-                payButton.isVisible = true
-                googlePayButton.isVisible = false
+                binding.pay.isVisible = true
+                binding.pay.isEnabled = false
+                binding.googlePayButtonLayout.root.isVisible = false
             }
 
+            binding.paymentSelectorButtonBig.isVisible = showBigSelector
+            binding.paymentSelector.isVisible = showSmallSelector
+            binding.paymentActive.isVisible = !showBigSelector
+
             if (cart.isRestorable) {
-                payButton.isEnabled = true
-                payButton.setText(R.string.Snabble_Shoppingcart_emptyState_restoreButtonTitle)
+                binding.pay.isEnabled = true
+                binding.pay.setText(R.string.Snabble_Shoppingcart_emptyState_restoreButtonTitle)
             } else {
-                payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
+                binding.pay.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
             }
         }
     }

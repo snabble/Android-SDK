@@ -165,7 +165,7 @@ public class PaymentSelectionHelper {
             }
 
             // preserve last payment selection, if its still available
-            String last = sharedPreferences.getString("lastPaymentSelection", null);
+            String last = sharedPreferences.getString(getLastPaymentSelectionKey(), null);
             Entry lastEntry = null;
             if (last != null) {
                 lastEntry = GsonHolder.get().fromJson(last, Entry.class);
@@ -185,7 +185,7 @@ public class PaymentSelectionHelper {
                             }
                         }
                     } else if (lastEntry.paymentMethod == e.paymentMethod) {
-                        if (e.isAvailable) {
+                        if (e.isAvailable && e.isAdded) {
                             setSelectedEntry(e);
                             return;
                         }
@@ -193,13 +193,16 @@ public class PaymentSelectionHelper {
                 }
             }
 
-            // payment credentials or payment method were not available, use defaults
             Entry preferredDefaultEntry = null;
             for (Entry e : entries) {
-                if (e.isAvailable) {
+                if (e.paymentMethod.isRequiringCredentials() && e.isAdded) {
                     preferredDefaultEntry = e;
                     break;
                 }
+            }
+
+            if (entries.size() == 1 && cart.getTotalPrice() > 0) {
+                preferredDefaultEntry = entries.get(0);
             }
 
             // google pay always wins if available and the user did not select anything
@@ -210,12 +213,14 @@ public class PaymentSelectionHelper {
                 }
             }
 
-            if (preferredDefaultEntry != null) {
-                setSelectedEntry(preferredDefaultEntry);
-            }
+            setSelectedEntry(preferredDefaultEntry);
         } else {
             setSelectedEntry(null);
         }
+    }
+
+    private String getLastPaymentSelectionKey() {
+        return "lastPaymentSelection_" + project.getId();
     }
 
     private void updateGooglePayIsReadyToPay() {
@@ -252,7 +257,7 @@ public class PaymentSelectionHelper {
         String json = GsonHolder.get().toJson(e);
 
         sharedPreferences.edit()
-                .putString("lastPaymentSelection", json)
+                .putString(getLastPaymentSelectionKey(), json)
                 .apply();
     }
 
@@ -347,6 +352,10 @@ public class PaymentSelectionHelper {
                 continue;
             }
 
+            if (pm == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
+                continue;
+            }
+
             if (pm.isRequiringCredentials() && addedCredentialPaymentMethods.contains(pm)) {
                 continue;
             }
@@ -386,6 +395,43 @@ public class PaymentSelectionHelper {
         save(entry);
     }
 
+    public boolean shouldShowBigSelector() {
+        for (Entry e : entries) {
+            if ((e.paymentMethod.isRequiringCredentials() && e.isAdded)
+              || e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
+                return false;
+            }
+        }
+
+        if (entries.size() == 1 && entries.get(0).paymentMethod.isOfflineMethod()) {
+            return false;
+        }
+
+        if (cart.getTotalPrice() <= 0) {
+            return false;
+        }
+
+        if (selectedEntry.getValue() != null) {
+            return false;
+        }
+
+        return shouldShowPayButton();
+    }
+
+    public boolean shouldShowPayButton() {
+        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && cart.getAvailablePaymentMethods().length > 0;
+        return cart.getTotalPrice() > 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
+    }
+
+    public boolean shouldShowGooglePayButton() {
+        Entry entry = selectedEntry.getValue();
+        return entry != null && entry.paymentMethod == PaymentMethod.GOOGLE_PAY && cart.getTotalPrice() > 0;
+    }
+
+    public boolean shouldShowSmallSelector() {
+        return entries.size() > 1 && !shouldShowBigSelector();
+    }
+
     private void setSelectedEntry(Entry entry) {
         selectedEntry.postValue(entry);
     }
@@ -410,7 +456,7 @@ public class PaymentSelectionHelper {
 
         Entry se = selectedEntry.getValue();
         if (se != null) {
-            args.putSerializable("selectedEntry", se);
+            args.putSerializable(PaymentSelectionDialogFragment.ARG_SELECTED_ENTRY, se);
         }
 
         DialogFragment dialogFragment = new PaymentSelectionDialogFragment();

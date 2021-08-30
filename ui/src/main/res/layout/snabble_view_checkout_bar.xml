@@ -37,6 +37,7 @@
                 tools:text="13,37 €"/>
         </FrameLayout>
         <LinearLayout
+            android:id="@+id/payment_active"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="12dp"
@@ -49,7 +50,8 @@
                 android:clipChildren="false"
                 android:layout_marginStart="16dp">
 
-                <Button style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton"
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton"
                     android:id="@+id/payment_selector_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -84,7 +86,8 @@
                 </LinearLayout>
             </FrameLayout>
 
-            <Button style="@style/Snabble.Widget.MaterialComponents.Button"
+            <com.google.android.material.button.MaterialButton
+                style="@style/Snabble.Widget.MaterialComponents.Button"
                 android:id="@+id/pay"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -101,7 +104,7 @@
                 android:maxLines="1"
                 android:text="@string/Snabble.Shoppingcart.buyProducts.now" />
 
-            <include android:id="@+id/google_pay_button"
+            <include android:id="@+id/google_pay_button_layout"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
@@ -109,4 +112,27 @@
                 layout="@layout/snabble_buy_with_googlepay_button_no_shadow"/>
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            style="@style/Snabble.Widget.MaterialComponents.Button"
+            android:id="@+id/payment_selector_button_big"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetLeft="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeMaxTextSize="16sp"
+            android:backgroundTint="?attr/colorSurface"
+            android:textColor="?attr/colorOnSurface"
+            app:icon="@drawable/snabble_ic_small_chevron_down"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconGravity="end"
+            android:maxLines="1"
+            android:text="@string/Snabble.Shoppingcart.buyProducts.selectPaymentMethod" />
 </merge>
