@@ -28,7 +28,6 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
-    public static final String ARG_PAYMENT_METHOD_LIST = "paymentMethods";
     public static final String ARG_PROJECT_ID = "projectId";
 
     private List<Entry> entries;
@@ -41,12 +40,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            Collection<PaymentMethod> list = (Collection<PaymentMethod>) args.getSerializable(ARG_PAYMENT_METHOD_LIST);
-            paymentMethods = new HashSet<>();
-            if (list == null) {
-                list = SnabbleUI.getProject().getAvailablePaymentMethods();
-            }
-            paymentMethods.addAll(list);
             projectId = args.getString(ARG_PROJECT_ID, null);
         }
     }

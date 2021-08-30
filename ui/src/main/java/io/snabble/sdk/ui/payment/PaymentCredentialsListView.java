@@ -92,17 +92,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         }
 
                         bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, p.getId());
-                        ArrayList<PaymentMethod> types;
-                        if (PaymentCredentialsListView.this.types == null) {
-                            types = new ArrayList<>(Arrays.asList(PaymentMethod.values()));
-                        } else {
-                            ArrayList<PaymentMethod> methodList = new ArrayList<>();
-                            for (PaymentCredentials.Type type : PaymentCredentialsListView.this.types) {
-                                methodList.addAll(type.getPaymentMethods());
-                            }
-                            types = methodList;
-                        }
-                        bundle.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, types);
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                     } else {

@@ -407,7 +407,7 @@ public class PaymentSelectionHelper {
             return false;
         }
 
-        return !shouldShowPayButton();
+        return shouldShowPayButton();
     }
 
     public boolean shouldShowPayButton() {
