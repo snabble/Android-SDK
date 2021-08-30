@@ -1,5 +1,11 @@
-# Changelog  
+# Changelog
 All notable changes to this project will be documented in this file.
+
+## [0.48.0]
+
+### Changes
+- Improved payment selection flow, hinting at adding online payment methods before showing offline payment methods
+- Consolidated and simplified payment options
 
 ## [0.47.2]
 
