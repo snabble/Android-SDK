@@ -352,6 +352,10 @@ public class PaymentSelectionHelper {
                 continue;
             }
 
+            if (pm == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
+                continue;
+            }
+
             if (pm.isRequiringCredentials() && addedCredentialPaymentMethods.contains(pm)) {
                 continue;
             }
@@ -404,6 +408,10 @@ public class PaymentSelectionHelper {
         }
 
         if (cart.getTotalPrice() <= 0) {
+            return false;
+        }
+
+        if (selectedEntry.getValue() != null) {
             return false;
         }
 
