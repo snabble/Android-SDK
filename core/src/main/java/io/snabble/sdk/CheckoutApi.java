@@ -1,7 +1,10 @@
 package io.snabble.sdk;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -54,6 +57,25 @@ public class CheckoutApi {
             return null;
         }
 
+        public boolean isRequiringTaxation() {
+            try {
+                if (checkoutInfo != null && checkoutInfo.has("requiredInformation")) {
+                    JsonArray jsonArray = checkoutInfo.get("requiredInformation").getAsJsonArray();
+                    for (JsonElement element : jsonArray) {
+                        String id = element.getAsJsonObject().get("id").getAsString();
+                        boolean hasValue = element.getAsJsonObject().has("value");
+                        if (id.equals("taxation") && !hasValue) {
+                            return true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                return false;
+            }
+
+            return false;
+        }
+
         public PaymentMethodInfo[] getAvailablePaymentMethods(PaymentMethod[] clientAcceptedPaymentMethods) {
             if (checkoutInfo != null && checkoutInfo.has("paymentMethods")) {
                 JsonArray jsonArray = checkoutInfo.getAsJsonArray("paymentMethods");
@@ -84,6 +106,29 @@ public class CheckoutApi {
 
             return new PaymentMethodInfo[0];
         }
+
+        public List<Coupon> getRedeemedCoupons(List<Coupon> availableCoupons) {
+            ArrayList<Coupon> redeemedCoupons = new ArrayList<>();
+
+            if (checkoutInfo != null && checkoutInfo.has("lineItems")) {
+                JsonArray jsonArray = checkoutInfo.getAsJsonArray("lineItems");
+                if (jsonArray != null) {
+                    List<LineItem> lineItems = new Gson().fromJson(jsonArray,
+                            new TypeToken<List<LineItem>>() {}.getType());
+                    for (LineItem lineItem : lineItems) {
+                        if (lineItem.type == LineItemType.COUPON && lineItem.redeemed) {
+                            for (Coupon coupon : availableCoupons) {
+                                if (coupon.getId().equals(lineItem.couponId)) {
+                                    redeemedCoupons.add(coupon);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return redeemedCoupons;
+        }
     }
 
     public static class CheckoutInfo {
@@ -107,6 +152,7 @@ public class CheckoutApi {
         int totalPrice;
         LineItemType type;
         List<PriceModifier> priceModifiers;
+        boolean redeemed;
     }
 
     public static class PriceModifier {
@@ -123,6 +169,8 @@ public class CheckoutApi {
         DISCOUNT,
         @SerializedName("giveaway")
         GIVEAWAY,
+        @SerializedName("coupon")
+        COUPON,
     }
 
     public static class ExitToken {
@@ -157,6 +205,7 @@ public class CheckoutApi {
 
     public static class PaymentMethodInfo {
         public String id;
+        public boolean isTesting = false;
         public String[] acceptedOriginTypes;
     }
 
@@ -165,7 +214,18 @@ public class CheckoutApi {
         public String failureCause;
     }
 
+    public static class AuthorizePaymentRequest {
+        public String encryptedOrigin;
+    }
+
+    public interface AuthorizePaymentResult {
+        void success();
+        void error();
+    }
+
     public enum State {
+        @SerializedName("unauthorized")
+        UNAUTHORIZED,
         @SerializedName("pending")
         PENDING,
         @SerializedName("processing")
@@ -237,6 +297,7 @@ public class CheckoutApi {
         public PaymentMethod paymentMethod;
         public boolean modified;
         public PaymentInformation paymentInformation;
+        public JsonObject paymentPreauthInformation;
         public ExitToken exitToken;
         public State paymentState;
         public PaymentResult paymentResult;
@@ -250,8 +311,8 @@ public class CheckoutApi {
             return null;
         }
 
-        public String getReceiptLink() {
-            Href link = links.get("receipt");
+        public String getAuthorizePaymentLink() {
+            Href link = links.get("authorizePayment");
             if (link != null && link.href != null) {
                 return link.href;
             }
@@ -547,6 +608,39 @@ public class CheckoutApi {
                     updatePaymentProcess(finalUrl, paymentProcessResult);
                 } else {
                     paymentProcessResult.error();
+                }
+            }
+        });
+    }
+
+    public void authorizePayment(final CheckoutProcessResponse checkoutProcessResponse,
+                                 final AuthorizePaymentRequest authorizePaymentRequest,
+                                 final AuthorizePaymentResult authorizePaymentResult) {
+        String url = checkoutProcessResponse.getAuthorizePaymentLink();
+        if (url == null) {
+            authorizePaymentResult.error();
+            return;
+        }
+
+        String json = GsonHolder.get().toJson(authorizePaymentRequest);
+        final Request request = new Request.Builder()
+                .url(Snabble.getInstance().absoluteUrl(url))
+                .post(RequestBody.create(JSON, json))
+                .build();
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                authorizePaymentResult.error();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) {
+                    authorizePaymentResult.success();
+                } else {
+                    authorizePaymentResult.error();
                 }
             }
         });

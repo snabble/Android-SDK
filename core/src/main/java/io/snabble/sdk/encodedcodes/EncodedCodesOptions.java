@@ -28,15 +28,14 @@ public class EncodedCodesOptions {
     public final boolean repeatCodes;
     public final String countSeparator;
     public final int maxSizeMm;
+    public final String manualDiscountFinalCode;
     public final Project project;
-    public final Sorter sorter;
 
     private EncodedCodesOptions(String prefix, SparseArray<String> prefixMap, String separator, String suffix, int maxChars,
                                 int maxCodes, String finalCode, String nextCode,
                                 String nextCodeWithCheck, boolean repeatCodes, String countSeparator,
-                                int maxSizeMm,
-                                Project project,
-                                Sorter sorter) {
+                                int maxSizeMm, String manualDiscountFinalCode,
+                                Project project) {
         this.prefix = prefix;
         this.prefixMap = prefixMap;
         this.separator = separator;
@@ -49,8 +48,8 @@ public class EncodedCodesOptions {
         this.repeatCodes = repeatCodes;
         this.countSeparator = countSeparator;
         this.maxSizeMm = maxSizeMm;
+        this.manualDiscountFinalCode = manualDiscountFinalCode;
         this.project = project;
-        this.sorter = sorter;
     }
 
     public static class Builder {
@@ -67,7 +66,7 @@ public class EncodedCodesOptions {
         private boolean repeatCodes = true;
         private String countSeparator = ";";
         private int maxSizeMm;
-        private Sorter sorter;
+        private String manualDiscountFinalCode = "";
 
         public Builder(Project project) {
             this.project = project;
@@ -133,15 +132,15 @@ public class EncodedCodesOptions {
             return this;
         }
 
-        public Builder maxSizeMm(Sorter sorter) {
-            this.sorter = sorter;
+        public Builder manualDiscountFinalCode(String manualDiscountFinalCode) {
+            this.manualDiscountFinalCode = manualDiscountFinalCode;
             return this;
         }
 
         public EncodedCodesOptions build() {
             return new EncodedCodesOptions(prefix, prefixMap, separator, suffix, maxChars, maxCodes,
                     finalCode, nextCode, nextCodeWithCheck, repeatCodes, countSeparator,
-                    maxSizeMm, project, sorter);
+                    maxSizeMm, manualDiscountFinalCode, project);
         }
     }
 
@@ -151,6 +150,7 @@ public class EncodedCodesOptions {
         int maxCodes = JsonUtils.getIntOpt(jsonObject, "maxCodes", EncodedCodesOptions.DEFAULT_MAX_CODES);
         int maxChars = JsonUtils.getIntOpt(jsonObject, "maxChars", EncodedCodesOptions.DEFAULT_MAX_CHARS);
         String finalCode = JsonUtils.getStringOpt(jsonObject, "finalCode", "");
+        String manualDiscountFinalCode = JsonUtils.getStringOpt(jsonObject, "manualDiscountFinalCode", "");
 
         switch (format) {
             case "csv":
@@ -162,6 +162,7 @@ public class EncodedCodesOptions {
                         .countSeparator(";")
                         .maxCodes(maxCodes)
                         .maxChars(maxChars)
+                        .manualDiscountFinalCode(manualDiscountFinalCode)
                         .build();
             case "csv_globus":
                 return new EncodedCodesOptions.Builder(project)
@@ -172,6 +173,7 @@ public class EncodedCodesOptions {
                         .countSeparator(";")
                         .maxCodes(maxCodes)
                         .maxChars(maxChars)
+                        .manualDiscountFinalCode(manualDiscountFinalCode)
                         .build();
             case "ikea":
                 String prefix = "9100003\u001d100{qrCodeCount}\u001d240";
@@ -189,6 +191,7 @@ public class EncodedCodesOptions {
                                 .finalCode(finalCode)
                                 .maxCodes(maxCodes)
                                 .maxChars(maxChars)
+                                .manualDiscountFinalCode(manualDiscountFinalCode)
                                 .build();
             case "simple":
             default:
@@ -201,34 +204,9 @@ public class EncodedCodesOptions {
                         .finalCode(finalCode)
                         .nextCode(JsonUtils.getStringOpt(jsonObject, "nextCode", ""))
                         .nextCodeWithCheck(JsonUtils.getStringOpt(jsonObject, "nextCodeWithCheck", ""))
+                        .manualDiscountFinalCode(manualDiscountFinalCode)
                         .maxSizeMm(JsonUtils.getIntOpt(jsonObject, "maxSizeMM", -1));
-
-                if (project.getId().contains("knauber")) {
-                    builder.sorter = new Sorter() {
-                        @Override
-                        public int compare(EncodedCodesGenerator.ProductInfo productInfo1,
-                                            EncodedCodesGenerator.ProductInfo productInfo2) {
-                            final String catchAll = "2030801009887";
-
-                            String tc1 = productInfo1.product.getTransmissionCode(
-                                    productInfo1.scannedCode.getTemplateName(),
-                                    productInfo1.scannedCode.getLookupCode());
-
-                            String tc2 = productInfo2.product.getTransmissionCode(
-                                    productInfo2.scannedCode.getTemplateName(),
-                                    productInfo2.scannedCode.getLookupCode());
-
-                            if (catchAll.equals(tc1)) {
-                                return 1;
-                            } else if (catchAll.equals(tc2)) {
-                                return -1;
-                            } else {
-                                return 0;
-                            }
-                        }
-                    };
-                }
-
+                
                 return builder.build();
         }
     }

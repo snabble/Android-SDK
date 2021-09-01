@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +26,7 @@ import java.util.List;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.googlepay.IsReadyToPayListener;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
@@ -35,17 +35,20 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {
     public static final String ARG_PAYMENT_TYPE = "paymentType";
+    public static final String ARG_BRAND = "brand";
     public static final String ARG_PROJECT_ID = "projectId";
 
     private List<Entry> entries = new ArrayList<>();
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
-    private PaymentCredentials.Type type;
+    private List<PaymentCredentials.Type> types;
     private Project project;
+    private View emptyState;
 
     public PaymentCredentialsListView(Context context) {
         super(context);
@@ -73,9 +76,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(null);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
         View fab = findViewById(R.id.fab);
         fab.setOnClickListener(new OneShotClickListener() {
             @Override
@@ -85,14 +85,13 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     if (activity instanceof FragmentActivity) {
                         SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
                         Bundle bundle = new Bundle();
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
-                        ArrayList<PaymentMethod> types;
-                        if (type == null) {
-                            types = new ArrayList<>(Arrays.asList(PaymentMethod.values()));
-                        } else {
-                            types = new ArrayList<>(type.getPaymentMethods());
+
+                        Project p = project;
+                        if (p == null) {
+                            p = SnabbleUI.getProject();
                         }
-                        bundle.putSerializable(SelectPaymentMethodFragment.ARG_PAYMENT_METHOD_LIST, types);
+
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, p.getId());
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                     } else {
@@ -107,10 +106,12 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 }
             }
         });
+
+        emptyState = findViewById(R.id.empty_state);
     }
 
-    public void show(PaymentCredentials.Type type, Project project) {
-        this.type = type;
+    public void show(List<PaymentCredentials.Type> types, Project project) {
+        this.types = types;
         this.project = project;
 
         entries.clear();
@@ -167,8 +168,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             }
 
             boolean sameTypeOrNull = true;
-            if (type != null) {
-                sameTypeOrNull = type.equals(pm.getType());
+            if (types != null) {
+                sameTypeOrNull = types.contains(pm.getType());
             }
 
             if (pm.isAvailableInCurrentApp() && sameTypeOrNull && sameProjectOrNull) {
@@ -177,24 +178,9 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));
                         break;
                     case CREDIT_CARD_PSD2:
-                        PaymentCredentials.Brand ccBrand = pm.getBrand();
-
-                        int drawableResId = 0;
-                        if (ccBrand != null) {
-                            switch (ccBrand) {
-                                case VISA:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_visa;
-                                    break;
-                                case MASTERCARD:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_mastercard;
-                                    break;
-                                case AMEX:
-                                    drawableResId = R.drawable.snabble_ic_payment_select_amex;
-                                    break;
-                            }
-                        }
-
-                        entries.add(new Entry(pm, drawableResId, pm.getObfuscatedId()));
+                    case DATATRANS:
+                    case DATATRANS_CREDITCARD:
+                        entries.add(new Entry(pm, getDrawableForBrand(pm.getBrand()), pm.getObfuscatedId()));
                         break;
                     case PAYDIREKT:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_paydirekt, pm.getObfuscatedId()));
@@ -206,59 +192,78 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             }
         }
 
+        if (project != null && project.getGooglePayHelper() != null) {
+            entries.add(0, new Entry(null, R.drawable.snabble_ic_payment_select_gpay, "Google Pay"));
+        }
+
+        if (entries.size() == 0) {
+            emptyState.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            emptyState.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
         recyclerView.getAdapter().notifyDataSetChanged();
+
     }
 
-    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final static int TYPE_EMPTYSTATE = 0;
-        private final static int TYPE_ENTRY = 1;
+    private int getDrawableForBrand(PaymentCredentials.Brand brand) {
+        int drawableResId = 0;
+        if (brand != null) {
+            switch (brand) {
+                case VISA:
+                    drawableResId = R.drawable.snabble_ic_payment_select_visa;
+                    break;
+                case MASTERCARD:
+                    drawableResId = R.drawable.snabble_ic_payment_select_mastercard;
+                    break;
+                case AMEX:
+                    drawableResId = R.drawable.snabble_ic_payment_select_amex;
+                    break;
+                case POST_FINANCE_CARD:
+                    drawableResId = R.drawable.snabble_ic_payment_select_postfinance;
+                    break;
+                case TWINT:
+                    drawableResId = R.drawable.snabble_ic_payment_select_twint;
+                    break;
+            }
+        }
+
+        return drawableResId;
+    }
+
+    private class Adapter extends RecyclerView.Adapter<EntryViewHolder> {
+        @Override
+        public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
+            return new EntryViewHolder(v);
+        }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == TYPE_EMPTYSTATE) {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_emptystate, parent, false);
-                return new EmptyStateViewHolder(v);
+        public void onBindViewHolder(final EntryViewHolder vh, final int position) {
+            final Entry e = entries.get(position);
+
+            if (e.drawableRes != 0) {
+                vh.icon.setImageResource(e.drawableRes);
+                vh.icon.setVisibility(View.VISIBLE);
             } else {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
-                return new EntryViewHolder(v);
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (entries.size() == 0) {
-                return TYPE_EMPTYSTATE;
+                vh.icon.setVisibility(View.INVISIBLE);
             }
 
-            return TYPE_ENTRY;
-        }
-
-        @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-            int type = getItemViewType(position);
-
-            if (type == TYPE_ENTRY) {
-                EntryViewHolder vh = (EntryViewHolder) holder;
-                final Entry e = entries.get(position);
-
-                if (e.drawableRes != 0) {
-                    vh.icon.setImageResource(e.drawableRes);
-                    vh.icon.setVisibility(View.VISIBLE);
-                } else {
-                    vh.icon.setVisibility(View.INVISIBLE);
-                }
-
+            if (e.paymentCredentials != null && e.paymentCredentials.getValidTo() != 0) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
                 String validTo = simpleDateFormat.format(e.paymentCredentials.getValidTo());
 
-                if (e.paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD_PSD2) {
-                    vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
-                    vh.validTo.setVisibility(View.VISIBLE);
-                } else {
-                    vh.validTo.setVisibility(View.GONE);
-                }
+                vh.validTo.setText(getResources().getString(R.string.Snabble_Payment_CreditCard_expireDate, validTo));
+                vh.validTo.setVisibility(View.VISIBLE);
+            } else {
+                vh.validTo.setVisibility(View.GONE);
+            }
 
-                vh.text.setText(e.text);
+            vh.text.setText(e.text);
+
+            if (e.paymentCredentials != null) {
                 vh.delete.setOnClickListener(view -> {
                     new AlertDialog.Builder(getContext())
                             .setMessage(R.string.Snabble_Payment_delete_message)
@@ -271,12 +276,14 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
                     Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
                 });
+            } else {
+                vh.delete.setVisibility(View.GONE);
             }
         }
 
         @Override
         public int getItemCount() {
-            return Math.max(1, entries.size());
+            return entries.size();
         }
     }
 

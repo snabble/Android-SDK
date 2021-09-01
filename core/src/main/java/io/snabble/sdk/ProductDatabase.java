@@ -116,7 +116,7 @@ public class ProductDatabase {
                 schemaVersionMajor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MAJOR));
                 schemaVersionMinor = Integer.parseInt(getMetaData(METADATA_KEY_SCHEMA_VERSION_MINOR));
 
-                if (schemaVersionMajor == 1 && schemaVersionMinor < 24) {
+                if (schemaVersionMajor == 1 && schemaVersionMinor < 25) {
                     Logger.d("Database has incompatible schema, deleting local database");
                     delete();
                     return false;
@@ -432,7 +432,9 @@ public class ProductDatabase {
         tempDbFile.getParentFile().mkdirs();
 
         try {
-            IOUtils.copy(inputStream, new FileOutputStream(tempDbFile));
+            FileOutputStream fos = new FileOutputStream(tempDbFile);
+            IOUtils.copy(inputStream, fos);
+            fos.close();
             swap(tempDbFile);
         } catch (IOException e) {
             project.logErrorEvent("Could not apply full update: %s", e.getMessage());
@@ -504,7 +506,7 @@ public class ProductDatabase {
                 long time2 = SystemClock.elapsedRealtime() - time;
                 if (time2 >= 16) {
                     Logger.d("Query performance warning (%d ms, %d rows) for SQL: %s",
-                            time2, count, bindArgs(sql, args));
+                            time2, count, DatabaseUtils.bindArgs(sql, args));
                 }
             } catch (Exception e) {
                 // query could not be executed
@@ -664,8 +666,6 @@ public class ProductDatabase {
 
         ProductDatabase otherDb = new ProductDatabase(project, otherDbFile.getName());
         try {
-            otherDb.open();
-
             if (!otherDb.verify()) {
                 ok = false;
             }
@@ -673,16 +673,17 @@ public class ProductDatabase {
             ok = false;
         }
 
-        otherDb.close();
-
         if (ok) {
             otherDb.dropFTSIndex();
             otherDb.createFTSIndexIfNecessary();
         } else {
+            otherDb.close();
             Logger.e("Could not swap database: malformed database or unknown schema version");
             application.deleteDatabase(otherDbFile.getName());
             return;
         }
+
+        otherDb.close();
 
         synchronized (dbLock) {
             close();
@@ -769,6 +770,7 @@ public class ProductDatabase {
         int[] codeSpecifiedQuantities = null;
         boolean[] codeIsPrimaryCode = null;
         String[] templates = null;
+        String[] transmissionTemplates = null;
 
         String sku = anyToString(cursor, 0);
 
@@ -867,9 +869,14 @@ public class ProductDatabase {
                     }
                 }
             }
+
+            String transmissionTemplatesStr = cursor.getString(19);
+            if (transmissionTemplatesStr != null) {
+                transmissionTemplates = transmissionTemplatesStr.split(",", -1);
+            }
         }
 
-        String scanMessage = cursor.getString(19);
+        String scanMessage = cursor.getString(20);
         if (scanMessage != null) {
             builder.setScanMessage(scanMessage);
         }
@@ -881,6 +888,7 @@ public class ProductDatabase {
                 String transmissionCode = null;
                 Unit codeEncodingUnit = null;
                 CodeTemplate template = null;
+                CodeTemplate transmissionTemplate = null;
 
                 if (transmissionCodes != null) {
                     String tc = transmissionCodes[i];
@@ -902,6 +910,15 @@ public class ProductDatabase {
                     }
                 }
 
+                if (transmissionTemplates != null) {
+                    String transmissionTemplateStr = transmissionTemplates[i];
+                    for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
+                        if (codeTemplate.getName().equals(transmissionTemplateStr)) {
+                            transmissionTemplate = codeTemplate;
+                        }
+                    }
+                }
+
                 String primaryTransmissionCode = transmissionCode;
                 if (codeIsPrimaryCode != null) {
                     for (int j = 0; j < codeIsPrimaryCode.length; j++) {
@@ -916,9 +933,11 @@ public class ProductDatabase {
                 }
 
                 String templateName = template != null ? template.getName() : null;
+                String transmissionTemplateName = transmissionTemplate != null ? transmissionTemplate.getName() : null;
                 productCodes[i] = new Product.Code(lookupCode,
                         primaryTransmissionCode,
                         templateName,
+                        transmissionTemplateName,
                         codeEncodingUnit,
                         codeIsPrimaryCode != null && codeIsPrimaryCode[i],
                         codeSpecifiedQuantities != null ? codeSpecifiedQuantities[i] : 0);
@@ -927,7 +946,7 @@ public class ProductDatabase {
             builder.setScannableCodes(productCodes);
         }
 
-        int availability = cursor.getInt(20);
+        int availability = cursor.getInt(21);
         Product.Availability[] availabilities = Product.Availability.values();
         if (availability >= 0 && availability < availabilities.length) {
             builder.setAvailability(availabilities[availability]);
@@ -947,7 +966,7 @@ public class ProductDatabase {
 
         String priceQuery;
 
-        if (schemaVersionMinor >= 22 && shop != null) {
+        if (shop != null) {
             priceQuery = "SELECT listPrice, discountedPrice, customerCardPrice, basePrice FROM prices " +
                     "JOIN shops ON shops.pricingCategory = prices.pricingCategory " +
                     "WHERE shops.id = ? AND sku = ? " +
@@ -1002,14 +1021,14 @@ public class ProductDatabase {
         return in;
     }
 
-    private String productSqlString(String appendSql, boolean distinct) {
+    private String productSqlString(String appendFields, String appendSql, boolean distinct) {
         Shop shop = project.getCheckedInShop();
         String shopId = "0";
         if (shop != null) {
             shopId = shop.getId();
         }
 
-        String sql = "SELECT " + (distinct ? "DISTINCT " : "") +
+        return "SELECT " + (distinct ? "DISTINCT " : "") +
                 "p.sku," +
                 "p.name," +
                 "p.description," +
@@ -1029,16 +1048,20 @@ public class ProductDatabase {
                 ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(sc.isPrimary, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
                 ",(SELECT group_concat(ifnull(sc.specifiedQuantity, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(sc.transmissionTemplate, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
                 ",p.scanMessage" +
                 ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), " + defaultAvailability + ") as availability" +
+                appendFields +
                 " FROM products p "
                 + appendSql;
-
-        return sql;
     }
 
     private Cursor productQuery(String appendSql, String[] args, boolean distinct, CancellationSignal cancellationSignal) {
-        return rawQuery(productSqlString(appendSql, distinct), args, cancellationSignal);
+        return rawQuery(productSqlString("", appendSql, distinct), args, cancellationSignal);
+    }
+
+    private Cursor productQuery(String appendFields, String appendSql, String[] args, CancellationSignal cancellationSignal) {
+        return rawQuery(productSqlString(appendFields, appendSql, true), args, cancellationSignal);
     }
 
     public boolean isAvailableOffline() {
@@ -1088,23 +1111,12 @@ public class ProductDatabase {
         }
     }
 
-    private String bindArgs(String sql, String[] args) {
-        if (args == null) {
-            return sql;
-        }
-
-        String printSql = sql;
-        for (String arg : args) {
-            printSql = printSql.replaceFirst("\\?", "'" + arg + "'");
-        }
-        return printSql;
-    }
-
     /**
      * Deprecated. Will be removed in a future version of the SDK.
      * <p>
      * Returns products that have a discounted price and a valid image url.
      */
+    @Deprecated
     public Product[] getDiscountedProducts() {
         Shop shop = project.getCheckedInShop();
 
@@ -1358,7 +1370,8 @@ public class ProductDatabase {
     }
 
     /**
-     * Returns a {@link Cursor} which can be iterated for items containing the given scannable code.
+     * Returns a {@link Cursor} which can be iterated for items containing the given scannable code
+     * or sku.
      * <p>
      * Allows for partial matching. "978" finds products containing "978020137962".
      *
@@ -1366,7 +1379,7 @@ public class ProductDatabase {
      */
     public Cursor searchByCode(String searchString, CancellationSignal cancellationSignal) {
         StringBuilder sb = new StringBuilder();
-        sb.append("JOIN scannableCodes s ON s.sku = p.sku WHERE s.code GLOB ? AND (");
+        sb.append("JOIN scannableCodes s ON s.sku = p.sku WHERE (s.code GLOB ? OR p.sku GLOB ?) AND (");
 
         int count = 0;
         for (String searchTemplate : project.getSearchableTemplates()) {
@@ -1387,10 +1400,9 @@ public class ProductDatabase {
         sb.append(" AND p.isDeposit = 0 ");
         sb.append(" AND availability != 2");
 
-        String query = productSqlString(sb.toString(), true) +
-                " LIMIT 100";
+        String query = productSqlString("", sb.toString(), true) + " LIMIT 100";
 
-        return rawQuery(query, new String[]{ searchString + "*" }, cancellationSignal);
+        return rawQuery(query, new String[]{ searchString + "*", searchString + "*" }, cancellationSignal);
     }
 
     private void notifyOnDatabaseUpdated() {

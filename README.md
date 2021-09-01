@@ -18,7 +18,7 @@ androidx and a material components theme for ui components
 
 #### Using the snabble github Repository
 
-Add the snabble Repository to your gradle Repositories
+Add the snabble and Datatrans Repository to your gradle Repositories
 
 ```
 repositories {

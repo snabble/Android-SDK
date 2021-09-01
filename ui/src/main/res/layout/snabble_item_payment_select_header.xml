@@ -3,11 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/header"
-    android:textSize="14sp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="12dp"
     android:paddingBottom="16dp"
     android:gravity="center"
-    android:textStyle="bold"
+    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
     android:text="@string/Snabble.Shoppingcart.howToPay" />

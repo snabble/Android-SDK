@@ -1,6 +1,8 @@
 package io.snabble.sdk.ui.cart;
 
 import android.app.Activity;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +17,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 
-import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.PaymentMethodDescriptor;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.payment.PaymentInputViewHelper;
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
 import io.snabble.sdk.ui.utils.UIUtils;
 
@@ -46,6 +49,14 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                 PaymentSelectionHelper.Entry selectedEntry = (PaymentSelectionHelper.Entry) args.getSerializable(ARG_SELECTED_ENTRY);
                 ArrayList<PaymentSelectionHelper.Entry> entries = (ArrayList<PaymentSelectionHelper.Entry>) args.getSerializable(ARG_ENTRIES);
                 if (entries != null) {
+                    boolean hasAnyAddedMethods = false;
+                    for (final PaymentSelectionHelper.Entry entry : entries) {
+                        if (entry.isAdded) {
+                            hasAnyAddedMethods = true;
+                            break;
+                        }
+                    }
+
                     for (final PaymentSelectionHelper.Entry entry : entries) {
                         View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select, null);
 
@@ -59,6 +70,15 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                             imageView.setImageResource(entry.iconResId);
                         } else {
                             imageView.setVisibility(View.INVISIBLE);
+                        }
+
+                        if (entry.isAdded || !hasAnyAddedMethods) {
+                            imageView.setColorFilter(null);
+                        } else {
+                            ColorMatrix matrix = new ColorMatrix();
+                            matrix.setSaturation(0);
+                            ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+                            imageView.setColorFilter(cf);
                         }
 
                         if (entry.text != null) {
@@ -75,8 +95,13 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
 
                         if (entry.isAvailable) {
                             v.setOnClickListener(v1 -> {
-                                PaymentSelectionHelper.getInstance().select(entry);
-                                dismissAllowingStateLoss();
+                                if (entry.isAdded) {
+                                    PaymentSelectionHelper.getInstance().select(entry);
+                                    dismissAllowingStateLoss();
+                                } else {
+                                    PaymentInputViewHelper.openPaymentInputView(getContext(), entry.paymentMethod, SnabbleUI.getProject().getId());
+                                    dismissAllowingStateLoss();
+                                }
                             });
                             name.setEnabled(true);
                         } else {
@@ -93,32 +118,6 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                     }
                 }
             }
-        }
-
-        boolean canAdd = false;
-        for (PaymentMethod pm : SnabbleUI.getProject().getAvailablePaymentMethods()) {
-            if (!pm.isOfflineMethod()) {
-                canAdd = true;
-                break;
-            }
-        }
-
-        if (canAdd) {
-            View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select_add, null);
-            v.setOnClickListener(v12 -> {
-                Activity activity = UIUtils.getHostActivity(getContext());
-                if (activity instanceof FragmentActivity) {
-                    SelectPaymentMethodFragment dialogFragment = new SelectPaymentMethodFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().getId());
-                    dialogFragment.setArguments(bundle);
-                    dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
-                } else {
-                    throw new RuntimeException("Host activity must be a Fragment Activity");
-                }
-                dismissAllowingStateLoss();
-            });
-            options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         return view;

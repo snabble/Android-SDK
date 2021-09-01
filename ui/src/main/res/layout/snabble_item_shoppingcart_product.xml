@@ -21,22 +21,25 @@
             android:id="@+id/helper_image"
             android:layout_width="44dp"
             android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
             android:visibility="gone"
             app:shapeAppearanceOverlay="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners"
             tools:background="#ccc"
             tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/sale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/red_label"
+            android:layout_width="20dp"
+            android:layout_height="18dp"
             android:background="@drawable/snabble_ic_round_textview"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
+            android:layout_marginEnd="8dp"
             android:text="%"
             android:textColor="#ffffff"
-            android:textSize="14sp"
+            android:gravity="center"
             app:backgroundTint="#ff0000"
+            app:autoSizeMinTextSize="8dp"
+            app:autoSizeMaxTextSize="12dp"
+            app:autoSizeTextType="uniform"
             tools:ignore="HardcodedText" />
     </FrameLayout>
 
@@ -53,8 +56,7 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:textSize="17sp"
@@ -64,9 +66,8 @@
             android:id="@+id/price_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="4dp"
-            android:layout_marginRight="8dp"
             android:orientation="horizontal">
 
             <TextView
@@ -93,7 +94,7 @@
 
             <Button
                 android:id="@+id/minus"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:insetLeft="0dp"
@@ -120,7 +121,7 @@
 
             <Button
                 android:id="@+id/plus"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:insetLeft="0dp"
@@ -184,7 +185,7 @@
 
             <Button
                 android:id="@+id/quantity_edit_apply"
-                style="@style/Widget.MaterialComponents.Button.Icon"
+                style="@style/Snabble.Widget.MaterialComponents.Button.Icon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center_vertical"

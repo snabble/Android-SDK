@@ -1,11 +1,14 @@
 package io.snabble.sdk.ui.checkout;
 
+import androidx.fragment.app.FragmentActivity;
+
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.payment.Datatrans;
 import io.snabble.sdk.utils.Logger;
 
 public class CheckoutHelper {
-    public static void displayPaymentView(Checkout checkout) {
+    public static void displayPaymentView(FragmentActivity activity, Checkout checkout) {
         SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
         if (callback == null) {
             Logger.e("ui action could not be performed: callback is null");
@@ -20,6 +23,9 @@ public class CheckoutHelper {
                 case MASTERCARD:
                 case AMEX:
                 case PAYDIREKT:
+                case TWINT:
+                case POST_FINANCE_CARD:
+                case GOOGLE_PAY:
                     callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_ONLINE, null);
                     break;
                 case GATEKEEPER_TERMINAL:

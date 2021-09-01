@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.collection.LruCache;
 
 import com.caverock.androidsvg.SVG;
 import com.google.gson.annotations.SerializedName;
@@ -44,6 +45,20 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class Assets {
+    private static LruCache<String, Bitmap> memoryCache;
+
+    static {
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+        Logger.d("setup lru cache " + (cacheSize / 1024) + " MB");
+        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+    }
+
     private enum Variant {
         @SerializedName("1x")
         MDPI("1x", 1.0f),
@@ -342,28 +357,29 @@ public class Assets {
     }
 
     public Bitmap getBitmap(String name) {
-        return getBitmapSVG(name);
+        return getBitmap(name, Type.SVG);
     }
 
     public Bitmap getBitmap(String name, Type type) {
+        Bitmap bitmap;
+
         switch (type) {
             case SVG:
-                return getBitmapSVG(name);
+                bitmap = getBitmapSVG(name);
+                break;
             case JPG:
             case WEBP:
-                return getBitmapByType(name, type);
+                bitmap = getBitmapByType(name, type);
+                break;
             default:
-                return null;
+                bitmap = null;
+                break;
         }
+
+        return bitmap;
     }
 
     private Asset getAsset(String name, Type type) {
-        // currently a limitation due to asynchronous reads and saves,
-        // could be solved with careful locking
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw new RuntimeException("Can only be access from the main thread");
-        }
-
         if (manifest == null) {
             return null;
         }
@@ -397,7 +413,7 @@ public class Assets {
         Asset asset = getAsset(name, type);
         if (asset != null) {
             try {
-                Logger.d("render jpg %s/%s", project.getId(), name);
+                Logger.d("render %s %s/%s", type.name(), project.getId(), name);
                 return BitmapFactory.decodeStream(new FileInputStream(asset.file));
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
@@ -412,7 +428,7 @@ public class Assets {
         Asset asset = getAsset(name, Type.SVG);
         if (asset != null) {
             try {
-                Logger.d("render svg %s/%s", project.getId(), name);
+                Logger.d("render SVG %s/%s", project.getId(), name);
 
                 Resources res = app.getResources();
                 DisplayMetrics dm = res.getDisplayMetrics();
@@ -438,10 +454,14 @@ public class Assets {
     }
 
     public void get(String name, Callback callback) {
-        get(name, Type.SVG, callback);
+        get(name, Type.SVG, false, callback);
     }
 
-    public void get(String name, Type type, Callback callback) {
+    public void get(String name, boolean async, Callback callback) {
+        get(name, Type.SVG, async, callback);
+    }
+
+    public void get(String name, Type type, boolean async, Callback callback) {
         String fileName = FilenameUtils.removeExtension(name);
         switch (type) {
             case SVG:
@@ -456,25 +476,71 @@ public class Assets {
         }
         final String finalFileName = fileName;
 
-        Bitmap bitmap = getBitmap(fileName, type);
-        if (bitmap != null) {
-            Logger.d("cache hit " + fileName);
-            callback.onReceive(bitmap);
-        } else {
-            Logger.d("cache miss " + fileName);
+        Asset asset = getAsset(name, type);
+        if (asset != null) {
+            String cacheKey = asset.hash;
+            Bitmap cachedBitmap = getBitmapFromMemCache(cacheKey);
+            if (cachedBitmap != null) {
+                callback.onReceive(cachedBitmap);
+                return;
+            }
+        }
 
-            download(fileName, new DownloadCallback() {
+        if (async) {
+            Dispatch.background(() -> {
+                get(finalFileName, type, callback);
+            });
+        } else {
+            get(finalFileName, type, callback);
+        }
+    }
+
+    private void get(String name, Type type, Callback callback) {
+        Bitmap bitmap = getBitmap(name, type);
+        if (bitmap != null) {
+            Logger.d("cache hit " + name);
+            Asset asset = getAsset(name, type);
+            if (asset != null) {
+                String cacheKey = asset.hash;
+                addBitmapToMemoryCache(cacheKey, bitmap);
+            }
+
+            Dispatch.mainThread(() -> callback.onReceive(bitmap));
+        } else {
+            Logger.d("cache miss " + name);
+
+            download(name, new DownloadCallback() {
                 @Override
                 public void success() {
-                    Dispatch.mainThread(() -> callback.onReceive(getBitmap(finalFileName, type)));
+                    Bitmap b = getBitmap(name, type);
+                    Asset asset = getAsset(name, type);
+                    if (asset != null) {
+                        String cacheKey = asset.hash;
+                        addBitmapToMemoryCache(cacheKey, b);
+                    }
+
+                    Dispatch.mainThread(() -> callback.onReceive(b));
                 }
 
                 @Override
                 public void failure() {
-                    Logger.d("fail " + finalFileName);
+                    Logger.d("fail " + name);
                     Dispatch.mainThread(() -> callback.onReceive(null));
                 }
             });
         }
+    }
+
+    public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            Logger.d("put lru cache %d / %d MB %s", memoryCache.size() / 1024, memoryCache.maxSize() / 1024, key);
+            memoryCache.put(key, bitmap);
+        }
+    }
+
+    public static Bitmap getBitmapFromMemCache(String key) {
+        Bitmap bitmap = memoryCache.get(key);
+        Logger.d("get lru cache %s %s", bitmap != null ? "HIT" : "MISS", key);
+        return bitmap;
     }
 }

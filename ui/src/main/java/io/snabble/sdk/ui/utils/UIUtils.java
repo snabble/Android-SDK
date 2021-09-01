@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.utils;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -8,7 +9,6 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +19,16 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.RestrictTo;
-import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import eu.rekisoft.android.util.LazyWorker;
 import io.snabble.sdk.ui.R;
-import kotlin.Deprecated;
-import kotlin.ReplaceWith;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
@@ -83,7 +80,7 @@ public class UIUtils {
     }
 
     public static int getDurationByLength(String text) {
-        return Math.max(Math.min(text.length() * 70, 2000), 7000);
+        return Math.min(Math.max(text.length() * 70, 4000), 7000);
     }
 
     public static int getColorByAttribute(Context context, @AttrRes int attrResId) {
@@ -92,7 +89,8 @@ public class UIUtils {
         return typedValue.data;
     }
 
-    public static View showTopDownInfoBox(ViewGroup parent, String text, int duration, int type, int offsetY) {
+    @Deprecated
+    public static TopDownInfoBoxController showTopDownInfoBox(ViewGroup parent, String text, int duration, int type, int offsetY) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final TextView info = (TextView)inflater.inflate(R.layout.snabble_view_info, parent, false);
 
@@ -130,28 +128,38 @@ public class UIUtils {
 
         Handler infoHandler = new Handler(Looper.getMainLooper());
         infoHandler.removeCallbacksAndMessages(null);
-        infoHandler.postDelayed(() -> info.animate()
-                .translationY(-offsetY - info.getHeight())
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
+        LazyWorker.Job hide = LazyWorker.createLifeCycleAwareJob(parent.getContext(), (job) -> {
+            if(info.isAttachedToWindow()) {
+                info.animate()
+                        .translationY(-offsetY - info.getHeight())
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                parent.removeView(info);
+                            }
 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        parent.removeView(info);
-                    }
+                            @Override
+                            public void onAnimationCancel(Animator animation) {
+                                parent.removeView(info);
+                            }
+                        }).start();
+            }
+            return null;
+        });
+        hide.doLater(duration);
 
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        parent.removeView(info);
-                    }
+        return new TopDownInfoBoxController(hide);
+    }
 
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                }).start(), duration);
+    public static final class TopDownInfoBoxController {
+        private final LazyWorker.Job hide;
 
-        return info;
+        private TopDownInfoBoxController(LazyWorker.Job hideJob) {
+            hide = hideJob;
+        }
+
+        public void hide() {
+            hide.doNow();
+        }
     }
 }

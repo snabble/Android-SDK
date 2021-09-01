@@ -135,6 +135,10 @@ public class Snabble {
         if (config.bundledMetadataAssetPath != null) {
             readMetadata();
             setupCompletionListener.onReady();
+
+            if (config.loadActiveShops) {
+                loadActiveShops();
+            }
         } else {
             metadataDownloader.loadAsync(new Downloader.Callback() {
                 @Override
@@ -151,6 +155,10 @@ public class Snabble {
                     }
 
                     setupCompletionListener.onReady();
+
+                    if (config.loadActiveShops) {
+                        loadActiveShops();
+                    }
                 }
 
                 @Override
@@ -290,6 +298,7 @@ public class Snabble {
                         Project project = new Project(jsonProject);
                         newProjects.add(project);
                     } catch (IllegalArgumentException e) {
+                        Logger.d(e.getMessage());
                         // malformed project, do nothing
                     }
                 }
@@ -415,6 +424,16 @@ public class Snabble {
         return projects;
     }
 
+    public Project getProjectById(String projectId) {
+        for (Project project : projects) {
+            if (project.getId().equals(projectId)) {
+                return project;
+            }
+        }
+
+        return null;
+    }
+
     public List<X509Certificate> getPaymentSigningCertificates() {
         return Collections.unmodifiableList(paymentCertificates);
     }
@@ -469,13 +488,26 @@ public class Snabble {
             protected void onDataLoaded(boolean wasStillValid) {
                 if (!wasStillValid) {
                     readMetadata();
+                    notifyMetadataUpdated();
+                }
 
-                    for (OnMetadataUpdateListener listener : onMetaDataUpdateListeners) {
-                        listener.onMetaDataUpdated();
-                    }
+                if (config.loadActiveShops) {
+                    loadActiveShops();
                 }
             }
         });
+    }
+
+    private void loadActiveShops() {
+        for (Project project : projects) {
+            project.loadActiveShops(this::notifyMetadataUpdated);
+        }
+    }
+
+    private void notifyMetadataUpdated() {
+        for (OnMetadataUpdateListener listener : onMetaDataUpdateListeners) {
+            listener.onMetaDataUpdated();
+        }
     }
 
     private void checkCartTimeouts() {
@@ -740,5 +772,13 @@ public class Snabble {
 
         /** SQL queries that will get executed in order on the product database **/
         public String[] initialSQL = null;
+
+        /** Vibrate while adding a product to the cart, by default false */
+        public boolean vibrateToConfirmCartFilled = false;
+
+        /** Set to true, to load shops that are marked as pre launch
+         *  and are not part of the original metadata in the backend
+         *  (for example for testing shops in production before a go-live) **/
+        public boolean loadActiveShops = false;
     }
 }

@@ -50,13 +50,13 @@
                     && ccBrand != null && expMonth != null && expYear != null && transactionId != null) {
                         snabble.saveCard(cardHolder, cardNumber, ccBrand, expMonth, expYear, hostedDataId, schemeTransactionId, transactionId);
                     } else {
-                        snabble.fail();
+                        snabble.fail(failReason);
                     }
                 } else {
                     if (failReason == "Abbruch durch Benutzer") {
                         snabble.abort();
                     } else {
-                        snabble.fail();
+                        snabble.fail(failReason);
                     }
                 }
             }

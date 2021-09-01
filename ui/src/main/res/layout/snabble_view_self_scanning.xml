@@ -12,6 +12,15 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <io.snabble.sdk.ui.views.MessageBoxStackView
+        android:id="@+id/messages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,28 +39,6 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="16dp"
         android:id="@+id/bottom_bar">
-
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:background="@drawable/snabble_ic_button_outlined_48dp"
-            android:src="@drawable/snabble_ic_search"
-            android:padding="12dp"
-            android:layout_marginStart="16dp"
-            android:gravity="center"
-            android:id="@+id/enter_barcode" />
-
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:background="@drawable/snabble_ic_button_outlined_48dp"
-            android:src="@drawable/snabble_ic_torch"
-            android:padding="12dp"
-            android:layout_marginStart="16dp"
-            android:gravity="center"
-            android:id="@+id/light" />
 
         <Button
             android:id="@+id/goto_cart"

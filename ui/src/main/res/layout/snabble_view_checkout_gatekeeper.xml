@@ -86,7 +86,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true">
         <Button
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

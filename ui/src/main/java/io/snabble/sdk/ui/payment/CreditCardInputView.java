@@ -27,7 +27,9 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.text.NumberFormat;
 import java.util.UUID;
 
 import io.snabble.sdk.PaymentMethod;
@@ -38,6 +40,7 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
+import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
@@ -66,6 +69,7 @@ public class CreditCardInputView extends FrameLayout {
     private PaymentMethod paymentType;
     private String projectId;
     private Project lastProject;
+    private TextView threeDHint;
 
     public CreditCardInputView(Context context) {
         super(context);
@@ -88,12 +92,14 @@ public class CreditCardInputView extends FrameLayout {
         resources = getContext().getResources();
 
         progressBar = findViewById(R.id.progress);
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setIndeterminate(true);
 
         webView = findViewById(R.id.web_view);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Dispatch.mainThread(() -> finishWithError());
+                Dispatch.mainThread(() -> finishWithError(null));
             }
         });
 
@@ -106,7 +112,7 @@ public class CreditCardInputView extends FrameLayout {
                     } else {
                         progressBar.setVisibility(View.VISIBLE);
                     }
-
+                    progressBar.setIndeterminate(false);
                     progressBar.setProgress(newProgress);
                 });
             }
@@ -122,14 +128,8 @@ public class CreditCardInputView extends FrameLayout {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
-        TextView threeDHint = findViewById(R.id.threed_secure_hint);
-
-        Project project = getProject();
-        String companyName = project.getName();
-        if (project.getCompany() != null && project.getCompany().getName() != null) {
-            companyName = project.getCompany().getName();
-        }
-        threeDHint.setText(resources.getString(R.string.Snabble_CC_3dsecureHint_retailer, companyName));
+        threeDHint = findViewById(R.id.threed_secure_hint);
+        threeDHint.setVisibility(View.GONE);
 
         requestHash();
     }
@@ -154,13 +154,13 @@ public class CreditCardInputView extends FrameLayout {
         Project project = getProject();
 
         if (project == null) {
-            finishWithError();
+            finishWithError("No project");
             return;
         }
 
         String url = project.getTelecashVaultItemsUrl();
         if (url == null) {
-            finishWithError();
+            finishWithError("No vault items url provided");
             return;
         }
 
@@ -181,7 +181,7 @@ public class CreditCardInputView extends FrameLayout {
 
             @Override
             public void error(Throwable t) {
-                Dispatch.mainThread(() -> finishWithError());
+                Dispatch.mainThread(() -> finishWithError(null));
             }
         });
     }
@@ -224,8 +224,19 @@ public class CreditCardInputView extends FrameLayout {
             }
 
             webView.loadData(Base64.encodeToString(data.getBytes(), Base64.DEFAULT), null, "base64");
+
+            Project project = getProject();
+            String companyName = project.getName();
+            if (project.getCompany() != null && project.getCompany().getName() != null) {
+                companyName = project.getCompany().getName();
+            }
+            NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
+            BigDecimal chargeTotal = new BigDecimal(hashResponse.chargeTotal);
+            threeDHint.setVisibility(View.VISIBLE);
+            threeDHint.setText(resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice, numberFormat.format(chargeTotal), companyName));
         } catch (IOException e) {
             Logger.e(e.getMessage());
+            threeDHint.setVisibility(View.GONE);
         }
     }
 
@@ -336,9 +347,14 @@ public class CreditCardInputView extends FrameLayout {
         }
     }
 
-    private void finishWithError() {
+    private void finishWithError(String failReason) {
+        String errorMessage = getContext().getString(R.string.Snabble_Payment_CreditCard_error);
+        if (failReason != null) {
+            errorMessage = errorMessage + ": " + failReason;
+        }
+
         Toast.makeText(getContext(),
-                R.string.Snabble_Payment_CreditCard_error,
+                errorMessage,
                 Toast.LENGTH_SHORT)
                 .show();
 
@@ -456,8 +472,8 @@ public class CreditCardInputView extends FrameLayout {
         }
 
         @JavascriptInterface
-        public void fail() {
-            Dispatch.mainThread(CreditCardInputView.this::finishWithError);
+        public void fail(String failReason) {
+            Dispatch.mainThread(() -> finishWithError(failReason));
         }
 
         @JavascriptInterface

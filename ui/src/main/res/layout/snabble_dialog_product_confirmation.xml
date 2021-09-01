@@ -79,8 +79,8 @@
         tools:text="+ 0,45 € deposit" />
 
     <Button
-        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:id="@+id/enterReducedPrice"
+        style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/depositPrice"
@@ -88,24 +88,25 @@
         android:layout_marginBottom="-16dp"
         android:textSize="14sp"
         tools:text="Reduzierten Preis eingeben"
-        tools:textColor="#c40000"/>
+        tools:textColor="#c40000" />
 
-    <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+    <Button
         android:id="@+id/minus"
+        style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_toStartOf="@+id/quantity_text_input"
         android:insetLeft="0dp"
-        android:insetRight="0dp"
         android:insetTop="0dp"
+        android:insetRight="0dp"
         android:insetBottom="0dp"
+        app:icon="@drawable/snabble_ic_minus_content"
         app:iconTint="?attr/colorOnSurface"
-        app:strokeColor="@drawable/snabble_stroke"
-        app:icon="@drawable/snabble_ic_minus_content" />
+        app:strokeColor="@drawable/snabble_stroke" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -120,7 +121,7 @@
         app:boxStrokeColor="@drawable/snabble_stroke"
         android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/quantity"
@@ -135,13 +136,13 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+    <Button style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
         android:id="@+id/plus"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"
         android:insetLeft="0dp"
         android:insetRight="0dp"
@@ -169,17 +170,18 @@
 
     <Button
         android:id="@+id/addToCart"
+        style="@style/Snabble.Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="24dp"
-        app:autoSizeTextType="uniform"
-        app:autoSizeMinTextSize="8sp"
-        app:autoSizeMaxTextSize="14sp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/quantity_text_input"
         android:layout_centerHorizontal="true"
-        android:text="@string/Snabble.Scanner.addToCart" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/Snabble.Scanner.addToCart"
+        app:autoSizeMaxTextSize="16sp"
+        app:autoSizeMinTextSize="8sp"
+        app:autoSizeTextType="uniform" />
 
 
     <!-- invisible view as a margin, marginBottom does not work on API 16-18 -->

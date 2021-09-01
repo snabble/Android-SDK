@@ -22,7 +22,13 @@ public enum PaymentMethod {
     @SerializedName("gatekeeperTerminal")
     GATEKEEPER_TERMINAL(false, false, false, false),
     @SerializedName("paydirektOneKlick")
-    PAYDIREKT(false, true, false, true);
+    PAYDIREKT(false, true, false, true),
+    @SerializedName("postFinanceCard")
+    POST_FINANCE_CARD(false, true, false, true),
+    @SerializedName("twint")
+    TWINT(false, true, false, true),
+    @SerializedName("googlePay")
+    GOOGLE_PAY(false, false, false, false);
 
     private boolean requiresCredentials;
     private boolean isOfflineMethod;
@@ -74,5 +80,16 @@ public enum PaymentMethod {
         return null;
     }
 
+    public String id() {
+        try {
+            SerializedName serializedName = PaymentMethod.class.getField(name()).getAnnotation(SerializedName.class);
+            if (serializedName != null) {
+                return serializedName.value();
+            }
+        } catch (Exception e) {
 
+        }
+
+        return null;
+    }
 }

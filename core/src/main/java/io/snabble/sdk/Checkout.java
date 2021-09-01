@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +42,17 @@ public class Checkout {
          */
         REQUEST_VERIFY_AGE,
         /**
+         * Ask the user for the taxation method.
+         */
+        REQUEST_TAXATION,
+        /**
+         * Request a payment authorization token.
+         *
+         * For example a Google Pay payment token that needs to get sent back to
+         * the snabble Backend.
+         */
+        REQUEST_PAYMENT_AUTHORIZATION_TOKEN,
+        /**
          * Payment was received by the backend and we are waiting for confirmation of the payment provider
          */
         WAIT_FOR_APPROVAL,
@@ -71,6 +84,10 @@ public class Checkout {
          * The payment could not be aborted.
          */
         PAYMENT_ABORT_FAILED,
+        /**
+         * There was a unrecoverable payment processing error.
+         */
+        PAYMENT_PROCESSING_ERROR,
         /**
          * There was a unrecoverable connection error.
          */
@@ -112,6 +129,9 @@ public class Checkout {
     private final CheckoutRetryer checkoutRetryer;
     private Future<?> currentPollFuture;
     private final PaymentOriginCandidateHelper paymentOriginCandidateHelper;
+    private CheckoutApi.AuthorizePaymentRequest storedAuthorizePaymentRequest;
+    private boolean authorizePaymentRequestFailed;
+    private List<Coupon> redeemedCoupons;
 
     Checkout(Project project) {
         this.project = project;
@@ -121,11 +141,18 @@ public class Checkout {
         this.paymentOriginCandidateHelper = new PaymentOriginCandidateHelper(project);
     }
 
+    public void abortError() {
+        abort(true);
+    }
+
+    public void abort() {
+        abort(false);
+    }
     /**
      * Aborts outstanding http calls and notifies the backend that the checkout process
      * was cancelled
      */
-    public void abort() {
+    public void abort(boolean error) {
         cancelOutstandingCalls();
 
         if (state != Checkout.State.PAYMENT_APPROVED
@@ -136,7 +163,11 @@ public class Checkout {
                 @Override
                 public void success() {
                     synchronized (Checkout.this) {
-                        notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+                        if (error) {
+                            notifyStateChanged(Checkout.State.PAYMENT_PROCESSING_ERROR);
+                        } else {
+                            notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+                        }
 
                         invalidProducts = null;
                         paymentMethod = null;
@@ -147,7 +178,11 @@ public class Checkout {
 
                 @Override
                 public void error() {
-                    notifyStateChanged(Checkout.State.PAYMENT_ABORT_FAILED);
+                    if (error) {
+                        notifyStateChanged(Checkout.State.PAYMENT_PROCESSING_ERROR);
+                    } else {
+                        notifyStateChanged(Checkout.State.PAYMENT_ABORT_FAILED);
+                    }
                 }
             });
 
@@ -193,7 +228,7 @@ public class Checkout {
     }
 
     public void resume() {
-        if (lastState == Checkout.State.WAIT_FOR_APPROVAL) {
+        if (lastState == Checkout.State.WAIT_FOR_APPROVAL || lastState == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN) {
             notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
             pollForResult();
         }
@@ -204,8 +239,9 @@ public class Checkout {
     }
 
     private PaymentMethod getFallbackPaymentMethod() {
-        PaymentMethod[] paymentMethods = project.getAvailablePaymentMethods();
-        for (PaymentMethod pm : paymentMethods) {
+        List<PaymentMethodDescriptor> paymentMethods = project.getPaymentMethodDescriptors();
+        for (PaymentMethodDescriptor descriptor : paymentMethods) {
+            PaymentMethod pm = descriptor.getPaymentMethod();
             if (pm.isOfflineMethod()) {
                 return pm;
             }
@@ -235,8 +271,10 @@ public class Checkout {
         paymentMethod = null;
         priceToPay = 0;
         invalidProducts = null;
+        storedAuthorizePaymentRequest = null;
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
+        redeemedCoupons = null;
 
         notifyStateChanged(Checkout.State.HANDSHAKING);
 
@@ -255,6 +293,13 @@ public class Checkout {
                                 int onlinePrice,
                                 CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
                 signedCheckoutInfo = checkoutInfo;
+
+                if (signedCheckoutInfo.isRequiringTaxation()) {
+                    Logger.d("Taxation requested");
+                    notifyStateChanged(State.REQUEST_TAXATION);
+                    return;
+                }
+
                 priceToPay = shoppingCart.getTotalPrice();
 
                 if (availablePaymentMethods.length == 1) {
@@ -374,6 +419,26 @@ public class Checkout {
         }
     }
 
+    public void authorizePayment(String encryptedOrigin) {
+        CheckoutApi.AuthorizePaymentRequest authorizePaymentRequest = new CheckoutApi.AuthorizePaymentRequest();
+        authorizePaymentRequest.encryptedOrigin = encryptedOrigin;
+        storedAuthorizePaymentRequest = authorizePaymentRequest;
+
+        checkoutApi.authorizePayment(checkoutProcess,
+                authorizePaymentRequest,
+                new CheckoutApi.AuthorizePaymentResult() {
+                    @Override
+            public void success() {
+                // ignore
+            }
+
+            @Override
+            public void error() {
+                authorizePaymentRequestFailed = true;
+            }
+        });
+    }
+
     private boolean runChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
         boolean allChecksOk = true;
 
@@ -381,6 +446,10 @@ public class Checkout {
             for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
                 if (check.type == null || check.state == null) {
                     continue;
+                }
+
+                if (check.state == CheckoutApi.State.FAILED) {
+                    return false;
                 }
 
                 if (check.performedBy == CheckoutApi.Performer.APP) {
@@ -494,8 +563,10 @@ public class Checkout {
             }
         });
 
-        if (state == Checkout.State.WAIT_FOR_APPROVAL || state == Checkout.State.PAYMENT_PROCESSING
-        || (state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
+        if (state == Checkout.State.WAIT_FOR_APPROVAL
+                || state == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
+                || state == Checkout.State.PAYMENT_PROCESSING
+                || (state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
             scheduleNextPoll();
         }
     }
@@ -508,6 +579,22 @@ public class Checkout {
         }
 
         paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
+
+        String authorizePaymentUrl = checkoutProcess.getAuthorizePaymentLink();
+        if (authorizePaymentUrl != null) {
+            if (authorizePaymentRequestFailed) {
+                authorizePaymentRequestFailed = false;
+                authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin);
+            } else {
+                if (storedAuthorizePaymentRequest != null) {
+                    authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin);
+                } else {
+                    notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN);
+                }
+            }
+
+            return false;
+        }
 
         if (checkoutProcess.paymentState == CheckoutApi.State.SUCCESSFUL) {
             if (checkoutProcess.exitToken != null
@@ -527,7 +614,8 @@ public class Checkout {
                     return false;
                 }
             }
-        } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING) {
+        } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING
+                || checkoutProcess.paymentState == CheckoutApi.State.UNAUTHORIZED) {
             if (hasAnyFulfillmentFailed()) {
                 checkoutApi.abort(checkoutProcess, null);
                 notifyStateChanged(State.PAYMENT_ABORTED);
@@ -535,12 +623,20 @@ public class Checkout {
                 return true;
             }
 
+            if (!runChecks(checkoutProcess)) {
+                Logger.d("Payment denied by supervisor");
+                shoppingCart.generateNewUUID();
+                notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
+            }
+
             if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
                 Logger.d("Payment denied by supervisor");
+                shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
                 return true;
             } else if (checkoutProcess.paymentApproval != null && !checkoutProcess.paymentApproval) {
                 Logger.d("Payment denied by payment provider");
+                shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
                 return true;
             }
@@ -566,13 +662,27 @@ public class Checkout {
     private void approve() {
         if (state != Checkout.State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
-            shoppingCart.backup();
+
+            if (paymentMethod.isOfflineMethod()) {
+                shoppingCart.backup();
+            }
+
+            redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(project.getCoupons().get());
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
 
             Snabble.getInstance().getUsers().update();
         }
+    }
+
+    @NonNull
+    public List<Coupon> getRedeemedCoupons() {
+        if (redeemedCoupons == null) {
+            return new ArrayList<>();
+        }
+
+        return redeemedCoupons;
     }
 
     public void approveOfflineMethod() {
@@ -643,6 +753,21 @@ public class Checkout {
 
     public int getPriceToPay() {
         return priceToPay;
+    }
+
+    public int getVerifiedOnlinePrice() {
+        try {
+            if (checkoutProcess != null) {
+                return checkoutProcess.checkoutInfo.get("price")
+                        .getAsJsonObject()
+                        .get("price")
+                        .getAsInt();
+            }
+        } catch (Exception e) {
+            return -1;
+        }
+
+        return -1;
     }
 
     public List<Product> getInvalidProducts() {
@@ -743,8 +868,12 @@ public class Checkout {
     }
 
     private void notifyStateChanged(final State state) {
+        notifyStateChanged(state, false);
+    }
+
+    private void notifyStateChanged(final State state, boolean repeat) {
         synchronized (Checkout.this) {
-            if (this.state != state) {
+            if (this.state != state || repeat) {
                 this.lastState = this.state;
                 this.state = state;
 

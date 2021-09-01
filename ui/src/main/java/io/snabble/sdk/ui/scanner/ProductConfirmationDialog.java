@@ -1,10 +1,13 @@
 package io.snabble.sdk.ui.scanner;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spannable;
@@ -27,17 +30,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import io.snabble.sdk.ManualCoupon;
+import io.snabble.sdk.Coupon;
+import io.snabble.sdk.CouponType;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
@@ -285,17 +291,17 @@ public class ProductConfirmationDialog {
             depositPrice.setVisibility(View.GONE);
         }
 
-        List<ManualCoupon> manualCoupons = project.getManualCoupons();
+        List<Coupon> manualCoupons = project.getCoupons().filter(CouponType.MANUAL);
         boolean isVisible = manualCoupons != null && manualCoupons.size() > 0;
         enterReducedPrice.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         enterReducedPrice.setOnClickListener(v -> {
             FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(context);
-            new SelectReducedPriceDialogFragment(ProductConfirmationDialog.this, cartItem)
+            new SelectReducedPriceDialogFragment(ProductConfirmationDialog.this, cartItem, shoppingCart)
                     .show(fragmentActivity.getSupportFragmentManager(), null);
         });
 
-        if (cartItem.getManualCoupon() != null) {
-            enterReducedPrice.setText(cartItem.getManualCoupon().getName());
+        if (cartItem.getCoupon() != null) {
+            enterReducedPrice.setText(cartItem.getCoupon().getName());
         } else {
             enterReducedPrice.setText(R.string.Snabble_addDiscount);
         }
@@ -311,7 +317,7 @@ public class ProductConfirmationDialog {
 
         Telemetry.event(Telemetry.Event.ConfirmedProduct, cartItem.getProduct());
 
-        int q = getQuantity();
+        int q = Math.max(getQuantity(), cartItem.getScannedCode().getEmbeddedData());
         if (cartItem.getProduct().getType() == Product.Type.UserWeighed && q == 0) {
             shake();
             return;
@@ -321,7 +327,9 @@ public class ProductConfirmationDialog {
             shoppingCart.add(cartItem);
         }
 
-        cartItem.setQuantity(q);
+        if (cartItem.getProduct().getType() == Product.Type.UserWeighed) {
+            cartItem.setQuantity(q);
+        }
 
         shoppingCart.updatePrices(false);
 
@@ -338,6 +346,14 @@ public class ProductConfirmationDialog {
             callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, args);
         }
         dismiss(true);
+
+        if (Snabble.getInstance().getConfig().vibrateToConfirmCartFilled &&
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.VIBRATE)
+                        == PackageManager.PERMISSION_GRANTED) {
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            // noinspection MissingPermission, check is above
+            vibrator.vibrate(200L);
+        }
     }
 
     private void shake() {

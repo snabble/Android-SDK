@@ -35,7 +35,7 @@ public class App extends Application {
 
         // if you are using a light mode theme, disable night mode resources
         // this seems like a bug in android
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     public void initBlocking() {
@@ -83,8 +83,8 @@ public class App extends Application {
                 SnabbleUI.useProject(project);
 
                 // select the first shop for demo purposes
-                if (project.getShops().length > 0) {
-                    project.setCheckedInShop(project.getShops()[0]);
+                if (project.getShops().size() > 0) {
+                    project.setCheckedInShop(project.getShops().get(0));
                 }
 
                 // you can update the local database asynchronously, you can still query
@@ -106,7 +106,11 @@ public class App extends Application {
 
             @Override
             public void onError(Snabble.Error error) {
-                callback.error("SdkError: " + error.toString());
+                if(config.appId.equals("<missing app id>") || config.secret.equals("<missing secret>")) {
+                    callback.error("SdkError: You did not setup any secrets yet.\nSee README.md for more details.");
+                } else {
+                    callback.error("SdkError: " + error.toString());
+                }
             }
         });
 

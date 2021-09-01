@@ -1,13 +1,16 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.commons.lang3.LocaleUtils;
 
 import java.io.File;
-import java.math.BigDecimal;
+import java.lang.reflect.Type;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,16 +22,18 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.JsonUtils;
 import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public class Project {
     private Snabble snabble;
@@ -36,14 +41,14 @@ public class Project {
     private String name;
 
     private ProductDatabase productDatabase;
-    private Shop[] shops;
+    private ArrayList<Shop> shops;
     private Brand brand;
     private Company company;
     private Checkout checkout;
     private ShoppingCartStorage shoppingCartStorage;
     private Events events;
     private Assets assets;
-
+    private GooglePayHelper googlePayHelper;
     private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
     private Currency currency;
@@ -60,7 +65,6 @@ public class Project {
     private Shop checkedInShop;
     private CustomerCardInfo[] acceptedCustomerCardInfos;
     private CustomerCardInfo requiredCustomerCardInfo;
-    private PaymentMethod[] availablePaymentMethods;
 
     private Map<String, String> urls;
 
@@ -72,7 +76,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
-    private List<ManualCoupon> manualCoupons;
+    private Coupons coupons;
     private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
@@ -81,6 +85,7 @@ public class Project {
     private String tokensUrl;
     private String appUserUrl;
     private boolean displayNetPrice;
+    private List<PaymentMethodDescriptor> paymentMethodDescriptors;
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         snabble = Snabble.getInstance();
@@ -91,6 +96,7 @@ public class Project {
         okHttpClient = Snabble.getInstance().getOkHttpClient()
                 .newBuilder()
                 .addInterceptor(new SnabbleAuthorizationInterceptor(this))
+                .addInterceptor(new AcceptedLanguageInterceptor())
                 .build();
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
@@ -100,11 +106,18 @@ public class Project {
         checkout = new Checkout(this);
         events = new Events(this);
         assets = new Assets(this);
+
+        for (PaymentMethodDescriptor descriptor : getPaymentMethodDescriptors()) {
+            if (descriptor.getPaymentMethod() == PaymentMethod.GOOGLE_PAY) {
+                googlePayHelper = new GooglePayHelper(this, Snabble.getInstance().getApplication());
+                break;
+            }
+        }
+
+        coupons.update();
     }
 
     void parse(JsonObject jsonObject) {
-        Snabble snabble = Snabble.getInstance();
-
         Map<String, String> urls = new HashMap<>();
 
         if (jsonObject.has("id")) {
@@ -197,23 +210,22 @@ public class Project {
             requiredCustomerCardInfo = new CustomerCardInfo(requiredCustomerCard, true);
         }
 
-        List<PaymentMethod> paymentMethodList = new ArrayList<>();
-        String[] paymentMethods = JsonUtils.getStringArrayOpt(jsonObject, "paymentMethods", new String[0]);
-        for (String paymentMethod : paymentMethods) {
-            PaymentMethod pm = PaymentMethod.fromString(paymentMethod);
-            if (pm != null) {
-                paymentMethodList.add(pm);
+        JsonElement descriptors = jsonObject.get("paymentMethodDescriptors");
+        if (descriptors != null) {
+            Type t = new TypeToken<List<PaymentMethodDescriptor>>() {}.getType();
+            List<PaymentMethodDescriptor> paymentMethodDescriptors = GsonHolder.get().fromJson(descriptors, t);
+            ArrayList<PaymentMethodDescriptor> filteredDescriptors = new ArrayList<>();
+            for (PaymentMethodDescriptor descriptor : paymentMethodDescriptors) {
+                if (PaymentMethod.fromString(descriptor.getId()) != null) {
+                    filteredDescriptors.add(descriptor);
+                }
             }
-        }
-        availablePaymentMethods = paymentMethodList.toArray(new PaymentMethod[paymentMethodList.size()]);
-
-        if (jsonObject.has("shops")) {
-            shops = Shop.fromJson(jsonObject.get("shops"));
+            this.paymentMethodDescriptors = Collections.unmodifiableList(filteredDescriptors);
+        } else {
+            this.paymentMethodDescriptors = Collections.unmodifiableList(Collections.emptyList());
         }
 
-        if (shops == null) {
-            shops = new Shop[0];
-        }
+        parseShops(jsonObject);
 
         if (jsonObject.has("company")) {
             company = GsonHolder.get().fromJson(jsonObject.get("company"), Company.class);
@@ -293,26 +305,66 @@ public class Project {
 
         displayNetPrice = JsonUtils.getBooleanOpt(jsonObject, "displayNetPrice", false);
 
-        ArrayList<ManualCoupon> manualCoupons = new ArrayList<>();
+        List<Coupon> couponList = new ArrayList<>();
 
         try {
-            if (jsonObject.has("manualCoupons")) {
-                JsonArray jsonArray = jsonObject.get("manualCoupons").getAsJsonArray();
-                for (JsonElement element : jsonArray) {
-                    JsonObject coupon = element.getAsJsonObject();
-                    manualCoupons.add(new ManualCoupon(
-                            coupon.get("id").getAsString(),
-                            coupon.get("name").getAsString()
-                    ));
-                }
+            if (jsonObject.has("coupons")) {
+                JsonElement couponsJsonObject = jsonObject.get("coupons");
+                Type couponsType = new TypeToken<List<Coupon>>() {}.getType();
+                couponList = GsonHolder.get().fromJson(couponsJsonObject, couponsType);
             }
         } catch (Exception e) {
-            Logger.e("Could not parse manual coupons");
+            Logger.e("Could not parse coupons");
         }
 
-        this.manualCoupons = Collections.unmodifiableList(manualCoupons);
+        this.coupons = new Coupons(couponList, this);
 
         notifyUpdate();
+    }
+
+    private void parseShops(JsonObject jsonObject) {
+        shops = new ArrayList<>();
+
+        if (jsonObject.has("shops")) {
+            Shop[] jsonShops = Shop.fromJson(jsonObject.get("shops"));
+            if (jsonShops != null) {
+                shops.addAll(Arrays.asList(jsonShops));
+            }
+        }
+    }
+
+    void loadActiveShops(Runnable done) {
+        if (snabble.getConfig().loadActiveShops) {
+            String url = getActiveShopsUrl();
+            if (url != null) {
+                Request request = new Request.Builder()
+                        .get()
+                        .url(getActiveShopsUrl())
+                        .build();
+
+                okHttpClient.newCall(request).enqueue(new SimpleJsonCallback<JsonObject>(JsonObject.class) {
+                    @Override
+                    public void success(JsonObject jsonObject) {
+                        if (jsonObject.has("shops")) {
+                            Shop[] hiddenShops = Shop.fromJson(jsonObject.get("shops"));
+                            if (hiddenShops != null) {
+                                shops.clear();
+                                shops.addAll(Arrays.asList(hiddenShops));
+
+                                if (done != null) {
+                                    done.run();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void error(Throwable t) {
+                        Logger.e("Failed to load hidden shops, statusCode: %d", responseCode());
+                    }
+                });
+            }
+        }
     }
 
     public File getInternalStorageDirectory() {
@@ -381,16 +433,19 @@ public class Project {
         return urls.get("telecashVaultItems");
     }
 
+    public String getDatatransTokenizationUrl() {
+        return urls.get("datatransTokenization");
+    }
+
+    public String getActiveShopsUrl() {
+        return urls.get("activeShops");
+    }
     public BarcodeFormat[] getSupportedBarcodeFormats() {
         return supportedBarcodeFormats;
     }
 
     public EncodedCodesOptions getEncodedCodesOptions() {
         return encodedCodesOptions;
-    }
-
-    public List<ManualCoupon> getManualCoupons() {
-        return manualCoupons;
     }
 
     public boolean isCheckoutAvailable() {
@@ -434,9 +489,14 @@ public class Project {
      * payment process.
      */
     public void setCheckedInShop(Shop checkedInShop) {
-        this.checkedInShop = checkedInShop;
-        events.updateShop(checkedInShop);
-        getShoppingCart().updatePrices(false);
+        String currentShopId = this.checkedInShop != null ? this.checkedInShop.getId() : "";
+        String newShopId = checkedInShop != null ? checkedInShop.getId() : "";
+
+        if (!currentShopId.equals(newShopId)) {
+            this.checkedInShop = checkedInShop;
+            events.updateShop(checkedInShop);
+            getShoppingCart().updatePrices(false);
+        }
     }
 
     public Shop getCheckedInShop() {
@@ -446,8 +506,8 @@ public class Project {
     /**
      * @return The available shops. Empty if no shops are defined.
      */
-    public Shop[] getShops() {
-        return shops;
+    public List<Shop> getShops() {
+        return Collections.unmodifiableList(shops);
     }
 
     public Company getCompany() {
@@ -502,6 +562,15 @@ public class Project {
         return assets;
     }
 
+    public Coupons getCoupons() {
+        return coupons;
+    }
+
+    @Nullable
+    public GooglePayHelper getGooglePayHelper() {
+        return googlePayHelper;
+    }
+
     public void logErrorEvent(String format, Object... args) {
         if (events != null) {
             Logger.e(format, args);
@@ -524,8 +593,16 @@ public class Project {
         return loyaltyCardId;
     }
 
-    public PaymentMethod[] getAvailablePaymentMethods() {
-        return availablePaymentMethods;
+    public List<PaymentMethodDescriptor> getPaymentMethodDescriptors() {
+        return paymentMethodDescriptors;
+    }
+
+    public List<PaymentMethod> getAvailablePaymentMethods() {
+        List<PaymentMethod> list = new ArrayList<>();
+        for (PaymentMethodDescriptor descriptor : paymentMethodDescriptors) {
+            list.add(descriptor.getPaymentMethod());
+        }
+        return list;
     }
 
     public CodeTemplate getDefaultCodeTemplate() {

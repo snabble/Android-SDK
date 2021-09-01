@@ -10,16 +10,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import java.io.Serializable;
-
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.PaymentStatusView;
 import io.snabble.sdk.ui.integration.ProjectPaymentOptionsFragment;
 import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
-import io.snabble.sdk.ui.payment.PaydirektInputView;
-import io.snabble.sdk.ui.payment.PaymentOptionsView;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
 public abstract class BaseActivity extends AppCompatActivity implements SnabbleUI.Callback {
@@ -36,6 +32,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setSupportActionBar(findViewById(R.id.toolbar));
 
         progressIndicator = findViewById(R.id.progress_indicator);
         content = findViewById(R.id.content);
@@ -60,13 +58,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
             @Override
             public void error(final String text) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressIndicator.setVisibility(View.GONE);
-                        sdkError.setVisibility(View.VISIBLE);
-                        sdkError.setText(text);
-                    }
+                runOnUiThread(() -> {
+                    progressIndicator.setVisibility(View.GONE);
+                    sdkError.setVisibility(View.VISIBLE);
+                    sdkError.setText(text);
                 });
             }
         });
@@ -266,5 +261,4 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         Intent intent = new Intent(this, AgeVerificationActivity.class);
         startActivity(intent);
     }
-
 }

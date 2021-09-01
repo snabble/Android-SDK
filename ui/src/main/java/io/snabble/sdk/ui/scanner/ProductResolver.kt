@@ -143,8 +143,21 @@ class ProductResolver private constructor(private val context: Context, private 
                     if (gs1GtinScannedCodes.isNotEmpty() && gs1Code == null) {
                         lookupProductData(gs1GtinScannedCodes, newGs1Code)
                     } else {
-                        project.events.productNotFound(scannedCodes)
-                        handleProductNotFound(result.code!!)
+                        project.productDatabase.findBySkuOnline(scannedCodes[0].lookupCode, object : OnProductAvailableListener {
+                            override fun onProductAvailable(product: Product, wasOnline: Boolean) {
+                                handleProductAvailable(product, wasOnline, scannedCodes[0], null)
+                            }
+
+                            override fun onProductNotFound() {
+                                project.events.productNotFound(scannedCodes)
+                                handleProductNotFound(scannedCodes[0])
+                            }
+
+                            override fun onError() {
+                                handleProductError()
+                            }
+                        })
+
                     }
                 }
             }
@@ -174,7 +187,7 @@ class ProductResolver private constructor(private val context: Context, private 
                     scannedCode.embeddedUnit = unit.smallestUnit
                 }
             }
-        } else {
+        } else if (scannedCode.embeddedUnit == null) {
             scannedCode.embeddedUnit = product.getEncodingUnit(scannedCode.templateName, scannedCode.lookupCode)
         }
 

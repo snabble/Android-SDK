@@ -1,5 +1,331 @@
-# Changelog  
+# Changelog
 All notable changes to this project will be documented in this file.
+
+## [0.48.0]
+
+### Changes
+- Improved payment selection flow, hinting at adding online payment methods before showing offline payment methods
+- Consolidated and simplified payment options
+
+## [0.47.2]
+
+### Fixed
+- Initialization error
+
+## [0.47.1]
+
+### Added
+- Support for localized coupons
+
+## [0.47.0]
+
+### Changed
+- Updated build tools to 7.0.1
+- Updated firebase detector to use new mlkit on-device api's
+
+## [0.46.0]
+
+### Added
+- Translations for fr and it
+
+## [0.45.2]
+
+### Fixed
+- CheckoutOnlineView not updating when coming from an activity resumed state
+
+## [0.45.1]
+
+### Changes
+- Upgraded Datatrans SDK to v1.4.2
+
+### Fixed
+- Fixed Datatrans Transaction Listener
+
+## [0.45.0]
+
+### Added
+- Added API to get redeemed coupons 
+
+## [0.44.4]
+
+### Added 
+- Added button themes for overriding button themes.
+
+### Fixed
+- Handle edge case when scanning a user weighed product with a pre weighed barcode
+- Fixed an endless loop that resulted in the app freezing
+
+## [0.44.3]
+
+### Fixed 
+- Fixed visual bug in ShoppingCartView when deleting Coupons
+
+## [0.44.2]
+
+### Fixed
+- Removed usage of removeIf, to support API < 26 without using coreLibraryDesugaring
+
+## [0.44.1]
+
+### Added
+- Added coupon fields for colors and disclaimer
+
+## [0.44.0]
+
+### Added
+- Added support for DIGITAL coupons with additional fields
+
+## [0.43.2]
+
+### Added
+- Added an icon to the payment credentials list empty state
+
+### Fixed
+- PaymentOptionsView not updating when adding a credit card via datatrans
+
+## [0.43.1]
+
+### Fixed
+- Persist shopping list on new uuid's
+
+## [0.43.0]
+
+### Added
+- Added support for taxation
+
+## [0.42.2]
+
+### Fixed
+- Fixed NullPointerException introduced in 0.42.1
+
+## [0.42.1]
+
+### Fixed
+- Only update prices when the shop differs, not always when setCheckedInShop is called
+
+## [0.42.0]
+
+### Changed
+- Removed manual discount message
+- Added in memory lru cache for asset decoding
+- Added async parameter for asset loading
+
+## [0.41.0]
+
+### Added
+- Added support for payment method descriptors
+- Added support for credit card payment using Datatrans
+
+### Fixed
+- Fixed internal storage directory sometimes pointing to null
+
+## [0.40.2]
+
+### Fixed
+- Fix crash when google pay gateway is not configured correctly, showing error message instead
+
+## [0.40.1]
+
+### Fixed
+- Fixed SelfScanningFragment being out of sync with SelfScanningView
+
+## [0.40.0]
+
+### Breaking Changes
+- Project.getShops now returns a List instead of an Array
+
+### Added
+- Added support for "activeShops"
+
+### Fixed
+- Fixed PostFinance and Twint not selectable when skipping over project specific payment methods
+
+## [0.39.13]
+
+### Fixed
+- Fixed crash when using standalone PaymentCredentialsListView
+
+## [0.39.12]
+
+### Added
+- Telemetry for shopping list tags
+
+## [0.39.11]
+
+### Fixed
+- ShoppingCart items not updating correctly when only the manual coupon state changes
+
+## [0.39.10]
+
+### Changed
+- Remove dependency on gitter and migrate it to maven central.
+
+## [0.39.9]
+
+### Fixed
+- Fixed crash on adding a second payment method on the same project
+
+## [0.39.8]
+
+### Fixed
+- Removed additional padding on Snackbars when using Android 11 + OnApplyWindowInsetListener
+
+## [0.39.7]
+
+### Fixed
+- Reversed camera torch drawable
+
+## [0.39.6]
+
+### Added
+- Added support for "manualDiscountFinalCode"
+
+## [0.39.5]
+
+### Fixed
+- QR codes being cutoff when maxSizeMM is higher than available view space
+- Payment methods being shown to project that are not part of the project
+
+### Updated
+- Updated Datatrans SDK to v1.4.1
+
+## [0.39.4]
+
+### Added
+- Add configuration flag `isUsingShoppingList` to avoid creating a FTS when not required
+
+## [0.39.3]
+
+### Fixed
+- Fixed checkouts not aborting when age verification check is not passing
+
+## [0.39.2]
+
+### Fixed
+- Added package query for Android 11+
+
+## [0.39.1]
+
+### Added
+- Jump to play store if google pay is not installed
+
+## [0.39.0]
+
+### Added
+- Added support for Google Pay
+
+### Fixed
+- Fixed exceptions when using coupons that affect the whole cart
+
+## [0.38.1]
+
+### Updated
+- Updated Datatrans SDK to v1.4.0
+
+### Fixed
+- Product searches of sku's are now also working on pressing the imeActionDone.
+
+## [0.38.0]
+
+### Added
+- Added stackable scan messages with a new Style
+
+### Deprecated
+- Deprecated UIUtils.showTopDownInfoBox
+
+## [0.37.12]
+
+### Added
+- Added indicator if an manual discount was applied or not
+
+### Fixed
+- Fixed pull to refresh in ShoppingCartView
+- Fixed selecting manual discounts resetting amount, even when no item is already in cart
+- Products with manual discounts are now editable
+
+## [0.37.11]
+
+### Fixed
+- Fixed crash when no TWINT or PostFinance payment method could be added
+
+## [0.37.10]
+
+### Changed
+- Changed default Datatrans environment to Production
+
+### Fixed
+- Fixed listing of TWINT and PostFinace Card payment methods when no credit card payment
+methods are available
+
+## [0.37.9]
+
+### Changed
+- Made credit card 3d secure hint locale aware
+
+## [0.37.8]
+
+### Fixed
+- Only update cart when it actually changed
+
+## [0.37.7]
+
+### Added
+- Support for switching Datatrans environments
+- CreditCardInputView's 3d secure hint now used project specific i18n
+
+## [0.37.6]
+
+### Added
+- Added option to vibrate when item was added to the cart
+
+## [0.37.5]
+
+### Fixed
+- Fixed price override codes
+
+## [0.37.4]
+
+### Changed
+- Not showing cart restoration after successful online checkout
+
+## [0.37.3]
+
+### Added
+- Added age restriction indicator in shopping cart items
+
+## [0.37.2]
+
+### Fixed
+- Fix VISA credit card input not opening
+
+## [0.37.1]
+
+### Fixed
+- TWINT and PostFinance payment methods are now listed in their project specific lists
+
+## [0.37.0]
+
+### Added
+- Support for transmission templates
+- Added support for TWINT and PostFinance Payments using Datatrans
+- searchByCode now also searches in SKU's
+
+### Changes
+- Increased the minimum required database revision to 1.25
+
+## [0.36.0]
+
+### Added
+- Support for printed coupons
+
+### Changed
+- Support for new coupon metadata
+- Improved SEPACardInputView for copy pasting IBAN's with prefixes
+- Removed flash and search buttons in SelfScanningView
+- Replaced scan indicator with a barcode image
+
+### Fixed
+- Remove old scan result messages
 
 ## [0.35.9]
 

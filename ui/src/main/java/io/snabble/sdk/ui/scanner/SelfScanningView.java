@@ -8,30 +8,31 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.ImageViewCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.util.Pair;
 
 import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
+import io.snabble.sdk.Coupon;
+import io.snabble.sdk.CouponCode;
+import io.snabble.sdk.CouponType;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
@@ -47,6 +48,7 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.ui.views.MessageBoxStackView;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
@@ -55,8 +57,6 @@ public class SelfScanningView extends FrameLayout {
     private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
-    private ImageView enterBarcode;
-    private ImageView light;
     private Button goToCart;
     private View noPermission;
     private boolean isRunning;
@@ -68,6 +68,7 @@ public class SelfScanningView extends FrameLayout {
     private boolean isShowingHint;
     private boolean manualCameraControl;
     private int topDownInfoBoxOffset;
+    private MessageBoxStackView messages;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -93,15 +94,9 @@ public class SelfScanningView extends FrameLayout {
 
         shoppingCart = project.getShoppingCart();
 
+        messages = findViewById(R.id.messages);
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
-
-        enterBarcode = findViewById(R.id.enter_barcode);
-        light = findViewById(R.id.light);
-        light.setOnClickListener(v -> {
-            setTorchEnabled(!isTorchEnabled());
-            updateTorchIcon();
-        });
 
         goToCart = findViewById(R.id.goto_cart);
         goToCart.setOnClickListener(new OneShotClickListener() {
@@ -111,11 +106,7 @@ public class SelfScanningView extends FrameLayout {
             }
         });
 
-        updateBarcodeSearchIcon();
-        updateTorchIcon();
         updateCartButton();
-
-        enterBarcode.setOnClickListener(v -> searchWithBarcode());
 
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
 
@@ -144,6 +135,11 @@ public class SelfScanningView extends FrameLayout {
 
         isInitialized = true;
         startBarcodeScanner(false);
+
+        setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT)
+        );
     }
 
     private void showShoppingCart() {
@@ -151,38 +147,6 @@ public class SelfScanningView extends FrameLayout {
         if (callback != null) {
             callback.execute(SnabbleUI.Action.SHOW_SHOPPING_CART, null);
         }
-    }
-
-    private void updateBarcodeSearchIcon() {
-        enterBarcode.setImageResource(R.drawable.snabble_ic_search);
-
-        int color = Color.argb(128, 255, 255, 255);
-        ViewCompat.setBackgroundTintList(enterBarcode, ColorStateList.valueOf(color));
-        ImageViewCompat.setImageTintList(enterBarcode, ColorStateList.valueOf(color));
-    }
-
-    private int dp2px(float dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
-    }
-
-    private void updateTorchIcon() {
-        if (barcodeScanner.isTorchEnabled()) {
-            light.setImageResource(R.drawable.snabble_ic_torch_active);
-            light.setBackgroundResource(R.drawable.snabble_ic_button_filled_48dp);
-            UIUtils.getColorByAttribute(getContext(), R.attr.colorPrimary);
-            int color = UIUtils.getColorByAttribute(getContext(), R.attr.colorPrimary);
-            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
-        } else {
-            light.setImageResource(R.drawable.snabble_ic_torch);
-            light.setBackgroundResource(R.drawable.snabble_ic_button_outlined_48dp);
-            int color = Color.argb(128, 255, 255, 255);
-            ViewCompat.setBackgroundTintList(light, ColorStateList.valueOf(color));
-            ImageViewCompat.setImageTintList(light, ColorStateList.valueOf(color));
-        }
-
-        int dp = dp2px(12);
-        light.setPadding(dp, dp, dp, dp);
     }
 
     private void updateCartButton() {
@@ -213,10 +177,10 @@ public class SelfScanningView extends FrameLayout {
                     }
                 })
                 .setOnProductNotFoundListener(() -> {
-                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                    handleCoupon(scannedCodes, getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
                 })
                 .setOnNetworkErrorListener(() -> {
-                    showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
+                    handleCoupon(scannedCodes, getResources().getString(R.string.Snabble_Scanner_networkError));
                 })
                 .setOnShelfCodeScannedListener(() -> {
                     showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
@@ -229,23 +193,51 @@ public class SelfScanningView extends FrameLayout {
                         .setCancelable(false)
                         .create()
                         .show())
-                .setOnAgeNotReachedListener(() -> {
-                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
-                            R.string.Snabble_Scanner_scannedAgeRestrictedProduct)));
-                })
-                .setOnAlreadyScannedListener(() -> {
-                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
-                            R.string.Snabble_Scanner_duplicateDepositScanned)));
-                })
+                .setOnAgeNotReachedListener(() ->
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                                R.string.Snabble_Scanner_scannedAgeRestrictedProduct))))
+                .setOnAlreadyScannedListener(() ->
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                                R.string.Snabble_Scanner_duplicateDepositScanned))))
                 .setOnNotForSaleListener(product -> {
                     if (product.getScanMessage() != null) {
                         showScanMessage(product, true);
                     } else {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_notForSale_errorMsg_scan)));
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
+                                R.string.Snabble_notForSale_errorMsg_scan)));
                     }
                 })
                 .create()
                 .resolve();
+    }
+
+    private void handleCoupon(List<ScannedCode> scannedCodes, String failureMessage) {
+        Pair<Coupon, ScannedCode> coupon = lookupCoupon(scannedCodes);
+        if (coupon == null) {
+            showWarning(failureMessage);
+        } else {
+            if (!shoppingCart.containsScannedCode(coupon.second)) {
+                shoppingCart.add(shoppingCart.newItem(coupon.first, coupon.second));
+            }
+
+            showInfo(getResources().getString(R.string.Snabble_Scanner_couponAdded, coupon.first.getName()));
+        }
+    }
+
+    private Pair<Coupon, ScannedCode> lookupCoupon(List<ScannedCode> scannedCodes) {
+        Project project = SnabbleUI.getProject();
+        for (Coupon coupon : project.getCoupons().filter(CouponType.PRINTED)){
+            for (CouponCode code : coupon.getCodes()) {
+                for (ScannedCode scannedCode : scannedCodes) {
+                    if (scannedCode.getCode().equals(code.getCode())
+                     && scannedCode.getTemplateName().equals(code.getTemplate())) {
+                        return new Pair<>(coupon, scannedCode);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes) {
@@ -270,15 +262,21 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showInfo(final String text) {
-        Dispatch.mainThread(() -> {
-            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_NEUTRAL, topDownInfoBoxOffset);
-        });
+        Dispatch.mainThread(() -> messages.show(
+                text,
+                UIUtils.getDurationByLength(text),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoColor, null),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoTextColor, null)
+                ));
     }
 
     private void showWarning(final String text) {
-        Dispatch.mainThread(() -> {
-            UIUtils.showTopDownInfoBox(SelfScanningView.this, text, UIUtils.getDurationByLength(text), UIUtils.INFO_WARNING, topDownInfoBoxOffset);
-        });
+        Dispatch.mainThread(() -> messages.show(
+                text,
+                UIUtils.getDurationByLength(text),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoColorWarning, null),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_infoTextColorWarning, null)
+        ));
     }
 
     public void setDefaultButtonVisibility(boolean visible) {
@@ -531,10 +529,6 @@ public class SelfScanningView extends FrameLayout {
 
             if (list.getAddCount() == 1) {
                 showHints();
-            }
-
-            if (item.getManualCoupon() != null) {
-                showInfo(getResources().getString(R.string.Snabble_Scanner_manualCouponAdded));
             }
         }
 

@@ -23,7 +23,6 @@ import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
 import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.Project;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.GsonHolder;
@@ -32,19 +31,23 @@ import io.snabble.sdk.utils.Utils;
 
 public class PaymentCredentials {
     public enum Type {
-        SEPA(null, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
+        SEPA(null, false, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
         // legacy credit card type, not used anymore.
-        CREDIT_CARD(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        CREDIT_CARD_PSD2(null, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYDIREKT(null, Collections.singletonList(PaymentMethod.PAYDIREKT)),
-        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD));
+        CREDIT_CARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        CREDIT_CARD_PSD2(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYDIREKT(null, false, Collections.singletonList(PaymentMethod.PAYDIREKT)),
+        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
+        DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
+        DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
 
         private String originType;
+        private boolean requiresProject;
         private List<PaymentMethod> paymentMethods;
 
-        Type(String originType, List<PaymentMethod> paymentMethods) {
+        Type(String originType, boolean requiresProject, List<PaymentMethod> paymentMethods) {
             this.originType = originType;
             this.paymentMethods = paymentMethods;
+            this.requiresProject = requiresProject;
         }
 
         public String getOriginType() {
@@ -54,13 +57,36 @@ public class PaymentCredentials {
         public List<PaymentMethod> getPaymentMethods() {
             return paymentMethods;
         }
+
+        public boolean isProjectDependantType() {
+            return requiresProject;
+        }
     }
 
     public enum Brand {
         UNKNOWN,
         VISA,
         MASTERCARD,
-        AMEX
+        AMEX,
+        TWINT,
+        POST_FINANCE_CARD;
+
+        public static Brand fromPaymentMethod(PaymentMethod paymentMethod) {
+            switch (paymentMethod) {
+                case AMEX:
+                    return AMEX;
+                case VISA:
+                    return VISA;
+                case MASTERCARD:
+                    return MASTERCARD;
+                case TWINT:
+                    return TWINT;
+                case POST_FINANCE_CARD:
+                    return POST_FINANCE_CARD;
+            }
+
+            return null;
+        }
     }
 
     private static class SepaData {
@@ -80,6 +106,12 @@ public class PaymentCredentials {
         private String clientID;
         private String customerAuthorizationURI;
         private PaydirektAuthorizationData authorizationData;
+    }
+
+    private static class DatatransData {
+        private String alias;
+        private String expiryMonth;
+        private String expiryYear;
     }
 
     public static class PaydirektAuthorizationData {
@@ -205,25 +237,33 @@ public class PaymentCredentials {
         pc.brand = brand;
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.projectId = projectId;
-
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/yyyy");
-            Date date = simpleDateFormat.parse(expirationMonth + "/" + expirationYear);
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-            pc.validTo = calendar.getTimeInMillis();
-        } catch (Exception e) {
-            return null;
-        }
+        pc.validTo = parseValidTo("MM/yyyy", expirationMonth, expirationYear);
 
         if (pc.encryptedData == null) {
             return null;
         }
 
         return pc;
+    }
+
+    private static long parseValidTo(String format, String expirationMonth, String expirationYear) {
+        if (expirationMonth == null || expirationMonth.equals("")
+         || expirationYear == null || expirationYear.equals("")) {
+            return 0;
+        }
+
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+            Date date = simpleDateFormat.parse(expirationMonth + "/" + expirationYear);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+            return calendar.getTimeInMillis();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public static PaymentCredentials fromPaydirekt(PaydirektAuthorizationData authorizationData, String customerAuthorizationURI) {
@@ -259,6 +299,55 @@ public class PaymentCredentials {
         pc.additionalData.put("deviceName", authorizationData.name);
         pc.additionalData.put("deviceFingerprint", authorizationData.fingerprint);
         pc.additionalData.put("deviceIPAddress", authorizationData.ipAddress);
+
+        if (pc.encryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
+    public static PaymentCredentials fromDatatrans(String token, Brand brand, String obfuscatedId,
+                                                   String expirationMonth, String expirationYear,
+                                                   String projectId) {
+        if (token == null) {
+            return null;
+        }
+
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
+        if (brand == Brand.TWINT || brand == Brand.POST_FINANCE_CARD) {
+            pc.type = Type.DATATRANS;
+        } else {
+            pc.type = Type.DATATRANS_CREDITCARD;
+        }
+        pc.projectId = projectId;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        pc.obfuscatedId = obfuscatedId;
+
+        DatatransData datatransData = new DatatransData();
+        datatransData.alias = token;
+
+        if (pc.type == Type.DATATRANS_CREDITCARD) {
+            datatransData.expiryMonth = expirationMonth;
+            datatransData.expiryYear = expirationYear;
+        }
+
+        String json = GsonHolder.get().toJson(datatransData, DatatransData.class);
+
+        X509Certificate certificate = certificates.get(0);
+        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.encrypt();
+        pc.signature = pc.sha256Signature(certificate);
+        pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.brand = brand;
+        pc.obfuscatedId = obfuscatedId;
+        pc.validTo = parseValidTo("MM/yy", expirationMonth, expirationYear);
 
         if (pc.encryptedData == null) {
             return null;
@@ -532,16 +621,20 @@ public class PaymentCredentials {
     public PaymentMethod getPaymentMethod() {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;
-        } else if (type == Type.CREDIT_CARD_PSD2) {
-            switch (getBrand()) {
-                case VISA: return PaymentMethod.VISA;
-                case AMEX: return PaymentMethod.AMEX;
-                case MASTERCARD: return PaymentMethod.MASTERCARD;
-            }
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.PAYDIREKT) {
             return PaymentMethod.PAYDIREKT;
+        } else if (type == Type.CREDIT_CARD_PSD2
+                || type == Type.DATATRANS
+                || type == Type.DATATRANS_CREDITCARD) {
+            switch (getBrand()) {
+                case VISA: return PaymentMethod.VISA;
+                case AMEX: return PaymentMethod.AMEX;
+                case MASTERCARD: return PaymentMethod.MASTERCARD;
+                case POST_FINANCE_CARD: return PaymentMethod.POST_FINANCE_CARD;
+                case TWINT: return PaymentMethod.TWINT;
+            }
         }
 
         return null;
