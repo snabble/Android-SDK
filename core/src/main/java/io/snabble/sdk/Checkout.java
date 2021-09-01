@@ -1,6 +1,9 @@
 package io.snabble.sdk;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ComputableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,6 +121,9 @@ public class Checkout {
 
     private final List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
     private final List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
+
+    private MutableLiveData<Checkout.State> onCheckoutStateChanged = new MutableLiveData<>();
+    private MutableLiveData<CheckoutApi.Fulfillment[]> onFulfillmentStateUpdated = new MutableLiveData<>();
 
     private State lastState = Checkout.State.NONE;
     private State state = Checkout.State.NONE;
@@ -857,6 +863,14 @@ public class Checkout {
         void onStateChanged(State state);
     }
 
+    public LiveData<State> getOnCheckoutStateChanged() {
+        return onCheckoutStateChanged;
+    }
+
+    public LiveData<CheckoutApi.Fulfillment[]> getOnFulfillmentStateUpdated() {
+        return onFulfillmentStateUpdated;
+    }
+
     public void addOnCheckoutStateChangedListener(OnCheckoutStateChangedListener listener) {
         if (!checkoutStateListeners.contains(listener)) {
             checkoutStateListeners.add(listener);
@@ -881,6 +895,8 @@ public class Checkout {
                     for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
                         checkoutStateListener.onStateChanged(state);
                     }
+
+                    onCheckoutStateChanged.setValue(state);
                 });
             }
         }
@@ -906,6 +922,12 @@ public class Checkout {
             for (OnFulfillmentUpdateListener checkoutStateListener : fulfillmentUpdateListeners) {
                 checkoutStateListener.onFulfillmentUpdated();
             }
+
+            if (checkoutProcess != null) {
+                onFulfillmentStateUpdated.setValue(checkoutProcess.fulfillments);
+            } else {
+                onFulfillmentStateUpdated.setValue(null);
+            }
         });
     }
 
@@ -913,6 +935,12 @@ public class Checkout {
         Dispatch.mainThread(() -> {
             for (OnFulfillmentUpdateListener checkoutStateListener : fulfillmentUpdateListeners) {
                 checkoutStateListener.onFulfillmentDone();
+            }
+
+            if (checkoutProcess != null) {
+                onFulfillmentStateUpdated.setValue(checkoutProcess.fulfillments);
+            } else {
+                onFulfillmentStateUpdated.setValue(null);
             }
         });
     }

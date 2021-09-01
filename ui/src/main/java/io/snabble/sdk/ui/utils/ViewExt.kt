@@ -12,6 +12,8 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -74,4 +76,22 @@ inline var View.behavior: CoordinatorLayout.Behavior<*>?
 fun TextView.setOrHide(text: CharSequence?) {
     this.isVisible = text.isNotNullOrBlank()
     this.text = text
+}
+
+fun <T> LiveData<T>.observeView(view: View, observer: Observer<T>) {
+    view.getFragmentActivity()?.let {
+        observe(it, observer)
+    }
+
+    view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View?) {
+            view.getFragmentActivity()?.let {
+                observe(it, observer)
+            }
+        }
+
+        override fun onViewDetachedFromWindow(v: View?) {
+            removeObserver(observer)
+        }
+    })
 }

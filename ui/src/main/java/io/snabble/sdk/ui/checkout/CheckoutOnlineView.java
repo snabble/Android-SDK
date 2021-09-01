@@ -193,6 +193,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 }
                 break;
             case PAYMENT_PROCESSING:
+            case PAYMENT_PROCESSING_ERROR:
                 SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
             case PAYMENT_ABORT_FAILED:
@@ -225,9 +226,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                callback.execute(SnabbleUI.Action.GO_BACK, null);
-                break;
-            case PAYMENT_PROCESSING_ERROR:
                 callback.execute(SnabbleUI.Action.GO_BACK, null);
                 break;
         }
