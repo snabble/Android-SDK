@@ -295,8 +295,6 @@ public class Events {
     }
 
     public static void logErrorEvent(String projectId, String format, Object... args) {
-        Logger.d(format, args);
-
         // since we have no error logging without a project, we try to find the project by id
         // and if no project is found we just use the first project to at least log it to something
         Project project = Snabble.getInstance().getProjectById(projectId);

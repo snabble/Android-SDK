@@ -181,7 +181,7 @@ public class PaymentCredentialsStore {
             Snabble snabble = Snabble.getInstance();
             if (snabble.getProjects().size() > 0) {
                 if (removals.size() > 0) {
-                    Events.logErrorEvent(null, "Deleted payment credentials because device is not secure anymore. Lost access to %d payment credentials", removals.size());
+                    Logger.errorEvent(null, "Deleted payment credentials because device is not secure anymore. Lost access to %d payment credentials", removals.size());
                 }
             }
         }

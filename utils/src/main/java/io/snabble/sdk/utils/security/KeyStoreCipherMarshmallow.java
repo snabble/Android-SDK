@@ -89,13 +89,10 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
             Key key = keyStore.getKey(alias, null);
             c.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
             return true;
-        } catch (KeyPermanentlyInvalidatedException e) {
-            Logger.d("KeyPermanentlyInvalidatedException: " + e.getMessage());
-            return false;
         } catch (UserNotAuthenticatedException e) {
             return true;
         } catch (Exception e) {
-            Logger.d(e.getClass().getName() + ": " + e.getMessage());
+            Logger.errorEvent("KeyStore inaccessible: " + e.getClass().getName() + ": " + e.getMessage());
             return false;
         }
     }
