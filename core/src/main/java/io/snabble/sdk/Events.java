@@ -143,15 +143,13 @@ public class Events {
             return;
         }
 
-        if (shop == null) {
-            return;
-        }
-
         Event event = new Event();
         event.type = payload.getEventType();
         event.appId = Snabble.getInstance().getClientId();
         event.project = project.getId();
-        event.shopId = shop.getId();
+        if (shop != null) {
+            event.shopId = shop.getId();
+        }
         event.timestamp = DateUtils.toRFC3339(new Date());
         event.payload = GsonHolder.get().toJsonTree(payload);
 
