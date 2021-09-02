@@ -186,7 +186,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">Kúpiť %1$d položky/položiek za %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Zaplatiť teraz</string>
     <string name="Snabble.Shoppingcart.buyProducts.one">Kúpiť %1$d položku za %2$s</string>
-    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod"/>
+    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod">Vybrať spôsob platby</string>
     <string name="Snabble.Shoppingcart.coupon">Poukážka</string>
     <string name="Snabble.Shoppingcart.coupons">Poukážky</string>
     <string name="Snabble.Shoppingcart.deposit">Záloha</string>
@@ -247,9 +247,9 @@
     <string name="Snabble.ShoppingList.Voice.title">Tip</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Nákupné zoznamy</string>
-    <string name="Snabble.Taxation.consume.inhouse">Jesť tu</string>
-    <string name="Snabble.Taxation.consume.takeaway">Zobrať so sebou</string>
-    <string name="Snabble.Taxation.consumeWhere">Budeš jesť tu, alebo zoberieš so sebou?</string>
+    <string name="Snabble.Taxation.consume.inhouse">konzumovať tu</string>
+    <string name="Snabble.Taxation.consume.takeaway">zobrať so sebou</string>
+    <string name="Snabble.Taxation.consumeWhere">Chceš svoj nákup</string>
     <string name="Snabble.Taxation.pleaseChoose">Vyber niektorú možnosť</string>
     <string name="Snabble.TWINT.payNow">Zaplatiť cez TWINT teraz</string>
     <string name="Snabble.undo">Vrátiť späť</string>
