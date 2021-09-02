@@ -8,6 +8,7 @@ import android.security.keystore.UserNotAuthenticatedException;
 
 import androidx.annotation.RequiresApi;
 
+import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.Date;
@@ -48,8 +49,6 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private boolean createKeys() {
         try {
             if (!isKeyAccessible()) {
-                keyStore.deleteEntry(alias);
-
                 KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE);
                 KeyGenParameterSpec.Builder spec = new KeyGenParameterSpec.Builder(alias,
                         KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT);
@@ -87,13 +86,16 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
         try {
             Cipher c = Cipher.getInstance(AES_MODE);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(FIXED_IV);
-            c.init(Cipher.ENCRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
+            Key key = keyStore.getKey(alias, null);
+            c.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
             return true;
         } catch (KeyPermanentlyInvalidatedException e) {
+            Logger.d("KeyPermanentlyInvalidatedException: " + e.getMessage());
             return false;
         } catch (UserNotAuthenticatedException e) {
             return true;
         } catch (Exception e) {
+            Logger.d(e.getClass().getName() + ": " + e.getMessage());
             return false;
         }
     }

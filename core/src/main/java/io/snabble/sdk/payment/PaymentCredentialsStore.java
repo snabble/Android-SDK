@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.Environment;
+import io.snabble.sdk.Events;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
@@ -180,8 +181,7 @@ public class PaymentCredentialsStore {
             Snabble snabble = Snabble.getInstance();
             if (snabble.getProjects().size() > 0) {
                 if (removals.size() > 0) {
-                    snabble.getProjects().get(0).getEvents()
-                            .log("Deleted payment credentials because device is not secure anymore. Lost access to %d payment credentials", removals.size());
+                    Events.logErrorEvent(null, "Deleted payment credentials because device is not secure anymore. Lost access to %d payment credentials", removals.size());
                 }
             }
         }

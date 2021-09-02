@@ -22,6 +22,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
+import io.snabble.sdk.Events;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
@@ -567,11 +568,13 @@ public class PaymentCredentials {
         if (type == Type.CREDIT_CARD_PSD2) {
             Date date = new Date(validTo);
             if (date.getTime() < System.currentTimeMillis()) {
+                Events.logErrorEvent(null, "removing payment credentials: expired");
                 return false;
             }
         }
 
         if (type == Type.CREDIT_CARD) {
+            Events.logErrorEvent(null, "removing payment credentials: old credit card type");
             return false;
         }
 
@@ -582,6 +585,7 @@ public class PaymentCredentials {
             }
         }
 
+        Events.logErrorEvent(null, "removing payment credentials: different gateway certificate signature");
         return false;
     }
 
