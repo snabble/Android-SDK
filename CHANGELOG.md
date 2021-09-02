@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ### Updated
 - Updated compile and target sdk to 31
+- Updated translations
+- Updated dependencies
 
 ### Added
 - Added various error logs 
