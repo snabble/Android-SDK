@@ -73,13 +73,15 @@ open class PaymentStatusView @JvmOverloads constructor(
         }
 
         checkout.checkoutProcess?.exitToken?.let {
-            val format = BarcodeFormat.parse(it.format)
-            if (format != null) {
-                exitTokenItem.isVisible = true
-                exitTokenItem.state = PaymentStatusItemView.State.SUCCESS
-                exitTokenItem.setBarcode(it.value, format)
-            } else {
-                exitTokenItem.isVisible = false
+            if (it.format != null) {
+                val format = BarcodeFormat.parse(it.format)
+                if (format != null) {
+                    exitTokenItem.isVisible = true
+                    exitTokenItem.state = PaymentStatusItemView.State.SUCCESS
+                    exitTokenItem.setBarcode(it.value, format)
+                } else {
+                    exitTokenItem.isVisible = false
+                }
             }
         }
 
