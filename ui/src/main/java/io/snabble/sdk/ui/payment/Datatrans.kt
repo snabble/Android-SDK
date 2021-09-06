@@ -51,6 +51,7 @@ class Datatrans {
         fun registerCard(activity: FragmentActivity, project: Project, paymentMethod: PaymentMethod) {
             val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
             if (descriptor == null) {
+                project.events.logError("Datatrans Error: No payment descriptor")
                 Logger.e("Datatrans error: No payment method descriptor for $paymentMethod")
 
                 Dispatch.mainThread {
@@ -61,6 +62,7 @@ class Datatrans {
 
             val url = descriptor.links?.get("tokenization")
             if (url == null) {
+                project.events.logError("Datatrans Error: No tokenization url")
                 Logger.e("Datatrans error: No tokenization url")
 
                 Dispatch.mainThread {
@@ -87,7 +89,8 @@ class Datatrans {
                         showError(activity, paymentMethod)
                     }
 
-                    Logger.e("Datatrans error: ${t?.message}")
+                    project.events.logError("Datatrans Tokenization Error: " + t?.message)
+                    Logger.e("Datatrans Tokenization Error: ${t?.message}")
                 }
             })
         }

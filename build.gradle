@@ -31,12 +31,12 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.48.0'
+        sdkVersion='0.48.1'
         versionCode=1
 
-        compileSdkVersion=30
+        compileSdkVersion=31
         minSdkVersion=21
-        targetSdkVersion=30
+        targetSdkVersion=31
 
         buildToolsVersion='30.0.2'
         okhttpVersion='4.9.1'

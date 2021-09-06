@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.48.1]
+
+### Updated
+- Updated compile and target sdk to 31
+- Updated translations
+- Updated dependencies
+
+### Added
+- Added various error logs 
+
 ## [0.48.0]
 
 ### Changes

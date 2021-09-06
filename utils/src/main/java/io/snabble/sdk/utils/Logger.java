@@ -13,6 +13,7 @@ public class Logger {
     private static final int CALL_STACK_INDEX = 2;
 
     private static boolean isEnabled = BuildConfig.DEBUG;
+    private static ErrorEventHandler errorEventHandler = null;
 
     public static void setEnabled(boolean enable) {
         isEnabled = enable;
@@ -83,6 +84,21 @@ public class Logger {
             } catch(Exception e) {
                 // ignore any possible errors while formatting the string
             }
+        }
+    }
+
+    public interface ErrorEventHandler {
+        void logErrorEvent(String message, Object... args);
+    }
+
+    public static void setErrorEventHandler(ErrorEventHandler e) {
+        errorEventHandler = e;
+    }
+
+    public static void errorEvent(String message, Object... args) {
+        ErrorEventHandler e = errorEventHandler;
+        if (e != null) {
+            e.logErrorEvent(message, args);
         }
     }
 }

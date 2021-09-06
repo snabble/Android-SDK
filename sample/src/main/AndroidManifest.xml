@@ -15,7 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/SnabbleTheme"
         android:supportsRtl="true">
-        <activity android:name="io.snabble.testapp.MainActivity"
+        <activity
+            android:exported="true"
+            android:name="io.snabble.testapp.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

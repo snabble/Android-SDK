@@ -86,6 +86,8 @@ public class Snabble {
         this.application = app;
         this.config = config;
 
+        Logger.setErrorEventHandler((message, args) -> Events.logErrorEvent(null, message, args));
+
         if (config.appId == null || config.secret == null) {
             setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
             return;
