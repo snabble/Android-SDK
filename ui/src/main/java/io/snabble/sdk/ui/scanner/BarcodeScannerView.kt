@@ -233,7 +233,9 @@ open class BarcodeScannerView @JvmOverloads constructor(
                 || image.format == ImageFormat.YUV_422_888
                 || image.format == ImageFormat.YUV_444_888
                 && image.planes.size == 3) {
-            val luminanceBytes = image.planes[0].buffer // Y plane of a YUV buffer
+            val luminanceImagePlane = image.planes.first()
+            val luminanceBytes = luminanceImagePlane.buffer // Y plane of a YUV buffer
+            val rowStride = luminanceImagePlane.rowStride
             val rect = if (scanIndicatorView.visibility == View.VISIBLE && restrictScanningToIndicator) {
                 val height = image.height / 3
                 val top = (image.height / 2) - height
@@ -244,8 +246,14 @@ open class BarcodeScannerView @JvmOverloads constructor(
             }
 
             previewView.display?.rotation?.let { rotation ->
+                // Use the rowStride instead of the width to avoid analysis errors by ignoring the
+                // attentional bytes at the end of each row. On one device we had a diff of 32 bytes
+                // per row and the last image line has those 32 bytes missing. Since the last image
+                // line should not contain any useful data we will just skip it to avoid accessing
+                // the last 32 bytes which causes some out of bounds exceptions.
+                // See also https://issuetracker.google.com/issues/134740191
                 val barcode = barcodeDetector.detect(luminanceBytes.toByteArray(),
-                        image.width, image.height, 8, rect, rotation)
+                        rowStride, image.height - 1, 8, rect, rotation)
 
                 if (barcode != null) {
                     Dispatch.mainThread {
