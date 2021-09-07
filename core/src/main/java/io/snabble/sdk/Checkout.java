@@ -624,9 +624,9 @@ public class Checkout {
                 || checkoutProcess.paymentState == CheckoutApi.State.UNAUTHORIZED) {
             if (hasAnyFulfillmentFailed()) {
                 checkoutApi.abort(checkoutProcess, null);
-                notifyStateChanged(State.PAYMENT_ABORTED);
+                notifyStateChanged(State.PAYMENT_PROCESSING);
                 notifyFulfillmentDone();
-                return true;
+                return false;
             }
 
             if (!runChecks(checkoutProcess)) {

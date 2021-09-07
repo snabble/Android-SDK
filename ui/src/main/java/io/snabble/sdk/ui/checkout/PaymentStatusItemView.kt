@@ -24,6 +24,7 @@ open class PaymentStatusItemView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     enum class State {
+        NOT_EXECUTED,
         IN_PROGRESS,
         SUCCESS,
         FAILED
@@ -31,7 +32,7 @@ open class PaymentStatusItemView @JvmOverloads constructor(
 
     private val titleView: TextView
     private val contentLayout: LinearLayout
-    private val progress: CircularProgressIndicator
+    private val progress: ProgressBar
     private val image: ImageView
     private var text: TextView
     private var action: Button
@@ -53,18 +54,23 @@ open class PaymentStatusItemView @JvmOverloads constructor(
             field = value
 
             when (value) {
+                State.NOT_EXECUTED -> {
+                    image.visibility = View.VISIBLE
+                    image.setImageResource(R.drawable.snabble_ic_payment_notdone)
+                    progress.visibility = View.GONE
+                }
                 State.IN_PROGRESS -> {
                     image.visibility = View.GONE
                     progress.visibility = View.VISIBLE
                 }
                 State.SUCCESS -> {
                     image.visibility = View.VISIBLE
-                    image.setImageResource(R.drawable.snabble_ic_success)
+                    image.setImageResource(R.drawable.snabble_ic_payment_success)
                     progress.visibility = View.GONE
                 }
                 State.FAILED -> {
                     image.visibility = View.VISIBLE
-                    image.setImageResource(R.drawable.snabble_ic_fail)
+                    image.setImageResource(R.drawable.snabble_ic_payment_error)
                     progress.visibility = View.GONE
                 }
             }

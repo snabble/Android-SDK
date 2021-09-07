@@ -5,27 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
-    <RelativeLayout android:id="@+id/root"
+    <LinearLayout android:id="@+id/root"
+        android:weightSum="100"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipChildren="false"
-        android:clipToPadding="false"
-        tools:parentTag="android.widget.RelativeLayout">
+        android:clipToPadding="false">
 
         <FrameLayout
             android:id="@+id/header"
-            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/image"
@@ -33,6 +26,14 @@
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
                 android:src="@drawable/snabble_ic_success" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                tools:visibility="visible" />
         </FrameLayout>
 
         <TextView
@@ -40,13 +41,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/header"
+            android:layout_gravity="center_horizontal"
             android:padding="16dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            tools:text="@string/Snabble.PaymentStatus.Title.inProgress" />
+            android:text="@string/Snabble.PaymentStatus.Title.inProgress" />
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/status_container_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipChildren="false"
@@ -99,15 +100,13 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/back"
             android:layout_width="match_parent"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="12dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             android:text="@string/Snabble.PaymentStatus.close" />
-    </RelativeLayout>
+    </LinearLayout>
 </ScrollView>

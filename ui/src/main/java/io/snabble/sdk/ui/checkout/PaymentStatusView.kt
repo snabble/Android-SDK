@@ -16,6 +16,7 @@ import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.utils.Dispatch
 import android.os.Bundle
 import android.widget.RelativeLayout
+import android.widget.ScrollView
 import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.utils.executeUiAction
 
@@ -23,7 +24,7 @@ import io.snabble.sdk.ui.utils.executeUiAction
 @Suppress("LeakingThis")
 open class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : RelativeLayout(context, attrs, defStyleAttr),
+) : ScrollView(context, attrs, defStyleAttr),
     LifecycleObserver {
 
     private var isStopped: Boolean = false
@@ -47,6 +48,11 @@ open class PaymentStatusView @JvmOverloads constructor(
         }
 
         getFragmentActivity()?.lifecycle?.addObserver(this)
+
+        binding.back.isEnabled = false
+        binding.back.setOnClickListener {
+            executeUiAction(SnabbleUI.Action.GO_BACK, null)
+        }
     }
 
     private fun onStateChanged(state: Checkout.State?) {
@@ -62,8 +68,13 @@ open class PaymentStatusView @JvmOverloads constructor(
                 binding.payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
             Checkout.State.PAYMENT_APPROVED -> {
+                binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_success)
+                binding.image.setImageResource(R.drawable.snabble_ic_success)
+                binding.image.isVisible = true
+                binding.progress.isVisible = false
                 binding.payment.state = PaymentStatusItemView.State.SUCCESS
                 startPollingForReceipts(checkout.checkoutProcess?.orderId)
+                binding.back.isEnabled = true
             }
             // TODO: be more explicit with the error handling - more detailed messages
             Checkout.State.PAYMENT_PROCESSING_ERROR,
@@ -76,7 +87,12 @@ open class PaymentStatusView @JvmOverloads constructor(
                 binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain), {
                     executeUiAction(SnabbleUI.Action.GO_BACK, null)
                 })
-                binding.receipt.state = PaymentStatusItemView.State.FAILED // TODO indeterminate
+                binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
+                binding.image.isVisible = true
+                binding.image.setImageResource(R.drawable.snabble_ic_fail)
+                binding.progress.isVisible = false
+                binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
+                binding.back.isEnabled = true
             }
             else -> {
                 executeUiAction(SnabbleUI.Action.GO_BACK, null)
@@ -148,12 +164,18 @@ open class PaymentStatusView @JvmOverloads constructor(
         tobaccolandEWA?.let {
             if (it.state.isOpen) {
                 binding.fulfillment.isVisible = true
+                binding.fulfillment.setText("")
+                binding.fulfillment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                 binding.fulfillment.state = PaymentStatusItemView.State.IN_PROGRESS
             } else if (it.state.isFailure) {
                 binding.fulfillment.isVisible = true
+                binding.fulfillment.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_error))
+                binding.fulfillment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                 binding.fulfillment.state = PaymentStatusItemView.State.FAILED
             } else if (it.state.isClosed) {
                 binding.fulfillment.isVisible = true
+                binding.fulfillment.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_message))
+                binding.fulfillment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                 binding.fulfillment.state = PaymentStatusItemView.State.SUCCESS
             }
         }

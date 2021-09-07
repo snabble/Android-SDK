@@ -303,7 +303,8 @@ class CheckoutBar @JvmOverloads constructor(
             CheckoutHelper.displayPaymentView(UIUtils.getHostFragmentActivity(context), project.checkout)
             progressDialog.dismiss()
         } else if (state == Checkout.State.PAYMENT_PROCESSING) {
-            progressDialog.showAfterDelay(300)
+            Telemetry.event(Telemetry.Event.CheckoutSuccessful)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
         } else if (state == Checkout.State.PAYMENT_APPROVED) {
             Telemetry.event(Telemetry.Event.CheckoutSuccessful)
             SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
