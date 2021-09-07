@@ -137,15 +137,16 @@ open class BarcodeScannerView @JvmOverloads constructor(
                     .build()
 
             this.preview = Preview.Builder()
-                    .setTargetResolution(Size(768, 1024))
+                    .setTargetResolution(Size(720, 1280))
                     .setTargetRotation(rotation)
                     .build()
 
             val imageAnalyzer = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(768, 1024))
+                    .setTargetResolution(Size(720, 1280))
                     .setTargetRotation(rotation)
                     .setImageQueueDepth(1)
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
                     .build()
                     .also {
                         cameraExecutor?.let { exec ->
