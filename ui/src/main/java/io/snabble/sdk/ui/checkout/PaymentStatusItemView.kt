@@ -9,6 +9,7 @@ import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import io.snabble.sdk.BarcodeFormat
 import io.snabble.sdk.Checkout
 import io.snabble.sdk.Project
@@ -28,14 +29,12 @@ open class PaymentStatusItemView @JvmOverloads constructor(
         FAILED
     }
 
-
     private val titleView: TextView
     private val contentLayout: LinearLayout
-    private val progress: ProgressBar
+    private val progress: CircularProgressIndicator
     private val image: ImageView
     private var text: TextView
     private var action: Button
-    private var barcode: BarcodeView
 
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status_item, this)
@@ -47,7 +46,6 @@ open class PaymentStatusItemView @JvmOverloads constructor(
         image = findViewById(R.id.image)
         text = findViewById(R.id.text)
         action = findViewById(R.id.action)
-        barcode = findViewById(R.id.barcode)
     }
 
     var state = State.IN_PROGRESS
@@ -73,7 +71,12 @@ open class PaymentStatusItemView @JvmOverloads constructor(
         }
 
     fun setTitle(title: String?) {
-        titleView.text = title
+        if (title == null) {
+            titleView.visibility = View.GONE
+        } else {
+            titleView.visibility = View.VISIBLE
+            titleView.text = title
+        }
     }
 
     fun setText(t: String?) {
@@ -92,16 +95,6 @@ open class PaymentStatusItemView @JvmOverloads constructor(
             action.setOnClickListener(onClickListener)
         } else {
             action.isVisible = false
-        }
-    }
-
-    fun setBarcode(text: String?, barcodeFormat: BarcodeFormat?) {
-        if (text == null || barcodeFormat == null) {
-            barcode.visibility = View.GONE
-        } else {
-            barcode.visibility = View.VISIBLE
-            barcode.setText(text)
-            barcode.setFormat(barcodeFormat)
         }
     }
 }

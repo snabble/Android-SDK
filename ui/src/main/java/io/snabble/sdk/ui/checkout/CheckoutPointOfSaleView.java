@@ -153,6 +153,11 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
                 SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
+            case PAYMENT_PROCESSING:
+            case PAYMENT_PROCESSING_ERROR:
+            case DENIED_TOO_YOUNG:
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
+                break;
         }
 
         currentState = state;

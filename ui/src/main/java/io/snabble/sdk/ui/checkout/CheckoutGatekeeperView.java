@@ -214,6 +214,10 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
                 SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
+            case PAYMENT_PROCESSING_ERROR:
+            case DENIED_TOO_YOUNG:
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
+                break;
         }
 
         currentState = state;

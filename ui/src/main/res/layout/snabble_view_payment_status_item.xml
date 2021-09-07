@@ -10,11 +10,11 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_margin="16dp">
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </ProgressBar>
+        </com.google.android.material.progressindicator.CircularProgressIndicator>
 
         <ImageView
             android:id="@+id/image"
@@ -30,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
         android:orientation="vertical">
 
         <TextView
@@ -65,17 +66,5 @@
             android:visibility="gone"
             tools:visibility="visible"
             tools:text="Erneut versuchen" />
-
-        <io.snabble.sdk.ui.scanner.BarcodeView
-            android:id="@+id/barcode"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:visibility="gone"
-            tools:visibility="visible">
-        </io.snabble.sdk.ui.scanner.BarcodeView>
     </LinearLayout>
 </merge>
