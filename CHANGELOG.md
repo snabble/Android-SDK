@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.48.2]
+
+### Fixed
+- Fix scanner which was not working on some devices
+
 ## [0.48.1]
 
 ### Updated
