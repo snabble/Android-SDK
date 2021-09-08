@@ -1,7 +1,6 @@
 package io.snabble.sdk;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ComputableLiveData;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -394,7 +393,7 @@ public class Checkout {
                         rawCheckoutProcess = rawResponse;
 
                         if (!handleProcessResponse()) {
-                            boolean allChecksOk = runChecks(checkoutProcessResponse);
+                            boolean allChecksOk = areAllChecksSucceeded(checkoutProcessResponse);
 
                             if (allChecksOk) {
                                 if (checkoutProcessResponse.paymentState == CheckoutApi.State.PROCESSING) {
@@ -402,8 +401,12 @@ public class Checkout {
                                     notifyStateChanged(Checkout.State.PAYMENT_PROCESSING);
                                 } else {
                                     Logger.d("Waiting for approval...");
-                                    notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
+                                    if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
+                                        notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
+                                    }
                                 }
+                            } else {
+                                notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
                             }
 
                             if (!paymentMethod.isOfflineMethod()) {
@@ -445,17 +448,17 @@ public class Checkout {
         });
     }
 
-    private boolean runChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+    private boolean areAllChecksSucceeded(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
         boolean allChecksOk = true;
 
         if (checkoutProcessResponse.checks != null) {
             for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
-                if (check.type == null || check.state == null) {
-                    continue;
-                }
-
                 if (check.state == CheckoutApi.State.FAILED) {
                     return false;
+                }
+
+                if (check.type == null) {
+                    continue;
                 }
 
                 if (check.performedBy == CheckoutApi.Performer.APP) {
@@ -484,6 +487,18 @@ public class Checkout {
         }
 
         return allChecksOk;
+    }
+
+    private boolean hasStillPendingChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+        if (checkoutProcessResponse.checks != null) {
+            for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
+                if (check.state == CheckoutApi.State.PENDING) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private boolean areAllFulfillmentsClosed() {
@@ -570,6 +585,7 @@ public class Checkout {
         });
 
         if (state == Checkout.State.WAIT_FOR_APPROVAL
+                || state == State.VERIFYING_PAYMENT_METHOD
                 || state == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
                 || state == Checkout.State.PAYMENT_PROCESSING
                 || (state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
@@ -629,7 +645,11 @@ public class Checkout {
                 return false;
             }
 
-            if (!runChecks(checkoutProcess)) {
+            if (hasStillPendingChecks(checkoutProcess)) {
+                notifyStateChanged(State.WAIT_FOR_APPROVAL);
+            }
+
+            if (!areAllChecksSucceeded(checkoutProcess)) {
                 Logger.d("Payment denied by supervisor");
                 shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
@@ -892,11 +912,13 @@ public class Checkout {
                 this.state = state;
 
                 Dispatch.mainThread(() -> {
+                    Logger.d("ddd notifyStateChanged " + state);
+
+                    onCheckoutStateChanged.setValue(state);
+
                     for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
                         checkoutStateListener.onStateChanged(state);
                     }
-
-                    onCheckoutStateChanged.setValue(state);
                 });
             }
         }

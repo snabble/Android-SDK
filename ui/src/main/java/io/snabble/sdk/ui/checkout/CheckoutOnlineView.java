@@ -197,6 +197,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             case DENIED_BY_PAYMENT_PROVIDER:
             case DENIED_BY_SUPERVISOR:
             case DENIED_TOO_YOUNG:
+            case REQUEST_PAYMENT_AUTHORIZATION_TOKEN:
                 SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
             case PAYMENT_ABORT_FAILED:
@@ -213,19 +214,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                         .setCancelable(false)
                         .create()
                         .show();
-                break;
-            case REQUEST_PAYMENT_AUTHORIZATION_TOKEN:
-                int price = checkout.getVerifiedOnlinePrice();
-                if (price != -1) {
-                    GooglePayHelper googlePayHelper = project.getGooglePayHelper();
-                    if (googlePayHelper != null) {
-                        project.getGooglePayHelper().requestPayment(price);
-                    } else {
-                        abort();
-                    }
-                } else {
-                    abort();
-                }
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);

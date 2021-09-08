@@ -21,6 +21,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.utils.executeUiAction
+import io.snabble.sdk.utils.Logger
 
 
 @Suppress("LeakingThis")
@@ -65,6 +66,7 @@ open class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun onStateChanged(state: Checkout.State?) {
+        Logger.d("ddd onStateChanged " + state)
         binding.payment.isVisible = true
         binding.payment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Payment_title))
 
@@ -105,6 +107,19 @@ open class PaymentStatusView @JvmOverloads constructor(
                 binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 binding.back.isEnabled = true
                 backPressedCallback.isEnabled = false
+            }
+            Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
+                val price = checkout.verifiedOnlinePrice;
+                if (price != -1) {
+                    val googlePayHelper = project.googlePayHelper
+                    if (googlePayHelper != null) {
+                        googlePayHelper.requestPayment(price)
+                    } else {
+                        checkout.abort()
+                    }
+                } else {
+                    checkout.abort()
+                }
             }
         }
 
