@@ -63,7 +63,7 @@ public class FirebaseBarcodeDetector implements BarcodeDetector {
     public io.snabble.sdk.ui.scanner.Barcode detect(byte[] data, int width, int height, int bitsPerPixel, Rect detectionRect, int displayOrientation) {
         byte[] buf = crop(data, width, height, bitsPerPixel, detectionRect);
 
-        InputImage inputImage = InputImage.fromByteArray(data, width, height, displayOrientation, InputImage.IMAGE_FORMAT_NV21);
+        InputImage inputImage = InputImage.fromByteArray(buf, width, height, displayOrientation, InputImage.IMAGE_FORMAT_NV21);
 
         Task<List<Barcode>> result = detector.process(inputImage);
 
