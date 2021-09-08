@@ -17,6 +17,8 @@ import io.snabble.sdk.utils.Dispatch
 import android.os.Bundle
 import android.widget.RelativeLayout
 import android.widget.ScrollView
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.utils.executeUiAction
 
@@ -32,6 +34,11 @@ open class PaymentStatusView @JvmOverloads constructor(
     private var checkout: Checkout
 
     private val binding: SnabbleViewPaymentStatusBinding
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+
+        }
+    }
 
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
@@ -47,11 +54,13 @@ open class PaymentStatusView @JvmOverloads constructor(
             onFulfillmentStateChanged(it)
         }
 
-        getFragmentActivity()?.lifecycle?.addObserver(this)
+        val activity = getFragmentActivity()
+        activity?.lifecycle?.addObserver(this)
+        activity?.onBackPressedDispatcher?.addCallback(backPressedCallback)
 
         binding.back.isEnabled = false
         binding.back.setOnClickListener {
-            executeUiAction(SnabbleUI.Action.GO_BACK, null)
+            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_DONE, null)
         }
     }
 
@@ -64,17 +73,19 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.receipt.state = PaymentStatusItemView.State.IN_PROGRESS
 
         when (state) {
-            Checkout.State.PAYMENT_PROCESSING -> {
+            Checkout.State.PAYMENT_PROCESSING,
+            Checkout.State.VERIFYING_PAYMENT_METHOD -> {
                 binding.payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
             Checkout.State.PAYMENT_APPROVED -> {
                 binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_success)
-                binding.image.setImageResource(R.drawable.snabble_ic_success)
+                binding.image.setImageResource(R.drawable.snabble_ic_payment_success_big)
                 binding.image.isVisible = true
                 binding.progress.isVisible = false
                 binding.payment.state = PaymentStatusItemView.State.SUCCESS
                 startPollingForReceipts(checkout.checkoutProcess?.orderId)
                 binding.back.isEnabled = true
+                backPressedCallback.isEnabled = false
             }
             // TODO: be more explicit with the error handling - more detailed messages
             Checkout.State.PAYMENT_PROCESSING_ERROR,
@@ -84,18 +95,16 @@ open class PaymentStatusView @JvmOverloads constructor(
             Checkout.State.PAYMENT_ABORTED -> {
                 binding.payment.state = PaymentStatusItemView.State.FAILED
                 binding.payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
-                binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain), {
+                binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
                     executeUiAction(SnabbleUI.Action.GO_BACK, null)
-                })
+                }
                 binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
                 binding.image.isVisible = true
-                binding.image.setImageResource(R.drawable.snabble_ic_fail)
+                binding.image.setImageResource(R.drawable.snabble_ic_payment_error_big)
                 binding.progress.isVisible = false
                 binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 binding.back.isEnabled = true
-            }
-            else -> {
-                executeUiAction(SnabbleUI.Action.GO_BACK, null)
+                backPressedCallback.isEnabled = false
             }
         }
 
@@ -117,7 +126,7 @@ open class PaymentStatusView @JvmOverloads constructor(
             }
         }
 
-        binding.statusContainer.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        binding.statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
