@@ -206,34 +206,6 @@ public class UserPreferences {
         return sharedPreferences.getString(SHARED_PREFERENCES_CONSENT_VERSION, null);
     }
 
-    /**
-     * Enables keyguard authentication for online payment using user credentials.
-     * Requires the user to have a PIN, Fingerprint or other security locks.
-     *
-     * Payment credentials will then be securely stored using a generated key
-     * using the Android KeyStore API.
-     *
-     * Removing the secure lock will cause the keys to be wiped and rendering the
-     * stored payment credentials useless.
-     *
-     * Only supported for Android >= 4.3. For earlier Android versions the credentials will only
-     * be stored using asynchronous RSA.
-     *
-     */
-    public void setRequireKeyguardAuthenticationForPayment(boolean enabled) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            sharedPreferences.edit().putBoolean(SHARED_PREFERENCES_USE_KEYGUARD, enabled).apply();
-        }
-    }
-
-    public boolean isRequiringKeyguardAuthenticationForPayment() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            return sharedPreferences.getBoolean(SHARED_PREFERENCES_USE_KEYGUARD, false);
-        }
-
-        return false;
-    }
-
     public void addOnNewAppUserListener(OnNewAppUserListener onNewAppUserListener) {
         if (!onNewAppUserListeners.contains(onNewAppUserListener)) {
             onNewAppUserListeners.add(onNewAppUserListener);

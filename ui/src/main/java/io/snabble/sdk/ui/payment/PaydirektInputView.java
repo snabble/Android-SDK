@@ -222,25 +222,21 @@ public class PaydirektInputView extends FrameLayout {
     }
 
     private void authenticateAndSave() {
-        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                @Override
-                public void success() {
-                    save();
-                }
+        Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
+            @Override
+            public void success() {
+                save();
+            }
 
-                @Override
-                public void error() {
-                    if (isShown()) {
-                        finish();
-                    } else {
-                        acceptedKeyguard = true;
-                    }
+            @Override
+            public void error() {
+                if (isShown()) {
+                    finish();
+                } else {
+                    acceptedKeyguard = true;
                 }
-            });
-        } else {
-            save();
-        }
+            }
+        });
     }
 
     private void save() {

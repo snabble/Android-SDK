@@ -95,9 +95,6 @@ public class App extends Application {
                 // we invent one here
                 project.setCustomerCardId("2206467131013");
 
-                // if you want to force keyguard authentication before online payment
-                snabble.getUserPreferences().setRequireKeyguardAuthenticationForPayment(true);
-
                 // optional: preload assets
                 project.getAssets().update();
 

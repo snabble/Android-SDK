@@ -243,25 +243,21 @@ public class CreditCardInputView extends FrameLayout {
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
         cancelPreAuth(creditCardInfo);
 
-        if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-            Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                @Override
-                public void success() {
-                    save(creditCardInfo);
-                }
+        Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
+            @Override
+            public void success() {
+                save(creditCardInfo);
+            }
 
-                @Override
-                public void error() {
-                    if (isShown()) {
-                        finish();
-                    } else {
-                        acceptedKeyguard = true;
-                    }
+            @Override
+            public void error() {
+                if (isShown()) {
+                    finish();
+                } else {
+                    acceptedKeyguard = true;
                 }
-            });
-        } else {
-            save(creditCardInfo);
-        }
+            }
+        });
     }
 
     private void save(CreditCardInfo info) {

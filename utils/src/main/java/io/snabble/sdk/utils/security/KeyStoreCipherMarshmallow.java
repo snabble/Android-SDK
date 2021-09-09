@@ -17,6 +17,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 
@@ -133,7 +134,7 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
             c.init(Cipher.ENCRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
             return c.doFinal(input);
         } catch (KeyPermanentlyInvalidatedException e) {
-            Logger.e("Key permanently invalidated");
+            Logger.errorEvent("Key permanently invalidated " + e.getClass().getName() + ": " + e.getMessage());
         } catch (Exception e) {
             Logger.e("Could not encrypt data: %s", e.getMessage());
         }
@@ -148,7 +149,7 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
             c.init(Cipher.DECRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
             return c.doFinal(encrypted);
         } catch (KeyPermanentlyInvalidatedException e) {
-            Logger.e("Key permanently invalidated");
+            Logger.errorEvent("Key permanently invalidated " + e.getClass().getName() + ": " + e.getMessage());
         } catch (Exception e) {
             Logger.e("Could not decrypt data: %s", e.getMessage());
         }

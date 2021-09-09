@@ -62,32 +62,27 @@ public class PaymentCredentialsStore {
     @SuppressLint("NewApi")
     private void initializeKeyStore() {
         if (keyStoreCipher == null) {
-            Snabble snabble = Snabble.getInstance();
-
-            // KeyStore is not available on Android < 4.3
-            if (userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
-                keyStoreCipher = KeyStoreCipher.create(snabble.getApplication(), "SnabblePaymentCredentialsStore", true);
-            }
+            keyStoreCipher = KeyStoreCipher.create(Snabble.getInstance().getApplication(), "SnabblePaymentCredentialsStore", true);
         }
     }
 
     private void ensureKeyStoreIsAccessible() {
         initializeKeyStore();
 
-        if (keyStoreCipher != null) {
-            keyStoreCipher.validate();
+        keyStoreCipher.validate();
 
-            String id = keyStoreCipher.id();
-            if (id == null) {
-                keyStoreCipher = null;
-                return;
-            }
+        String id = keyStoreCipher.id();
+        if (id == null) {
+            Logger.errorEvent("Keystore has no id!");
+            keyStoreCipher = null;
+            return;
+        }
 
-            if (!id.equals(data.id)) {
-                data.id = keyStoreCipher.id();
-                data.isKeyguarded = true;
-                removeInvalidCredentials();
-            }
+        if (!id.equals(data.id)) {
+            data.id = keyStoreCipher.id();
+            data.isKeyguarded = true;
+            Logger.errorEvent("Removing payment credentials, because key store id differs");
+            removeInvalidCredentials();
         }
 
         Context context = Snabble.getInstance().getApplication();
@@ -103,7 +98,8 @@ public class PaymentCredentialsStore {
             }
         }
 
-        if (!secure || data.isKeyguarded != userPreferences.isRequiringKeyguardAuthenticationForPayment()) {
+        if (!secure) {
+            Logger.errorEvent("Removing payment credentials, because device is not secure. KeyguardManager is " + (keyguardManager != null ? "not null" : "null"));
             removeInvalidCredentials();
         }
     }
@@ -211,7 +207,7 @@ public class PaymentCredentialsStore {
             try {
                 data = gson.fromJson(json, Data.class);
             } catch (Exception e) {
-                Logger.e("Could not read payment credentials: %s", e.getMessage());
+                Logger.errorEvent("Could not read payment credentials: %s", e.getMessage());
             }
 
             if (data.credentialsList == null) {
