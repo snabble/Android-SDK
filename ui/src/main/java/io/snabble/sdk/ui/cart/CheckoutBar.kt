@@ -311,7 +311,6 @@ class CheckoutBar @JvmOverloads constructor(
             } else {
                 project.checkout.abort()
             }
-            progressDialog.dismiss()
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
             CheckoutHelper.displayPaymentView(UIUtils.getHostFragmentActivity(context), project.checkout)
             progressDialog.dismiss()

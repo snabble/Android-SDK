@@ -41,11 +41,18 @@ open class PaymentStatusView @JvmOverloads constructor(
         }
     }
 
+    private var lastState: Checkout.State? = null
+
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
         project = SnabbleUI.getProject()
         checkout = project.checkout
         binding = SnabbleViewPaymentStatusBinding.bind(this)
+
+        binding.back.isEnabled = false
+        binding.back.setOnClickListener {
+            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_DONE, null)
+        }
 
         checkout.onCheckoutStateChanged.observeView(this) {
             onStateChanged(it)
@@ -58,15 +65,16 @@ open class PaymentStatusView @JvmOverloads constructor(
         val activity = getFragmentActivity()
         activity?.lifecycle?.addObserver(this)
         activity?.onBackPressedDispatcher?.addCallback(backPressedCallback)
-
-        binding.back.isEnabled = false
-        binding.back.setOnClickListener {
-            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_DONE, null)
-        }
     }
 
     private fun onStateChanged(state: Checkout.State?) {
-        Logger.d("ddd onStateChanged " + state)
+        if (lastState == state) {
+            return
+        }
+
+        lastState = state
+        
+        Logger.d("ddd onStateChanged " + state + ", " + System.identityHashCode(this))
         binding.payment.isVisible = true
         binding.payment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Payment_title))
 
