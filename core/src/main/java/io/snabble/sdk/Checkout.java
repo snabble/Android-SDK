@@ -912,8 +912,6 @@ public class Checkout {
                 this.state = state;
 
                 Dispatch.mainThread(() -> {
-                    Logger.d("ddd notifyStateChanged " + state);
-
                     onCheckoutStateChanged.setValue(state);
 
                     for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {

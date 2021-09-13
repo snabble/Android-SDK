@@ -73,8 +73,7 @@ open class PaymentStatusView @JvmOverloads constructor(
         }
 
         lastState = state
-        
-        Logger.d("ddd onStateChanged " + state + ", " + System.identityHashCode(this))
+
         binding.payment.isVisible = true
         binding.payment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Payment_title))
 

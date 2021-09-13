@@ -157,7 +157,6 @@ class GooglePayHelper(
     }
 
     fun requestPayment(priceToPay: Int): Boolean {
-        Logger.d("ddd requestPayment")
         val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
         val intent = Intent(context, GooglePayHelperActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
