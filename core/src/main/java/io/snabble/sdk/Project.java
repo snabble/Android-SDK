@@ -578,6 +578,13 @@ public class Project {
         }
     }
 
+    public void logEvent(String format, Object... args) {
+        if (events != null) {
+            Logger.e(format, args);
+            events.log(format, args);
+        }
+    }
+
     /**
      * Sets the customer card number for user identification with the backend.
      */

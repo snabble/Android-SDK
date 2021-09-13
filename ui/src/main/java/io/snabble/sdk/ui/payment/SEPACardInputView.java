@@ -258,28 +258,24 @@ public class SEPACardInputView extends FrameLayout {
         }
 
         if (ok) {
-            if (Snabble.getInstance().getUserPreferences().isRequiringKeyguardAuthenticationForPayment()) {
-                if (KeyguardUtils.isDeviceSecure()) {
-                    Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
-                        @Override
-                        public void success() {
-                            add(name, iban);
-                        }
+            if (KeyguardUtils.isDeviceSecure()) {
+                Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
+                    @Override
+                    public void success() {
+                        add(name, iban);
+                    }
 
-                        @Override
-                        public void error() {
+                    @Override
+                    public void error() {
 
-                        }
-                    });
-                } else {
-                    new AlertDialog.Builder(getContext())
-                            .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                            .setPositiveButton(R.string.Snabble_OK, null)
-                            .setCancelable(false)
-                            .show();
-                }
+                    }
+                });
             } else {
-                add(name, iban);
+                new AlertDialog.Builder(getContext())
+                        .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
+                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setCancelable(false)
+                        .show();
             }
         }
     }

@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.48.3]
+
+### Changes
+- Additional logging for KeyStore related problems
+- Only invalidate KeyStore when keys are permanently inaccessible
+
 ## [0.48.2]
 
 ### Fixed

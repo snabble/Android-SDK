@@ -17,6 +17,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 
@@ -29,7 +30,9 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private KeyStore keyStore;
     private String alias;
     private boolean requireUserAuthentication;
-
+    private boolean wasNotAccessible = false;
+    private boolean wasPermanentlyInvalidated = false;
+    
     KeyStoreCipherMarshmallow(String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_M";
         this.requireUserAuthentication = requireUserAuthentication;
@@ -88,15 +91,34 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
             IvParameterSpec ivParameterSpec = new IvParameterSpec(FIXED_IV);
             Key key = keyStore.getKey(alias, null);
             c.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
+            logWasNotAccessible();
             return true;
         } catch (UserNotAuthenticatedException e) {
+            logWasNotAccessible();
             return true;
-        } catch (Exception e) {
-            Logger.errorEvent("KeyStore inaccessible: " + e.getClass().getName() + ": " + e.getMessage());
+        } catch (KeyPermanentlyInvalidatedException e) {
+            wasPermanentlyInvalidated = true;
+            Logger.errorEvent("KeyStore permanently invalidated " + e.getClass().getName() + ": " + e.getMessage());
             return false;
+        }  catch (Exception e) {
+            wasNotAccessible = true;
+            Logger.logEvent("KeyStore inaccessible: " + e.getClass().getName() + ": " + e.getMessage());
+            return true;
         }
     }
+    
+    private void logWasNotAccessible() {
+        if (wasNotAccessible) {
+            Logger.logEvent("KeyStore was not accessible, but is now accessible again");
+            wasNotAccessible = false;
+        }
 
+        if (wasPermanentlyInvalidated) {
+            Logger.logEvent("KeyStore was permanently invalidated, but is now recreated");
+            wasPermanentlyInvalidated = false;
+        }
+    }
+    
     @Override
     public String id() {
         try {
@@ -133,7 +155,7 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
             c.init(Cipher.ENCRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
             return c.doFinal(input);
         } catch (KeyPermanentlyInvalidatedException e) {
-            Logger.e("Key permanently invalidated");
+            Logger.errorEvent("Key permanently invalidated " + e.getClass().getName() + ": " + e.getMessage());
         } catch (Exception e) {
             Logger.e("Could not encrypt data: %s", e.getMessage());
         }
@@ -148,7 +170,7 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
             c.init(Cipher.DECRYPT_MODE, keyStore.getKey(alias, null), ivParameterSpec);
             return c.doFinal(encrypted);
         } catch (KeyPermanentlyInvalidatedException e) {
-            Logger.e("Key permanently invalidated");
+            Logger.errorEvent("Key permanently invalidated " + e.getClass().getName() + ": " + e.getMessage());
         } catch (Exception e) {
             Logger.e("Could not decrypt data: %s", e.getMessage());
         }

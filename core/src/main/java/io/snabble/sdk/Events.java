@@ -294,7 +294,7 @@ public class Events {
         }
     }
 
-    public static void logErrorEvent(String projectId, String format, Object... args) {
+    private static Project getUsableProject(String projectId) {
         // since we have no error logging without a project, we try to find the project by id
         // and if no project is found we just use the first project to at least log it to something
         Project project = Snabble.getInstance().getProjectById(projectId);
@@ -305,6 +305,18 @@ public class Events {
             }
         }
 
+        return project;
+    }
+
+    public static void logErrorEvent(String projectId, String format, Object... args) {
+        Project project = getUsableProject(projectId);
+        if (project != null) {
+            project.logErrorEvent(format, args);
+        }
+    }
+
+    public static void logWarningEvent(String projectId, String format, Object... args) {
+        Project project = getUsableProject(projectId);
         if (project != null) {
             project.logErrorEvent(format, args);
         }
