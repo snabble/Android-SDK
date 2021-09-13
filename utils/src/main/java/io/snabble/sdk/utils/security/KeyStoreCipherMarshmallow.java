@@ -30,7 +30,9 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private KeyStore keyStore;
     private String alias;
     private boolean requireUserAuthentication;
-
+    private boolean wasNotAccessible = false;
+    private boolean wasPermanentlyInvalidated = false;
+    
     KeyStoreCipherMarshmallow(String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_M";
         this.requireUserAuthentication = requireUserAuthentication;
@@ -89,15 +91,34 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
             IvParameterSpec ivParameterSpec = new IvParameterSpec(FIXED_IV);
             Key key = keyStore.getKey(alias, null);
             c.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
+            logWasNotAccessible();
             return true;
         } catch (UserNotAuthenticatedException e) {
+            logWasNotAccessible();
             return true;
-        } catch (Exception e) {
-            Logger.errorEvent("KeyStore inaccessible: " + e.getClass().getName() + ": " + e.getMessage());
+        } catch (KeyPermanentlyInvalidatedException e) {
+            wasPermanentlyInvalidated = true;
+            Logger.errorEvent("KeyStore permanently invalidated " + e.getClass().getName() + ": " + e.getMessage());
             return false;
+        }  catch (Exception e) {
+            wasNotAccessible = true;
+            Logger.logEvent("KeyStore inaccessible: " + e.getClass().getName() + ": " + e.getMessage());
+            return true;
         }
     }
+    
+    private void logWasNotAccessible() {
+        if (wasNotAccessible) {
+            Logger.logEvent("KeyStore was not accessible, but is now accessible again");
+            wasNotAccessible = false;
+        }
 
+        if (wasPermanentlyInvalidated) {
+            Logger.logEvent("KeyStore was permanently invalidated, but is now recreated");
+            wasPermanentlyInvalidated = false;
+        }
+    }
+    
     @Override
     public String id() {
         try {

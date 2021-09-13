@@ -14,6 +14,7 @@ public class Logger {
 
     private static boolean isEnabled = BuildConfig.DEBUG;
     private static ErrorEventHandler errorEventHandler = null;
+    private static LogEventHandler logEventHandler = null;
 
     public static void setEnabled(boolean enable) {
         isEnabled = enable;
@@ -99,6 +100,21 @@ public class Logger {
         ErrorEventHandler e = errorEventHandler;
         if (e != null) {
             e.logErrorEvent(message, args);
+        }
+    }
+
+    public interface LogEventHandler {
+        void logEvent(String message, Object... args);
+    }
+
+    public static void setLogEventHandler(LogEventHandler e) {
+        logEventHandler = e;
+    }
+
+    public static void logEvent(String message, Object... args) {
+        LogEventHandler e = logEventHandler;
+        if (e != null) {
+            e.logEvent(message, args);
         }
     }
 }
