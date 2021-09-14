@@ -191,7 +191,7 @@ public class PaymentCredentialsStore {
         }
     }
 
-    private void save() {
+    void save() {
         Gson gson = new Gson();
         String json = gson.toJson(data);
         sharedPreferences.edit().putString(credentialsKey, json).apply();

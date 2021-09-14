@@ -25,6 +25,7 @@ import javax.crypto.spec.PSource;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -130,7 +131,6 @@ public class PaymentCredentials {
 
     private String obfuscatedId;
     private boolean isKeyStoreEncrypted;
-    private boolean canBypassKeyStore;
     private String encryptedData; // old key-store based encrypted data
     private String rsaEncryptedData; // rsa encrypted data
     private String signature;
@@ -172,8 +172,7 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(data, SepaData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
@@ -232,15 +231,14 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(creditCardData, CreditCardData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = brand;
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.projectId = projectId;
         pc.validTo = parseValidTo("MM/yyyy", expirationMonth, expirationYear);
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -290,8 +288,7 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(paydirektData, PaydirektData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
 
@@ -301,7 +298,7 @@ public class PaymentCredentials {
         pc.additionalData.put("deviceFingerprint", authorizationData.fingerprint);
         pc.additionalData.put("deviceIPAddress", authorizationData.ipAddress);
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -342,15 +339,14 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(datatransData, DatatransData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.brand = brand;
         pc.obfuscatedId = obfuscatedId;
         pc.validTo = parseValidTo("MM/yy", expirationMonth, expirationYear);
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -387,9 +383,8 @@ public class PaymentCredentials {
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.projectId = projectId;
-        pc.canBypassKeyStore = true;
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -458,26 +453,8 @@ public class PaymentCredentials {
         }
     }
 
-    /** Synchronous encryption using the biometric prompt credentials **/
-    private void encrypt() {
-        PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
-
-        if (store.keyStoreCipher == null) {
-            return;
-        }
-
-        byte[] keyStoreEncrypted = store.keyStoreCipher.encrypt(encryptedData.getBytes());
-
-        if (keyStoreEncrypted != null) {
-            encryptedData = Base64.encodeToString(keyStoreEncrypted, Base64.NO_WRAP);
-            isKeyStoreEncrypted = true;
-        } else {
-            Logger.e("Could not encrypt payment credentials: KeyStore unavailable");
-        }
-    }
-
     /** Synchronous decryption using the user credentials **/
-    private String decrypt() {
+    private String decryptUsingKeyStore() {
         PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
 
         if (store.keyStoreCipher == null) {
@@ -491,10 +468,7 @@ public class PaymentCredentials {
         if (isKeyStoreEncrypted) {
             byte[] decrypted = store.keyStoreCipher.decrypt(Base64.decode(encryptedData, Base64.NO_WRAP));
             if (decrypted != null) {
-                // migrate key store encrypted data to rsa encrypted data
-                rsaEncryptedData = new String(decrypted);
-                canBypassKeyStore = true;
-                return rsaEncryptedData;
+                return new String(decrypted);
             } else {
                 Logger.e("Could not decrypt using KeyStoreCipher");
                 return null;
@@ -513,7 +487,7 @@ public class PaymentCredentials {
     }
 
     public boolean canBypassKeyStore() {
-        return canBypassKeyStore;
+        return rsaEncryptedData != null;
     }
 
     private boolean validateCertificate(X509Certificate certificate) {
@@ -622,7 +596,14 @@ public class PaymentCredentials {
             return rsaEncryptedData;
         }
 
-        return decrypt();
+        String decrypted = decryptUsingKeyStore();
+
+        if (rsaEncryptedData == null) {
+            rsaEncryptedData = decrypted;
+            Dispatch.mainThread(() -> Snabble.getInstance().getPaymentCredentialsStore().save());
+        }
+
+        return decrypted;
     }
 
     public Map<String, String> getAdditionalData() {
