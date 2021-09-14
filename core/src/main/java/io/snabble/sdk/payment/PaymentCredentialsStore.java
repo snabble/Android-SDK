@@ -159,6 +159,11 @@ public class PaymentCredentialsStore {
     }
 
     public void removeInvalidCredentials() {
+        // we do not lose payment information if we are not using key store
+        if (data.isMigratedFromKeyStore) {
+            return;
+        }
+
         List<PaymentCredentials> removals = new ArrayList<>();
         for (PaymentCredentials credentials : data.credentialsList) {
             if (!credentials.canBypassKeyStore()) {
