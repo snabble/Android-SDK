@@ -30,6 +30,7 @@ public class PaymentCredentialsStore {
         private List<PaymentCredentials> credentialsList;
         private String id;
         private boolean removedOldCreditCards;
+        private boolean isMigratedFromKeyStore;
         private boolean isKeyguarded;
     }
 
@@ -191,7 +192,26 @@ public class PaymentCredentialsStore {
         }
     }
 
-    void save() {
+    public void migrateKeyStoreCredentials() {
+        if (!data.isMigratedFromKeyStore) {
+            List<PaymentCredentials> removals = new ArrayList<>();
+
+            for (PaymentCredentials paymentCredentials : data.credentialsList) {
+                if (!paymentCredentials.migrateFromKeyStore()) {
+                    removals.add(paymentCredentials);
+                }
+            }
+
+            for (PaymentCredentials credentials : removals) {
+                data.credentialsList.remove(credentials);
+            }
+
+            data.isMigratedFromKeyStore = true;
+            save();
+        }
+    }
+
+    private void save() {
         Gson gson = new Gson();
         String json = gson.toJson(data);
         sharedPreferences.edit().putString(credentialsKey, json).apply();

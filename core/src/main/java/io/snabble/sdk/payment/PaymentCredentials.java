@@ -596,14 +596,27 @@ public class PaymentCredentials {
             return rsaEncryptedData;
         }
 
-        String decrypted = decryptUsingKeyStore();
+        Logger.logEvent("Accessing not migrated keystore credentials");
+        return decryptUsingKeyStore();
+    }
 
-        if (rsaEncryptedData == null) {
-            rsaEncryptedData = decrypted;
-            Dispatch.mainThread(() -> Snabble.getInstance().getPaymentCredentialsStore().save());
+    public boolean migrateFromKeyStore() {
+        if (rsaEncryptedData == null && encryptedData != null) {
+            rsaEncryptedData = decryptUsingKeyStore();
+
+            if (rsaEncryptedData != null) {
+                Logger.logEvent("Successfully migrated payment credentials");
+            } else {
+                Logger.logEvent("Payment credential migration was unsuccessful");
+            }
         }
 
-        return decrypted;
+        if (rsaEncryptedData == null && encryptedData == null) {
+            Logger.errorEvent("Payment credentials are contain no data - removing");
+            return false;
+        }
+
+        return true;
     }
 
     public Map<String, String> getAdditionalData() {

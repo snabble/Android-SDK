@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.concurrent.Executors;
 
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.Dispatch;
 
 public class Keyguard {
@@ -110,6 +111,9 @@ public class Keyguard {
             if (callback != null && currentCallback != callback) {
                 return;
             }
+
+            // start migration when we are having authentication
+            Snabble.getInstance().getPaymentCredentialsStore().migrateKeyStoreCredentials();
 
             if (currentCallback != null) {
                 currentCallback.success();
