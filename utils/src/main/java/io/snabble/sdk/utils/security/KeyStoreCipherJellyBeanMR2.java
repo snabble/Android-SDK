@@ -31,6 +31,7 @@ import javax.security.auth.x500.X500Principal;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 
+@Deprecated
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
@@ -47,6 +48,7 @@ public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
     private boolean requireUserAuthentication;
     private Context context;
 
+    @Deprecated
     KeyStoreCipherJellyBeanMR2(Context context, String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_JB_MR2";
         this.context = context;

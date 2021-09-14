@@ -22,7 +22,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
-import io.snabble.sdk.Events;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
@@ -132,7 +131,8 @@ public class PaymentCredentials {
     private String obfuscatedId;
     private boolean isKeyStoreEncrypted;
     private boolean canBypassKeyStore;
-    private String encryptedData;
+    private String encryptedData; // old key-store based encrypted data
+    private String rsaEncryptedData; // rsa encrypted data
     private String signature;
     private long validTo;
     private Type type;
@@ -458,7 +458,7 @@ public class PaymentCredentials {
         }
     }
 
-    /** Synchronous encryption using the user credentials **/
+    /** Synchronous encryption using the biometric prompt credentials **/
     private void encrypt() {
         PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
 
@@ -491,7 +491,10 @@ public class PaymentCredentials {
         if (isKeyStoreEncrypted) {
             byte[] decrypted = store.keyStoreCipher.decrypt(Base64.decode(encryptedData, Base64.NO_WRAP));
             if (decrypted != null) {
-                return new String(decrypted);
+                // migrate key store encrypted data to rsa encrypted data
+                rsaEncryptedData = new String(decrypted);
+                canBypassKeyStore = true;
+                return rsaEncryptedData;
             } else {
                 Logger.e("Could not decrypt using KeyStoreCipher");
                 return null;
@@ -615,6 +618,10 @@ public class PaymentCredentials {
     }
 
     public String getEncryptedData() {
+        if (rsaEncryptedData != null) {
+            return rsaEncryptedData;
+        }
+
         return decrypt();
     }
 

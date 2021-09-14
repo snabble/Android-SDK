@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 
 import io.snabble.sdk.utils.Logger;
 
+@Deprecated
 public abstract class KeyStoreCipher {
     public abstract String id();
     public abstract void validate();
@@ -14,6 +15,7 @@ public abstract class KeyStoreCipher {
     public abstract byte[] encrypt(byte[] data);
     public abstract byte[] decrypt(byte[] encrypted);
 
+    @Deprecated
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static KeyStoreCipher create(Context context, String tag, boolean requireUserAuthentication) {
         try {
