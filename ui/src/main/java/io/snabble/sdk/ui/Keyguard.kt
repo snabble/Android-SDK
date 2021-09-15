@@ -1,7 +1,5 @@
 package io.snabble.sdk.ui
 
-import io.snabble.sdk.ui.Keyguard
-import android.annotation.SuppressLint
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.AuthenticationError
@@ -23,7 +21,6 @@ object Keyguard {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     // start migration when we are having authentication
                     Snabble.getInstance().paymentCredentialsStore.migrateKeyStoreCredentials()
-
                     callback.success()
                 }
 

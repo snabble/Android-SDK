@@ -601,21 +601,25 @@ public class PaymentCredentials {
     }
 
     public boolean migrateFromKeyStore() {
+        // if data is available and we have not migrated before, start migration
         if (rsaEncryptedData == null && encryptedData != null) {
             rsaEncryptedData = decryptUsingKeyStore();
 
             if (rsaEncryptedData != null) {
                 Logger.logEvent("Successfully migrated payment credentials");
+                return true;
             } else {
                 Logger.logEvent("Payment credential migration was unsuccessful");
+                return false;
             }
         }
 
-        if (rsaEncryptedData == null && encryptedData == null) {
+        if (rsaEncryptedData == null) {
             Logger.errorEvent("Payment credentials are contain no data - removing");
             return false;
         }
 
+        // if already migrated do nothing
         return true;
     }
 
