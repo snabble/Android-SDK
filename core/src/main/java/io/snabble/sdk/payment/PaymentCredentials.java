@@ -130,7 +130,9 @@ public class PaymentCredentials {
     }
 
     private String obfuscatedId;
+    // comes from previously saved data on deserialization - was used in encrypt() from old code
     private boolean isKeyStoreEncrypted;
+    @Deprecated
     private String encryptedData; // old key-store based encrypted data
     private String rsaEncryptedData; // rsa encrypted data
     private String signature;
