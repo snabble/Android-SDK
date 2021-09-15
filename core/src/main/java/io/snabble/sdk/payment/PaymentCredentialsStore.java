@@ -196,7 +196,7 @@ public class PaymentCredentialsStore {
         }
     }
 
-    public synchronized void migrateKeyStoreCredentials() {
+    public synchronized void maybeMigrateKeyStoreCredentials() {
         if (!data.isMigratedFromKeyStore) {
             List<PaymentCredentials> removals = new ArrayList<>();
 
