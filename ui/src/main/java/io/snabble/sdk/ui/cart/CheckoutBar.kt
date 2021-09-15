@@ -32,7 +32,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.*
 
 
-class CheckoutBar @JvmOverloads constructor(
+open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
     private lateinit var progressDialog: DelayedProgressDialog
@@ -75,7 +75,7 @@ class CheckoutBar @JvmOverloads constructor(
 
         binding.pay.setOneShotClickListener {
             cart.taxation = ShoppingCart.Taxation.UNDECIDED
-            payClick()
+            handleButtonClick()
         }
 
         binding.googlePayButtonLayout.googlePayButton.setOneShotClickListener {
@@ -83,7 +83,7 @@ class CheckoutBar @JvmOverloads constructor(
             val pm = context.packageManager
             try {
                 pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-                payClick()
+                handleButtonClick()
             } catch (e: PackageManager.NameNotFoundException) {
                 try {
                     context.startActivity(Intent(Intent.ACTION_VIEW,
@@ -127,13 +127,17 @@ class CheckoutBar @JvmOverloads constructor(
         })
     }
 
-    private fun payClick() {
+    private fun handleButtonClick() {
         if (cart.isRestorable) {
             cart.restore()
             update()
         } else {
-            pay()
+            onPayClick()
         }
+    }
+
+    protected open fun onPayClick() {
+        pay()
     }
 
     private fun update() {
@@ -197,7 +201,7 @@ class CheckoutBar @JvmOverloads constructor(
         }
     }
 
-    private fun pay() {
+    protected fun pay() {
         if (cart.hasReachedMaxCheckoutLimit()) {
             val message = resources.getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.priceFormatter.format(project.maxCheckoutLimit))
