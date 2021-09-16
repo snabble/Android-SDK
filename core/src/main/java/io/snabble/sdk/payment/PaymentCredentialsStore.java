@@ -30,6 +30,7 @@ public class PaymentCredentialsStore {
         private List<PaymentCredentials> credentialsList;
         private String id;
         private boolean removedOldCreditCards;
+        private boolean isMigratedFromKeyStore;
         private boolean isKeyguarded;
     }
 
@@ -38,8 +39,8 @@ public class PaymentCredentialsStore {
     private List<Callback> callbacks = new CopyOnWriteArrayList<>();
     private List<OnPaymentCredentialsAddedListener> onPaymentCredentialsAddedListeners = new CopyOnWriteArrayList<>();
     private String credentialsKey;
-    private UserPreferences userPreferences;
 
+    // this still is needed for migration
     KeyStoreCipher keyStoreCipher;
 
     public PaymentCredentialsStore() {
@@ -49,7 +50,6 @@ public class PaymentCredentialsStore {
     public void init(Context context, Environment environment) {
         sharedPreferences = context.getSharedPreferences("snabble_payment", Context.MODE_PRIVATE);
         credentialsKey = "credentials_" + (environment != null ? environment.name() : "_UNKNOWN");
-        userPreferences = Snabble.getInstance().getUserPreferences();
 
         load();
         initializeKeyStore();
@@ -137,7 +137,7 @@ public class PaymentCredentialsStore {
         return data.removedOldCreditCards;
     }
 
-    public void add(PaymentCredentials credentials) {
+    public synchronized void add(PaymentCredentials credentials) {
         if (credentials == null) {
             return;
         }
@@ -150,14 +150,19 @@ public class PaymentCredentialsStore {
         notifyChanged();
     }
 
-    public void remove(PaymentCredentials credentials) {
+    public synchronized void remove(PaymentCredentials credentials) {
         if (data.credentialsList.remove(credentials)) {
             save();
             notifyChanged();
         }
     }
 
-    public void removeInvalidCredentials() {
+    public synchronized void removeInvalidCredentials() {
+        // we do not lose payment information if we are not using key store
+        if (data.isMigratedFromKeyStore) {
+            return;
+        }
+
         List<PaymentCredentials> removals = new ArrayList<>();
         for (PaymentCredentials credentials : data.credentialsList) {
             if (!credentials.canBypassKeyStore()) {
@@ -183,7 +188,7 @@ public class PaymentCredentialsStore {
         }
     }
 
-    public void clear() {
+    public synchronized void clear() {
         if (data.credentialsList.size() > 0) {
             data.credentialsList.clear();
             save();
@@ -191,13 +196,32 @@ public class PaymentCredentialsStore {
         }
     }
 
-    private void save() {
+    public synchronized void maybeMigrateKeyStoreCredentials() {
+        if (!data.isMigratedFromKeyStore) {
+            List<PaymentCredentials> removals = new ArrayList<>();
+
+            for (PaymentCredentials paymentCredentials : data.credentialsList) {
+                if (!paymentCredentials.migrateFromKeyStore()) {
+                    removals.add(paymentCredentials);
+                }
+            }
+
+            for (PaymentCredentials credentials : removals) {
+                data.credentialsList.remove(credentials);
+            }
+
+            data.isMigratedFromKeyStore = true;
+            save();
+        }
+    }
+
+    private synchronized void save() {
         Gson gson = new Gson();
         String json = gson.toJson(data);
         sharedPreferences.edit().putString(credentialsKey, json).apply();
     }
 
-    private void load() {
+    private synchronized void load() {
         Gson gson = new Gson();
         data = new Data();
         data.credentialsList = new ArrayList<>();
@@ -218,7 +242,7 @@ public class PaymentCredentialsStore {
         }
     }
 
-    private void validate() {
+    private synchronized void validate() {
         boolean changed = false;
 
         List<PaymentCredentials> removals = new ArrayList<>();

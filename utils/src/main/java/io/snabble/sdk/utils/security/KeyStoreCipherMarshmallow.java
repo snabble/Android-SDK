@@ -21,6 +21,7 @@ import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 
+@Deprecated
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
@@ -32,7 +33,8 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private boolean requireUserAuthentication;
     private boolean wasNotAccessible = false;
     private boolean wasPermanentlyInvalidated = false;
-    
+
+    @Deprecated
     KeyStoreCipherMarshmallow(String alias, boolean requireUserAuthentication) {
         this.alias = alias + "_M";
         this.requireUserAuthentication = requireUserAuthentication;
@@ -103,7 +105,7 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
         }  catch (Exception e) {
             wasNotAccessible = true;
             Logger.logEvent("KeyStore inaccessible: " + e.getClass().getName() + ": " + e.getMessage());
-            return true;
+            return false;
         }
     }
     
