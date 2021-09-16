@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.49.0]
+
+### Important Changes
+This release included a auto-migration path away from KeyStore based encryption, due to concurrency bugs in vendor implementations resulting in loss of payment information.
+Payment credentials are now stored using an asynchronous RSA. 
+
 ## [0.48.4]
 
 ### Changes
