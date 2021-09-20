@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.49.1]
+
+### Fixed
+- Bypass KeyStoreCipher when it can not be created
+
 ## [0.49.0]
 
 ### Important Changes

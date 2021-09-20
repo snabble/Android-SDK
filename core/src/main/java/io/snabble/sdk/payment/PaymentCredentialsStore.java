@@ -69,20 +69,22 @@ public class PaymentCredentialsStore {
     private void ensureKeyStoreIsAccessible() {
         initializeKeyStore();
 
-        keyStoreCipher.validate();
+        if (keyStoreCipher != null) {
+            keyStoreCipher.validate();
 
-        String id = keyStoreCipher.id();
-        if (id == null) {
-            Logger.errorEvent("Keystore has no id!");
-            keyStoreCipher = null;
-            return;
-        }
+            String id = keyStoreCipher.id();
+            if (id == null) {
+                Logger.errorEvent("Keystore has no id!");
+                keyStoreCipher = null;
+                return;
+            }
 
-        if (!id.equals(data.id)) {
-            data.id = keyStoreCipher.id();
-            data.isKeyguarded = true;
-            Logger.errorEvent("Removing payment credentials, because key store id differs");
-            removeInvalidCredentials();
+            if (!id.equals(data.id)) {
+                data.id = keyStoreCipher.id();
+                data.isKeyguarded = true;
+                Logger.errorEvent("Removing payment credentials, because key store id differs");
+                removeInvalidCredentials();
+            }
         }
 
         Context context = Snabble.getInstance().getApplication();
