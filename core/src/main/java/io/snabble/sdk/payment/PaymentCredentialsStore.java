@@ -303,6 +303,10 @@ public class PaymentCredentialsStore {
                     if (pc.getProjectId().equals(project.getId()) && onlineMethods.contains(pc.getPaymentMethod())) {
                         count++;
                     }
+                } else {
+                    if (pc.getType() == PaymentCredentials.Type.SEPA && onlineMethods.contains(pc.getPaymentMethod())) {
+                        count++;
+                    }
                 }
             }
         }

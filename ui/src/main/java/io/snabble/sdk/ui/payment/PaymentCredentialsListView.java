@@ -167,9 +167,17 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 sameProjectOrNull = project.getId().equals(pm.getProjectId());
             }
 
+            if (pm.getProjectId() == null && pm.getType() == PaymentCredentials.Type.SEPA) {
+                sameProjectOrNull = true;
+            }
+
             boolean sameTypeOrNull = true;
             if (types != null) {
-                sameTypeOrNull = types.contains(pm.getType());
+                if (project != null) {
+                    sameTypeOrNull = project.getAvailablePaymentMethods().contains(pm.getPaymentMethod());
+                } else {
+                    sameTypeOrNull = types.contains(pm.getType());
+                }
             }
 
             if (pm.isAvailableInCurrentApp() && sameTypeOrNull && sameProjectOrNull) {

@@ -179,7 +179,7 @@ public class PaymentCredentials {
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -380,7 +380,7 @@ public class PaymentCredentials {
         data.cardNumber = cardNumber;
         String json = GsonHolder.get().toJson(data, TegutEmployeeCard.class);
 
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;

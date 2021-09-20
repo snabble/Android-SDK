@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.49.2]
+
+### Fixed
+- Fixed added SEPA Cards not showing up in payment credentials list view
+
 ## [0.49.1]
 
 ### Fixed
