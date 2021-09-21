@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.49.2]
+
+### Fixed
+- Fixed added SEPA Cards not showing up in payment credentials list view
+
+## [0.49.1]
+
+### Fixed
+- Bypass KeyStoreCipher when it can not be created
+
+## [0.49.0]
+
+### Important Changes
+This release included a auto-migration path away from KeyStore based encryption, due to concurrency bugs in vendor implementations resulting in loss of payment information.
+Payment credentials are now stored using an asynchronous RSA. 
+
+## [0.48.4]
+
+### Changes
+- Open checkout bar for customization
+
 ## [0.48.3]
 
 ### Changes

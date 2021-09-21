@@ -22,10 +22,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
-import io.snabble.sdk.Events;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -130,9 +130,11 @@ public class PaymentCredentials {
     }
 
     private String obfuscatedId;
+    // comes from previously saved data on deserialization - was used in encrypt() from old code
     private boolean isKeyStoreEncrypted;
-    private boolean canBypassKeyStore;
-    private String encryptedData;
+    @Deprecated
+    private String encryptedData; // old key-store based encrypted data
+    private String rsaEncryptedData; // rsa encrypted data
     private String signature;
     private long validTo;
     private Type type;
@@ -172,13 +174,12 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(data, SepaData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -232,15 +233,14 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(creditCardData, CreditCardData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = brand;
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.projectId = projectId;
         pc.validTo = parseValidTo("MM/yyyy", expirationMonth, expirationYear);
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -290,8 +290,7 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(paydirektData, PaydirektData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
 
@@ -301,7 +300,7 @@ public class PaymentCredentials {
         pc.additionalData.put("deviceFingerprint", authorizationData.fingerprint);
         pc.additionalData.put("deviceIPAddress", authorizationData.ipAddress);
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -342,15 +341,14 @@ public class PaymentCredentials {
         String json = GsonHolder.get().toJson(datatransData, DatatransData.class);
 
         X509Certificate certificate = certificates.get(0);
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.encrypt();
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.brand = brand;
         pc.obfuscatedId = obfuscatedId;
         pc.validTo = parseValidTo("MM/yy", expirationMonth, expirationYear);
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -382,14 +380,13 @@ public class PaymentCredentials {
         data.cardNumber = cardNumber;
         String json = GsonHolder.get().toJson(data, TegutEmployeeCard.class);
 
-        pc.encryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.projectId = projectId;
-        pc.canBypassKeyStore = true;
 
-        if (pc.encryptedData == null) {
+        if (pc.rsaEncryptedData == null) {
             return null;
         }
 
@@ -458,26 +455,8 @@ public class PaymentCredentials {
         }
     }
 
-    /** Synchronous encryption using the user credentials **/
-    private void encrypt() {
-        PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
-
-        if (store.keyStoreCipher == null) {
-            return;
-        }
-
-        byte[] keyStoreEncrypted = store.keyStoreCipher.encrypt(encryptedData.getBytes());
-
-        if (keyStoreEncrypted != null) {
-            encryptedData = Base64.encodeToString(keyStoreEncrypted, Base64.NO_WRAP);
-            isKeyStoreEncrypted = true;
-        } else {
-            Logger.e("Could not encrypt payment credentials: KeyStore unavailable");
-        }
-    }
-
     /** Synchronous decryption using the user credentials **/
-    private String decrypt() {
+    private String decryptUsingKeyStore() {
         PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
 
         if (store.keyStoreCipher == null) {
@@ -510,7 +489,7 @@ public class PaymentCredentials {
     }
 
     public boolean canBypassKeyStore() {
-        return canBypassKeyStore;
+        return rsaEncryptedData != null;
     }
 
     private boolean validateCertificate(X509Certificate certificate) {
@@ -615,7 +594,35 @@ public class PaymentCredentials {
     }
 
     public String getEncryptedData() {
-        return decrypt();
+        if (rsaEncryptedData != null) {
+            return rsaEncryptedData;
+        }
+
+        Logger.logEvent("Accessing not migrated keystore credentials");
+        return decryptUsingKeyStore();
+    }
+
+    public boolean migrateFromKeyStore() {
+        // if data is available and we have not migrated before, start migration
+        if (rsaEncryptedData == null && encryptedData != null) {
+            rsaEncryptedData = decryptUsingKeyStore();
+
+            if (rsaEncryptedData != null) {
+                Logger.logEvent("Successfully migrated payment credentials");
+                return true;
+            } else {
+                Logger.logEvent("Payment credential migration was unsuccessful");
+                return false;
+            }
+        }
+
+        if (rsaEncryptedData == null) {
+            Logger.errorEvent("Payment credentials are contain no data - removing");
+            return false;
+        }
+
+        // if already migrated do nothing
+        return true;
     }
 
     public Map<String, String> getAdditionalData() {
