@@ -654,18 +654,6 @@ public class Checkout {
                 shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
             }
-
-            if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
-                Logger.d("Payment denied by supervisor");
-                shoppingCart.generateNewUUID();
-                notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
-                return true;
-            } else if (checkoutProcess.paymentApproval != null && !checkoutProcess.paymentApproval) {
-                Logger.d("Payment denied by payment provider");
-                shoppingCart.generateNewUUID();
-                notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
-                return true;
-            }
         } else if (checkoutProcess.paymentState == CheckoutApi.State.PROCESSING) {
             notifyStateChanged(State.PAYMENT_PROCESSING);
         } else if (checkoutProcess.paymentState == CheckoutApi.State.FAILED) {
@@ -784,10 +772,7 @@ public class Checkout {
     public int getVerifiedOnlinePrice() {
         try {
             if (checkoutProcess != null) {
-                return checkoutProcess.checkoutInfo.get("price")
-                        .getAsJsonObject()
-                        .get("price")
-                        .getAsInt();
+                return checkoutProcess.pricing.price.price;
             }
         } catch (Exception e) {
             return -1;
