@@ -24,6 +24,7 @@ public class Telemetry {
         SelectedBundleProduct,
         PaymentMethodAdded,
         PaymentMethodDeleted,
+        Rating,
 
         // shopping list
         ListCreated,

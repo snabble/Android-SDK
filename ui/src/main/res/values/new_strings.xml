@@ -17,4 +17,5 @@
     <string name="Snabble.PaymentStatus.AddDebitCard.message">Möchtest du die Daten deiner girocard sicher in der App speichern, um deinen nächsten Einkauf per Lastschrift zu bezahlen? Die Karte kannst du zukünftig im Geldbeutel lassen.</string>
     <string name="Snabble.PaymentStatus.AddDebitCard.button">Ja, Karte in der App speichern</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Hat dir der Einkauf gefallen?</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanks">Danke!</string>
 </resources>

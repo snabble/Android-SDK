@@ -19,7 +19,9 @@ import android.widget.RelativeLayout
 import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
+import androidx.core.view.isInvisible
 import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
+import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.utils.Logger
 
@@ -62,9 +64,28 @@ open class PaymentStatusView @JvmOverloads constructor(
             onFulfillmentStateChanged(it)
         }
 
+        binding.rating1.setOnClickListener {
+            sendRating("1")
+        }
+
+        binding.rating2.setOnClickListener {
+            sendRating("2")
+        }
+
+        binding.rating3.setOnClickListener {
+            sendRating("3")
+        }
+
         val activity = getFragmentActivity()
         activity?.lifecycle?.addObserver(this)
         activity?.onBackPressedDispatcher?.addCallback(backPressedCallback)
+    }
+
+    private fun sendRating(rating: String) {
+        project.events.analytics("rating", rating, "")
+        Telemetry.event(Telemetry.Event.Rating, rating)
+        binding.ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanks)
+        binding.ratingContainer.isInvisible = true
     }
 
     private fun onStateChanged(state: Checkout.State?) {
@@ -95,6 +116,7 @@ open class PaymentStatusView @JvmOverloads constructor(
                 startPollingForReceipts(checkout.checkoutProcess?.orderId)
                 binding.back.isEnabled = true
                 backPressedCallback.isEnabled = false
+                binding.ratingLayout.isVisible = true
             }
             // TODO: be more explicit with the error handling - more detailed messages
             Checkout.State.PAYMENT_PROCESSING_ERROR,

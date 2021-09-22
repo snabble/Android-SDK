@@ -194,6 +194,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 break;
             case PAYMENT_PROCESSING:
             case PAYMENT_PROCESSING_ERROR:
+            case PAYMENT_APPROVED:
             case DENIED_BY_PAYMENT_PROVIDER:
             case DENIED_BY_SUPERVISOR:
             case DENIED_TOO_YOUNG:
