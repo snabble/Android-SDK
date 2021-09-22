@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.49.3]
+
+### Fixed 
+- Transaction can now not be aborted anymore when already processing and user is still in cart
+
 ## [0.49.2]
 
 ### Fixed

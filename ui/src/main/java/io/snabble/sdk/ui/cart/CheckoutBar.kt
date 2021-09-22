@@ -102,11 +102,10 @@ open class CheckoutBar @JvmOverloads constructor(
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog.setMessage(context.getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
-        progressDialog.setCancelable(true)
+        progressDialog.setCancelable(false)
         progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { dialogInterface: DialogInterface, _, keyEvent: KeyEvent ->
             if (keyEvent.keyCode == KeyEvent.KEYCODE_BACK) {
                 project.checkout.abort()
-                dialogInterface.dismiss()
                 return@OnKeyListener true
             }
             false

@@ -169,8 +169,10 @@ public class Checkout {
                             notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
                         }
 
+                        stopPolling();
                         invalidProducts = null;
                         paymentMethod = null;
+
                         shoppingCart.generateNewUUID();
                         shop = null;
                     }
@@ -181,7 +183,9 @@ public class Checkout {
                     if (error) {
                         notifyStateChanged(Checkout.State.PAYMENT_PROCESSING_ERROR);
                     } else {
-                        notifyStateChanged(Checkout.State.PAYMENT_ABORT_FAILED);
+                        if (state != State.PAYMENT_PROCESSING && state != State.PAYMENT_APPROVED) {
+                            notifyStateChanged(Checkout.State.PAYMENT_ABORT_FAILED);
+                        }
                     }
                 }
             });
@@ -209,7 +213,6 @@ public class Checkout {
 
     public void cancelOutstandingCalls() {
         checkoutApi.cancel();
-        stopPolling();
     }
 
     /**
@@ -219,6 +222,7 @@ public class Checkout {
      */
     public void reset() {
         cancelOutstandingCalls();
+        stopPolling();
         notifyStateChanged(Checkout.State.NONE);
 
         invalidProducts = null;
