@@ -171,10 +171,21 @@ public class BarcodeView extends AppCompatImageView {
 
                         BitMatrix bm = writer.encode(text, ZXingHelper.toZXingFormat(format), tw, th);
                         int[] pixels = new int[w * h];
+                        
+                        int[] rect = bm.getEnclosingRectangle();
+                        int left = rect[0];
+                        int top = rect[1];
+                        int right = left + rect[2];
+                        int bottom = top + rect[3];
 
-                        // DATA-MATRIX codes are not scaled
+                        int startX = left - dp2px(8);
+                        int startY = top - dp2px(8);
+                        int endX = right + dp2px(8);
+                        int endY = bottom + dp2px(8);
+                        
+                        // DATA-MATRIX and PDF_417 codes are not scaled
                         // See https://github.com/zxing/zxing/issues/836
-                        if (format == BarcodeFormat.DATA_MATRIX) {
+                        if (format == BarcodeFormat.DATA_MATRIX || format == BarcodeFormat.PDF_417) {
                             float dw = (float)tw / (float)bm.getWidth();
                             float dh = (float)th / (float)bm.getHeight();
 
@@ -184,24 +195,18 @@ public class BarcodeView extends AppCompatImageView {
 
                                 for (int x = 0; x < tw; x++) {
                                     int ax = (int)((float)x/dw);
-                                    pixels[x + stride] = bm.get(ax, ay) ? Color.BLACK : backgroundColor;
+                                    int bgColor = backgroundColor;
+
+                                    if (ax > startX && ay > startY && ax < endX && ay < endY) {
+                                        bgColor = Color.WHITE;
+                                    }
+
+                                    pixels[x + stride] = bm.get(ax, ay) ? Color.BLACK : bgColor;
                                 }
                             }
                         } else {
-                            int[] rect = bm.getEnclosingRectangle();
-                            int left = rect[0];
-                            int top = rect[1];
-                            int right = left + rect[2];
-                            int bottom = top + rect[3];
-
-                            int startX = left - dp2px(8);
-                            int startY = top - dp2px(8);
-                            int endX = right + dp2px(8);
-                            int endY = bottom + dp2px(8);
-
                             for (int y = 0; y < th; y++) {
                                 final int stride = y * tw;
-
                                 for (int x = 0; x < tw; x++) {
                                     int bgColor = backgroundColor;
 

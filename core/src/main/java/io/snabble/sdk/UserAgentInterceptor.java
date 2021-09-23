@@ -3,6 +3,8 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -11,7 +13,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 class UserAgentInterceptor implements Interceptor {
-    private String userAgent;
+    private final String userAgent;
 
     public UserAgentInterceptor(Context context) {
         userAgent = context.getPackageManager().getApplicationLabel(context.getApplicationInfo())
@@ -19,9 +21,10 @@ class UserAgentInterceptor implements Interceptor {
                 + " snabble/" + Snabble.getVersion() +
                 " (Android " + Build.VERSION.RELEASE
                 + "; " + Build.BRAND + "; " + Build.MODEL + ")" +
-                " okhttp " + OkHttp.VERSION;
+                " okhttp/" + OkHttp.VERSION;
     }
 
+    @NonNull
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();

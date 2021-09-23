@@ -7,7 +7,8 @@ public enum BarcodeFormat {
     EAN_13,
     ITF_14,
     QR_CODE,
-    DATA_MATRIX;
+    DATA_MATRIX,
+    PDF_417;
 
     public static BarcodeFormat parse(String str) {
         switch (str) {
@@ -23,6 +24,8 @@ public enum BarcodeFormat {
                 return ITF_14;
             case "datamatrix":
                 return DATA_MATRIX;
+            case "pdf417":
+                return PDF_417;
             case "qr":
             case "qrCode":
                 return QR_CODE;

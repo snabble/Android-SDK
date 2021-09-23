@@ -20,6 +20,8 @@ class FirebaseBarcodeHelper {
                 return Barcode.FORMAT_ITF;
             case DATA_MATRIX:
                 return Barcode.FORMAT_DATA_MATRIX;
+            case PDF_417:
+                return Barcode.FORMAT_PDF417;
             case QR_CODE:
                 return Barcode.FORMAT_QR_CODE;
         }
@@ -42,6 +44,8 @@ class FirebaseBarcodeHelper {
                 return BarcodeFormat.ITF_14;
             case Barcode.FORMAT_DATA_MATRIX:
                 return BarcodeFormat.DATA_MATRIX;
+            case Barcode.FORMAT_PDF417:
+                return BarcodeFormat.PDF_417;
             case Barcode.FORMAT_QR_CODE:
                 return BarcodeFormat.QR_CODE;
         }
