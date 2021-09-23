@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.50.0]
+
+### Added
+- Added support for scanning and displaying PDF_417 codes
+
 ## [0.49.3]
 
 ### Fixed 
