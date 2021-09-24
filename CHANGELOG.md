@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.50.1]
+
+### Fixed
+- Improved sessionStart and cart events only firing on the active project
+
 ## [0.50.0]
 
 ### Added

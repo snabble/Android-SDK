@@ -52,13 +52,15 @@ public class Events {
                     return;
                 }
 
-                if (!hasSentSessionStart) {
-                    PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
-                    payloadSessionStart.session = cartId;
-                    post(payloadSessionStart, false);
-                }
+                if (shop != null) {
+                    if (!hasSentSessionStart) {
+                        PayloadSessionStart payloadSessionStart = new PayloadSessionStart();
+                        payloadSessionStart.session = cartId;
+                        post(payloadSessionStart, false);
+                    }
 
-                post(Events.this.project.getShoppingCart().toBackendCart(), true);
+                    post(Events.this.project.getShoppingCart().toBackendCart(), true);
+                }
             }
         });
     }
