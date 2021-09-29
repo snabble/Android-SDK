@@ -27,7 +27,14 @@ data class Coupon (
     val image: CouponImage?,
     val disclaimer: String?,
     val colors: Map<String, String>?,
-) : Parcelable
+) : Parcelable {
+    val isValid: Boolean
+    get() = when(type) {
+        CouponType.DIGITAL -> image != null && validFrom != null && validUntil != null
+        CouponType.MANUAL -> name != null
+        CouponType.PRINTED -> true
+    }
+}
 
 @Parcelize
 data class CouponCode (
@@ -118,9 +125,8 @@ class Coupons (
                     if (response.isSuccessful) {
                         val localizedResponse = GsonBuilder().create()
                             .fromJson(response.body?.string(), CouponResponse::class.java)
-                        postValue(localizedResponse.coupons.filterNot {
-                            // filter invalid
-                            it.type == CouponType.DIGITAL && (it.image == null || it.validFrom == null || it.validUntil == null)
+                        postValue(localizedResponse.coupons.filter { coupon ->
+                            coupon.isValid
                         })
                         source.postValue(CouponSource.Online)
                     }
