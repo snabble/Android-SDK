@@ -118,14 +118,13 @@ class Coupons (
                     if (response.isSuccessful) {
                         val localizedResponse = GsonBuilder().create()
                             .fromJson(response.body?.string(), CouponResponse::class.java)
-                        postValue(localizedResponse.coupons.filter {
-                            it.image != null && it.validFrom != null && it.validUntil != null
+                        postValue(localizedResponse.coupons.filterNot {
+                            // filter invalid
+                            it.type == CouponType.DIGITAL && (it.image == null || it.validFrom == null || it.validUntil == null)
                         })
-                    } else {
-                        postValue(emptyList())
+                        source.postValue(CouponSource.Online)
                     }
                     isLoading.postValue(false)
-                    source.postValue(CouponSource.Online)
                 }
             })
         }
