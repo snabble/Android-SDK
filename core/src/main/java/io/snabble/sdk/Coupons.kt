@@ -1,5 +1,6 @@
 package io.snabble.sdk
 
+import android.os.Looper
 import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
@@ -69,9 +70,8 @@ enum class CouponSource {
 }
 
 class Coupons (
-    coupons: List<Coupon>,
     private val project: Project
-) : Iterable<Coupon>, LiveData<List<Coupon>>(coupons) {
+) : Iterable<Coupon>, LiveData<List<Coupon>>() {
     val source: LiveData<CouponSource> = MutableLiveData(CouponSource.Bundled)
     val isLoading: LiveData<Boolean> = MutableLiveData(false)
 
@@ -97,16 +97,19 @@ class Coupons (
 
     fun update() {
         if (isLoading.value == true) return
-        // make an implicit cast with an extension function
-        fun <T> LiveData<T>.postValue(value: T) {
-            (this as? MutableLiveData<T>)?.postValue(value)
+        fun <T> LiveData<T>.setAsap(value: T) {
+            if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
+                (this as MutableLiveData<T>).value = value
+            } else {
+                (this as MutableLiveData<T>).postValue(value)
+            }
         }
         project.urls["coupons"]?.let { path ->
-            isLoading.postValue(true)
+            isLoading.setAsap(true)
             val newsUrl = Snabble.getInstance().absoluteUrl(path)
 
             if (newsUrl == null) {
-                postValue(emptyList())
+                setProjectCoupons(emptyList())
                 return
             }
 
@@ -117,8 +120,8 @@ class Coupons (
             couponCall.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     postValue(emptyList())
-                    isLoading.postValue(false)
-                    source.postValue(CouponSource.Online)
+                    isLoading.setAsap(false)
+                    source.setAsap(CouponSource.Online)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -128,11 +131,20 @@ class Coupons (
                         postValue(localizedResponse.coupons.filter { coupon ->
                             coupon.isValid
                         })
-                        source.postValue(CouponSource.Online)
+                        source.setAsap(CouponSource.Online)
                     }
-                    isLoading.postValue(false)
+                    isLoading.setAsap(false)
                 }
             })
+        }
+    }
+
+    // Visibility for Project class. Used for setting the data asap if on main thread
+    internal fun setProjectCoupons(coupons: List<Coupon>) {
+        if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
+            value = coupons
+        } else {
+            postValue(coupons)
         }
     }
 

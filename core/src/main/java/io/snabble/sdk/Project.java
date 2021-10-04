@@ -76,7 +76,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
-    private Coupons coupons;
+    private final Coupons coupons;
     private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
@@ -89,6 +89,7 @@ public class Project {
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         snabble = Snabble.getInstance();
+        coupons = new Coupons(this);
 
         parse(jsonObject);
 
@@ -317,7 +318,7 @@ public class Project {
             Logger.e("Could not parse coupons");
         }
 
-        this.coupons = new Coupons(couponList, this);
+        this.coupons.setProjectCoupons$core_debug(couponList); // call internal setProjectCoupons
 
         notifyUpdate();
     }
