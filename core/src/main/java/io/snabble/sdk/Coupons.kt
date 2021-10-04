@@ -140,6 +140,7 @@ class Coupons (
     }
 
     // Visibility for Project class. Used for setting the data asap if on main thread
+    @JvmName("setInternalProjectCoupons")
     internal fun setProjectCoupons(coupons: List<Coupon>) {
         if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
             value = coupons

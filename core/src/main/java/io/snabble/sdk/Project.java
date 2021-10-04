@@ -318,7 +318,7 @@ public class Project {
             Logger.e("Could not parse coupons");
         }
 
-        this.coupons.setProjectCoupons$core_debug(couponList); // call internal setProjectCoupons
+        this.coupons.setInternalProjectCoupons(couponList);
 
         notifyUpdate();
     }
