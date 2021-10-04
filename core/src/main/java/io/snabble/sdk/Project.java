@@ -318,7 +318,9 @@ public class Project {
             Logger.e("Could not parse coupons");
         }
 
-        this.coupons.setInternalProjectCoupons(couponList);
+        if (this.coupons.getSource().getValue() != CouponSource.Online) {
+            this.coupons.setInternalProjectCoupons(couponList);
+        }
 
         notifyUpdate();
     }
