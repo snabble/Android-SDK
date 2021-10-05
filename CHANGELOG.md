@@ -1,7 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.50.3]
+## [0.50.5]
+
+### Changed
+- Deprecated legacy PaymentCredentials.CREDIT_CARD (will be removed soon)
+- Improve background updates
+
+## [0.50.4]
 
 ### Fixed
 - Coupon deletion from metadata
