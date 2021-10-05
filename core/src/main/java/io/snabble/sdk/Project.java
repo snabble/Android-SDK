@@ -114,8 +114,6 @@ public class Project {
                 break;
             }
         }
-
-        coupons.update();
     }
 
     void parse(JsonObject jsonObject) {
@@ -318,9 +316,10 @@ public class Project {
             Logger.e("Could not parse coupons");
         }
 
-        if (this.coupons.getSource().getValue() != CouponSource.Online) {
-            this.coupons.setInternalProjectCoupons(couponList);
+        if (coupons.getSource().getValue() != CouponSource.Online) {
+            coupons.setInternalProjectCoupons(couponList);
         }
+        coupons.update();
 
         notifyUpdate();
     }
