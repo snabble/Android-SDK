@@ -30,8 +30,7 @@ public class PaymentOriginCandidateHelper {
     }
 
     void startPollingIfLinkIsAvailable(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse.paymentResult == null
-                || checkoutProcessResponse.paymentResult.originCandidateLink == null) {
+        if (checkoutProcessResponse.getSelfLink() == null) {
             return;
         }
 
@@ -48,10 +47,10 @@ public class PaymentOriginCandidateHelper {
             return;
         }
 
-        Dispatch.mainThread(() -> {
+        Dispatch.background(() -> {
             Request request = new Request.Builder()
                     .get()
-                    .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.paymentResult.originCandidateLink))
+                    .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getSelfLink()))
                     .build();
 
             call = project.getOkHttpClient().newCall(request);
