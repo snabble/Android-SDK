@@ -25,7 +25,6 @@ import javax.crypto.spec.PSource;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -34,6 +33,7 @@ public class PaymentCredentials {
     public enum Type {
         SEPA(null, false, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
         // legacy credit card type, not used anymore.
+        @Deprecated
         CREDIT_CARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         CREDIT_CARD_PSD2(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYDIREKT(null, false, Collections.singletonList(PaymentMethod.PAYDIREKT)),

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -100,7 +99,7 @@ public class CheckoutApi {
                         }
                     }
 
-                    return result.toArray(new PaymentMethodInfo[result.size()]);
+                    return result.toArray(new PaymentMethodInfo[0]);
                 }
             }
 
