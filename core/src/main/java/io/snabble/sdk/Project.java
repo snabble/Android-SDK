@@ -90,15 +90,15 @@ public class Project {
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         snabble = Snabble.getInstance();
         coupons = new Coupons(this);
-
-        parse(jsonObject);
-
-        internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
         okHttpClient = Snabble.getInstance().getOkHttpClient()
                 .newBuilder()
                 .addInterceptor(new SnabbleAuthorizationInterceptor(this))
                 .addInterceptor(new AcceptedLanguageInterceptor())
                 .build();
+
+        parse(jsonObject);
+
+        internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
 

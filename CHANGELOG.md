@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.50.6]
+
+### Fixed
+- Change initialization order within projects
+
 ## [0.50.5]
 
 ### Changed
