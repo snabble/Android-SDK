@@ -16,7 +16,16 @@ import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
@@ -39,7 +48,8 @@ public class PaymentCredentials {
         PAYDIREKT(null, false, Collections.singletonList(PaymentMethod.PAYDIREKT)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
-        DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
+        DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
 
         private String originType;
         private boolean requiresProject;
@@ -110,6 +120,12 @@ public class PaymentCredentials {
     }
 
     private static class DatatransData {
+        private String alias;
+        private String expiryMonth;
+        private String expiryYear;
+    }
+
+    private static class PayoneData {
         private String alias;
         private String expiryMonth;
         private String expiryYear;
@@ -347,6 +363,55 @@ public class PaymentCredentials {
         pc.brand = brand;
         pc.obfuscatedId = obfuscatedId;
         pc.validTo = parseValidTo("MM/yy", expirationMonth, expirationYear);
+
+        if (pc.rsaEncryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
+    public static PaymentCredentials fromPayone(String pseudocardpan,
+                                                String truncatedcardpan,
+                                                PaymentCredentials.Brand brand,
+                                                String cardexpiredate,
+                                                String lastname,
+                                                String projectId) {
+        if (pseudocardpan == null) {
+            return null;
+        }
+
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
+        if (brand == Brand.MASTERCARD || brand == Brand.AMEX || brand == Brand.VISA) {
+            pc.type = Type.PAYONE_CREDITCARD;
+        } else {
+            // not sure...
+        }
+        pc.projectId = projectId;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        PayoneData payoneData = new PayoneData();
+        payoneData.alias = truncatedcardpan;
+
+        if (pc.type == Type.PAYONE_CREDITCARD) {
+            payoneData.expiryMonth = cardexpiredate.substring(0, 2);
+            payoneData.expiryYear = cardexpiredate.substring(2, 2);
+        }
+
+        String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
+
+        X509Certificate certificate = certificates.get(0);
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.signature = pc.sha256Signature(certificate);
+        pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.brand = brand;
+        pc.obfuscatedId = truncatedcardpan;
+        pc.validTo = parseValidTo("MM/yy", payoneData.expiryMonth, payoneData.expiryYear);
 
         if (pc.rsaEncryptedData == null) {
             return null;
@@ -645,6 +710,12 @@ public class PaymentCredentials {
                 case MASTERCARD: return PaymentMethod.MASTERCARD;
                 case POST_FINANCE_CARD: return PaymentMethod.POST_FINANCE_CARD;
                 case TWINT: return PaymentMethod.TWINT;
+            }
+        } else if (type == Type.PAYONE_CREDITCARD) {
+            switch (getBrand()) {
+                case VISA: return PaymentMethod.VISA;
+                case AMEX: return PaymentMethod.AMEX;
+                case MASTERCARD: return PaymentMethod.MASTERCARD;
             }
         }
 

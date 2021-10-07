@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from:'../scripts/maven.gradle'
+apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -58,7 +59,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.webkit:webkit:1.4.0'
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'com.github.google:flexbox-layout:2.0.1'
     implementation 'me.relex:circleindicator:2.1.6'
@@ -67,12 +68,12 @@ dependencies {
     implementation 'eu.rekisoft.android.util:LazyWorker:2.0.2'
     implementation 'androidx.biometric:biometric:1.2.0-alpha03'
 
-    def camerax_version = "1.0.1"
+    def camerax_version = "1.0.2"
     implementation "androidx.camera:camera-core:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
-    implementation "androidx.camera:camera-view:1.0.0-alpha28"
-    implementation "androidx.camera:camera-extensions:1.0.0-alpha28"
+    implementation "androidx.camera:camera-view:1.0.0-alpha29"
+    implementation "androidx.camera:camera-extensions:1.0.0-alpha29"
 
     //noinspection GradleDependency
     implementation 'commons-io:commons-io:2.5'

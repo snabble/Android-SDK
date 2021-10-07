@@ -137,6 +137,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_CREDIT_CARD_INPUT:
                 showCreditCardInput(args);
                 break;
+            case SHOW_PAYONE_INPUT:
+                showPayoneInput(args);
+                break;
             case SHOW_PAYDIREKT_INPUT:
                 showPaydirektInput();
                 break;
@@ -228,6 +231,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showCreditCardInput(Bundle args) {
         Intent intent = new Intent(this, CreditCardInputActivity.class);
+        intent.putExtra("args", args);
+        startActivity(intent);
+    }
+
+    public void showPayoneInput(Bundle args) {
+        Intent intent = new Intent(this, PayoneInputActivity.class);
         intent.putExtra("args", args);
         startActivity(intent);
     }

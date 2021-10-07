@@ -38,14 +38,6 @@ object Datatrans {
         val isTesting: Boolean?,
     )
 
-    val datatransPaymentMethods = mapOf(
-        PaymentMethod.MASTERCARD to "ECA",
-        PaymentMethod.VISA to "VIS",
-        PaymentMethod.AMEX to "AMX",
-        PaymentMethod.TWINT to "TWI",
-        PaymentMethod.POST_FINANCE_CARD to "PFC"
-    )
-
     @JvmStatic
     fun registerCard(activity: FragmentActivity, project: Project, paymentMethod: PaymentMethod) {
         val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
@@ -77,8 +69,7 @@ object Datatrans {
             ).toRequestBody("application/json".toMediaType()))
             .build()
 
-        val okClient = project.okHttpClient
-        okClient.newCall(request).enqueue(object : SimpleJsonCallback<DatatransTokenizationResponse>(DatatransTokenizationResponse::class.java), Callback {
+        project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<DatatransTokenizationResponse>(DatatransTokenizationResponse::class.java), Callback {
             override fun success(response: DatatransTokenizationResponse) {
                 startDatatransTransaction(activity, response, paymentMethod, project)
             }
