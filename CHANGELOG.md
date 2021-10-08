@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.50.7]
+
+### Changed
+- Removed useless observer
+
 ## [0.50.6]
 
 ### Fixed
