@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.50.8]
+
+### Changed
+- Removed listing of unsupported payment methods on different projects
+
 ## [0.50.7]
 
 ### Changed

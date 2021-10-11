@@ -331,8 +331,7 @@ public class PaymentSelectionHelper {
                 e.hint = context.getString(R.string.Snabble_Shoppingcart_notForThisPurchase);
                 e.isAvailable = false;
             } else {
-                e.hint = context.getString(R.string.Snabble_Shoppingcart_notForVendor);
-                e.isAvailable = false;
+                continue;
             }
 
             Integer iconResId = icons.get(e.paymentMethod);
