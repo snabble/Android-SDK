@@ -1,5 +1,6 @@
 package io.snabble.sdk
 
+import android.os.Looper
 import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
@@ -27,7 +28,14 @@ data class Coupon (
     val image: CouponImage?,
     val disclaimer: String?,
     val colors: Map<String, String>?,
-) : Parcelable
+) : Parcelable {
+    val isValid: Boolean
+    get() = when(type) {
+        CouponType.DIGITAL -> image != null && validFrom != null && validUntil != null
+        CouponType.MANUAL -> name != null
+        CouponType.PRINTED -> true
+    }
+}
 
 @Parcelize
 data class CouponCode (
@@ -62,19 +70,10 @@ enum class CouponSource {
 }
 
 class Coupons (
-    coupons: List<Coupon>,
     private val project: Project
-) : Iterable<Coupon>, LiveData<List<Coupon>>(coupons) {
+) : Iterable<Coupon>, LiveData<List<Coupon>>() {
     val source: LiveData<CouponSource> = MutableLiveData(CouponSource.Bundled)
     val isLoading: LiveData<Boolean> = MutableLiveData(false)
-
-    init {
-        project.addOnUpdateListener {
-            if (source.value == CouponSource.Bundled) {
-                postValue(project.coupons.value)
-            }
-        }
-    }
 
     fun filter(type: CouponType): List<Coupon> =
         value?.filter { it.type == type } ?: emptyList()
@@ -90,44 +89,48 @@ class Coupons (
 
     fun update() {
         if (isLoading.value == true) return
-        // make an implicit cast with an extension function
-        fun <T> LiveData<T>.postValue(value: T) {
-            (this as? MutableLiveData<T>)?.postValue(value)
+        fun <T> LiveData<T>.setAsap(value: T) {
+            if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
+                (this as MutableLiveData<T>).value = value
+            } else {
+                (this as MutableLiveData<T>).postValue(value)
+            }
         }
         project.urls["coupons"]?.let { path ->
-            isLoading.postValue(true)
-            val newsUrl = Snabble.getInstance().absoluteUrl(path)
-
-            if (newsUrl == null) {
-                postValue(emptyList())
-                return
-            }
+            val couponsUrl = Snabble.getInstance().absoluteUrl(path) ?: return
+            isLoading.setAsap(true)
 
             val request = Request.Builder()
-                .url(newsUrl)
+                .url(couponsUrl)
                 .build()
             val couponCall = project.okHttpClient.newCall(request)
             couponCall.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    postValue(emptyList())
-                    isLoading.postValue(false)
-                    source.postValue(CouponSource.Online)
+                    isLoading.setAsap(false)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
                         val localizedResponse = GsonBuilder().create()
                             .fromJson(response.body?.string(), CouponResponse::class.java)
-                        postValue(localizedResponse.coupons.filter {
-                            it.image != null && it.validFrom != null && it.validUntil != null
+                        postValue(localizedResponse.coupons.filter { coupon ->
+                            coupon.isValid
                         })
-                    } else {
-                        postValue(emptyList())
+                        source.setAsap(CouponSource.Online)
                     }
-                    isLoading.postValue(false)
-                    source.postValue(CouponSource.Online)
+                    isLoading.setAsap(false)
                 }
             })
+        }
+    }
+
+    // Visibility for Project class. Used for setting the data asap if on main thread
+    @JvmName("setInternalProjectCoupons")
+    internal fun setProjectCoupons(coupons: List<Coupon>) {
+        if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
+            value = coupons
+        } else {
+            postValue(coupons)
         }
     }
 

@@ -8,14 +8,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +22,6 @@ import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
@@ -68,7 +65,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.DE_DIRECT_DEBIT, null);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.DE_DIRECT_DEBIT, null);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -80,7 +77,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.VISA), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.VISA, projectId);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.VISA, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -92,7 +89,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.MASTERCARD), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.MASTERCARD, projectId);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.MASTERCARD, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -104,7 +101,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.AMEX), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.AMEX, projectId);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.AMEX, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -116,7 +113,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.PAYDIREKT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.PAYDIREKT, null);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.PAYDIREKT, null);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -128,7 +125,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.TWINT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.TWINT, projectId);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.TWINT, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -140,7 +137,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     getUsableAtText(PaymentMethod.TWINT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(getContext(), PaymentMethod.POST_FINANCE_CARD, projectId);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.POST_FINANCE_CARD, projectId);
                     dismissAllowingStateLoss();
                 }
             }));

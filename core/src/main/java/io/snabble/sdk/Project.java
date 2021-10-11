@@ -76,7 +76,7 @@ public class Project {
     private PriceOverrideTemplate[] priceOverrideTemplates;
     private String[] searchableTemplates;
     private PriceFormatter priceFormatter;
-    private Coupons coupons;
+    private final Coupons coupons;
     private Map<String, String> texts;
 
     private int maxOnlinePaymentLimit;
@@ -89,15 +89,16 @@ public class Project {
 
     Project(JsonObject jsonObject) throws IllegalArgumentException {
         snabble = Snabble.getInstance();
-
-        parse(jsonObject);
-
-        internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
+        coupons = new Coupons(this);
         okHttpClient = Snabble.getInstance().getOkHttpClient()
                 .newBuilder()
                 .addInterceptor(new SnabbleAuthorizationInterceptor(this))
                 .addInterceptor(new AcceptedLanguageInterceptor())
                 .build();
+
+        parse(jsonObject);
+
+        internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
 
@@ -113,8 +114,6 @@ public class Project {
                 break;
             }
         }
-
-        coupons.update();
     }
 
     void parse(JsonObject jsonObject) {
@@ -317,7 +316,10 @@ public class Project {
             Logger.e("Could not parse coupons");
         }
 
-        this.coupons = new Coupons(couponList, this);
+        if (coupons.getSource().getValue() != CouponSource.Online) {
+            coupons.setInternalProjectCoupons(couponList);
+        }
+        coupons.update();
 
         notifyUpdate();
     }

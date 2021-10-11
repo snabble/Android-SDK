@@ -1,7 +1,7 @@
 package io.snabble.sdk.ui.payment
 
 import android.content.Context
-import io.snabble.sdk.ui.payment.Datatrans.Companion.registerCard
+import io.snabble.sdk.ui.payment.Datatrans.registerCard
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.KeyguardUtils
@@ -13,12 +13,11 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.Project
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.utils.Logger
 
 object PaymentInputViewHelper {
     @JvmStatic
-    fun openPaymentInputView(context: Context?, paymentMethod: PaymentMethod?, projectId: String?) {
+    fun openPaymentInputView(context: Context, paymentMethod: PaymentMethod?, projectId: String?) {
         val callback = SnabbleUI.getUiCallback()
         if (callback != null) {
             if (KeyguardUtils.isDeviceSecure()) {
@@ -61,7 +60,7 @@ object PaymentInputViewHelper {
                     }
                 }
             } else {
-                AlertDialog.Builder(context!!)
+                AlertDialog.Builder(context)
                     .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
                     .setPositiveButton(R.string.Snabble_OK, null)
                     .setCancelable(false)

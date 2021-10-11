@@ -1,6 +1,47 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.50.8]
+
+### Changed
+- Removed listing of unsupported payment methods on different projects
+
+## [0.50.7]
+
+### Changed
+- Removed useless observer
+
+## [0.50.6]
+
+### Fixed
+- Change initialization order within projects
+
+## [0.50.5]
+
+### Changed
+- Deprecated legacy PaymentCredentials.CREDIT_CARD (will be removed soon)
+- Improve background updates
+
+## [0.50.4]
+
+### Fixed
+- Coupon deletion from metadata
+
+## [0.50.3]
+
+### Fixed
+- Interrupted coupons observer
+
+## [0.50.2]
+
+### Fixed
+- Coupon loading behavior
+
+## [0.50.1]
+
+### Fixed
+- Improved sessionStart and cart events only firing on the active project
+
 ## [0.50.0]
 
 ### Added

@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.cart;
 
-import android.app.Activity;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
@@ -11,19 +10,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 
-import io.snabble.sdk.PaymentMethodDescriptor;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper;
-import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment;
-import io.snabble.sdk.ui.utils.UIUtils;
 
 public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
     public static final String ARG_ENTRIES = "entries";
@@ -99,7 +92,7 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
                                     PaymentSelectionHelper.getInstance().select(entry);
                                     dismissAllowingStateLoss();
                                 } else {
-                                    PaymentInputViewHelper.openPaymentInputView(getContext(), entry.paymentMethod, SnabbleUI.getProject().getId());
+                                    PaymentInputViewHelper.openPaymentInputView(requireContext(), entry.paymentMethod, SnabbleUI.getProject().getId());
                                     dismissAllowingStateLoss();
                                 }
                             });
