@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="PaymentDone.Rating.thanks">Thank you!</string>
+    <string name="PaymentDone.Rating.title">Did you like shopping with Snabble?</string>
     <string name="release.safety.catch">Please remove the bottle\'s security device (if present) at the designated station at the exit.</string>
+    <string name="Shopping.title">Shopping</string>
     <string name="Snabble.addDiscount">Enter discount</string>
     <string name="Snabble.ageVerification.explanation">To purchase certain products like alcoholic beverages, verifying your age is required. Enter the 7-digit Number from the back side of your ID card.</string>
     <string name="Snabble.ageVerification.failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
@@ -88,6 +91,7 @@
     <string name="Snabble.Payment.payViaInvoice">via Invoice</string>
     <string name="Snabble.Payment.PostFinanceCard.error">There was an error processing your postfinance card</string>
     <string name="Snabble.Payment.presentCode">Show this code at a Snabble monitor or to a cashier to confirm your purchase.</string>
+    <string name="Snabble.Payment.rejected">Purchase denied</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
@@ -119,9 +123,26 @@
     <string name="Snabble.PaymentSelection.howToPay">How would you like to pay %s?</string>
     <string name="Snabble.PaymentSelection.payNow">Pay %s now</string>
     <string name="Snabble.PaymentSelection.title">Payment</string>
+    <string name="Snabble.PaymentStatus.AddDebitCard.button"/>
+    <string name="Snabble.PaymentStatus.AddDebitCard.message"/>
+    <string name="Snabble.PaymentStatus.back"/>
+    <string name="Snabble.PaymentStatus.close"/>
+    <string name="Snabble.PaymentStatus.ExitCode.title"/>
+    <string name="Snabble.PaymentStatus.Payment.error"/>
+    <string name="Snabble.PaymentStatus.Payment.title"/>
+    <string name="Snabble.PaymentStatus.Payment.tryAgain"/>
+    <string name="Snabble.PaymentStatus.Ratings.thanks"/>
+    <string name="Snabble.PaymentStatus.Ratings.title"/>
+    <string name="Snabble.PaymentStatus.Receipt.title"/>
     <string name="Snabble.PaymentStatus.step1">Locating you in the checkout area</string>
     <string name="Snabble.PaymentStatus.step2">Processing your purchase</string>
     <string name="Snabble.PaymentStatus.step3">Processing your payment</string>
+    <string name="Snabble.PaymentStatus.Title.error"/>
+    <string name="Snabble.PaymentStatus.Title.inProgress"/>
+    <string name="Snabble.PaymentStatus.Title.success"/>
+    <string name="Snabble.PaymentStatus.Tobacco.error"/>
+    <string name="Snabble.PaymentStatus.Tobacco.message"/>
+    <string name="Snabble.PaymentStatus.Tobacco.title"/>
     <string name="Snabble.pleaseWait">Please wait…</string>
     <string name="Snabble.PostFinanceCard.payNow">Pay now using PostFinance Card</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d of %2$d</string>
