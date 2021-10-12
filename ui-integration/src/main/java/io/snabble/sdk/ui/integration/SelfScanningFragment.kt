@@ -19,9 +19,7 @@ import io.snabble.sdk.ui.utils.setOneShotClickListener
 
 open class SelfScanningFragment : Fragment() {
     private var optionsMenu: Menu? = null
-    private var _selfScanningView: SelfScanningView? = null
-    val selfScanningView: SelfScanningView
-        get() = requireNotNull(_selfScanningView)
+    var selfScanningView: SelfScanningView? = null
     protected lateinit var rootView: ViewGroup
     private lateinit var permissionContainer: View
     private lateinit var askForPermission: Button
@@ -29,21 +27,21 @@ open class SelfScanningFragment : Fragment() {
     private var isStart = false
     var allowShowingHints = false
     val hasSelfScanningView
-        get() = _selfScanningView != null
+        get() = selfScanningView != null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
+        setHasOptionsMenu(false)
         return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         rootView = view as ViewGroup
-        _selfScanningView = null
+        selfScanningView = null
         permissionContainer = rootView.findViewById(R.id.permission_denied_container)
         askForPermission = rootView.findViewById(R.id.open_settings)
 
@@ -62,8 +60,8 @@ open class SelfScanningFragment : Fragment() {
         if (isPermissionGranted) {
             createSelfScanningView()
         } else {
-            rootView.removeView(_selfScanningView)
-            _selfScanningView = null
+            rootView.removeView(selfScanningView)
+            selfScanningView = null
             if (isAdded && isStart) {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA), 0)
             } else {
@@ -74,11 +72,12 @@ open class SelfScanningFragment : Fragment() {
     }
 
     private fun createSelfScanningView() {
-        if (_selfScanningView == null) {
-            _selfScanningView = SelfScanningView(context).apply {
+        if (selfScanningView == null) {
+            selfScanningView = SelfScanningView(context).apply {
                 setAllowShowingHints(allowShowingHints)
             }
             rootView.addView(selfScanningView, 0)
+            setHasOptionsMenu(true)
         }
         permissionContainer.visibility = View.GONE
         canAskAgain = true
@@ -88,7 +87,7 @@ open class SelfScanningFragment : Fragment() {
     private fun handleBundleArgs() {
         arguments?.let { args ->
             args.getString("showProductCode")?.let { scannableCode ->
-                _selfScanningView?.lookupAndShowProduct(
+                selfScanningView?.lookupAndShowProduct(
                     ScannedCode.parse(
                         SnabbleUI.getProject(),
                         scannableCode
@@ -152,10 +151,10 @@ open class SelfScanningFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.snabble_action_search -> {
-                selfScanningView.searchWithBarcode()
+                selfScanningView?.searchWithBarcode()
             }
             R.id.snabble_action_torch -> {
-                selfScanningView.isTorchEnabled = !selfScanningView.isTorchEnabled
+                selfScanningView?.isTorchEnabled = !(selfScanningView?.isTorchEnabled ?: false)
                 updateTorchIcon()
             }
         }
@@ -165,7 +164,7 @@ open class SelfScanningFragment : Fragment() {
 
     private fun updateTorchIcon() {
         val menuItem = optionsMenu?.findItem(R.id.snabble_action_torch)
-        if (selfScanningView.isTorchEnabled) {
+        if (selfScanningView?.isTorchEnabled ?: false) {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_on, null)
         } else {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)
