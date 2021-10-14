@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import ch.gooods.location.CheckInLocationManager;
+import ch.gooods.manager.CheckInManager;
 import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.auth.Token;
 import io.snabble.sdk.auth.TokenRegistry;
@@ -60,6 +62,8 @@ public class Snabble {
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
     private PaymentCredentialsStore paymentCredentialsStore;
+    private CheckInLocationManager checkInLocationManager;
+    private CheckInManager checkInManager;
     private File internalStorageDirectory;
     private String metadataUrl;
     private Config config;
@@ -175,6 +179,9 @@ public class Snabble {
                 }
             });
         }
+
+        checkInLocationManager = new CheckInLocationManager(application);
+        checkInManager = new CheckInManager(this, checkInLocationManager);
 
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
         registerNetworkCallback(app);
@@ -417,6 +424,14 @@ public class Snabble {
 
     public TermsOfService getTermsOfService() {
         return termsOfService;
+    }
+
+    public CheckInLocationManager getCheckInLocationManager() {
+        return checkInLocationManager;
+    }
+
+    public CheckInManager getCheckInManager() {
+        return checkInManager;
     }
 
     public Map<String, Brand> getBrands() {
@@ -783,5 +798,13 @@ public class Snabble {
          *  and are not part of the original metadata in the backend
          *  (for example for testing shops in production before a go-live) **/
         public boolean loadActiveShops = false;
+
+        /**
+         * When set to true does disable the automatic check in and polling of location.
+         *
+         * When disabled you are either required to manually use
+         * CheckInManager.setShop or CheckInManager.startUpdating()
+         */
+        public boolean disableAutomaticCheckin = false;
     }
 }
