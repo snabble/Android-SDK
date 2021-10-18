@@ -1,54 +1,73 @@
-package ch.gooods.manager
+package io.snabble.sdk.checkin
 
 import android.content.Context
 import android.location.Location
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.MutableLiveData
-import ch.gooods.location.CheckInLocationManager
-import ch.gooods.location.distanceTo
-import ch.gooods.location.toLatLng
+import androidx.lifecycle.Observer
 import com.google.android.gms.maps.model.LatLng
 import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.utils.Dispatch
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
+interface OnCheckInStateChangedListener {
+    fun onCheckInStateChanged()
+}
+
+private const val TAG_SHOP_ID = "shop_id"
+private const val TAG_CHECKIN_TIME = "checkin_time"
+
 class CheckInManager(val snabble: Snabble,
                      val locationManager: CheckInLocationManager) {
-
-    private val TAG_SHOP_ID = "shopId"
-    private val TAG_CHECKIN_TIME = "checkinTime"
     private val CHECKIN_RADIUS = 500
     private val CHECKIN_STAY_CHECKED_IN_RADIUS = 1000
     private val STAY_CHECKED_IN_SECONDS = 15000L
 
     private val application = snabble.application
-
-    // TODO shop/debugShop
-    val shop = MutableLiveData<Shop?>(null)
-    val shops = MutableLiveData<List<Shop>?>(null)
+    private val sharedPreferences = application.getSharedPreferences("snabble_checkin_manager", Context.MODE_PRIVATE)
 
     private var lastLocation: Location? = null
-    private val sharedPreferences = application.getSharedPreferences("snabble_checkin_manager", Context.MODE_PRIVATE)
 
     private val handler = Handler(Looper.getMainLooper())
     private var projectByShopId = HashMap<String, Project>()
-
     private var shopList: List<Shop> = emptyList()
     private var lastCheckedInProject: Project? = null
 
-    init {
-        locationManager.location.observeForever { location ->
+    private val onCheckInStateChangedListeners = CopyOnWriteArrayList<OnCheckInStateChangedListener>()
+
+    var shop: Shop? = null
+        set(value) {
+            checkIn(value)
+        }
+
+    var project: Project? = null
+        get() {
+            return projectByShopId.get(shop?.id)
+        }
+        private set;
+
+    var candidates: List<Shop>? = null
+
+    var checkedInAt: Long = -1
+
+    private val locationObserver = object : Observer<Location?> {
+        override fun onChanged(location: Location?) {
             lastLocation = location
             update()
         }
+    }
 
-        snabble.addOnMetadataUpdateListener {
+    private val metadataListener = object : Snabble.OnMetadataUpdateListener {
+        override fun onMetaDataUpdated() {
             update()
         }
+    }
 
+    init {
         update()
     }
 
@@ -73,12 +92,13 @@ class CheckInManager(val snabble: Snabble,
             val savedShop = shopList.firstOrNull {
                 it.id == sharedPreferences.getString(TAG_SHOP_ID, null)
             }
-            shop.postValue(savedShop)
+
+            shop = savedShop
 
             if (savedShop != null) {
-                shops.postValue(listOf(savedShop))
+                candidates = listOf(savedShop)
             } else {
-                shops.postValue(null)
+                candidates = null
             }
 
             val newCheckedInProject = projectByShopId.get(savedShop?.id)
@@ -93,11 +113,12 @@ class CheckInManager(val snabble: Snabble,
 
         val loc = lastLocation?.toLatLng()
         if (loc != null) {
-            val nearestShop = shops.value?.nearest(loc)
+            val currentShop = shop
+            val nearestShop = shopList.nearest(loc)
             nearestShop?.let { it ->
                 if (it.distance < CHECKIN_RADIUS) {
                     checkIn(it.shop)
-                } else if (it.distance < CHECKIN_STAY_CHECKED_IN_RADIUS && shop.value != null) {
+                } else if (it.distance < CHECKIN_STAY_CHECKED_IN_RADIUS && currentShop?.id == it.shop.id) {
                     checkIn(it.shop)
                 } else {
                     if (!canUseSavedShop) {
@@ -112,18 +133,30 @@ class CheckInManager(val snabble: Snabble,
         }
     }
 
+    fun startUpdating() {
+        locationManager.startTrackingLocation()
+        locationManager.location.observeForever(locationObserver)
+        Snabble.getInstance().addOnMetadataUpdateListener(metadataListener)
+    }
+
+    fun stopUpdating() {
+        locationManager.stopTrackingLocation()
+        locationManager.location.removeObserver(locationObserver)
+        Snabble.getInstance().removeOnMetadataUpdateListener(metadataListener)
+    }
+
     fun checkIn(checkInShop: Shop?) {
         handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             checkIn(null)
         }, TimeUnit.SECONDS.toMillis(STAY_CHECKED_IN_SECONDS))
 
-        shop.postValue(checkInShop)
+        shop = checkInShop
 
         if (checkInShop != null) {
-            shops.postValue(listOf(checkInShop))
+            candidates = listOf(checkInShop)
         } else {
-            shops.postValue(null)
+            candidates = null
         }
 
         if (checkInShop != null) {
@@ -131,8 +164,10 @@ class CheckInManager(val snabble: Snabble,
 
             if (lastCheckedInProject != newCheckedInProject){
                 lastCheckedInProject = newCheckedInProject
-                newCheckedInProject?.checkedInShop = checkInShop
+                lastCheckedInProject?.checkedInShop = null
             }
+
+            newCheckedInProject?.checkedInShop = checkInShop
         } else {
             lastCheckedInProject?.checkedInShop = null
             lastCheckedInProject = null
@@ -143,6 +178,7 @@ class CheckInManager(val snabble: Snabble,
             .putLong(TAG_CHECKIN_TIME, if (checkInShop != null) System.currentTimeMillis() else 0)
             .apply()
 
+        notifyOnCheckInStateChanged()
         println("checkin to " + checkInShop?.id)
     }
 
@@ -157,14 +193,30 @@ class CheckInManager(val snabble: Snabble,
 
         projectByShopId = newProjectByShop
     }
+
+    fun addOnCheckInStateChangedListener(onCheckInStateChangedListener: OnCheckInStateChangedListener) {
+        onCheckInStateChangedListeners.add(onCheckInStateChangedListener)
+    }
+
+    fun removeOnCheckInStateChangedListener(onCheckInStateChangedListener: OnCheckInStateChangedListener) {
+        onCheckInStateChangedListeners.remove(onCheckInStateChangedListener)
+    }
+
+    private fun notifyOnCheckInStateChanged() {
+        Dispatch.mainThread {
+            onCheckInStateChangedListeners.forEach {
+                it.onCheckInStateChanged()
+            }
+        }
+    }
 }
 
-data class NearestShop(
+private data class NearestShop(
     val distance: Float,
     val shop: Shop
 )
 
-fun List<Shop>.nearest(location: LatLng): NearestShop? {
+private fun List<Shop>.nearest(location: LatLng): NearestShop? {
     var nearest: Shop? = null
     var nearestDistance: Float = Float.MAX_VALUE
 

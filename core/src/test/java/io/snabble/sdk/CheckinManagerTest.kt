@@ -10,7 +10,7 @@ import org.robolectric.RobolectricTestRunner
 class CheckinManagerTest : SnabbleSdkTest() {
     @Test
     fun testCheckIn() {
-        val mockLocation = Location("") 
+        val mockLocation = Location("")
         mockLocation.setLatitude(50.7352963)
         mockLocation.setLongitude(7.100141)
 

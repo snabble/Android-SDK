@@ -37,8 +37,8 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import ch.gooods.location.CheckInLocationManager;
-import ch.gooods.manager.CheckInManager;
+import io.snabble.sdk.checkin.CheckInLocationManager;
+import io.snabble.sdk.checkin.CheckInManager;
 import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.auth.Token;
 import io.snabble.sdk.auth.TokenRegistry;
@@ -136,6 +136,8 @@ public class Snabble {
         environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl);
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
         paymentCredentialsStore = new PaymentCredentialsStore();
+        checkInLocationManager = new CheckInLocationManager(application);
+        checkInManager = new CheckInManager(this, checkInLocationManager);
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
 
@@ -179,9 +181,6 @@ public class Snabble {
                 }
             });
         }
-
-        checkInLocationManager = new CheckInLocationManager(application);
-        checkInManager = new CheckInManager(this, checkInLocationManager);
 
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
         registerNetworkCallback(app);

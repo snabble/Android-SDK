@@ -1,4 +1,4 @@
-package ch.gooods.location
+package io.snabble.sdk.checkin
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng

@@ -1,4 +1,4 @@
-package ch.gooods.location
+package io.snabble.sdk.checkin
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -24,9 +24,21 @@ class CheckInLocationManager(val application: Application) {
             location.postValue(value)
         }
 
-    private val locationListener = object : LocationListener {
-        override fun onLocationChanged(l: Location) {
-            if (mockLocation != null) {
+    private val allowedProviders = listOf(
+        LocationManager.GPS_PROVIDER,
+        LocationManager.NETWORK_PROVIDER
+    )
+
+    private val locationListener = LocationListener { l ->
+        if (mockLocation != null) {
+            location.postValue(l)
+        } else {
+            Logger.d("LOCATION - [" + l.provider + "]" + "" + l.toString())
+
+            val currentLocation = location.value
+            if(isBetterLocation(l, currentLocation)) {
+                Logger.d("LOCATION + [" + l.provider + "]" + "" + l.toString())
+
                 location.postValue(l)
             }
         }
@@ -38,7 +50,7 @@ class CheckInLocationManager(val application: Application) {
 
     fun checkLocationPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(application,
-            Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     fun isLocationAvailable(): Boolean {
@@ -49,23 +61,16 @@ class CheckInLocationManager(val application: Application) {
 
     fun isEnabled(context: Context): Boolean {
         val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        return allowedProviders.any { lm.isProviderEnabled(it) }
     }
 
     @SuppressLint("MissingPermission")
     fun startTrackingLocation() {
         if (checkLocationPermission()) {
-            val criteria = Criteria();
-            criteria.accuracy = Criteria.ACCURACY_FINE
-            criteria.isCostAllowed = false
-            criteria.isAltitudeRequired = false
-            criteria.isBearingRequired = false
-
-            val provider = locationManager.getBestProvider(criteria, true);
-            if (provider != null) {
-                locationManager.requestLocationUpdates(provider, 5000, 10.0f, locationListener)
-            } else {
-                Logger.e("No suitable location provider available, location can not be updated")
+            val providers = locationManager.getProviders(true)
+            providers.retainAll(allowedProviders)
+            providers.forEach {
+                locationManager.requestLocationUpdates(it, 5000, 0.0f, locationListener)
             }
         } else {
             Logger.e("Missing location permission, location can not be updated")
