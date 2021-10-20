@@ -39,8 +39,12 @@ class CheckInManager(val snabble: Snabble,
 
     private val onCheckInStateChangedListeners = CopyOnWriteArrayList<OnCheckInStateChangedListener>()
 
-    var shop: Shop? = null
+    private var currentShop: Shop? = null
+
+    var shop: Shop?
+        get() = currentShop
         set(value) {
+            currentShop = value
             checkIn(value)
         }
 
@@ -54,12 +58,11 @@ class CheckInManager(val snabble: Snabble,
 
     var checkedInAt: Long = -1
 
-    private val locationObserver = object : Observer<Location?> {
-        override fun onChanged(location: Location?) {
+    private val locationObserver =
+        Observer<Location?> { location ->
             lastLocation = location
             update()
         }
-    }
 
     private val metadataListener = object : Snabble.OnMetadataUpdateListener {
         override fun onMetaDataUpdated() {
@@ -93,7 +96,7 @@ class CheckInManager(val snabble: Snabble,
                 it.id == sharedPreferences.getString(TAG_SHOP_ID, null)
             }
 
-            shop = savedShop
+            currentShop = savedShop
 
             if (savedShop != null) {
                 candidates = listOf(savedShop)
@@ -151,7 +154,7 @@ class CheckInManager(val snabble: Snabble,
             checkIn(null)
         }, TimeUnit.SECONDS.toMillis(STAY_CHECKED_IN_SECONDS))
 
-        shop = checkInShop
+        currentShop = checkInShop
 
         if (checkInShop != null) {
             candidates = listOf(checkInShop)
@@ -173,9 +176,11 @@ class CheckInManager(val snabble: Snabble,
             lastCheckedInProject = null
         }
 
+        checkedInAt = if (checkInShop != null) System.currentTimeMillis() else 0
+
         sharedPreferences.edit()
             .putString(TAG_SHOP_ID, checkInShop?.id)
-            .putLong(TAG_CHECKIN_TIME, if (checkInShop != null) System.currentTimeMillis() else 0)
+            .putLong(TAG_CHECKIN_TIME, checkedInAt)
             .apply()
 
         notifyOnCheckInStateChanged()

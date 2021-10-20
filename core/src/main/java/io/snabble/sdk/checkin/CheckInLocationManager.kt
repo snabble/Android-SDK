@@ -15,12 +15,12 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.Logger
 
 class CheckInLocationManager(val application: Application) {
-    private val locationManager: LocationManager
+    private val locationManager: LocationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     val location: MutableLiveData<Location?> = MutableLiveData(null)
     var mockLocation: Location? = null
         set(value) {
-            mockLocation = value
+            field = value
             location.postValue(value)
         }
 
@@ -42,10 +42,6 @@ class CheckInLocationManager(val application: Application) {
                 location.postValue(l)
             }
         }
-    }
-
-    init {
-        locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
     fun checkLocationPermission(): Boolean {
