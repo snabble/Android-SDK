@@ -25,6 +25,9 @@ interface OnCheckInStateChangedListener {
 private const val TAG_SHOP_ID = "shop_id"
 private const val TAG_CHECKIN_TIME = "checkin_time"
 
+/**
+ * Provides functionality for checking in at shops using the users Location.
+ */
 class CheckInManager(val snabble: Snabble,
                      val locationManager: CheckInLocationManager,
                      var checkInRadius: Float = 500.0f,
@@ -44,6 +47,11 @@ class CheckInManager(val snabble: Snabble,
 
     private var currentShop: Shop? = null
 
+    /**
+     * Set's the current checked in Shop.
+     *
+     * If you set a shop while still updating it may be updated.
+     */
     var shop: Shop?
         get() = currentShop
         set(value) {
@@ -51,12 +59,25 @@ class CheckInManager(val snabble: Snabble,
             checkIn(value)
         }
 
+    /**
+     * The project associated with the currently checked in shop. Is null if not checked in a shop.
+     */
     var project: Project? = null
         get() = projectByShopId.get(shop?.id)
         private set
 
+    /**
+     * Potential list of shops, if in range of multiple shops.
+     * To select a shop of multiple candidates you neet to call setShop.
+     *
+     * While still inside the checkOutRadius the selected shop will be preferred.
+     */
     var candidates: List<Shop>? = null
 
+    /**
+     * The time at which the last successful check in was made. Updates itself to the current time
+     * while still inside the check in/out radius.
+     */
     var checkedInAt: Long
         get() = sharedPreferences.getLong(TAG_CHECKIN_TIME, 0)
         internal set(value) = sharedPreferences.edit()
@@ -116,21 +137,28 @@ class CheckInManager(val snabble: Snabble,
                 newCheckedInProject?.checkedInShop = savedShop
             }
 
-            println("using saved shop" + savedShop?.id)
+            Logger.d("Using saved shop " + savedShop?.id)
         }
 
         val loc = lastLocation?.toLatLng()
         if (loc != null) {
             val currentShop = shop
-            val nearestShop = shopList.nearest(loc)
-            nearestShop?.let { it ->
-                if (it.distance < checkInRadius) {
-                    checkIn(it.shop)
-                } else if (it.distance < checkOutRadius && currentShop?.id == it.shop.id) {
-                    checkIn(it.shop)
-                } else {
-                    if (!canUseSavedShop) {
-                        checkIn(null)
+            val distance = if (currentShop == null) {
+                -1.0f
+            } else {
+                loc.distanceTo(LatLng(currentShop.latitude, currentShop.longitude))
+            }
+            if (distance < 0 || distance > checkOutRadius) {
+                val nearestShop = shopList.nearest(loc)
+                nearestShop?.let { it ->
+                    if (it.distance < checkInRadius) {
+                        checkIn(it.shop)
+                    } else if (it.distance < checkOutRadius && currentShop?.id == it.shop.id) {
+                        checkIn(it.shop)
+                    } else {
+                        if (!canUseSavedShop) {
+                            checkIn(null)
+                        }
                     }
                 }
             }
@@ -161,7 +189,7 @@ class CheckInManager(val snabble: Snabble,
         Snabble.getInstance().removeOnMetadataUpdateListener(metadataListener)
     }
 
-    fun checkIn(checkInShop: Shop?) {
+    private fun checkIn(checkInShop: Shop?) {
         handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
             checkIn(null)

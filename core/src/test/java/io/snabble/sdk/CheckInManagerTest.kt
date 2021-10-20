@@ -175,4 +175,43 @@ class CheckInManagerTest : SnabbleSdkTest() {
         locationManager.mockLocation = locationSnabbleButWith640MetersDistance
         latch2.await(2, TimeUnit.SECONDS)
     }
+
+    @Test
+    fun testMultipleShopsCheckIn() {
+        val checkInManager = Snabble.getInstance().checkInManager
+        checkInManager.startUpdating()
+
+        val latch = CountDownLatch(1)
+        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
+            override fun onCheckIn(shop: Shop) {
+                latch.countDown()
+            }
+
+            override fun onCheckOut() {
+
+            }
+        })
+
+        val locationManager = Snabble.getInstance().checkInLocationManager
+        locationManager.mockLocation = locationSnabble
+
+        latch.await(2, TimeUnit.SECONDS)
+        Assert.assertEquals("1774", checkInManager.shop?.id)
+
+        val latch2 = CountDownLatch(1)
+        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
+            override fun onCheckIn(shop: Shop) {
+                latch2.countDown()
+            }
+
+            override fun onCheckOut() {
+
+            }
+        })
+
+        checkInManager.shop = project.shops.find { it.id == "1337" }
+        locationManager.mockLocation = locationSnabble
+        latch2.await(2, TimeUnit.SECONDS)
+        Assert.assertEquals("1337", checkInManager.shop?.id)
+    }
 }
