@@ -260,6 +260,7 @@ public class Snabble {
 
         paymentCredentialsStore.init(application, environment);
         users.postPendingConsents();
+        checkInManager.update();
     }
 
     private String getUrl(JsonObject jsonObject, String urlName) {

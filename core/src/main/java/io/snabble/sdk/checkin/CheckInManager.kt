@@ -62,9 +62,8 @@ class CheckInManager(val snabble: Snabble,
     /**
      * The project associated with the currently checked in shop. Is null if not checked in a shop.
      */
-    var project: Project? = null
-        get() = projectByShopId.get(shop?.id)
-        private set
+    val project: Project?
+        get() = projectByShopId[shop?.id]
 
     /**
      * Potential list of shops, if in range of multiple shops.
@@ -90,17 +89,11 @@ class CheckInManager(val snabble: Snabble,
             update()
         }
 
-    private val metadataListener = object : Snabble.OnMetadataUpdateListener {
-        override fun onMetaDataUpdated() {
-            update()
-        }
-    }
-
-    init {
+    private val metadataListener = Snabble.OnMetadataUpdateListener {
         update()
     }
 
-    private fun update() {
+    fun update() {
         updateShopProjectsMap()
 
         shopList = snabble.projects.flatMap { it.shops }
@@ -122,20 +115,7 @@ class CheckInManager(val snabble: Snabble,
                 it.id == sharedPreferences.getString(TAG_SHOP_ID, null)
             }
 
-            currentShop = savedShop
-
-            if (savedShop != null) {
-                candidates = listOf(savedShop)
-            } else {
-                candidates = null
-            }
-
-            val newCheckedInProject = projectByShopId.get(savedShop?.id)
-
-            if (lastCheckedInProject != newCheckedInProject){
-                lastCheckedInProject = newCheckedInProject
-                newCheckedInProject?.checkedInShop = savedShop
-            }
+            checkIn(savedShop)
 
             Logger.d("Using saved shop " + savedShop?.id)
         }
@@ -195,41 +175,47 @@ class CheckInManager(val snabble: Snabble,
             checkIn(null)
         }, lastSeenThreshold)
 
-        currentShop = checkInShop
+        if (currentShop != checkInShop) {
+            currentShop = checkInShop
 
-        if (checkInShop != null) {
-            candidates = listOf(checkInShop)
-        } else {
-            candidates = null
-        }
-
-        if (checkInShop != null) {
-            val newCheckedInProject = projectByShopId.get(checkInShop.id)
-
-            if (lastCheckedInProject != newCheckedInProject){
-                lastCheckedInProject = newCheckedInProject
-                lastCheckedInProject?.checkedInShop = null
+            candidates = if (checkInShop != null) {
+                listOf(checkInShop)
+            } else {
+                null
             }
 
-            newCheckedInProject?.checkedInShop = checkInShop
-        } else {
-            lastCheckedInProject?.checkedInShop = null
-            lastCheckedInProject = null
+            if (checkInShop != null) {
+                val newCheckedInProject = projectByShopId[checkInShop.id]
+
+                if (lastCheckedInProject != newCheckedInProject) {
+                    lastCheckedInProject = newCheckedInProject
+                    lastCheckedInProject?.checkedInShop = null
+                }
+
+                newCheckedInProject?.checkedInShop = checkInShop
+            } else {
+                lastCheckedInProject?.checkedInShop = null
+                lastCheckedInProject = null
+            }
+
+            sharedPreferences.edit()
+                .putString(TAG_SHOP_ID, checkInShop?.id)
+                .putLong(
+                    TAG_CHECKIN_TIME,
+                    if (checkInShop != null) System.currentTimeMillis() else 0
+                )
+                .apply()
+
+            if (checkInShop != null) {
+                notifyOnCheckIn(checkInShop)
+            } else {
+                notifyOnCheckOut()
+            }
+
+            Logger.d("check in to " + checkInShop?.id)
         }
-
-        sharedPreferences.edit()
-            .putString(TAG_SHOP_ID, checkInShop?.id)
-            .putLong(TAG_CHECKIN_TIME, if (checkInShop != null) System.currentTimeMillis() else 0)
-            .apply()
-
-        if (checkInShop != null) {
-            notifyOnCheckIn(checkInShop)
-        } else {
-            notifyOnCheckOut()
-        }
-
-        Logger.d("check in to " + checkInShop?.id)
     }
+
 
     private fun updateShopProjectsMap() {
         val newProjectByShop = HashMap<String, Project>()
@@ -245,6 +231,13 @@ class CheckInManager(val snabble: Snabble,
 
     fun addOnCheckInStateChangedListener(onCheckInStateChangedListener: OnCheckInStateChangedListener) {
         onCheckInStateChangedListeners.add(onCheckInStateChangedListener)
+
+        val shop = shop
+        val project = project
+
+        if (shop != null && project != null) {
+            onCheckInStateChangedListener.onCheckIn(shop)
+        }
     }
 
     fun removeOnCheckInStateChangedListener(onCheckInStateChangedListener: OnCheckInStateChangedListener) {
@@ -252,21 +245,17 @@ class CheckInManager(val snabble: Snabble,
     }
 
     private fun notifyOnCheckIn(shop: Shop) {
-        if (this.shop?.id != shop.id) {
-            Dispatch.mainThread {
-                onCheckInStateChangedListeners.forEach {
-                    it.onCheckIn(shop)
-                }
+        Dispatch.mainThread {
+            onCheckInStateChangedListeners.forEach {
+                it.onCheckIn(shop)
             }
         }
     }
 
     private fun notifyOnCheckOut() {
-        if (this.shop != null) {
-            Dispatch.mainThread {
-                onCheckInStateChangedListeners.forEach {
-                    it.onCheckOut()
-                }
+        Dispatch.mainThread {
+            onCheckInStateChangedListeners.forEach {
+                it.onCheckOut()
             }
         }
     }
