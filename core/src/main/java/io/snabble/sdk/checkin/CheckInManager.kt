@@ -224,17 +224,21 @@ class CheckInManager(val snabble: Snabble,
     }
 
     private fun notifyOnCheckIn(shop: Shop) {
-        Dispatch.mainThread {
-            onCheckInStateChangedListeners.forEach {
-                it.onCheckIn(shop)
+        if (this.shop?.id != shop.id) {
+            Dispatch.mainThread {
+                onCheckInStateChangedListeners.forEach {
+                    it.onCheckIn(shop)
+                }
             }
         }
     }
 
     private fun notifyOnCheckOut() {
-        Dispatch.mainThread {
-            onCheckInStateChangedListeners.forEach {
-                it.onCheckOut()
+        if (this.shop != null) {
+            Dispatch.mainThread {
+                onCheckInStateChangedListeners.forEach {
+                    it.onCheckOut()
+                }
             }
         }
     }

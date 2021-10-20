@@ -16,6 +16,11 @@ class CheckInManagerTest : SnabbleSdkTest() {
         longitude = 7.100141
     }
 
+    val locationSnabbleButWith640MetersDistance = Location("").apply {
+        latitude = 50.7340824
+        longitude = 7.0912753
+    }
+
     val locationNoWhere = Location("").apply {
         latitude = 51.7352963
         longitude = 5.100141
@@ -53,7 +58,7 @@ class CheckInManagerTest : SnabbleSdkTest() {
     }
 
     @Test
-    fun testCheckOut() {
+    fun testCheckOutByDistanceAndTime() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
@@ -94,7 +99,7 @@ class CheckInManagerTest : SnabbleSdkTest() {
     }
 
     @Test
-    fun testStillCheckedIn() {
+    fun testStillCheckedInWhileInTimeWindow() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
@@ -112,7 +117,7 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val locationManager = Snabble.getInstance().checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
-        latch.await(10, TimeUnit.SECONDS)
+        latch.await(2, TimeUnit.SECONDS)
         Assert.assertEquals("1774", checkInManager.shop?.id)
         locationManager.mockLocation = locationNoWhere
 
@@ -128,6 +133,46 @@ class CheckInManagerTest : SnabbleSdkTest() {
         })
 
         locationManager.mockLocation = locationNoWhere
+        latch2.await(2, TimeUnit.SECONDS)
+    }
+
+    @Test
+    fun testStillCheckedInWhileInCheckOutRadiusButNotInTimeWindow() {
+        val checkInManager = Snabble.getInstance().checkInManager
+        checkInManager.startUpdating()
+
+        val latch = CountDownLatch(1)
+        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
+            override fun onCheckIn(shop: Shop) {
+                latch.countDown()
+            }
+
+            override fun onCheckOut() {
+
+            }
+        })
+
+        val locationManager = Snabble.getInstance().checkInLocationManager
+        locationManager.mockLocation = locationSnabble
+
+        latch.await(2, TimeUnit.SECONDS)
+        Assert.assertEquals("1774", checkInManager.shop?.id)
+
+        // simulate that we checked in 15 minutes before
+        checkInManager.checkedInAt = checkInManager.checkedInAt - TimeUnit.MINUTES.toMillis(15)
+
+        val latch2 = CountDownLatch(1)
+        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
+            override fun onCheckIn(shop: Shop) {
+                Assert.fail()
+            }
+
+            override fun onCheckOut() {
+                Assert.fail()
+            }
+        })
+
+        locationManager.mockLocation = locationSnabbleButWith640MetersDistance
         latch2.await(2, TimeUnit.SECONDS)
     }
 }
