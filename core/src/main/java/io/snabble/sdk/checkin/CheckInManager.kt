@@ -140,13 +140,13 @@ class CheckInManager(val snabble: Snabble,
             Logger.d("Using saved shop " + savedShop?.id)
         }
 
-        val loc = lastLocation?.toLatLng()
+        val loc = lastLocation
         if (loc != null) {
             val currentShop = shop
             val distance = if (currentShop == null) {
                 -1.0f
             } else {
-                loc.distanceTo(LatLng(currentShop.latitude, currentShop.longitude))
+                loc.distanceTo(currentShop.location)
             }
             if (distance < 0 || distance > checkOutRadius) {
                 val nearestShop = shopList.nearest(loc)
@@ -277,13 +277,14 @@ private data class NearestShop(
     val shop: Shop
 )
 
-private fun List<Shop>.nearest(location: LatLng): NearestShop? {
+private fun List<Shop>.nearest(location: Location): NearestShop? {
     var nearest: Shop? = null
     var nearestDistance: Float = Float.MAX_VALUE
 
     forEach {
-        val latLng = LatLng(it.latitude, it.longitude)
-        val dist = latLng.distanceTo(location)
+        val shopLocation = Location("")
+        shopLocation.latitude
+        val dist = it.location.distanceTo(location)
         if (dist < nearestDistance) {
             nearest = it
             nearestDistance = dist
