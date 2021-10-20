@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 
+import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.apache.commons.io.FileUtils;
@@ -160,6 +161,8 @@ public class SnabbleSdkTest {
         config.generateSearchIndex = generateSearchIndex;
         config.initialSQL = initialSQL;
 
+        onApplyConfig(config);
+
         Snabble snabble = Snabble.getInstance();
         snabble.setupBlocking((Application) context.getApplicationContext(), config);
 
@@ -185,6 +188,10 @@ public class SnabbleSdkTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void onApplyConfig(@NonNull Snabble.Config config) {
+
     }
 
     public void prepareUpdateDb(String assetPath) throws IOException {

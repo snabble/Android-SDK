@@ -20,8 +20,9 @@ class CheckInLocationManager(val application: Application) {
     val location: MutableLiveData<Location?> = MutableLiveData(null)
     var mockLocation: Location? = null
         set(value) {
+            value?.time = System.currentTimeMillis()
             field = value
-            location.postValue(value)
+            location.value = value
         }
 
     private val allowedProviders = listOf(
@@ -30,15 +31,9 @@ class CheckInLocationManager(val application: Application) {
     )
 
     private val locationListener = LocationListener { l ->
-        if (mockLocation != null) {
-            location.postValue(l)
-        } else {
-            Logger.d("LOCATION - [" + l.provider + "]" + "" + l.toString())
-
+        if (mockLocation == null) {
             val currentLocation = location.value
             if(isBetterLocation(l, currentLocation)) {
-                Logger.d("LOCATION + [" + l.provider + "]" + "" + l.toString())
-
                 location.postValue(l)
             }
         }

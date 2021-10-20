@@ -137,7 +137,12 @@ public class Snabble {
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
         paymentCredentialsStore = new PaymentCredentialsStore();
         checkInLocationManager = new CheckInLocationManager(application);
-        checkInManager = new CheckInManager(this, checkInLocationManager);
+        checkInManager = new CheckInManager(this,
+                checkInLocationManager,
+                config.checkInRadius,
+                config.checkOutRadius,
+                config.lastSeenThreshold
+        );
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
 
@@ -799,11 +804,24 @@ public class Snabble {
         public boolean loadActiveShops = false;
 
         /**
-         * When set to true does disable the automatic check in and polling of location.
+         * The radius in which the CheckInManager tries to check in a shop.
          *
-         * When disabled you are either required to manually use
-         * CheckInManager.setShop or CheckInManager.startUpdating()
+         * In meters.
          */
-        public boolean disableAutomaticCheckin = false;
+        public float checkInRadius = 500.0f;
+
+        /**
+         * The radius in which the CheckInManager tries to stay in a shop, if already in it.
+         * If outside of this radius and the lastSeenThreshold, you will be checked out.
+         */
+        public float checkOutRadius = 1000.0f;
+
+        /**
+         * The time in milliseconds which we keep you checked in at a shop.
+         *
+         * The timer will be refreshed while you are still inside the shop
+         * and only begins to run if you are not inside the checkOutRadius anymore.
+         */
+        public long lastSeenThreshold = TimeUnit.MINUTES.toMillis(15);
     }
 }
