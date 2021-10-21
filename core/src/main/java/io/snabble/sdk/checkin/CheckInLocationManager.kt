@@ -55,6 +55,8 @@ class CheckInLocationManager(val application: Application) {
         return allowedProviders.any { lm.isProviderEnabled(it) }
     }
 
+    // suppressing permission because the hosting app is technically not required to provide this permission
+    // if it is not using the check in manager
     @SuppressLint("MissingPermission")
     fun startTrackingLocation() {
         if (checkLocationPermission()) {
@@ -68,6 +70,7 @@ class CheckInLocationManager(val application: Application) {
         }
     }
 
+    @SuppressLint("MissingPermission")
     fun stopTrackingLocation() {
         locationManager.removeUpdates(locationListener)
     }
