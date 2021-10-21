@@ -124,7 +124,9 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val latch2 = CountDownLatch(1)
         checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
-                Assert.fail()
+                if (shop.id != "1774") {
+                    Assert.fail()
+                }
             }
 
             override fun onCheckOut() {
@@ -164,7 +166,9 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val latch2 = CountDownLatch(1)
         checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
-                Assert.fail()
+                if (shop.id != "1774") {
+                    Assert.fail()
+                }
             }
 
             override fun onCheckOut() {

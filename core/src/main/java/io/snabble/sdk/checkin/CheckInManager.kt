@@ -55,7 +55,6 @@ class CheckInManager(val snabble: Snabble,
     var shop: Shop?
         get() = currentShop
         set(value) {
-            currentShop = value
             checkIn(value)
         }
 
