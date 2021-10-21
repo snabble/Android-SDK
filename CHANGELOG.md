@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.51.2]
+
+### Fixed
+- Fixed gs1 code parsing
+
 ## [0.51.1]
 
 ### Fixed
