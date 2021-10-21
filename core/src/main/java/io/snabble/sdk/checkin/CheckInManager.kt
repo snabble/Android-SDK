@@ -20,6 +20,7 @@ import kotlin.collections.HashMap
 interface OnCheckInStateChangedListener {
     fun onCheckIn(shop: Shop)
     fun onCheckOut()
+    fun onMultipleCandidatesAvailable(candidates: List<Shop>)
 }
 
 private const val TAG_SHOP_ID = "shop_id"
@@ -101,13 +102,9 @@ class CheckInManager(val snabble: Snabble,
 
         val now = System.currentTimeMillis()
         val savedTimeDiff = now - savedTime
-        val locationAge = now - (lastLocation?.time ?: 0)
-        val locationAccuracy = lastLocation?.accuracy ?: 10000f
 
         val canUseSavedShop = savedTime != 0L
                     && savedTimeDiff < lastSeenThreshold
-                    && locationAge < 60000
-                    && locationAccuracy < checkInRadius
 
         if (canUseSavedShop) {
             val savedShop = shopList.firstOrNull {
@@ -119,29 +116,44 @@ class CheckInManager(val snabble: Snabble,
             Logger.d("Using saved shop " + savedShop?.id)
         }
 
-        val loc = lastLocation
-        if (loc != null) {
-            val currentShop = shop
-            val distance = if (currentShop == null) {
-                -1.0f
-            } else {
-                loc.distanceTo(currentShop.location)
-            }
-            if (distance < 0 || distance > checkOutRadius) {
-                val nearestShop = shopList.nearest(loc)
-                nearestShop?.let { it ->
-                    if (it.distance < checkInRadius) {
-                        checkIn(it.shop)
-                    } else if (it.distance < checkOutRadius && currentShop?.id == it.shop.id) {
-                        checkIn(it.shop)
-                    } else {
-                        if (!canUseSavedShop) {
-                            checkIn(null)
+        lastLocation?.let { loc ->
+            val locationAge = now - (loc.time ?: 0)
+            val locationAccuracy = loc.accuracy ?: 10000f
+
+            if (locationAge < 60000 && locationAccuracy < checkInRadius) {
+                val newCandidates = shopList.filter { it.location.distanceTo(loc) < checkInRadius }
+
+                if (candidates?.map { it.id } != newCandidates.map { it.id }) {
+                    candidates = newCandidates
+
+                    if (newCandidates.size > 1) {
+                        notifyOnMultipleCandidatesAvailable(newCandidates)
+                    }
+                }
+
+                val currentShop = shop
+                val distance = if (currentShop == null) {
+                    -1.0f
+                } else {
+                    loc.distanceTo(currentShop.location)
+                }
+
+                if (distance < 0 || distance > checkOutRadius) {
+                    val nearestShop = shopList.nearest(loc)
+                    nearestShop?.let { it ->
+                        if (it.distance < checkInRadius) {
+                            checkIn(it.shop)
+                        } else if (it.distance < checkOutRadius && currentShop?.id == it.shop.id) {
+                            checkIn(it.shop)
+                        } else {
+                            if (!canUseSavedShop) {
+                                checkIn(null)
+                            }
                         }
                     }
                 }
             }
-        } else {
+        } ?: run {
             if (!canUseSavedShop) {
                 checkIn(null)
             }
@@ -176,12 +188,6 @@ class CheckInManager(val snabble: Snabble,
 
         if (currentShop != checkInShop) {
             currentShop = checkInShop
-
-            candidates = if (checkInShop != null) {
-                listOf(checkInShop)
-            } else {
-                null
-            }
 
             if (checkInShop != null) {
                 val newCheckedInProject = projectByShopId[checkInShop.id]
@@ -255,6 +261,14 @@ class CheckInManager(val snabble: Snabble,
         Dispatch.mainThread {
             onCheckInStateChangedListeners.forEach {
                 it.onCheckOut()
+            }
+        }
+    }
+
+    private fun notifyOnMultipleCandidatesAvailable(candidates: List<Shop>) {
+        Dispatch.mainThread {
+            onCheckInStateChangedListeners.forEach {
+                it.onMultipleCandidatesAvailable(candidates)
             }
         }
     }

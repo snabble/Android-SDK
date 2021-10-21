@@ -14,16 +14,22 @@ class CheckInManagerTest : SnabbleSdkTest() {
     val locationSnabble = Location("").apply {
         latitude = 50.7352963
         longitude = 7.100141
+        accuracy = 0.0f
+        time = System.currentTimeMillis()
     }
 
     val locationSnabbleButWith640MetersDistance = Location("").apply {
         latitude = 50.7340824
         longitude = 7.0912753
+        accuracy = 0.0f
+        time = System.currentTimeMillis()
     }
 
     val locationNoWhere = Location("").apply {
         latitude = 51.7352963
         longitude = 5.100141
+        accuracy = 0.0f
+        time = System.currentTimeMillis()
     }
 
     override fun onApplyConfig(config: Snabble.Config) {
@@ -46,6 +52,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
             }
 
             override fun onCheckOut() {
+
+            }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
 
             }
         })
@@ -71,6 +81,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
             override fun onCheckOut() {
 
             }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
+
+            }
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
@@ -90,6 +104,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
 
             override fun onCheckOut() {
                 latch2.countDown()
+            }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
+
             }
         })
 
@@ -112,6 +130,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
             override fun onCheckOut() {
 
             }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
+
+            }
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
@@ -132,6 +154,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
             override fun onCheckOut() {
                 Assert.fail()
             }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
+
+            }
         })
 
         locationManager.mockLocation = locationNoWhere
@@ -150,6 +176,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
             }
 
             override fun onCheckOut() {
+
+            }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
 
             }
         })
@@ -174,10 +204,41 @@ class CheckInManagerTest : SnabbleSdkTest() {
             override fun onCheckOut() {
                 Assert.fail()
             }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
+
+            }
         })
 
         locationManager.mockLocation = locationSnabbleButWith640MetersDistance
         latch2.await(2, TimeUnit.SECONDS)
+    }
+
+    @Test
+    fun testMultipleShopsAvailable() {
+        val checkInManager = Snabble.getInstance().checkInManager
+        checkInManager.startUpdating()
+
+        val latch = CountDownLatch(1)
+        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
+            override fun onCheckIn(shop: Shop) {
+
+            }
+
+            override fun onCheckOut() {
+
+            }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
+                latch.countDown()
+            }
+        })
+
+        val locationManager = Snabble.getInstance().checkInLocationManager
+        locationManager.mockLocation = locationSnabble
+
+        latch.await(2, TimeUnit.SECONDS)
+        Assert.assertEquals(2, checkInManager.candidates?.size)
     }
 
     @Test
@@ -192,6 +253,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
             }
 
             override fun onCheckOut() {
+
+            }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
 
             }
         })
@@ -209,6 +274,10 @@ class CheckInManagerTest : SnabbleSdkTest() {
             }
 
             override fun onCheckOut() {
+
+            }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
 
             }
         })
