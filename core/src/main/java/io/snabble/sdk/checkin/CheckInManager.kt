@@ -67,7 +67,7 @@ class CheckInManager(val snabble: Snabble,
 
     /**
      * Potential list of shops, if in range of multiple shops.
-     * To select a shop of multiple candidates you neet to call setShop.
+     * To select a shop of multiple candidates you need to call setShop.
      *
      * While still inside the checkOutRadius the selected shop will be preferred.
      */
