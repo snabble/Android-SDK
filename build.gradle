@@ -1,33 +1,33 @@
 buildscript {
-    ext.kotlin_version = "1.5.31"
+    ext.kotlin_version = '1.5.31'
 
     repositories {
         google()
         mavenCentral()
-
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-base:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:7.0.3'
         classpath 'gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0'
-        classpath "gradle.plugin.gmazzo:sqlite-plugin:0.2"
+        classpath 'gradle.plugin.gmazzo:sqlite-plugin:0.2'
     }
 }
 
 plugins {
     id 'maven-publish'
+    id 'org.jetbrains.dokka'
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://datatrans.jfrog.io/artifactory/mobile-sdk/"}
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://datatrans.jfrog.io/artifactory/mobile-sdk/'}
     }
 
     project.ext {
@@ -42,7 +42,7 @@ allprojects {
         okhttpVersion='4.9.1'
         desugarVersion='1.1.5'
 
-        sdkVersion += project.getProperties().get("versionSuffix", "")
+        sdkVersion += project.getProperties().get('versionSuffix', '')
     }
 }
 
@@ -50,24 +50,108 @@ afterEvaluate {
     publishing {
         repositories {
             maven {
-                name = "LocalBuildDir"
-                def releasesRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-releases/"
-                def snapshotsRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-snapshots/"
+                name = 'LocalBuildDir'
+                def releasesRepoUrl = 'file://' + project.rootDir.absolutePath + '/build/maven-releases/'
+                def snapshotsRepoUrl = 'file://' + project.rootDir.absolutePath + '/build/maven-snapshots/'
                 url = rootProject.sdkVersion.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             }
 
             maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/snabble/Android-SDK")
+                name = 'GitHubPackages'
+                url = uri('https://maven.pkg.github.com/snabble/Android-SDK')
 
                 credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
+                    username = System.getenv('GITHUB_ACTOR')
+                    password = System.getenv('GITHUB_TOKEN')
                 }
             }
         }
     }
 }
+
+//tasks.dokkaHtmlMultiModule.configure {
+//    outputDirectory.set(buildDir.resolve("dokkaCustomMultiModuleOutput"))
+//}
+
+//dokkaMultimodule {
+//    // File to be used as an excerpt for each subprojects
+//    documentationFileName = "README.md"
+//    // output format for rendering multimodule page (accepts the same values as regular dokka task)
+//    outputFormat = "gfm"
+//}
+
+//tasks.register<DokkaTask>("dokkaCustomFormat") {
+//    pluginConfiguration<org.jetbrains.dokka.base.DokkaBase, org.jetbrains.dokka.base.DokkaBaseConfiguration> {
+//        customStyleSheets = listOf(file("logo-styles.css"))
+//        customAssets = listOf(file("ktor-logo.png"))
+//        //pluginsMapConfiguration.set(mapOf("org.jetbrains.dokka.base.DokkaBase" to """{ "footerMessage": "<div style=\"color: red\">custom message</div>" }"""))
+//
+//    }
+//}
+
+tasks.named("dokkaHtml").configure {
+    dokkaSourceSets {
+        configureEach {
+            skipDeprecated.set(true)
+        }
+    }
+}
+tasks.withType(org.jetbrains.dokka.gradle.AbstractDokkaTask).configureEach {
+    // TODO remove one docs when this is ready for use
+    outputDirectory.set(rootDir.toPath().resolve("docs/docs/api").toFile())
+    var year = java.time.LocalDate.now().year
+    pluginsMapConfiguration.set([
+                //"customStyleSheets": ["${rootDir.toPath().resolve("docs/css/logo-styles.css").toString().replace('\\', '/')}"],
+                //"customAssets": ["${rootDir.toPath().resolve("docs/img/palette_black_36dp.svg").toString().replace('\\', '/')}"],
+            "org.jetbrains.dokka.base.DokkaBase": """{ 
+                "footerMessage": "Copyright &copy; $year snabble GmbH"
+            }"""])
+}
+
+/*
+tasks.dokkaHtml.configure {
+    dokkaSourceSets {
+        named("main") {
+            // by changing the moduleName here, the heading in the markdown (README.md) must also be changed
+            moduleName.set("TEST TEST TEST")
+            // since the readme has a level 1 heading matching "Module <moduleName>",
+            // it will be considered as module doc and rendered in dokka
+            includes.from("README.md")
+            // show warnings on undocumented public members
+            reportUndocumented.set(true)
+
+            // when provided, Dokka generates "source" links for each declaration
+            // see https://github.com/Kotlin/dokka/blob/master/examples/gradle/dokka-gradle-example/build.gradle.kts
+            //sourceLink {
+            //    localDirectory.set(file("src/main/kotlin"))
+            //    remoteUrl.set(URL("https://github.com/derlin/goodreads-metadata-fetcher/tree/main/src/main/kotlin"))
+            //    remoteLineSuffix.set("#L") // this is specific to Github
+            //}
+
+            // the samples can then be referenced using @sample package.methodName,
+            // where "package" is actually the package defined in each file
+            //samples.from("${file("src/e2e/kotlin/samples/samples.kt")}")
+
+            // configure the dokka HTML plugin, see https://kotlin.github.io/dokka/1.4.32/user_guide/gradle/usage/#applying-plugins
+            // this syntax is only possible because "org.jetbrains.dokka:dokka-base" is referenced in the buildscript {}
+            // without it, use:
+            //pluginsMapConfiguration.set(
+            //    mapOf(
+            //        "org.jetbrains.dokka.base.DokkaBase" to """{
+            //            "customStyleSheets" : ["${file("dokka/custom-styles.css")}"],
+            //            "customAssets": ["${file("dokka/logo-icon.svg")}", "${file("dokka/logo.svg")}"],
+            //            "footerMessage": "Made with love by Derlin"
+            //            }"""
+            //    )
+            //)
+            pluginConfiguration<org.jetbrains.dokka.base.DokkaBase, org.jetbrains.dokka.base.DokkaBaseConfiguration> {
+                customAssets = listOf(file("dokka/logo-icon.svg"), file("dokka/logo.svg"))
+                customStyleSheets = listOf(file("dokka/custom-styles.css"))
+                footerMessage = "Made with ❤ by Derlin"
+            }
+        }
+    }
+}*/
 
 task printVersion() {
     println project.sdkVersion

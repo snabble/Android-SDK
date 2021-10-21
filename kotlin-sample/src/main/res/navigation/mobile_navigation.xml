@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="io.snabble.sdk.sample.HomeFragment"
+        android:label="@string/home_title" />
+
+    <fragment
+        android:id="@+id/navigation_scanner"
+        android:name="io.snabble.sdk.ui.integration.SelfScanningFragment"
+        android:label="@string/scanner_title">
+        <argument android:name="showProductCode" app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_cart"
+        android:name="io.snabble.sdk.ui.integration.ShoppingCartFragment"
+        android:label="@string/cart_title"/>
+
+    <fragment
+        android:id="@+id/navigation_barcode_search"
+        android:name="io.snabble.sdk.ui.integration.ProductSearchFragment"
+        android:label="Barcode Search" />
+
+    <fragment
+        android:id="@+id/navigation_age_verification"
+        android:name="io.snabble.sdk.ui.integration.AgeVerificationInputFragment"
+        android:label="Age verification"/>
+
+    <fragment
+        android:id="@+id/navigation_checkout_customer_card_fragment"
+        android:name="io.snabble.sdk.ui.integration.CheckoutCustomerCardFragment"
+        android:label="Checkout" />
+
+    <fragment
+        android:id="@+id/navigation_checkout_gatekeeper_fragment"
+        android:name="io.snabble.sdk.ui.integration.CheckoutGatekeeperFragment"
+        android:label="Checkout" />
+
+    <fragment
+        android:id="@+id/navigation_checkout_pos_fragment"
+        android:name="io.snabble.sdk.ui.integration.CheckoutPOSFragment"
+        android:label="Checkout" />
+
+    <fragment
+        android:id="@+id/navigation_checkout_online"
+        android:name="io.snabble.sdk.ui.integration.CheckoutOnlineFragment"
+        android:label="Checkout" />
+
+    <fragment
+        android:id="@+id/navigation_checkout_offline"
+        android:name="io.snabble.sdk.ui.integration.CheckoutOfflineFragment"
+        android:label="Checkout" />
+
+    <fragment
+        android:id="@+id/navigation_paydirekt_input"
+        android:name="io.snabble.sdk.ui.integration.PaydirektInputFragment"
+        android:label="Paydirekt" />
+
+    <fragment
+        android:id="@+id/navigation_credit_card_input"
+        android:name="io.snabble.sdk.ui.integration.CreditCardInputFragment"
+        android:label="Enter credit card" />
+
+    <fragment
+        android:id="@+id/navigation_sepa_card_input"
+        android:name="io.snabble.sdk.ui.integration.SEPACardInputFragment"
+        android:label="Enter SEPA card info" />
+
+    <fragment
+        android:id="@+id/navigation_payment_credentials"
+        android:name="io.snabble.sdk.ui.integration.PaymentCredentialsListFragment"
+        android:label="Payment Credentials" />
+
+    <fragment
+        android:id="@+id/navigation_payment_success"
+        android:name="io.snabble.sdk.sample.CustomPaymentSuccess"
+        android:label="Success" />
+
+    <action
+        android:id="@+id/navigation_action_success"
+        app:destination="@id/navigation_payment_success"
+        app:popUpTo="@id/navigation_cart"
+        app:popUpToInclusive="true" />
+
+    <fragment
+        android:id="@+id/navigation_payment_failure"
+        android:name="io.snabble.sdk.ui.integration.PaymentFailureFragment"
+        android:label="Failure" />
+
+    <action
+        android:id="@+id/navigation_action_failure"
+        app:destination="@id/navigation_payment_failure"
+        app:popUpTo="@id/navigation_cart"
+        app:popUpToInclusive="true" />
+
+</navigation>

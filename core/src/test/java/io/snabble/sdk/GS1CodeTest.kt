@@ -70,8 +70,13 @@ class GS1CodeTest {
 
     @Test
     fun testSingle() {
-        // check("010000000000000", null, listOf("010000000000000"))
+        check("010000000000000", null, listOf("010000000000000"))
         check("010000000000000_${GS}01123", null, listOf("010000000000000_", "01123"))
+    }
+
+    @Test
+    fun gs128Single() {
+        // TODO
     }
 
     @Test

@@ -1,1 +1,7 @@
-include ':core', ':sample', ':ui', 'ui-integration', ':utils', ':firebase-detector'
+pluginManagement {
+    plugins {
+        id "org.jetbrains.dokka" version "1.5.30"
+    }
+}
+
+include ':core', ':java-sample', 'kotlin-sample', ':ui', 'ui-integration', ':utils', ':firebase-detector'
