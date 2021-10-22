@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.51.2]
+
+### Fixed
+- Fixed gs1 code parsing
+
+## [0.51.1]
+
+### Fixed
+- Fixed payment options not showing anything if in a single project context
+
+## [0.51.0]
+
+### Changed
+- SelfScanningFragment's getSelfScanningView() is now nullable 
+
+### Fixed
+- SelfScanningFragment options menu being visible when no camera permission is given
+
 ## [0.50.8]
 
 ### Changed
