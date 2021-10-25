@@ -522,6 +522,10 @@ public class SelfScanningView extends FrameLayout {
         unregisterListeners();
     }
 
+    public BarcodeDetector getBarcodeDetector() {
+        return barcodeScanner.getBarcodeDetector();
+    }
+
     private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
