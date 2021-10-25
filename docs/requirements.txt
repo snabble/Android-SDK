@@ -1,0 +1,5 @@
+# snabble mkdocs dependencies
+mkdocs-codeinclude-plugin
+mkdocs-material
+pymdown-extensions
+pymdown-extensions
