@@ -17,4 +17,10 @@ jobs:
         with:
           java-version: 12
       - name: Build
-        run: ./gradlew build
+        # TODO Roll this back to build and move the logic to publish.yml
+        run: ./gradlew build dokkaGfmMultiModule
+      - name: Deploy docs
+          uses: mhausenblas/mkdocs-deploy-gh-pages@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            CONFIG_FILE: docs/mkdocs.yml
