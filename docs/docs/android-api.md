@@ -13,11 +13,11 @@ androidx and a material components theme for ui components
 ## Testing mkdocs features
 This is *NOT* part of the documentation!!
 <!--codeinclude-->
-[Init methods](./api/foo.java) block:initBlocking
+[Init methods](../../java-sample/src/main/java/io/snabble/testapp/App.java) block:initBlocking
 <!--/codeinclude-->
 
 <!--codeinclude-->
-[Snabble Setup](./api/foo.java) inside_block:doFoo
+[Snabble Setup](../../java-sample/src/main/java/io/snabble/testapp/App.java) inside_block:doFoo
 <!--/codeinclude-->
 
 ### Using the snabble GitHub Repository
