@@ -19,8 +19,7 @@ jobs:
       - name: Build
         # TODO Roll this back to build and move the logic to publish.yml
         run: ./gradlew build dokkaGfmMultiModule
-      - name: Set up mkdocs dependencies
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
         - run: pip install mkdocs-codeinclude-plugin mkdocs-material pymdown-extensions pymdown-extensions
