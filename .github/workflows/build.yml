@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, feature/documentation ] # TODO remove the feature branch
   pull_request:
     branches: [ main, master ]
 
