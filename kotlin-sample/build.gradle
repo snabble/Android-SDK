@@ -44,10 +44,19 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
 
-    implementation 'io.snabble.sdk:core:0.50.6'
-    implementation 'io.snabble.sdk:ui:0.50.6'
-    implementation 'io.snabble.sdk:ui-integration:0.50.6'
-    implementation 'io.snabble.sdk:utils:0.50.6'
+    // just for simplicity
+    implementation project(':core')
+    implementation project(':ui')
+    implementation project(':ui-integration')
+    implementation project(':utils')
+
+    // in your app you need to use those dependencies:
+    //implementation 'io.snabble.sdk:core:0.50.6'
+    //implementation 'io.snabble.sdk:ui:0.50.6'
+    //implementation 'io.snabble.sdk:ui-integration:0.50.6'
+    //implementation 'io.snabble.sdk:utils:0.50.6'
+
+    // TODO verify this one
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     testImplementation 'junit:junit:4.13.2'
