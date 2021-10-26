@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.scanner;
 
 import android.graphics.Rect;
 
+import com.google.android.gms.common.annotation.KeepName;
 import com.google.zxing.Binarizer;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
@@ -20,6 +21,7 @@ import java.util.Map;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.utils.Logger;
 
+@KeepName
 public class ZXingBarcodeDetector implements BarcodeDetector {
     private byte[] cropBuffer = null;
     private MultiFormatReader multiFormatReader;
