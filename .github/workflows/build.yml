@@ -17,12 +17,11 @@ jobs:
         with:
           java-version: 12
       - name: Build
-        # TODO Roll this back to build and move the logic to publish.yml
+        # TODO Roll this back to build and move Deploy docs to publish.yml
         run: ./gradlew build dokkaGfmMultiModule
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@nomaterial
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONFIG_FILE: docs/mkdocs.yml
-          #EXTRA_PACKAGES: mkdocs-codeinclude-plugin mkdocs-material pymdown-extensions pymdown-extensions
           REQUIREMENTS: docs/requirements.txt
