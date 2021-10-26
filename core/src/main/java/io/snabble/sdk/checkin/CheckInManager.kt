@@ -17,9 +17,28 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
+/**
+ * Listener for check in states. Notifies about check in / check out and if multiple shops are
+ * available in the same area
+ */
 interface OnCheckInStateChangedListener {
+    /**
+     * Gets called when the user is inside or near a shop.
+     */
     fun onCheckIn(shop: Shop)
+
+    /**
+     * Gets called after the user leaves the area of a shop for lastSeenThreshold time.
+     */
     fun onCheckOut()
+
+    /**
+     * Gets called if the check in manager detected multiple shops in the same area.
+     * You should show a message to the user for selecting one of the available shops.
+     *
+     * You can set the Shop via CheckInManager#setShop and it will be the checked in shop
+     * until the user leaves the area.
+     */
     fun onMultipleCandidatesAvailable(candidates: List<Shop>)
 }
 
