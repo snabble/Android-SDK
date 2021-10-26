@@ -40,7 +40,7 @@ class CheckInManager(val snabble: Snabble,
     private var lastLocation: Location? = null
 
     private val handler = Handler(Looper.getMainLooper())
-    private var projectByShopId = HashMap<String, Project>()
+    private var projectByShopId = mapOf<String, Project>()
     private var shopList: List<Shop> = emptyList()
     private var lastCheckedInProject: Project? = null
 
@@ -223,15 +223,8 @@ class CheckInManager(val snabble: Snabble,
 
 
     private fun updateShopProjectsMap() {
-        val newProjectByShop = HashMap<String, Project>()
-
-        for (project in Snabble.getInstance().projects) {
-            for (s in project.shops) {
-                newProjectByShop[s.id] = project
-            }
-        }
-
-        projectByShopId = newProjectByShop
+        val projects = Snabble.getInstance().projects
+        projectByShopId = projects.flatMap { project -> project.shops.map { it.id to project } }.toMap()
     }
 
     fun addOnCheckInStateChangedListener(onCheckInStateChangedListener: OnCheckInStateChangedListener) {
