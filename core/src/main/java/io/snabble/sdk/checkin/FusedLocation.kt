@@ -42,14 +42,12 @@ fun isBetterLocation(location: Location, currentBestLocation: Location?): Boolea
     )
 
     // Determine location quality using a combination of timeliness and accuracy
-    if (isMoreAccurate) {
-        return true
-    } else if (isNewer && !isLessAccurate) {
-        return true
-    } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-        return true
+    return when {
+        isMoreAccurate -> true
+        isNewer && !isLessAccurate -> true
+        isNewer && !isSignificantlyLessAccurate && isFromSameProvider -> true
+        else -> false
     }
-    return false
 }
 
 /** Checks whether two providers are the same  */
