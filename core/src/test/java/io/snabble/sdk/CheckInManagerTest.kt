@@ -1,6 +1,7 @@
 package io.snabble.sdk
 
 import android.location.Location
+import io.snabble.sdk.checkin.CheckInManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
 import org.junit.Assert
 import org.junit.Test
@@ -45,25 +46,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
-        val latch = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                latch.countDown()
-            }
-
-            override fun onCheckOut() {
-
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
+        val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
+            countDown()
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
-        latch.await(2, TimeUnit.SECONDS)
+        listener.await()
         Assert.assertEquals("1774", checkInManager.shop?.id)
     }
 
@@ -72,47 +62,25 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
-        val latch = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                latch.countDown()
-            }
-
-            override fun onCheckOut() {
-
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
+        val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
+            countDown()
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
-        latch.await(2, TimeUnit.SECONDS)
+        listener.await()
         Assert.assertEquals("1774", checkInManager.shop?.id)
 
         // simulate that we checked in 15 minutes before
         checkInManager.checkedInAt = checkInManager.checkedInAt - TimeUnit.MINUTES.toMillis(15)
 
-        val latch2 = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-
-            }
-
-            override fun onCheckOut() {
-                latch2.countDown()
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
+        val listener2 = CheckInListener(checkInManager, onCheckOut = {
+            countDown()
         })
 
         locationManager.mockLocation = locationNoWhere
-        latch2.await(2, TimeUnit.SECONDS)
+        listener2.await()
         Assert.assertEquals(null, checkInManager.shop?.id)
     }
 
@@ -121,47 +89,28 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
-        val latch = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                latch.countDown()
-            }
-
-            override fun onCheckOut() {
-
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
+        val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
+            countDown()
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
-        latch.await(2, TimeUnit.SECONDS)
+        listener.await()
         Assert.assertEquals("1774", checkInManager.shop?.id)
         locationManager.mockLocation = locationNoWhere
 
-        val latch2 = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                if (shop.id != "1774") {
+        val listener2 = CheckInListener(checkInManager,
+            onCheckIn = {
+                if (it.id != "1774") {
                     Assert.fail("Shop is different, but should be the same!")
-                }
-            }
-
-            override fun onCheckOut() {
+                }},
+            onCheckOut = {
                 Assert.fail("Shop should still be checked in, but is not")
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
-        })
+            })
 
         locationManager.mockLocation = locationNoWhere
-        latch2.await(2, TimeUnit.SECONDS)
+        listener2.await()
     }
 
     @Test
@@ -169,49 +118,30 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
-        val latch = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                latch.countDown()
-            }
-
-            override fun onCheckOut() {
-
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
+        val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
+            countDown()
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
-        latch.await(2, TimeUnit.SECONDS)
+        listener.await()
         Assert.assertEquals("1774", checkInManager.shop?.id)
 
         // simulate that we checked in 15 minutes before
         checkInManager.checkedInAt = checkInManager.checkedInAt - TimeUnit.MINUTES.toMillis(15)
 
-        val latch2 = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                if (shop.id != "1774") {
+        val listener2 = CheckInListener(checkInManager,
+            onCheckIn = {
+                if (it.id != "1774") {
                     Assert.fail("Shop is different, but should be the same!")
-                }
-            }
-
-            override fun onCheckOut() {
+                }},
+            onCheckOut = {
                 Assert.fail("Shop should still be checked in, but is not")
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
-        })
+            })
 
         locationManager.mockLocation = locationSnabbleButWith640MetersDistance
-        latch2.await(2, TimeUnit.SECONDS)
+        listener2.await()
     }
 
     @Test
@@ -219,25 +149,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
-        val latch = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-
-            }
-
-            override fun onCheckOut() {
-
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-                latch.countDown()
-            }
+        val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
+            countDown()
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
-        latch.await(2, TimeUnit.SECONDS)
+        listener.await()
         Assert.assertEquals(2, checkInManager.candidates?.size)
     }
 
@@ -246,45 +165,51 @@ class CheckInManagerTest : SnabbleSdkTest() {
         val checkInManager = Snabble.getInstance().checkInManager
         checkInManager.startUpdating()
 
-        val latch = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                latch.countDown()
-            }
-
-            override fun onCheckOut() {
-
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
+        val listener = CheckInListener(checkInManager, onCheckIn = {
+            countDown()
         })
 
         val locationManager = Snabble.getInstance().checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
-        latch.await(2, TimeUnit.SECONDS)
+        listener.await()
         Assert.assertEquals("1774", checkInManager.shop?.id)
 
-        val latch2 = CountDownLatch(1)
-        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                latch2.countDown()
-            }
-
-            override fun onCheckOut() {
-
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-
-            }
+        val listener2 = CheckInListener(checkInManager, onCheckIn = {
+            countDown()
         })
 
         checkInManager.shop = project.shops.find { it.id == "1337" }
         locationManager.mockLocation = locationSnabble
-        latch2.await(2, TimeUnit.SECONDS)
+        listener2.await()
         Assert.assertEquals("1337", checkInManager.shop?.id)
     }
+}
+
+private class CheckInListener(
+    checkInManager: CheckInManager,
+    onCheckIn: (CheckInListener.(Shop)->Any)? = null,
+    onCheckOut: (CheckInListener.()->Any)? = null,
+    onMultipleCandidatesAvailable: (CheckInListener.(List<Shop>)->Any)? = null) {
+    private val latch = CountDownLatch(1)
+
+    init {
+        checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
+            override fun onCheckIn(shop: Shop) {
+                onCheckIn?.invoke(this@CheckInListener, shop)
+            }
+
+            override fun onCheckOut() {
+                onCheckOut?.invoke(this@CheckInListener)
+            }
+
+            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
+                onMultipleCandidatesAvailable?.invoke(this@CheckInListener, candidates)
+            }
+        })
+    }
+
+    fun await() = latch.await(2, TimeUnit.SECONDS)
+
+    fun countDown() = latch.countDown()
 }
