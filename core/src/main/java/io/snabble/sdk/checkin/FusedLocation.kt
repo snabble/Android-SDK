@@ -2,7 +2,7 @@ package io.snabble.sdk.checkin
 
 import android.location.Location
 
-private const val TWO_MINUTES = 1000 * 60 * 2
+private const val MIN_DELTA_TIME = 1000 * 60 * 2
 
 /** Determines whether one Location reading is better than the current Location fix
  * @param location  The new Location that you want to evaluate
@@ -16,8 +16,8 @@ fun isBetterLocation(location: Location, currentBestLocation: Location?): Boolea
 
     // Check whether the new location fix is newer or older
     val timeDelta = location.time - currentBestLocation.time
-    val isSignificantlyNewer = timeDelta > TWO_MINUTES
-    val isSignificantlyOlder = timeDelta < -TWO_MINUTES
+    val isSignificantlyNewer = timeDelta > MIN_DELTA_TIME
+    val isSignificantlyOlder = timeDelta < -MIN_DELTA_TIME
     val isNewer = timeDelta > 0
 
     // If it's been more than two minutes since the current location, use the new location
