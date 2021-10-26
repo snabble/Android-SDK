@@ -186,7 +186,10 @@ class CheckInManager(val snabble: Snabble,
      *
      * Requires ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION.
      */
-    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    @RequiresPermission(anyOf = [
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ])
     fun startUpdating() {
         locationManager.startTrackingLocation()
         locationManager.location.observeForever(locationObserver)
