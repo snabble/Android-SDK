@@ -27,7 +27,7 @@ class LoadingActivity : AppCompatActivity() {
         val snabble = Snabble.getInstance()
         snabble.setup(application, config, object : Snabble.SetupCompletionListener {
             override fun onReady() {
-                snabble.userPreferences.setRequireKeyguardAuthenticationForPayment(true)
+                //snabble.userPreferences.setRequireKeyguardAuthenticationForPayment(true)
 
                 // an application can have multiple projects
                 val project = snabble.projects.first()
