@@ -2,14 +2,15 @@
 Offer Scan & Go to your customers in your own app – with the Snabble Mobile SDK. Our mobile SDK supports the entire range of Snabble base functionality including scanning, product lists, promotions, payment and shops.
 The SDK covers the whole communication with the Snabble Cloud-Platform and provides you with UI elements for your app that are easy to use and customize, so that you simplify the integration of Scan & Go into your app significantly.
 For details about integrating with the Snabble Cloud-Platform, please see the [Platform Documentation](https://github.com/snabble/docs) on GitHub.
-## Distribution & Download
 
+## Distribution & Download
 ### iOS
 * [Snabble Mobile SDK for iOS on GitHub](https://github.com/snabble/iOS-SDK)
 * Supported iOS versions: iOS 12+
 
 ### Android
-* [Snabble Mobile SDK for Android on GitHub](android-api.md)
+* [Snabble Mobile SDK for Android on GitHub](https://github.com/snabble/Android-SDK)
+* [Sample Apps](sample-apps.md)
 * Supported Android versions: Android 8+
 
 ## Feature Overview

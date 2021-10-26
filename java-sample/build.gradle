@@ -6,31 +6,31 @@ android {
     buildToolsVersion project.buildToolsVersion
 
     defaultConfig {
-        applicationId "io.snabble.testapp"
+        applicationId 'io.snabble.testapp'
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
         versionCode 2
-        versionName "1.0"
+        versionName '1.0'
 
-        Properties properties = new Properties()
-        def localFile = project.rootProject.file('local.properties')
-        if (localFile.exists()) {
-            properties.load(localFile.newDataInputStream())
+        // Setup here or in your local.properties file you Snabble secrets
+        def appId = null
+        def endpoint = null
+        def secret = null
 
-            def id = properties.getProperty('snabble.appId')
-            def endpoint = properties.getProperty('snabble.endpoint')
-            def secret = properties.getProperty('snabble.secret')
-            
-            resValue "string", "app_id", id != null ? id : "<missing app id>"
-            resValue "string", "endpoint", endpoint != null ? endpoint : ""
-            resValue "string", "secret", secret != null ? secret : "<missing secret>"
-        } else {
-            resValue "string", "app_id", "<missing app id>"
-            resValue "string", "endpoint", ""
-            resValue "string", "secret", "<missing secret>"
+        def configFile = project.rootProject.file('local.properties')
+        if ((appId == null || endpoint == null || secret == null) && configFile.exists()) {
+            Properties properties = new Properties()
+            properties.load(configFile.newDataInputStream())
+
+            appId = properties.getProperty('snabble.appId')
+            endpoint = properties.getProperty('snabble.endpoint')
+            secret = properties.getProperty('snabble.secret')
         }
+        resValue 'string', 'app_id', appId ?: '<missing app id>'
+        resValue 'string', 'endpoint', endpoint ?: ''
+        resValue 'string', 'secret', secret ?: '<missing secret>'
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -59,9 +59,15 @@ android {
 dependencies {
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
 
+    // just for simplicity
     implementation project(':core')
     implementation project(':ui')
     implementation project(':ui-integration')
+
+    // in your app you need to use those dependencies:
+    //implementation 'io.snabble.sdk:core:0.50.6'
+    //implementation 'io.snabble.sdk:ui:0.50.6'
+    //implementation 'io.snabble.sdk:ui-integration:0.50.6'
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'commons-io:commons-io:2.5'

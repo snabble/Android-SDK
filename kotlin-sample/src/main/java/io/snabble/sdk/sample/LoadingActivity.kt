@@ -17,10 +17,10 @@ class LoadingActivity : AppCompatActivity() {
     fun initSdk() {
         // config {
         val config = Snabble.Config()
-        config.appId = "insert app id here"
-        config.endpointBaseUrl = "https://api.snabble-testing.io" // delete for production environment
-        config.secret = "insert secret here"
-        // }
+        config.endpointBaseUrl = getString(R.string.endpoint)
+        config.secret = getString(R.string.secret)
+        config.appId = getString(R.string.app_id)
+        //}
 
         Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
 

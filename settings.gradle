@@ -4,4 +4,4 @@ pluginManagement {
     }
 }
 
-include ':core', ':java-sample', /*'kotlin-sample',*/ ':ui', 'ui-integration', ':utils', ':firebase-detector'
+include ':core', ':java-sample', 'kotlin-sample', ':ui', 'ui-integration', ':utils', ':firebase-detector'

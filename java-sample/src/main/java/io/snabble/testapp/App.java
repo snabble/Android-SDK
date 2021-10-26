@@ -68,10 +68,12 @@ public class App extends Application {
         //you may enable debug logging to see requests made by the sdk, and other various logs
         Snabble.setDebugLoggingEnabled(true);
 
+        // config {
         Snabble.Config config = new Snabble.Config();
         config.endpointBaseUrl = getString(R.string.endpoint);
         config.secret = getString(R.string.secret);
         config.appId = getString(R.string.app_id);
+        //}
 
         final Snabble snabble = Snabble.getInstance();
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
