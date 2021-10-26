@@ -184,7 +184,7 @@ class CheckInManager(val snabble: Snabble,
      *
      * Calls OnCheckInStateChangedListener's onCheckIn or onCheckOut if users enter or exit shop areas.
      *
-     * Requires ACCESS_FINE_LOCATION.
+     * Requires ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION. 
      */
     @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     fun startUpdating() {
