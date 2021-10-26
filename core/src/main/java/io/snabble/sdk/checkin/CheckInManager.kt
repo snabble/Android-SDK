@@ -292,20 +292,12 @@ private data class NearestShop(
 )
 
 private fun List<Shop>.nearest(location: Location): NearestShop? {
-    var nearest: Shop? = null
-    var nearestDistance: Float = Float.MAX_VALUE
+    val nearest = minByOrNull { it.location.distanceTo(location) }
+    val nearestDistance = nearest?.location?.distanceTo(location)
 
-    forEach {
-        val shopLocation = Location("")
-        shopLocation.latitude
-        val dist = it.location.distanceTo(location)
-        if (dist < nearestDistance) {
-            nearest = it
-            nearestDistance = dist
-        }
+    if (nearest != null && nearestDistance != null) {
+        return NearestShop(nearestDistance, nearest)
     }
 
-    return nearest?.let { shop ->
-        NearestShop(nearestDistance, shop)
-    }
+    return null
 }
