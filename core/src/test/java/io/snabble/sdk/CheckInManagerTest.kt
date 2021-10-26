@@ -147,12 +147,12 @@ class CheckInManagerTest : SnabbleSdkTest() {
         checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
                 if (shop.id != "1774") {
-                    Assert.fail()
+                    Assert.fail("Shop is different, but should be the same!")
                 }
             }
 
             override fun onCheckOut() {
-                Assert.fail()
+                Assert.fail("Shop should still be checked in, but is not")
             }
 
             override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
@@ -197,12 +197,12 @@ class CheckInManagerTest : SnabbleSdkTest() {
         checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
                 if (shop.id != "1774") {
-                    Assert.fail()
+                    Assert.fail("Shop is different, but should be the same!")
                 }
             }
 
             override fun onCheckOut() {
-                Assert.fail()
+                Assert.fail("Shop should still be checked in, but is not")
             }
 
             override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
