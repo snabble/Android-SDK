@@ -14,6 +14,9 @@ import com.google.android.gms.tasks.Task
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.Logger
 
+private const val LOCATION_UPDATE_INTERVAL_MS = 5000L
+private const val LOCATION_UPDATE_MIN_DISTANCE = 0f
+
 /**
  * Location manager used by the check in manager. Periodically polls location after calling
  * startTrackingLocation and stores it in location live data.
@@ -92,7 +95,12 @@ class CheckInLocationManager(val application: Application) {
             val providers = locationManager.getProviders(true)
             providers.retainAll(allowedProviders)
             providers.forEach {
-                locationManager.requestLocationUpdates(it, 5000, 0.0f, locationListener)
+                locationManager.requestLocationUpdates(
+                    it,
+                    LOCATION_UPDATE_INTERVAL_MS,
+                    LOCATION_UPDATE_MIN_DISTANCE,
+                    locationListener
+                )
             }
         } else {
             Logger.e("Missing location permission, location can not be updated")
