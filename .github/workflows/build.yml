@@ -18,7 +18,7 @@ jobs:
           java-version: 12
       - name: Build
         # TODO Roll this back to build and move Deploy docs to publish.yml
-        run: ./gradlew build dokkaGfmMultiModule
+        run: ./gradlew build dokkaGfmMultiModule && cp CHANGELOG.md docs/docs/changelog.md
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@nomaterial
         env:

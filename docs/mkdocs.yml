@@ -19,7 +19,7 @@ markdown_extensions:
   - pymdownx.tabbed
 nav:
   - Home: index.md
-  - Changelog: ../CHANGELOG.md
+  - Changelog: changelog.md
   - API:
     - Overview: android-api.md
     - Core: api/core/index.md
