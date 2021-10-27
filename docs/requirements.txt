@@ -2,3 +2,4 @@
 mkdocs-codeinclude-plugin
 mkdocs-material
 pymdown-extensions
+mkdocs-macros-plugin

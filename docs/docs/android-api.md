@@ -2,29 +2,17 @@
 
 ## Requirements
 
-```
-minSdkVersion = 21
-compileSdkVersion = 29
+minSdkVersion = 21  
+compileSdkVersion = 29  
 java 8
 
 androidx and a material components theme for ui components
-```
-
-## Testing mkdocs features
-This is *NOT* part of the documentation!!
-<!--codeinclude-->
-[Init methods](../../java-sample/src/main/java/io/snabble/testapp/App.java) block:initBlocking
-<!--/codeinclude-->
-
-<!--codeinclude-->
-[Snabble Setup](../../java-sample/src/main/java/io/snabble/testapp/App.java) inside_block:doFoo
-<!--/codeinclude-->
 
 ### Using the snabble GitHub Repository
 
-Add the snabble and Datatrans Repository to your gradle Repositories
+Add the snabble maven repository for out and the Datatrans SDK:
 
-```
+``` groovy
 repositories {
     maven {
         url 'https://raw.githubusercontent.com/snabble/maven-repository/releases'
@@ -34,17 +22,17 @@ repositories {
 
 Then add the library to your dependencies.
 
-```gradle
+``` groovy
 dependencies {
     // core library
-    implementation 'io.snabble.sdk:core:{currentVersion}'
+    implementation 'io.snabble.sdk:core:{{ extra.sdk_version }}'
     
     // user interface library
-    implementation 'io.snabble.sdk:ui:{currentVersion}'
+    implementation 'io.snabble.sdk:ui:{{ extra.sdk_version }}'
     
     // user interface integration library, entirely optional,
     // for more seamless and easier integration in apps
-    implementation 'io.snabble.sdk:ui-integration:{currentVersion}'
+    implementation 'io.snabble.sdk:ui-integration:{{ extra.sdk_version }}'
 }
 ```
 
@@ -52,13 +40,13 @@ dependencies {
 
 The library can be installed to the local maven repository using:
 
-```sh
+``` sh
 ./gradlew publishToMavenLocal
 ```
 
 Make sure you add maven local to your repositories in your gradle script.
 
-```gradle
+``` groovy
 repositories {
     mavenLocal()
 }
@@ -66,16 +54,16 @@ repositories {
 
 Then add the library to your dependencies. (Note: The + means it always uses the latest version)
 
-```gradle
+``` groovy
 dependencies {
-    implementation 'io.snabble.sdk:core:+'
-    implementation 'io.snabble.sdk:ui:+'
-    implementation 'io.snabble.sdk:ui-integration:+'
+    implementation 'io.snabble.sdk:core:{{ extra.sdk_version }}'
+    implementation 'io.snabble.sdk:ui:{{ extra.sdk_version }}'
+    implementation 'io.snabble.sdk:ui-integration:{{ extra.sdk_version }}'
 }
 ```
 
 ## Usage
-```java
+``` java
 //you may enable debug logging to see requests made by the sdk, and other various logs
 Snabble.setDebugLoggingEnabled(true);
 

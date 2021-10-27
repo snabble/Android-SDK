@@ -6,6 +6,7 @@ theme:
   custom_dir: overrides
   features:
     - content.code.annotate
+    - content.code.annotate
     - navigation.tabs
   palette:
     primary: white
@@ -15,8 +16,13 @@ repo_name: Android-SDK
 repo_url: https://github.com/snabble/Android-SDK
 plugins:
   - codeinclude
+  - macros
 markdown_extensions:
   - pymdownx.tabbed
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
 nav:
   - Home: index.md
   - Changelog: changelog.md
@@ -31,3 +37,5 @@ nav:
   - Stores: https://snabble.io/en/stores/
   - Careers: https://snabble.io/en/jobs/
   - Contact: https://snabble.io/en/contact/
+extra:
+  sdk_version: '0.51.3'
