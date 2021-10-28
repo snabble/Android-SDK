@@ -75,11 +75,6 @@ class GS1CodeTest {
     }
 
     @Test
-    fun gs128Single() {
-        // TODO
-    }
-
-    @Test
     fun testMultivalue() {
         // amount payable, currency=111, value=0123456
         val code1 = GS1Code("39101110123456")
