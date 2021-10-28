@@ -24,6 +24,10 @@ import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.utils.Logger
+import android.text.Editable
+
+import android.text.TextWatcher
+import androidx.annotation.NonNull
 
 
 @Suppress("LeakingThis")
@@ -42,7 +46,7 @@ open class PaymentStatusView @JvmOverloads constructor(
 
         }
     }
-
+    private var ratingMessage: String? = null
     private var lastState: Checkout.State? = null
 
     init {
@@ -65,7 +69,15 @@ open class PaymentStatusView @JvmOverloads constructor(
         }
 
         binding.rating1.setOnClickListener {
-            sendRating("1")
+            ratingMessage = ""
+            binding.inputBadRatingLayout.isVisible = true
+            binding.inputBadRatingLayout.getEditText()?.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable) {
+                    ratingMessage = s.toString()
+                }
+            })
         }
 
         binding.rating2.setOnClickListener {
@@ -82,10 +94,13 @@ open class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun sendRating(rating: String) {
-        project.events.analytics("rating", rating, "")
+        Logger.d("Send rating " + rating + " message = " + ratingMessage)
+
+        project.events.analytics("rating", rating, ratingMessage ?: "")
         Telemetry.event(Telemetry.Event.Rating, rating)
         binding.ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanks)
         binding.ratingContainer.isInvisible = true
+        ratingMessage = null
     }
 
     private fun onStateChanged(state: Checkout.State?) {
@@ -182,6 +197,28 @@ open class PaymentStatusView @JvmOverloads constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private fun onStop() {
         isStopped = true
+
+        if (ratingMessage != null) {
+            sendRating("1")
+        }
+    }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+
+        if (visibility != VISIBLE) {
+            if (ratingMessage != null) {
+                sendRating("1")
+            }
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        if (ratingMessage != null) {
+            sendRating("1")
+        }
     }
 
     private fun startPollingForReceipts(orderId: String?) {
