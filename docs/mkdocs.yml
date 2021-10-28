@@ -38,4 +38,4 @@ nav:
   - Careers: https://snabble.io/en/jobs/
   - Contact: https://snabble.io/en/contact/
 extra:
-  sdk_version: '0.51.3'
+  sdk_version: '0.51.4'
