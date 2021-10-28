@@ -96,11 +96,11 @@ public class Assets {
     }
 
     private class Asset {
-        public File file;
+        public String filePath;
         public String hash;
 
-        public Asset(File file, String hash) {
-            this.file = file;
+        public Asset(String filePath, String hash) {
+            this.filePath = filePath;
             this.hash = hash;
         }
     }
@@ -127,7 +127,7 @@ public class Assets {
     Assets(Project project) {
         this.app = Snabble.getInstance().getApplication();
         this.project = project;
-        this.manifestFile = new File(project.getInternalStorageDirectory(), "assets.json");
+        this.manifestFile = new File(project.getInternalStorageDirectory(), "assets_v2.json");
         this.assetDir = new File(project.getInternalStorageDirectory(), "assets/");
         this.assetDir.mkdirs();
 
@@ -280,7 +280,7 @@ public class Assets {
 
                             Logger.d("add " + apiAsset.name);
 
-                            Asset asset = new Asset(localFile, hash);
+                            Asset asset = new Asset(localFile.getAbsolutePath(), hash);
                             IOUtils.copy(body.byteStream(), new FileOutputStream(localFile));
 
                             Dispatch.mainThread(() -> {
@@ -303,7 +303,8 @@ public class Assets {
                         if (!hashes.contains(asset.hash)) {
                             Logger.d("remove " + entry.getKey());
 
-                            asset.file.delete();
+                            File file = new File(asset.filePath);
+                            file.delete();
                             removals.add(entry.getKey());
                         }
                     }
@@ -414,7 +415,7 @@ public class Assets {
         if (asset != null) {
             try {
                 Logger.d("render %s %s/%s", type.name(), project.getId(), name);
-                return BitmapFactory.decodeStream(new FileInputStream(asset.file));
+                return BitmapFactory.decodeStream(new FileInputStream(asset.filePath));
             } catch (Exception e) {
                 Logger.d("could not decode " + name + ": " + e.toString());
                 return null;
@@ -433,7 +434,7 @@ public class Assets {
                 Resources res = app.getResources();
                 DisplayMetrics dm = res.getDisplayMetrics();
 
-                SVG svg = SVG.getFromInputStream(new FileInputStream(asset.file));
+                SVG svg = SVG.getFromInputStream(new FileInputStream(asset.filePath));
                 int width = Math.round(svg.getDocumentWidth() * dm.density);
                 int height = Math.round(svg.getDocumentHeight() * dm.density);
 

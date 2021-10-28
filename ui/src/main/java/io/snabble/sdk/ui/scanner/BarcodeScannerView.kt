@@ -49,7 +49,8 @@ open class BarcodeScannerView @JvmOverloads constructor(
         }
     }
 
-    private var barcodeDetector: BarcodeDetector
+    var barcodeDetector: BarcodeDetector
+        private set
 
     private var isPaused: Boolean = false
 

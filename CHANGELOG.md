@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.51.4]
+
+### Fixed
+- Fixed Assets not loading after second app startup on Android 12
+
+## [0.51.3]
+
+### Added
+- Expose the scanner engine
+
+## [0.51.2]
+
+### Fixed
+- Fixed gs1 code parsing
+
+## [0.51.1]
+
+### Fixed
+- Fixed payment options not showing anything if in a single project context
+
 ## [0.51.0]
 
 ### Changed
