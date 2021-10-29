@@ -30,7 +30,7 @@ object Payone {
 
     @Parcelize
     data class PreAuthInfo(
-        val amount: Double?,
+        val amount: Int?,
         val currency: String?
     ) : Parcelable
 

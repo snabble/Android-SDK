@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="release.safety.catch">Prosím, odstráň z fľaše zámok (ak je nasadený) pri východe na mieste, ktoré je na to určené.</string>
+    <string name="Shopping.title">Nakúpiť</string>
     <string name="Snabble.addDiscount">Zadať zľavu</string>
     <string name="Snabble.ageVerification.explanation">Na kúpu určitých produktov (napr. alkoholických produktov) je potrebné potvrdenie veku. Za týmto účelom zadaj 7-miestne číslo na zadnej strane svojho občianskeho preukazu.</string>
     <string name="Snabble.ageVerification.failed.message">Pre niektoré produkty v tvojom košíku platí vekový limit a tieto žiaľ nemôžeš kúpiť.</string>
@@ -24,8 +25,8 @@
     <string name="Snabble.Biometry.TouchId">Touch ID</string>
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Zrušiť</string>
-    <string name="Snabble.CC.3dsecureHint.retailer">Za účelom overenia kreditnej karty budeš po zadaní údajov presmerovaný/presmerovaná na tvoju banku. Tam budeš požiadaný/-á o súhlas s platbou 1,00 € pre %s. Po súhlase ti bude suma okamžite opäť pripísaná na účet.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Za účelom overenia kreditnej karty budeš po zadaní údajov presmerovaný/presmerovaná na tvoju banku. Tam budeš požiadaný/-á o súhlas so zaplatením %s pre %s. Po súhlase ti bude suma okamžite opäť pripísaná na účet.</string>
+    <string name="Snabble.CC.3dsecureHint.retailer">Zadaj svoje údaje tu. Následne ťa presmerujeme do tvojej banky za účelom potvrdenia tvojich údajov. Dovtedy si rezervujeme 1 € (na %s), a potom ti budú peniaze opäť priamo pripísané.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Zadaj svoje údaje tu. Následne ťa presmerujeme do tvojej banky za účelom potvrdenia tvojich údajov. Dovtedy si rezervujeme %s (na %s), a potom ti budú peniaze opäť priamo pripísané.</string>
     <string name="Snabble.CC.cardNumber">Číslo karty</string>
     <string name="Snabble.CC.editingHint">Údaje tvojej kreditnej karty budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.CC.noEntryPossible">Momentálne nemôžete uložiť žiadnu kreditnú kartu.</string>
@@ -88,6 +89,7 @@
     <string name="Snabble.Payment.payViaInvoice">na faktúru</string>
     <string name="Snabble.Payment.PostFinanceCard.error">Pri spracovaní tvojej karty PostFinance sa vyskytla chyba</string>
     <string name="Snabble.Payment.presentCode">Za účelom potvrdenia nákupu prilož tento kód pred Snabble monitor alebo ho ukáž zamestnancovi.</string>
+    <string name="Snabble.Payment.rejected">Nákup zamietnutý</string>
     <string name="Snabble.Payment.SEPA.hint">Poznámka: Za účelom tvojej ochrany a ochrany našich obchodníkov pred zneužitím si obchodník pri tvojej prvej platbe prostredníctvom SEPA inkasa vyžiada tvoju bankovú kartu.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Zadaný IBAN je neplatný.</string>
@@ -119,9 +121,34 @@
     <string name="Snabble.PaymentSelection.howToPay">Ako chceš zaplatiť za %s?</string>
     <string name="Snabble.PaymentSelection.payNow">Zaplatiť %s teraz</string>
     <string name="Snabble.PaymentSelection.title">Zaplatiť</string>
+    <string name="Snabble.PaymentStatus.AddDebitCard.button">Áno, uložiť kartu v aplikácii</string>
+    <string name="Snabble.PaymentStatus.AddDebitCard.message">Naozaj chceš uložiť v aplikácii svoju kartu girocard, aby si nasledujúci nákup mohol/mohla zaplatiť inkasom? Kartu môžeš v budúcnosti nechať vo svojej peňaženke.</string>
+    <string name="Snabble.PaymentStatus.back">Späť</string>
+    <string name="Snabble.PaymentStatus.close">Zatvoriť</string>
+    <string name="Snabble.PaymentStatus.ExitCode.title">Kód ukončenia</string>
+    <string name="Snabble.PaymentStatus.Payment.error">Tvoja platba nemohla byť vykonaná. Skús znovu alebo vyber iný spôsob platby.</string>
+    <string name="Snabble.PaymentStatus.Payment.title">Platba</string>
+    <string name="Snabble.PaymentStatus.Payment.tryAgain">Skúsiť znovu</string>
+    <string name="Snabble.PaymentStatus.Rating.send">Odoslať</string>
+    <string name="Snabble.PaymentStatus.Rating.title"/>
+    <string name="Snabble.PaymentStatus.Ratings.thanks">Ďakujem!</string>
+    <string name="Snabble.PaymentStatus.Ratings.title">Páčilo sa ti nakupovanie?</string>
+    <string name="Snabble.PaymentStatus.Receipt.title">Pokladničný blok</string>
     <string name="Snabble.PaymentStatus.step1">Lokalizácia v oblasti pokladní</string>
     <string name="Snabble.PaymentStatus.step2">Povolenie tvojho nákupu</string>
     <string name="Snabble.PaymentStatus.step3">Povolenie tvojej platby</string>
+    <string name="Snabble.PaymentStatus.Title.error">Ľutujeme, vyskytla sa chyba</string>
+    <string name="Snabble.PaymentStatus.Title.inProgress">Tvoj nákup bude uzavretý</string>
+    <string name="Snabble.PaymentStatus.Title.success">Ďakujeme za tvoj nákup!</string>
+    <string name="Snabble.PaymentStatus.Tobacco.error">Pri vydávaní cigariet sa vyskytol problém. Obráť sa na zamestnanca obchodu, prosím.</string>
+    <string name="Snabble.PaymentStatus.Tobacco.message">Zober si svoje cigarety, prosím.</string>
+    <string name="Snabble.PaymentStatus.Tobacco.title">Vydávanie cigariet</string>
+    <string name="Snabble.Payone.cardNumber"/>
+    <string name="Snabble.Payone.cvc"/>
+    <string name="Snabble.Payone.expireMonth"/>
+    <string name="Snabble.Payone.expireYear"/>
+    <string name="Snabble.Payone.incompleteForm"/>
+    <string name="Snabble.Payone.Lastname"/>
     <string name="Snabble.pleaseWait">Čakaj, prosím...</string>
     <string name="Snabble.PostFinanceCard.payNow">Zaplatiť kartou PostFinance teraz</string>
     <string name="Snabble.QRCode.codeXofY">Kód %1$d z %2$d</string>

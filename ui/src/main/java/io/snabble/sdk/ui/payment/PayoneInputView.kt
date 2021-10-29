@@ -50,6 +50,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     private lateinit var project: Project
     private lateinit var tokenizationData: PayoneTokenizationData
     private lateinit var threeDHint: TextView
+    private var lastPreAuthResponse: Payone.PreAuthResponse? = null
 
 
     @SuppressLint("InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface")
@@ -82,6 +83,42 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.addJavascriptInterface(JsInterface(), "snabble")
+
+        webView.webViewClient = object : WebViewClient() {
+            override fun onReceivedError(
+                view: WebView,
+                errorCode: Int,
+                description: String,
+                failingUrl: String
+            ) {
+                Logger.d("onReceivedError $failingUrl")
+                Dispatch.mainThread { finishWithError() }
+            }
+
+            override fun shouldOverrideUrlLoading(
+                view: WebView,
+                request: WebResourceRequest
+            ): Boolean {
+                val uri = request.url
+                if (uri != null) {
+                    val url = uri.toString()
+                    Logger.d("shouldOverrideUrlLoading $url")
+                    lastPreAuthResponse?.links?.let { links ->
+                        when(url) {
+                            links["redirectBack"]?.href -> finish()
+                            links["redirectError"]?.href -> finishWithError()
+                            links["redirectSuccess"]?.href -> {
+                                //cancelPreAuth(cr)
+                            }
+                            else -> return false
+                        }
+                        return true
+                    }
+                }
+                return super.shouldOverrideUrlLoading(view, request)
+            }
+        }
+
 
         // this disables credit card storage prompt for google pay
         ViewCompat.setImportantForAutofill(webView, IMPORTANT_FOR_AUTOFILL_NO)
@@ -137,14 +174,13 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             .replace("{{mode}}", if(tokenizationData.isTesting) "test" else "live")
             .replace("{{language}}", Locale.getDefault().language)
             .replace("{{supportedCardType}}", ccType)
-            // TODO: l10n
-            .replace("{{lastname}}", "Nachname")
-            .replace("{{cardNumberLabel}}", "Kartennummer")
-            .replace("{{cvcLabel}}", "Prüfnummer (CVC)")
-            .replace("{{expireMonthLabel}}", "Ablaufmonat (MM)")
-            .replace("{{expireYearLabel}}", "Ablaufjahr (JJJJ)")
-            .replace("{{saveButtonLabel}}", "Speichern")
-            .replace("{{incompleteForm}}", "Bitte fülle das Formular vollständig aus.")
+            .replace("{{lastname}}", context.getString(R.string.Snabble_Payone_Lastname))
+            .replace("{{cardNumberLabel}}", context.getString(R.string.Snabble_Payone_cardNumber))
+            .replace("{{cvcLabel}}", context.getString(R.string.Snabble_Payone_cvc))
+            .replace("{{expireMonthLabel}}", context.getString(R.string.Snabble_Payone_expireMonth))
+            .replace("{{expireYearLabel}}", context.getString(R.string.Snabble_Payone_expireYear))
+            .replace("{{saveButtonLabel}}", context.getString(R.string.Snabble_Save))
+            .replace("{{incompleteForm}}", context.getString(R.string.Snabble_Payone_incompleteForm))
             // URL is required for an origin check
             webView.loadDataWithBaseURL(
                 "https://snabble.io",
@@ -160,7 +196,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             val numberFormat = NumberFormat.getCurrencyInstance(
                 project.currencyLocale
             )
-            val chargeTotal = BigDecimal(tokenizationData.preAuthInfo.amount ?: 0.0) // TODO check currency
+            val chargeTotal = BigDecimal(tokenizationData.preAuthInfo.amount ?: 0).divide(BigDecimal(100)) // TODO check currency
             threeDHint.visibility = VISIBLE
             threeDHint.text = resources.getString(
                 R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
@@ -185,7 +221,9 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
         project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<Payone.PreAuthResponse>(Payone.PreAuthResponse::class.java), Callback {
             override fun success(response: Payone.PreAuthResponse?) {
+                // PreAuthResponse(status=pending, userID=348936955, links={preAuthStatus=Link(href=/test-ieme8a/payone/preauth/589253701/status), redirectBack=Link(href=snabble://payone/back), redirectError=Link(href=snabble://payone/error), redirectSuccess=Link(href=snabble://payone/success), scaChallenge=Link(href=https://threedssvc.pay1.de:443/3ds/3ds1/challenge/redirect/b6669b73-bf60-4608-a0eb-4b28f3d2521a)})
                 response?.let {
+                    lastPreAuthResponse = it
                     response.links["scaChallenge"]?.href?.let { url ->
                         Dispatch.mainThread {
                             threeDHint.isVisible = false
@@ -196,7 +234,8 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             }
 
             override fun error(t: Throwable?) {
-                //TODO("Not yet implemented")
+                t?.printStackTrace()
+                Dispatch.mainThread { finishWithError() }
             }
         })
 
@@ -281,7 +320,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         callback?.execute(SnabbleUI.Action.GO_BACK, null)
     }
 
-    private fun finishWithError(failReason: String?) {
+    private fun finishWithError(failReason: String? = null) {
         var errorMessage = context.getString(R.string.Snabble_Payment_CreditCard_error)
         if (failReason != null) {
             errorMessage = "$errorMessage: $failReason"

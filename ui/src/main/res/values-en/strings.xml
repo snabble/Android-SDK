@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="release.safety.catch">Please remove the bottle\'s security device (if present) at the designated station at the exit.</string>
+    <string name="Shopping.title">Shopping</string>
     <string name="Snabble.addDiscount">Enter discount</string>
     <string name="Snabble.ageVerification.explanation">To purchase certain products like alcoholic beverages, verifying your age is required. Enter the 7-digit Number from the back side of your ID card.</string>
     <string name="Snabble.ageVerification.failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
@@ -24,8 +25,8 @@
     <string name="Snabble.Biometry.TouchId">Touch ID</string>
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Cancel</string>
-    <string name="Snabble.CC.3dsecureHint.retailer">In order to verify your credit card, you will be redirected to your bank after entering your data. There you will be asked to approve a payment of € 1.00 to %s. The amount will be credited to you immediately after your approval.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">In order to verify your credit card, you will be redirected to your bank after entering your data. There you will be asked to approve a payment of %s to %s. The amount will be credited to you immediately after your approval.</string>
+    <string name="Snabble.CC.3dsecureHint.retailer">Enter your data here. We will then forward you to your bank to confirm your details. We reserve 1 € (for %s) and book the money back immediately.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Enter your data here. We will then forward you to your bank to confirm your details. We reserve %s (for %s) and book the money back immediately.</string>
     <string name="Snabble.CC.cardNumber">Card number</string>
     <string name="Snabble.CC.editingHint">Your credit card data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.CC.noEntryPossible">Unfortunately you can\'t add credit cards at this time.</string>
@@ -88,6 +89,7 @@
     <string name="Snabble.Payment.payViaInvoice">via Invoice</string>
     <string name="Snabble.Payment.PostFinanceCard.error">There was an error processing your postfinance card</string>
     <string name="Snabble.Payment.presentCode">Show this code at a Snabble monitor or to a cashier to confirm your purchase.</string>
+    <string name="Snabble.Payment.rejected">Purchase denied</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
@@ -119,9 +121,34 @@
     <string name="Snabble.PaymentSelection.howToPay">How would you like to pay %s?</string>
     <string name="Snabble.PaymentSelection.payNow">Pay %s now</string>
     <string name="Snabble.PaymentSelection.title">Payment</string>
+    <string name="Snabble.PaymentStatus.AddDebitCard.button">Yes, save girocard in app</string>
+    <string name="Snabble.PaymentStatus.AddDebitCard.message">Would you like to store your girocard data securely in the app so that you can pay for your next purchase by direct debit? You can leave your card in your wallet in the future.</string>
+    <string name="Snabble.PaymentStatus.back">Back</string>
+    <string name="Snabble.PaymentStatus.close">Close</string>
+    <string name="Snabble.PaymentStatus.ExitCode.title">Exit-Code</string>
+    <string name="Snabble.PaymentStatus.Payment.error">Your payment could not be processed. Try again or choose another payment method.</string>
+    <string name="Snabble.PaymentStatus.Payment.title">Payment</string>
+    <string name="Snabble.PaymentStatus.Payment.tryAgain">Try again</string>
+    <string name="Snabble.PaymentStatus.Rating.send">Send</string>
+    <string name="Snabble.PaymentStatus.Rating.title">What was not good?</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanks">Thank you!</string>
+    <string name="Snabble.PaymentStatus.Ratings.title">Did you like the purchase?</string>
+    <string name="Snabble.PaymentStatus.Receipt.title">Receipt</string>
     <string name="Snabble.PaymentStatus.step1">Locating you in the checkout area</string>
     <string name="Snabble.PaymentStatus.step2">Processing your purchase</string>
     <string name="Snabble.PaymentStatus.step3">Processing your payment</string>
+    <string name="Snabble.PaymentStatus.Title.error">Unfortunately an error has occurred</string>
+    <string name="Snabble.PaymentStatus.Title.inProgress">Your purchase is completing</string>
+    <string name="Snabble.PaymentStatus.Title.success">Thank you for your purchase!</string>
+    <string name="Snabble.PaymentStatus.Tobacco.error">A problem has occurred with the distribution of cigarettes. Please inform a staff member.</string>
+    <string name="Snabble.PaymentStatus.Tobacco.message">Please remove your cigarettes.</string>
+    <string name="Snabble.PaymentStatus.Tobacco.title">Cigarette distribution</string>
+    <string name="Snabble.Payone.cardNumber">Card Number</string>
+    <string name="Snabble.Payone.cvc">Card Security Code (CVV)</string>
+    <string name="Snabble.Payone.expireMonth">Expiry Month (MM)</string>
+    <string name="Snabble.Payone.expireYear">Expiry Year (YYYY)</string>
+    <string name="Snabble.Payone.incompleteForm">Please enter all required data.</string>
+    <string name="Snabble.Payone.Lastname">Last Name</string>
     <string name="Snabble.pleaseWait">Please wait…</string>
     <string name="Snabble.PostFinanceCard.payNow">Pay now using PostFinance Card</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d of %2$d</string>

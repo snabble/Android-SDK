@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="release.safety.catch">Rimuovi il dispositivo di sicurezza della bottiglia (se presente) alla stazione designata all’uscita.</string>
+    <string name="Shopping.title"/>
     <string name="Snabble.addDiscount">Inserisci lo sconto</string>
     <string name="Snabble.ageVerification.explanation">Per l’acquisto di determinati articoli, come ad esempio gli alcolici, è necessario un documento che attesti l’età. Inserisci il numero a 7 cifre della parte posteriore del tuo documento di identità.</string>
     <string name="Snabble.ageVerification.failed.message">Alcuni articoli nel tuo carrello sono soggetti a una limitazione di età e purtroppo non puoi acquistarli.</string>
@@ -88,6 +89,7 @@
     <string name="Snabble.Payment.payViaInvoice">con fattura</string>
     <string name="Snabble.Payment.PostFinanceCard.error">Si è verificato un errore nell’elaborazione della tua Postfinance Card</string>
     <string name="Snabble.Payment.presentCode">Presenta questo codice a monitor Snabble oppure mostralo a un commesso per confermare il tuo acquisto.</string>
+    <string name="Snabble.Payment.rejected"/>
     <string name="Snabble.Payment.SEPA.hint">Nota: per proteggere te e i nostri commercianti da frodi, quando effettuerai il primo pagamento con addebito diretto SEPA, il commerciante chiederà di vedere la tua carta di credito.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">L’IBAN inserito non è valido.</string>
@@ -119,9 +121,34 @@
     <string name="Snabble.PaymentSelection.howToPay">Come vuoi pagare %s?</string>
     <string name="Snabble.PaymentSelection.payNow">Paga ora %s</string>
     <string name="Snabble.PaymentSelection.title">Paga</string>
+    <string name="Snabble.PaymentStatus.AddDebitCard.button"/>
+    <string name="Snabble.PaymentStatus.AddDebitCard.message"/>
+    <string name="Snabble.PaymentStatus.back"/>
+    <string name="Snabble.PaymentStatus.close"/>
+    <string name="Snabble.PaymentStatus.ExitCode.title"/>
+    <string name="Snabble.PaymentStatus.Payment.error"/>
+    <string name="Snabble.PaymentStatus.Payment.title"/>
+    <string name="Snabble.PaymentStatus.Payment.tryAgain"/>
+    <string name="Snabble.PaymentStatus.Rating.send"/>
+    <string name="Snabble.PaymentStatus.Rating.title"/>
+    <string name="Snabble.PaymentStatus.Ratings.thanks"/>
+    <string name="Snabble.PaymentStatus.Ratings.title"/>
+    <string name="Snabble.PaymentStatus.Receipt.title"/>
     <string name="Snabble.PaymentStatus.step1">Localizzazione in zona cassa</string>
     <string name="Snabble.PaymentStatus.step2">Autorizzazione del tuo acquisto</string>
     <string name="Snabble.PaymentStatus.step3">Autorizzazione del tuo pagamento</string>
+    <string name="Snabble.PaymentStatus.Title.error"/>
+    <string name="Snabble.PaymentStatus.Title.inProgress"/>
+    <string name="Snabble.PaymentStatus.Title.success"/>
+    <string name="Snabble.PaymentStatus.Tobacco.error"/>
+    <string name="Snabble.PaymentStatus.Tobacco.message"/>
+    <string name="Snabble.PaymentStatus.Tobacco.title"/>
+    <string name="Snabble.Payone.cardNumber"/>
+    <string name="Snabble.Payone.cvc"/>
+    <string name="Snabble.Payone.expireMonth"/>
+    <string name="Snabble.Payone.expireYear"/>
+    <string name="Snabble.Payone.incompleteForm"/>
+    <string name="Snabble.Payone.Lastname"/>
     <string name="Snabble.pleaseWait">Attendi...</string>
     <string name="Snabble.PostFinanceCard.payNow">Paga ora con PostFinance Card</string>
     <string name="Snabble.QRCode.codeXofY">Codice %1$d di %2$d</string>
