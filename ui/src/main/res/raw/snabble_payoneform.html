@@ -116,9 +116,9 @@ function processResponse(response) {
 <body>
 <form action="#" method="post">
     <div class="form-group">
-        <label for="lastName">{{lastName}}</label>
+        <label for="lastname">{{lastname}}</label>
         <div class="payone-input-mock">
-            <input type="text" id="lastName"/>
+            <input type="text" id="lastname"/>
         </div>
     </div>
 
@@ -222,8 +222,8 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
     switch (response.status) {
         case 'VALID':
             console.log('Success! Credit card check was valid.');
-            var lastName = document.getElementById('lastName').value;
-            processResponse({...response, lastName});
+            var lastname = document.getElementById('lastname').value;
+            processResponse({...response, lastname});
             break;
         case 'INVALID':
         case 'ERROR':
@@ -237,7 +237,7 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
 
 PayoneAutoCcDetection.prototype.performCreditCardCheck = function () {
     console.log("performCheck");
-    var name = document.getElementById('lastName').value
+    var name = document.getElementById('lastname').value
     if (this._hostedIframe.isComplete() && name != "") {
         console.log("complete!");
         this._hostedIframe.creditCardCheck(this._creditCardCheckCallbackName);

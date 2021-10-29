@@ -24,11 +24,35 @@ object Payone {
         val portalID: String,
         val accountID: String,
         val hash: String,
-        val preauthURL: String,
-        val pollingURL: String,
-        val chargeAmount: String?,
-        val currency: String?,
+        val preAuthInfo: PreAuthInfo,
+        val links: Map<String, Link>
     ) : Parcelable
+
+    @Parcelize
+    data class PreAuthInfo(
+        val amount: Double?,
+        val currency: String?
+    ) : Parcelable
+
+    @Parcelize
+    data class Link(
+        val href: String?
+    ) : Parcelable
+
+    @Parcelize
+    data class PreAuthRequest(
+        val pseudoCardPAN: String,
+        val lastname: String,
+    ) : Parcelable
+
+    @Parcelize
+    data class PreAuthResponse(
+        val status: String,
+        val userID: String,
+        val links: Map<String, Link>
+    ) : Parcelable
+
+
 
     @JvmStatic
     fun registerCard(

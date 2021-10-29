@@ -9,12 +9,10 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.Payone.PayoneTokenizationData
 import androidx.lifecycle.Lifecycle
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.SnabbleUI
 import android.app.Application.ActivityLifecycleCallbacks
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 import android.app.Activity
 import android.app.Application
 import android.content.Context
@@ -30,9 +28,10 @@ import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.utils.UIUtils
-import io.snabble.sdk.utils.Dispatch
-import io.snabble.sdk.utils.Logger
+import io.snabble.sdk.utils.*
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.IOUtils
 import java.io.IOException
 import java.math.BigDecimal
@@ -48,9 +47,8 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     private var isActivityResumed = false
     private var pendingCreditCardInfo: CreditCardInfo? = null
     private lateinit var paymentType: PaymentMethod
-    private lateinit var projectId: String
+    private lateinit var project: Project
     private lateinit var tokenizationData: PayoneTokenizationData
-    private var lastProject: Project? = null
     private lateinit var threeDHint: TextView
 
 
@@ -108,7 +106,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         paymentType: PaymentMethod,
         tokenizationData: PayoneTokenizationData
     ) {
-        this.projectId = projectId
+        this.project = Snabble.getInstance().projects.first { it.id == projectId }
         this.paymentType = paymentType
         this.tokenizationData = tokenizationData
         inflateView()
@@ -140,7 +138,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             .replace("{{language}}", Locale.getDefault().language)
             .replace("{{supportedCardType}}", ccType)
             // TODO: l10n
-            .replace("{{lastName}}", "Nachname")
+            .replace("{{lastname}}", "Nachname")
             .replace("{{cardNumberLabel}}", "Kartennummer")
             .replace("{{cvcLabel}}", "Prüfnummer (CVC)")
             .replace("{{expireMonthLabel}}", "Ablaufmonat (MM)")
@@ -155,7 +153,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 "utf-8",
                 "https://snabble.io"
             )
-            val project = Snabble.getInstance().projects.first { it.id == projectId }
             var companyName = project.name
             if (project.company != null && project.company.getName() != null) {
                 companyName = project.company.getName()
@@ -163,7 +160,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             val numberFormat = NumberFormat.getCurrencyInstance(
                 project.currencyLocale
             )
-            val chargeTotal = BigDecimal(tokenizationData.chargeAmount?:"0")
+            val chargeTotal = BigDecimal(tokenizationData.preAuthInfo.amount ?: 0.0) // TODO check currency
             threeDHint.visibility = VISIBLE
             threeDHint.text = resources.getString(
                 R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
@@ -176,8 +173,36 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         }
     }
 
+    fun Any.toJsonRequest() : RequestBody =
+        GsonHolder.get().toJson(this).toRequestBody("application/json".toMediaTypeOrNull())
+
     private fun authenticateAndSave(creditCardInfo: CreditCardInfo) {
+        val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
+        val request = Request.Builder()
+            .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(tokenizationData.links["preAuth"]?.href)))
+            .post(req.toJsonRequest())
+            .build()
+
+        project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<Payone.PreAuthResponse>(Payone.PreAuthResponse::class.java), Callback {
+            override fun success(response: Payone.PreAuthResponse?) {
+                response?.let {
+                    response.links["scaChallenge"]?.href?.let { url ->
+                        Dispatch.mainThread {
+                            threeDHint.isVisible = false
+                            webView.loadUrl(url)
+                        }
+                    } ?: error(null)
+                } ?: error(null)
+            }
+
+            override fun error(t: Throwable?) {
+                //TODO("Not yet implemented")
+            }
+        })
+
+        /*
         cancelPreAuth(creditCardInfo)
+        // CreditCardInfo(pseudocardpan=9410010000475742516, truncatedcardpan=424242XXXXXX4242, cardtype=V, cardexpiredate=2212, lastname=undefined)
         Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
             override fun success() {
                 save(creditCardInfo)
@@ -191,6 +216,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 }
             }
         })
+        // */
     }
 
     private fun save(info: CreditCardInfo) {
@@ -206,7 +232,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             ccBrand,
             info.cardexpiredate,
             info.lastname,
-            projectId
+            project.id
         )
         if (pc == null) {
             Toast.makeText(context, "Could not verify payment credentials", Toast.LENGTH_LONG)
@@ -226,10 +252,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         var url = cancelPreAuthUrl
         if (url == null) {
             Logger.e("Could not abort pre authorization, no url provided")
-            return
-        }
-        if (lastProject == null) {
-            Logger.e("Could not abort pre authorization, no project provided")
             return
         }
         // TODO wait for backend to implement pre auth
