@@ -12,9 +12,6 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.SnabbleUI
-import android.app.Application.ActivityLifecycleCallbacks
-import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
@@ -24,8 +21,11 @@ import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
+import eu.rekisoft.android.util.LazyWorker
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.*
@@ -34,28 +34,56 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.IOUtils
 import java.io.IOException
+import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.nio.charset.Charset
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
     private var acceptedKeyguard = false
     private lateinit var webView: WebView
-    private var cancelPreAuthUrl: String? = null
     private lateinit var progressBar: ProgressBar
     private var isActivityResumed = false
-    private var pendingCreditCardInfo: CreditCardInfo? = null
+    private lateinit var creditCardInfo: CreditCardInfo
     private lateinit var paymentType: PaymentMethod
     private lateinit var project: Project
     private lateinit var tokenizationData: PayoneTokenizationData
     private lateinit var threeDHint: TextView
     private var lastPreAuthResponse: Payone.PreAuthResponse? = null
+    private var polling = LazyWorker.createLifeCycleAwareJob(context) {
+        lastPreAuthResponse?.links?.get("preAuthStatus")?.href?.let { statusUrl ->
+            val request = Request.Builder()
+                .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(statusUrl)))
+                .build()
+            project.okHttpClient.newCall(request).enqueue(object :
+                SimpleJsonCallback<Payone.PreAuthResponse>(Payone.PreAuthResponse::class.java),
+                Callback {
+                override fun success(response: Payone.PreAuthResponse?) {
+                    response?.let {
+                        when (it.status) {
+                            Payone.AuthStatus.pending -> doLater(1000).also { println("Stated saving from network") }
+                            Payone.AuthStatus.successful -> {
+                                creditCardInfo.userId = it.userID
+                                save(creditCardInfo)
+                                finish()
+                            }
+                            Payone.AuthStatus.failed -> finishWithError()
+                        }
+                    } ?: error(null)
+                }
 
+                override fun error(t: Throwable?) {
+                    t?.printStackTrace()
+                    doLater(1000).also { println("Stated saving from error") }
+                }
+            })
+        }
+    }
 
     @SuppressLint("InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface")
     private fun inflateView() {
-        checkActivityResumed()
         inflate(context, R.layout.snabble_view_cardinput_creditcard, this)
         progressBar = findViewById(R.id.progress)
         progressBar.visibility = VISIBLE
@@ -107,9 +135,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                         when(url) {
                             links["redirectBack"]?.href -> finish()
                             links["redirectError"]?.href -> finishWithError()
-                            links["redirectSuccess"]?.href -> {
-                                //cancelPreAuth(cr)
-                            }
+                            links["redirectSuccess"]?.href -> polling.doNow()
                             else -> return false
                         }
                         return true
@@ -149,11 +175,8 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         inflateView()
     }
 
-    private fun checkActivityResumed() {
-        val fragmentActivity = UIUtils.getHostFragmentActivity(context)
-        isActivityResumed =
-            fragmentActivity?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.RESUMED) ?: true
-    }
+    private fun <T> T.anyOfTheseOfFirst(fallback: T, vararg options: T) =
+        if (options.contains(this)) this else fallback
 
     private fun loadForm() {
         try {
@@ -164,6 +187,8 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 else -> "V"
             }
 
+            val language = Locale.getDefault().language.anyOfTheseOfFirst("en", "de", "fr", "it", "es", "pt", "nl")
+
             val htmlForm = IOUtils.toString(
                 resources.openRawResource(R.raw.snabble_payoneform),
                 Charset.forName("UTF-8")
@@ -172,7 +197,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             .replace("{{portalID}}", tokenizationData.portalID)
             .replace("{{accountID}}", tokenizationData.accountID)
             .replace("{{mode}}", if(tokenizationData.isTesting) "test" else "live")
-            .replace("{{language}}", Locale.getDefault().language)
+            .replace("{{language}}", language)
             .replace("{{supportedCardType}}", ccType)
             .replace("{{lastname}}", context.getString(R.string.Snabble_Payone_Lastname))
             .replace("{{cardNumberLabel}}", context.getString(R.string.Snabble_Payone_cardNumber))
@@ -212,7 +237,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     fun Any.toJsonRequest() : RequestBody =
         GsonHolder.get().toJson(this).toRequestBody("application/json".toMediaTypeOrNull())
 
-    private fun authenticateAndSave(creditCardInfo: CreditCardInfo) {
+    private fun authenticate() {
         val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
         val request = Request.Builder()
             .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(tokenizationData.links["preAuth"]?.href)))
@@ -221,13 +246,13 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
         project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<Payone.PreAuthResponse>(Payone.PreAuthResponse::class.java), Callback {
             override fun success(response: Payone.PreAuthResponse?) {
-                // PreAuthResponse(status=pending, userID=348936955, links={preAuthStatus=Link(href=/test-ieme8a/payone/preauth/589253701/status), redirectBack=Link(href=snabble://payone/back), redirectError=Link(href=snabble://payone/error), redirectSuccess=Link(href=snabble://payone/success), scaChallenge=Link(href=https://threedssvc.pay1.de:443/3ds/3ds1/challenge/redirect/b6669b73-bf60-4608-a0eb-4b28f3d2521a)})
                 response?.let {
                     lastPreAuthResponse = it
                     response.links["scaChallenge"]?.href?.let { url ->
                         Dispatch.mainThread {
                             threeDHint.isVisible = false
                             webView.loadUrl(url)
+                            polling.doLater(1000)
                         }
                     } ?: error(null)
                 } ?: error(null)
@@ -238,24 +263,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 Dispatch.mainThread { finishWithError() }
             }
         })
-
-        /*
-        cancelPreAuth(creditCardInfo)
-        // CreditCardInfo(pseudocardpan=9410010000475742516, truncatedcardpan=424242XXXXXX4242, cardtype=V, cardexpiredate=2212, lastname=undefined)
-        Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
-            override fun success() {
-                save(creditCardInfo)
-            }
-
-            override fun error() {
-                if (isShown) {
-                    finish()
-                } else {
-                    acceptedKeyguard = true
-                }
-            }
-        })
-        // */
     }
 
     private fun save(info: CreditCardInfo) {
@@ -271,6 +278,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             ccBrand,
             info.cardexpiredate,
             info.lastname,
+            info.userId,
             project.id
         )
         if (pc == null) {
@@ -285,34 +293,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         } else {
             acceptedKeyguard = true
         }
-    }
-
-    private fun cancelPreAuth(creditCardInfo: CreditCardInfo) {
-        var url = cancelPreAuthUrl
-        if (url == null) {
-            Logger.e("Could not abort pre authorization, no url provided")
-            return
-        }
-        // TODO wait for backend to implement pre auth
-        /*
-        url = url.replace("{orderID}", creditCardInfo.transactionId)
-        val request: Request = Request.Builder()
-            .url(Snabble.getInstance().absoluteUrl(url))
-            .delete()
-            .build()
-
-        // fire and forget
-        lastProject!!.okHttpClient.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // ignore
-            }
-
-            @Throws(IOException::class)
-            override fun onResponse(call: Call, response: Response) {
-                // ignore
-            }
-        })
-         */
     }
 
     private fun finish() {
@@ -336,49 +316,30 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     public override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        checkActivityResumed()
-        val application = context.applicationContext as Application
-        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
-    }
-
-    public override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        val application = context.applicationContext as Application
-        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
-    }
-
-    private val activityLifecycleCallbacks: ActivityLifecycleCallbacks =
-        object : SimpleActivityLifecycleCallbacks() {
-            override fun onActivityStarted(activity: Activity) {
-                if (UIUtils.getHostActivity(context) === activity) {
-                    if (acceptedKeyguard) {
-                        finish()
-                        acceptedKeyguard = false
-                    }
-                }
-            }
-
-            override fun onActivityResumed(activity: Activity) {
-                super.onActivityResumed(activity)
+        val fragmentActivity = UIUtils.getHostFragmentActivity(context)
+        fragmentActivity?.lifecycle?.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            fun onResume() {
                 isActivityResumed = true
-                if (pendingCreditCardInfo != null) {
-                    authenticateAndSave(pendingCreditCardInfo!!)
-                    pendingCreditCardInfo = null
-                }
+                if (this@PayoneInputView::creditCardInfo.isInitialized) polling.doNow().also { println("Stated saving from resume") }
             }
 
-            override fun onActivityPaused(activity: Activity) {
-                super.onActivityPaused(activity)
+            @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+            fun onPause() {
                 isActivityResumed = false
             }
-        }
+        })
+        isActivityResumed =
+            fragmentActivity?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.RESUMED) ?: true
+    }
 
     private data class CreditCardInfo(
         val pseudocardpan: String,
         val truncatedcardpan: String,
         val cardtype: String,
         val cardexpiredate: String,
-        val lastname: String
+        val lastname: String,
+        var userId: String? = null,
     )
 
     @Keep
@@ -391,7 +352,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             cardexpiredate: String?,
             lastname: String?
         ) {
-            val creditCardInfo = CreditCardInfo(
+            creditCardInfo = CreditCardInfo(
                 pseudocardpan = requireNotNull(pseudocardpan),
                 truncatedcardpan = requireNotNull(truncatedcardpan),
                 cardtype = requireNotNull(cardtype),
@@ -399,9 +360,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 lastname = requireNotNull(lastname),
             )
             if (isActivityResumed) {
-                Dispatch.mainThread { authenticateAndSave(creditCardInfo) }
-            } else {
-                pendingCreditCardInfo = creditCardInfo
+                Dispatch.mainThread { authenticate() }
             }
         }
 

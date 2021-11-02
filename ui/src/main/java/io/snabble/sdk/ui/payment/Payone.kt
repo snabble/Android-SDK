@@ -39,20 +39,20 @@ object Payone {
         val href: String?
     ) : Parcelable
 
-    @Parcelize
     data class PreAuthRequest(
         val pseudoCardPAN: String,
         val lastname: String,
-    ) : Parcelable
+    )
 
-    @Parcelize
     data class PreAuthResponse(
-        val status: String,
+        val status: AuthStatus,
         val userID: String,
         val links: Map<String, Link>
-    ) : Parcelable
+    )
 
-
+    enum class AuthStatus {
+        pending, successful, failed
+    }
 
     @JvmStatic
     fun registerCard(

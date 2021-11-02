@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -126,9 +127,15 @@ public class PaymentCredentials {
     }
 
     private static class PayoneData {
-        private String alias;
-        private String expiryMonth;
-        private String expiryYear;
+        PayoneData(String pseudoCardPAN, String name, String userID) {
+            this.pseudoCardPAN = pseudoCardPAN;
+            this.name = name;
+            this.userID = userID;
+        }
+
+        private final String pseudoCardPAN;
+        private final String name;
+        private final String userID;
     }
 
     public static class PaydirektAuthorizationData {
@@ -263,18 +270,26 @@ public class PaymentCredentials {
         return pc;
     }
 
+    @Deprecated
     private static long parseValidTo(String format, String expirationMonth, String expirationYear) {
         if (expirationMonth == null || expirationMonth.equals("")
          || expirationYear == null || expirationYear.equals("")) {
             return 0;
         }
 
+        return parseValidTo(format, expirationMonth + "/" + expirationYear);
+    }
+
+    private static long parseValidTo(String format, String expirationDate) {
+        if (expirationDate == null || expirationDate.trim().equals("")) {
+            return 0;
+        }
+
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-            Date date = simpleDateFormat.parse(expirationMonth + "/" + expirationYear);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.getDefault());
 
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
+            calendar.setTime(simpleDateFormat.parse(expirationDate));
             calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
             return calendar.getTimeInMillis();
@@ -376,6 +391,7 @@ public class PaymentCredentials {
                                                 PaymentCredentials.Brand brand,
                                                 String cardexpiredate,
                                                 String lastname,
+                                                String userId,
                                                 String projectId) {
         if (pseudocardpan == null) {
             return null;
@@ -386,7 +402,7 @@ public class PaymentCredentials {
         if (brand == Brand.MASTERCARD || brand == Brand.AMEX || brand == Brand.VISA) {
             pc.type = Type.PAYONE_CREDITCARD;
         } else {
-            // not sure...
+            return null;
         }
         pc.projectId = projectId;
 
@@ -395,13 +411,7 @@ public class PaymentCredentials {
             return null;
         }
 
-        PayoneData payoneData = new PayoneData();
-        payoneData.alias = truncatedcardpan;
-
-        if (pc.type == Type.PAYONE_CREDITCARD) {
-            payoneData.expiryMonth = cardexpiredate.substring(0, 2);
-            payoneData.expiryYear = cardexpiredate.substring(2, 2);
-        }
+        PayoneData payoneData = new PayoneData(pseudocardpan, lastname, userId);
 
         String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
 
@@ -411,7 +421,7 @@ public class PaymentCredentials {
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.brand = brand;
         pc.obfuscatedId = truncatedcardpan;
-        pc.validTo = parseValidTo("MM/yy", payoneData.expiryMonth, payoneData.expiryYear);
+        pc.validTo = parseValidTo("yyMM", cardexpiredate);
 
         if (pc.rsaEncryptedData == null) {
             return null;
