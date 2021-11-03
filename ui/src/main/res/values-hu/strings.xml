@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="PaymentDone.Rating.thanks">Köszönjük!</string>
-    <string name="PaymentDone.Rating.title">Milyen volt a Snabble-lel végzett bevásárlásod?</string>
     <string name="release.safety.catch">Kérjük, hogy a kijáratnál, az arra kijelölt állomáson vedd le a palacknyak-biztosítót (ha van).</string>
     <string name="Shopping.title">Bevásárlás</string>
     <string name="Snabble.addDiscount">Árengedmény megadása</string>
@@ -27,8 +25,8 @@
     <string name="Snabble.Biometry.TouchId">Touch-ID</string>
     <!-- ********* Snabble ********* -->
     <string name="Snabble.Cancel">Mégsem</string>
-    <string name="Snabble.CC.3dsecureHint.retailer">A hitelkártyád azonosítása érdekében az adatok bevitelét követően átlépsz a bankodhoz. Ott a rendszer arra kér, hogy 1,00 €-t fizess a %s részére. Hozzájárulásodat követően ezt az összeget azonnal jóváírjuk.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">A hitelkártyád azonosítása érdekében az adatok bevitelét követően átlépsz a bankodhoz. Ott a rendszer arra kér, hogy fizess %s-t a %s részére. Hozzájárulásodat követően ezt az összeget azonnal jóváírjuk.</string>
+    <string name="Snabble.CC.3dsecureHint.retailer">Itt add meg az adataidat. Ezután átirányítunk a bankodhoz, hogy megerősítse az adataidat. Ekkor zárolunk 1 eurót (%s-re), majd a pénzt közvetlenül visszautaljuk.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Itt add meg az adataidat. Ezután átirányítunk a bankodhoz, hogy megerősítse az adataidat. Ekkor zárolunk %s-t (%s-re), majd a pénzt közvetlenül visszautaljuk.</string>
     <string name="Snabble.CC.cardNumber">Kártyaszám</string>
     <string name="Snabble.CC.editingHint">A hitelkártyaadatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.CC.noEntryPossible">Jelenleg sajnos nem tudsz hitelkártyaadatokat elmenteni.</string>
@@ -123,26 +121,27 @@
     <string name="Snabble.PaymentSelection.howToPay">Hogyan szeretnél fizetni %s?</string>
     <string name="Snabble.PaymentSelection.payNow">%s fizetés most</string>
     <string name="Snabble.PaymentSelection.title">Fizetés</string>
-    <string name="Snabble.PaymentStatus.AddDebitCard.button"/>
-    <string name="Snabble.PaymentStatus.AddDebitCard.message"/>
-    <string name="Snabble.PaymentStatus.back"/>
-    <string name="Snabble.PaymentStatus.close"/>
-    <string name="Snabble.PaymentStatus.ExitCode.title"/>
-    <string name="Snabble.PaymentStatus.Payment.error"/>
-    <string name="Snabble.PaymentStatus.Payment.title"/>
-    <string name="Snabble.PaymentStatus.Payment.tryAgain"/>
-    <string name="Snabble.PaymentStatus.Ratings.thanks"/>
-    <string name="Snabble.PaymentStatus.Ratings.title"/>
-    <string name="Snabble.PaymentStatus.Receipt.title"/>
+    <string name="Snabble.PaymentStatus.AddDebitCard.button">Igen, elmentem a kártyát az alkalmazásban</string>
+    <string name="Snabble.PaymentStatus.AddDebitCard.message">Szeretnéd biztonságosan tárolni a girocard adataidat az alkalmazásban, hogy a következő vásárlásodat beszedési megbízással fizethesd ki? A kártyát a jövőben a pénztárcádban hagyhatod.</string>
+    <string name="Snabble.PaymentStatus.back">Vissza</string>
+    <string name="Snabble.PaymentStatus.close">Bezárás</string>
+    <string name="Snabble.PaymentStatus.ExitCode.title">Kilépőkód</string>
+    <string name="Snabble.PaymentStatus.Payment.error">Fizetésed nem sikerült teljesíteni. Próbáld meg újra, vagy válassz másik fizetési módot.</string>
+    <string name="Snabble.PaymentStatus.Payment.title">Fizetés</string>
+    <string name="Snabble.PaymentStatus.Payment.tryAgain">Megpróbálom újra</string>
+    <string name="Snabble.PaymentStatus.Rating.send">Elküldés</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanks">Köszönjük!</string>
+    <string name="Snabble.PaymentStatus.Ratings.title">Tetszett a vásárlás?</string>
+    <string name="Snabble.PaymentStatus.Receipt.title">Nyugta</string>
     <string name="Snabble.PaymentStatus.step1">Helymeghatározás a pénztár területén</string>
     <string name="Snabble.PaymentStatus.step2">Bevásárlásod engedélyezése</string>
     <string name="Snabble.PaymentStatus.step3">Fizetésed engedélyezése</string>
-    <string name="Snabble.PaymentStatus.Title.error"/>
-    <string name="Snabble.PaymentStatus.Title.inProgress"/>
-    <string name="Snabble.PaymentStatus.Title.success"/>
-    <string name="Snabble.PaymentStatus.Tobacco.error"/>
-    <string name="Snabble.PaymentStatus.Tobacco.message"/>
-    <string name="Snabble.PaymentStatus.Tobacco.title"/>
+    <string name="Snabble.PaymentStatus.Title.error">Sajnos hiba történt</string>
+    <string name="Snabble.PaymentStatus.Title.inProgress">A vásárlásod befejeződött</string>
+    <string name="Snabble.PaymentStatus.Title.success">Köszönjük a vásárlásodat!</string>
+    <string name="Snabble.PaymentStatus.Tobacco.error">A cigaretták kiadásakor probléma lépett fel. Kérjük, tájékoztasd az egyik alkalmazottat.</string>
+    <string name="Snabble.PaymentStatus.Tobacco.message">Vedd ki a cigarettáidat</string>
+    <string name="Snabble.PaymentStatus.Tobacco.title">Cigaretta kiadása</string>
     <string name="Snabble.pleaseWait">Kérlek, várj...</string>
     <string name="Snabble.PostFinanceCard.payNow">Most fizetés a PostFinance kártyával</string>
     <string name="Snabble.QRCode.codeXofY">%1$d / %2$d kód</string>
