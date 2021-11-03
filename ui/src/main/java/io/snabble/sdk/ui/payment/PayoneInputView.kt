@@ -27,6 +27,7 @@ import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import eu.rekisoft.android.util.LazyWorker
 import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.*
 import okhttp3.*
@@ -34,11 +35,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.IOUtils
 import java.io.IOException
-import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.nio.charset.Charset
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
@@ -63,11 +62,10 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 override fun success(response: Payone.PreAuthResponse?) {
                     response?.let {
                         when (it.status) {
-                            Payone.AuthStatus.pending -> doLater(1000).also { println("Stated saving from network") }
+                            Payone.AuthStatus.pending -> doLater(1000)
                             Payone.AuthStatus.successful -> {
                                 creditCardInfo.userId = it.userID
-                                save(creditCardInfo)
-                                finish()
+                                authenticateAndSave()
                             }
                             Payone.AuthStatus.failed -> finishWithError()
                         }
@@ -76,7 +74,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
                 override fun error(t: Throwable?) {
                     t?.printStackTrace()
-                    doLater(1000).also { println("Stated saving from error") }
+                    doLater(1000)
                 }
             })
         }
@@ -265,6 +263,24 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         })
     }
 
+
+    private fun authenticateAndSave() {
+        Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
+            override fun success() {
+                save(creditCardInfo)
+                finish()
+            }
+
+            override fun error() {
+                if (isShown) {
+                    finish()
+                } else {
+                    acceptedKeyguard = true
+                }
+            }
+        })
+    }
+
     private fun save(info: CreditCardInfo) {
         val ccBrand = when (info.cardtype) {
             "V" -> PaymentCredentials.Brand.VISA
@@ -305,12 +321,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         if (failReason != null) {
             errorMessage = "$errorMessage: $failReason"
         }
-        Toast.makeText(
-            context,
-            errorMessage,
-            Toast.LENGTH_SHORT
-        )
-            .show()
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         finish()
     }
 
@@ -321,12 +332,13 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             fun onResume() {
                 isActivityResumed = true
-                if (this@PayoneInputView::creditCardInfo.isInitialized) polling.doNow().also { println("Stated saving from resume") }
+                if (this@PayoneInputView::creditCardInfo.isInitialized) polling.doNow()
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
             fun onPause() {
                 isActivityResumed = false
+                fragmentActivity.lifecycle.removeObserver(this)
             }
         })
         isActivityResumed =
