@@ -133,7 +133,6 @@ open class PaymentStatusView @JvmOverloads constructor(
                 backPressedCallback.isEnabled = false
                 binding.ratingLayout.isVisible = true
             }
-            // TODO: be more explicit with the error handling - more detailed messages
             Checkout.State.PAYMENT_PROCESSING_ERROR,
             Checkout.State.DENIED_TOO_YOUNG,
             Checkout.State.DENIED_BY_PAYMENT_PROVIDER,
