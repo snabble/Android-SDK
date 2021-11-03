@@ -124,7 +124,11 @@ open class PaymentStatusView @JvmOverloads constructor(
                 binding.image.isVisible = true
                 binding.progress.isVisible = false
                 binding.payment.state = PaymentStatusItemView.State.SUCCESS
-                startPollingForReceipts(checkout.checkoutProcess?.orderId)
+                if (checkout.checkoutProcess?.orderId != null) {
+                    startPollingForReceipts(checkout.checkoutProcess?.orderId)
+                } else {
+                    binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
+                }
                 binding.back.isEnabled = true
                 backPressedCallback.isEnabled = false
                 binding.ratingLayout.isVisible = true
