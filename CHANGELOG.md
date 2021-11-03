@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.51.5]
+
+### Fixed
+- Fixed crash when parsing a barcode with a comma in it
+
 ## [0.51.4]
 
 ### Fixed

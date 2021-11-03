@@ -41,6 +41,8 @@ public class ProductDatabase {
     private static final String METADATA_DEFAULT_AVAILABILITY = "defaultAvailability";
     private static final String METADATA_KEY_LAST_UPDATE_TIMESTAMP = "app_lastUpdateTimestamp";
 
+    private static final String SEPARATOR = "·";
+
     private SQLiteDatabase db;
     private Product.Type[] productTypes = Product.Type.values();
 
@@ -794,7 +796,7 @@ public class ProductDatabase {
 
         String codes = cursor.getString(7);
         if (codes != null) {
-            lookupCodes = codes.split(",");
+            lookupCodes = codes.split(SEPARATOR);
         }
 
         builder.setSubtitle(cursor.getString(8));
@@ -808,7 +810,7 @@ public class ProductDatabase {
         if (lookupCodes != null) {
             String transmissionCodesStr = cursor.getString(12);
             if (transmissionCodesStr != null) {
-                transmissionCodes = transmissionCodesStr.split(",", -1);
+                transmissionCodes = transmissionCodesStr.split(SEPARATOR, -1);
             }
         }
 
@@ -831,17 +833,17 @@ public class ProductDatabase {
         if (lookupCodes != null) {
             String encodingUnitsStr = cursor.getString(15);
             if (encodingUnitsStr != null) {
-                codeEncodingUnits = encodingUnitsStr.split(",", -1);
+                codeEncodingUnits = encodingUnitsStr.split(SEPARATOR, -1);
             }
 
             String templatesStr = cursor.getString(16);
             if (templatesStr != null) {
-                templates = templatesStr.split(",", -1);
+                templates = templatesStr.split(SEPARATOR, -1);
             }
 
             String isPrimaryStr = cursor.getString(17);
             if (isPrimaryStr != null) {
-                String[] split = isPrimaryStr.split(",", -1);
+                String[] split = isPrimaryStr.split(SEPARATOR, -1);
                 if (split.length > 0) {
                     codeIsPrimaryCode = new boolean[split.length];
                     for (int i=0; i<split.length; i++) {
@@ -856,7 +858,7 @@ public class ProductDatabase {
 
             String specifiedQuantities = cursor.getString(18);
             if (specifiedQuantities != null) {
-                String[] split = specifiedQuantities.split(",", -1);
+                String[] split = specifiedQuantities.split(SEPARATOR, -1);
                 if (split.length > 0) {
                     codeSpecifiedQuantities = new int[split.length];
                     for (int i=0; i<split.length; i++) {
@@ -872,7 +874,7 @@ public class ProductDatabase {
 
             String transmissionTemplatesStr = cursor.getString(19);
             if (transmissionTemplatesStr != null) {
-                transmissionTemplates = transmissionTemplatesStr.split(",", -1);
+                transmissionTemplates = transmissionTemplatesStr.split(SEPARATOR, -1);
             }
         }
 
@@ -889,6 +891,8 @@ public class ProductDatabase {
                 Unit codeEncodingUnit = null;
                 CodeTemplate template = null;
                 CodeTemplate transmissionTemplate = null;
+
+                // BRAINDUMP: transmissionCodes und productCodes length !=
 
                 if (transmissionCodes != null) {
                     String tc = transmissionCodes[i];
@@ -1036,19 +1040,19 @@ public class ProductDatabase {
                 "p.depositSku," +
                 "p.isDeposit," +
                 "p.weighing," +
-                "(SELECT group_concat(s.code) FROM scannableCodes s WHERE s.sku = p.sku)," +
+                "(SELECT group_concat(s.code, \"" + SEPARATOR + "\") FROM scannableCodes s WHERE s.sku = p.sku)," +
                 "p.subtitle" +
                 ",p.saleRestriction"+
                 ",p.saleStop" +
                 ",p.notForSale" +
-                ",(SELECT group_concat(ifnull(s.transmissionCode, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(s.transmissionCode, \"\"), \"" + SEPARATOR + "\") FROM scannableCodes s WHERE s.sku = p.sku)" +
                 ",p.referenceUnit" +
                 ",p.encodingUnit" +
-                ",(SELECT group_concat(ifnull(s.encodingUnit, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
-                ",(SELECT group_concat(ifnull(s.template, \"\")) FROM scannableCodes s WHERE s.sku = p.sku)" +
-                ",(SELECT group_concat(ifnull(sc.isPrimary, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
-                ",(SELECT group_concat(ifnull(sc.specifiedQuantity, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
-                ",(SELECT group_concat(ifnull(sc.transmissionTemplate, '')) FROM scannableCodes sc where sc.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(s.encodingUnit, \"\"), \"" + SEPARATOR + "\") FROM scannableCodes s WHERE s.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(s.template, \"\"), \"" + SEPARATOR + "\") FROM scannableCodes s WHERE s.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(sc.isPrimary, ''), \"" + SEPARATOR + "\") FROM scannableCodes sc where sc.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(sc.specifiedQuantity, ''), \"" + SEPARATOR + "\") FROM scannableCodes sc where sc.sku = p.sku)" +
+                ",(SELECT group_concat(ifnull(sc.transmissionTemplate, ''), \"" + SEPARATOR + "\") FROM scannableCodes sc where sc.sku = p.sku)" +
                 ",p.scanMessage" +
                 ",ifnull((SELECT a.value FROM availabilities a WHERE a.sku = p.sku AND a.shopID = " + shopId + "), " + defaultAvailability + ") as availability" +
                 appendFields +
