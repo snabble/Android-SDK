@@ -2,6 +2,7 @@ package io.snabble.sdk.firebase;
 
 import android.graphics.Rect;
 
+import com.google.android.gms.common.annotation.KeepName;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.mlkit.vision.barcode.Barcode;
@@ -19,9 +20,10 @@ import io.snabble.sdk.ui.scanner.BarcodeDetector;
 import io.snabble.sdk.ui.scanner.FalsePositiveFilter;
 import io.snabble.sdk.utils.Logger;
 
+@KeepName
 public class FirebaseBarcodeDetector implements BarcodeDetector {
     private byte[] cropBuffer = null;
-    private FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter(3);
+    private final FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter(3);
     private BarcodeScanner detector;
 
     public FirebaseBarcodeDetector() {

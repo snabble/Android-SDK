@@ -6,18 +6,17 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.math.min
-import kotlin.math.round
 
 class GS1Code(val code: String) {
     companion object {
         const val GS = "\u001D"
 
         private val symbologyIdentifiers = listOf(
-                "]C1",  // = GS1-128
-                "]e0",  // = GS1 DataBar
-                "]d2",  // = GS1 DataMatrix
-                "]Q3",  // = GS1 QR Code
-                "]J1"   // = GS1 DotCode
+            "]C1",  // = GS1-128
+            "]e0",  // = GS1 DataBar
+            "]d2",  // = GS1 DataMatrix
+            "]Q3",  // = GS1 QR Code
+            "]J1"   // = GS1 DotCode
         )
     }
 
@@ -37,7 +36,7 @@ class GS1Code(val code: String) {
         }
 
         @Suppress("ControlFlowWithEmptyBody")
-        while (nextElement()){}
+        while (nextElement()) {}
     }
 
     private fun nextElement(): Boolean {
@@ -91,19 +90,16 @@ class GS1Code(val code: String) {
         return false
     }
 
-    private fun firstValue(prefix: String): String? {
-        return elements.firstOrNull{
+    private fun firstValue(prefix: String): String? =
+        elements.firstOrNull {
             it.identifier.prefix.startsWith(prefix)
         }?.values?.firstOrNull()
-    }
 
-    private fun firstDecimal(prefix: String): BigDecimal? {
-        return elements.firstOrNull{ it.identifier.prefix.startsWith(prefix) }?.decimal
-    }
+    private fun firstDecimal(prefix: String): BigDecimal? =
+        elements.firstOrNull { it.identifier.prefix.startsWith(prefix) }?.decimal
 
-    private fun firstElement(prefix: String): Element? {
-        return elements.firstOrNull{ it.identifier.prefix.startsWith(prefix) }
-    }
+    private fun firstElement(prefix: String): Element? =
+        elements.firstOrNull { it.identifier.prefix.startsWith(prefix) }
 
     private fun BigDecimal.trim(): BigDecimal {
         val df = DecimalFormat()
@@ -132,9 +128,7 @@ class GS1Code(val code: String) {
     }
 
     val weight: Int?
-        get() {
-            return getWeight(Unit.GRAM)?.toInt()
-        }
+        get() = getWeight(Unit.GRAM)?.toInt()
 
     fun getLength(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.DISTANCE) {
@@ -154,9 +148,7 @@ class GS1Code(val code: String) {
     }
 
     val length: Int?
-        get() {
-            return getLength(Unit.MILLIMETER)?.toInt()
-        }
+        get() = getLength(Unit.MILLIMETER)?.toInt()
 
     fun getArea(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.AREA) {
@@ -177,9 +169,7 @@ class GS1Code(val code: String) {
     }
 
     val area: Int?
-        get() {
-            return getArea(Unit.SQUARE_CENTIMETER)?.toInt()
-        }
+        get() = getArea(Unit.SQUARE_CENTIMETER)?.toInt()
 
     fun getLiters(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.VOLUME) {
@@ -199,9 +189,7 @@ class GS1Code(val code: String) {
     }
 
     val liters: Int?
-        get() {
-            return getLiters(Unit.MILLILITER)?.toInt()
-        }
+        get() = getLiters(Unit.MILLILITER)?.toInt()
 
     fun getVolume(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.CAPACITY) {
@@ -219,17 +207,15 @@ class GS1Code(val code: String) {
     }
 
     val volume: Int?
-        get() {
-            return getVolume(Unit.CUBIC_CENTIMETER)?.toInt()
-        }
+        get() = getVolume(Unit.CUBIC_CENTIMETER)?.toInt()
 
     val gtin: String?
-        get() {
-            return firstValue("01")
-        }
+        get() = firstValue("01")
 
-    data class Price (val price: BigDecimal,
-                      val currencyCode: String?)
+    data class Price(
+        val price: BigDecimal,
+        val currencyCode: String?
+    )
 
     val price: Price?
         get() {
@@ -248,26 +234,20 @@ class GS1Code(val code: String) {
             return null
         }
 
-    fun getPrice(digits: Int, roundingMode: RoundingMode): Price? {
-        return price?.let { price ->
-            return Price(
-                    price = price.price.setScale(digits, roundingMode),
-                    currencyCode = price.currencyCode
+    fun getPrice(digits: Int, roundingMode: RoundingMode): Price? =
+        price?.let { price ->
+            Price(
+                price = price.price.setScale(digits, roundingMode),
+                currencyCode = price.currencyCode
             )
         }
-    }
 
     val amount: Int?
-        get() {
-            return firstValue("30")?.toIntOrNull()
-        }
+        get() = firstValue("30")?.toIntOrNull()
 
-    fun getEmbeddedData(encodingUnit: Unit?, digits: Int?, roundingMode: RoundingMode?): BigDecimal? {
-        if (encodingUnit == null) {
-            return null
-        }
-
-        return when (encodingUnit.dimension) {
+    fun getEmbeddedData(encodingUnit: Unit?, digits: Int?, roundingMode: RoundingMode?): BigDecimal? =
+        when (encodingUnit?.dimension) {
+            null -> null
             Dimension.VOLUME -> getLiters(encodingUnit)
             Dimension.CAPACITY -> getVolume(encodingUnit)
             Dimension.AREA -> getArea(encodingUnit)
@@ -281,7 +261,5 @@ class GS1Code(val code: String) {
                     this.price?.price
                 }
             }
-            else -> null
         }
-    }
 }

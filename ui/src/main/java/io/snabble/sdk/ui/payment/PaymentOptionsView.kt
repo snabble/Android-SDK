@@ -120,10 +120,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
         }
 
         val adapterList = ArrayList<Entry>()
-
-        if (projectList.size > 1) {
-            adapterList.addAll(projectList)
-        }
+        adapterList.addAll(projectList)
 
         return adapterList
     }

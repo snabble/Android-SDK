@@ -1295,9 +1295,9 @@ public class ProductDatabase {
 
         // try again for upc codes
         if (product == null) {
-            String upcCode = extractUpcA(scannedCode.getLookupCode());
-            if (upcCode != null) {
-                return findByCode(upcCode, scannedCode.getTemplateName());
+            String shorterCode = removePrefix(scannedCode.getLookupCode());
+            if (shorterCode != null) {
+                return findByCode(shorterCode, scannedCode.getTemplateName());
             }
         }
 
@@ -1311,14 +1311,28 @@ public class ProductDatabase {
                 templateName
         }, false);
 
-        return getFirstProductAndClose(cursor);
+        Product product = getFirstProductAndClose(cursor);
+
+        if (product == null) {
+            String shorterCode = removePrefix(lookupCode);
+            if (shorterCode != null) {
+                return findByCode(shorterCode, templateName);
+            }
+        }
+
+        return product;
     }
 
-    private String extractUpcA(String code) {
-        if (code.length() == 13 && code.startsWith("0")) {
+    private String removePrefix(String code) {
+        if (code.length() == 12 && code.startsWith("0000")) {
+            // convert EAN12 to EAN8
+            return code.substring(4);
+        } else if (code.length() == 13 && code.startsWith("0")) {
+            // convert UPC-A or EAN13 to EAN12
             return code.substring(1);
-        } else if (code.length() == 14 && code.startsWith("00")) {
-            return code.substring(2);
+        } else if (code.length() == 14 && code.startsWith("0")) {
+            // convert EAN14 to EAN13
+            return code.substring(1);
         } else {
             return null;
         }

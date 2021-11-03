@@ -75,14 +75,6 @@ class Coupons (
     val source: LiveData<CouponSource> = MutableLiveData(CouponSource.Bundled)
     val isLoading: LiveData<Boolean> = MutableLiveData(false)
 
-    init {
-        project.addOnUpdateListener {
-            if (source.value == CouponSource.Bundled) {
-                postValue(project.coupons.value)
-            }
-        }
-    }
-
     fun filter(type: CouponType): List<Coupon> =
         value?.filter { it.type == type } ?: emptyList()
 
@@ -105,23 +97,16 @@ class Coupons (
             }
         }
         project.urls["coupons"]?.let { path ->
+            val couponsUrl = Snabble.getInstance().absoluteUrl(path) ?: return
             isLoading.setAsap(true)
-            val newsUrl = Snabble.getInstance().absoluteUrl(path)
-
-            if (newsUrl == null) {
-                setProjectCoupons(emptyList())
-                return
-            }
 
             val request = Request.Builder()
-                .url(newsUrl)
+                .url(couponsUrl)
                 .build()
             val couponCall = project.okHttpClient.newCall(request)
             couponCall.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    postValue(emptyList())
                     isLoading.setAsap(false)
-                    source.setAsap(CouponSource.Online)
                 }
 
                 override fun onResponse(call: Call, response: Response) {

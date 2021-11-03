@@ -1,0 +1,92 @@
+.page-footer {
+    background: url(https://snabble.io/images/stipes2.svg) 100% 100% no-repeat #000;
+    color: #fff;
+    padding: 30px;
+    font-size: 14px;
+    line-height: 1.7;
+    letter-spacing: .3px;
+}
+.page-footer p {
+    margin: 35px 0;
+}
+.page-footer__item:nth-child(2n) {
+    margin-left: 0;
+    margin-right: 0;
+}
+.page-footer__wrapper {
+    display: grid;
+    grid-gap: 60px;
+    grid-template-columns: 2fr 1fr 1fr;
+    color: hsla(0,0%,100%,.5);
+    margin-left:auto;
+    margin-right:auto;
+    max-width:61rem;
+}
+.page-footer__item {
+    grid-column: auto;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.page-footer__headline {
+    color:#fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 10px;
+}
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin-left: -10px;
+}
+.footer-list__item {
+    padding: 5px 10px;
+    display: block;
+    margin: 0;
+}
+.footer-list__link {
+    text-decoration: none;
+    font-weight: 300;
+}
+.page-footer__link img {
+    width: 30px;
+    height: 30px;
+    opacity: .5;
+    margin-right: 10px;
+}
+.page-footer__link:hover img {
+    opacity: 1;
+    transition: all .2s;
+}
+.footer-list__item:hover .footer-list__link {
+    color: #fff;
+    transition: all .2s;
+}
+.footer-list__item:hover {
+    background-color: hsla(0,0%,100%,.2);
+    border-radius: 5px;
+}
+.error-404 h1::after {
+    content: ".";
+    color: #07b;
+}
+.error-404 h1, .error-404 h2 {
+    font-family: gilroy,sans-serif;
+    font-weight: 400;
+}
+.error-404 h1 {
+    margin: 0 0 -20px;
+    line-height: 1.1;
+    font-size: 350%;
+}
+.error-404 h2 {
+    line-height: 1.3;
+    font-size: 150%;
+    margin: 40px 0;
+}
+@media only screen and (max-width:600px) {
+  .page-footer__wrapper {
+    grid-template-columns: 1fr;
+    margin-bottom: 6em;
+  }
+}
