@@ -1,37 +1,37 @@
 buildscript {
-    ext.kotlin_version = "1.5.31"
+    ext.kotlin_version = '1.5.31'
 
     repositories {
         google()
         mavenCentral()
-
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-base:$kotlin_version"
         classpath 'com.android.tools.build:gradle:7.0.3'
         classpath 'gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0'
-        classpath "gradle.plugin.gmazzo:sqlite-plugin:0.2"
+        classpath 'gradle.plugin.gmazzo:sqlite-plugin:0.2'
     }
 }
 
 plugins {
     id 'maven-publish'
+    id 'org.jetbrains.dokka'
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://datatrans.jfrog.io/artifactory/mobile-sdk/"}
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://datatrans.jfrog.io/artifactory/mobile-sdk/'}
     }
 
     project.ext {
-        sdkVersion='0.51.4'
+        sdkVersion='0.51.5'
         versionCode=1
 
         compileSdkVersion=31
@@ -42,7 +42,7 @@ allprojects {
         okhttpVersion='4.9.1'
         desugarVersion='1.1.5'
 
-        sdkVersion += project.getProperties().get("versionSuffix", "")
+        sdkVersion += project.getProperties().get('versionSuffix', '')
     }
 }
 
@@ -50,23 +50,34 @@ afterEvaluate {
     publishing {
         repositories {
             maven {
-                name = "LocalBuildDir"
-                def releasesRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-releases/"
-                def snapshotsRepoUrl = "file://"+ project.rootDir.absolutePath +"/build/maven-snapshots/"
+                name = 'LocalBuildDir'
+                def releasesRepoUrl = 'file://' + project.rootDir.absolutePath + '/build/maven-releases/'
+                def snapshotsRepoUrl = 'file://' + project.rootDir.absolutePath + '/build/maven-snapshots/'
                 url = rootProject.sdkVersion.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             }
 
             maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/snabble/Android-SDK")
+                name = 'GitHubPackages'
+                url = uri('https://maven.pkg.github.com/snabble/Android-SDK')
 
                 credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
+                    username = System.getenv('GITHUB_ACTOR')
+                    password = System.getenv('GITHUB_TOKEN')
                 }
             }
         }
     }
+}
+
+tasks.named("dokkaHtml").configure {
+    dokkaSourceSets {
+        configureEach {
+            skipDeprecated.set(true)
+        }
+    }
+}
+tasks.withType(org.jetbrains.dokka.gradle.AbstractDokkaTask).configureEach {
+    outputDirectory.set(rootDir.toPath().resolve("docs/docs/api").toFile())
 }
 
 task printVersion() {

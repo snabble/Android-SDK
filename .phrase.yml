@@ -9,7 +9,7 @@ phrase:
           tags: "SDK"
           encoding: "UTF-8"
           file_format: xml
-          include_empty_translations: true
+          include_empty_translations: false
           format_options:
             convert_placeholder: true
             escape_linebreaks: true
@@ -18,7 +18,7 @@ phrase:
           tags: "SDK"
           encoding: "UTF-8"
           file_format: xml
-          include_empty_translations: true
+          include_empty_translations: false
           format_options:
             convert_placeholder: true
             escape_linebreaks: true

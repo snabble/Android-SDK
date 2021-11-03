@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply from:'../scripts/maven.gradle'
+apply from: '../scripts/maven.gradle'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -11,7 +12,7 @@ android {
         targetSdkVersion project.targetSdkVersion
         versionCode project.versionCode
         versionName project.sdkVersion
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -41,8 +42,8 @@ android {
     }
 
     kotlinOptions {
-        freeCompilerArgs = ["-Xjvm-default=all"]
-        jvmTarget = "1.8"
+        freeCompilerArgs = ['-Xjvm-default=all']
+        jvmTarget = '1.8'
     }
 }
 
@@ -58,7 +59,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.webkit:webkit:1.4.0'
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'com.github.google:flexbox-layout:2.0.1'
     implementation 'me.relex:circleindicator:2.1.6'
@@ -71,8 +72,8 @@ dependencies {
     implementation "androidx.camera:camera-core:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
-    implementation "androidx.camera:camera-view:1.0.0-alpha28"
-    implementation "androidx.camera:camera-extensions:1.0.0-alpha28"
+    implementation "androidx.camera:camera-view:1.0.0-alpha30"
+    implementation "androidx.camera:camera-extensions:1.0.0-alpha30"
 
     //noinspection GradleDependency
     implementation 'commons-io:commons-io:2.5'
