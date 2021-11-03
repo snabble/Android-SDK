@@ -600,7 +600,11 @@ public class Checkout {
     private boolean handleProcessResponse() {
         if (checkoutProcess.aborted) {
             Logger.d("Payment aborted");
-            notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+            if (hasAnyFulfillmentFailed()) {
+                notifyStateChanged(State.PAYMENT_PROCESSING_ERROR);
+            } else {
+                notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+            }
             return true;
         }
 

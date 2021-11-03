@@ -2,10 +2,8 @@ package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
 import android.content.Context
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
-import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import io.snabble.sdk.*
@@ -14,11 +12,8 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.utils.Dispatch
-import android.os.Bundle
-import android.widget.RelativeLayout
 import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
 import androidx.core.view.isInvisible
 import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -27,7 +22,6 @@ import io.snabble.sdk.utils.Logger
 import android.text.Editable
 
 import android.text.TextWatcher
-import androidx.annotation.NonNull
 
 
 @Suppress("LeakingThis")
@@ -51,6 +45,8 @@ open class PaymentStatusView @JvmOverloads constructor(
 
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
+        clipChildren = false
+
         project = SnabbleUI.getProject()
         checkout = project.checkout
         binding = SnabbleViewPaymentStatusBinding.bind(this)
@@ -142,6 +138,7 @@ open class PaymentStatusView @JvmOverloads constructor(
                 binding.payment.state = PaymentStatusItemView.State.FAILED
                 binding.payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
                 binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
+                    project.shoppingCart.generateNewUUID()
                     executeUiAction(SnabbleUI.Action.GO_BACK, null)
                 }
                 binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
@@ -250,8 +247,8 @@ open class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun onFulfillmentStateChanged(fulfillments: Array<CheckoutApi.Fulfillment>?) {
-        val tobaccolandEWA = fulfillments?.find { it.type == "tobaccolandEWA" }
-        tobaccolandEWA?.let {
+        val cigarettesStatus = fulfillments?.find { it.type == "tobaccolandEWA" || it.type == "mock" }
+        cigarettesStatus?.let {
             if (it.state.isOpen) {
                 binding.fulfillment.isVisible = true
                 binding.fulfillment.setText("")
