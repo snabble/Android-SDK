@@ -40,7 +40,7 @@ import java.nio.charset.Charset
 import java.text.NumberFormat
 import java.util.*
 
-class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr), LifecycleObserver {
     private var acceptedKeyguard = false
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
@@ -117,7 +117,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 description: String,
                 failingUrl: String
             ) {
-                Logger.d("onReceivedError $failingUrl")
+                Logger.e("onReceivedError $failingUrl")
                 Dispatch.mainThread { finishWithError() }
             }
 
@@ -327,22 +327,26 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     public override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        val fragmentActivity = UIUtils.getHostFragmentActivity(context)
-        fragmentActivity?.lifecycle?.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-            fun onResume() {
-                isActivityResumed = true
-                if (this@PayoneInputView::creditCardInfo.isInitialized) polling.doNow()
-            }
+        isActivityResumed = UIUtils.getHostFragmentActivity(context)?.lifecycle?.let { lifecycle ->
+            lifecycle.addObserver(this)
+            lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        } ?: true
+    }
 
-            @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-            fun onPause() {
-                isActivityResumed = false
-                fragmentActivity.lifecycle.removeObserver(this)
-            }
-        })
-        isActivityResumed =
-            fragmentActivity?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.RESUMED) ?: true
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
+        isActivityResumed = true
+        if (this@PayoneInputView::creditCardInfo.isInitialized) polling.doNow()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause() {
+        isActivityResumed = false
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        UIUtils.getHostFragmentActivity(context)?.lifecycle?.removeObserver(this)
     }
 
     private data class CreditCardInfo(
