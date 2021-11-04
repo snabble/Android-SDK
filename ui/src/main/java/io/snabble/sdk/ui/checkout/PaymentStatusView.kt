@@ -22,6 +22,7 @@ import io.snabble.sdk.utils.Logger
 import android.text.Editable
 
 import android.text.TextWatcher
+import android.view.ViewGroup
 
 
 @Suppress("LeakingThis")
@@ -67,13 +68,28 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.rating1.setOnClickListener {
             ratingMessage = ""
             binding.inputBadRatingLayout.isVisible = true
-            binding.inputBadRatingLayout.getEditText()?.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: Editable) {
-                    ratingMessage = s.toString()
-                }
-            })
+            binding.inputBadRatingLayout.getEditText()
+                ?.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
+
+                    override fun onTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                    }
+
+                    override fun afterTextChanged(s: Editable) {
+                        ratingMessage = s.toString()
+                    }
+                })
         }
 
         binding.rating2.setOnClickListener {
@@ -119,7 +135,8 @@ open class PaymentStatusView @JvmOverloads constructor(
                 binding.payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
             Checkout.State.PAYMENT_APPROVED -> {
-                binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_success)
+                binding.title.text =
+                    resources.getString(R.string.Snabble_PaymentStatus_Title_success)
                 binding.image.setImageResource(R.drawable.snabble_ic_payment_success_big)
                 binding.image.isVisible = true
                 binding.progress.isVisible = false
@@ -250,23 +267,40 @@ open class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun onFulfillmentStateChanged(fulfillments: Array<CheckoutApi.Fulfillment>?) {
-        val cigarettesStatus = fulfillments?.find { it.type == "tobaccolandEWA" || it.type == "mock" }
-        cigarettesStatus?.let {
-            if (it.state.isOpen) {
-                binding.fulfillment.isVisible = true
-                binding.fulfillment.setText("")
-                binding.fulfillment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
-                binding.fulfillment.state = PaymentStatusItemView.State.IN_PROGRESS
-            } else if (it.state.isFailure) {
-                binding.fulfillment.isVisible = true
-                binding.fulfillment.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_error))
-                binding.fulfillment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
-                binding.fulfillment.state = PaymentStatusItemView.State.FAILED
-            } else if (it.state.isClosed) {
-                binding.fulfillment.isVisible = true
-                binding.fulfillment.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_message))
-                binding.fulfillment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
-                binding.fulfillment.state = PaymentStatusItemView.State.SUCCESS
+        fulfillments?.forEach {
+            var itemView = binding.fulfillmentContainer.findViewWithTag<PaymentStatusItemView>(it.type)
+            if (itemView == null) {
+                itemView = PaymentStatusItemView(context)
+                itemView.tag = it.type
+                binding.fulfillmentContainer.addView(itemView,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+
+            if (it.type == "tobaccolandEWA") {
+                if (it.state.isOpen) {
+                    itemView.setText(null)
+                    itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
+                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
+                } else if (it.state.isFailure) {
+                    itemView.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_error))
+                    itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
+                    itemView.state = PaymentStatusItemView.State.FAILED
+                } else if (it.state.isClosed) {
+                    itemView.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_message))
+                    itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
+                    itemView.state = PaymentStatusItemView.State.SUCCESS
+                }
+            } else {
+                itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Fulfillment_title))
+
+                if (it.state.isOpen) {
+                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
+                } else if (it.state.isFailure) {
+                    itemView.state = PaymentStatusItemView.State.FAILED
+                } else if (it.state.isClosed) {
+                    itemView.state = PaymentStatusItemView.State.SUCCESS
+                }
             }
         }
     }

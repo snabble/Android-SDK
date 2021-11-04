@@ -126,6 +126,7 @@
     <string name="Snabble.PaymentStatus.back">Zurück</string>
     <string name="Snabble.PaymentStatus.close">Schließen</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Ausgangs-Code</string>
+    <string name="Snabble.PaymentStatus.Fulfillment.title">Lieferung</string>
     <string name="Snabble.PaymentStatus.Payment.error">Deine Zahlung konnte nicht durchgeführt werden. Versuche es erneut oder wähle ein anderes Bezahlverfahren.</string>
     <string name="Snabble.PaymentStatus.Payment.title">Bezahlung</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Erneut versuchen</string>

@@ -67,11 +67,11 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>
 
-                <io.snabble.sdk.ui.checkout.PaymentStatusItemView
-                    android:id="@+id/fulfillment"
+                <LinearLayout
+                    android:id="@+id/fulfillment_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone" />
+                    android:orientation="vertical" />
 
                 <io.snabble.sdk.ui.checkout.PaymentStatusItemView
                     android:id="@+id/exit_token"
