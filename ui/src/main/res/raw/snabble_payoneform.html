@@ -218,7 +218,6 @@ PayoneAutoCcDetection.prototype._handleUnsupportedCardType = function () {
 }
 
 PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
-    console.log("checkCallback: " + JSON.stringify(response));
     switch (response.status) {
         case 'VALID':
             console.log('Success! Credit card check was valid.');
