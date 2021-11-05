@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
 import android.content.Context
+import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.view.isVisible
@@ -188,6 +189,10 @@ open class PaymentStatusView @JvmOverloads constructor(
             if (it.value != null && it.format != null) {
                 val format = BarcodeFormat.parse(it.format)
                 if (format != null) {
+                    SnabbleUI.executeAction(SnabbleUI.Action.EVENT_EXIT_TOKEN_AVAILABLE, Bundle().apply {
+                        putString("token", it.value)
+                        putString("format", it.format)
+                    })
                     binding.exitToken.isVisible = true
                     binding.exitToken.state = PaymentStatusItemView.State.SUCCESS
                     binding.exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))

@@ -36,6 +36,7 @@ public class SnabbleUI {
         GO_BACK,
         EVENT_PRODUCT_CONFIRMATION_SHOW,
         EVENT_PRODUCT_CONFIRMATION_HIDE,
+        EVENT_EXIT_TOKEN_AVAILABLE,
     }
 
     public interface Callback {
