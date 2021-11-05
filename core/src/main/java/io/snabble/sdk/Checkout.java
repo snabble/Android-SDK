@@ -284,6 +284,7 @@ public class Checkout {
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
         redeemedCoupons = null;
+        onFulfillmentStateUpdated.setValue(null);
 
         notifyStateChanged(Checkout.State.HANDSHAKING);
 
