@@ -130,6 +130,7 @@
     <string name="Snabble.PaymentStatus.Payment.title">Fizetés</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Megpróbálom újra</string>
     <string name="Snabble.PaymentStatus.Rating.send">Elküldés</string>
+    <string name="Snabble.PaymentStatus.Rating.title">Mi nem volt jó?</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Köszönjük!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Tetszett a vásárlás?</string>
     <string name="Snabble.PaymentStatus.Receipt.title">Nyugta</string>
@@ -142,6 +143,12 @@
     <string name="Snabble.PaymentStatus.Tobacco.error">A cigaretták kiadásakor probléma lépett fel. Kérjük, tájékoztasd az egyik alkalmazottat.</string>
     <string name="Snabble.PaymentStatus.Tobacco.message">Vedd ki a cigarettáidat</string>
     <string name="Snabble.PaymentStatus.Tobacco.title">Cigaretta kiadása</string>
+    <string name="Snabble.Payone.cardNumber">Kártyaszám</string>
+    <string name="Snabble.Payone.cvc">Ellenőrző szám (CVC)</string>
+    <string name="Snabble.Payone.expireMonth">Érvényesség hónapja (HH)</string>
+    <string name="Snabble.Payone.expireYear">Érvényesség éve (ÉÉÉÉ)</string>
+    <string name="Snabble.Payone.incompleteForm">Kérjük, hogy teljesen töltsd ki az űrlapot.</string>
+    <string name="Snabble.Payone.Lastname">Vezetéknév</string>
     <string name="Snabble.pleaseWait">Kérlek, várj...</string>
     <string name="Snabble.PostFinanceCard.payNow">Most fizetés a PostFinance kártyával</string>
     <string name="Snabble.QRCode.codeXofY">%1$d / %2$d kód</string>

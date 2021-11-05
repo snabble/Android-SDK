@@ -33,8 +33,8 @@ open class PaymentStatusView @JvmOverloads constructor(
     LifecycleObserver {
 
     private var isStopped: Boolean = false
-    private var project: Project
-    private var checkout: Checkout
+    private val project: Project
+    private val checkout: Checkout
 
     private val binding: SnabbleViewPaymentStatusBinding
     private val backPressedCallback = object : OnBackPressedCallback(true) {
@@ -58,11 +58,11 @@ open class PaymentStatusView @JvmOverloads constructor(
             executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_DONE, null)
         }
 
-        checkout.onCheckoutStateChanged.observeView(this) {
+        checkout.checkoutState.observeView(this) {
             onStateChanged(it)
         }
 
-        checkout.onFulfillmentStateUpdated.observeView(this) {
+        checkout.fulfillmentState.observeView(this) {
             onFulfillmentStateChanged(it)
         }
 
@@ -71,22 +71,8 @@ open class PaymentStatusView @JvmOverloads constructor(
             binding.inputBadRatingLayout.isVisible = true
             binding.inputBadRatingLayout.getEditText()
                 ?.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(
-                        s: CharSequence,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-                    }
-
-                    override fun onTextChanged(
-                        s: CharSequence,
-                        start: Int,
-                        before: Int,
-                        count: Int
-                    ) {
-                    }
-
+                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
                     override fun afterTextChanged(s: Editable) {
                         ratingMessage = s.toString()
                     }
@@ -151,24 +137,25 @@ open class PaymentStatusView @JvmOverloads constructor(
                 backPressedCallback.isEnabled = false
                 binding.ratingLayout.isVisible = true
             }
-            Checkout.State.PAYMENT_PROCESSING_ERROR,
-            Checkout.State.DENIED_TOO_YOUNG,
-            Checkout.State.DENIED_BY_PAYMENT_PROVIDER,
-            Checkout.State.DENIED_BY_SUPERVISOR,
+            Checkout.State.PAYMENT_PROCESSING_ERROR -> {
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                handlePaymentAborted()
+            }
+            Checkout.State.DENIED_TOO_YOUNG -> {
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung);
+                handlePaymentAborted()
+            }
+            Checkout.State.DENIED_BY_PAYMENT_PROVIDER -> {
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                handlePaymentAborted()
+            }
+            Checkout.State.DENIED_BY_SUPERVISOR -> {
+                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+                handlePaymentAborted()
+            }
             Checkout.State.PAYMENT_ABORTED -> {
-                binding.payment.state = PaymentStatusItemView.State.FAILED
-                binding.payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
-                binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
-                    project.shoppingCart.generateNewUUID()
-                    executeUiAction(SnabbleUI.Action.GO_BACK, null)
-                }
-                binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
-                binding.image.isVisible = true
-                binding.image.setImageResource(R.drawable.snabble_ic_payment_error_big)
-                binding.progress.isVisible = false
-                binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
-                binding.back.isEnabled = true
-                backPressedCallback.isEnabled = false
+                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
+                handlePaymentAborted()
             }
             Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
                 val price = checkout.verifiedOnlinePrice;
@@ -210,6 +197,22 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
     }
 
+    private fun handlePaymentAborted() {
+        binding.payment.state = PaymentStatusItemView.State.FAILED
+        binding.payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
+        binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
+            project.shoppingCart.generateNewUUID()
+            executeUiAction(SnabbleUI.Action.GO_BACK, null)
+        }
+        binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
+        binding.image.isVisible = true
+        binding.image.setImageResource(R.drawable.snabble_ic_payment_error_big)
+        binding.progress.isVisible = false
+        binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
+        binding.back.isEnabled = true
+        backPressedCallback.isEnabled = false
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun onStart() {
         onStateChanged(checkout.state)
@@ -228,10 +231,8 @@ open class PaymentStatusView @JvmOverloads constructor(
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
 
-        if (visibility != VISIBLE) {
-            if (ratingMessage != null) {
-                sendRating("1")
-            }
+        if (visibility != VISIBLE && ratingMessage != null) {
+            sendRating("1")
         }
     }
 

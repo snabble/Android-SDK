@@ -107,7 +107,9 @@ public class Checkout {
          */
         NO_SHOP
     }
-
+    
+    public static final int INVALID_PRICE = -1;
+    
     private final Project project;
     private final CheckoutApi checkoutApi;
     private final ShoppingCart shoppingCart;
@@ -121,8 +123,8 @@ public class Checkout {
     private final List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
     private final List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
 
-    private MutableLiveData<Checkout.State> onCheckoutStateChanged = new MutableLiveData<>();
-    private MutableLiveData<CheckoutApi.Fulfillment[]> onFulfillmentStateUpdated = new MutableLiveData<>();
+    private MutableLiveData<Checkout.State> checkoutState = new MutableLiveData<>();
+    private MutableLiveData<CheckoutApi.Fulfillment[]> fulfillmentState = new MutableLiveData<>();
 
     private State lastState = Checkout.State.NONE;
     private State state = Checkout.State.NONE;
@@ -284,7 +286,7 @@ public class Checkout {
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
         redeemedCoupons = null;
-        onFulfillmentStateUpdated.setValue(null);
+        fulfillmentState.setValue(null);
 
         notifyStateChanged(Checkout.State.HANDSHAKING);
 
@@ -877,12 +879,12 @@ public class Checkout {
         void onStateChanged(State state);
     }
 
-    public LiveData<State> getOnCheckoutStateChanged() {
-        return onCheckoutStateChanged;
+    public LiveData<State> getCheckoutState() {
+        return checkoutState;
     }
 
-    public LiveData<CheckoutApi.Fulfillment[]> getOnFulfillmentStateUpdated() {
-        return onFulfillmentStateUpdated;
+    public LiveData<CheckoutApi.Fulfillment[]> getFulfillmentState() {
+        return fulfillmentState;
     }
 
     public void addOnCheckoutStateChangedListener(OnCheckoutStateChangedListener listener) {
@@ -906,7 +908,7 @@ public class Checkout {
                 this.state = state;
 
                 Dispatch.mainThread(() -> {
-                    onCheckoutStateChanged.setValue(state);
+                    checkoutState.setValue(state);
 
                     for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
                         checkoutStateListener.onStateChanged(state);
@@ -938,9 +940,9 @@ public class Checkout {
             }
 
             if (checkoutProcess != null) {
-                onFulfillmentStateUpdated.setValue(checkoutProcess.fulfillments);
+                fulfillmentState.setValue(checkoutProcess.fulfillments);
             } else {
-                onFulfillmentStateUpdated.setValue(null);
+                fulfillmentState.setValue(null);
             }
         });
     }
@@ -952,9 +954,9 @@ public class Checkout {
             }
 
             if (checkoutProcess != null) {
-                onFulfillmentStateUpdated.setValue(checkoutProcess.fulfillments);
+                fulfillmentState.setValue(checkoutProcess.fulfillments);
             } else {
-                onFulfillmentStateUpdated.setValue(null);
+                fulfillmentState.setValue(null);
             }
         });
     }

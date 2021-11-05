@@ -130,6 +130,7 @@
     <string name="Snabble.PaymentStatus.Payment.title">Platba</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Skúsiť znovu</string>
     <string name="Snabble.PaymentStatus.Rating.send">Odoslať</string>
+    <string name="Snabble.PaymentStatus.Rating.title">Čo sa ti nepáčilo?</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Ďakujem!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Páčilo sa ti nakupovanie?</string>
     <string name="Snabble.PaymentStatus.Receipt.title">Pokladničný blok</string>
@@ -142,6 +143,12 @@
     <string name="Snabble.PaymentStatus.Tobacco.error">Pri vydávaní cigariet sa vyskytol problém. Obráť sa na zamestnanca obchodu, prosím.</string>
     <string name="Snabble.PaymentStatus.Tobacco.message">Zober si svoje cigarety, prosím.</string>
     <string name="Snabble.PaymentStatus.Tobacco.title">Vydávanie cigariet</string>
+    <string name="Snabble.Payone.cardNumber">Číslo karty</string>
+    <string name="Snabble.Payone.cvc">Kontrolné číslo (CVC)</string>
+    <string name="Snabble.Payone.expireMonth">Koniec platnosti – mesiac (MM)</string>
+    <string name="Snabble.Payone.expireYear">Koniec platnosti – rok (RRRR)</string>
+    <string name="Snabble.Payone.incompleteForm">Vyplň formulár úplne, prosím.</string>
+    <string name="Snabble.Payone.Lastname">Priezvisko</string>
     <string name="Snabble.pleaseWait">Čakaj, prosím...</string>
     <string name="Snabble.PostFinanceCard.payNow">Zaplatiť kartou PostFinance teraz</string>
     <string name="Snabble.QRCode.codeXofY">Kód %1$d z %2$d</string>

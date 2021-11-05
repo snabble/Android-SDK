@@ -304,7 +304,7 @@ open class CheckoutBar @JvmOverloads constructor(
             }
         } else if (state == Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN) {
             val price = project.checkout.verifiedOnlinePrice
-            if (price != -1) {
+            if (price != Checkout.INVALID_PRICE) {
                 val googlePayHelper = project.googlePayHelper
                 if (googlePayHelper != null) {
                     googlePayHelper.requestPayment(price)

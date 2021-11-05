@@ -32,7 +32,7 @@ android {
     }
 
     lintOptions {
-        disable 'LabelFor', 'ContentDescription'
+        disable 'LabelFor', 'ContentDescription', 'MissingTranslation'
     }
 
     compileOptions {
