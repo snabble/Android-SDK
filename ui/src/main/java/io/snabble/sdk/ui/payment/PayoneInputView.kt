@@ -250,7 +250,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                         Dispatch.mainThread {
                             threeDHint.isVisible = false
                             webView.loadUrl(url)
-                            polling.doLater(1000)
                         }
                     } ?: error(null)
                 } ?: error(null)
