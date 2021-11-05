@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.51.6]
+
+### Fixed
+- Only fallback to offline payment method if an offline capable payment method is selected
+
 ## [0.51.5]
 
 ### Fixed

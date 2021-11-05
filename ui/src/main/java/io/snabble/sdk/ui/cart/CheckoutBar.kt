@@ -217,7 +217,7 @@ open class CheckoutBar @JvmOverloads constructor(
                             object : OneShotClickListener() {
                                 override fun click() {
                                     if (entry.paymentMethod.isOfflineMethod) {
-                                        project.checkout.checkout(3000)
+                                        project.checkout.checkout(3000, true)
                                     } else {
                                         project.checkout.checkout()
                                     }
