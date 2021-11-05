@@ -17,6 +17,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.utils.getFragmentActivity
+import io.snabble.sdk.ui.utils.setOrHide
 import io.snabble.sdk.utils.Utils.dp2px
 
 @Suppress("LeakingThis")
@@ -77,25 +78,15 @@ open class PaymentStatusItemView @JvmOverloads constructor(
         }
 
     fun setTitle(title: String?) {
-        if (title == null) {
-            titleView.visibility = View.GONE
-        } else {
-            titleView.visibility = View.VISIBLE
-            titleView.text = title
-        }
+        titleView.setOrHide(title)
     }
 
     fun setText(t: String?) {
-        if (t == null) {
-            text.visibility = View.GONE
-        } else {
-            text.visibility = View.VISIBLE
-            text.text = t
-        }
+        text.setOrHide(t)
     }
 
-    fun setAction(text: String?, onClickListener: OnClickListener?) {
-        if (text != null && onClickListener != null) {
+    fun setAction(text: String?, onClickListener: OnClickListener) {
+        if (text != null) {
             action.isVisible = true
             action.text = text
             action.setOnClickListener(onClickListener)
