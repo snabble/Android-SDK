@@ -16,7 +16,17 @@ import java.security.cert.X509Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
@@ -39,7 +49,8 @@ public class PaymentCredentials {
         PAYDIREKT(null, false, Collections.singletonList(PaymentMethod.PAYDIREKT)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
-        DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
+        DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
 
         private String originType;
         private boolean requiresProject;
@@ -113,6 +124,18 @@ public class PaymentCredentials {
         private String alias;
         private String expiryMonth;
         private String expiryYear;
+    }
+
+    private static class PayoneData {
+        PayoneData(String pseudoCardPAN, String name, String userID) {
+            this.pseudoCardPAN = pseudoCardPAN;
+            this.name = name;
+            this.userID = userID;
+        }
+
+        private final String pseudoCardPAN;
+        private final String name;
+        private final String userID;
     }
 
     public static class PaydirektAuthorizationData {
@@ -247,18 +270,26 @@ public class PaymentCredentials {
         return pc;
     }
 
+    @Deprecated
     private static long parseValidTo(String format, String expirationMonth, String expirationYear) {
         if (expirationMonth == null || expirationMonth.equals("")
          || expirationYear == null || expirationYear.equals("")) {
             return 0;
         }
 
+        return parseValidTo(format, expirationMonth + "/" + expirationYear);
+    }
+
+    private static long parseValidTo(String format, String expirationDate) {
+        if (expirationDate == null || expirationDate.trim().equals("")) {
+            return 0;
+        }
+
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-            Date date = simpleDateFormat.parse(expirationMonth + "/" + expirationYear);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.getDefault());
 
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
+            calendar.setTime(simpleDateFormat.parse(expirationDate));
             calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
             return calendar.getTimeInMillis();
@@ -347,6 +378,50 @@ public class PaymentCredentials {
         pc.brand = brand;
         pc.obfuscatedId = obfuscatedId;
         pc.validTo = parseValidTo("MM/yy", expirationMonth, expirationYear);
+
+        if (pc.rsaEncryptedData == null) {
+            return null;
+        }
+
+        return pc;
+    }
+
+    public static PaymentCredentials fromPayone(String pseudocardpan,
+                                                String truncatedcardpan,
+                                                PaymentCredentials.Brand brand,
+                                                String cardexpiredate,
+                                                String lastname,
+                                                String userId,
+                                                String projectId) {
+        if (pseudocardpan == null) {
+            return null;
+        }
+
+        PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
+        if (brand == Brand.MASTERCARD || brand == Brand.AMEX || brand == Brand.VISA) {
+            pc.type = Type.PAYONE_CREDITCARD;
+        } else {
+            return null;
+        }
+        pc.projectId = projectId;
+
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        if (certificates.size() == 0) {
+            return null;
+        }
+
+        PayoneData payoneData = new PayoneData(pseudocardpan, lastname, userId);
+
+        String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
+
+        X509Certificate certificate = certificates.get(0);
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.signature = pc.sha256Signature(certificate);
+        pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.brand = brand;
+        pc.obfuscatedId = truncatedcardpan;
+        pc.validTo = parseValidTo("yyMM", cardexpiredate);
 
         if (pc.rsaEncryptedData == null) {
             return null;
@@ -645,6 +720,12 @@ public class PaymentCredentials {
                 case MASTERCARD: return PaymentMethod.MASTERCARD;
                 case POST_FINANCE_CARD: return PaymentMethod.POST_FINANCE_CARD;
                 case TWINT: return PaymentMethod.TWINT;
+            }
+        } else if (type == Type.PAYONE_CREDITCARD) {
+            switch (getBrand()) {
+                case VISA: return PaymentMethod.VISA;
+                case AMEX: return PaymentMethod.AMEX;
+                case MASTERCARD: return PaymentMethod.MASTERCARD;
             }
         }
 

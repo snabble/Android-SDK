@@ -2,12 +2,12 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.integration.CreditCardInputFragment;
+import io.snabble.sdk.ui.integration.PayoneInputFragment;
 
-public class CreditCardInputActivity extends BaseActivity {
+public class PayoneInputActivity extends BaseActivity {
     @Override
     public Fragment onCreateFragment() {
-        CreditCardInputFragment fragment =  new CreditCardInputFragment();
+        PayoneInputFragment fragment =  new PayoneInputFragment();
         fragment.setArguments(getIntent().getBundleExtra("args"));
         return fragment;
     }
