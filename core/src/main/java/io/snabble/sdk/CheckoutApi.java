@@ -286,19 +286,17 @@ public class CheckoutApi {
 
     public static class CheckoutProcessResponse {
         public Map<String, Href> links;
-        public Boolean supervisorApproval;
-        public Boolean paymentApproval;
         public Check[] checks;
         @SerializedName("orderID")
         public String orderId;
         public boolean aborted;
-        public JsonObject checkoutInfo;
         public PaymentMethod paymentMethod;
         public boolean modified;
         public PaymentInformation paymentInformation;
         public JsonObject paymentPreauthInformation;
         public ExitToken exitToken;
         public State paymentState;
+        public Pricing pricing;
         public PaymentResult paymentResult;
         public Fulfillment[] fulfillments;
 
@@ -317,6 +315,10 @@ public class CheckoutApi {
             }
             return null;
         }
+    }
+
+    public static class Pricing {
+        Price price;
     }
 
     public interface CheckoutInfoResult {

@@ -139,20 +139,15 @@ class GooglePayHelper(
     fun isReadyToPay(isReadyToPayListener: IsReadyToPayListener) {
         val request = IsReadyToPayRequest.fromJson(GsonHolder.get().toJson(isReadyToPayRequest()))
 
-        val googlePayClient = googlePayClient
-        if (googlePayClient != null) {
-            val task = googlePayClient.isReadyToPay(request)
-            task.addOnCompleteListener { completedTask ->
-                try {
-                    completedTask.getResult(ApiException::class.java)?.let {
-                        isReadyToPayListener.isReadyToPay(it)
-                    }
-                } catch (exception: ApiException) {
-                    isReadyToPayListener.isReadyToPay(false)
+        val task = googlePayClient.isReadyToPay(request)
+        task.addOnCompleteListener { completedTask ->
+            try {
+                completedTask.getResult(ApiException::class.java)?.let {
+                    isReadyToPayListener.isReadyToPay(it)
                 }
+            } catch (exception: ApiException) {
+                isReadyToPayListener.isReadyToPay(false)
             }
-        } else {
-            isReadyToPayListener.isReadyToPay(false)
         }
     }
 
@@ -177,13 +172,9 @@ class GooglePayHelper(
 
         val request = PaymentDataRequest.fromJson(GsonHolder.get().toJson(paymentDataRequestJson))
         val googlePayClient = googlePayClient
-        if (request != null && googlePayClient != null) {
-            val task = googlePayClient.loadPaymentData(request)
-            AutoResolveHelper.resolveTask(task, activity, requestCode)
-            return true
-        }
-
-        return false
+        val task = googlePayClient.loadPaymentData(request)
+        AutoResolveHelper.resolveTask(task, activity, requestCode)
+        return true
     }
 
     fun onActivityResult(resultCode: Int, data: Intent?) {

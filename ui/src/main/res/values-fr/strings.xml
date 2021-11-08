@@ -140,7 +140,6 @@
     <string name="Snabble.Receipts.title">Achats précédents</string>
     <string name="Snabble.remove">Supprimer</string>
     <string name="Snabble.saleStop.errorMsg">Ces produits ne peuvent malheureusement pas être payés avec l’application actuellement, merci de les payer comme d’habitude à la caisse.</string>
-    <string name="Snabble.saleStop.errorMsg.one"/>
     <string name="Snabble.saleStop.errorMsg.scan">Ce produit ne peut malheureusement pas être payé avec l’application actuellement, merci de le payer comme d’habitude à la caisse.</string>
     <string name="Snabble.saleStop.errorMsg.title">Pardon</string>
     <string name="Snabble.Save">Enregistrer</string>
@@ -185,8 +184,6 @@
     <string name="Snabble.Shoppingcart.articleRemoved">Article supprimé</string>
     <string name="Snabble.Shoppingcart.buyProducts">Acheter %1$d articles pour %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Payer maintenant</string>
-    <string name="Snabble.Shoppingcart.buyProducts.one"/>
-    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod"/>
     <string name="Snabble.Shoppingcart.coupon">Bon</string>
     <string name="Snabble.Shoppingcart.coupons">Bons</string>
     <string name="Snabble.Shoppingcart.deposit">Consigne</string>
@@ -203,7 +200,6 @@
     <string name="Snabble.Shoppingcart.notForThisPurchase">Non disponible pour cet achat</string>
     <string name="Snabble.Shoppingcart.notForVendor">N’est pas pris en charge par le commerçant</string>
     <string name="Snabble.Shoppingcart.numberOfItems">%d article</string>
-    <string name="Snabble.Shoppingcart.numberOfItems.one"/>
     <string name="Snabble.Shoppingcart.removeItem">Es-tu sûr(e) de vouloir supprimer %s ?</string>
     <string name="Snabble.Shoppingcart.removeItems">Es-tu sûr(e) de vouloir supprimer tous les produits du panier ?</string>
     <string name="Snabble.ShoppingCart.title">Panier</string>

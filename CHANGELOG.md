@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.52.0-beta01]
+
+### Breaking Changes
+- Added a new PaymentStatusView for displaying the current payment status in a linear fashion. 
+  It also displays dispatching of cigarettes and the status of the receipt 
+- Removed SHOW_PAYMENT_SUCCESS and SHOW_PAYMENT_FAILURE for SHOW_PAYMENT_STATUS
+
+### Added
+- Added optional CheckInManager and CheckInLocationManager which can used for geofencing store locations
+- Added support for PayOne credit card tokenization and transactions
+
 ## [0.51.6]
 
 ### Fixed

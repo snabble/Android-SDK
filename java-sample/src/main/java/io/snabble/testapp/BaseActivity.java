@@ -12,6 +12,9 @@ import androidx.fragment.app.Fragment;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.checkout.PaymentStatusView;
+import io.snabble.sdk.ui.integration.ProjectPaymentOptionsFragment;
+import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
@@ -125,17 +128,20 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_CHECKOUT_POINT_OF_SALE:
                 showCheckoutQRCodePOS();
                 break;
-            case SHOW_PAYMENT_FAILURE:
-                showPaymentFailure();
+            case SHOW_PAYMENT_STATUS:
+                showPaymentStatus();
                 break;
-            case SHOW_PAYMENT_SUCCESS:
-                showPaymentSuccess();
+            case SHOW_PAYMENT_DONE:
+                showPaymentDone();
                 break;
             case SHOW_SEPA_CARD_INPUT:
                 showSEPACardInput();
                 break;
             case SHOW_CREDIT_CARD_INPUT:
                 showCreditCardInput(args);
+                break;
+            case SHOW_PAYONE_INPUT:
+                showPayoneInput(args);
                 break;
             case SHOW_PAYDIREKT_INPUT:
                 showPaydirektInput();
@@ -196,14 +202,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showPaymentSuccess() {
-        Intent intent = new Intent(this, PaymentSuccessActivity.class);
+    public void showPaymentDone() {
+        Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
 
-    public void showPaymentFailure() {
-        Intent intent = new Intent(this, PaymentFailureActivity.class);
+    public void showPaymentStatus() {
+        Intent intent = new Intent(this, PaymentStatusActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
@@ -228,6 +234,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showCreditCardInput(Bundle args) {
         Intent intent = new Intent(this, CreditCardInputActivity.class);
+        intent.putExtra("args", args);
+        startActivity(intent);
+    }
+
+    public void showPayoneInput(Bundle args) {
+        Intent intent = new Intent(this, PayoneInputActivity.class);
         intent.putExtra("args", args);
         startActivity(intent);
     }

@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import io.snabble.sdk.checkin.CheckInLocationManager;
+import io.snabble.sdk.checkin.CheckInManager;
 import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.auth.Token;
 import io.snabble.sdk.auth.TokenRegistry;
@@ -60,6 +62,8 @@ public class Snabble {
     private MetadataDownloader metadataDownloader;
     private UserPreferences userPreferences;
     private PaymentCredentialsStore paymentCredentialsStore;
+    private CheckInLocationManager checkInLocationManager;
+    private CheckInManager checkInManager;
     private File internalStorageDirectory;
     private String metadataUrl;
     private Config config;
@@ -132,6 +136,13 @@ public class Snabble {
         environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl);
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
         paymentCredentialsStore = new PaymentCredentialsStore();
+        checkInLocationManager = new CheckInLocationManager(application);
+        checkInManager = new CheckInManager(this,
+                checkInLocationManager,
+                config.checkInRadius,
+                config.checkOutRadius,
+                config.lastSeenThreshold
+        );
 
         this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
 
@@ -249,6 +260,7 @@ public class Snabble {
 
         paymentCredentialsStore.init(application, environment);
         users.postPendingConsents();
+        checkInManager.update();
     }
 
     private String getUrl(JsonObject jsonObject, String urlName) {
@@ -417,6 +429,14 @@ public class Snabble {
 
     public TermsOfService getTermsOfService() {
         return termsOfService;
+    }
+
+    public CheckInLocationManager getCheckInLocationManager() {
+        return checkInLocationManager;
+    }
+
+    public CheckInManager getCheckInManager() {
+        return checkInManager;
     }
 
     public Map<String, Brand> getBrands() {
@@ -783,5 +803,26 @@ public class Snabble {
          *  and are not part of the original metadata in the backend
          *  (for example for testing shops in production before a go-live) **/
         public boolean loadActiveShops = false;
+
+        /**
+         * The radius in which the CheckInManager tries to check in a shop.
+         *
+         * In meters.
+         */
+        public float checkInRadius = 500.0f;
+
+        /**
+         * The radius in which the CheckInManager tries to stay in a shop, if already in it.
+         * If outside of this radius and the lastSeenThreshold, you will be checked out.
+         */
+        public float checkOutRadius = 1000.0f;
+
+        /**
+         * The time in milliseconds which we keep you checked in at a shop.
+         *
+         * The timer will be refreshed while you are still inside the shop
+         * and only begins to run if you are not inside the checkOutRadius anymore.
+         */
+        public long lastSeenThreshold = TimeUnit.MINUTES.toMillis(15);
     }
 }
