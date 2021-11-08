@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SnabbleTheme" parent="@style/Theme.Material3.DayNight.NoActionBar"/>
+    <style name="SnabbleTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#0077BB</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorPrimaryContainer">#0077BB</item>
+        <item name="colorOnPrimaryContainer">#0077BB</item>
+        <item name="colorPrimaryInverse">#0077BB</item>
+
+        <item name="colorSecondary">#0077BB</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <item name="colorSecondaryContainer">#0077BB</item>
+        <item name="colorOnSecondaryContainer">#0077BB</item>
+
+        <item name="colorTertiary">#0077BB</item>
+        <item name="colorOnTertiary">#ffffff</item>
+        <item name="colorTertiaryContainer">#0077BB</item>
+        <item name="colorOnTertiaryContainer">#0077BB</item>
+    </style>
 </resources>
