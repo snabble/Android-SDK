@@ -92,22 +92,23 @@
             android:layout_height="38dp"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/minus"
-                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            <FrameLayout
                 android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                android:padding="6dp"
-                app:icon="@drawable/snabble_ic_minus"
-                app:iconPadding="0dp"
-                app:iconTint="?attr/colorOnSurface"
-                app:strokeColor="@drawable/snabble_stroke"
-                tools:background="#ccc" />
+                android:layout_height="36dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/snabble_ic_minus"
+                    app:tint="?attr/colorOnSurface" />
 
+                <Button
+                    android:id="@+id/minus"
+                    style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:strokeColor="@drawable/snabble_stroke" />
+            </FrameLayout>
             <TextView
                 android:id="@+id/quantity"
                 android:layout_width="wrap_content"
@@ -119,22 +120,23 @@
                 android:textSize="17sp"
                 tools:text="3" />
 
-            <Button
-                android:id="@+id/plus"
-                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            <FrameLayout
                 android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                android:padding="6dp"
-                app:icon="@drawable/snabble_ic_add"
-                app:iconPadding="0dp"
-                app:iconTint="?attr/colorOnSurface"
-                app:strokeColor="@drawable/snabble_stroke"
-                tools:background="#ccc" />
+                android:layout_height="36dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/snabble_ic_add"
+                    app:tint="?attr/colorOnSurface" />
 
+                <Button
+                    android:id="@+id/plus"
+                    style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:strokeColor="@drawable/snabble_stroke" />
+            </FrameLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -183,22 +185,29 @@
                 android:textSize="15sp"
                 tools:text="g" />
 
-            <Button
-                android:id="@+id/quantity_edit_apply"
-                style="@style/Snabble.Widget.MaterialComponents.Button.Icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+            <FrameLayout
+                android:id="@+id/quantity_edit_apply_layout"
                 android:layout_gravity="center_vertical"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                android:padding="6dp"
-                app:icon="@drawable/snabble_ic_check_white"
-                app:iconPadding="0dp"
-                app:iconTint="?attr/colorOnPrimary"
-                tools:background="@drawable/snabble_ic_check_white"
-                tools:backgroundTint="#000" />
+                android:layout_width="36dp"
+                android:layout_height="36dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/quantity_edit_apply"
+                    style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:backgroundTint="?attr/colorPrimary"
+                    app:strokeColor="@drawable/snabble_stroke" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:src="@drawable/snabble_ic_check_white"
+                    app:tint="?attr/colorOnPrimary" />
+            </FrameLayout>
         </LinearLayout>
     </FrameLayout>
 </RelativeLayout>

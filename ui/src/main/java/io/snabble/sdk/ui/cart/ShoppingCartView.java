@@ -561,6 +561,7 @@ public class ShoppingCartView extends FrameLayout {
         View controlsUserWeighed;
         View controlsDefault;
         View quantityEditApply;
+        View quantityEditApplyLayout;
         TextView quantityAnnotation;
         TextView redLabel;
         TextWatcher textWatcher;
@@ -583,6 +584,7 @@ public class ShoppingCartView extends FrameLayout {
             controlsDefault = itemView.findViewById(R.id.controls_default);
             quantityEdit = itemView.findViewById(R.id.quantity_edit);
             quantityEditApply = itemView.findViewById(R.id.quantity_edit_apply);
+            quantityEditApplyLayout = itemView.findViewById(R.id.quantity_edit_apply_layout);
             quantityAnnotation = itemView.findViewById(R.id.quantity_annotation);
             redLabel = itemView.findViewById(R.id.red_label);
         }
@@ -732,8 +734,10 @@ public class ShoppingCartView extends FrameLayout {
             int value = getQuantityEditValue();
             if (value > 0 && value != quantity) {
                 quantityEditApply.setVisibility(View.VISIBLE);
+                quantityEditApplyLayout.setVisibility(View.VISIBLE);
             } else {
                 quantityEditApply.setVisibility(View.GONE);
+                quantityEditApplyLayout.setVisibility(View.GONE);
             }
         }
 

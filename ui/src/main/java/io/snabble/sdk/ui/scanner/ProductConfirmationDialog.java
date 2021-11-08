@@ -73,6 +73,8 @@ public class ProductConfirmationDialog {
     private View close;
     private View plus;
     private View minus;
+    private View plusLayout;
+    private View minusLayout;
     private Button enterReducedPrice;
 
     private ShoppingCart.Item cartItem;
@@ -115,6 +117,8 @@ public class ProductConfirmationDialog {
         close = view.findViewById(R.id.close);
         plus = view.findViewById(R.id.plus);
         minus = view.findViewById(R.id.minus);
+        plusLayout = view.findViewById(R.id.plus_layout);
+        minusLayout = view.findViewById(R.id.minus_layout);
         enterReducedPrice = view.findViewById(R.id.enterReducedPrice);
 
         name.setText(product.getName());
@@ -384,18 +388,18 @@ public class ProductConfirmationDialog {
             quantity.setEnabled(true);
 
             if (cartItem.getProduct().getType() == Product.Type.UserWeighed) {
-                plus.setVisibility(View.GONE);
-                minus.setVisibility(View.GONE);
+                plusLayout.setVisibility(View.GONE);
+                minusLayout.setVisibility(View.GONE);
             } else {
-                plus.setVisibility(View.VISIBLE);
-                minus.setVisibility(View.VISIBLE);
+                plusLayout.setVisibility(View.VISIBLE);
+                minusLayout.setVisibility(View.VISIBLE);
                 quantity.setVisibility(View.VISIBLE);
                 quantityTextInput.setVisibility(View.VISIBLE);
             }
         } else {
             quantity.setEnabled(false);
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
+            plusLayout.setVisibility(View.GONE);
+            minusLayout.setVisibility(View.GONE);
             quantity.setVisibility(View.GONE);
             quantityTextInput.setVisibility(View.GONE);
             quantityAnnotation.setVisibility(View.GONE);
