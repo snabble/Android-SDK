@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="release.safety.catch">Kérjük, hogy a kijáratnál, az arra kijelölt állomáson vedd le a palacknyak-biztosítót (ha van).</string>
-    <string name="Shopping.title">Bevásárlás</string>
     <string name="Snabble.addDiscount">Árengedmény megadása</string>
     <string name="Snabble.ageVerification.explanation">Meghatározott termékek, mint pl. alkohol vásárlásához igazolnod kell a korod. Ehhez személyazonosító igazolványod hátoldaláról másold be a 7 jegyű számot.</string>
     <string name="Snabble.ageVerification.failed.message">A kosárban olyan termékek is vannak, amelyek életkori korlátozás alá esnek. Ezeket sajnos nem veheted meg.</string>
@@ -209,6 +208,7 @@
     <string name="Snabble.SEPA.payNow">Fizetés SEPA segítségével</string>
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
     <string name="Snabble.Settings">Beállítások</string>
+    <string name="Snabble.Shopping.title">Bevásárlás</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Termék eltávolítva</string>
     <string name="Snabble.Shoppingcart.buyProducts">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Fizetés, most</string>

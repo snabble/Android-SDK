@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="release.safety.catch">Please remove the bottle\'s security device (if present) at the designated station at the exit.</string>
-    <string name="Shopping.title">Shopping</string>
     <string name="Snabble.addDiscount">Enter discount</string>
     <string name="Snabble.ageVerification.explanation">To purchase certain products like alcoholic beverages, verifying your age is required. Enter the 7-digit Number from the back side of your ID card.</string>
     <string name="Snabble.ageVerification.failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
@@ -210,6 +209,7 @@
     <string name="Snabble.SEPA.payNow">Pay now using SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Please enter the name from the card to save it for future payments.</string>
     <string name="Snabble.Settings">Settings</string>
+    <string name="Snabble.Shopping.title">Shopping</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Product removed</string>
     <string name="Snabble.Shoppingcart.buyProducts">Buy %1$d products for %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Pay now</string>

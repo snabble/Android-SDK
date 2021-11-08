@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="release.safety.catch">Bitte entferne (wenn vorhanden) die Flaschenhalssicherung an der dafür vorgesehenen Station am Ausgang.</string>
-    <string name="Shopping.title">Einkaufen</string>
     <string name="Snabble.addDiscount">Rabatt eingeben</string>
     <string name="Snabble.ageVerification.explanation">Für den Kauf bestimmter Artikel, wie z.B. Alkohol, ist ein Altersnachweis notwendig. Gib dazu die 7-stellige Zahl von der Rückseite deines Personalausweises ein.</string>
     <string name="Snabble.ageVerification.failed.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung, du darfst sie leider nicht kaufen.</string>
@@ -210,6 +209,7 @@
     <string name="Snabble.SEPA.payNow">Jetzt mit SEPA bezahlen</string>
     <string name="Snabble.SEPA.scoTransferHint">Bitte gib noch den Namen auf der Karte ein um sie für Zahlungen direkt mit der App speichern zu können.</string>
     <string name="Snabble.Settings">Einstellungen</string>
+    <string name="Snabble.Shopping.title">Einkaufen</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Artikel entfernt</string>
     <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Jetzt bezahlen</string>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="release.safety.catch">Prosím, odstráň z fľaše zámok (ak je nasadený) pri východe na mieste, ktoré je na to určené.</string>
-    <string name="Shopping.title">Nakúpiť</string>
     <string name="Snabble.addDiscount">Zadať zľavu</string>
     <string name="Snabble.ageVerification.explanation">Na kúpu určitých produktov (napr. alkoholických produktov) je potrebné potvrdenie veku. Za týmto účelom zadaj 7-miestne číslo na zadnej strane svojho občianskeho preukazu.</string>
     <string name="Snabble.ageVerification.failed.message">Pre niektoré produkty v tvojom košíku platí vekový limit a tieto žiaľ nemôžeš kúpiť.</string>
@@ -209,6 +208,7 @@
     <string name="Snabble.SEPA.payNow">SEPA platba teraz</string>
     <string name="Snabble.SEPA.scoTransferHint">Ešte zadaj meno uvedené na karte, aby si ju mohol/mohla uložiť pre platby priamo prostredníctvom aplikácie.</string>
     <string name="Snabble.Settings">Nastavenia</string>
+    <string name="Snabble.Shopping.title">Nakúpiť</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Položka bola odstránená</string>
     <string name="Snabble.Shoppingcart.buyProducts">Kúpiť %1$d položky/položiek za %2$s</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Zaplatiť teraz</string>
