@@ -21,8 +21,8 @@ public class SnabbleUI {
         SHOW_CHECKOUT_CUSTOMERCARD,
         SHOW_CHECKOUT_POINT_OF_SALE,
         SHOW_CHECKOUT_GATEKEEPER,
-        SHOW_PAYMENT_SUCCESS,
-        SHOW_PAYMENT_FAILURE,
+        SHOW_PAYMENT_STATUS,
+        SHOW_PAYMENT_DONE,
         SHOW_SCANNER,
         SHOW_BARCODE_SEARCH,
         SHOW_SEPA_CARD_INPUT,
@@ -36,6 +36,7 @@ public class SnabbleUI {
         GO_BACK,
         EVENT_PRODUCT_CONFIRMATION_SHOW,
         EVENT_PRODUCT_CONFIRMATION_HIDE,
+        EVENT_EXIT_TOKEN_AVAILABLE,
     }
 
     public interface Callback {

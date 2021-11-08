@@ -7,6 +7,7 @@ public class Telemetry {
         ClickCheckout,
         SelectedPaymentMethod,
         CheckoutSuccessful,
+        CheckoutDeniedByTooYoung,
         CheckoutDeniedBySupervisor,
         CheckoutDeniedByPaymentProvider,
         CheckoutFinishByUser,
@@ -24,6 +25,7 @@ public class Telemetry {
         SelectedBundleProduct,
         PaymentMethodAdded,
         PaymentMethodDeleted,
+        Rating,
 
         // shopping list
         ListCreated,

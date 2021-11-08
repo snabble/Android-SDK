@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:clipChildren="false"
+    tools:parentTag="android.widget.LinearLayout">
+    <FrameLayout
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="16dp">
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </ProgressBar>
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            tools:visibility="gone"
+            tools:src="@drawable/snabble_ic_payment_success">
+        </ImageView>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:clipChildren="false"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="Bezahlung">
+        </TextView>
+
+        <TextView
+            android:id="@+id/text"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="@string/Snabble.PaymentStatus.Payment.error">
+        </TextView>
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+            android:id="@+id/action"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="-8dp"
+            android:layout_marginBottom="-8dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="Erneut versuchen" />
+    </LinearLayout>
+</merge>

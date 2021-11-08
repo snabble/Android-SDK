@@ -302,20 +302,42 @@ open class CheckoutBar @JvmOverloads constructor(
                 progressDialog.showAfterDelay(300)
                 project.checkout.pay(entry.paymentMethod, null)
             }
+        } else if (state == Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN) {
+            val price = project.checkout.verifiedOnlinePrice
+            if (price != Checkout.INVALID_PRICE) {
+                val googlePayHelper = project.googlePayHelper
+                if (googlePayHelper != null) {
+                    googlePayHelper.requestPayment(price)
+                } else {
+                    project.checkout.abort()
+                }
+            } else {
+                project.checkout.abort()
+            }
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
             CheckoutHelper.displayPaymentView(UIUtils.getHostFragmentActivity(context), project.checkout)
             progressDialog.dismiss()
+            unregisterListeners()
         } else if (state == Checkout.State.PAYMENT_PROCESSING) {
-            progressDialog.showAfterDelay(300)
+            Telemetry.event(Telemetry.Event.CheckoutSuccessful)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
+            progressDialog.dismiss()
+            unregisterListeners()
         } else if (state == Checkout.State.PAYMENT_APPROVED) {
             Telemetry.event(Telemetry.Event.CheckoutSuccessful)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
+            progressDialog.dismiss()
+            unregisterListeners()
         } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
             Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
+            progressDialog.dismiss()
+            unregisterListeners()
         } else if (state == Checkout.State.DENIED_BY_SUPERVISOR) {
             Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_FAILURE)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
+            progressDialog.dismiss()
+            unregisterListeners()
         } else if (state == Checkout.State.INVALID_PRODUCTS) {
             val invalidProducts = project.checkout.invalidProducts
             if (invalidProducts != null && invalidProducts.size > 0) {

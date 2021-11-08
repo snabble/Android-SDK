@@ -1,6 +1,8 @@
 package io.snabble.sdk;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -105,7 +107,9 @@ public class Checkout {
          */
         NO_SHOP
     }
-
+    
+    public static final int INVALID_PRICE = -1;
+    
     private final Project project;
     private final CheckoutApi checkoutApi;
     private final ShoppingCart shoppingCart;
@@ -118,6 +122,9 @@ public class Checkout {
 
     private final List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
     private final List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
+
+    private MutableLiveData<Checkout.State> checkoutState = new MutableLiveData<>();
+    private MutableLiveData<CheckoutApi.Fulfillment[]> fulfillmentState = new MutableLiveData<>();
 
     private State lastState = Checkout.State.NONE;
     private State state = Checkout.State.NONE;
@@ -279,6 +286,7 @@ public class Checkout {
         shop = project.getCheckedInShop();
         paymentOriginCandidateHelper.reset();
         redeemedCoupons = null;
+        fulfillmentState.setValue(null);
 
         notifyStateChanged(Checkout.State.HANDSHAKING);
 
@@ -392,7 +400,7 @@ public class Checkout {
                         rawCheckoutProcess = rawResponse;
 
                         if (!handleProcessResponse()) {
-                            boolean allChecksOk = runChecks(checkoutProcessResponse);
+                            boolean allChecksOk = areAllChecksSucceeded(checkoutProcessResponse);
 
                             if (allChecksOk) {
                                 if (checkoutProcessResponse.paymentState == CheckoutApi.State.PROCESSING) {
@@ -400,8 +408,12 @@ public class Checkout {
                                     notifyStateChanged(Checkout.State.PAYMENT_PROCESSING);
                                 } else {
                                     Logger.d("Waiting for approval...");
-                                    notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
+                                    if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
+                                        notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
+                                    }
                                 }
+                            } else {
+                                notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
                             }
 
                             if (!paymentMethod.isOfflineMethod()) {
@@ -443,17 +455,17 @@ public class Checkout {
         });
     }
 
-    private boolean runChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+    private boolean areAllChecksSucceeded(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
         boolean allChecksOk = true;
 
         if (checkoutProcessResponse.checks != null) {
             for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
-                if (check.type == null || check.state == null) {
-                    continue;
-                }
-
                 if (check.state == CheckoutApi.State.FAILED) {
                     return false;
+                }
+
+                if (check.type == null) {
+                    continue;
                 }
 
                 if (check.performedBy == CheckoutApi.Performer.APP) {
@@ -482,6 +494,18 @@ public class Checkout {
         }
 
         return allChecksOk;
+    }
+
+    private boolean hasStillPendingChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+        if (checkoutProcessResponse.checks != null) {
+            for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
+                if (check.state == CheckoutApi.State.PENDING) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private boolean areAllFulfillmentsClosed() {
@@ -568,6 +592,7 @@ public class Checkout {
         });
 
         if (state == Checkout.State.WAIT_FOR_APPROVAL
+                || state == State.VERIFYING_PAYMENT_METHOD
                 || state == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
                 || state == Checkout.State.PAYMENT_PROCESSING
                 || (state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
@@ -578,7 +603,11 @@ public class Checkout {
     private boolean handleProcessResponse() {
         if (checkoutProcess.aborted) {
             Logger.d("Payment aborted");
-            notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+            if (hasAnyFulfillmentFailed()) {
+                notifyStateChanged(State.PAYMENT_PROCESSING_ERROR);
+            } else {
+                notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
+            }
             return true;
         }
 
@@ -622,27 +651,19 @@ public class Checkout {
                 || checkoutProcess.paymentState == CheckoutApi.State.UNAUTHORIZED) {
             if (hasAnyFulfillmentFailed()) {
                 checkoutApi.abort(checkoutProcess, null);
-                notifyStateChanged(State.PAYMENT_ABORTED);
+                notifyStateChanged(State.PAYMENT_PROCESSING);
                 notifyFulfillmentDone();
-                return true;
+                return false;
             }
 
-            if (!runChecks(checkoutProcess)) {
+            if (hasStillPendingChecks(checkoutProcess)) {
+                notifyStateChanged(State.WAIT_FOR_APPROVAL);
+            }
+
+            if (!areAllChecksSucceeded(checkoutProcess)) {
                 Logger.d("Payment denied by supervisor");
                 shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
-            }
-
-            if (checkoutProcess.supervisorApproval != null && !checkoutProcess.supervisorApproval) {
-                Logger.d("Payment denied by supervisor");
-                shoppingCart.generateNewUUID();
-                notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
-                return true;
-            } else if (checkoutProcess.paymentApproval != null && !checkoutProcess.paymentApproval) {
-                Logger.d("Payment denied by payment provider");
-                shoppingCart.generateNewUUID();
-                notifyStateChanged(Checkout.State.DENIED_BY_PAYMENT_PROVIDER);
-                return true;
             }
         } else if (checkoutProcess.paymentState == CheckoutApi.State.PROCESSING) {
             notifyStateChanged(State.PAYMENT_PROCESSING);
@@ -762,10 +783,7 @@ public class Checkout {
     public int getVerifiedOnlinePrice() {
         try {
             if (checkoutProcess != null) {
-                return checkoutProcess.checkoutInfo.get("price")
-                        .getAsJsonObject()
-                        .get("price")
-                        .getAsInt();
+                return checkoutProcess.pricing.price.price;
             }
         } catch (Exception e) {
             return -1;
@@ -861,6 +879,14 @@ public class Checkout {
         void onStateChanged(State state);
     }
 
+    public LiveData<State> getCheckoutState() {
+        return checkoutState;
+    }
+
+    public LiveData<CheckoutApi.Fulfillment[]> getFulfillmentState() {
+        return fulfillmentState;
+    }
+
     public void addOnCheckoutStateChangedListener(OnCheckoutStateChangedListener listener) {
         if (!checkoutStateListeners.contains(listener)) {
             checkoutStateListeners.add(listener);
@@ -882,6 +908,8 @@ public class Checkout {
                 this.state = state;
 
                 Dispatch.mainThread(() -> {
+                    checkoutState.setValue(state);
+
                     for (OnCheckoutStateChangedListener checkoutStateListener : checkoutStateListeners) {
                         checkoutStateListener.onStateChanged(state);
                     }
@@ -910,6 +938,12 @@ public class Checkout {
             for (OnFulfillmentUpdateListener checkoutStateListener : fulfillmentUpdateListeners) {
                 checkoutStateListener.onFulfillmentUpdated();
             }
+
+            if (checkoutProcess != null) {
+                fulfillmentState.setValue(checkoutProcess.fulfillments);
+            } else {
+                fulfillmentState.setValue(null);
+            }
         });
     }
 
@@ -917,6 +951,12 @@ public class Checkout {
         Dispatch.mainThread(() -> {
             for (OnFulfillmentUpdateListener checkoutStateListener : fulfillmentUpdateListeners) {
                 checkoutStateListener.onFulfillmentDone();
+            }
+
+            if (checkoutProcess != null) {
+                fulfillmentState.setValue(checkoutProcess.fulfillments);
+            } else {
+                fulfillmentState.setValue(null);
             }
         });
     }

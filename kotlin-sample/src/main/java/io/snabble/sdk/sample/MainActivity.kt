@@ -104,11 +104,8 @@ class MainActivity : AppCompatActivity() {
                     SnabbleUI.Action.SHOW_CHECKOUT_GATEKEEPER -> {
                         navigate(R.id.navigation_checkout_gatekeeper_fragment)
                     }
-                    SnabbleUI.Action.SHOW_PAYMENT_SUCCESS -> {
-                        navigate(R.id.navigation_action_success)
-                    }
-                    SnabbleUI.Action.SHOW_PAYMENT_FAILURE -> {
-                        navigate(R.id.navigation_action_failure)
+                    SnabbleUI.Action.SHOW_PAYMENT_STATUS -> {
+                        navigate(R.id.navigation_payment_status)
                     }
                     SnabbleUI.Action.SHOW_SCANNER -> {
                         val args = Bundle()
