@@ -267,7 +267,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
             override fun success() {
                 save(creditCardInfo)
-                finish()
             }
 
             override fun error() {
@@ -311,6 +310,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun finish() {
+        RuntimeException("finish and back call").printStackTrace()
         val callback = SnabbleUI.getUiCallback()
         callback?.execute(SnabbleUI.Action.GO_BACK, null)
     }
