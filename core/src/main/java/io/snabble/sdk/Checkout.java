@@ -255,7 +255,7 @@ public class Checkout {
     }
 
     public void checkout() {
-        checkout(-1);
+        checkout(-1, false);
     }
 
     /**
@@ -268,7 +268,7 @@ public class Checkout {
      * You then need to sometime after call @link Checkout#pay(PaymentMethod)}
      * to pay with that payment method.
      */
-    public void checkout(long timeout) {
+    public void checkout(long timeout, boolean allowFallbackAfterTimeout) {
         checkoutProcess = null;
         rawCheckoutProcess = null;
         signedCheckoutInfo = null;
@@ -349,7 +349,7 @@ public class Checkout {
             @Override
             public void connectionError() {
                 PaymentMethod fallback = getFallbackPaymentMethod();
-                if(fallback != null) {
+                if(fallback != null && allowFallbackAfterTimeout) {
                     paymentMethod = fallback;
                     priceToPay = shoppingCart.getTotalPrice();
                     checkoutRetryer.add(backendCart);

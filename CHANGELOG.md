@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file.
 - Added optional CheckInManager and CheckInLocationManager which can used for geofencing store locations
 - Added support for PayOne credit card tokenization and transactions
 
+## [0.51.6]
+
+### Fixed
+- Only fallback to offline payment method if an offline capable payment method is selected
+
 ## [0.51.5]
 
 ### Fixed
