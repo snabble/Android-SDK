@@ -310,7 +310,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun finish() {
-        RuntimeException("finish and back call").printStackTrace()
         val callback = SnabbleUI.getUiCallback()
         callback?.execute(SnabbleUI.Action.GO_BACK, null)
     }
