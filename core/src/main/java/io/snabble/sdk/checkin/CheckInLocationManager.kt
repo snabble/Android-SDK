@@ -7,11 +7,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.*
+import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 
 private const val LOCATION_UPDATE_INTERVAL_MS = 5000L
@@ -46,13 +48,23 @@ class CheckInLocationManager(val application: Application) {
         LocationManager.NETWORK_PROVIDER
     )
 
-    private val locationListener = LocationListener { l ->
-        if (mockLocation == null) {
-            val currentLocation = location.value
-            if(isBetterLocation(l, currentLocation)) {
-                location.postValue(l)
+    private val locationListener = object : LocationListener {
+        override fun onLocationChanged(l: Location) {
+            if (mockLocation == null) {
+                val currentLocation = location.value
+                if(isBetterLocation(l, currentLocation)) {
+                    location.postValue(l)
+                }
             }
         }
+
+        override fun onFlushComplete(requestCode: Int) {}
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+        override fun onProviderEnabled(provider: String) {}
+
+        override fun onProviderDisabled(provider: String) {}
     }
 
     /**
@@ -91,19 +103,21 @@ class CheckInLocationManager(val application: Application) {
     // if it is not using the check in manager
     @SuppressLint("MissingPermission")
     fun startTrackingLocation() {
-        if (checkLocationPermission()) {
-            val providers = locationManager.getProviders(true)
-            providers.retainAll(allowedProviders)
-            providers.forEach {
-                locationManager.requestLocationUpdates(
-                    it,
-                    LOCATION_UPDATE_INTERVAL_MS,
-                    LOCATION_UPDATE_MIN_DISTANCE,
-                    locationListener
-                )
+        Dispatch.mainThread {
+            if (checkLocationPermission()) {
+                val providers = locationManager.getProviders(true)
+                providers.retainAll(allowedProviders)
+                providers.forEach {
+                    locationManager.requestLocationUpdates(
+                        it,
+                        LOCATION_UPDATE_INTERVAL_MS,
+                        LOCATION_UPDATE_MIN_DISTANCE,
+                        locationListener
+                    )
+                }
+            } else {
+                Logger.e("Missing location permission, location can not be updated")
             }
-        } else {
-            Logger.e("Missing location permission, location can not be updated")
         }
     }
 
@@ -112,6 +126,8 @@ class CheckInLocationManager(val application: Application) {
      */
     @SuppressLint("MissingPermission")
     fun stopTrackingLocation() {
-        locationManager.removeUpdates(locationListener)
+        Dispatch.mainThread {
+            locationManager.removeUpdates(locationListener)
+        }
     }
 }
