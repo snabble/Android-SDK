@@ -91,6 +91,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
         val brands = ArrayList<Brand>()
         val counts = HashMap<Brand, Int>()
+        val projectCount = HashMap<Brand, Int>()
 
         projects.filter { it.brand != null }
                 .forEach { project ->
@@ -102,18 +103,26 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
                     val currentCount = counts.getOrPut(project.brand) { 0 }
                     counts[project.brand] = currentCount + count
+                    projectCount[project.brand] = projectCount.getOrPut(project.brand) { 0 } + 1
         }
 
         brands.forEach { brand ->
+            val project = projects.firstOrNull { it.brand?.id == brand.id }
+            val projectBrandCount = projectCount.get(project?.brand) ?: 0
             projectList.add(
                 Entry(
                     text = brand.name,
-                    project = projects.firstOrNull { it.brand?.id == brand.id },
+                    project = project,
                     count = counts[brand] ?: 0,
                     click = {
-                        val args = Bundle()
-                        args.putString(ProjectPaymentOptionsView.ARG_BRAND, brand.id)
-                        executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, args)
+                        if (project != null && projectBrandCount <= 1) {
+                            PaymentInputViewHelper.showPaymentList(project)
+                        } else {
+                            val args = Bundle()
+                            args.putString(ProjectPaymentOptionsView.ARG_BRAND, brand.id)
+                            executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, args)
+                        }
+
                     }
                 )
             )
