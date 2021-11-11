@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.52.0-beta02]
+
+### Fixed
+- Fixed an issue with Keyguard popping up multiple times on Android < 9 while entering PayOne Credentials
+- Fixed a crash when while using the CheckInLocationManager on Android < 8. 
+- Fixed a crash when starting location updates from a background thread
+  
+### Changes
+- Skip brand selection of payment selection when only one project is being shown
+
 ## [0.52.0-beta01]
 
 ### Breaking Changes
