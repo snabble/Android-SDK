@@ -190,16 +190,21 @@ class CheckInManager(val snabble: Snabble,
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     ])
+
     fun startUpdating() {
-        locationManager.startTrackingLocation()
-        locationManager.location.observeForever(locationObserver)
-        Snabble.getInstance().addOnMetadataUpdateListener(metadataListener)
+        Dispatch.mainThread {
+            locationManager.startTrackingLocation()
+            locationManager.location.observeForever(locationObserver)
+            Snabble.getInstance().addOnMetadataUpdateListener(metadataListener)
+        }
     }
 
     fun stopUpdating() {
-        locationManager.stopTrackingLocation()
-        locationManager.location.removeObserver(locationObserver)
-        Snabble.getInstance().removeOnMetadataUpdateListener(metadataListener)
+        Dispatch.mainThread {
+            locationManager.stopTrackingLocation()
+            locationManager.location.removeObserver(locationObserver)
+            Snabble.getInstance().removeOnMetadataUpdateListener(metadataListener)
+        }
     }
 
     private fun checkIn(checkInShop: Shop?) {
