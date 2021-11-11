@@ -35,17 +35,18 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.IOUtils
 import java.io.IOException
+import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.nio.charset.Charset
 import java.text.NumberFormat
 import java.util.*
+import java.util.concurrent.CancellationException
 
 class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr), LifecycleObserver {
-    private var acceptedKeyguard = false
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
     private var isActivityResumed = false
-    private lateinit var creditCardInfo: CreditCardInfo
+    private var creditCardInfo: CreditCardInfo? = null
     private lateinit var paymentType: PaymentMethod
     private lateinit var project: Project
     private lateinit var tokenizationData: PayoneTokenizationData
@@ -64,8 +65,10 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                         when (it.status) {
                             Payone.AuthStatus.pending -> doLater(1000)
                             Payone.AuthStatus.successful -> {
-                                creditCardInfo.userId = it.userID
-                                authenticateAndSave()
+                                creditCardInfo?.let { cardInfo ->
+                                    cardInfo.userId = it.userID
+                                    authenticateAndSave(cardInfo)
+                                } ?: finishWithError()
                             }
                             Payone.AuthStatus.failed -> finishWithError()
                         }
@@ -73,8 +76,10 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 }
 
                 override fun error(t: Throwable?) {
-                    t?.printStackTrace()
-                    doLater(1000)
+                    t?.let {
+                        IllegalStateException("Error while saving card", it).printStackTrace()
+                    }
+                    if (t !is CancellationException) doLater(1000)
                 }
             })
         }
@@ -235,7 +240,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     fun Any.toJsonRequest() : RequestBody =
         GsonHolder.get().toJson(this).toRequestBody("application/json".toMediaTypeOrNull())
 
-    private fun authenticate() {
+    private fun authenticate(creditCardInfo: CreditCardInfo) {
         val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
         val request = Request.Builder()
             .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(tokenizationData.links["preAuth"]?.href)))
@@ -263,23 +268,21 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
 
-    private fun authenticateAndSave() {
+    private fun authenticateAndSave(creditCardInfo: CreditCardInfo) {
         Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
             override fun success() {
                 save(creditCardInfo)
             }
 
             override fun error() {
-                if (isShown) {
-                    finish()
-                } else {
-                    acceptedKeyguard = true
-                }
+                this@PayoneInputView.creditCardInfo = null
+                finish()
             }
         })
     }
 
     private fun save(info: CreditCardInfo) {
+        creditCardInfo = null
         val ccBrand = when (info.cardtype) {
             "V" -> PaymentCredentials.Brand.VISA
             "M" -> PaymentCredentials.Brand.MASTERCARD
@@ -302,11 +305,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             Snabble.getInstance().paymentCredentialsStore.add(pc)
             Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type.name)
         }
-        if (isShown) {
-            finish()
-        } else {
-            acceptedKeyguard = true
-        }
+        finish()
     }
 
     private fun finish() {
@@ -334,7 +333,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
         isActivityResumed = true
-        if (this@PayoneInputView::creditCardInfo.isInitialized) polling.doNow()
+        if (creditCardInfo != null) polling.doNow()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -366,15 +365,17 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             cardexpiredate: String?,
             lastname: String?
         ) {
-            creditCardInfo = CreditCardInfo(
+            CreditCardInfo(
                 pseudocardpan = requireNotNull(pseudocardpan),
                 truncatedcardpan = requireNotNull(truncatedcardpan),
                 cardtype = requireNotNull(cardtype),
                 cardexpiredate = requireNotNull(cardexpiredate),
                 lastname = requireNotNull(lastname),
-            )
-            if (isActivityResumed) {
-                Dispatch.mainThread { authenticate() }
+            ).let { cardInfo ->
+                creditCardInfo = cardInfo
+                if (isActivityResumed) {
+                    Dispatch.mainThread { authenticate(cardInfo) }
+                }
             }
         }
 
