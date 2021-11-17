@@ -5,6 +5,11 @@
         <item name="cornerSize">4dp</item>
     </style>
 
+    <style name="Snabble.ShapeAppearanceOverlay.RoundedCorners.Big" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">32dp</item>
+    </style>
+
     <style name="Snabble.Widget.MaterialComponents.Button" parent="Widget.Material3.Button"  />
     <style name="Snabble.Widget.MaterialComponents.Button.TextButton" parent="Widget.Material3.Button.TextButton" />
     <style name="Snabble.Widget.MaterialComponents.Button.Icon" parent="Widget.Material3.Button.Icon" />

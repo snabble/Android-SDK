@@ -125,6 +125,7 @@
         android:insetBottom="0dp"
         app:hintEnabled="false"
         app:boxStrokeColor="@drawable/snabble_stroke"
+        app:shapeAppearance="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
         android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp">
