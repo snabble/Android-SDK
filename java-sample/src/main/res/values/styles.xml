@@ -4,17 +4,17 @@
         <item name="colorPrimary">#0077BB</item>
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorPrimaryContainer">#0077BB</item>
-        <item name="colorOnPrimaryContainer">#0077BB</item>
+        <item name="colorOnPrimaryContainer">#ffffff</item>
         <item name="colorPrimaryInverse">#0077BB</item>
 
         <item name="colorSecondary">#0077BB</item>
         <item name="colorOnSecondary">#ffffff</item>
         <item name="colorSecondaryContainer">#0077BB</item>
-        <item name="colorOnSecondaryContainer">#0077BB</item>
+        <item name="colorOnSecondaryContainer">#ffffff</item>
 
         <item name="colorTertiary">#0077BB</item>
         <item name="colorOnTertiary">#ffffff</item>
         <item name="colorTertiaryContainer">#0077BB</item>
-        <item name="colorOnTertiaryContainer">#0077BB</item>
+        <item name="colorOnTertiaryContainer">#ffffff</item>
     </style>
 </resources>

@@ -1,17 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorSecondary">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:statusBarColor">#ffffff</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#0077BB</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorPrimaryContainer">#0077BB</item>
+        <item name="colorOnPrimaryContainer">#ffffff</item>
+        <item name="colorPrimaryInverse">#0077BB</item>
+
+        <item name="colorSecondary">#0077BB</item>
+        <item name="colorOnSecondary">#ffffff</item>
+        <item name="colorSecondaryContainer">#0077BB</item>
+        <item name="colorOnSecondaryContainer">#ffffff</item>
+
+        <item name="colorTertiary">#0077BB</item>
+        <item name="colorOnTertiary">#ffffff</item>
+        <item name="colorTertiaryContainer">#0077BB</item>
+        <item name="colorOnTertiaryContainer">#ffffff</item>
     </style>
 
-    <style name="LoadingTheme" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="LoadingTheme" parent="@style/AppTheme">
         <item name="android:statusBarColor">#ffffff</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:windowBackground">@drawable/loading</item>
