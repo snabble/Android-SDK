@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## In the next Release
+
+### Changed
+- Handle the quiet zone in QR-Codes correctly in the dark mode, in the light mode it will be omitted at all since there is enough white space.
+
 ## [0.51.6]
 
 ### Fixed

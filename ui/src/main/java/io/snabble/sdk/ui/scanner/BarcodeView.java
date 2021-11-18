@@ -4,6 +4,7 @@ package io.snabble.sdk.ui.scanner;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,9 +21,17 @@ import android.view.WindowManager;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
+import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.google.zxing.qrcode.encoder.ByteMatrix;
+import com.google.zxing.qrcode.encoder.Encoder;
+import com.google.zxing.qrcode.encoder.QRCode;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.ui.R;
@@ -166,10 +175,21 @@ public class BarcodeView extends AppCompatImageView {
                         int paddingWidth = getPaddingRight() + getPaddingLeft();
                         int paddingHeight = getPaddingBottom() + getPaddingTop();
 
+                        int border = dp2px(8);
+                        boolean isDarkMode = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+                        Map<EncodeHintType, String> hints = null;
+
+                        // Remove the quite zone of the QR code we have enough space in the light mode
+                        if (format == BarcodeFormat.QR_CODE && !isDarkMode) {
+                            hints = new HashMap<>();
+                            hints.put(EncodeHintType.MARGIN, "0");
+                            border = 0;
+                        }
+
                         int tw = w - paddingWidth;
                         int th = h - paddingHeight;
 
-                        BitMatrix bm = writer.encode(text, ZXingHelper.toZXingFormat(format), tw, th);
+                        BitMatrix bm = writer.encode(text, ZXingHelper.toZXingFormat(format), tw, th, hints);
                         int[] pixels = new int[w * h];
                         
                         int[] rect = bm.getEnclosingRectangle();
@@ -178,23 +198,41 @@ public class BarcodeView extends AppCompatImageView {
                         int right = left + rect[2];
                         int bottom = top + rect[3];
 
-                        int startX = left - dp2px(8);
-                        int startY = top - dp2px(8);
-                        int endX = right + dp2px(8);
-                        int endY = bottom + dp2px(8);
-                        
+                        // Handle the quiet zone for QR-Codes correctly: The fixed default border of
+                        // 8dp would create a too small white border. Here we calculate the element
+                        // width aka multiplier of the QRCodeWriter.renderResult(...)
+                        if (format == BarcodeFormat.QR_CODE && isDarkMode) {
+                            int quietZone = 4;
+
+                            QRCode code = Encoder.encode(text, ErrorCorrectionLevel.L, null);
+                            ByteMatrix input = code.getMatrix();
+                            int inputWidth = input.getWidth();
+                            int inputHeight = input.getHeight();
+                            int qrWidth = inputWidth + (quietZone * 2);
+                            int qrHeight = inputHeight + (quietZone * 2);
+                            int outputWidth = Math.max(tw, qrWidth);
+                            int outputHeight = Math.max(th, qrHeight);
+
+                            border = quietZone * Math.min(outputWidth / qrWidth, outputHeight / qrHeight);
+                        }
+
+                        int startX = left - border;
+                        int startY = top - border;
+                        int endX = right + border;
+                        int endY = bottom + border;
+
                         // DATA-MATRIX and PDF_417 codes are not scaled
                         // See https://github.com/zxing/zxing/issues/836
                         if (format == BarcodeFormat.DATA_MATRIX || format == BarcodeFormat.PDF_417) {
-                            float dw = (float)tw / (float)bm.getWidth();
-                            float dh = (float)th / (float)bm.getHeight();
+                            float dw = (float) tw / (float) bm.getWidth();
+                            float dh = (float) th / (float) bm.getHeight();
 
                             for (int y = 0; y < th; y++) {
                                 final int stride = y * tw;
-                                final int ay = (int)((float)y/dh);
+                                final int ay = (int) ((float) y / dh);
 
                                 for (int x = 0; x < tw; x++) {
-                                    int ax = (int)((float)x/dw);
+                                    int ax = (int) ((float) x / dw);
                                     int bgColor = backgroundColor;
 
                                     if (ax > startX && ay > startY && ax < endX && ay < endY) {
