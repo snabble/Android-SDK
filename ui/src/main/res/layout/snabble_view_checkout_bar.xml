@@ -130,7 +130,6 @@
             app:autoSizeMaxTextSize="16sp"
             android:backgroundTint="?attr/colorSurface"
             android:textColor="?attr/colorOnSurface"
-
             android:maxLines="1"
             android:text="@string/Snabble.Shoppingcart.buyProducts.selectPaymentMethod" />
 </merge>
