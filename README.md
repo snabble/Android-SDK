@@ -11,7 +11,7 @@ minSdkVersion = 21
 compileSdkVersion = 29
 java 8
 
-androidx and a material components theme for ui components
+androidx and a material 3 theme for ui components
 ```
 
 ## Installation
