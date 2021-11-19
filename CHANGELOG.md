@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.52.0-beta04]
+
+### Breaking Changes
+- Updated UI components to use Material 3. Usage of ui components now requires a Material 3 theme
+
 ## [0.52.0-beta03]
 
 Identical to 0.52.0-beta02, Rerelease because of conflict in GitHub Packages
