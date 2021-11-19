@@ -5,8 +5,7 @@
         <item name="cornerSize">4dp</item>
     </style>
 
-    <style name="Snabble.ShapeAppearanceOverlay.RoundedCorners.Big" parent="">
-        <item name="cornerFamily">rounded</item>
+    <style name="Snabble.ShapeAppearanceOverlay.RoundedCorners.Big" parent="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners">
         <item name="cornerSize">32dp</item>
     </style>
 
