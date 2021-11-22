@@ -5,8 +5,8 @@ public enum Environment {
     STAGING("snabble-staging.io"),
     PRODUCTION("snabble.io");
 
-    private String baseUrl;
-    private String wildcardUrl;
+    private final String baseUrl;
+    private final String wildcardUrl;
 
     Environment(String domain) {
         this.baseUrl = "https://api." + domain;

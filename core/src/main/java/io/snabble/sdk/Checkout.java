@@ -123,8 +123,8 @@ public class Checkout {
     private final List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
     private final List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
 
-    private MutableLiveData<Checkout.State> checkoutState = new MutableLiveData<>();
-    private MutableLiveData<CheckoutApi.Fulfillment[]> fulfillmentState = new MutableLiveData<>();
+    private final MutableLiveData<Checkout.State> checkoutState = new MutableLiveData<>();
+    private final MutableLiveData<CheckoutApi.Fulfillment[]> fulfillmentState = new MutableLiveData<>();
 
     private State lastState = Checkout.State.NONE;
     private State state = Checkout.State.NONE;
@@ -805,7 +805,7 @@ public class Checkout {
                 }
             }
 
-            return paymentMethods.toArray(new PaymentMethod[paymentMethods.size()]);
+            return paymentMethods.toArray(new PaymentMethod[0]);
         }
 
         return new PaymentMethod[0];
@@ -860,7 +860,7 @@ public class Checkout {
      * <p>
      * See {@link State}.
      *
-     * @return
+     * @return the state
      */
     public State getState() {
         return state;

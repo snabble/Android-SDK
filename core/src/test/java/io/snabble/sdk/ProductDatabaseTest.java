@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -28,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 public class ProductDatabaseTest extends SnabbleSdkTest {
@@ -79,7 +79,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         while (cursor.moveToNext()) {
             Product p = productDatabase.productAtCursor(cursor);
             if (set.contains(p)) {
-                assertFalse(true);
+                fail();
             }
             set.add(p);
         }
@@ -119,10 +119,10 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     public void testSaleStop() {
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("1");
-        assertEquals(product.getSaleStop(), false);
+        assertFalse(product.getSaleStop());
 
         product = productDatabase.findBySku("42");
-        assertEquals(product.getSaleStop(), true);
+        assertTrue(product.getSaleStop());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
             final Product product = findBySkuBlocking(productDatabase, "1");
             assertEquals(product.getSku(), "1");
             containsCode(product, "4008258510001");
-            assertEquals(product.getTransmissionCode(project, "default", "0", 0), null);
+            assertNull(product.getTransmissionCode(project, "default", "0", 0));
 
             final Product product2 = findBySkuBlocking(productDatabase, "2");
             assertEquals(product2.getSku(), "2");
@@ -161,8 +161,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         while (working) {
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException ignored) {}
             Robolectric.flushForegroundThreadScheduler();
         }
         if(error != null) throw error;
@@ -277,7 +276,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testApplyChangeSetInvalidDoesNotModifyDb() throws IOException {
+    public void testApplyChangeSetInvalidDoesNotModifyDb() {
         ProductDatabase productDatabase = project.getProductDatabase();
         String changeSet = "UPDATE prices SET discountedPrice=59 WHERE sku=1;\n\n" +
                 "DELETE FROM pricesASDF WHER!E sku=3;\n\n" +

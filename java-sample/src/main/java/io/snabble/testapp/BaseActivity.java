@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.checkout.PaymentStatusView;
-import io.snabble.sdk.ui.integration.ProjectPaymentOptionsFragment;
-import io.snabble.sdk.ui.integration.SelfScanningFragment;
 import io.snabble.sdk.ui.integration.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
@@ -42,17 +39,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         App.get().init(new App.InitCallback() {
             @Override
             public void done() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressIndicator.setVisibility(View.GONE);
-                        content.setVisibility(View.VISIBLE);
+                runOnUiThread(() -> {
+                    progressIndicator.setVisibility(View.GONE);
+                    content.setVisibility(View.VISIBLE);
 
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content, onCreateFragment())
-                                .commitAllowingStateLoss();
-                    }
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.content, onCreateFragment())
+                            .commitAllowingStateLoss();
                 });
             }
 

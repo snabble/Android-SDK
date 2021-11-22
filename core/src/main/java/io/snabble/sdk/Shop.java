@@ -4,6 +4,8 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
@@ -11,7 +13,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +49,7 @@ public class Shop implements Serializable, Parcelable {
             return href;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "Href{" +
@@ -257,6 +259,7 @@ public class Shop implements Serializable, Parcelable {
                 '}';
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Shop{" +
@@ -292,9 +295,7 @@ public class Shop implements Serializable, Parcelable {
     }
 
     protected Shop(Parcel in) {
-        InstanceCreator<Shop> creator = new InstanceCreator<Shop>() {
-            public Shop createInstance(Type type) { return Shop.this; }
-        };
+        InstanceCreator<Shop> creator = type -> Shop.this;
 
         Gson gson = new GsonBuilder().registerTypeAdapter(Shop.class, creator).create();
         gson.fromJson(in.readString(), Shop.class);

@@ -21,10 +21,10 @@ import io.snabble.sdk.utils.Logger;
 class ShoppingCartUpdater {
     private static final int DEBOUNCE_DELAY_MS = 1000;
 
-    private Project project;
-    private ShoppingCart cart;
-    private CheckoutApi checkoutApi;
-    private Handler handler;
+    private final Project project;
+    private final ShoppingCart cart;
+    private final CheckoutApi checkoutApi;
+    private final Handler handler;
     private CheckoutApi.PaymentMethodInfo[] lastAvailablePaymentMethods;
     private boolean isUpdated;
     private int successfulModCount = -1;
@@ -36,12 +36,7 @@ class ShoppingCartUpdater {
         this.handler = new Handler(Looper.getMainLooper());
     }
 
-    private Runnable updatePriceRunnable = new Runnable() {
-        @Override
-        public void run() {
-            update(false);
-        }
-    };
+    private final Runnable updatePriceRunnable = () -> update(false);
 
     public CheckoutApi.PaymentMethodInfo[] getLastAvailablePaymentMethods() {
         return lastAvailablePaymentMethods;

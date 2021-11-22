@@ -1,11 +1,13 @@
 package io.snabble.sdk.ui.scanner;
 
+import androidx.annotation.NonNull;
+
 import io.snabble.sdk.BarcodeFormat;
 
 public class Barcode {
-    private BarcodeFormat format;
-    private String text;
-    private long timestamp;
+    private final BarcodeFormat format;
+    private final String text;
+    private final long timestamp;
 
     public Barcode(BarcodeFormat format, String text, long timestamp) {
         this.format = format;
@@ -25,6 +27,7 @@ public class Barcode {
         return timestamp;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Barcode{" +

@@ -45,13 +45,12 @@ public class SnabbleUI {
     }
 
     private static Project currentProject;
-    private static MutableLiveData<Project> projectLiveData = new MutableLiveData<>();
+    private static final MutableLiveData<Project> projectLiveData = new MutableLiveData<>();
     private static SnabbleUI.Callback uiCallback;
     private static ActionBar actionBar;
 
     /**
      * Registers a globally used project for use with views.
-     * <p>
      */
     public static void useProject(Project project) {
         currentProject = project;

@@ -3,12 +3,12 @@ package io.snabble.sdk;
 import java.util.Date;
 
 public class ReceiptInfo {
-    private String id;
-    private String projectId;
-    private long timestamp;
-    private String pdfUrl;
-    private String shopName;
-    private String price;
+    private final String id;
+    private final String projectId;
+    private final long timestamp;
+    private final String pdfUrl;
+    private final String shopName;
+    private final String price;
 
     public ReceiptInfo(String id, String projectId, long timestamp, String pdfUrl, String shopName, String price) {
         this.id = id;
@@ -48,4 +48,3 @@ public class ReceiptInfo {
         return price;
     }
 }
-

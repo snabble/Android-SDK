@@ -13,7 +13,6 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.UserPreferences;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -21,7 +20,7 @@ import okhttp3.Response;
 
 public class TokenRegistry {
     private Totp totp;
-    private Map<String, Token> tokens = new HashMap<>();
+    private final Map<String, Token> tokens = new HashMap<>();
     private UserPreferences userPreferences;
     private String appId;
     private OkHttpClient okHttpClient;

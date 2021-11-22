@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class EmbedDecimalGroup extends Group {
-    private int integerParts;
+    private final int integerParts;
 
     public EmbedDecimalGroup(CodeTemplate template, int integerParts, int fractionalParts) {
         super(template, integerParts+fractionalParts);

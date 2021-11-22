@@ -3,6 +3,8 @@ package io.snabble.sdk.utils;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,16 +24,16 @@ public abstract class Downloader {
     private int inMemoryCacheTime = 0;
     private Call call;
 
-    private OkHttpClient client;
+    private final OkHttpClient client;
 
     private int retryCount = 0;
     private int currentTry = 0;
 
     private boolean fromCache;
 
-    private Map<String, String> headers = new HashMap<>();
+    private final Map<String, String> headers = new HashMap<>();
 
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     public Downloader(OkHttpClient okHttpClient) {
         client = okHttpClient;
@@ -109,7 +111,7 @@ public abstract class Downloader {
             call = client.newCall(request);
             call.enqueue(new okhttp3.Callback() {
                 @Override
-                public void onFailure(final Call call, final IOException e) {
+                public void onFailure(@NonNull final Call call, @NonNull final IOException e) {
                     if (call.isCanceled()) {
                         Logger.i("Canceled download %s", url);
                     } else {
@@ -118,7 +120,7 @@ public abstract class Downloader {
                 }
 
                 @Override
-                public void onResponse(final Call call, final Response response) {
+                public void onResponse(@NonNull final Call call, @NonNull final Response response) {
                     try {
                         if (!response.isSuccessful()) {
                             fail(callback, response);
@@ -193,12 +195,7 @@ public abstract class Downloader {
     private void retry(final Callback callback) {
         if (currentTry < retryCount || retryCount == -1) {
             Logger.i("Retrying download %s", url);
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    loadAsyncImpl(callback);
-                }
-            }, 2000);
+            handler.postDelayed(() -> loadAsyncImpl(callback), 2000);
         } else {
             Logger.i("Download of %s failed after %d attempts", url, retryCount + 1);
             fail(callback, null);
@@ -220,9 +217,7 @@ public abstract class Downloader {
     /**
      * Gets called when the download is about to be started
      */
-    protected void onStartDownload() {
-
-    }
+    protected void onStartDownload() {}
 
     /**
      * Gets called when the download from loadAsync failed (for whatever reason).
@@ -314,15 +309,11 @@ public abstract class Downloader {
          *
          * @param wasStillValid Indicates whether the data has not changed since the last invocation
          */
-        protected void onDataLoaded(boolean wasStillValid) {
-
-        }
+        protected void onDataLoaded(boolean wasStillValid) {}
 
         /**
          * Called when there is an error loading the data type.
          */
-        protected void onError() {
-
-        }
+        protected void onError() {}
     }
 }

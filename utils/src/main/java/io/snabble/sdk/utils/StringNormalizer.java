@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * Class to normalize Strings and match them.
  */
 public class StringNormalizer {
-    private static Pattern normalizedPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+    private static final Pattern normalizedPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
     /**
      * Normalized a string by converting all diacriticals to plain text.
@@ -23,4 +23,3 @@ public class StringNormalizer {
         return normalizedPattern.matcher(normalized).replaceAll("").toLowerCase(Locale.getDefault());
     }
 }
-

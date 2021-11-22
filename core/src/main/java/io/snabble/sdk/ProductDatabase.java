@@ -44,23 +44,23 @@ public class ProductDatabase {
     private static final String SEPARATOR = "·";
 
     private SQLiteDatabase db;
-    private Product.Type[] productTypes = Product.Type.values();
+    private final Product.Type[] productTypes = Product.Type.values();
 
     private long revisionId;
 
     private final Object dbLock = new Object();
-    private String dbName;
+    private final String dbName;
 
-    private List<OnDatabaseUpdateListener> onDatabaseUpdateListeners = new CopyOnWriteArrayList<>();
+    private final List<OnDatabaseUpdateListener> onDatabaseUpdateListeners = new CopyOnWriteArrayList<>();
     private Date lastUpdateDate;
     private int schemaVersionMajor;
     private int schemaVersionMinor;
-    private boolean generateSearchIndex;
+    private final boolean generateSearchIndex;
 
-    private Project project;
-    private Application application;
-    private ProductDatabaseDownloader productDatabaseDownloader;
-    private ProductApi productApi;
+    private final Project project;
+    private final Application application;
+    private final ProductDatabaseDownloader productDatabaseDownloader;
+    private final ProductApi productApi;
     private int defaultAvailability;
 
     ProductDatabase(Project project, String name, boolean generateSearchIndex) {
@@ -334,7 +334,7 @@ public class ProductDatabase {
 
         Scanner scanner = new Scanner(inputStream, "UTF-8");
 
-        //delta update statements are splitted by ;\n\n - occurrences of ;\n\n in strings are
+        //delta update statements are split by ;\n\n - occurrences of ;\n\n in strings are
         //escaped replaced by the backend - splitting by just ; is not enough because of eventual
         //occurrences in database rows
         scanner.useDelimiter(";\n\n");
@@ -1457,7 +1457,3 @@ public class ProductDatabase {
         void error();
     }
 }
-
-
-
-

@@ -82,10 +82,10 @@ public class EAN13 implements Serializable {
 
     }
 
-    private static SparseIntArray check5plus = new SparseIntArray();
-    private static SparseIntArray check2minus = new SparseIntArray();
-    private static SparseIntArray check5minus = new SparseIntArray();
-    private static SparseIntArray check5minusReverse = new SparseIntArray();
+    private static final SparseIntArray check5plus = new SparseIntArray();
+    private static final SparseIntArray check2minus = new SparseIntArray();
+    private static final SparseIntArray check5minus = new SparseIntArray();
+    private static final SparseIntArray check5minusReverse = new SparseIntArray();
 
     static {
         check5plus.put(0, 0);

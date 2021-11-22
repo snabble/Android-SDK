@@ -44,7 +44,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
     private Checkout checkout;
     private Checkout.State currentState;
     private ViewPager2 viewPager;
-    private CircleIndicator3 viewPagerIndicator;
     private ImageView helperImage;
     private View upArrow;
     private CodeListViewAdapter viewPagerAdapter;
@@ -126,7 +125,7 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
             }
         });
 
-        viewPagerIndicator = findViewById(R.id.view_pager_indicator);
+        CircleIndicator3 viewPagerIndicator = findViewById(R.id.view_pager_indicator);
         viewPagerIndicator.setViewPager(viewPager);
 
         if (viewPagerAdapter.getItemCount() == 1) {
@@ -259,7 +258,7 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
     }
 
     private class CodeListViewAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private ArrayList<String> codes;
+        private final ArrayList<String> codes;
 
         CodeListViewAdapter() {
             Checkout checkout = project.getCheckout();

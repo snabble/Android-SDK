@@ -25,7 +25,7 @@ import io.snabble.sdk.utils.Logger;
 public class ZXingBarcodeDetector implements BarcodeDetector {
     private byte[] cropBuffer = null;
     private MultiFormatReader multiFormatReader;
-    private FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter();
+    private final FalsePositiveFilter falsePositiveFilter = new FalsePositiveFilter();
 
     @Override
     public void setup(List<BarcodeFormat> barcodeFormats) {
@@ -38,7 +38,6 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
         }
 
         hints.put(DecodeHintType.POSSIBLE_FORMATS, formats);
-        //hints.put(DecodeHintType.TRY_HARDER, true);
         multiFormatReader.setHints(hints);
     }
 
@@ -160,5 +159,4 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
 
         return buf;
     }
-
 }

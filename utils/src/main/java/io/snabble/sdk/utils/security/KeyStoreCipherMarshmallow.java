@@ -17,7 +17,6 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 
-import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 
@@ -28,9 +27,9 @@ public class KeyStoreCipherMarshmallow extends KeyStoreCipher {
     private static final String AES_MODE = "AES/CBC/PKCS7Padding";
     private static final byte[] FIXED_IV = new byte[] { 30, 119, 28, 107, 29, -26, 62, 115, 40, 123, 35, 114, -75, -116, -41, 33 };
 
-    private KeyStore keyStore;
-    private String alias;
-    private boolean requireUserAuthentication;
+    private final KeyStore keyStore;
+    private final String alias;
+    private final boolean requireUserAuthentication;
     private boolean wasNotAccessible = false;
     private boolean wasPermanentlyInvalidated = false;
 

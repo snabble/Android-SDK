@@ -53,9 +53,9 @@ public class EncodedCodesOptions {
     }
 
     public static class Builder {
-        private Project project;
+        private final Project project;
         private String prefix = "";
-        private SparseArray<String> prefixMap = new SparseArray<>();
+        private final SparseArray<String> prefixMap = new SparseArray<>();
         private String separator = "\n";
         private String suffix = "";
         private int maxChars = DEFAULT_MAX_CHARS;

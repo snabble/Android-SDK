@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -40,7 +41,6 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
-import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
@@ -48,7 +48,6 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -325,12 +324,12 @@ public class CreditCardInputView extends FrameLayout {
         // fire and forget
         lastProject.getOkHttpClient().newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 // ignore
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
                 // ignore
             }
         });
@@ -372,7 +371,7 @@ public class CreditCardInputView extends FrameLayout {
         application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
 
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityStarted(Activity activity) {
@@ -402,7 +401,7 @@ public class CreditCardInputView extends FrameLayout {
                 }
             };
 
-    private class CreditCardInfo {
+    private static class CreditCardInfo {
         String cardHolder;
         String obfuscatedCardNumber;
         String brand;
@@ -432,7 +431,7 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     @Keep
-    private class HashResponse {
+    private static class HashResponse {
         String hash;
         String storeId;
         String orderId;

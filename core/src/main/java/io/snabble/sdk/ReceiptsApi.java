@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -19,15 +18,15 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class ReceiptsApi {
-    public class ApiLink {
+    public static class ApiLink {
         public String href;
     }
 
-    public class ApiReceipt {
+    public static class ApiReceipt {
         public ApiOrder[] orders;
     }
 
-    public class ApiOrder {
+    public static class ApiOrder {
         public String id;
         public String project;
         public String date;
@@ -142,7 +141,7 @@ public class ReceiptsApi {
 
                     Collections.sort(result, (o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
 
-                    receiptUpdateCallback.success(result.toArray(new ReceiptInfo[result.size()]));
+                    receiptUpdateCallback.success(result.toArray(new ReceiptInfo[0]));
                 }
 
                 @Override

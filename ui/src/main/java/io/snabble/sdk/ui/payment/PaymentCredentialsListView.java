@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,10 +36,9 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class PaymentCredentialsListView extends FrameLayout implements PaymentCredentialsStore.Callback {
     public static final String ARG_PAYMENT_TYPE = "paymentType";
-    public static final String ARG_BRAND = "brand";
     public static final String ARG_PROJECT_ID = "projectId";
 
-    private List<Entry> entries = new ArrayList<>();
+    private final List<Entry> entries = new ArrayList<>();
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
     private List<PaymentCredentials.Type> types;
@@ -125,7 +125,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
     }
 
-    private class EmptyStateViewHolder extends RecyclerView.ViewHolder {
+    private static class EmptyStateViewHolder extends RecyclerView.ViewHolder {
         View add;
 
         EmptyStateViewHolder(View itemView) {
@@ -134,7 +134,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
     }
 
-    private class EntryViewHolder extends RecyclerView.ViewHolder {
+    private static class EntryViewHolder extends RecyclerView.ViewHolder {
         TextView text;
         TextView validTo;
         ImageView icon;
@@ -209,7 +209,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
-
     }
 
     private int getDrawableForBrand(PaymentCredentials.Brand brand) {
@@ -239,13 +238,13 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
     private class Adapter extends RecyclerView.Adapter<EntryViewHolder> {
         @Override
-        public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public EntryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
             return new EntryViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(final EntryViewHolder vh, final int position) {
+        public void onBindViewHolder(@NonNull final EntryViewHolder vh, final int position) {
             final Entry e = entries.get(position);
 
             if (e.drawableRes != 0) {
@@ -320,7 +319,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         unregisterListeners();
     }
 
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityResumed(Activity activity) {
@@ -341,5 +340,4 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     }
                 }
             };
-
 }

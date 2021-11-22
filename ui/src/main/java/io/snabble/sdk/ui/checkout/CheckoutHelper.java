@@ -4,7 +4,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.payment.Datatrans;
 import io.snabble.sdk.utils.Logger;
 
 public class CheckoutHelper {

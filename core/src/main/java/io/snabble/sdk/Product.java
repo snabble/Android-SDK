@@ -3,6 +3,8 @@ package io.snabble.sdk;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
@@ -47,7 +49,7 @@ public class Product implements Serializable, Parcelable {
          */
         DepositReturnVoucher(3);
 
-        private int databaseValue;
+        private final int databaseValue;
 
         Type(int databaseValue) {
             this.databaseValue = databaseValue;
@@ -74,10 +76,10 @@ public class Product implements Serializable, Parcelable {
         @SerializedName("min_age_21")
         MIN_AGE_21(1, 21);
 
-        private long databaseType;
-        private long value;
+        private final long databaseType;
+        private final long value;
 
-        private static SaleRestriction[] values = SaleRestriction.values();
+        private static final SaleRestriction[] values = SaleRestriction.values();
 
         SaleRestriction(long dbType, long value) {
             this.databaseType = dbType;
@@ -106,7 +108,7 @@ public class Product implements Serializable, Parcelable {
     public enum Availability {
         IN_STOCK,
         LISTED,
-        NOT_AVAILABLE;
+        NOT_AVAILABLE
     }
 
     public static class Code implements Serializable {
@@ -134,6 +136,7 @@ public class Product implements Serializable, Parcelable {
             this.specifiedQuantity = specifiedQuantity;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "Code{" +
@@ -170,9 +173,7 @@ public class Product implements Serializable, Parcelable {
     private boolean saleStop;
     private boolean notForSale;
 
-    public Product() {
-
-    }
+    public Product() {}
 
     /**
      * @return The unique identifier of the product. Usually the same identifier
@@ -415,6 +416,7 @@ public class Product implements Serializable, Parcelable {
                 '}';
     }
 
+    @NonNull 
     @Override
     public String toString() {
         return "Product{" +
@@ -444,9 +446,7 @@ public class Product implements Serializable, Parcelable {
     }
 
     protected Product(Parcel in) {
-        InstanceCreator<Product> creator = new InstanceCreator<Product>() {
-            public Product createInstance(java.lang.reflect.Type type) { return Product.this; }
-        };
+        InstanceCreator<Product> creator = type -> Product.this;
 
         Gson gson = new GsonBuilder().registerTypeAdapter(Product.class, creator).create();
         gson.fromJson(in.readString(), Product.class);
@@ -470,7 +470,7 @@ public class Product implements Serializable, Parcelable {
     };
 
     public static class Builder {
-        private Product product = new Product();
+        private final Product product = new Product();
 
         public Builder setName(String name) {
             product.name = name;

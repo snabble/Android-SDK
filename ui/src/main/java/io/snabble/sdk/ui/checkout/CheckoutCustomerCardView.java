@@ -5,8 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,36 +12,24 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
-
-import java.util.ArrayList;
-
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
-import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.utils.Logger;
-import me.relex.circleindicator.CircleIndicator3;
 
 public class CheckoutCustomerCardView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private Project project;
-    private Button paidButton;
     private Checkout checkout;
     private Checkout.State currentState;
     private View helperText;
     private ImageView helperImage;
     private View upArrow;
-    private BarcodeView barcodeView;
 
     public CheckoutCustomerCardView(Context context) {
         super(context);
@@ -66,7 +52,7 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
 
         inflate(getContext(), R.layout.snabble_view_checkout_customercard, this);
 
-        paidButton = findViewById(R.id.paid);
+        Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
@@ -80,7 +66,7 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
         helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
-        barcodeView = findViewById(R.id.barcode_view);
+        BarcodeView barcodeView = findViewById(R.id.barcode_view);
 
         project.getAssets().get("checkout-offline", this::setHelperImage);
 

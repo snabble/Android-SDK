@@ -1,5 +1,7 @@
 package io.snabble.sdk.auth;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
 import io.snabble.sdk.Project;
@@ -10,14 +12,15 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class SnabbleAuthorizationInterceptor implements Interceptor {
-    private Project project;
-    private TokenRegistry tokenRegistry;
+    private final Project project;
+    private final TokenRegistry tokenRegistry;
 
     public SnabbleAuthorizationInterceptor(Project project) {
         this.project = project;
         this.tokenRegistry = Snabble.getInstance().getTokenRegistry();
     }
 
+    @NonNull
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();

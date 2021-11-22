@@ -1,8 +1,8 @@
 package io.snabble.sdk;
 
 public class CustomerCardInfo {
-    private String cardId;
-    private boolean isRequired;
+    private final String cardId;
+    private final boolean isRequired;
 
     CustomerCardInfo(String cardId, boolean isRequired) {
         this.cardId = cardId;

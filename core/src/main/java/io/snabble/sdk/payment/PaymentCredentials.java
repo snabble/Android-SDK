@@ -52,9 +52,9 @@ public class PaymentCredentials {
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
 
-        private String originType;
-        private boolean requiresProject;
-        private List<PaymentMethod> paymentMethods;
+        private final String originType;
+        private final boolean requiresProject;
+        private final List<PaymentMethod> paymentMethods;
 
         Type(String originType, boolean requiresProject, List<PaymentMethod> paymentMethods) {
             this.originType = originType;

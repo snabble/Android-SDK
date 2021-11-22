@@ -21,7 +21,6 @@ import androidx.lifecycle.OnLifecycleEvent;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
@@ -35,13 +34,11 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
-    private TextView helperText;
     private TextView helperTextNoImage;
     private Checkout.State currentState;
     private ImageView helperImage;
     private View upArrow;
     private View progressIndicator;
-    private Project project;
 
     public CheckoutOnlineView(Context context) {
         super(context);
@@ -63,13 +60,13 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
 
         inflate(getContext(), R.layout.snabble_view_checkout_online, this);
 
-        project = SnabbleUI.getProject();
+        Project project = SnabbleUI.getProject();
 
         checkoutIdCode = findViewById(R.id.checkout_id_code);
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
-        helperText = findViewById(R.id.helper_text);
+        TextView helperText = findViewById(R.id.helper_text);
 
         String text = I18nUtils.getString(getResources(), "Snabble.Payment.Online.message");
         if (text != null) {

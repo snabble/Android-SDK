@@ -2,7 +2,6 @@ package io.snabble.sdk.ui.scanner;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +30,7 @@ class SelectBundleDialog {
                 .setCancelable(true)
                 .create();
 
-        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                callback.onDismissed();
-            }
-        });
+        alertDialog.setOnDismissListener(dialogInterface -> callback.onDismissed());
 
         View close = view.findViewById(R.id.close);
         close.setOnClickListener(new OneShotClickListener() {
@@ -88,7 +82,6 @@ class SelectBundleDialog {
 
     public interface Callback {
         void onProductSelected(Product product);
-
         void onDismissed();
     }
 }

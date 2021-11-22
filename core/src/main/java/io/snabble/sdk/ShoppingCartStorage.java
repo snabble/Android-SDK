@@ -18,10 +18,10 @@ import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
 class ShoppingCartStorage {
-    private Project project;
+    private final Project project;
     private ShoppingCart shoppingCart;
-    private File file;
-    private Handler mainThreadHandler;
+    private final File file;
+    private final Handler mainThreadHandler;
 
     ShoppingCartStorage(final Project project) {
         mainThreadHandler = new Handler(Looper.getMainLooper());

@@ -29,10 +29,10 @@ class CheckoutRetryer {
         }
     }
 
-    private PaymentMethod fallbackPaymentMethod;
-    private SharedPreferences sharedPreferences;
-    private Project project;
-    private CopyOnWriteArrayList<SavedCart> savedCarts;
+    private final PaymentMethod fallbackPaymentMethod;
+    private final SharedPreferences sharedPreferences;
+    private final Project project;
+    private final CopyOnWriteArrayList<SavedCart> savedCarts;
     private CountDownLatch countDownLatch;
 
     CheckoutRetryer(Project project, PaymentMethod fallbackPaymentMethod) {

@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.integration;
 
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
@@ -36,7 +36,7 @@ public class ShoppingCartFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.snabble_menu_shopping_cart, menu);
 
         for (int i=0; i<menu.size(); i++) {
@@ -51,13 +51,10 @@ public class ShoppingCartFragment extends Fragment {
         if (item.getItemId() == R.id.action_delete) {
             new AlertDialog.Builder(requireContext())
                     .setMessage(R.string.Snabble_Shoppingcart_removeItems)
-                    .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            SnabbleUI.getProject().getShoppingCart().clearBackup();
-                            SnabbleUI.getProject().getShoppingCart().clear();
-                            onCartCleared();
-                        }
+                    .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
+                        SnabbleUI.getProject().getShoppingCart().clearBackup();
+                        SnabbleUI.getProject().getShoppingCart().clear();
+                        onCartCleared();
                     })
                     .setNegativeButton(R.string.Snabble_No, null)
                     .create()

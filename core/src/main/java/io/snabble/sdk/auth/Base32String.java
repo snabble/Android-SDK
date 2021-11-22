@@ -35,29 +35,26 @@ import java.util.Locale;
  */
 public class Base32String {
     // singleton
-
-    private static final Base32String INSTANCE =
-            new Base32String("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"); // RFC 4648/3548
+    private static final Base32String INSTANCE = new Base32String(); // RFC 4648/3548
 
     static Base32String getInstance() {
         return INSTANCE;
     }
 
     // 32 alpha-numeric characters.
-    private String ALPHABET;
-    private char[] DIGITS;
-    private int MASK;
-    private int SHIFT;
-    private HashMap<Character, Integer> CHAR_MAP;
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    private final char[] DIGITS;
+    private final int MASK;
+    private final int SHIFT;
+    private final HashMap<Character, Integer> CHAR_MAP;
 
     static final String SEPARATOR = "-";
 
-    protected Base32String(String alphabet) {
-        this.ALPHABET = alphabet;
+    protected Base32String() {
         DIGITS = ALPHABET.toCharArray();
         MASK = DIGITS.length - 1;
         SHIFT = Integer.numberOfTrailingZeros(DIGITS.length);
-        CHAR_MAP = new HashMap<Character, Integer>();
+        CHAR_MAP = new HashMap<>();
         for (int i = 0; i < DIGITS.length; i++) {
             CHAR_MAP.put(DIGITS[i], i);
         }
@@ -99,11 +96,6 @@ public class Base32String {
                 bitsLeft -= 8;
             }
         }
-        // We'll ignore leftover bits for now.
-        //
-        // if (next != outLength || bitsLeft >= SHIFT) {
-        //  throw new DecodingException("Bits left: " + bitsLeft);
-        // }
         return result;
     }
 

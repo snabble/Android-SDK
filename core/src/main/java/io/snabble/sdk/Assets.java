@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.os.Looper;
 import android.util.DisplayMetrics;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -45,7 +44,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class Assets {
-    private static LruCache<String, Bitmap> memoryCache;
+    private static final LruCache<String, Bitmap> memoryCache;
 
     static {
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
@@ -118,10 +117,10 @@ public class Assets {
         void onReceive(Bitmap bitmap);
     }
 
-    private Application app;
-    private File assetDir;
-    private Project project;
-    private File manifestFile;
+    private final Application app;
+    private final File assetDir;
+    private final Project project;
+    private final File manifestFile;
     private Manifest manifest;
 
     Assets(Project project) {

@@ -55,24 +55,19 @@ import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
 public class ProductConfirmationDialog {
-    private Context context;
-    private Project project;
+    private final Context context;
+    private final Project project;
     private AlertDialog alertDialog;
-    private ShoppingCart shoppingCart;
-    private PriceFormatter priceFormatter;
+    private final ShoppingCart shoppingCart;
+    private final PriceFormatter priceFormatter;
 
     private EditText quantity;
     private View quantityTextInput;
-    private TextView subtitle;
-    private TextView name;
     private TextView price;
     private TextView originalPrice;
     private TextView depositPrice;
     private TextView quantityAnnotation;
     private AppCompatButton addToCart;
-    private View close;
-    private View plus;
-    private View minus;
     private View plusLayout;
     private View minusLayout;
     private Button enterReducedPrice;
@@ -107,16 +102,16 @@ public class ProductConfirmationDialog {
 
         quantity = view.findViewById(R.id.quantity);
         quantityTextInput = view.findViewById(R.id.quantity_text_input);
-        subtitle = view.findViewById(R.id.subtitle);
-        name = view.findViewById(R.id.name);
+        TextView subtitle = view.findViewById(R.id.subtitle);
+        TextView name = view.findViewById(R.id.name);
         price = view.findViewById(R.id.price);
         originalPrice = view.findViewById(R.id.originalPrice);
         depositPrice = view.findViewById(R.id.depositPrice);
         quantityAnnotation = view.findViewById(R.id.quantity_annotation);
         addToCart = view.findViewById(R.id.addToCart);
-        close = view.findViewById(R.id.close);
-        plus = view.findViewById(R.id.plus);
-        minus = view.findViewById(R.id.minus);
+        View close = view.findViewById(R.id.close);
+        View plus = view.findViewById(R.id.plus);
+        View minus = view.findViewById(R.id.minus);
         plusLayout = view.findViewById(R.id.plus_layout);
         minusLayout = view.findViewById(R.id.minus_layout);
         enterReducedPrice = view.findViewById(R.id.enterReducedPrice);

@@ -1,10 +1,9 @@
 package io.snabble.testapp;
 
 import android.app.Application;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import org.apache.commons.io.IOUtils;
 
@@ -115,17 +114,14 @@ public class App extends Application {
 
         // sets a ui event listener for telemetry events, which can you redirect to any
         // telemetry provider
-        Telemetry.setOnEventListener(new Telemetry.OnEventListener() {
-            @Override
-            public void onEvent(Telemetry.Event event, @Nullable Object data) {
-                String dataStr = "";
+        Telemetry.setOnEventListener((event, data) -> {
+            String dataStr = "";
 
-                if (data != null) {
-                    dataStr = data.toString();
-                }
-
-                Log.d("Telemetry", String.format("Event: %s [%s]", event.toString(), dataStr));
+            if (data != null) {
+                dataStr = data.toString();
             }
+
+            Log.d("Telemetry", String.format("Event: %s [%s]", event.toString(), dataStr));
         });
     }
 

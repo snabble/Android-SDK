@@ -3,7 +3,7 @@ package io.snabble.sdk.codes.templates.groups;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 
 public class ConstantCodeGroup extends CodeGroup {
-    private String constantCode;
+    private final String constantCode;
 
     public ConstantCodeGroup(CodeTemplate template, String constantCode) {
         super(template, constantCode.length());
@@ -21,4 +21,3 @@ public class ConstantCodeGroup extends CodeGroup {
         return string().equals(constantCode);
     }
 }
-

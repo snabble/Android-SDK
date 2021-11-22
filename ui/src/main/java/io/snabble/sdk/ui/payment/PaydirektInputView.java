@@ -19,11 +19,6 @@ import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.ViewCompat;
-import androidx.fragment.app.FragmentActivity;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Map;
 import java.util.UUID;
@@ -82,7 +77,7 @@ public class PaydirektInputView extends FrameLayout {
     private AuthorizationResult authorizationResult;
     private PaymentCredentials.PaydirektAuthorizationData authorizationData;
 
-    private OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
             if (webView != null && webView.canGoBack()) {
@@ -296,7 +291,7 @@ public class PaydirektInputView extends FrameLayout {
         onBackPressedCallback.remove();
     }
 
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityStarted(Activity activity) {

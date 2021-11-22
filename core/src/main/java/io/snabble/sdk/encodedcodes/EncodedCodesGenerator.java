@@ -1,8 +1,6 @@
 package io.snabble.sdk.encodedcodes;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.snabble.sdk.Coupon;
@@ -33,7 +31,7 @@ public class EncodedCodesGenerator {
     }
 
     private StringBuilder stringBuilder;
-    private EncodedCodesOptions options;
+    private final EncodedCodesOptions options;
     private ArrayList<String> encodedCodes;
     private int codeCount;
     private boolean hasAgeRestrictedCode;
@@ -148,12 +146,8 @@ public class EncodedCodesGenerator {
     }
 
     private boolean isAgeRestricted(Product product) {
-        if (product.getSaleRestriction().isAgeRestriction()
-                && product.getSaleRestriction().getValue() >= 16) {
-            return true;
-        }
-
-        return false;
+        return product.getSaleRestriction().isAgeRestriction()
+                && product.getSaleRestriction().getValue() >= 16;
     }
 
     private void addProducts(final List<ProductInfo> productInfos, boolean ageRestricted) {
