@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.52.0-beta05]
+
+### Updated
+- Updated Datatrans SDK to v1.4.3
+
+### Fixed
+- Crash when validating payment methods
+
 ## [0.52.0-beta04]
 
 ### Breaking Changes
