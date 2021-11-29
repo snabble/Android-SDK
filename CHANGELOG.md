@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Handle the quiet zone in QR-Codes correctly in the dark mode, in the light mode it will be omitted at all since there is enough white space.
 
+## [0.52.0-beta05]
+
+### Updated
+- Updated Datatrans SDK to v1.4.3
+
+### Fixed
+- Crash when validating payment methods
+
 ## [0.52.0-beta04]
 
 ### Breaking Changes

@@ -622,13 +622,13 @@ public class PaymentCredentials {
         if (type == Type.CREDIT_CARD_PSD2) {
             Date date = new Date(validTo);
             if (date.getTime() < System.currentTimeMillis()) {
-                Logger.errorEvent(null, "removing payment credentials: expired");
+                Logger.errorEvent("removing payment credentials: expired");
                 return false;
             }
         }
 
         if (type == Type.CREDIT_CARD) {
-            Logger.errorEvent(null, "removing payment credentials: old credit card type");
+            Logger.errorEvent("removing payment credentials: old credit card type");
             return false;
         }
 
@@ -639,7 +639,7 @@ public class PaymentCredentials {
             }
         }
 
-        Logger.errorEvent(null, "removing payment credentials: different gateway certificate signature");
+        Logger.errorEvent("removing payment credentials: different gateway certificate signature");
         return false;
     }
 
