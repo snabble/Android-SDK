@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
@@ -24,13 +25,16 @@ import android.text.Editable
 
 import android.text.TextWatcher
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
+import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 
 
 @Suppress("LeakingThis")
 open class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ScrollView(context, attrs, defStyleAttr),
-    LifecycleObserver {
+    LifecycleObserver, PaymentOriginCandidateAvailableListener {
 
     private var isStopped: Boolean = false
     private val project: Project
@@ -42,6 +46,7 @@ open class PaymentStatusView @JvmOverloads constructor(
 
         }
     }
+
     private var ratingMessage: String? = null
     private var lastState: Checkout.State? = null
 
@@ -86,6 +91,13 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.rating3.setOnClickListener {
             sendRating("3")
         }
+
+        binding.addIbanLayout.isVisible = false
+        binding.addIbanButton.setOnClickListener {
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
+        }
+
+        checkout.paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
         val activity = getFragmentActivity()
         activity?.lifecycle?.addObserver(this)
@@ -215,12 +227,16 @@ open class PaymentStatusView @JvmOverloads constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun onStart() {
+        checkout.paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
+
         onStateChanged(checkout.state)
         isStopped = false
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private fun onStop() {
+        checkout.paymentOriginCandidateHelper.removePaymentOriginCandidateAvailableListener(this)
+
         isStopped = true
 
         if (ratingMessage != null) {
@@ -236,12 +252,20 @@ open class PaymentStatusView @JvmOverloads constructor(
         }
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        checkout.paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
 
         if (ratingMessage != null) {
             sendRating("1")
         }
+
+        checkout.paymentOriginCandidateHelper.removePaymentOriginCandidateAvailableListener(this)
     }
 
     private fun startPollingForReceipts(orderId: String?) {
@@ -308,6 +332,12 @@ open class PaymentStatusView @JvmOverloads constructor(
                     itemView.state = PaymentStatusItemView.State.SUCCESS
                 }
             }
+        }
+    }
+
+    override fun onPaymentOriginCandidateAvailable(paymentOriginCandidate: PaymentOriginCandidate?) {
+        if (paymentOriginCandidate != null) {
+            binding.addIbanLayout.isVisible = true
         }
     }
 }

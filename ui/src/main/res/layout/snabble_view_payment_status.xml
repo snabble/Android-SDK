@@ -97,6 +97,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>
+                <LinearLayout
+                    android:id="@+id/add_iban_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/add_iban_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:text="@string/Snabble.PaymentStatus.AddDebitCard.message"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+                        android:id="@+id/add_iban_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:text="@string/Snabble.PaymentStatus.AddDebitCard.button"/>
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

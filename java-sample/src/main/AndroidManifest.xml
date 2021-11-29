@@ -42,5 +42,6 @@
         <activity android:name=".CheckoutGatekeeperActivity" />
         <activity android:name=".CheckoutOnlineActivity" />
         <activity android:name=".CheckoutPOSActivity" />
+        <activity android:name=".PayoneInputActivity" />
     </application>
 </manifest>
