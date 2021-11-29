@@ -12,4 +12,3 @@ public class CreditCardInputActivity extends BaseActivity {
         return fragment;
     }
 }
-

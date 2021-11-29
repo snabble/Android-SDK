@@ -175,6 +175,43 @@
         },
         {
           "city": "Bonn",
+          "country": "Deutschland ",
+          "email": "info@snabble.io",
+          "external": null,
+          "externalId": null,
+          "id": "1337",
+          "lat": 50.7352963,
+          "links": {
+            "self": {
+              "href": "https://api.snabble-testing.io/test/shops/1774"
+            }
+          },
+          "lon": 7.1001417,
+          "name": "snabble GmbH Duplicate",
+          "openingHoursSpecification": [
+            {
+              "closes": "12:01:00",
+              "dayOfWeek": "Tuesday",
+              "opens": "12:00:00"
+            },
+            {
+              "closes": "12:00:00",
+              "dayOfWeek": "Monday",
+              "opens": "10:00:00"
+            }
+          ],
+          "phone": "+491717673249",
+          "project": "test",
+          "services": [
+            "parking",
+            "bakery"
+          ],
+          "state": "NRW",
+          "street": "Acherstraße 26",
+          "zip": "53111"
+        },
+        {
+          "city": "Bonn",
           "country": "Deutschland",
           "email": "info@snabble.io",
           "external": null,

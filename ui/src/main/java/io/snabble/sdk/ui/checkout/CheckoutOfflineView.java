@@ -206,7 +206,7 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                     break;
                 }
                 Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_SUCCESS, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
@@ -214,11 +214,16 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                 break;
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
             case DENIED_BY_SUPERVISOR:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-                callback.execute(SnabbleUI.Action.SHOW_PAYMENT_FAILURE, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
+                break;
+            case PAYMENT_PROCESSING:
+            case PAYMENT_PROCESSING_ERROR:
+            case DENIED_TOO_YOUNG:
+                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
         }
 

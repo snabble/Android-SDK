@@ -6,6 +6,36 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Handle the quiet zone in QR-Codes correctly in the dark mode, in the light mode it will be omitted at all since there is enough white space.
 
+## [0.52.0-beta04]
+
+### Breaking Changes
+- Updated UI components to use Material 3. Usage of ui components now requires a Material 3 theme
+
+## [0.52.0-beta03]
+
+Identical to 0.52.0-beta02, Rerelease because of conflict in GitHub Packages
+
+## [0.52.0-beta02]
+
+### Fixed
+- Fixed an issue with Keyguard popping up multiple times on Android < 9 while entering PayOne Credentials
+- Fixed a crash when while using the CheckInLocationManager on Android < 8. 
+- Fixed a crash when starting location updates from a background thread
+  
+### Changes
+- Skip brand selection of payment selection when only one project is being shown
+
+## [0.52.0-beta01]
+
+### Breaking Changes
+- Added a new PaymentStatusView for displaying the current payment status in a linear fashion. 
+  It also displays dispatching of cigarettes and the status of the receipt 
+- Removed SHOW_PAYMENT_SUCCESS and SHOW_PAYMENT_FAILURE for SHOW_PAYMENT_STATUS
+
+### Added
+- Added optional CheckInManager and CheckInLocationManager which can used for geofencing store locations
+- Added support for PayOne credit card tokenization and transactions
+
 ## [0.51.6]
 
 ### Fixed

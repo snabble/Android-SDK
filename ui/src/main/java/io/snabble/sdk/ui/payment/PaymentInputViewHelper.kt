@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.payment
 
 import android.content.Context
-import io.snabble.sdk.ui.payment.Datatrans.registerCard
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.KeyguardUtils
@@ -22,15 +21,18 @@ object PaymentInputViewHelper {
         if (callback != null) {
             if (KeyguardUtils.isDeviceSecure()) {
                 val project = Snabble.getInstance().getProjectById(projectId)
-                val useDatatrans = project?.paymentMethodDescriptors
-                    ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes
-                    ?.any { it == "datatransAlias" || it == "datatransCreditCardAlias" } ?: false
+                val acceptedOriginTypes = project?.paymentMethodDescriptors
+                    ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
+                val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
+                val usePayone = acceptedOriginTypes.any { it == "payonePseudoCardPAN" }
 
                 val activity = UIUtils.getHostFragmentActivity(context)
                 val args = Bundle()
 
                 if (useDatatrans && paymentMethod != null) {
-                    registerCard(activity, project, paymentMethod)
+                    Datatrans.registerCard(activity, project, paymentMethod)
+                } else if (usePayone && paymentMethod != null) {
+                    Payone.registerCard(activity, project, paymentMethod, callback)
                 } else {
                     when (paymentMethod) {
                         PaymentMethod.VISA -> {

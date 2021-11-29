@@ -78,24 +78,13 @@
         android:label="Payment Credentials" />
 
     <fragment
-        android:id="@+id/navigation_payment_success"
-        android:name="io.snabble.sdk.sample.CustomPaymentSuccess"
-        android:label="Success" />
+        android:id="@+id/navigation_payment_status"
+        android:name="io.snabble.sdk.ui.integration.PaymentStatusFragment"
+        android:label="Payment Status" />
 
     <action
-        android:id="@+id/navigation_action_success"
-        app:destination="@id/navigation_payment_success"
-        app:popUpTo="@id/navigation_cart"
-        app:popUpToInclusive="true" />
-
-    <fragment
-        android:id="@+id/navigation_payment_failure"
-        android:name="io.snabble.sdk.ui.integration.PaymentFailureFragment"
-        android:label="Failure" />
-
-    <action
-        android:id="@+id/navigation_action_failure"
-        app:destination="@id/navigation_payment_failure"
+        android:id="@+id/navigation_action_status"
+        app:destination="@id/navigation_payment_status"
         app:popUpTo="@id/navigation_cart"
         app:popUpToInclusive="true" />
 

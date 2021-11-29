@@ -1,5 +1,6 @@
 package io.snabble.sdk;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -180,6 +181,13 @@ public class Shop implements Serializable, Parcelable {
         return longitude;
     }
 
+    public Location getLocation() { 
+        Location location = new Location("");
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        return location;
+    }
+    
     public String getName() {
         return name;
     }

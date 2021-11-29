@@ -90,23 +90,29 @@
         tools:text="Reduzierten Preis eingeben"
         tools:textColor="#c40000" />
 
-    <Button
-        android:id="@+id/minus"
-        style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <FrameLayout
+        android:id="@+id/minus_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_toStartOf="@+id/quantity_text_input"
-        android:insetLeft="0dp"
-        android:insetTop="0dp"
-        android:insetRight="0dp"
-        android:insetBottom="0dp"
-        app:icon="@drawable/snabble_ic_minus_content"
-        app:iconTint="?attr/colorOnSurface"
-        app:strokeColor="@drawable/snabble_stroke" />
+        android:layout_toStartOf="@+id/quantity_text_input">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/snabble_ic_minus_content"
+            app:tint="?attr/colorOnSurface" />
+
+        <Button
+            android:id="@+id/minus"
+            style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:strokeColor="@drawable/snabble_stroke" />
+    </FrameLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -119,6 +125,7 @@
         android:insetBottom="0dp"
         app:hintEnabled="false"
         app:boxStrokeColor="@drawable/snabble_stroke"
+        app:shapeAppearance="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
         android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp">
@@ -136,22 +143,28 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:id="@+id/plus"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <FrameLayout
+        android:id="@+id/plus_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/enterReducedPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:layout_toEndOf="@+id/quantity_text_input"
-        app:iconTint="?attr/colorOnSurface"
-        app:strokeColor="@drawable/snabble_stroke"
-        app:icon="@drawable/snabble_ic_plus_content" />
+        android:layout_toEndOf="@+id/quantity_text_input">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/snabble_ic_plus_content"
+            app:tint="?attr/colorOnSurface" />
+
+        <Button style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:id="@+id/plus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:strokeColor="@drawable/snabble_stroke" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/quantity_annotation"
