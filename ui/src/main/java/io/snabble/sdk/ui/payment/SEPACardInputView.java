@@ -24,7 +24,6 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.textfield.TextInputLayout;
 
 import io.snabble.sdk.PaymentOriginCandidateHelper;
-import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;
@@ -50,8 +49,9 @@ public class SEPACardInputView extends FrameLayout {
     private boolean acceptedKeyguard;
     private boolean isAttachedToWindow;
     private ProgressBar progressIndicator;
-    private PaymentOriginCandidateHelper.PaymentOriginCandidate paymentOriginCandidate;
     private PaymentCredentials paymentCredentials;
+
+    public static PaymentOriginCandidateHelper.PaymentOriginCandidate prefilledPaymentOriginCandidate;
 
     public SEPACardInputView(Context context) {
         super(context);
@@ -187,43 +187,35 @@ public class SEPACardInputView extends FrameLayout {
             }
         });
 
-        nameInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    ibanInput.requestFocus();
-                    return true;
-                }
-
-                return false;
+        nameInput.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                ibanInput.requestFocus();
+                return true;
             }
+
+            return false;
         });
 
-        ibanInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    saveCard();
-                    return true;
-                }
-
-                return false;
+        ibanInput.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                saveCard();
+                return true;
             }
+
+            return false;
         });
 
         formatIBANInput();
 
         try {
-            Project project = SnabbleUI.getProject();
-            PaymentOriginCandidateHelper paymentOriginCandidateHelper = project.getCheckout().getPaymentOriginCandidateHelper();
-            paymentOriginCandidate = paymentOriginCandidateHelper.getPaymentOriginCandidate();
-
-            if (paymentOriginCandidate != null) {
-                ibanCountryCode.setText(paymentOriginCandidate.origin.substring(0, 2));
-                ibanInput.setText(paymentOriginCandidate.origin.substring(2));
+            if (prefilledPaymentOriginCandidate != null) {
+                ibanCountryCode.setText(prefilledPaymentOriginCandidate.origin.substring(0, 2));
+                ibanInput.setText(prefilledPaymentOriginCandidate.origin.substring(2));
                 ibanInput.setEnabled(false);
                 ibanCountryCode.setEnabled(false);
                 hint.setText(R.string.Snabble_SEPA_scoTransferHint);
+
+                prefilledPaymentOriginCandidate = null;
             }
         } catch (Exception e) {
             // runtime exception when no project is set, in which case this view is still valid to show!
@@ -298,10 +290,10 @@ public class SEPACardInputView extends FrameLayout {
     }
 
     private void finish() {
-        if (paymentOriginCandidate != null) {
+        if (prefilledPaymentOriginCandidate != null) {
             progressIndicator.setVisibility(View.VISIBLE);
 
-            paymentOriginCandidate.promote(paymentCredentials, new PaymentOriginCandidateHelper.PromoteResult() {
+            prefilledPaymentOriginCandidate.promote(paymentCredentials, new PaymentOriginCandidateHelper.PromoteResult() {
                 @Override
                 public void success() {
                     Dispatch.mainThread(() -> {

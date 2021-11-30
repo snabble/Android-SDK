@@ -135,7 +135,6 @@ public class Checkout {
     private List<Product> invalidProducts;
     private final CheckoutRetryer checkoutRetryer;
     private Future<?> currentPollFuture;
-    private final PaymentOriginCandidateHelper paymentOriginCandidateHelper;
     private CheckoutApi.AuthorizePaymentRequest storedAuthorizePaymentRequest;
     private boolean authorizePaymentRequestFailed;
     private List<Coupon> redeemedCoupons;
@@ -145,7 +144,6 @@ public class Checkout {
         this.shoppingCart = project.getShoppingCart();
         this.checkoutApi = new CheckoutApi(project);
         this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
-        this.paymentOriginCandidateHelper = new PaymentOriginCandidateHelper(project);
     }
 
     public void abortError() {
@@ -284,7 +282,6 @@ public class Checkout {
         invalidProducts = null;
         storedAuthorizePaymentRequest = null;
         shop = project.getCheckedInShop();
-        paymentOriginCandidateHelper.reset();
         redeemedCoupons = null;
         fulfillmentState.setValue(null);
 
@@ -611,8 +608,6 @@ public class Checkout {
             return true;
         }
 
-        paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkoutProcess);
-
         String authorizePaymentUrl = checkoutProcess.getAuthorizePaymentLink();
         if (authorizePaymentUrl != null) {
             if (authorizePaymentRequestFailed) {
@@ -794,10 +789,6 @@ public class Checkout {
 
     public List<Product> getInvalidProducts() {
         return invalidProducts;
-    }
-
-    public PaymentOriginCandidateHelper getPaymentOriginCandidateHelper() {
-        return paymentOriginCandidateHelper;
     }
 
     /**

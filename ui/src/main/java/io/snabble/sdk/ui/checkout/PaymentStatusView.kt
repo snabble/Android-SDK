@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
@@ -20,14 +19,13 @@ import androidx.core.view.isInvisible
 import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.executeUiAction
-import io.snabble.sdk.utils.Logger
 import android.text.Editable
 
 import android.text.TextWatcher
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.ui.payment.SEPACardInputView
 
 
 @Suppress("LeakingThis")
@@ -50,12 +48,17 @@ open class PaymentStatusView @JvmOverloads constructor(
     private var ratingMessage: String? = null
     private var lastState: Checkout.State? = null
 
+    private var paymentOriginCandidate: PaymentOriginCandidate? = null
+    private var paymentOriginCandidateHelper: PaymentOriginCandidateHelper
+
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
         clipChildren = false
 
         project = SnabbleUI.getProject()
         checkout = project.checkout
+        paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
+        paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
         binding = SnabbleViewPaymentStatusBinding.bind(this)
 
         binding.back.isEnabled = false
@@ -94,10 +97,12 @@ open class PaymentStatusView @JvmOverloads constructor(
 
         binding.addIbanLayout.isVisible = false
         binding.addIbanButton.setOnClickListener {
+            if (paymentOriginCandidate != null) {
+                SEPACardInputView.prefilledPaymentOriginCandidate = paymentOriginCandidate
+            }
+
             SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
         }
-
-        checkout.paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
         val activity = getFragmentActivity()
         activity?.lifecycle?.addObserver(this)
@@ -105,8 +110,6 @@ open class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun sendRating(rating: String) {
-        Logger.d("Send rating " + rating + " message = " + ratingMessage)
-
         project.events.analytics("rating", rating, ratingMessage ?: "")
         Telemetry.event(Telemetry.Event.Rating, rating)
         binding.ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanks)
@@ -148,6 +151,7 @@ open class PaymentStatusView @JvmOverloads constructor(
                 binding.back.isEnabled = true
                 backPressedCallback.isEnabled = false
                 binding.ratingLayout.isVisible = true
+                paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
             Checkout.State.PAYMENT_PROCESSING_ERROR -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
@@ -225,9 +229,21 @@ open class PaymentStatusView @JvmOverloads constructor(
         backPressedCallback.isEnabled = false
     }
 
+    private fun startPollingForPaymentOriginCandidate() {
+        paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
+        if (checkout.state == Checkout.State.PAYMENT_APPROVED) {
+            paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
+        }
+    }
+
+    private fun stopPollingForPaymentOriginCandidate(){
+        paymentOriginCandidateHelper.removePaymentOriginCandidateAvailableListener(this)
+        paymentOriginCandidateHelper.stopPolling()
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun onStart() {
-        checkout.paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
+        startPollingForPaymentOriginCandidate()
 
         onStateChanged(checkout.state)
         isStopped = false
@@ -235,7 +251,7 @@ open class PaymentStatusView @JvmOverloads constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private fun onStop() {
-        checkout.paymentOriginCandidateHelper.removePaymentOriginCandidateAvailableListener(this)
+        stopPollingForPaymentOriginCandidate()
 
         isStopped = true
 
@@ -255,7 +271,7 @@ open class PaymentStatusView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        checkout.paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
+        startPollingForPaymentOriginCandidate()
     }
 
     override fun onDetachedFromWindow() {
@@ -265,7 +281,7 @@ open class PaymentStatusView @JvmOverloads constructor(
             sendRating("1")
         }
 
-        checkout.paymentOriginCandidateHelper.removePaymentOriginCandidateAvailableListener(this)
+        stopPollingForPaymentOriginCandidate()
     }
 
     private fun startPollingForReceipts(orderId: String?) {
@@ -338,6 +354,7 @@ open class PaymentStatusView @JvmOverloads constructor(
     override fun onPaymentOriginCandidateAvailable(paymentOriginCandidate: PaymentOriginCandidate?) {
         if (paymentOriginCandidate != null) {
             binding.addIbanLayout.isVisible = true
+            this.paymentOriginCandidate = paymentOriginCandidate
         }
     }
 }

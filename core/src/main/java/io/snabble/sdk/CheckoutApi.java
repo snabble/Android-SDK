@@ -315,6 +315,13 @@ public class CheckoutApi {
             }
             return null;
         }
+
+        public String getOriginCandidateLink() {
+            if (paymentResult != null && paymentResult.originCandidateLink != null) {
+                return paymentResult.originCandidateLink;
+            }
+            return null;
+        }
     }
 
     public static class Pricing {

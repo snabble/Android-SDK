@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -25,12 +26,12 @@ public class PaymentOriginCandidateHelper {
     private Call call;
     private PaymentOriginCandidate paymentOriginCandidate;
 
-    PaymentOriginCandidateHelper(Project project) {
+    public PaymentOriginCandidateHelper(Project project) {
         this.project = project;
     }
 
-    void startPollingIfLinkIsAvailable(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse.getSelfLink() == null) {
+    public void startPollingIfLinkIsAvailable(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+        if (checkoutProcessResponse.getOriginCandidateLink() == null) {
             return;
         }
 
@@ -50,7 +51,7 @@ public class PaymentOriginCandidateHelper {
         Dispatch.background(() -> {
             Request request = new Request.Builder()
                     .get()
-                    .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getSelfLink()))
+                    .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getOriginCandidateLink()))
                     .build();
 
             call = project.getOkHttpClient().newCall(request);
@@ -77,14 +78,15 @@ public class PaymentOriginCandidateHelper {
         }, 1000);
     }
 
-    void stopPolling() {
+    public void stopPolling() {
         if (call != null) {
             call.cancel();
-            isPolling = false;
         }
+
+        isPolling = false;
     }
 
-    void reset() {
+    public void reset() {
         stopPolling();
         paymentOriginCandidate = null;
     }
@@ -118,7 +120,7 @@ public class PaymentOriginCandidateHelper {
     }
 
     public static class PaymentOriginCandidate {
-        private Project project;
+        private transient Project project;
         public String origin;
         public Map<String, CheckoutApi.Href> links;
 
