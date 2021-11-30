@@ -26,19 +26,19 @@ public class CheckoutHelper {
                 case TWINT:
                 case POST_FINANCE_CARD:
                 case GOOGLE_PAY:
-                    callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_ONLINE, null);
+                    SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CHECKOUT_ONLINE);
                     break;
                 case GATEKEEPER_TERMINAL:
-                    callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_GATEKEEPER, null);
+                    SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CHECKOUT_GATEKEEPER);
                     break;
                 case QRCODE_POS:
-                    callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_POINT_OF_SALE, null);
+                    SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CHECKOUT_POINT_OF_SALE);
                     break;
                 case CUSTOMERCARD_POS:
-                    callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_CUSTOMERCARD, null);
+                    SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CHECKOUT_CUSTOMERCARD);
                     break;
                 case QRCODE_OFFLINE:
-                    callback.execute(SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE, null);
+                    SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE);
                     break;
             }
         }

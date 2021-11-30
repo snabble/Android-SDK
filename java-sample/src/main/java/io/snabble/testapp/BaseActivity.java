@@ -99,7 +99,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     public abstract Fragment onCreateFragment();
 
     @Override
-    public void execute(SnabbleUI.Action action, Bundle args) {
+    public void execute(SnabbleUI.Action action, Bundle args, boolean addToBackStack) {
         switch(action) {
             case GO_BACK:
                 onBackPressed();

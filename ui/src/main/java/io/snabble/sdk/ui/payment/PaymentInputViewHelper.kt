@@ -38,23 +38,23 @@ object PaymentInputViewHelper {
                         PaymentMethod.VISA -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
-                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
                         }
                         PaymentMethod.AMEX -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
-                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
                         }
                         PaymentMethod.MASTERCARD -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
-                            callback.execute(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
                         }
                         PaymentMethod.PAYDIREKT -> {
-                            callback.execute(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT, null)
+                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
                         }
                         PaymentMethod.DE_DIRECT_DEBIT -> {
-                            callback.execute(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT, null)
+                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
                         }
                         else -> {
                             Logger.e("Payment method requires no credentials or is unsupported")

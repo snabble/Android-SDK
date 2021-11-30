@@ -41,7 +41,7 @@ public class SnabbleUI {
     }
 
     public interface Callback {
-        void execute(Action action, Bundle args);
+        void execute(Action action, Bundle args, boolean addToBackStack);
     }
 
     private static Project currentProject;
@@ -94,7 +94,13 @@ public class SnabbleUI {
 
     public static void executeAction(Action action, Bundle args) {
         if (uiCallback != null) {
-            uiCallback.execute(action, args);
+            uiCallback.execute(action, args, true);
+        }
+    }
+
+    public static void executeAction(Action action, Bundle args, boolean addToBackStack) {
+        if (uiCallback != null) {
+            uiCallback.execute(action, args, addToBackStack);
         }
     }
 

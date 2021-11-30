@@ -60,11 +60,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             @Override
             public void click() {
                 SnabbleUI.getProject().getCheckout().abortSilently();
-
-                SnabbleUI.Callback uiCallback = SnabbleUI.getUiCallback();
-                if (uiCallback != null) {
-                    uiCallback.execute(SnabbleUI.Action.GO_BACK, null);
-                }
+                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
             }
         });
 
@@ -143,7 +139,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
                 break;
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);

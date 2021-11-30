@@ -143,10 +143,7 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showShoppingCart() {
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback != null) {
-            callback.execute(SnabbleUI.Action.SHOW_SHOPPING_CART, null);
-        }
+        SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SHOPPING_CART);
     }
 
     private void updateCartButton() {
@@ -301,38 +298,35 @@ public class SelfScanningView extends FrameLayout {
     }
 
     public void searchWithBarcode() {
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback != null) {
-            if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
-                callback.execute(SnabbleUI.Action.SHOW_BARCODE_SEARCH, null);
-            } else {
-                pauseBarcodeScanner();
+        if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_BARCODE_SEARCH);
+        } else {
+            pauseBarcodeScanner();
 
-                final EditText input = new EditText(getContext());
-                MarginLayoutParams lp = new MarginLayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-                input.setLayoutParams(lp);
-                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            final EditText input = new EditText(getContext());
+            MarginLayoutParams lp = new MarginLayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-                new AlertDialog.Builder(getContext())
-                        .setView(input)
-                        .setTitle(R.string.Snabble_Scanner_enterBarcode)
-                        .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> {
-                            lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
-                        })
-                        .setNegativeButton(R.string.Snabble_Cancel, null)
-                        .setOnDismissListener(dialog -> resumeBarcodeScanner())
-                        .create()
-                        .show();
+            new AlertDialog.Builder(getContext())
+                    .setView(input)
+                    .setTitle(R.string.Snabble_Scanner_enterBarcode)
+                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> {
+                        lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
+                    })
+                    .setNegativeButton(R.string.Snabble_Cancel, null)
+                    .setOnDismissListener(dialog -> resumeBarcodeScanner())
+                    .create()
+                    .show();
 
-                input.requestFocus();
+            input.requestFocus();
 
-                Dispatch.mainThread(() -> {
-                    InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
-                });
-            }
+            Dispatch.mainThread(() -> {
+                InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+            });
         }
     }
 

@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         val navController = findNavController(R.id.nav_host_fragment)
         with(navController) {
-            SnabbleUI.registerUiCallbacks { action, data ->
+            SnabbleUI.registerUiCallbacks { action, data, addToBackStack ->
                 when(action) {
                     SnabbleUI.Action.SHOW_BARCODE_SEARCH -> {
                         navigate(R.id.navigation_barcode_search)

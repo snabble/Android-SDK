@@ -171,10 +171,7 @@ public class ShoppingCartView extends FrameLayout {
 
         scanProducts = findViewById(R.id.scan_products);
         scanProducts.setOnClickListener(view -> {
-            SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-            if (callback != null) {
-                callback.execute(SnabbleUI.Action.SHOW_SCANNER, null);
-            }
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SCANNER);
         });
 
         restore = findViewById(R.id.restore);

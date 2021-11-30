@@ -210,7 +210,7 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
                 break;
             case DENIED_BY_PAYMENT_PROVIDER:
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
