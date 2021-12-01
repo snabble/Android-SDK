@@ -20,9 +20,8 @@ import io.snabble.sdk.ui.SnabbleUI
 import java.util.*
 
 fun View.executeUiAction(action: SnabbleUI.Action,
-                         args: Bundle? = null,
-                         addToBackStack: Boolean = false) {
-    SnabbleUI.executeAction(action, args, addToBackStack)
+                         args: Bundle? = null) {
+    SnabbleUI.executeAction(action, args)
 }
 
 fun View.getFragmentActivity(): FragmentActivity? =

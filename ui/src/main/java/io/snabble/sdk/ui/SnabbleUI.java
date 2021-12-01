@@ -41,14 +41,13 @@ public class SnabbleUI {
     }
 
     public interface Callback {
-        void execute(Action action, Bundle args, boolean addToBackStack);
+        void execute(Action action, Bundle args);
     }
 
     private static Project currentProject;
     private static MutableLiveData<Project> projectLiveData = new MutableLiveData<>();
     private static SnabbleUI.Callback uiCallback;
     private static ActionBar actionBar;
-    private static PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener paymentOriginCandidateAvailableListener;
 
     /**
      * Registers a globally used project for use with views.
@@ -94,13 +93,7 @@ public class SnabbleUI {
 
     public static void executeAction(Action action, Bundle args) {
         if (uiCallback != null) {
-            uiCallback.execute(action, args, true);
-        }
-    }
-
-    public static void executeAction(Action action, Bundle args, boolean addToBackStack) {
-        if (uiCallback != null) {
-            uiCallback.execute(action, args, addToBackStack);
+            uiCallback.execute(action, args);
         }
     }
 
