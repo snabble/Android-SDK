@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
@@ -25,6 +26,7 @@ import android.text.TextWatcher
 import android.view.ViewGroup
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.payment.SEPACardInputView
 
 
@@ -77,7 +79,7 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.rating1.setOnClickListener {
             ratingMessage = ""
             binding.inputBadRatingLayout.isVisible = true
-            binding.inputBadRatingLayout.getEditText()
+            binding.inputBadRatingLayout.editText
                 ?.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
                     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -97,11 +99,10 @@ open class PaymentStatusView @JvmOverloads constructor(
 
         binding.addIbanLayout.isVisible = false
         binding.addIbanButton.setOnClickListener {
-            if (paymentOriginCandidate != null) {
-                SEPACardInputView.prefilledPaymentOriginCandidate = paymentOriginCandidate
-            }
-
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
+            val paymentOriginCandidate = paymentOriginCandidate
+            val intent = Intent(getContext(), SEPACardInputActivity::class.java)
+            intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
+            getContext()?.startActivity(intent,)
         }
 
         val activity = getFragmentActivity()

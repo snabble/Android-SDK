@@ -2,6 +2,7 @@ package io.snabble.sdk.googlepay
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.wallet.AutoResolveHelper
 import io.snabble.sdk.Snabble

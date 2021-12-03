@@ -38,6 +38,10 @@ import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class SEPACardInputView extends FrameLayout {
+    public interface OnCloseListener {
+        void onClose();
+    }
+
     private Button save;
     private TextView hint;
     private EditText nameInput;
@@ -51,7 +55,8 @@ public class SEPACardInputView extends FrameLayout {
     private ProgressBar progressIndicator;
     private PaymentCredentials paymentCredentials;
 
-    public static PaymentOriginCandidateHelper.PaymentOriginCandidate prefilledPaymentOriginCandidate;
+    private PaymentOriginCandidateHelper.PaymentOriginCandidate prefilledPaymentOriginCandidate;
+    public OnCloseListener onCloseListener;
 
     public SEPACardInputView(Context context) {
         super(context);
@@ -206,20 +211,15 @@ public class SEPACardInputView extends FrameLayout {
         });
 
         formatIBANInput();
+    }
 
-        try {
-            if (prefilledPaymentOriginCandidate != null) {
-                ibanCountryCode.setText(prefilledPaymentOriginCandidate.origin.substring(0, 2));
-                ibanInput.setText(prefilledPaymentOriginCandidate.origin.substring(2));
-                ibanInput.setEnabled(false);
-                ibanCountryCode.setEnabled(false);
-                hint.setText(R.string.Snabble_SEPA_scoTransferHint);
-
-                prefilledPaymentOriginCandidate = null;
-            }
-        } catch (Exception e) {
-            // runtime exception when no project is set, in which case this view is still valid to show!
-        }
+    public void setPrefilledPaymentOriginCandidate(PaymentOriginCandidateHelper.PaymentOriginCandidate paymentOriginCandidate) {
+        ibanCountryCode.setText(paymentOriginCandidate.origin.substring(0, 2));
+        ibanInput.setText(paymentOriginCandidate.origin.substring(2));
+        ibanInput.setEnabled(false);
+        ibanCountryCode.setEnabled(false);
+        hint.setText(R.string.Snabble_SEPA_scoTransferHint);
+        prefilledPaymentOriginCandidate = paymentOriginCandidate;
     }
 
     private void formatIBANInput() {
@@ -319,6 +319,18 @@ public class SEPACardInputView extends FrameLayout {
         hideSoftKeyboard(ibanInput);
         hideSoftKeyboard(nameInput);
         SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
+
+        if (onCloseListener != null) {
+            onCloseListener.onClose();
+        }
+    }
+
+    public OnCloseListener getOnCloseListener() {
+        return onCloseListener;
+    }
+
+    public void setOnCloseListener(OnCloseListener onCloseListener) {
+        this.onCloseListener = onCloseListener;
     }
 
     private void hideSoftKeyboard(View view) {
