@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.integration.CheckoutGatekeeperFragment;
+import io.snabble.sdk.ui.fragment.CheckoutGatekeeperFragment;
 
 public class CheckoutGatekeeperActivity extends BaseActivity {
     @Override

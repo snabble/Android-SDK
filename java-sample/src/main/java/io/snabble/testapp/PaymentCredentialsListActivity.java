@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.integration.PaymentCredentialsListFragment;
+import io.snabble.sdk.ui.fragment.PaymentCredentialsListFragment;
 
 public class PaymentCredentialsListActivity extends BaseActivity{
     @Override

@@ -29,10 +29,6 @@ dependencies {
     
     // user interface library
     implementation 'io.snabble.sdk:ui:{{ extra.sdk_version }}'
-    
-    // user interface integration library, entirely optional,
-    // for more seamless and easier integration in apps
-    implementation 'io.snabble.sdk:ui-integration:{{ extra.sdk_version }}'
 }
 ```
 

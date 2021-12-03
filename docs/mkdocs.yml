@@ -31,7 +31,6 @@ nav:
     - Core: api/core/index.md
     - Firebase Detector: api/firebase-detector/index.md
     - UI: api/ui/index.md
-    - UI integration: api/ui-integration/index.md
     - Utils: api/utils/index.md
   - News: https://snabble.io/en/latest/
   - Stores: https://snabble.io/en/stores/

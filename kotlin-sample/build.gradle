@@ -64,13 +64,11 @@ dependencies {
     // just for simplicity
     implementation project(':core')
     implementation project(':ui')
-    implementation project(':ui-integration')
     implementation project(':utils')
 
     // in your app you need to use those dependencies:
     //implementation 'io.snabble.sdk:core:0.50.6'
     //implementation 'io.snabble.sdk:ui:0.50.6'
-    //implementation 'io.snabble.sdk:ui-integration:0.50.6'
     //implementation 'io.snabble.sdk:utils:0.50.6'
 
     // TODO verify this one

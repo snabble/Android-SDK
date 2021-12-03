@@ -2,7 +2,6 @@ package io.snabble.sdk.sample
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -14,10 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.integration.SelfScanningFragment
-import io.snabble.sdk.ui.scanner.BarcodeDetector
-import io.snabble.sdk.ui.scanner.BarcodeDetectorFactory
-import io.snabble.sdk.ui.scanner.ZXingBarcodeDetector
+import io.snabble.sdk.ui.fragment.SelfScanningFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView

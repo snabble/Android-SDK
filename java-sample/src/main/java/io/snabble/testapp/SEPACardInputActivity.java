@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.integration.SEPACardInputFragment;
+import io.snabble.sdk.ui.fragment.SEPACardInputFragment;
 
 public class SEPACardInputActivity extends BaseActivity {
     @Override

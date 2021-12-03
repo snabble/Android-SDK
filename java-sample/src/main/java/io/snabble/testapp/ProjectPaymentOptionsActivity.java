@@ -1,7 +1,7 @@
 package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
-import io.snabble.sdk.ui.integration.ProjectPaymentOptionsFragment;
+import io.snabble.sdk.ui.fragment.ProjectPaymentOptionsFragment;
 
 public class ProjectPaymentOptionsActivity extends BaseActivity {
     @Override
