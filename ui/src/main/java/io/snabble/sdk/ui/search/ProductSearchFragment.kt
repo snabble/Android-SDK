@@ -1,19 +1,18 @@
-package io.snabble.sdk.ui.search;
+package io.snabble.sdk.ui.search
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.Fragment
+import io.snabble.sdk.ui.R
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
-import io.snabble.sdk.ui.R;
-
-public class ProductSearchFragment extends Fragment {
-    @Override
-    @NonNull
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.snabble_fragment_productsearch, container, false);
+open class ProductSearchFragment : Fragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.snabble_fragment_productsearch, container, false)
     }
 }

@@ -1,79 +1,59 @@
-package io.snabble.sdk.ui.cart;
+package io.snabble.sdk.ui.cart
 
-import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.os.Bundle
+import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.utils.UIUtils
+import android.content.res.ColorStateList
+import android.view.*
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.MenuItemCompat
+import androidx.fragment.app.Fragment
+import io.snabble.sdk.ui.SnabbleUI
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.MenuItemCompat;
-import androidx.fragment.app.Fragment;
+open class ShoppingCartFragment : Fragment() {
+    var shoppingCartView: ShoppingCartView? = null
+        private set
 
-import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.cart.ShoppingCartView;
-import io.snabble.sdk.ui.utils.UIUtils;
-
-public class ShoppingCartFragment extends Fragment {
-    private ShoppingCartView shoppingCartView;
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.snabble_fragment_shoppingcart, container, false);
-
-        shoppingCartView = v.findViewById(R.id.shopping_cart_view);
-
-        return v;
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val v = inflater.inflate(R.layout.snabble_fragment_shoppingcart, container, false)
+        shoppingCartView = v.findViewById(R.id.shopping_cart_view)
+        return v
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.snabble_menu_shopping_cart, menu);
-
-        for (int i=0; i<menu.size(); i++) {
-            MenuItem menuItem = menu.getItem(i);
-            int color = UIUtils.getColorByAttribute(requireContext(), R.attr.colorOnActionBar);
-            MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(color));
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.snabble_menu_shopping_cart, menu)
+        for (i in 0 until menu.size()) {
+            val menuItem = menu.getItem(i)
+            val color = UIUtils.getColorByAttribute(requireContext(), R.attr.colorOnActionBar)
+            MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(color))
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_delete) {
-            new AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.Snabble_Shoppingcart_removeItems)
-                    .setPositiveButton(R.string.Snabble_Yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            SnabbleUI.getProject().getShoppingCart().clearBackup();
-                            SnabbleUI.getProject().getShoppingCart().clear();
-                            onCartCleared();
-                        }
-                    })
-                    .setNegativeButton(R.string.Snabble_No, null)
-                    .create()
-                    .show();
-            return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_delete) {
+            AlertDialog.Builder(requireContext())
+                .setMessage(R.string.Snabble_Shoppingcart_removeItems)
+                .setPositiveButton(R.string.Snabble_Yes) { dialog, which ->
+                    SnabbleUI.getProject().shoppingCart.clearBackup()
+                    SnabbleUI.getProject().shoppingCart.clear()
+                    onCartCleared()
+                }
+                .setNegativeButton(R.string.Snabble_No, null)
+                .create()
+                .show()
+            return true
         }
-
-        return false;
+        return false
     }
 
-    public void onCartCleared() {
-
-    }
-
-    public ShoppingCartView getShoppingCartView() {
-        return shoppingCartView;
-    }
+    open fun onCartCleared() {}
 }
