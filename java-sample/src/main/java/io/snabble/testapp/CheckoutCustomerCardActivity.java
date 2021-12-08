@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.fragment.CheckoutCustomerCardFragment;
+import io.snabble.sdk.ui.checkout.CheckoutCustomerCardFragment;
 
 public class CheckoutCustomerCardActivity extends BaseActivity {
     @Override

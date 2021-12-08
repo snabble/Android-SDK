@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.fragment;
+package io.snabble.sdk.ui.utils;
 
 import android.app.Activity;
 import android.view.KeyEvent;

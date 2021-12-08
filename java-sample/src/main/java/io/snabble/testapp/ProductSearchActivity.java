@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.fragment.ProductSearchFragment;
+import io.snabble.sdk.ui.search.ProductSearchFragment;
 
 public class ProductSearchActivity extends BaseActivity {
     @Override

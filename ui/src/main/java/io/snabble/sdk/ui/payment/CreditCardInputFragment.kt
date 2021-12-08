@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.fragment
+package io.snabble.sdk.ui.payment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.CreditCardInputView
 
 open class CreditCardInputFragment : Fragment() {
     companion object {

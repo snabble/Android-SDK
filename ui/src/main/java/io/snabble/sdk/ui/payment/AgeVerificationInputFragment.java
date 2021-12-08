@@ -1,4 +1,5 @@
-package io.snabble.sdk.ui.fragment;
+package io.snabble.sdk.ui.payment;
+
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,15 +10,14 @@ import androidx.fragment.app.Fragment;
 
 import io.snabble.sdk.ui.R;
 
-public class PaymentStatusFragment extends Fragment {
+public class AgeVerificationInputFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.snabble_fragment_payment_status, container, false);
+        return inflater.inflate(R.layout.snabble_fragment_age_verification, container, false);
     }
 }

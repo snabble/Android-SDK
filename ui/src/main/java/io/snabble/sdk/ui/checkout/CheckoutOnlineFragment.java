@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.fragment;
+package io.snabble.sdk.ui.checkout;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.checkout.CheckoutOnlineView;
 
-public class CheckoutOfflineFragment extends Fragment {
+public class CheckoutOnlineFragment extends Fragment {
+    private CheckoutOnlineView view;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,6 +21,7 @@ public class CheckoutOfflineFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.snabble_fragment_checkout_offline, container, false);
+        view = (CheckoutOnlineView) inflater.inflate(R.layout.snabble_fragment_checkout_online, container, false);
+        return view;
     }
 }

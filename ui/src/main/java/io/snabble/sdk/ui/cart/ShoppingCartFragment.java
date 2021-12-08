@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.fragment;
+package io.snabble.sdk.ui.cart;
 
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;

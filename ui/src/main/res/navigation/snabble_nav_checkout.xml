@@ -3,42 +3,42 @@
     android:id="@+id/snabble_nav_checkout">
     <fragment
         android:id="@+id/snabble_nav_checkout_online"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutOnlineFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutOnlineFragment"
         android:label="@string/Snabble.Checkout.title">
 
     </fragment>
 
     <fragment
         android:id="@+id/snabble_nav_checkout_gatekeeper"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutGatekeeperFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutGatekeeperFragment"
         android:label="@string/Snabble.Checkout.title">
 
     </fragment>
 
     <fragment
         android:id="@+id/snabble_nav_checkout_pos"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutPOSFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutPOSFragment"
         android:label="@string/Snabble.Checkout.title">
 
     </fragment>
 
     <fragment
         android:id="@+id/snabble_nav_checkout_customercard"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutCustomerCardFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutCustomerCardFragment"
         android:label="@string/Snabble.Checkout.title">
 
     </fragment>
 
     <fragment
         android:id="@+id/snabble_nav_checkout_offline"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutOfflineFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutOfflineFragment"
         android:label="@string/Snabble.Checkout.title">
 
     </fragment>
 
     <fragment
         android:id="@+id/snabble_nav_payment_status"
-        android:name="io.snabble.sdk.ui.fragment.PaymentStatusFragment"
+        android:name="io.snabble.sdk.ui.payment.PaymentStatusFragment"
         android:label="@string/Snabble.Checkout.title">
 
     </fragment>

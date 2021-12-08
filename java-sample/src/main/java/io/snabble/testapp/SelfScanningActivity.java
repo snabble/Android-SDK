@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.fragment.SelfScanningFragment;
+import io.snabble.sdk.ui.scanner.SelfScanningFragment;
 
 public class SelfScanningActivity extends BaseActivity {
     @Override

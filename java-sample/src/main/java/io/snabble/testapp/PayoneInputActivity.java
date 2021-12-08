@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.fragment.PayoneInputFragment;
+import io.snabble.sdk.ui.payment.PayoneInputFragment;
 
 public class PayoneInputActivity extends BaseActivity {
     @Override

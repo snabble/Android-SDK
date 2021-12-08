@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.fragment.PaydirektInputFragment;
+import io.snabble.sdk.ui.payment.PaydirektInputFragment;
 
 public class PaydirektInputActivity extends BaseActivity {
     @Override

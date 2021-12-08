@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.fragment
+package io.snabble.sdk.ui.scanner
 
 import android.Manifest
 import android.content.Intent
@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.scanner.SelfScanningView
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 
 open class SelfScanningFragment : Fragment() {

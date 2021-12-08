@@ -2,7 +2,7 @@ package io.snabble.testapp;
 
 import androidx.fragment.app.Fragment;
 
-import io.snabble.sdk.ui.fragment.CreditCardInputFragment;
+import io.snabble.sdk.ui.payment.CreditCardInputFragment;
 
 public class CreditCardInputActivity extends BaseActivity {
     @Override

@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.fragment
+package io.snabble.sdk.ui.payment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,6 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.PaymentCredentialsListView
 import java.util.ArrayList
 
 open class PaymentCredentialsListFragment : Fragment() {

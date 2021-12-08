@@ -12,74 +12,74 @@
 
     <fragment
         android:id="@+id/navigation_scanner"
-        android:name="io.snabble.sdk.ui.fragment.SelfScanningFragment"
+        android:name="io.snabble.sdk.ui.scanner.SelfScanningFragment"
         android:label="@string/scanner_title">
         <argument android:name="showProductCode" app:argType="string" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_cart"
-        android:name="io.snabble.sdk.ui.fragment.ShoppingCartFragment"
+        android:name="io.snabble.sdk.ui.cart.ShoppingCartFragment"
         android:label="@string/cart_title"/>
 
     <fragment
         android:id="@+id/navigation_barcode_search"
-        android:name="io.snabble.sdk.ui.fragment.ProductSearchFragment"
+        android:name="io.snabble.sdk.ui.search.ProductSearchFragment"
         android:label="Barcode Search" />
 
     <fragment
         android:id="@+id/navigation_age_verification"
-        android:name="io.snabble.sdk.ui.fragment.AgeVerificationInputFragment"
+        android:name="io.snabble.sdk.ui.payment.AgeVerificationInputFragment"
         android:label="Age verification"/>
 
     <fragment
         android:id="@+id/navigation_checkout_customer_card_fragment"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutCustomerCardFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutCustomerCardFragment"
         android:label="Checkout" />
 
     <fragment
         android:id="@+id/navigation_checkout_gatekeeper_fragment"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutGatekeeperFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutGatekeeperFragment"
         android:label="Checkout" />
 
     <fragment
         android:id="@+id/navigation_checkout_pos_fragment"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutPOSFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutPOSFragment"
         android:label="Checkout" />
 
     <fragment
         android:id="@+id/navigation_checkout_online"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutOnlineFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutOnlineFragment"
         android:label="Checkout" />
 
     <fragment
         android:id="@+id/navigation_checkout_offline"
-        android:name="io.snabble.sdk.ui.fragment.CheckoutOfflineFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutOfflineFragment"
         android:label="Checkout" />
 
     <fragment
         android:id="@+id/navigation_paydirekt_input"
-        android:name="io.snabble.sdk.ui.fragment.PaydirektInputFragment"
+        android:name="io.snabble.sdk.ui.payment.PaydirektInputFragment"
         android:label="Paydirekt" />
 
     <fragment
         android:id="@+id/navigation_credit_card_input"
-        android:name="io.snabble.sdk.ui.fragment.CreditCardInputFragment"
+        android:name="io.snabble.sdk.ui.payment.CreditCardInputFragment"
         android:label="Enter credit card" />
 
     <fragment
         android:id="@+id/navigation_sepa_card_input"
-        android:name="io.snabble.sdk.ui.fragment.SEPACardInputFragment"
+        android:name="io.snabble.sdk.ui.payment.SEPACardInputFragment"
         android:label="Enter SEPA card info" />
 
     <fragment
         android:id="@+id/navigation_payment_credentials"
-        android:name="io.snabble.sdk.ui.fragment.PaymentCredentialsListFragment"
+        android:name="io.snabble.sdk.ui.payment.PaymentCredentialsListFragment"
         android:label="Payment Credentials" />
 
     <fragment
         android:id="@+id/navigation_payment_status"
-        android:name="io.snabble.sdk.ui.fragment.PaymentStatusFragment"
+        android:name="io.snabble.sdk.ui.payment.PaymentStatusFragment"
         android:label="Payment Status" />
 
     <action

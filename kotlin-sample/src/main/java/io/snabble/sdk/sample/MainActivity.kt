@@ -13,7 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.fragment.SelfScanningFragment
+import io.snabble.sdk.ui.scanner.SelfScanningFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView

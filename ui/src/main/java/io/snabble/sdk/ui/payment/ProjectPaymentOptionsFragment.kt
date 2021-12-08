@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.fragment
+package io.snabble.sdk.ui.payment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.ProjectPaymentOptionsView
 
 open class ProjectPaymentOptionsFragment : Fragment() {
     companion object {
