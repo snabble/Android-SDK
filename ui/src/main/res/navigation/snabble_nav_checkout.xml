@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/snabble_nav_checkout">
+    <fragment
+        android:id="@+id/snabble_nav_checkout_online"
+        android:name="io.snabble.sdk.ui.fragment.CheckoutOnlineFragment"
+        android:label="@string/Snabble.Checkout.title">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/snabble_nav_checkout_gatekeeper"
+        android:name="io.snabble.sdk.ui.fragment.CheckoutGatekeeperFragment"
+        android:label="@string/Snabble.Checkout.title">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/snabble_nav_checkout_pos"
+        android:name="io.snabble.sdk.ui.fragment.CheckoutPOSFragment"
+        android:label="@string/Snabble.Checkout.title">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/snabble_nav_checkout_customercard"
+        android:name="io.snabble.sdk.ui.fragment.CheckoutCustomerCardFragment"
+        android:label="@string/Snabble.Checkout.title">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/snabble_nav_checkout_offline"
+        android:name="io.snabble.sdk.ui.fragment.CheckoutOfflineFragment"
+        android:label="@string/Snabble.Checkout.title">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/snabble_nav_payment_status"
+        android:name="io.snabble.sdk.ui.fragment.PaymentStatusFragment"
+        android:label="@string/Snabble.Checkout.title">
+
+    </fragment>
+</navigation>

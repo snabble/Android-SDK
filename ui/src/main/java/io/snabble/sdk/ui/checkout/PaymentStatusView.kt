@@ -28,6 +28,7 @@ import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.payment.SEPACardInputView
+import io.snabble.sdk.ui.utils.requireFragmentActivity
 
 
 @Suppress("LeakingThis")
@@ -65,7 +66,7 @@ open class PaymentStatusView @JvmOverloads constructor(
 
         binding.back.isEnabled = false
         binding.back.setOnClickListener {
-            executeUiAction(SnabbleUI.Action.SHOW_PAYMENT_DONE, null)
+            requireFragmentActivity().finish()
         }
 
         checkout.checkoutState.observeView(this) {

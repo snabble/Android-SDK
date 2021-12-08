@@ -23,7 +23,7 @@ import io.snabble.sdk.*
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.checkout.CheckoutHelper
+import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.databinding.SnabbleViewCheckoutBarBinding
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
@@ -309,7 +309,9 @@ open class CheckoutBar @JvmOverloads constructor(
                 project.checkout.abort()
             }
         } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
-            CheckoutHelper.displayPaymentView(UIUtils.getHostFragmentActivity(context), project.checkout)
+            context.startActivity(Intent(context, CheckoutActivity::class.java).apply {
+                putExtra(CheckoutActivity.ARG_PROJECT_ID, project.id)
+            })
             progressDialog.dismiss()
             unregisterListeners()
         } else if (state == Checkout.State.PAYMENT_PROCESSING) {
