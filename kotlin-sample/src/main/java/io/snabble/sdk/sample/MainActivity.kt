@@ -11,8 +11,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import io.snabble.sdk.CheckoutApi
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.scanner.SelfScanningFragment
 
 class MainActivity : AppCompatActivity() {
@@ -80,34 +82,15 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         val navController = findNavController(R.id.nav_host_fragment)
         with(navController) {
-            SnabbleUI.registerUiCallbacks { action, data ->
+            SnabbleUI.registerUiCallbacks { action, args ->
                 when(action) {
                     SnabbleUI.Action.SHOW_BARCODE_SEARCH -> {
                         navigate(R.id.navigation_barcode_search)
                     }
-                    SnabbleUI.Action.SHOW_CHECKOUT_ONLINE -> {
-                        navigate(R.id.navigation_checkout_online)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE -> {
-                        navigate(R.id.navigation_checkout_offline)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_CUSTOMERCARD -> {
-                        navigate(R.id.navigation_checkout_customer_card_fragment)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_POINT_OF_SALE -> {
-                        navigate(R.id.navigation_checkout_pos_fragment)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_GATEKEEPER -> {
-                        navigate(R.id.navigation_checkout_gatekeeper_fragment)
-                    }
-                    SnabbleUI.Action.SHOW_PAYMENT_STATUS -> {
-                        navigate(R.id.navigation_payment_status)
+                    SnabbleUI.Action.SHOW_CHECKOUT -> {
+                        CheckoutActivity.startCheckoutFlow(this@MainActivity, args)
                     }
                     SnabbleUI.Action.SHOW_SCANNER -> {
-                        val args = Bundle()
-                        if (data != null) {
-                            args.putString(SelfScanningFragment.ARG_SHOW_PRODUCT_CODE, data as String)
-                        }
                         navigate(R.id.navigation_scanner, args)
                     }
                     SnabbleUI.Action.SHOW_SEPA_CARD_INPUT -> {

@@ -1,5 +1,7 @@
 package io.snabble.sdk.ui.checkout
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
@@ -16,6 +18,22 @@ import io.snabble.sdk.ui.R
 class CheckoutActivity : FragmentActivity() {
     companion object {
         const val ARG_PROJECT_ID = "projectId"
+
+        @JvmStatic
+        fun startCheckoutFlow(context: Context, args: Bundle?) {
+            val intent = Intent(context, CheckoutActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            args?.let {
+                intent.putExtras(args)
+            }
+            context.startActivity(intent)
+        }
+
+        fun startCheckoutFlow(context: Context, project: Project) {
+            startCheckoutFlow(context, Bundle().apply {
+                putString(ARG_PROJECT_ID, project.id)
+            })
+        }
     }
 
     private lateinit var navGraph: NavGraph

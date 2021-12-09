@@ -156,10 +156,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     public void showCheckout(Bundle args) {
-        Intent intent = new Intent(this, CheckoutActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        intent.putExtras(args);
-        startActivity(intent);
+        CheckoutActivity.startCheckoutFlow(this, args);
     }
 
     public void showPaymentDone() {
