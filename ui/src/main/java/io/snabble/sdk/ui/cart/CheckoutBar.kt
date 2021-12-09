@@ -308,30 +308,16 @@ open class CheckoutBar @JvmOverloads constructor(
             } else {
                 project.checkout.abort()
             }
-        } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
-            context.startActivity(Intent(context, CheckoutActivity::class.java).apply {
-                putExtra(CheckoutActivity.ARG_PROJECT_ID, project.id)
+        } else if (state == Checkout.State.WAIT_FOR_APPROVAL
+                || state == Checkout.State.PAYMENT_PROCESSING
+                || state == Checkout.State.PAYMENT_APPROVED
+                || state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER
+                || state == Checkout.State.DENIED_BY_SUPERVISOR
+                || state == Checkout.State.PAYMENT_PROCESSING
+        ) {
+            executeUiAction(SnabbleUI.Action.SHOW_CHECKOUT, Bundle().apply {
+                putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
             })
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.PAYMENT_PROCESSING) {
-            Telemetry.event(Telemetry.Event.CheckoutSuccessful)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.PAYMENT_APPROVED) {
-            Telemetry.event(Telemetry.Event.CheckoutSuccessful)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
-            Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.DENIED_BY_SUPERVISOR) {
-            Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
             progressDialog.dismiss()
             unregisterListeners()
         } else if (state == Checkout.State.INVALID_PRODUCTS) {

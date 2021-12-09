@@ -192,15 +192,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                     checkoutIdCode.setText(id);
                 }
                 break;
-            case PAYMENT_PROCESSING:
-            case PAYMENT_PROCESSING_ERROR:
-            case PAYMENT_APPROVED:
-            case DENIED_BY_PAYMENT_PROVIDER:
-            case DENIED_BY_SUPERVISOR:
-            case DENIED_TOO_YOUNG:
-            case REQUEST_PAYMENT_AUTHORIZATION_TOKEN:
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
             case PAYMENT_ABORT_FAILED:
                 cancelProgress.setVisibility(View.INVISIBLE);
                 cancel.setEnabled(true);
@@ -215,10 +206,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                         .setCancelable(false)
                         .create()
                         .show();
-                break;
-            case PAYMENT_ABORTED:
-                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
                 break;
         }
 

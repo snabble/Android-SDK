@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.checkout.CheckoutActivity;
 import io.snabble.sdk.ui.utils.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
@@ -110,23 +111,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_BARCODE_SEARCH:
                 showBarcodeSearch();
                 break;
-            case SHOW_CHECKOUT_GATEKEEPER:
-                showCheckoutGatekeeper();
-                break;
-            case SHOW_CHECKOUT_ONLINE:
-                showCheckoutOnline();
-                break;
-            case SHOW_CHECKOUT_OFFLINE:
-                showCheckoutOffline();
-                break;
-            case SHOW_CHECKOUT_CUSTOMERCARD:
-                showCheckoutCustomerCard();
-                break;
-            case SHOW_CHECKOUT_POINT_OF_SALE:
-                showCheckoutQRCodePOS();
-                break;
-            case SHOW_PAYMENT_STATUS:
-                showPaymentStatus();
+            case SHOW_CHECKOUT:
+                showCheckout(args);
                 break;
             case SHOW_PAYMENT_DONE:
                 showPaymentDone();
@@ -169,44 +155,16 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         startActivity(intent);
     }
 
-    public void showCheckoutOffline() {
-        Intent intent = new Intent(this, CheckoutOfflineActivity.class);
+    public void showCheckout(Bundle args) {
+        Intent intent = new Intent(this, CheckoutActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-    }
-
-    public void showCheckoutCustomerCard() {
-        Intent intent = new Intent(this, CheckoutCustomerCardActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-    }
-
-    public void showCheckoutGatekeeper() {
-        Intent intent = new Intent(this, CheckoutGatekeeperActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-    }
-
-    public void showCheckoutOnline() {
-        Intent intent = new Intent(this, CheckoutOnlineActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-    }
-
-    public void showCheckoutQRCodePOS() {
-        Intent intent = new Intent(this, CheckoutPOSActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.putExtras(args);
         startActivity(intent);
     }
 
     public void showPaymentDone() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-    }
-
-    public void showPaymentStatus() {
-        Intent intent = new Intent(this, PaymentStatusActivity.class);
         startActivity(intent);
     }
 

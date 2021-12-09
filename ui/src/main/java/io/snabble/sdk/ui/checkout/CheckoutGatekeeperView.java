@@ -171,7 +171,6 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                 String id = checkout.getId();
                 if (id != null) {
                     checkoutIdCode.setText("snabble:checkoutProcess:" + id);
-                    Logger.d("SCO_CODE = snabble:checkoutProcess:" + id);
                 }
                 break;
             case PAYMENT_PROCESSING:
@@ -195,29 +194,6 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                         .setCancelable(false)
                         .create()
                         .show();
-                break;
-            case PAYMENT_APPROVED:
-                if (currentState == Checkout.State.PAYMENT_APPROVED) {
-                    break;
-                }
-                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_ABORTED:
-                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
-                break;
-            case DENIED_BY_PAYMENT_PROVIDER:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case DENIED_BY_SUPERVISOR:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_PROCESSING_ERROR:
-            case DENIED_TOO_YOUNG:
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
                 break;
         }
 

@@ -16,12 +16,7 @@ import io.snabble.sdk.utils.Logger;
 
 public class SnabbleUI {
     public enum Action {
-        SHOW_CHECKOUT_ONLINE,
-        SHOW_CHECKOUT_OFFLINE,
-        SHOW_CHECKOUT_CUSTOMERCARD,
-        SHOW_CHECKOUT_POINT_OF_SALE,
-        SHOW_CHECKOUT_GATEKEEPER,
-        SHOW_PAYMENT_STATUS,
+        SHOW_CHECKOUT,
         SHOW_PAYMENT_DONE,
         SHOW_SCANNER,
         SHOW_BARCODE_SEARCH,
