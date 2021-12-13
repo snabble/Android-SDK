@@ -37,11 +37,9 @@ import me.relex.circleindicator.CircleIndicator3;
 
 public class CheckoutCustomerCardView extends FrameLayout {
     private Project project;
-    private Button paidButton;
     private View helperText;
     private ImageView helperImage;
     private View upArrow;
-    private BarcodeView barcodeView;
 
     public CheckoutCustomerCardView(Context context) {
         super(context);
@@ -63,7 +61,7 @@ public class CheckoutCustomerCardView extends FrameLayout {
 
         inflate(getContext(), R.layout.snabble_view_checkout_customercard, this);
 
-        paidButton = findViewById(R.id.paid);
+        Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
@@ -77,7 +75,7 @@ public class CheckoutCustomerCardView extends FrameLayout {
         helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
-        barcodeView = findViewById(R.id.barcode_view);
+        BarcodeView barcodeView = findViewById(R.id.barcode_view);
 
         project.getAssets().get("checkout-offline", this::setHelperImage);
 

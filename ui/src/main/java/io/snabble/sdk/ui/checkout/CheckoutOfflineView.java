@@ -43,7 +43,6 @@ public class CheckoutOfflineView extends FrameLayout {
     private int maxSizeMm;
     private Button paidButton;
     private ViewPager2 viewPager;
-    private CircleIndicator3 viewPagerIndicator;
     private ImageView helperImage;
     private View upArrow;
     private CodeListViewAdapter viewPagerAdapter;
@@ -125,7 +124,7 @@ public class CheckoutOfflineView extends FrameLayout {
             }
         });
 
-        viewPagerIndicator = findViewById(R.id.view_pager_indicator);
+        CircleIndicator3 viewPagerIndicator = findViewById(R.id.view_pager_indicator);
         viewPagerIndicator.setViewPager(viewPager);
 
         if (viewPagerAdapter.getItemCount() == 1) {

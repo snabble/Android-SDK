@@ -31,7 +31,6 @@ import io.snabble.sdk.ui.payment.SEPACardInputView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 
 
-@Suppress("LeakingThis")
 open class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ScrollView(context, attrs, defStyleAttr),
@@ -67,6 +66,7 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.back.isEnabled = false
         binding.back.setOnClickListener {
             requireFragmentActivity().finish()
+            executeUiAction(SnabbleUI.Action.SHOW_CHECKOUT_DONE)
         }
 
         checkout.checkoutState.observeView(this) {

@@ -35,7 +35,7 @@
                 android:layout_marginBottom="24dp"
                 android:text="@string/Snabble.Scanner.Camera.allowAccess"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/open_settings"

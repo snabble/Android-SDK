@@ -102,7 +102,7 @@
                     android:src="@drawable/snabble_ic_minus"
                     app:tint="?attr/colorOnSurface" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/minus"
                     style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="36dp"
@@ -130,7 +130,7 @@
                     android:src="@drawable/snabble_ic_add"
                     app:tint="?attr/colorOnSurface" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/plus"
                     style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="36dp"

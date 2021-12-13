@@ -114,8 +114,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
             case SHOW_CHECKOUT:
                 showCheckout(args);
                 break;
-            case SHOW_PAYMENT_DONE:
-                showPaymentDone();
+            case SHOW_CHECKOUT_DONE:
+                showCheckoutDone();
                 break;
             case SHOW_SEPA_CARD_INPUT:
                 showSEPACardInput();
@@ -159,7 +159,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         CheckoutActivity.startCheckoutFlow(this, args);
     }
 
-    public void showPaymentDone() {
+    public void showCheckoutDone() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);

@@ -35,13 +35,7 @@
         <activity android:name=".PaydirektInputActivity" />
         <activity android:name=".PaymentCredentialsListActivity" />
         <activity android:name=".PaymentOptionsActivity" />
-        <activity android:name=".PaymentStatusActivity" />
         <activity android:name=".ProjectPaymentOptionsActivity" />
-        <activity android:name=".CheckoutCustomerCardActivity" />
-        <activity android:name=".CheckoutOfflineActivity" />
-        <activity android:name=".CheckoutGatekeeperActivity" />
-        <activity android:name=".CheckoutOnlineActivity" />
-        <activity android:name=".CheckoutPOSActivity" />
         <activity android:name=".PayoneInputActivity" />
     </application>
 </manifest>

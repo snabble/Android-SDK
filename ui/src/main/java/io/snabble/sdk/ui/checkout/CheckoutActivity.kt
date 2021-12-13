@@ -7,13 +7,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.fragment.NavHostFragment
 import io.snabble.sdk.Checkout
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
     companion object {
@@ -29,6 +29,7 @@ class CheckoutActivity : FragmentActivity() {
             context.startActivity(intent)
         }
 
+        @JvmStatic
         fun startCheckoutFlow(context: Context, project: Project) {
             startCheckoutFlow(context, Bundle().apply {
                 putString(ARG_PROJECT_ID, project.id)
@@ -55,20 +56,19 @@ class CheckoutActivity : FragmentActivity() {
 
         val projectId = intent.getStringExtra(ARG_PROJECT_ID)
         if (projectId == null) {
-            finish()
+            finishWithError("No project id set")
             return
         }
 
         val project = Snabble.getInstance().getProjectById(projectId)
         if (project == null) {
-            finish()
+            finishWithError("Project with id " + projectId + " not found")
             return
         }
 
         val checkout = project.checkout
-        // TODO handle more entry states?
-        if (checkout.state == Checkout.State.NONE) {
-            finish()
+        if (!checkout.state.isCheckoutState) {
+            finishWithError("Unexpected checkout state " + checkout.state)
             return
         }
         this.checkout = checkout
@@ -86,6 +86,11 @@ class CheckoutActivity : FragmentActivity() {
         checkout.checkoutState.observe(this) {
             onStateChanged()
         }
+    }
+
+    private fun finishWithError(error: String) {
+        Logger.e(error)
+        finish()
     }
 
     private fun getNavigationId(): Int? {

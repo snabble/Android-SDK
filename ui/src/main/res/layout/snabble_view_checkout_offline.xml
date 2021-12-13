@@ -83,7 +83,7 @@
         android:layout_marginTop="4dp"
         android:layout_above="@+id/paid"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/paid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
