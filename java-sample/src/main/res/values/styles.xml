@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SnabbleTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
+    <style name="SnabbleTheme" parent="@style/Theme.Material3.DayNight">
         <item name="colorPrimary">#0077BB</item>
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorPrimaryContainer">#0077BB</item>

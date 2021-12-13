@@ -94,19 +94,22 @@ class MainActivity : AppCompatActivity() {
                         navigate(R.id.navigation_scanner, args)
                     }
                     SnabbleUI.Action.SHOW_SEPA_CARD_INPUT -> {
-                        navigate(R.id.navigation_sepa_card_input)
+                        navigate(R.id.navigation_sepa_card_input, args)
                     }
                     SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT -> {
-                        navigate(R.id.navigation_credit_card_input)
+                        navigate(R.id.navigation_credit_card_input, args)
                     }
                     SnabbleUI.Action.SHOW_PAYDIREKT_INPUT -> {
-                        navigate(R.id.navigation_paydirekt_input)
+                        navigate(R.id.navigation_paydirekt_input, args)
+                    }
+                    SnabbleUI.Action.SHOW_PAYONE_INPUT -> {
+                        navigate(R.id.navigation_payone_input, args)
                     }
                     SnabbleUI.Action.SHOW_SHOPPING_CART -> {
                         navigate(R.id.navigation_cart)
                     }
                     SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST -> {
-                        navigate(R.id.navigation_payment_credentials)
+                        navigate(R.id.navigation_payment_credentials, args)
                     }
                     SnabbleUI.Action.SHOW_AGE_VERIFICATION -> {
                         navigate(R.id.navigation_age_verification)

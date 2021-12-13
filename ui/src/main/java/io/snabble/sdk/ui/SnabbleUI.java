@@ -1,17 +1,12 @@
 package io.snabble.sdk.ui;
 
-
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import io.snabble.sdk.PaymentOriginCandidateHelper;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.Logger;
 
 public class SnabbleUI {

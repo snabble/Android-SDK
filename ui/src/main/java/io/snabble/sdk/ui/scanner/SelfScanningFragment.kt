@@ -15,9 +15,14 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.payment.PayoneInputView
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 
 open class SelfScanningFragment : Fragment() {
+    companion object {
+        const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
+    }
+
     private var optionsMenu: Menu? = null
     var selfScanningView: SelfScanningView? = null
     protected lateinit var rootView: ViewGroup
@@ -86,7 +91,7 @@ open class SelfScanningFragment : Fragment() {
 
     private fun handleBundleArgs() {
         arguments?.let { args ->
-            args.getString("showProductCode")?.let { scannableCode ->
+            args.getString(ARG_SHOW_PRODUCT_CODE)?.let { scannableCode ->
                 selfScanningView?.lookupAndShowProduct(
                     ScannedCode.parse(
                         SnabbleUI.getProject(),
@@ -169,9 +174,5 @@ open class SelfScanningFragment : Fragment() {
         } else {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)
         }
-    }
-
-    companion object {
-        const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
     }
 }

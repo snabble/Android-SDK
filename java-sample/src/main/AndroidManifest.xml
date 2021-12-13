@@ -25,17 +25,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".SelfScanningActivity" />
-        <activity android:name=".ProductSearchActivity" />
-        <activity android:name=".ShoppingCartActivity" />
-        <activity android:name=".AgeVerificationActivity" />
-        <activity android:name=".SEPACardInputActivity" />
-        <activity android:name=".CreditCardInputActivity" />
-        <activity android:name=".PaydirektInputActivity" />
-        <activity android:name=".PaymentCredentialsListActivity" />
-        <activity android:name=".PaymentOptionsActivity" />
-        <activity android:name=".ProjectPaymentOptionsActivity" />
-        <activity android:name=".PayoneInputActivity" />
     </application>
 </manifest>

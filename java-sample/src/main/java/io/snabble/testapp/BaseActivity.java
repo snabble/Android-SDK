@@ -12,7 +12,18 @@ import androidx.fragment.app.Fragment;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.ShoppingCartActivity;
 import io.snabble.sdk.ui.checkout.CheckoutActivity;
+import io.snabble.sdk.ui.payment.AgeVerificationInputActivity;
+import io.snabble.sdk.ui.payment.CreditCardInputActivity;
+import io.snabble.sdk.ui.payment.PaydirektInputActivity;
+import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity;
+import io.snabble.sdk.ui.payment.PaymentOptionsActivity;
+import io.snabble.sdk.ui.payment.PayoneInputActivity;
+import io.snabble.sdk.ui.payment.ProjectPaymentOptionsActivity;
+import io.snabble.sdk.ui.payment.SEPACardInputActivity;
+import io.snabble.sdk.ui.scanner.SelfScanningActivity;
+import io.snabble.sdk.ui.search.ProductSearchActivity;
 import io.snabble.sdk.ui.utils.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
@@ -30,8 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        setSupportActionBar(findViewById(R.id.toolbar));
 
         progressIndicator = findViewById(R.id.progress_indicator);
         content = findViewById(R.id.content);
@@ -150,9 +159,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     public void showScanner() {
-        Intent intent = new Intent(this, SelfScanningActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        showScannerWithCode(null);
     }
 
     public void showCheckout(Bundle args) {
@@ -168,7 +175,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     public void showScannerWithCode(Bundle args) {
         Intent intent = new Intent(this, SelfScanningActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("args", args);
+        if (args != null) {
+            intent.putExtras(args);
+        }
         startActivity(intent);
     }
 
@@ -185,13 +194,17 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showCreditCardInput(Bundle args) {
         Intent intent = new Intent(this, CreditCardInputActivity.class);
-        intent.putExtra("args", args);
+        if (args != null) {
+            intent.putExtras(args);
+        }
         startActivity(intent);
     }
 
     public void showPayoneInput(Bundle args) {
         Intent intent = new Intent(this, PayoneInputActivity.class);
-        intent.putExtra("args", args);
+        if (args != null) {
+            intent.putExtras(args);
+        }
         startActivity(intent);
     }
 
@@ -202,7 +215,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showPaymentCredentialsList(Bundle args) {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
-        intent.putExtra("args", args);
+        if (args != null) {
+            intent.putExtras(args);
+        }
         startActivity(intent);
     }
 
@@ -213,12 +228,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showProjectPaymentOptions(Bundle args) {
         Intent intent = new Intent(this, ProjectPaymentOptionsActivity.class);
-        intent.putExtra("args", args);
+        if (args != null) {
+            intent.putExtras(args);
+        }
         startActivity(intent);
     }
 
     public void showAgeVerification() {
-        Intent intent = new Intent(this, AgeVerificationActivity.class);
+        Intent intent = new Intent(this, AgeVerificationInputActivity.class);
         startActivity(intent);
     }
 }
