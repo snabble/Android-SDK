@@ -28,7 +28,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
     private var itemCount = 0
     var showBarcode = true
     private var searchQuery = ""
-    private val project = SnabbleUI.getProject()
+    private val project = SnabbleUI.project
     private val productDatabase by lazy { project.productDatabase }
     var showSku = false
 

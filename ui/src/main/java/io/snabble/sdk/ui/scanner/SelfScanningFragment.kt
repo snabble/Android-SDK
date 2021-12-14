@@ -94,7 +94,7 @@ open class SelfScanningFragment : Fragment() {
             args.getString(ARG_SHOW_PRODUCT_CODE)?.let { scannableCode ->
                 selfScanningView?.lookupAndShowProduct(
                     ScannedCode.parse(
-                        SnabbleUI.getProject(),
+                        SnabbleUI.project,
                         scannableCode
                     )
                 )

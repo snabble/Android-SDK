@@ -57,7 +57,7 @@ open class PaymentStatusView @JvmOverloads constructor(
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
         clipChildren = false
 
-        project = SnabbleUI.getProject()
+        project = SnabbleUI.project
         checkout = project.checkout
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
@@ -103,6 +103,7 @@ open class PaymentStatusView @JvmOverloads constructor(
             val paymentOriginCandidate = paymentOriginCandidate
             val intent = Intent(getContext(), SEPACardInputActivity::class.java)
             intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             getContext()?.startActivity(intent)
         }
 
@@ -194,10 +195,12 @@ open class PaymentStatusView @JvmOverloads constructor(
             if (it.value != null && it.format != null) {
                 val format = BarcodeFormat.parse(it.format)
                 if (format != null) {
-                    SnabbleUI.executeAction(SnabbleUI.Action.EVENT_EXIT_TOKEN_AVAILABLE, Bundle().apply {
-                        putString("token", it.value)
-                        putString("format", it.format)
-                    })
+                    SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Action.EVENT_EXIT_TOKEN_AVAILABLE,
+                        Bundle().apply {
+                            putString("token", it.value)
+                            putString("format", it.format)
+                        }
+                    )
                     binding.exitToken.isVisible = true
                     binding.exitToken.state = PaymentStatusItemView.State.SUCCESS
                     binding.exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))

@@ -99,7 +99,7 @@ public class AgeVerificationInputView extends FrameLayout {
                     public void success() {
                         post(() -> {
                             Snabble.getInstance().getUserPreferences().setBirthday(getDate(input));
-                            SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
+                            SnabbleUI.executeAction(getContext(), SnabbleUI.Action.GO_BACK);
                         });
                     }
 

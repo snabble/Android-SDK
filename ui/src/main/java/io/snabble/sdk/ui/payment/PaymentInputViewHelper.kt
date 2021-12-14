@@ -17,67 +17,64 @@ import io.snabble.sdk.utils.Logger
 object PaymentInputViewHelper {
     @JvmStatic
     fun openPaymentInputView(context: Context, paymentMethod: PaymentMethod?, projectId: String?) {
-        val callback = SnabbleUI.getUiCallback()
-        if (callback != null) {
-            if (KeyguardUtils.isDeviceSecure()) {
-                val project = Snabble.getInstance().getProjectById(projectId)
-                val acceptedOriginTypes = project?.paymentMethodDescriptors
-                    ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
-                val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
-                val usePayone = acceptedOriginTypes.any { it == "payonePseudoCardPAN" }
+        if (KeyguardUtils.isDeviceSecure()) {
+            val project = Snabble.getInstance().getProjectById(projectId)
+            val acceptedOriginTypes = project?.paymentMethodDescriptors
+                ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
+            val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
+            val usePayone = acceptedOriginTypes.any { it == "payonePseudoCardPAN" }
 
-                val activity = UIUtils.getHostFragmentActivity(context)
-                val args = Bundle()
+            val activity = UIUtils.getHostFragmentActivity(context)
+            val args = Bundle()
 
-                if (useDatatrans && paymentMethod != null) {
-                    Datatrans.registerCard(activity, project, paymentMethod)
-                } else if (usePayone && paymentMethod != null) {
-                    Payone.registerCard(activity, project, paymentMethod, callback)
-                } else {
-                    when (paymentMethod) {
-                        PaymentMethod.VISA -> {
-                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
-                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
-                        }
-                        PaymentMethod.AMEX -> {
-                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
-                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
-                        }
-                        PaymentMethod.MASTERCARD -> {
-                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
-                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
-                        }
-                        PaymentMethod.PAYDIREKT -> {
-                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
-                        }
-                        PaymentMethod.DE_DIRECT_DEBIT -> {
-                            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
-                        }
-                        else -> {
-                            Logger.e("Payment method requires no credentials or is unsupported")
-                        }
+            if (useDatatrans && paymentMethod != null) {
+                Datatrans.registerCard(activity, project, paymentMethod)
+            } else if (usePayone && paymentMethod != null) {
+                Payone.registerCard(activity, project, paymentMethod)
+            } else {
+                when (paymentMethod) {
+                    PaymentMethod.VISA -> {
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
+                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                    }
+                    PaymentMethod.AMEX -> {
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
+                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                    }
+                    PaymentMethod.MASTERCARD -> {
+                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
+                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                    }
+                    PaymentMethod.PAYDIREKT -> {
+                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
+                    }
+                    PaymentMethod.DE_DIRECT_DEBIT -> {
+                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
+                    }
+                    else -> {
+                        Logger.e("Payment method requires no credentials or is unsupported")
                     }
                 }
-            } else {
-                AlertDialog.Builder(context)
-                    .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                    .setPositiveButton(R.string.Snabble_OK, null)
-                    .setCancelable(false)
-                    .show()
             }
+        } else {
+            AlertDialog.Builder(context)
+                .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
+                .setPositiveButton(R.string.Snabble_OK, null)
+                .setCancelable(false)
+                .show()
         }
     }
 
     @JvmStatic
-    fun showPaymentList(project: Project) {
+    fun showPaymentList(context: Context, project: Project) {
         val args = Bundle()
         args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE,
             ArrayList(PaymentCredentials.Type.values().toList()))
         args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
-        SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
+        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
     }
 
     @JvmStatic

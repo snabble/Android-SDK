@@ -24,7 +24,9 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.snippets
 nav:
-  - Home: index.md
+  - Home:
+    - Introduction: index.md
+    - UI: docs/ui-api.md
   - Changelog: changelog.md
   - API:
     - Overview: android-api.md

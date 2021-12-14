@@ -43,8 +43,8 @@ open class ShoppingCartFragment : Fragment() {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.Snabble_Shoppingcart_removeItems)
                 .setPositiveButton(R.string.Snabble_Yes) { dialog, which ->
-                    SnabbleUI.getProject().shoppingCart.clearBackup()
-                    SnabbleUI.getProject().shoppingCart.clear()
+                    SnabbleUI.project.shoppingCart.clearBackup()
+                    SnabbleUI.project.shoppingCart.clear()
                     onCartCleared()
                 }
                 .setNegativeButton(R.string.Snabble_No, null)

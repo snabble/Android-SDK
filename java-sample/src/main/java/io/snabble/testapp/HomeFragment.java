@@ -2,7 +2,6 @@ package io.snabble.testapp;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import io.snabble.sdk.Project;
@@ -46,8 +44,6 @@ public class HomeFragment extends Fragment {
         v.findViewById(R.id.show_pm).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentCredentialsList(null));
 
         v.findViewById(R.id.show_po).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentOptions());
-
-        v.findViewById(R.id.age_verification).setOnClickListener(btn -> ((BaseActivity)getActivity()).showAgeVerification());
 
         v.findViewById(R.id.clear_cache).setOnClickListener(btn -> {
             try {
@@ -95,7 +91,7 @@ public class HomeFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Project project = projectList.get(position);
 
-                SnabbleUI.useProject(project);
+                SnabbleUI.setProject(project);
 
                 updateShops(v);
 
@@ -158,4 +154,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+
 }

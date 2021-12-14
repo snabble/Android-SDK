@@ -1,10 +1,10 @@
 package io.snabble.testapp;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-
-import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
 
@@ -73,7 +73,7 @@ public class App extends Application {
         config.endpointBaseUrl = getString(R.string.endpoint);
         config.secret = getString(R.string.secret);
         config.appId = getString(R.string.app_id);
-        //}
+        // }
 
         final Snabble snabble = Snabble.getInstance();
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
@@ -82,7 +82,7 @@ public class App extends Application {
                 project = snabble.getProjects().get(0);
 
                 // registers this project globally for use with ui components
-                SnabbleUI.useProject(project);
+                SnabbleUI.setProject(project);
 
                 // select the first shop for demo purposes
                 if (project.getShops().size() > 0) {

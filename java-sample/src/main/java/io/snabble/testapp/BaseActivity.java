@@ -13,21 +13,13 @@ import androidx.fragment.app.Fragment;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.cart.ShoppingCartActivity;
-import io.snabble.sdk.ui.checkout.CheckoutActivity;
-import io.snabble.sdk.ui.payment.AgeVerificationInputActivity;
-import io.snabble.sdk.ui.payment.CreditCardInputActivity;
-import io.snabble.sdk.ui.payment.PaydirektInputActivity;
 import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity;
 import io.snabble.sdk.ui.payment.PaymentOptionsActivity;
-import io.snabble.sdk.ui.payment.PayoneInputActivity;
-import io.snabble.sdk.ui.payment.ProjectPaymentOptionsActivity;
-import io.snabble.sdk.ui.payment.SEPACardInputActivity;
-import io.snabble.sdk.ui.scanner.SelfScanningActivity;
-import io.snabble.sdk.ui.search.ProductSearchActivity;
-import io.snabble.sdk.ui.utils.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
+import io.snabble.sdk.ui.scanner.SelfScanningActivity;
+import io.snabble.sdk.ui.utils.ZebraSupport;
 
-public abstract class BaseActivity extends AppCompatActivity implements SnabbleUI.Callback {
+public abstract class BaseActivity extends AppCompatActivity {
 
     private ProgressBar progressIndicator;
     private View content;
@@ -49,17 +41,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
         App.get().init(new App.InitCallback() {
             @Override
             public void done() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressIndicator.setVisibility(View.GONE);
-                        content.setVisibility(View.VISIBLE);
+                runOnUiThread(() -> {
+                    progressIndicator.setVisibility(View.GONE);
+                    content.setVisibility(View.VISIBLE);
 
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.content, onCreateFragment())
-                                .commitAllowingStateLoss();
-                    }
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.content, onCreateFragment())
+                            .commitAllowingStateLoss();
                 });
             }
 
@@ -90,68 +79,20 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     @Override
-    protected void onResume() {
-        SnabbleUI.registerUiCallbacks(this);
+    protected void onStart() {
+        super.onStart();
 
-        super.onResume();
+        SnabbleUI.setUiAction(SnabbleUI.Action.GO_BACK, (activity, args) -> onBackPressed());
     }
 
     @Override
     protected void onStop() {
-        SnabbleUI.unregisterUiCallbacks(this);
-
         super.onStop();
+
+        SnabbleUI.removeAllUiActions();
     }
 
     public abstract Fragment onCreateFragment();
-
-    @Override
-    public void execute(SnabbleUI.Action action, Bundle args) {
-        switch(action) {
-            case GO_BACK:
-                onBackPressed();
-                break;
-            case SHOW_SCANNER:
-                showScannerWithCode(args);
-                break;
-            case SHOW_SHOPPING_CART:
-                showShoppingCart();
-                break;
-            case SHOW_BARCODE_SEARCH:
-                showBarcodeSearch();
-                break;
-            case SHOW_CHECKOUT:
-                showCheckout(args);
-                break;
-            case SHOW_CHECKOUT_DONE:
-                showCheckoutDone();
-                break;
-            case SHOW_SEPA_CARD_INPUT:
-                showSEPACardInput();
-                break;
-            case SHOW_CREDIT_CARD_INPUT:
-                showCreditCardInput(args);
-                break;
-            case SHOW_PAYONE_INPUT:
-                showPayoneInput(args);
-                break;
-            case SHOW_PAYDIREKT_INPUT:
-                showPaydirektInput();
-                break;
-            case SHOW_PAYMENT_CREDENTIALS_LIST:
-                showPaymentCredentialsList(args);
-                break;
-            case SHOW_PAYMENT_OPTIONS:
-                showPaymentOptions();
-                break;
-            case SHOW_PROJECT_PAYMENT_OPTIONS:
-                showProjectPaymentOptions(args);
-                break;
-            case SHOW_AGE_VERIFICATION:
-                showAgeVerification();
-                break;
-        }
-    }
 
     public void showShoppingCart() {
         Intent intent = new Intent(this, ShoppingCartActivity.class);
@@ -159,83 +100,19 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
     }
 
     public void showScanner() {
-        showScannerWithCode(null);
-    }
-
-    public void showCheckout(Bundle args) {
-        CheckoutActivity.startCheckoutFlow(this, args);
-    }
-
-    public void showCheckoutDone() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-    }
-
-    public void showScannerWithCode(Bundle args) {
         Intent intent = new Intent(this, SelfScanningActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        if (args != null) {
-            intent.putExtras(args);
-        }
-        startActivity(intent);
-    }
-
-    public void showBarcodeSearch() {
-        Intent intent = new Intent(this, ProductSearchActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
-    }
-
-    public void showSEPACardInput() {
-        Intent intent = new Intent(this, SEPACardInputActivity.class);
-        startActivity(intent);
-    }
-
-    public void showCreditCardInput(Bundle args) {
-        Intent intent = new Intent(this, CreditCardInputActivity.class);
-        if (args != null) {
-            intent.putExtras(args);
-        }
-        startActivity(intent);
-    }
-
-    public void showPayoneInput(Bundle args) {
-        Intent intent = new Intent(this, PayoneInputActivity.class);
-        if (args != null) {
-            intent.putExtras(args);
-        }
-        startActivity(intent);
-    }
-
-    public void showPaydirektInput() {
-        Intent intent = new Intent(this, PaydirektInputActivity.class);
         startActivity(intent);
     }
 
     public void showPaymentCredentialsList(Bundle args) {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
-        if (args != null) {
-            intent.putExtras(args);
-        }
+        intent.putExtra("args", args);
         startActivity(intent);
     }
 
     public void showPaymentOptions() {
         Intent intent = new Intent(this, PaymentOptionsActivity.class);
-        startActivity(intent);
-    }
-
-    public void showProjectPaymentOptions(Bundle args) {
-        Intent intent = new Intent(this, ProjectPaymentOptionsActivity.class);
-        if (args != null) {
-            intent.putExtras(args);
-        }
-        startActivity(intent);
-    }
-
-    public void showAgeVerification() {
-        Intent intent = new Intent(this, AgeVerificationInputActivity.class);
         startActivity(intent);
     }
 }

@@ -178,12 +178,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             return;
         }
 
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback == null) {
-            Logger.e("ui action could not be performed: callback is null");
-            return;
-        }
-
         switch (state) {
             case WAIT_FOR_APPROVAL:
                 checkoutIdCode.setVisibility(View.VISIBLE);

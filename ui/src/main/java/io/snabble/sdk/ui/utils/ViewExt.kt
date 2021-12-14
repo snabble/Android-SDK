@@ -21,7 +21,7 @@ import java.util.*
 
 fun View.executeUiAction(action: SnabbleUI.Action,
                          args: Bundle? = null) {
-    SnabbleUI.executeAction(action, args)
+    SnabbleUI.executeAction(context, action, args)
 }
 
 fun View.getFragmentActivity(): FragmentActivity? =

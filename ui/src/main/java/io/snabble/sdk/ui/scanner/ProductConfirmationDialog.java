@@ -241,7 +241,7 @@ public class ProductConfirmationDialog {
             });
         }
         
-        SnabbleUI.executeAction(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_SHOW);
+        SnabbleUI.executeAction(context, SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_SHOW);
     }
 
     public void updateQuantityText() {
@@ -342,7 +342,7 @@ public class ProductConfirmationDialog {
         
         Bundle args = new Bundle();
         args.putString("cartItem", GsonHolder.get().toJson(cartItem));
-        SnabbleUI.executeAction(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, args);
+        SnabbleUI.executeAction(context, SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, args);
         dismiss(true);
 
         if (Snabble.getInstance().getConfig().vibrateToConfirmCartFilled &&
@@ -427,7 +427,7 @@ public class ProductConfirmationDialog {
             alertDialog = null;
 
             if (!addToCart) {
-                SnabbleUI.executeAction(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE);
+                SnabbleUI.executeAction(context, SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE);
             }
         }
 

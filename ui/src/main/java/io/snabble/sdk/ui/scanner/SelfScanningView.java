@@ -143,7 +143,7 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showShoppingCart() {
-        SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SHOPPING_CART);
+        SnabbleUI.executeAction(getContext(), SnabbleUI.Action.SHOW_SHOPPING_CART);
     }
 
     private void updateCartButton() {
@@ -299,7 +299,7 @@ public class SelfScanningView extends FrameLayout {
 
     public void searchWithBarcode() {
         if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_BARCODE_SEARCH);
+            SnabbleUI.executeAction(getContext(), SnabbleUI.Action.SHOW_BARCODE_SEARCH);
         } else {
             pauseBarcodeScanner();
 

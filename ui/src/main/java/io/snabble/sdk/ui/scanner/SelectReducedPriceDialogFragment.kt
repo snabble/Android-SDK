@@ -21,7 +21,7 @@ class SelectReducedPriceDialogFragment(
             dismissAllowingStateLoss()
         }
 
-        val project = SnabbleUI.getProject()
+        val project = SnabbleUI.project
         val discounts = project.coupons.filter(CouponType.MANUAL)
         val dialog = productConfirmationDialog
         val item = cartItem

@@ -60,7 +60,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             @Override
             public void click() {
                 SnabbleUI.getProject().getCheckout().abortSilently();
-                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
+                SnabbleUI.executeAction(getContext(), SnabbleUI.Action.GO_BACK);
             }
         });
 
@@ -117,12 +117,6 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
     @Override
     public void onStateChanged(Checkout.State state) {
         if (state == currentState) {
-            return;
-        }
-
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback == null) {
-            Logger.e("ui action could not be performed: callback is null");
             return;
         }
 

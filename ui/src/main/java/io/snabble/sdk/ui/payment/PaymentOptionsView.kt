@@ -67,7 +67,6 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
         val projectList = ArrayList<Entry>()
         val store = Snabble.getInstance().paymentCredentialsStore
-        val credentials = store.allWithoutKeyStoreValidation
 
         projects.filter { it.brand == null }
                 .forEachIndexed { i, project ->
@@ -80,7 +79,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                             count = count,
                             click = {
                                 if (count > 0) {
-                                    PaymentInputViewHelper.showPaymentList(project)
+                                    PaymentInputViewHelper.showPaymentList(context, project)
                                 } else {
                                     PaymentInputViewHelper.showPaymentSelectionForAdding(context, project)
                                 }
@@ -116,7 +115,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                     count = counts[brand] ?: 0,
                     click = {
                         if (project != null && projectBrandCount <= 1) {
-                            PaymentInputViewHelper.showPaymentList(project)
+                            PaymentInputViewHelper.showPaymentList(context, project)
                         } else {
                             val args = Bundle()
                             args.putString(ProjectPaymentOptionsView.ARG_BRAND, brand.id)

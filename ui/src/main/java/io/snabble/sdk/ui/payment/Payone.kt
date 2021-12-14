@@ -58,8 +58,7 @@ object Payone {
     fun registerCard(
         activity: FragmentActivity,
         project: Project,
-        paymentMethod: PaymentMethod,
-        callback: SnabbleUI.Callback
+        paymentMethod: PaymentMethod
     ) {
         val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
         if (descriptor == null) {
@@ -74,7 +73,7 @@ object Payone {
 
         val url = descriptor.links?.get("tokenization")
         if (url == null) {
-            project.events.logError("Datatrans Error: No tokenization url")
+            project.events.logError("Payone Error: No tokenization url")
             Logger.e("Payone error: No tokenization url")
 
             Dispatch.mainThread {
@@ -94,7 +93,7 @@ object Payone {
                 args.putSerializable(PayoneInputView.ARG_PAYMENT_TYPE, paymentMethod)
                 args.putParcelable(PayoneInputView.ARG_TOKEN_DATA, response)
                 Dispatch.mainThread {
-                    SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYONE_INPUT, args)
+                    SnabbleUI.executeAction(activity, SnabbleUI.Action.SHOW_PAYONE_INPUT, args)
                 }
             }
 
@@ -103,8 +102,8 @@ object Payone {
                     showError(activity, paymentMethod)
                 }
 
-                project.events.logError("Datatrans Tokenization Error: " + t?.message)
-                Logger.e("Datatrans Tokenization Error: ${t?.message}")
+                project.events.logError("Payone Tokenization Error: " + t?.message)
+                Logger.e("Payone Tokenization Error: ${t?.message}")
             }
         })
     }

@@ -40,7 +40,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private val binding: SnabbleViewCheckoutBarBinding
     
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
-    private val project by lazy { SnabbleUI.getProject() }
+    private val project by lazy { SnabbleUI.project }
     private val cart: ShoppingCart by lazy { project.shoppingCart }
     private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
@@ -234,7 +234,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     if (activity is FragmentActivity) {
                         val dialogFragment = SelectPaymentMethodFragment()
                         val bundle = Bundle()
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().id)
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.project.id)
                         dialogFragment.arguments = bundle
                         dialogFragment.show(activity.supportFragmentManager, null)
                     }
@@ -357,7 +357,7 @@ open class CheckoutBar @JvmOverloads constructor(
         } else if (state == Checkout.State.PAYMENT_ABORTED) {
             progressDialog.dismiss()
         } else if (state == Checkout.State.REQUEST_VERIFY_AGE) {
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_AGE_VERIFICATION)
+            SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Action.SHOW_AGE_VERIFICATION)
             progressDialog.dismiss()
         } else if (state == Checkout.State.REQUEST_TAXATION) {
             progressDialog.dismiss()

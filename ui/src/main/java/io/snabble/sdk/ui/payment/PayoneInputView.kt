@@ -309,7 +309,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun finish() {
-        SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK)
+        SnabbleUI.executeAction(context, SnabbleUI.Action.GO_BACK)
     }
 
     private fun finishWithError(failReason: String? = null) {

@@ -318,7 +318,7 @@ public class SEPACardInputView extends FrameLayout {
     private void close() {
         hideSoftKeyboard(ibanInput);
         hideSoftKeyboard(nameInput);
-        SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
+        SnabbleUI.executeAction(getContext(), SnabbleUI.Action.GO_BACK);
 
         if (onCloseListener != null) {
             onCloseListener.onClose();
