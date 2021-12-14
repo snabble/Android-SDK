@@ -13,6 +13,8 @@ open class ProductSearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.snabble_fragment_productsearch, container, false)
+        val v = inflater.inflate(R.layout.snabble_fragment_productsearch, container, false) as ProductSearchView
+        v.allowAnyCode = true
+        return v
     }
 }
