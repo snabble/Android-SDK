@@ -103,7 +103,7 @@ open class PaymentStatusView @JvmOverloads constructor(
             val paymentOriginCandidate = paymentOriginCandidate
             val intent = Intent(getContext(), SEPACardInputActivity::class.java)
             intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
-            getContext()?.startActivity(intent,)
+            getContext()?.startActivity(intent)
         }
 
         val activity = getFragmentActivity()
