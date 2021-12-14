@@ -110,7 +110,7 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
             val callback = SnabbleUI.getUiCallback()
             val args = Bundle()
             args.putString("showProductCode", scannableCode)
-            callback.execute(SnabbleUI.Action.SHOW_SCANNER, args)
+            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_SCANNER, args)
         }
     }
 

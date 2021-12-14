@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +40,7 @@ public class CheckoutApi {
      *
      * https://github.com/snabble/docs/blob/master/api_checkout.md
      */
-    public static class Href {
+    public static class Href implements Serializable {
         public String href;
     }
 
@@ -312,6 +313,13 @@ public class CheckoutApi {
             Href link = links.get("authorizePayment");
             if (link != null && link.href != null) {
                 return link.href;
+            }
+            return null;
+        }
+
+        public String getOriginCandidateLink() {
+            if (paymentResult != null && paymentResult.originCandidateLink != null) {
+                return paymentResult.originCandidateLink;
             }
             return null;
         }

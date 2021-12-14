@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 
     <application>
+        <activity
+            android:name=".payment.SEPACardInputActivity"
+            android:exported="false" />
+
         <provider
             android:name="io.snabble.sdk.SnabbleFileProvider"
             android:grantUriPermissions="true"

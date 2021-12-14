@@ -210,7 +210,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SnabbleU
 
     public void showPaymentStatus() {
         Intent intent = new Intent(this, PaymentStatusActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
 

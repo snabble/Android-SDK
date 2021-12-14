@@ -259,11 +259,7 @@ public class PaydirektInputView extends FrameLayout {
 
     private void finish() {
         onBackPressedCallback.remove();
-
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback != null) {
-            callback.execute(SnabbleUI.Action.GO_BACK, null);
-        }
+        SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
     }
 
     private void finishWithError() {

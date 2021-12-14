@@ -240,11 +240,8 @@ public class ProductConfirmationDialog {
                 inputMethodManager.showSoftInput(quantity, 0);
             });
         }
-
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback != null) {
-            callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_SHOW, null);
-        }
+        
+        SnabbleUI.executeAction(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_SHOW);
     }
 
     public void updateQuantityText() {
@@ -342,13 +339,10 @@ public class ProductConfirmationDialog {
         if (imageUrl != null && imageUrl.length() > 0) {
             Picasso.get().load(cartItem.getProduct().getImageUrl()).fetch();
         }
-
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback != null) {
-            Bundle args = new Bundle();
-            args.putString("cartItem", GsonHolder.get().toJson(cartItem));
-            callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, args);
-        }
+        
+        Bundle args = new Bundle();
+        args.putString("cartItem", GsonHolder.get().toJson(cartItem));
+        SnabbleUI.executeAction(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, args);
         dismiss(true);
 
         if (Snabble.getInstance().getConfig().vibrateToConfirmCartFilled &&
@@ -433,10 +427,7 @@ public class ProductConfirmationDialog {
             alertDialog = null;
 
             if (!addToCart) {
-                SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-                if (callback != null) {
-                    callback.execute(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE, null);
-                }
+                SnabbleUI.executeAction(SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE);
             }
         }
 

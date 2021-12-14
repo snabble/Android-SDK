@@ -48,44 +48,14 @@ public class SnabbleUI {
     private static MutableLiveData<Project> projectLiveData = new MutableLiveData<>();
     private static SnabbleUI.Callback uiCallback;
     private static ActionBar actionBar;
-    private static PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener paymentOriginCandidateAvailableListener;
 
     /**
      * Registers a globally used project for use with views.
      * <p>
      */
     public static void useProject(Project project) {
-        if (paymentOriginCandidateAvailableListener != null) {
-            Project currentProject = projectLiveData.getValue();
-            if (currentProject != null) {
-                currentProject.getCheckout().getPaymentOriginCandidateHelper()
-                        .removePaymentOriginCandidateAvailableListener(paymentOriginCandidateAvailableListener);
-            }
-        }
-
         currentProject = project;
         projectLiveData.postValue(project);
-
-        if (project != null) {
-            project.getCheckout().getPaymentOriginCandidateHelper()
-                    .addPaymentOriginCandidateAvailableListener(paymentOriginCandidate -> {
-                        Activity currentActivity = Snabble.getInstance().getCurrentActivity();
-                        if (currentActivity != null) {
-                            new AlertDialog.Builder(currentActivity)
-                                    .setTitle(R.string.Snabble_SEPA_ibanTransferAlert_title)
-                                    .setMessage(currentActivity.getString(R.string.Snabble_SEPA_ibanTransferAlert_message, paymentOriginCandidate.origin))
-                                    .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
-                                        Callback callback = SnabbleUI.getUiCallback();
-                                        if (callback != null) {
-                                            callback.execute(Action.SHOW_SEPA_CARD_INPUT, null);
-                                        }
-                                    })
-                                    .setNegativeButton(R.string.Snabble_No, null)
-                                    .create()
-                                    .show();
-                        }
-                    });
-        }
     }
 
     /**

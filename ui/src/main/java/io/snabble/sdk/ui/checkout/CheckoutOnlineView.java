@@ -218,7 +218,7 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                 break;
             case PAYMENT_ABORTED:
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                callback.execute(SnabbleUI.Action.GO_BACK, null);
+                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
                 break;
         }
 

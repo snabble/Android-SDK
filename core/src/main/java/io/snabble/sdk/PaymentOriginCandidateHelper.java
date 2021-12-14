@@ -1,8 +1,13 @@
 package io.snabble.sdk;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -10,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -23,14 +29,13 @@ public class PaymentOriginCandidateHelper {
     private List<PaymentOriginCandidateAvailableListener> listeners = new CopyOnWriteArrayList<>();
     private boolean isPolling;
     private Call call;
-    private PaymentOriginCandidate paymentOriginCandidate;
 
-    PaymentOriginCandidateHelper(Project project) {
+    public PaymentOriginCandidateHelper(Project project) {
         this.project = project;
     }
 
-    void startPollingIfLinkIsAvailable(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse.getSelfLink() == null) {
+    public void startPollingIfLinkIsAvailable(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+        if (checkoutProcessResponse.getOriginCandidateLink() == null) {
             return;
         }
 
@@ -50,7 +55,7 @@ public class PaymentOriginCandidateHelper {
         Dispatch.background(() -> {
             Request request = new Request.Builder()
                     .get()
-                    .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getSelfLink()))
+                    .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getOriginCandidateLink()))
                     .build();
 
             call = project.getOkHttpClient().newCall(request);
@@ -58,8 +63,7 @@ public class PaymentOriginCandidateHelper {
                         @Override
                         public void success(PaymentOriginCandidate paymentOriginCandidate) {
                             if (paymentOriginCandidate.isValid()) {
-                                paymentOriginCandidate.project = project;
-                                PaymentOriginCandidateHelper.this.paymentOriginCandidate = paymentOriginCandidate;
+                                paymentOriginCandidate.projectId = project.getId();
                                 notifyPaymentOriginCandidateAvailable(paymentOriginCandidate);
                                 stopPolling();
                             } else {
@@ -77,26 +81,16 @@ public class PaymentOriginCandidateHelper {
         }, 1000);
     }
 
-    void stopPolling() {
+    public void stopPolling() {
         if (call != null) {
             call.cancel();
-            isPolling = false;
         }
-    }
 
-    void reset() {
-        stopPolling();
-        paymentOriginCandidate = null;
+        isPolling = false;
     }
 
     public Project getProject() {
         return project;
-    }
-
-    public PaymentOriginCandidate getPaymentOriginCandidate() {
-        PaymentOriginCandidate candidate = paymentOriginCandidate;
-        reset();
-        return candidate;
     }
 
     public void addPaymentOriginCandidateAvailableListener(PaymentOriginCandidateAvailableListener listener) {
@@ -117,8 +111,8 @@ public class PaymentOriginCandidateHelper {
         });
     }
 
-    public static class PaymentOriginCandidate {
-        private Project project;
+    public static class PaymentOriginCandidate implements Serializable {
+        public String projectId;
         public String origin;
         public Map<String, CheckoutApi.Href> links;
 
@@ -135,21 +129,24 @@ public class PaymentOriginCandidateHelper {
                     .url(Snabble.getInstance().absoluteUrl(getPromoteLink()))
                     .build();
 
-            project.getOkHttpClient().newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    result.error();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.code() == 201) {
-                        result.success();
-                    } else {
+            Project project = Snabble.getInstance().getProjectById(projectId);
+            if (project != null) {
+                project.getOkHttpClient().newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
                         result.error();
                     }
-                }
-            });
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.code() == 201) {
+                            result.success();
+                        } else {
+                            result.error();
+                        }
+                    }
+                });
+            }
         }
 
         private String getPromoteLink() {
