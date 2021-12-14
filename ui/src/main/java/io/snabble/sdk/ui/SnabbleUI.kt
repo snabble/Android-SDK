@@ -1,7 +1,5 @@
 package io.snabble.sdk.ui
 
-import android.app.Activity
-import android.content.ContentProvider
 import android.content.Context
 import android.content.Intent
 import io.snabble.sdk.Project
@@ -71,10 +69,24 @@ object SnabbleUI {
 
     /**
      * Sets an action handler for custom implementations of screens.
+     *
+     * This is mostly for ease of use in Java projects. Use setUiAction in Kotlin projects.
      */
     @JvmStatic
-    fun setUiAction(action: Action, callback: Callback) {
+    fun setUiCallback(action: Action, callback: Callback) {
         actions[action] = callback
+    }
+
+    /**
+     * Sets an action handler for custom implementations of screens.
+     */
+    @JvmStatic
+    fun setUiAction(action: Action, unit: ((context: Context, args: Bundle?)->Unit)?) {
+        actions[action] = object : Callback {
+            override fun execute(context: Context, args: Bundle?) {
+                unit?.invoke(context, args)
+            }
+        }
     }
 
     /**

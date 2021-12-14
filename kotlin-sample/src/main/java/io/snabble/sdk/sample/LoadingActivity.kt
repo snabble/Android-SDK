@@ -31,7 +31,7 @@ class LoadingActivity : AppCompatActivity() {
 
                 // an application can have multiple projects
                 val project = snabble.projects.first()
-                SnabbleUI.useProject(project)
+                SnabbleUI.project = project
                 project.checkedInShop = project.shops.first()
 
                 // this is done on the background and can be done at any time
