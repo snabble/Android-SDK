@@ -448,6 +448,10 @@ public class Snabble {
     }
 
     public Project getProjectById(String projectId) {
+        if (projects == null) {
+            return null;
+        }
+        
         for (Project project : projects) {
             if (project.getId().equals(projectId)) {
                 return project;
