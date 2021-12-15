@@ -433,7 +433,6 @@ public class PaymentCredentials {
     public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber, String projectId) {
         if (cardNumber == null || cardNumber.length() != 19
                 || (!cardNumber.startsWith("9280001621")
-                && !cardNumber.startsWith("9280001625")
                 && !cardNumber.startsWith("9280001620"))) {
             return null;
         }
