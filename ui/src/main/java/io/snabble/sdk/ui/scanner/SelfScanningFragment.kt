@@ -16,6 +16,7 @@ import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.PayoneInputView
+import io.snabble.sdk.ui.search.SearchHelper
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 
 open class SelfScanningFragment : Fragment() {
@@ -86,22 +87,15 @@ open class SelfScanningFragment : Fragment() {
         }
         permissionContainer.visibility = View.GONE
         canAskAgain = true
-        handleBundleArgs()
-    }
 
-    private fun handleBundleArgs() {
-        arguments?.let { args ->
-            args.getString(ARG_SHOW_PRODUCT_CODE)?.let { scannableCode ->
-                selfScanningView?.lookupAndShowProduct(
-                    ScannedCode.parse(
-                        SnabbleUI.project,
-                        scannableCode
-                    )
-                )
-            }
-            arguments = null
+        if (SearchHelper.lastSearch != null) {
+            selfScanningView?.lookupAndShowProduct(
+                ScannedCode.parse(SnabbleUI.project, SearchHelper.lastSearch)
+            )
+            SearchHelper.lastSearch = null
         }
     }
+
 
     val isPermissionGranted: Boolean
         get() = (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)

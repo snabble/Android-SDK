@@ -137,13 +137,8 @@ class CheckoutActivity : FragmentActivity() {
         val currentNavigationId = navController.currentDestination?.id
         if (currentNavigationId == navigationId) return
 
-        navController.navigate(navigationId,
-            args = null,
-            navOptions = NavOptions.Builder().apply {
-                setPopUpTo(currentNavigationId ?: 0,
-                    inclusive = true,
-                    saveState = false
-                )
-            }.build())
+        navController.navigate(navigationId, null, NavOptions.Builder().apply {
+                setPopUpTo(currentNavigationId ?: 0, true)
+        }.build())
     }
 }

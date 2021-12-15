@@ -78,11 +78,6 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             findViewById(R.id.explanation2).setVisibility(View.GONE);
         }
 
-        if (SnabbleUI.getActionBar() != null) {
-            findViewById(R.id.explanation1).setVisibility(View.GONE);
-            SnabbleUI.getActionBar().setTitle(R.string.Snabble_QRCode_showThisCode);
-        }
-
         TextView checkoutId = findViewById(R.id.checkout_id);
         String id = project.getCheckout().getId();
         if (id != null && id.length() >= 4) {

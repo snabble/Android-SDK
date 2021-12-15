@@ -2,7 +2,8 @@
 
 ## Requirements
 
-Material 3
+- AndroidX
+- Material components with a Material3 theme
 
 ## Usage
 

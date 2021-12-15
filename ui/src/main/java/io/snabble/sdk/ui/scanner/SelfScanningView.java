@@ -86,8 +86,6 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void inflateView() {
-        Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
-
         inflate(getContext(), R.layout.snabble_view_self_scanning, this);
 
         Project project = SnabbleUI.getProject();

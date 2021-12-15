@@ -59,8 +59,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
     }
 
     private void inflateView() {
-        Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
-
         inflate(getContext(), R.layout.snabble_view_checkout_online, this);
 
         project = SnabbleUI.getProject();
@@ -87,10 +85,6 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         cancel.setOnClickListener(v -> {
             abort();
         });
-
-        if (SnabbleUI.getActionBar() != null) {
-            SnabbleUI.getActionBar().setTitle(R.string.Snabble_Payment_confirm);
-        }
 
         TextView checkoutId = findViewById(R.id.checkout_id);
         String id = SnabbleUI.getProject().getCheckout().getId();

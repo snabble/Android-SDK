@@ -68,10 +68,6 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
             cancel.setEnabled(false);
         });
 
-        if (SnabbleUI.getActionBar() != null) {
-            SnabbleUI.getActionBar().setTitle(R.string.Snabble_Payment_confirm);
-        }
-
         TextView checkoutId = findViewById(R.id.checkout_id);
         String id = SnabbleUI.getProject().getCheckout().getId();
         if (id != null && id.length() >= 4) {

@@ -107,9 +107,8 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
     private fun showScannerWithCode(scannableCode: String?) {
         productSelectedListener?.onProductSelected(scannableCode) ?: run {
             Telemetry.event(Telemetry.Event.ManuallyEnteredProduct, scannableCode)
-            val args = Bundle()
-            args.putString("showProductCode", scannableCode)
-            SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_SCANNER, args)
+            SearchHelper.lastSearch = scannableCode
+            SnabbleUI.executeAction(context, SnabbleUI.Action.GO_BACK)
         }
     }
 

@@ -66,7 +66,10 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.back.isEnabled = false
         binding.back.setOnClickListener {
             requireFragmentActivity().finish()
-            executeUiAction(SnabbleUI.Action.SHOW_CHECKOUT_DONE)
+
+            if (lastState == Checkout.State.PAYMENT_APPROVED) {
+                executeUiAction(SnabbleUI.Action.SHOW_CHECKOUT_DONE)
+            }
         }
 
         checkout.checkoutState.observeView(this) {

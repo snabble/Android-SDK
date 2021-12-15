@@ -1,6 +1,5 @@
 package io.snabble.sdk.sample
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,11 +11,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import io.snabble.sdk.CheckoutApi
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.checkout.CheckoutActivity
-import io.snabble.sdk.ui.scanner.SelfScanningFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
@@ -45,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
+            toolbar.setNavigationOnClickListener { onBackPressed() }
 
             navController.addOnDestinationChangedListener { controller, destination, arguments ->
                 when (destination.id) {
@@ -78,44 +76,39 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
 
         with(navController) {
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_BARCODE_SEARCH) { _, _ ->
-                navigate(R.id.navigation_barcode_search)
-            }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_CHECKOUT) { context, args ->
+//            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_BARCODE_SEARCH) { _, _ ->
+//                navigate(R.id.navigation_barcode_search)
+//            }
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_CHECKOUT) { context, args ->
                 CheckoutActivity.startCheckoutFlow(context, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_SCANNER) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_SCANNER) { _, args ->
                 navigate(R.id.navigation_scanner, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_SEPA_CARD_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_SEPA_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_sepa_card_input, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_credit_card_input, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_PAYDIREKT_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_PAYDIREKT_INPUT) { _, args ->
                 navigate(R.id.navigation_paydirekt_input, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_PAYONE_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_PAYONE_INPUT) { _, args ->
                 navigate(R.id.navigation_payone_input, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_SHOPPING_CART) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_SHOPPING_CART) { _, args ->
                 navigate(R.id.navigation_cart, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST) { _, args ->
                 navigate(R.id.navigation_payment_credentials, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.SHOW_AGE_VERIFICATION) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.SHOW_AGE_VERIFICATION) { _, args ->
                 navigate(R.id.navigation_age_verification, args)
             }
-            SnabbleUI.setUiAction(SnabbleUI.Action.GO_BACK) { _, _ ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Action.GO_BACK) { _, _ ->
                 popBackStack()
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        SnabbleUI.removeAllUiActions()
     }
 }

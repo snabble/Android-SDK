@@ -16,6 +16,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SimpleFragmentActivity
 import io.snabble.sdk.ui.SnabbleUI
 import java.util.*
 

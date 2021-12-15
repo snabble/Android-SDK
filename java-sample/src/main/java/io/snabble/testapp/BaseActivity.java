@@ -91,20 +91,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        SnabbleUI.setUiCallback(SnabbleUI.Action.GO_BACK, (activity, args) -> onBackPressed());
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        SnabbleUI.removeAllUiActions();
-    }
-
     public abstract Fragment onCreateFragment();
 
     public void showShoppingCart() {

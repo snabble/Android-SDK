@@ -136,8 +136,6 @@ public class ShoppingCartView extends FrameLayout {
     }
 
     private void inflateView(Context context, AttributeSet attrs) {
-        Snabble.getInstance()._setCurrentActivity(UIUtils.getHostActivity(getContext()));
-
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
         if(isInEditMode()) return;
         final Project project = SnabbleUI.getProject();
