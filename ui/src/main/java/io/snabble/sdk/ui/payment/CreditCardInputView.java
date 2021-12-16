@@ -40,7 +40,6 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
-import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
@@ -48,7 +47,6 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -337,7 +335,7 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void finish() {
-        SnabbleUI.executeAction(getContext(), SnabbleUI.Action.GO_BACK);
+        SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
     }
 
     private void finishWithError(String failReason) {

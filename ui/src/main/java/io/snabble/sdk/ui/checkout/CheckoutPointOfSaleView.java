@@ -14,10 +14,8 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
-import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Dispatch;
-import io.snabble.sdk.utils.Logger;
 
 public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private BarcodeView barcodeView;
@@ -60,7 +58,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             @Override
             public void click() {
                 SnabbleUI.getProject().getCheckout().abortSilently();
-                SnabbleUI.executeAction(getContext(), SnabbleUI.Action.GO_BACK);
+                SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
             }
         });
 

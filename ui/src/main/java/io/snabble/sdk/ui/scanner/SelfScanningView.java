@@ -39,7 +39,6 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -141,7 +140,7 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showShoppingCart() {
-        SnabbleUI.executeAction(getContext(), SnabbleUI.Action.SHOW_SHOPPING_CART);
+        SnabbleUI.executeAction(getContext(), SnabbleUI.Event.SHOW_SHOPPING_CART);
     }
 
     private void updateCartButton() {
@@ -297,7 +296,7 @@ public class SelfScanningView extends FrameLayout {
 
     public void searchWithBarcode() {
         if (productDatabase.isAvailableOffline() && productDatabase.isUpToDate()) {
-            SnabbleUI.executeAction(getContext(), SnabbleUI.Action.SHOW_BARCODE_SEARCH);
+            SnabbleUI.executeAction(getContext(), SnabbleUI.Event.SHOW_BARCODE_SEARCH);
         } else {
             pauseBarcodeScanner();
 

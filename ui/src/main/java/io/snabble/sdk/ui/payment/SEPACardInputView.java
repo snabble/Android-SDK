@@ -8,7 +8,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -318,7 +317,7 @@ public class SEPACardInputView extends FrameLayout {
     private void close() {
         hideSoftKeyboard(ibanInput);
         hideSoftKeyboard(nameInput);
-        SnabbleUI.executeAction(getContext(), SnabbleUI.Action.GO_BACK);
+        SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
 
         if (onCloseListener != null) {
             onCloseListener.onClose();

@@ -27,7 +27,6 @@ import android.view.ViewGroup
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
-import io.snabble.sdk.ui.payment.SEPACardInputView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 
 
@@ -68,7 +67,7 @@ open class PaymentStatusView @JvmOverloads constructor(
             requireFragmentActivity().finish()
 
             if (lastState == Checkout.State.PAYMENT_APPROVED) {
-                executeUiAction(SnabbleUI.Action.SHOW_CHECKOUT_DONE)
+                executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
             }
         }
 
@@ -198,7 +197,7 @@ open class PaymentStatusView @JvmOverloads constructor(
             if (it.value != null && it.format != null) {
                 val format = BarcodeFormat.parse(it.format)
                 if (format != null) {
-                    SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Action.EVENT_EXIT_TOKEN_AVAILABLE,
+                    SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.EXIT_TOKEN_AVAILABLE,
                         Bundle().apply {
                             putString("token", it.value)
                             putString("format", it.format)
@@ -226,7 +225,7 @@ open class PaymentStatusView @JvmOverloads constructor(
         binding.payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
         binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
             project.shoppingCart.generateNewUUID()
-            executeUiAction(SnabbleUI.Action.GO_BACK, null)
+            executeUiAction(SnabbleUI.Event.GO_BACK, null)
         }
         binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
         binding.image.isVisible = true

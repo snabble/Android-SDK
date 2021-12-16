@@ -1,6 +1,7 @@
 package io.snabble.testapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.cart.ShoppingCartActivity;
@@ -104,9 +106,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void showPaymentCredentialsList(Bundle args) {
+    public void showPaymentCredentialsList() {
         Intent intent = new Intent(this, PaymentCredentialsListActivity.class);
-        intent.putExtra("args", args);
         startActivity(intent);
     }
 

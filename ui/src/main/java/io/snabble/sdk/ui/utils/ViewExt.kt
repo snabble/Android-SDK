@@ -5,24 +5,21 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SimpleFragmentActivity
 import io.snabble.sdk.ui.SnabbleUI
 import java.util.*
 
-fun View.executeUiAction(action: SnabbleUI.Action,
+fun View.executeUiAction(event: SnabbleUI.Event,
                          args: Bundle? = null) {
-    SnabbleUI.executeAction(context, action, args)
+    SnabbleUI.executeAction(context, event, args)
 }
 
 fun View.getFragmentActivity(): FragmentActivity? =

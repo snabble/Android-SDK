@@ -24,7 +24,6 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
@@ -40,13 +39,11 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
@@ -169,7 +166,7 @@ public class ShoppingCartView extends FrameLayout {
 
         scanProducts = findViewById(R.id.scan_products);
         scanProducts.setOnClickListener(view -> {
-            SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_SCANNER);
+            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SCANNER);
         });
 
         restore = findViewById(R.id.restore);

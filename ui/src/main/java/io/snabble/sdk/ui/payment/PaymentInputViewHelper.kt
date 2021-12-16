@@ -36,23 +36,23 @@ object PaymentInputViewHelper {
                     PaymentMethod.VISA -> {
                         args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                         args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
-                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                     }
                     PaymentMethod.AMEX -> {
                         args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                         args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
-                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                     }
                     PaymentMethod.MASTERCARD -> {
                         args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                         args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
-                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT, args)
+                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                     }
                     PaymentMethod.PAYDIREKT -> {
-                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_PAYDIREKT_INPUT)
+                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)
                     }
                     PaymentMethod.DE_DIRECT_DEBIT -> {
-                        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_SEPA_CARD_INPUT)
+                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT)
                     }
                     else -> {
                         Logger.e("Payment method requires no credentials or is unsupported")
@@ -74,7 +74,7 @@ object PaymentInputViewHelper {
         args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE,
             ArrayList(PaymentCredentials.Type.values().toList()))
         args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
-        SnabbleUI.executeAction(context, SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST, args)
+        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST, args)
     }
 
     @JvmStatic

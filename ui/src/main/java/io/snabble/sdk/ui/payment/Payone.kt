@@ -93,7 +93,7 @@ object Payone {
                 args.putSerializable(PayoneInputView.ARG_PAYMENT_TYPE, paymentMethod)
                 args.putParcelable(PayoneInputView.ARG_TOKEN_DATA, response)
                 Dispatch.mainThread {
-                    SnabbleUI.executeAction(activity, SnabbleUI.Action.SHOW_PAYONE_INPUT, args)
+                    SnabbleUI.executeAction(activity, SnabbleUI.Event.SHOW_PAYONE_INPUT, args)
                 }
             }
 

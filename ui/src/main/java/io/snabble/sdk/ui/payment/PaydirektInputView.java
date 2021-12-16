@@ -19,11 +19,6 @@ import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.ViewCompat;
-import androidx.fragment.app.FragmentActivity;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Map;
 import java.util.UUID;
@@ -259,7 +254,7 @@ public class PaydirektInputView extends FrameLayout {
 
     private void finish() {
         onBackPressedCallback.remove();
-        SnabbleUI.executeAction(getContext(), SnabbleUI.Action.GO_BACK);
+        SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
     }
 
     private void finishWithError() {

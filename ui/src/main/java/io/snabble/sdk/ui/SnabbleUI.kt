@@ -5,11 +5,9 @@ import android.content.Intent
 import io.snabble.sdk.Project
 import kotlin.jvm.JvmOverloads
 import android.os.Bundle
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
-import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.SnabbleUI.Action.*
+import io.snabble.sdk.ui.SnabbleUI.Event.*
 import io.snabble.sdk.ui.cart.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.payment.*
@@ -19,7 +17,7 @@ import io.snabble.sdk.ui.utils.UIUtils
 import java.lang.ref.WeakReference
 
 object SnabbleUI {
-    enum class Action {
+    enum class Event {
         SHOW_CHECKOUT,
         SHOW_CHECKOUT_DONE,
         SHOW_SCANNER,
@@ -34,20 +32,16 @@ object SnabbleUI {
         SHOW_PROJECT_PAYMENT_OPTIONS,
         SHOW_AGE_VERIFICATION,
         GO_BACK,
-        EVENT_PRODUCT_CONFIRMATION_SHOW,
-        EVENT_PRODUCT_CONFIRMATION_HIDE,
-        EVENT_EXIT_TOKEN_AVAILABLE
-    }
-
-    interface Callback {
-        fun execute(context: Context, args: Bundle?)
+        PRODUCT_CONFIRMATION_SHOWN,
+        PRODUCT_CONFIRMATION_HIDDEN,
+        EXIT_TOKEN_AVAILABLE
     }
 
     private class ActivityCallback(val activity: WeakReference<AppCompatActivity>,
-                                   val callback: Callback)
+                                   val action: Action)
 
     private val projectLiveData = MutableLiveData<Project?>()
-    private var actions = mutableMapOf<Action, ActivityCallback?>()
+    private var actions = mutableMapOf<Event, ActivityCallback?>()
     private var nullableProject: Project? = null
 
     @JvmStatic
@@ -66,56 +60,42 @@ object SnabbleUI {
 
     /**
      * Sets an action handler for custom implementations of screens.
-     *
-     * This is mostly for ease of use in Java projects. Use setUiAction in Kotlin projects.
      */
     @JvmStatic
-    fun setUiCallback(activity: AppCompatActivity, action: Action, callback: Callback) {
-        setUiAction(activity, action) { context, args ->
-            callback.execute(context, args)
+    fun setUiAction(activity: AppCompatActivity, event: Event, action: Action) {
+        if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
+            actions[event] = ActivityCallback(WeakReference<AppCompatActivity>(activity), action)
+
+            activity.lifecycle.addObserver(object : LifecycleObserver {
+                @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+                fun onDestroy() {
+                    actions.remove(event)
+                }
+            })
         }
-    }
-
-    /**
-     * Sets an action handler for custom implementations of screens.
-     */
-    @JvmStatic
-    fun setUiAction(activity: AppCompatActivity, action: Action, unit: ((context: Context, args: Bundle?)->Unit)?) {
-        actions[action] = ActivityCallback(WeakReference<AppCompatActivity>(activity), object : Callback {
-            override fun execute(context: Context, args: Bundle?) {
-                unit?.invoke(context, args)
-            }
-        })
-
-        activity.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun onDestroy() {
-                actions.remove(action)
-            }
-        })
     }
 
     @JvmStatic
     @JvmOverloads
-    fun executeAction(context: Context, action: Action?, args: Bundle? = null) {
+    fun executeAction(context: Context, event: Event?, args: Bundle? = null) {
         val activity = UIUtils.getHostFragmentActivity(context)
-        if (action == GO_BACK && activity is SimpleFragmentActivity) {
+        if (event == GO_BACK && activity is SimpleFragmentActivity) {
             activity.finish()
             return
         }
 
-        val cb = actions[action]
+        val cb = actions[event]
         val hostingActivity = cb?.activity?.get()
         if (cb != null) {
             if (hostingActivity != null) {
                 if (hostingActivity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                    cb.callback.execute(context, args)
+                    cb.action.execute(context, args)
                 } else {
                     hostingActivity.lifecycle.addObserver(object : LifecycleObserver {
                         @OnLifecycleEvent(Lifecycle.Event.ON_START)
                         fun onStart() {
                             hostingActivity.lifecycle.removeObserver(this)
-                            cb.callback.execute(context, args)
+                            cb.action.execute(context, args)
                         }
                     })
 
@@ -124,10 +104,10 @@ object SnabbleUI {
                     context.startActivity(intent)
                 }
             } else {
-                actions.remove(action)
+                actions.remove(event)
             }
         } else {
-            when(action) {
+            when(event) {
                 SHOW_CHECKOUT -> CheckoutActivity.startCheckoutFlow(context, args)
                 SHOW_SCANNER -> startActivity(context, SelfScanningActivity::class.java, args,
                     canGoBack = false,
@@ -150,9 +130,9 @@ object SnabbleUI {
                 // unhandled actions
                 GO_BACK,
                 SHOW_CHECKOUT_DONE,
-                EVENT_PRODUCT_CONFIRMATION_HIDE,
-                EVENT_PRODUCT_CONFIRMATION_SHOW,
-                EVENT_EXIT_TOKEN_AVAILABLE,
+                PRODUCT_CONFIRMATION_HIDDEN,
+                PRODUCT_CONFIRMATION_SHOWN,
+                EXIT_TOKEN_AVAILABLE,
                 null -> {}
             }
         }

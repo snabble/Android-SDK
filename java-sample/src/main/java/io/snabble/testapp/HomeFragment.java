@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment {
 
         v.findViewById(R.id.delete_db).setOnClickListener(btn -> App.get().getProject().getProductDatabase().delete());
 
-        v.findViewById(R.id.show_pm).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentCredentialsList(null));
+        v.findViewById(R.id.show_pm).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentCredentialsList());
 
         v.findViewById(R.id.show_po).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentOptions());
 

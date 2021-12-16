@@ -315,7 +315,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 || state == Checkout.State.DENIED_BY_SUPERVISOR
                 || state == Checkout.State.PAYMENT_PROCESSING
         ) {
-            executeUiAction(SnabbleUI.Action.SHOW_CHECKOUT, Bundle().apply {
+            executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT, Bundle().apply {
                 putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
             })
             progressDialog.dismiss()
@@ -357,7 +357,7 @@ open class CheckoutBar @JvmOverloads constructor(
         } else if (state == Checkout.State.PAYMENT_ABORTED) {
             progressDialog.dismiss()
         } else if (state == Checkout.State.REQUEST_VERIFY_AGE) {
-            SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Action.SHOW_AGE_VERIFICATION)
+            SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.SHOW_AGE_VERIFICATION)
             progressDialog.dismiss()
         } else if (state == Checkout.State.REQUEST_TAXATION) {
             progressDialog.dismiss()

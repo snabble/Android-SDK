@@ -9,8 +9,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.*
 import io.snabble.sdk.Brand
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -119,7 +116,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
                         } else {
                             val args = Bundle()
                             args.putString(ProjectPaymentOptionsView.ARG_BRAND, brand.id)
-                            executeUiAction(SnabbleUI.Action.SHOW_PROJECT_PAYMENT_OPTIONS, args)
+                            executeUiAction(SnabbleUI.Event.SHOW_PROJECT_PAYMENT_OPTIONS, args)
                         }
 
                     }
