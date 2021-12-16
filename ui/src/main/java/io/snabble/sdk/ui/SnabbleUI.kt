@@ -37,8 +37,10 @@ object SnabbleUI {
         EXIT_TOKEN_AVAILABLE
     }
 
-    private class ActivityCallback(val activity: WeakReference<AppCompatActivity>,
-                                   val action: Action)
+    private class ActivityCallback(
+        var activity: WeakReference<AppCompatActivity>,
+        val action: Action
+    )
 
     private val projectLiveData = MutableLiveData<Project?>()
     private var actions = mutableMapOf<Event, ActivityCallback?>()
@@ -98,10 +100,6 @@ object SnabbleUI {
                             cb.action.execute(context, args)
                         }
                     })
-
-                    val intent = Intent(context, hostingActivity.javaClass)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                    context.startActivity(intent)
                 }
             } else {
                 actions.remove(event)

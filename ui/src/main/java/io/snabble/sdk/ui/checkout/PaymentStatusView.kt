@@ -30,7 +30,7 @@ import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 
 
-open class PaymentStatusView @JvmOverloads constructor(
+class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ScrollView(context, attrs, defStyleAttr),
     LifecycleObserver, PaymentOriginCandidateAvailableListener {
@@ -51,6 +51,7 @@ open class PaymentStatusView @JvmOverloads constructor(
 
     private var paymentOriginCandidate: PaymentOriginCandidate? = null
     private var paymentOriginCandidateHelper: PaymentOriginCandidateHelper
+    private var ignoreStateChanges = false
 
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
@@ -64,9 +65,12 @@ open class PaymentStatusView @JvmOverloads constructor(
 
         binding.back.isEnabled = false
         binding.back.setOnClickListener {
+            ignoreStateChanges = true
+            val state = lastState
+            checkout.reset()
             requireFragmentActivity().finish()
 
-            if (lastState == Checkout.State.PAYMENT_APPROVED) {
+            if (state == Checkout.State.PAYMENT_APPROVED) {
                 executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
             }
         }
@@ -123,7 +127,7 @@ open class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun onStateChanged(state: Checkout.State?) {
-        if (lastState == state) {
+        if (lastState == state || ignoreStateChanges) {
             return
         }
 

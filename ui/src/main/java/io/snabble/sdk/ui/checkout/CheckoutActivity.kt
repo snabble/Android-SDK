@@ -62,13 +62,13 @@ class CheckoutActivity : FragmentActivity() {
 
         val project = Snabble.getInstance().getProjectById(projectId)
         if (project == null) {
-            finishWithError("Project with id " + projectId + " not found")
+            finishWithError("Project with id $projectId not found")
             return
         }
 
         val checkout = project.checkout
         if (!checkout.state.isCheckoutState) {
-            finishWithError("Unexpected checkout state " + checkout.state)
+            finishWithError("Unexpected checkout state ${checkout.state.name}")
             return
         }
         this.checkout = checkout
@@ -78,7 +78,7 @@ class CheckoutActivity : FragmentActivity() {
             finish()
             return
         } else {
-            navGraph.setStartDestination(startDestinationId)
+            navGraph.startDestination = startDestinationId
         }
 
         navController.graph = navGraph
@@ -130,6 +130,10 @@ class CheckoutActivity : FragmentActivity() {
         }
 
         return null
+    }
+
+    override fun onBackPressed() {
+
     }
 
     private fun onStateChanged() {
