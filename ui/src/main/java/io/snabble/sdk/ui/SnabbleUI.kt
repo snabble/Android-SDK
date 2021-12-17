@@ -81,7 +81,7 @@ object SnabbleUI {
     @JvmOverloads
     fun executeAction(context: Context, event: Event?, args: Bundle? = null) {
         val activity = UIUtils.getHostFragmentActivity(context)
-        if (event == GO_BACK && activity is SimpleFragmentActivity) {
+        if (event == GO_BACK && activity is BaseFragmentActivity) {
             activity.finish()
             return
         }

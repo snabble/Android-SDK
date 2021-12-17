@@ -32,10 +32,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-
-        // if you are using a light mode theme, disable night mode resources
-        // this seems like a bug in android
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     public void initBlocking() {

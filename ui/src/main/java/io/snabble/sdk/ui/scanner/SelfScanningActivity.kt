@@ -1,9 +1,9 @@
 package io.snabble.sdk.ui.scanner
 
 import androidx.fragment.app.Fragment
-import io.snabble.sdk.ui.SimpleFragmentActivity
+import io.snabble.sdk.ui.BaseFragmentActivity
 
-class SelfScanningActivity : SimpleFragmentActivity() {
+class SelfScanningActivity : BaseFragmentActivity() {
     companion object {
         const val ARG_SHOW_PRODUCT_CODE = SelfScanningFragment.ARG_SHOW_PRODUCT_CODE
     }

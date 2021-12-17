@@ -32,11 +32,22 @@ Exceptions are View's for entering payment credentials.
 The SDK does need to switch to different Screens at different times (For example, when starting a Checkout).
 
 If you do not register any ui actions, activities will be launched. If you want to integrate the SDK more deeply into 
-your App, you need to Handlers to Events.
+your App, you need to add Handlers to Events.
 
 Todo that, call **SnabbleUI.setUiAction**, which will then be called instead of opening an Activity.
 
 In some cases Activities will still be launched, which will then not invoke the ui action handler.
+
+## Styling
+
+The SDK uses Material 3 theme styling where possible. 
+
+Activities can also use a MaterialToolbar, to enable using a Toolbar set the Theme attribute 
+**snabbleToolbarStyle**.
+
+## Night mode
+
+The SDK supports Material 3 DayNight themes.
 
 ## List of UI Actions
 

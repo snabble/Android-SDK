@@ -7,5 +7,5 @@
         <attr name="animateBarcode" format="boolean" />
     </declare-styleable>
 
-    <attr name="colorOnActionBar" format="color" />
+    <attr name="snabbleToolbarStyle" format="reference" />
 </resources>

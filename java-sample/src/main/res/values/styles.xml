@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SnabbleTheme" parent="@style/Theme.Material3.DayNight">
+    <style name="SnabbleTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#0077BB</item>
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorPrimaryContainer">#0077BB</item>
@@ -16,5 +16,8 @@
         <item name="colorOnTertiary">#ffffff</item>
         <item name="colorTertiaryContainer">#0077BB</item>
         <item name="colorOnTertiaryContainer">#ffffff</item>
+
+        <!-- You can enable a Toolbar inside Activities, by setting a style -->
+        <item name="snabbleToolbarStyle">@style/SnabbleTheme</item>
     </style>
 </resources>

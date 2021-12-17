@@ -31,11 +31,6 @@ open class ShoppingCartFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.snabble_menu_shopping_cart, menu)
-        for (i in 0 until menu.size()) {
-            val menuItem = menu.getItem(i)
-            val color = UIUtils.getColorByAttribute(requireContext(), R.attr.colorOnActionBar)
-            MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(color))
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
