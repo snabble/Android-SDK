@@ -80,7 +80,7 @@ window.console.log = function(msg) {
 };
 
 // intercept errors
-window.onerror = (msg, url, line, column, error) => {
+window.onerror = function(msg, url, line, column, error) {
     const message = {
         message: msg,
         url: url,
@@ -222,7 +222,13 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
         case 'VALID':
             console.log('Success! Credit card check was valid.');
             var lastname = document.getElementById('lastname').value;
-            processResponse({...response, lastname});
+            processResponse({
+                pseudocardpan: response.pseudocardpan,
+                truncatedcardpan: response.truncatedcardpan,
+                cardtype: response.cardtype,
+                cardexpiredate: response.cardexpiredate,
+                lastname
+            });
             break;
         case 'INVALID':
         case 'ERROR':
