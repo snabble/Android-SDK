@@ -22,7 +22,6 @@ class CheckoutActivity : FragmentActivity() {
         @JvmStatic
         fun startCheckoutFlow(context: Context, args: Bundle?) {
             val intent = Intent(context, CheckoutActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             args?.let {
                 intent.putExtras(args)
             }

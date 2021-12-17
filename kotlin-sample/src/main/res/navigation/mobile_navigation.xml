@@ -83,7 +83,7 @@
 
     <fragment
         android:id="@+id/navigation_payment_status"
-        android:name="io.snabble.sdk.ui.payment.PaymentStatusFragment"
+        android:name="io.snabble.sdk.ui.checkout.PaymentStatusFragment"
         android:label="Payment Status" />
 
     <action

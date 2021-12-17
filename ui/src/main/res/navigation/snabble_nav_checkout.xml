@@ -38,7 +38,7 @@
 
     <fragment
         android:id="@+id/snabble_nav_payment_status"
-        android:name="io.snabble.sdk.ui.payment.PaymentStatusFragment"
+        android:name="io.snabble.sdk.ui.checkout.PaymentStatusFragment"
         android:label="@string/Snabble.Checkout.title">
 
     </fragment>

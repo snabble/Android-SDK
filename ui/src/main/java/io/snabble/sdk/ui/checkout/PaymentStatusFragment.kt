@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment
+package io.snabble.sdk.ui.checkout
 
 import android.os.Bundle
 import android.view.LayoutInflater

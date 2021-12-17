@@ -161,6 +161,7 @@ public class CheckoutGatekeeperView extends FrameLayout implements Checkout.OnCh
                 String id = checkout.getId();
                 if (id != null) {
                     checkoutIdCode.setText("snabble:checkoutProcess:" + id);
+                    Logger.d("QR_CODE = snabble:checkoutProcess:" + id);
                 }
                 break;
             case PAYMENT_PROCESSING:

@@ -52,6 +52,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private var paymentOriginCandidate: PaymentOriginCandidate? = null
     private var paymentOriginCandidateHelper: PaymentOriginCandidateHelper
     private var ignoreStateChanges = false
+    private var hasShownSEPAInput = false
 
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
@@ -111,6 +112,8 @@ class PaymentStatusView @JvmOverloads constructor(
             intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             getContext()?.startActivity(intent)
+            binding.addIbanLayout.isVisible = false
+            hasShownSEPAInput = true
         }
 
         val activity = getFragmentActivity()
@@ -229,7 +232,7 @@ class PaymentStatusView @JvmOverloads constructor(
         binding.payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
         binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
             project.shoppingCart.generateNewUUID()
-            executeUiAction(SnabbleUI.Event.GO_BACK, null)
+            requireFragmentActivity().finish()
         }
         binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
         binding.image.isVisible = true
@@ -241,6 +244,10 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun startPollingForPaymentOriginCandidate() {
+        if (hasShownSEPAInput) {
+            return
+        }
+
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
         if (checkout.state == Checkout.State.PAYMENT_APPROVED) {
             paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
