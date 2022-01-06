@@ -89,6 +89,7 @@
     <string name="Snabble.Payment.PostFinanceCard.error">Bei der Verarbeitung deiner Postfinance-Card ist ein Fehler aufgetreten</string>
     <string name="Snabble.Payment.presentCode">Halte diesen Code an einem Snabble-Monitor vor oder zeige ihn einem Mitarbeiter, um deinen Einkauf zu bestätigen.</string>
     <string name="Snabble.Payment.rejected">Einkauf abgelehnt</string>
+    <string name="Snabble.Payment.rejectedHint">Dein Einkauf wurde abgelehnt. Bitte überprüfe deinen Warenkorb und starte den Bezahlvorgang erneut.</string>
     <string name="Snabble.Payment.SEPA.hint">Hinweis: Um dich und unsere Händler vor Missbrauch zu schützen, wird sich der Händler bei deiner ersten Zahlung per SEPA-Lastschrift deine Bankkarte zeigen lassen.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Die eingegebene IBAN ist ungültig.</string>
@@ -124,6 +125,7 @@
     <string name="Snabble.PaymentStatus.AddDebitCard.message">Möchtest du die Daten deiner girocard sicher in der App speichern, um deinen nächsten Einkauf per Lastschrift zu bezahlen? Die Karte kannst du zukünftig im Geldbeutel lassen.</string>
     <string name="Snabble.PaymentStatus.back">Zurück</string>
     <string name="Snabble.PaymentStatus.close">Schließen</string>
+    <string name="Snabble.PaymentStatus.DebitCardAdded.message">Wir haben deine Karte erfolgreich verifiziert. Ab sofort kannst du per SEPA-Lastschrift bezahlen. Deine girocard kannst du zukünftig im Geldbeutel lassen.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Ausgangs-Code</string>
     <string name="Snabble.PaymentStatus.Fulfillment.title">Lieferung</string>
     <string name="Snabble.PaymentStatus.Payment.error">Deine Zahlung konnte nicht durchgeführt werden. Versuche es erneut oder wähle ein anderes Bezahlverfahren.</string>

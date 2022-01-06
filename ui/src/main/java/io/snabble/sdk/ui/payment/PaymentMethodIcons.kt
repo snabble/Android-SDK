@@ -13,6 +13,7 @@ fun PaymentMethod.icon() = when(this) {
     PaymentMethod.POST_FINANCE_CARD -> R.drawable.snabble_ic_payment_select_postfinance
     PaymentMethod.TWINT -> R.drawable.snabble_ic_payment_select_twint
     PaymentMethod.TEGUT_EMPLOYEE_CARD -> R.drawable.snabble_ic_payment_select_tegut
+    PaymentMethod.LEINWEBER_CUSTOMER_ID -> R.drawable.snabble_ic_payment_select_paydirekt // FIXME
     PaymentMethod.CUSTOMERCARD_POS -> R.drawable.snabble_ic_payment_select_pos
     PaymentMethod.GATEKEEPER_TERMINAL -> R.drawable.snabble_ic_payment_select_sco
     PaymentMethod.PAYDIREKT -> R.drawable.snabble_ic_payment_select_paydirekt

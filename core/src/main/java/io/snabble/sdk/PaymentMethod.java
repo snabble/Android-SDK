@@ -17,6 +17,8 @@ public enum PaymentMethod {
     AMEX(false, true, false, true),
     @SerializedName("externalBilling")
     TEGUT_EMPLOYEE_CARD(false, true, true, true),
+    @SerializedName("externalBilling")
+    LEINWEBER_CUSTOMER_ID(false, true, true, true),
     @SerializedName("customerCardPOS")
     CUSTOMERCARD_POS(false, false, false, false),
     @SerializedName("gatekeeperTerminal")
