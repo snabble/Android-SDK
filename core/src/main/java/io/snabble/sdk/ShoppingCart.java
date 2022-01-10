@@ -1,5 +1,8 @@
 package io.snabble.sdk;
 
+import static io.snabble.sdk.Unit.PIECE;
+import static io.snabble.sdk.Unit.PRICE;
+
 import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -19,9 +22,6 @@ import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
-import static io.snabble.sdk.Unit.PIECE;
-import static io.snabble.sdk.Unit.PRICE;
-
 public class ShoppingCart {
     public enum ItemType {
         PRODUCT,
@@ -34,7 +34,7 @@ public class ShoppingCart {
         IN_HOUSE("inHouse"),
         TAKEAWAY("takeaway");
 
-        private String value;
+        private final String value;
 
         Taxation(String value) {
             this.value = value;
@@ -67,7 +67,6 @@ public class ShoppingCart {
     private transient PriceFormatter priceFormatter;
     private String oldId;
     private Integer oldOnlineTotalPrice;
-    private List<CouponItem> oldAppliedCoupons = new ArrayList<>();
     private int oldAddCount;
     private int oldModCount;
     private long oldCartTimestamp;
@@ -280,7 +279,6 @@ public class ShoppingCart {
 
     public void clearBackup() {
         oldItems = null;
-        oldAppliedCoupons = null;
         oldId = null;
         oldAddCount = 0;
         oldModCount = 0;
@@ -545,8 +543,8 @@ public class ShoppingCart {
     }
 
     public static class CouponItem {
-        private Coupon coupon;
-        private ScannedCode scannedCode;
+        private final Coupon coupon;
+        private final ScannedCode scannedCode;
 
         public CouponItem(Coupon coupon, ScannedCode scannedCode) {
             this.coupon = coupon;
@@ -845,7 +843,7 @@ public class ShoppingCart {
 
             int q = getEffectiveQuantity();
             if (q > 0) {
-                return String.valueOf(q) + (unit != null ? unit.getDisplayValue() : "");
+                return q + (unit != null ? unit.getDisplayValue() : "");
             } else {
                 return "1";
             }
@@ -1154,7 +1152,7 @@ public class ShoppingCart {
             }
         }
 
-        backendCart.items = items.toArray(new BackendCartItem[items.size()]);
+        backendCart.items = items.toArray(new BackendCartItem[0]);
 
         return backendCart;
     }

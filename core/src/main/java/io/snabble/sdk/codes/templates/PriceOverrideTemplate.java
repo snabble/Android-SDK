@@ -1,9 +1,9 @@
 package io.snabble.sdk.codes.templates;
 
 public class PriceOverrideTemplate {
-    private CodeTemplate codeTemplate;
-    private CodeTemplate transmissionCodeTemplate;
-    private String transmissionCode;
+    private final CodeTemplate codeTemplate;
+    private final CodeTemplate transmissionCodeTemplate;
+    private final String transmissionCode;
 
     public PriceOverrideTemplate(CodeTemplate codeTemplate, CodeTemplate transmissionCodeTemplate, String transmissionCode) {
         this.codeTemplate = codeTemplate;

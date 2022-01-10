@@ -41,13 +41,11 @@ public class SEPACardInputView extends FrameLayout {
         void onClose();
     }
 
-    private Button save;
     private TextView hint;
     private EditText nameInput;
     private EditText ibanCountryCode;
     private EditText ibanInput;
     private TextInputLayout nameTextInputLayout;
-    private TextInputLayout ibanCountryCodeTextInputLayout;
     private TextInputLayout ibanTextInputLayout;
     private boolean acceptedKeyguard;
     private boolean isAttachedToWindow;
@@ -82,13 +80,12 @@ public class SEPACardInputView extends FrameLayout {
         progressIndicator = findViewById(R.id.progress_indicator);
 
         nameTextInputLayout = findViewById(R.id.input_name_layout);
-        ibanCountryCodeTextInputLayout = findViewById(R.id.prefix_layout);
         ibanTextInputLayout = findViewById(R.id.input_iban_layout);
 
         ibanTextInputLayout.setHelperText(" ");
         nameTextInputLayout.setHelperText(" ");
 
-        save = findViewById(R.id.save);
+        final Button save = findViewById(R.id.save);
         save.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
@@ -121,51 +118,50 @@ public class SEPACardInputView extends FrameLayout {
         ibanInput.addTextChangedListener(new TextWatcher() {
             boolean isUpdating;
             private int previousLength;
-            private boolean backSpace;
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (isUpdating) {
-                        return;
+                if (isUpdating) {
+                    return;
+                }
+
+                boolean backSpace = previousLength > s.length();
+
+                if (backSpace) {
+                    return;
+                }
+
+                String originalInput = s.toString();
+
+                if (originalInput.length() >= 2) {
+                    char[] possibleCountryData = originalInput.substring(0, 2).toCharArray();
+                    if (Character.isLetter(possibleCountryData[0]) && Character.isLetter(possibleCountryData[1])) {
+                        ibanCountryCode.setText(originalInput.substring(0, 2));
+                        originalInput = originalInput.substring(2);
+                    }
+                }
+
+                String str = originalInput.replace(" ", "");
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 0; i < str.length(); i++) {
+                    if ((i + 2) % 4 == 0) {
+                        sb.append(' ');
                     }
 
-                    backSpace = previousLength > s.length();
+                    sb.append(str.charAt(i));
+                }
 
-                    if (backSpace) {
-                        return;
-                    }
+                isUpdating = true;
 
-                    String originalInput = s.toString();
+                String text = sb.toString();
+                int selection = ibanInput.getSelectionEnd();
+                selection += Math.max(0, text.length() - originalInput.length());
 
-                    if(originalInput.length() >= 2) {
-                        char[] possibleCountryData = originalInput.substring(0, 2).toCharArray();
-                        if (Character.isLetter(possibleCountryData[0]) && Character.isLetter(possibleCountryData[1])) {
-                            ibanCountryCode.setText(originalInput.substring(0, 2));
-                            originalInput = originalInput.substring(2);
-                        }
-                    }
+                // not using setText because that causes the keyboard state to be reset
+                ibanInput.getText().replace(0, ibanInput.getText().length(), text, 0, text.length());
+                ibanInput.setSelection(Math.min(ibanInput.length(), selection));
 
-                    String str = originalInput.replace(" ", "");
-                    StringBuilder sb = new StringBuilder();
-
-                    for (int i = 0; i < str.length(); i++) {
-                        if ((i + 2) % 4 == 0) {
-                            sb.append(' ');
-                        }
-
-                        sb.append(str.charAt(i));
-                    }
-
-                    isUpdating = true;
-
-                    String text = sb.toString();
-                    int selection = ibanInput.getSelectionEnd();
-                    selection += Math.max(0, text.length() - originalInput.length());
-
-                    // not using setText because that causes the keyboard state to be reset
-                    ibanInput.getText().replace(0, ibanInput.getText().length(), text, 0, text.length());
-                    ibanInput.setSelection(Math.min(ibanInput.length(), selection));
-
-                    isUpdating = false;
+                isUpdating = false;
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -357,7 +353,7 @@ public class SEPACardInputView extends FrameLayout {
         application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
     }
 
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityStarted(Activity activity) {

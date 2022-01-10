@@ -36,20 +36,20 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class Project {
-    private Snabble snabble;
+    private final Snabble snabble;
     private String id;
     private String name;
 
-    private ProductDatabase productDatabase;
+    private final ProductDatabase productDatabase;
     private ArrayList<Shop> shops;
     private Brand brand;
     private Company company;
-    private Checkout checkout;
-    private ShoppingCartStorage shoppingCartStorage;
-    private Events events;
-    private Assets assets;
+    private final Checkout checkout;
+    private final ShoppingCartStorage shoppingCartStorage;
+    private final Events events;
+    private final Assets assets;
     private GooglePayHelper googlePayHelper;
-    private List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
+    private final List<OnProjectUpdatedListener> updateListeners = new CopyOnWriteArrayList<>();
 
     private Currency currency;
     private int currencyFractionDigits;
@@ -68,9 +68,9 @@ public class Project {
 
     private Map<String, String> urls;
 
-    private OkHttpClient okHttpClient;
+    private final OkHttpClient okHttpClient;
 
-    private File internalStorageDirectory;
+    private final File internalStorageDirectory;
 
     private CodeTemplate[] codeTemplates;
     private PriceOverrideTemplate[] priceOverrideTemplates;
@@ -203,7 +203,7 @@ public class Project {
             customerCardInfos.add(customerCardInfo);
         }
 
-        acceptedCustomerCardInfos = customerCardInfos.toArray(new CustomerCardInfo[customerCardInfos.size()]);
+        acceptedCustomerCardInfos = customerCardInfos.toArray(new CustomerCardInfo[0]);
 
         if (requiredCustomerCard != null) {
             requiredCustomerCardInfo = new CustomerCardInfo(requiredCustomerCard, true);
@@ -254,7 +254,7 @@ public class Project {
             codeTemplates.add(new CodeTemplate("default", "{code:*}"));
         }
         
-        this.codeTemplates = codeTemplates.toArray(new CodeTemplate[codeTemplates.size()]);
+        this.codeTemplates = codeTemplates.toArray(new CodeTemplate[0]);
 
         List<PriceOverrideTemplate> priceOverrideTemplates = new ArrayList<>();
         if (jsonObject.has("priceOverrideCodes")) {
@@ -280,7 +280,7 @@ public class Project {
             }
         }
 
-        this.priceOverrideTemplates = priceOverrideTemplates.toArray(new PriceOverrideTemplate[priceOverrideTemplates.size()]);
+        this.priceOverrideTemplates = priceOverrideTemplates.toArray(new PriceOverrideTemplate[0]);
 
         searchableTemplates = JsonUtils.getStringArrayOpt(jsonObject, "searchableTemplates", new String[] { "default" });
 

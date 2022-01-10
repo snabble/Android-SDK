@@ -51,7 +51,7 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import okhttp3.OkHttpClient;
 
 public class Snabble {
-    private static Snabble instance = new Snabble();
+    private static final Snabble instance = new Snabble();
 
     private Map<String, Brand> brands;
     private List<Project> projects;
@@ -67,7 +67,7 @@ public class Snabble {
     private File internalStorageDirectory;
     private String metadataUrl;
     private Config config;
-    private List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
+    private final List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
     private String versionName;
     private Environment environment;
     private TermsOfService termsOfService;
@@ -451,7 +451,7 @@ public class Snabble {
         if (projects == null) {
             return null;
         }
-        
+
         for (Project project : projects) {
             if (project.getId().equals(projectId)) {
                 return project;
@@ -594,7 +594,7 @@ public class Snabble {
     };
 
 
-    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+    private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
         public void onAvailable(@NonNull Network network) {
             onConnectionStateChanged(true);
@@ -680,6 +680,7 @@ public class Snabble {
             return error;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "SnabbleException{" +

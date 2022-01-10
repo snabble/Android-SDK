@@ -39,11 +39,12 @@ label {
 }
 .payone-input-mock input {
     height: 42px;
-    width: 90%;
+    width: 100%;
     vertical-align: middle;
     font-size: 17px;
     border: none;
     outline: none;
+    background-color: transparent;
 }
 #submit {
     margin: 2rem 0;
@@ -80,7 +81,7 @@ window.console.log = function(msg) {
 };
 
 // intercept errors
-window.onerror = (msg, url, line, column, error) => {
+window.onerror = function(msg, url, line, column, error) {
     const message = {
         message: msg,
         url: url,
@@ -222,7 +223,13 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
         case 'VALID':
             console.log('Success! Credit card check was valid.');
             var lastname = document.getElementById('lastname').value;
-            processResponse({...response, lastname});
+            processResponse({
+                pseudocardpan: response.pseudocardpan,
+                truncatedcardpan: response.truncatedcardpan,
+                cardtype: response.cardtype,
+                cardexpiredate: response.cardexpiredate,
+                lastname
+            });
             break;
         case 'INVALID':
         case 'ERROR':
@@ -282,7 +289,7 @@ var autoCcDetection = new PayoneAutoCcDetection({
                 }
             },
             defaultStyle: {
-                input: "height: 100%; width: 100%; border: none; font-size: 17px; border-radius: 0; outline:none !important; box-shadow: none !important;",
+                input: "height: 100%; width: 100%; border: none; font-size: 17px; border-radius: 0; outline:none !important; box-shadow: none !important; background-color: transparent !important;",
                 iframe: {}
             },
 

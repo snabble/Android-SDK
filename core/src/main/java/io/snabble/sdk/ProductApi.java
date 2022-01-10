@@ -70,8 +70,8 @@ class ProductApi {
         int specifiedQuantity;
     }
 
-    private Project project;
-    private OkHttpClient okHttpClient;
+    private final Project project;
+    private final OkHttpClient okHttpClient;
 
     ProductApi(Project project) {
         this.project = project;

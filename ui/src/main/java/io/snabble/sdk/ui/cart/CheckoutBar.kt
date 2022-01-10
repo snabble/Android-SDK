@@ -152,7 +152,7 @@ open class CheckoutBar @JvmOverloads constructor(
             val pcs = Snabble.getInstance().paymentCredentialsStore
             val hasNoPaymentMethods = pcs.usablePaymentCredentialsCount == 0
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
-            binding.paymentSelector.visibility = if (isHidden) GONE else VISIBLE
+            binding.paymentSelector.isVisible = !isHidden
             binding.paymentIcon.setImageResource(entry.iconResId)
         }
     }
@@ -188,7 +188,7 @@ open class CheckoutBar @JvmOverloads constructor(
             }
 
             binding.paymentSelectorButtonBig.isVisible = showBigSelector
-            binding.paymentSelector.isVisible = showSmallSelector
+            binding.paymentSelector.isVisible = price > 0 && showSmallSelector
             binding.paymentActive.isVisible = !showBigSelector
 
             if (cart.isRestorable) {

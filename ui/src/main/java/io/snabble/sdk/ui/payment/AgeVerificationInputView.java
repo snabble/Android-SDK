@@ -29,7 +29,6 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 
 public class AgeVerificationInputView extends FrameLayout {
-    private DelayedProgressDialog progressDialog;
     private TextInputLayout textInputLayout;
     private TextInputEditText textInputEditText;
 
@@ -54,7 +53,7 @@ public class AgeVerificationInputView extends FrameLayout {
         setFocusable(true);
         setFocusableInTouchMode(true);
 
-        progressDialog = new DelayedProgressDialog(getContext());
+        DelayedProgressDialog progressDialog = new DelayedProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
@@ -129,7 +128,7 @@ public class AgeVerificationInputView extends FrameLayout {
         }
 
 
-        int[] multipliers = new int[] { 7, 3, 1, 7, 3, 1} ;
+        int[] multipliers = new int[] { 7, 3, 1, 7, 3, 1 };
         int checksum = 0;
 
         int index = 0;
@@ -154,5 +153,4 @@ public class AgeVerificationInputView extends FrameLayout {
         hideSoftKeyboard(textInputEditText);
         super.onDetachedFromWindow();
     }
-
 }

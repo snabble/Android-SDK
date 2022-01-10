@@ -170,15 +170,12 @@ public class SelfScanningView extends FrameLayout {
                         resumeBarcodeScanner();
                     }
                 })
-                .setOnProductNotFoundListener(() -> {
-                    handleCoupon(scannedCodes, getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
-                })
-                .setOnNetworkErrorListener(() -> {
-                    handleCoupon(scannedCodes, getResources().getString(R.string.Snabble_Scanner_networkError));
-                })
-                .setOnShelfCodeScannedListener(() -> {
-                    showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode)));
-                })
+                .setOnProductNotFoundListener(() ->
+                        handleCoupon(scannedCodes, getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode))))
+                .setOnNetworkErrorListener(() ->
+                        handleCoupon(scannedCodes, getResources().getString(R.string.Snabble_Scanner_networkError)))
+                .setOnShelfCodeScannedListener(() ->
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode))))
                 .setOnSaleStopListener(() -> new AlertDialog.Builder(getContext())
                         .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
                         .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_scan))
@@ -517,7 +514,7 @@ public class SelfScanningView extends FrameLayout {
         return barcodeScanner.getBarcodeDetector();
     }
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
             super.onItemAdded(list, item);
@@ -553,7 +550,7 @@ public class SelfScanningView extends FrameLayout {
         }
     };
 
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
+    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks =
             new SimpleActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityStarted(Activity activity) {

@@ -9,9 +9,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Dispatch {
-    private static Handler handler = new Handler(Looper.getMainLooper());
-    private static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(0);
-    private static ScheduledExecutorService ioScheduler = Executors.newSingleThreadScheduledExecutor();
+    private static final Handler handler = new Handler(Looper.getMainLooper());
+    private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(0);
+    private static final ScheduledExecutorService ioScheduler = Executors.newSingleThreadScheduledExecutor();
 
     public static Future<?> background(Runnable runnable) {
         return executorService.submit(runnable);

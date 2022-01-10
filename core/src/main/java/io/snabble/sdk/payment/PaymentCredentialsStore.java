@@ -15,11 +15,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.Environment;
-import io.snabble.sdk.Events;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.UserPreferences;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -36,8 +34,8 @@ public class PaymentCredentialsStore {
 
     private SharedPreferences sharedPreferences;
     private Data data;
-    private List<Callback> callbacks = new CopyOnWriteArrayList<>();
-    private List<OnPaymentCredentialsAddedListener> onPaymentCredentialsAddedListeners = new CopyOnWriteArrayList<>();
+    private final List<Callback> callbacks = new CopyOnWriteArrayList<>();
+    private final List<OnPaymentCredentialsAddedListener> onPaymentCredentialsAddedListeners = new CopyOnWriteArrayList<>();
     private String credentialsKey;
 
     // this still is needed for migration

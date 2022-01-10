@@ -2,7 +2,6 @@ package io.snabble.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.util.Base64;
 
 import java.io.UnsupportedEncodingException;
@@ -36,8 +35,8 @@ public class UserPreferences {
 
     private static final SimpleDateFormat BIRTHDAY_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
-    private SharedPreferences sharedPreferences;
-    private List<OnNewAppUserListener> onNewAppUserListeners;
+    private final SharedPreferences sharedPreferences;
+    private final List<OnNewAppUserListener> onNewAppUserListeners;
 
     UserPreferences(Context context) {
         this.sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);

@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.NonNull;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -24,7 +26,7 @@ public class Receipts {
         void failure();
     }
 
-    private ReceiptsApi receiptsApi;
+    private final ReceiptsApi receiptsApi;
     private Call call;
 
     Receipts() {
@@ -103,7 +105,7 @@ public class Receipts {
         call = project.getOkHttpClient().newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     FileOutputStream fos = new FileOutputStream(file);
                     IOUtils.copy(response.body().byteStream(), fos);
@@ -121,7 +123,7 @@ public class Receipts {
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 if (callback != null) {
                     callback.failure();
                 }

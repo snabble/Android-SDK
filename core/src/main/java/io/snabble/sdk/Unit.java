@@ -36,9 +36,9 @@ public enum Unit {
     PIECE("piece", "", Dimension.COUNT),
     PRICE("price", "", Dimension.AMOUNT);
 
-    private String id;
-    private String displayValue;
-    private Dimension dimension;
+    private final String id;
+    private final String displayValue;
+    private final Dimension dimension;
 
     Unit(String id, String displayValue, Dimension dimension) {
         this.id = id;
@@ -137,7 +137,7 @@ public enum Unit {
         }
     }
 
-    private static List<Conversion> conversions = new ArrayList<>();
+    private static final List<Conversion> conversions = new ArrayList<>();
 
     private static void addConversion(Unit from, Unit to, int factor, int divisor) {
         conversions.add(new Conversion(from, to, factor, divisor));

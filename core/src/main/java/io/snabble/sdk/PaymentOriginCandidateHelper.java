@@ -1,13 +1,11 @@
 package io.snabble.sdk;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import androidx.annotation.NonNull;
 
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleJsonCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -26,7 +23,7 @@ import okhttp3.Response;
 
 public class PaymentOriginCandidateHelper {
     private final Project project;
-    private List<PaymentOriginCandidateAvailableListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<PaymentOriginCandidateAvailableListener> listeners = new CopyOnWriteArrayList<>();
     private boolean isPolling;
     private Call call;
 
@@ -133,12 +130,12 @@ public class PaymentOriginCandidateHelper {
             if (project != null) {
                 project.getOkHttpClient().newCall(request).enqueue(new Callback() {
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         result.error();
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(@NonNull Call call, @NonNull Response response) {
                         if (response.code() == 201) {
                             result.success();
                         } else {

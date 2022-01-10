@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
@@ -29,11 +31,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Events {
-    private Project project;
+    private final Project project;
     private String cartId;
     private Shop shop;
 
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
@@ -165,12 +167,7 @@ public class Events {
 
         if (debounce) {
             handler.removeCallbacksAndMessages(event.type);
-            handler.postAtTime(new Runnable() {
-                @Override
-                public void run() {
-                    send(request, payload);
-                }
-            }, event.type, SystemClock.uptimeMillis() + 2000);
+            handler.postAtTime(() -> send(request, payload), event.type, SystemClock.uptimeMillis() + 2000);
         } else {
             send(request, payload);
         }
@@ -184,7 +181,7 @@ public class Events {
         OkHttpClient okHttpClient = project.getOkHttpClient();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(@NonNull Call call, Response response) {
                 if (response.isSuccessful()) {
                     Logger.d("Successfully posted event: " + payload.getEventType());
                 } else {
@@ -195,7 +192,7 @@ public class Events {
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, IOException e) {
                 Logger.e("Could not post event: " + e.toString());
 
                 if (payload.getEventType() == EventType.SESSION_START) {

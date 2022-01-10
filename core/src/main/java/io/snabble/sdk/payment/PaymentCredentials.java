@@ -52,9 +52,9 @@ public class PaymentCredentials {
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
 
-        private String originType;
-        private boolean requiresProject;
-        private List<PaymentMethod> paymentMethods;
+        private final String originType;
+        private final boolean requiresProject;
+        private final List<PaymentMethod> paymentMethods;
 
         Type(String originType, boolean requiresProject, List<PaymentMethod> paymentMethods) {
             this.originType = originType;
@@ -433,7 +433,6 @@ public class PaymentCredentials {
     public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber, String projectId) {
         if (cardNumber == null || cardNumber.length() != 19
                 || (!cardNumber.startsWith("9280001621")
-                && !cardNumber.startsWith("9280001625")
                 && !cardNumber.startsWith("9280001620"))) {
             return null;
         }

@@ -194,7 +194,7 @@ public class CheckoutOfflineView extends FrameLayout {
     }
 
     private class CodeListViewAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private ArrayList<String> codes;
+        private final ArrayList<String> codes;
 
         CodeListViewAdapter() {
             Checkout checkout = project.getCheckout();

@@ -9,9 +9,9 @@ import java.util.Currency;
 import io.snabble.sdk.codes.ScannedCode;
 
 public class PriceFormatter {
-    private Project project;
-    private NumberFormat numberFormat;
-    private LruCache<Integer, String> cache;
+    private final Project project;
+    private final NumberFormat numberFormat;
+    private final LruCache<Integer, String> cache;
 
     public PriceFormatter(Project project) {
         this.project = project;

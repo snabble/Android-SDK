@@ -5,8 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,29 +12,21 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
-
-import java.util.ArrayList;
-
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.codes.EAN13;
-import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
-import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.utils.Logger;
-import me.relex.circleindicator.CircleIndicator3;
 
 public class CheckoutCustomerCardView extends FrameLayout {
     private Project project;
+    private Checkout checkout;
+    private Checkout.State currentState;
     private View helperText;
     private ImageView helperImage;
     private View upArrow;

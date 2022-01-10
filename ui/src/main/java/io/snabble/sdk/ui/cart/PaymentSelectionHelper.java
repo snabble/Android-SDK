@@ -29,13 +29,13 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.utils.GsonHolder;
 
 public class PaymentSelectionHelper {
-    private static PaymentSelectionHelper instance = new PaymentSelectionHelper();
+    private static final PaymentSelectionHelper instance = new PaymentSelectionHelper();
 
     public static PaymentSelectionHelper getInstance() {
         return instance;
     }
 
-    public class Entry implements Serializable {
+    public static class Entry implements Serializable {
         String text;
         String hint;
         transient int iconResId;
@@ -45,9 +45,9 @@ public class PaymentSelectionHelper {
         boolean isAdded = true;
     }
 
-    private Map<PaymentMethod, Integer> icons = new HashMap<>();
-    private Map<PaymentMethod, String> names = new HashMap<>();
-    private List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
+    private final Map<PaymentMethod, Integer> icons = new HashMap<>();
+    private final Map<PaymentMethod, String> names = new HashMap<>();
+    private final List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
 
     private Application application;
     private PaymentCredentialsStore paymentCredentialsStore;
@@ -55,14 +55,14 @@ public class PaymentSelectionHelper {
     private MutableLiveData<Entry> selectedEntry;
     private Project project;
     private ShoppingCart cart;
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
     private ArrayList<Entry> entries;
     private boolean isOffline;
     private WeakReference<DialogFragment> existingDialogFragment;
     private PaymentCredentials lastAddedPaymentCredentials;
     private boolean googlePayIsReady = false;
 
-    private ShoppingCart.ShoppingCartListener shoppingCartListener =
+    private final ShoppingCart.ShoppingCartListener shoppingCartListener =
             new ShoppingCart.SimpleShoppingCartListener() {
                 @Override
                 public void onChanged(ShoppingCart list) {
@@ -149,7 +149,6 @@ public class PaymentSelectionHelper {
     private void update() {
         updateGooglePayIsReadyToPay();
 
-        paymentCredentials = paymentCredentialsStore.getAllWithoutKeyStoreValidation();
         updateEntries();
 
         if (entries.size() > 0 && cart.size() > 0) {
@@ -304,7 +303,7 @@ public class PaymentSelectionHelper {
             }
         }
 
-        Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<PaymentMethod>();
+        Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<>();
 
         for (final PaymentCredentials pc : Snabble.getInstance().getPaymentCredentialsStore().getAllWithoutKeyStoreValidation()) {
             final Entry e = new Entry();

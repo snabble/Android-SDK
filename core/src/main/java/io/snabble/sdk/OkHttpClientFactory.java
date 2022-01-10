@@ -37,13 +37,7 @@ class OkHttpClientFactory {
         builder.retryOnConnectionFailure(true);
         builder.pingInterval(5, TimeUnit.SECONDS); // workaround for https://github.com/square/okhttp/issues/3146
 
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(
-                new HttpLoggingInterceptor.Logger() {
-                    @Override
-                    public void log(String message) {
-                        Logger.i(message);
-                    }
-                });
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(Logger::i);
 
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
         builder.addInterceptor(logging);

@@ -10,8 +10,8 @@ class ProductDatabaseDownloader extends Downloader {
     private static final String MIMETYPE_DELTA = "application/vnd+snabble.appdb+sql";
     private static final String MIMETYPE_FULL = "application/vnd+snabble.appdb+sqlite3";
 
-    private Project project;
-    private ProductDatabase productDatabase;
+    private final Project project;
+    private final ProductDatabase productDatabase;
 
     private boolean sameRevision;
     private boolean deltaUpdateOnly;

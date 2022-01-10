@@ -42,11 +42,11 @@ public class KeyStoreCipherJellyBeanMR2 extends KeyStoreCipher {
     private static final byte[] FIXED_IV = new byte[] { 30, 119, 28, 107, 29, -26, 62, 115, 40, 123, 35, 114, -75, -116, -41, 33 };
     private static final String SHARED_PREFERENCES_TAG = "snabble_SecureStorageProviderJellyBeanMR2";
 
-    private KeyStore keyStore;
-    private String alias;
-    private SharedPreferences sharedPreferences;
-    private boolean requireUserAuthentication;
-    private Context context;
+    private final KeyStore keyStore;
+    private final String alias;
+    private final SharedPreferences sharedPreferences;
+    private final boolean requireUserAuthentication;
+    private final Context context;
 
     @Deprecated
     KeyStoreCipherJellyBeanMR2(Context context, String alias, boolean requireUserAuthentication) {

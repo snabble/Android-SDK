@@ -3,7 +3,7 @@ package io.snabble.sdk.ui.scanner;
 import io.snabble.sdk.utils.Logger;
 
 public class FalsePositiveFilter {
-    private  int repeatsNeeded;
+    private final int repeatsNeeded;
     private Barcode lastBarcode;
     private int repeats = 0;
 

@@ -30,10 +30,10 @@ public enum PaymentMethod {
     @SerializedName("googlePay")
     GOOGLE_PAY(false, false, false, false);
 
-    private boolean requiresCredentials;
-    private boolean isOfflineMethod;
-    private boolean showOnlyIfCredentialsArePresent;
-    private boolean needsAbortConfirmation;
+    private final boolean requiresCredentials;
+    private final boolean isOfflineMethod;
+    private final boolean showOnlyIfCredentialsArePresent;
+    private final boolean needsAbortConfirmation;
 
     PaymentMethod(boolean isOfflineMethod,
                   boolean requiresCredentials,
@@ -86,9 +86,7 @@ public enum PaymentMethod {
             if (serializedName != null) {
                 return serializedName.value();
             }
-        } catch (Exception e) {
-
-        }
+        } catch (Exception ignored) {}
 
         return null;
     }

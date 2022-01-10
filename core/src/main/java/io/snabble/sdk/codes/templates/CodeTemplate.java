@@ -53,9 +53,9 @@ import io.snabble.sdk.codes.templates.groups.WildcardGroup;
  * Represents the check digit of an EAN-8, EAN-13 or EAN-14 code.
  */
 public class CodeTemplate {
-    private String pattern;
-    private List<Group> groups;
-    private String name;
+    private final String pattern;
+    private final List<Group> groups;
+    private final String name;
     private String matchedCode;
 
     public CodeTemplate(String name, String pattern) {
@@ -416,5 +416,3 @@ public class CodeTemplate {
         return pattern;
     }
 }
-
-

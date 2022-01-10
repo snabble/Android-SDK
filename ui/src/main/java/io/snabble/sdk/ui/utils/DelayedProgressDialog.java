@@ -6,9 +6,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 public class DelayedProgressDialog extends ProgressDialog {
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
-    private Runnable showRunnable = new Runnable() {
+    private final Runnable showRunnable = new Runnable() {
         public void run() {
             if (!isDismissed) {
                 show();
