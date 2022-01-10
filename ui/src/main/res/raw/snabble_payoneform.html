@@ -39,11 +39,12 @@ label {
 }
 .payone-input-mock input {
     height: 42px;
-    width: 90%;
+    width: 100%;
     vertical-align: middle;
     font-size: 17px;
     border: none;
     outline: none;
+    background-color: transparent;
 }
 #submit {
     margin: 2rem 0;
@@ -288,7 +289,7 @@ var autoCcDetection = new PayoneAutoCcDetection({
                 }
             },
             defaultStyle: {
-                input: "height: 100%; width: 100%; border: none; font-size: 17px; border-radius: 0; outline:none !important; box-shadow: none !important;",
+                input: "height: 100%; width: 100%; border: none; font-size: 17px; border-radius: 0; outline:none !important; box-shadow: none !important; background-color: transparent !important;",
                 iframe: {}
             },
 
