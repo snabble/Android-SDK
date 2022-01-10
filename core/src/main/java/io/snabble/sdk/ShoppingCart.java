@@ -815,6 +815,18 @@ public class ShoppingCart {
             return lineItem != null && lineItem.type == CheckoutApi.LineItemType.GIVEAWAY;
         }
 
+        public int getModifiedPrice() {
+            int sum = 0;
+
+            if (lineItem != null && lineItem.priceModifiers != null) {
+                for (CheckoutApi.PriceModifier priceModifier : lineItem.priceModifiers) {
+                    sum += lineItem.amount * priceModifier.price;
+                }
+            }
+
+            return sum;
+        }
+
         public String getDisplayName() {
             if (lineItem != null) {
                 return lineItem.name;

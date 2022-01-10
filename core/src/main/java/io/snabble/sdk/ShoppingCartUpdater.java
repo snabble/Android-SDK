@@ -199,6 +199,7 @@ class ShoppingCartUpdater {
                             ShoppingCart.Item refersTo = cart.getByItemId(lineItem.refersTo);
                             if (refersTo != null) {
                                 refersTo.setManualCouponApplied(lineItem.redeemed);
+                                discounts += refersTo.getModifiedPrice();
                             }
                         }
                     }
