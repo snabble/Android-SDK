@@ -210,11 +210,10 @@ class PaymentStatusView @JvmOverloads constructor(
                             putString("format", it.format)
                         }
                     )
-                    binding.exitToken.isVisible = true
+
+                    binding.exitTokenContainer.isVisible = true
                     binding.exitToken.state = PaymentStatusItemView.State.SUCCESS
                     binding.exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))
-
-                    binding.exitTokenBarcode.isVisible = true
                     binding.exitTokenBarcode.setFormat(format)
                     binding.exitTokenBarcode.setText(it.value)
                 } else {

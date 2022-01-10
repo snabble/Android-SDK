@@ -73,24 +73,41 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
-                <io.snabble.sdk.ui.checkout.PaymentStatusItemView
-                    android:id="@+id/exit_token"
+
+
+                <LinearLayout
+                    android:id="@+id/exit_token_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"/>
-
-                <io.snabble.sdk.ui.scanner.BarcodeView
-                    android:id="@+id/exit_token_barcode"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@android:color/transparent"
                     android:visibility="gone"
-                    tools:visibility="visible">
-                </io.snabble.sdk.ui.scanner.BarcodeView>
+                    android:orientation="vertical">
+                    <io.snabble.sdk.ui.checkout.PaymentStatusItemView
+                        android:id="@+id/exit_token"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <io.snabble.sdk.ui.scanner.BarcodeView
+                        android:id="@+id/exit_token_barcode"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@android:color/transparent"
+                        tools:visibility="visible">
+                    </io.snabble.sdk.ui.scanner.BarcodeView>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:text="@string/Snabble.PaymentStatus.ExitCode.openExitGateTimed"
+                        android:gravity="center_horizontal"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="16dp"/>
+                </LinearLayout>
+
 
                 <io.snabble.sdk.ui.checkout.PaymentStatusItemView
                     android:id="@+id/receipt"

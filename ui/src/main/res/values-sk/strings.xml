@@ -89,6 +89,7 @@
     <string name="Snabble.Payment.PostFinanceCard.error">Pri spracovaní tvojej karty PostFinance sa vyskytla chyba</string>
     <string name="Snabble.Payment.presentCode">Za účelom potvrdenia nákupu prilož tento kód pred Snabble monitor alebo ho ukáž zamestnancovi.</string>
     <string name="Snabble.Payment.rejected">Nákup zamietnutý</string>
+    <string name="Snabble.Payment.rejectedHint">Tvoj nákup bol zamietnutý. Skontroluj svoj košík a začni platobný proces znovu.</string>
     <string name="Snabble.Payment.SEPA.hint">Poznámka: Za účelom tvojej ochrany a ochrany našich obchodníkov pred zneužitím si obchodník pri tvojej prvej platbe prostredníctvom SEPA inkasa vyžiada tvoju bankovú kartu.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Zadaný IBAN je neplatný.</string>
@@ -124,7 +125,10 @@
     <string name="Snabble.PaymentStatus.AddDebitCard.message">Naozaj chceš uložiť v aplikácii svoju kartu girocard, aby si nasledujúci nákup mohol/mohla zaplatiť inkasom? Kartu môžeš v budúcnosti nechať vo svojej peňaženke.</string>
     <string name="Snabble.PaymentStatus.back">Späť</string>
     <string name="Snabble.PaymentStatus.close">Zatvoriť</string>
+    <string name="Snabble.PaymentStatus.DebitCardAdded.message">Tvoja karta bola úspešne overená. Odteraz môžeš platiť SEPA inkasom. Svoju kartu girocard môžeš v budúcnosti nechať vo svojej peňaženke.</string>
+    <string name="Snabble.PaymentStatus.ExitCode.openExitGateTimed">Platnosť kódu je časovo obmedzená.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Kód ukončenia</string>
+    <string name="Snabble.PaymentStatus.Fulfillment.title">Dodanie</string>
     <string name="Snabble.PaymentStatus.Payment.error">Tvoja platba nemohla byť vykonaná. Skús znovu alebo vyber iný spôsob platby.</string>
     <string name="Snabble.PaymentStatus.Payment.title">Platba</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Skúsiť znovu</string>
