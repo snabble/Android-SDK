@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.R
 
-open class CheckoutGatekeeperFragment : Fragment() {
+open class CheckoutSCOFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)

@@ -285,6 +285,15 @@ public class CheckoutApi {
         }
     }
 
+    public enum RoutingTarget {
+        @SerializedName("gatekeeper")
+        GATEKEEPER,
+        @SerializedName("supervisor")
+        SUPERVISOR,
+        @SerializedName("none")
+        NONE,
+    }
+
     public static class CheckoutProcessResponse {
         public Map<String, Href> links;
         public Check[] checks;
@@ -298,6 +307,7 @@ public class CheckoutApi {
         public ExitToken exitToken;
         public State paymentState;
         public Pricing pricing;
+        public RoutingTarget routingTarget;
         public PaymentResult paymentResult;
         public Fulfillment[] fulfillments;
 

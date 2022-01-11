@@ -13,50 +13,43 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
 
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
-import io.snabble.sdk.ui.utils.I18nUtils;
-import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Logger;
 
-public class CheckoutOnlineView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener, LifecycleObserver {
+public class CheckoutSCOView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private Checkout checkout;
     private BarcodeView checkoutIdCode;
     private View cancel;
     private View cancelProgress;
-    private TextView helperTextNoImage;
     private Checkout.State currentState;
+    private TextView helperText;
     private ImageView helperImage;
     private View upArrow;
     private View progressIndicator;
 
-    public CheckoutOnlineView(Context context) {
+    public CheckoutSCOView(Context context) {
         super(context);
         inflateView();
     }
 
-    public CheckoutOnlineView(Context context, AttributeSet attrs) {
+    public CheckoutSCOView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public CheckoutOnlineView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CheckoutSCOView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }
 
     private void inflateView() {
-        inflate(getContext(), R.layout.snabble_view_checkout_online, this);
+        inflate(getContext(), R.layout.snabble_view_checkout_gatekeeper, this);
 
         Project project = SnabbleUI.getProject();
 
@@ -64,23 +57,15 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         cancel = findViewById(R.id.cancel);
         cancelProgress = findViewById(R.id.cancel_progress);
 
-        TextView helperText = findViewById(R.id.helper_text);
-
-        String text = I18nUtils.getString(getResources(), "Snabble.Payment.Online.message");
-        if (text != null) {
-            helperText.setVisibility(View.VISIBLE);
-            helperText.setText(text);
-        } else {
-            helperText.setVisibility(View.GONE);
-        }
-
-        helperTextNoImage = findViewById(R.id.helper_text_no_image);
+        helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);
         upArrow = findViewById(R.id.arrow);
         progressIndicator = findViewById(R.id.progress_indicator);
 
         cancel.setOnClickListener(v -> {
-            abort();
+            checkout.abort();
+            cancelProgress.setVisibility(View.VISIBLE);
+            cancel.setEnabled(false);
         });
 
         TextView checkoutId = findViewById(R.id.checkout_id);
@@ -93,13 +78,51 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
 
         project.getAssets().get("checkout-online", this::setHelperImage);
 
-        checkout = project.getCheckout();
+        checkout = SnabbleUI.getProject().getCheckout();
         onStateChanged(checkout.getState());
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void onResume() {
-        onStateChanged(checkout.getState());
+    public void setHelperImage(Bitmap bitmap) {
+        if (bitmap != null) {
+            helperImage.setImageBitmap(bitmap);
+            upArrow.setVisibility(View.VISIBLE);
+            helperImage.setVisibility(View.VISIBLE);
+            helperText.setVisibility(View.GONE);
+            progressIndicator.setVisibility(View.GONE);
+        } else {
+            upArrow.setVisibility(View.GONE);
+            helperImage.setVisibility(View.GONE);
+            helperText.setVisibility(View.VISIBLE);
+            progressIndicator.setVisibility(View.GONE);
+        }
+
+        if (currentState == Checkout.State.PAYMENT_PROCESSING) {
+            checkoutIdCode.setVisibility(View.GONE);
+            helperText.setVisibility(View.GONE);
+            helperImage.setVisibility(View.GONE);
+            upArrow.setVisibility(View.GONE);
+            progressIndicator.setVisibility(View.VISIBLE);
+            cancel.setVisibility(View.INVISIBLE);
+            cancelProgress.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (checkout != null) {
+            checkout.addOnCheckoutStateChangedListener(this);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (checkout != null) {
+            checkout.removeOnCheckoutStateChangedListener(this);
+        }
     }
 
     @SuppressLint("DrawAllocation")
@@ -121,41 +144,9 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
             }
+
+            onStateChanged(checkout.getState());
         }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        if (checkout != null) {
-            checkout.addOnCheckoutStateChangedListener(this);
-        }
-
-        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
-        if (fragmentActivity != null) {
-            fragmentActivity.getLifecycle().addObserver(this);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (checkout != null) {
-            checkout.removeOnCheckoutStateChangedListener(this);
-        }
-
-        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
-        if (fragmentActivity != null) {
-            fragmentActivity.getLifecycle().removeObserver(this);
-        }
-    }
-
-    private void abort() {
-        checkout.abort();
-        cancelProgress.setVisibility(View.VISIBLE);
-        cancel.setEnabled(false);
     }
 
     @Override
@@ -164,18 +155,21 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
             return;
         }
 
-        FragmentActivity hostActivity = UIUtils.getHostFragmentActivity(getContext());
-        if (!hostActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-            return;
-        }
-
         switch (state) {
             case WAIT_FOR_APPROVAL:
                 checkoutIdCode.setVisibility(View.VISIBLE);
                 String id = checkout.getId();
                 if (id != null) {
-                    checkoutIdCode.setText(id);
+                    checkoutIdCode.setText("snabble:checkoutProcess:" + id);
+                    Logger.d("QR_CODE = snabble:checkoutProcess:" + id);
                 }
+                break;
+            case PAYMENT_PROCESSING:
+                checkoutIdCode.setVisibility(View.GONE);
+                upArrow.setVisibility(View.GONE);
+                progressIndicator.setVisibility(View.VISIBLE);
+                cancel.setVisibility(View.INVISIBLE);
+                cancelProgress.setVisibility(View.INVISIBLE);
                 break;
             case PAYMENT_ABORT_FAILED:
                 cancelProgress.setVisibility(View.INVISIBLE);
@@ -195,30 +189,5 @@ public class CheckoutOnlineView extends FrameLayout implements Checkout.OnChecko
         }
 
         currentState = state;
-    }
-
-    public void setHelperImage(Bitmap bitmap) {
-        if (bitmap != null) {
-            helperImage.setImageBitmap(bitmap);
-            upArrow.setVisibility(View.VISIBLE);
-            helperImage.setVisibility(View.VISIBLE);
-            helperTextNoImage.setVisibility(View.GONE);
-            progressIndicator.setVisibility(View.GONE);
-        } else {
-            upArrow.setVisibility(View.GONE);
-            helperImage.setVisibility(View.GONE);
-            helperTextNoImage.setVisibility(View.VISIBLE);
-            progressIndicator.setVisibility(View.GONE);
-        }
-
-        if (currentState == Checkout.State.PAYMENT_PROCESSING) {
-            checkoutIdCode.setVisibility(View.GONE);
-            helperTextNoImage.setVisibility(View.GONE);
-            helperImage.setVisibility(View.GONE);
-            upArrow.setVisibility(View.GONE);
-            progressIndicator.setVisibility(View.VISIBLE);
-            cancel.setVisibility(View.INVISIBLE);
-            cancelProgress.setVisibility(View.INVISIBLE);
-        }
     }
 }

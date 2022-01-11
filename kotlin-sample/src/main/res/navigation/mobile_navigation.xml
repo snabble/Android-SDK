@@ -39,7 +39,7 @@
 
     <fragment
         android:id="@+id/navigation_checkout_gatekeeper_fragment"
-        android:name="io.snabble.sdk.ui.checkout.CheckoutGatekeeperFragment"
+        android:name="io.snabble.sdk.ui.checkout.CheckoutSCOFragment"
         android:label="Checkout" />
 
     <fragment
@@ -49,7 +49,7 @@
 
     <fragment
         android:id="@+id/navigation_checkout_online"
-        android:name="io.snabble.sdk.ui.checkout.CheckoutOnlineFragment"
+        android:name="io.snabble.sdk.ui.checkout.routingtargets.RoutingTargetGatekeeperFragment"
         android:label="Checkout" />
 
     <fragment

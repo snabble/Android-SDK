@@ -569,6 +569,8 @@ public class Checkout {
 
         Logger.d("Polling for approval state...");
 
+        Logger.d("RoutingTarget = " + getRoutingTarget());
+
         checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
             @Override
             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
@@ -785,6 +787,14 @@ public class Checkout {
         }
 
         return -1;
+    }
+
+    public CheckoutApi.RoutingTarget getRoutingTarget() {
+        if (checkoutProcess != null && checkoutProcess.routingTarget != null) {
+            return checkoutProcess.routingTarget;
+        }
+
+        return CheckoutApi.RoutingTarget.NONE;
     }
 
     public List<Product> getInvalidProducts() {

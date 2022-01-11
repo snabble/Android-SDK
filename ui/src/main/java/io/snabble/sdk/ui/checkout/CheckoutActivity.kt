@@ -8,10 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import io.snabble.sdk.Checkout
-import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.Project
-import io.snabble.sdk.Snabble
+import io.snabble.sdk.*
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Logger
 
@@ -96,31 +93,33 @@ class CheckoutActivity : FragmentActivity() {
         val checkout = checkout ?: return null
 
         if (checkout.state == Checkout.State.WAIT_FOR_APPROVAL) {
-            val selectedPaymentMethod = checkout.selectedPaymentMethod
-            selectedPaymentMethod?.let {
-                when (it) {
-                    PaymentMethod.TEGUT_EMPLOYEE_CARD,
-                    PaymentMethod.DE_DIRECT_DEBIT,
-                    PaymentMethod.VISA,
-                    PaymentMethod.MASTERCARD,
-                    PaymentMethod.AMEX,
-                    PaymentMethod.PAYDIREKT,
-                    PaymentMethod.TWINT,
-                    PaymentMethod.POST_FINANCE_CARD,
-                    PaymentMethod.GOOGLE_PAY -> {
-                        return R.id.snabble_nav_checkout_online
-                    }
-                    PaymentMethod.GATEKEEPER_TERMINAL -> {
-                        return R.id.snabble_nav_checkout_gatekeeper
-                    }
-                    PaymentMethod.QRCODE_POS -> {
-                        return R.id.snabble_nav_checkout_pos
-                    }
-                    PaymentMethod.CUSTOMERCARD_POS -> {
-                        return R.id.snabble_nav_checkout_customercard
-                    }
-                    PaymentMethod.QRCODE_OFFLINE -> {
-                        return R.id.snabble_nav_checkout_offline
+            when(checkout.routingTarget) {
+                CheckoutApi.RoutingTarget.GATEKEEPER -> {
+                    return R.id.snabble_nav_routing_supervisor
+                }
+                CheckoutApi.RoutingTarget.SUPERVISOR -> {
+                    return R.id.snabble_nav_routing_supervisor
+                }
+                CheckoutApi.RoutingTarget.NONE -> {
+                    val selectedPaymentMethod = checkout.selectedPaymentMethod
+                    selectedPaymentMethod?.let {
+                        when (it) {
+                            PaymentMethod.GATEKEEPER_TERMINAL -> {
+                                return R.id.snabble_nav_checkout_sco
+                            }
+                            PaymentMethod.QRCODE_POS -> {
+                                return R.id.snabble_nav_checkout_pos
+                            }
+                            PaymentMethod.CUSTOMERCARD_POS -> {
+                                return R.id.snabble_nav_checkout_customercard
+                            }
+                            PaymentMethod.QRCODE_OFFLINE -> {
+                                return R.id.snabble_nav_checkout_offline
+                            }
+                            else -> {
+                                // unsupported case
+                            }
+                        }
                     }
                 }
             }
