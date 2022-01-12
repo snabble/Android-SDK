@@ -354,7 +354,7 @@ public class PaymentSelectionHelper {
                 continue;
             }
 
-            if (pm == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
+            if (pm.isShowOnlyIfCredentialsArePresent()) {
                 continue;
             }
 
