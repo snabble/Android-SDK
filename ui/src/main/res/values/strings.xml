@@ -89,6 +89,7 @@
     <string name="Snabble.Payment.PostFinanceCard.error">There was an error processing your postfinance card</string>
     <string name="Snabble.Payment.presentCode">Show this code at a Snabble monitor or to a cashier to confirm your purchase.</string>
     <string name="Snabble.Payment.rejected">Purchase denied</string>
+    <string name="Snabble.Payment.rejectedHint">Your purchase was denied. Please check your cart and start the checkout again.</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
     <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
     <string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
@@ -124,6 +125,7 @@
     <string name="Snabble.PaymentStatus.AddDebitCard.message">Would you like to store your girocard data securely in the app so that you can pay for your next purchase by direct debit? You can leave your card in your wallet in the future.</string>
     <string name="Snabble.PaymentStatus.back">Back</string>
     <string name="Snabble.PaymentStatus.close">Close</string>
+    <string name="Snabble.PaymentStatus.DebitCardAdded.message">We have successfully verified your card. You can now pay by SEPA direct debit. You can leave your girocard in your wallet in the future.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Exit-Code</string>
     <string name="Snabble.PaymentStatus.Fulfillment.title">Fulfillment</string>
     <string name="Snabble.PaymentStatus.Payment.error">Your payment could not be processed. Try again or choose another payment method.</string>

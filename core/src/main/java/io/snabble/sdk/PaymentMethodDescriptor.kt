@@ -4,12 +4,10 @@ data class PaymentMethodDescriptor(
     val id: String,
     val links: Map<String, Link>?,
     val providerName: String,
-    val acceptedOriginTypes: List<String>
+    val acceptedOriginTypes: List<String>?
 ) {
     val paymentMethod: PaymentMethod
-        get() {
-            return PaymentMethod.fromString(id)!!
-        }
+        get() = PaymentMethod.fromIdAndOrigin(id, acceptedOriginTypes)!!
 }
 
 data class Link(
