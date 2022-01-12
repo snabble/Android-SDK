@@ -310,8 +310,6 @@ public class PaymentSelectionHelper {
         Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<>();
 
         for (final PaymentCredentials pc : Snabble.getInstance().getPaymentCredentialsStore().getAllWithoutKeyStoreValidation()) {
-            final Entry e = new Entry();
-
             if (!pc.isAvailableInCurrentApp()) {
                 continue;
             }
@@ -320,6 +318,7 @@ public class PaymentSelectionHelper {
                 continue;
             }
 
+            final Entry e = new Entry();
             e.paymentMethod = pc.getPaymentMethod();
             if (e.paymentMethod == null || !pc.isAvailableInCurrentApp()) {
                 continue;
