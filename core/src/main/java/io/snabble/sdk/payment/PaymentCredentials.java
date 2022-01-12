@@ -748,6 +748,8 @@ public class PaymentCredentials {
             return PaymentMethod.DE_DIRECT_DEBIT;
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
+        } else if (type == Type.LEINWEBER_CUSTOMER_ID) {
+            return PaymentMethod.LEINWEBER_CUSTOMER_ID;
         } else if (type == Type.PAYDIREKT) {
             return PaymentMethod.PAYDIREKT;
         } else if (type == Type.CREDIT_CARD_PSD2
