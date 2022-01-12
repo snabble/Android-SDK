@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,6 +78,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.AMEX, R.drawable.snabble_ic_payment_select_amex);
         icons.put(PaymentMethod.PAYDIREKT, R.drawable.snabble_ic_payment_select_paydirekt);
         icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_payment_select_tegut);
+        icons.put(PaymentMethod.LEINWEBER_CUSTOMER_ID, R.drawable.snabble_ic_payment_select_leinweber);
         icons.put(PaymentMethod.CUSTOMERCARD_POS, R.drawable.snabble_ic_payment_select_pos);
         icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_payment_select_sco);
         icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_payment_select_pos);
@@ -91,6 +93,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.AMEX, "American Express");
         names.put(PaymentMethod.PAYDIREKT, "Paydirekt");
         names.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, "Tegut... Mitarbeiterkarte");
+        names.put(PaymentMethod.LEINWEBER_CUSTOMER_ID, "Leinweber Rechnungskauf");
         names.put(PaymentMethod.GATEKEEPER_TERMINAL, context.getString(R.string.Snabble_Payment_payAtSCO));
         names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
@@ -109,6 +112,7 @@ public class PaymentSelectionHelper {
         paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
         paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
         paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
+        paymentMethodsSortPriority.add(PaymentMethod.LEINWEBER_CUSTOMER_ID);
         paymentMethodsSortPriority.add(PaymentMethod.CUSTOMERCARD_POS);
         paymentMethodsSortPriority.add(PaymentMethod.QRCODE_POS);
         paymentMethodsSortPriority.add(PaymentMethod.QRCODE_OFFLINE);
@@ -228,7 +232,7 @@ public class PaymentSelectionHelper {
                 GooglePayHelper googlePayHelper = project.getGooglePayHelper();
                 if (googlePayHelper != null) {
                     for (CheckoutApi.PaymentMethodInfo info : availablePaymentMethods) {
-                        if (info.id.equals(PaymentMethod.GOOGLE_PAY.id())) {
+                        if (info.id.equals(PaymentMethod.GOOGLE_PAY.getId())) {
                             googlePayHelper.setUseTestEnvironment(info.isTesting);
                             break;
                         }
@@ -293,7 +297,9 @@ public class PaymentSelectionHelper {
 
         List<PaymentMethod> availablePaymentMethodsList = new ArrayList<>();
         for (final CheckoutApi.PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
-            PaymentMethod paymentMethod = PaymentMethod.fromString(paymentMethodInfo.id);
+            String[] origins = paymentMethodInfo.acceptedOriginTypes;
+            if(origins == null) origins = new String[0];
+            PaymentMethod paymentMethod = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.id, Arrays.asList(origins));
             if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
                 availablePaymentMethodsList.add(paymentMethod);
             } else if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
