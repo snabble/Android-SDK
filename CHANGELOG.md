@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.53.0]
+
+### Changed
+- IBAN transfer flow
+- Hide payment selection when cart price is 0
+- Added missing discount line
+- Added support for Leinweber billing with customer number
+  
+### Fixed
+- Multiple lint warnings
+- Payone credit card input issues on legecy devices which no EM6 support
+- Fixed potential crash bugs
+
 ## [0.52.0]
 
 ### Changed
