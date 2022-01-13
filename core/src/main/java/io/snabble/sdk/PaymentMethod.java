@@ -2,43 +2,50 @@ package io.snabble.sdk;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public enum PaymentMethod {
     @SerializedName("qrCodePOS")
-    QRCODE_POS(false, false, false, false),
+    QRCODE_POS("qrCodePOS", false, false, false, false),
     @SerializedName("qrCodeOffline")
-    QRCODE_OFFLINE(true, false, false, false),
+    QRCODE_OFFLINE("qrCodeOffline", true, false, false, false),
     @SerializedName("deDirectDebit")
-    DE_DIRECT_DEBIT(false, true, false, true),
+    DE_DIRECT_DEBIT("deDirectDebit", false, true, false, true),
     @SerializedName("creditCardVisa")
-    VISA(false, true, false, true),
+    VISA("creditCardVisa", false, true, false, true),
     @SerializedName("creditCardMastercard")
-    MASTERCARD(false, true, false, true),
+    MASTERCARD("creditCardMastercard", false, true, false, true),
     @SerializedName("creditCardAmericanExpress")
-    AMEX(false, true, false, true),
+    AMEX("creditCardAmericanExpress", false, true, false, true),
     @SerializedName("externalBilling")
-    TEGUT_EMPLOYEE_CARD(false, true, true, true),
+    TEGUT_EMPLOYEE_CARD("externalBilling", false, true, true, true),
+    @SerializedName("externalBilling")
+    LEINWEBER_CUSTOMER_ID("externalBilling", false, true, true, true),
     @SerializedName("customerCardPOS")
-    CUSTOMERCARD_POS(false, false, false, false),
+    CUSTOMERCARD_POS("customerCardPOS", false, false, false, false),
     @SerializedName("gatekeeperTerminal")
-    GATEKEEPER_TERMINAL(false, false, false, false),
+    GATEKEEPER_TERMINAL("gatekeeperTerminal", false, false, false, false),
     @SerializedName("paydirektOneKlick")
-    PAYDIREKT(false, true, false, true),
+    PAYDIREKT("paydirektOneKlick", false, true, false, true),
     @SerializedName("postFinanceCard")
-    POST_FINANCE_CARD(false, true, false, true),
+    POST_FINANCE_CARD("postFinanceCard", false, true, false, true),
     @SerializedName("twint")
-    TWINT(false, true, false, true),
+    TWINT("twint", false, true, false, true),
     @SerializedName("googlePay")
-    GOOGLE_PAY(false, false, false, false);
+    GOOGLE_PAY("googlePay", false, false, false, false);
 
+    private final String id;
     private final boolean requiresCredentials;
     private final boolean isOfflineMethod;
     private final boolean showOnlyIfCredentialsArePresent;
     private final boolean needsAbortConfirmation;
 
-    PaymentMethod(boolean isOfflineMethod,
+    PaymentMethod(String id,
+                  boolean isOfflineMethod,
                   boolean requiresCredentials,
                   boolean showOnlyIfCredentialsArePresent,
                   boolean needsAbortConfirmation) {
+        this.id = id;
         this.isOfflineMethod = isOfflineMethod;
         this.requiresCredentials = requiresCredentials;
         this.showOnlyIfCredentialsArePresent = showOnlyIfCredentialsArePresent;
@@ -64,30 +71,32 @@ public enum PaymentMethod {
     public static PaymentMethod fromString(String value) {
         PaymentMethod[] values = values();
         for (PaymentMethod pm : values) {
-            try {
-                SerializedName serializedName = PaymentMethod.class.getField(pm.name()).getAnnotation(SerializedName.class);
-                if (serializedName != null) {
-                    String name = serializedName.value();
-                    if (name.equals(value)) {
-                        return pm;
-                    }
+            if (pm.id.equals(value)) {
+                return pm;
+            }
+        }
+
+        return null;
+    }
+    public static PaymentMethod fromIdAndOrigin(String id, List<String> origin) {
+        PaymentMethod[] values = values();
+        for (PaymentMethod pm : values) {
+            if(pm.id.equals(id) && pm.id.equals(TEGUT_EMPLOYEE_CARD.id)) {
+                switch(origin.get(0)) {
+                    case "tegutEmployeeID":
+                        return TEGUT_EMPLOYEE_CARD;
+                    case "leinweberCustomerID":
+                        return LEINWEBER_CUSTOMER_ID;
                 }
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+            } else if (pm.id.equals(id)) {
+                return pm;
             }
         }
 
         return null;
     }
 
-    public String id() {
-        try {
-            SerializedName serializedName = PaymentMethod.class.getField(name()).getAnnotation(SerializedName.class);
-            if (serializedName != null) {
-                return serializedName.value();
-            }
-        } catch (Exception ignored) {}
-
-        return null;
+    public String getId() {
+        return id;
     }
 }
