@@ -107,6 +107,7 @@ class CheckoutActivity : FragmentActivity() {
                     PaymentMethod.PAYDIREKT,
                     PaymentMethod.TWINT,
                     PaymentMethod.POST_FINANCE_CARD,
+                    PaymentMethod.LEINWEBER_CUSTOMER_ID,
                     PaymentMethod.GOOGLE_PAY -> {
                         return R.id.snabble_nav_checkout_online
                     }

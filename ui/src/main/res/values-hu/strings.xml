@@ -126,6 +126,7 @@
     <string name="Snabble.PaymentStatus.back">Vissza</string>
     <string name="Snabble.PaymentStatus.close">Bezárás</string>
     <string name="Snabble.PaymentStatus.DebitCardAdded.message">Sikeresen ellenőriztük a kártyádat. Azonnal tudsz fizetni SEPA terhelési megbízással. A girocard kártyádat a jövőben a pénztárcádban hagyhatod.</string>
+    <string name="Snabble.PaymentStatus.ExitCode.openExitGateTimed">A kód csak rövid ideig érvényes.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Kilépőkód</string>
     <string name="Snabble.PaymentStatus.Fulfillment.title">Szállítás</string>
     <string name="Snabble.PaymentStatus.Payment.error">Fizetésed nem sikerült teljesíteni. Próbáld meg újra, vagy válassz másik fizetési módot.</string>
