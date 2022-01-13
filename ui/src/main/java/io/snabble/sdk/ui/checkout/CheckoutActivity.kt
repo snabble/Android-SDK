@@ -123,6 +123,8 @@ class CheckoutActivity : FragmentActivity() {
                     }
                 }
             }
+        } else if (checkout.state == Checkout.State.PAYMENT_ABORTED) {
+            finish()
         } else {
             return R.id.snabble_nav_payment_status
         }
