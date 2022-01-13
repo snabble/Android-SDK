@@ -64,29 +64,6 @@
                 app:format="QR_CODE"
                 tools:ignore="RtlHardcoded" />
 
-
-            <LinearLayout android:id="@+id/progress_indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:visibility="gone"
-                android:orientation="vertical">
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:indeterminate="true"
-                    android:indeterminateOnly="true" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_gravity="center_horizontal"
-                    android:text="@string/Snabble.Payment.waiting" />
-            </LinearLayout>
-
             <TextView
                 android:id="@+id/checkout_id"
                 android:layout_width="wrap_content"

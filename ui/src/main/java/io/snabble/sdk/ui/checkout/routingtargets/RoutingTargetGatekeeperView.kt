@@ -33,12 +33,12 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
     private var cancelProgress: View
     private var helperTextNoImage: TextView
     private var helperImage: ImageView
-    private var progressIndicator: View
+    private var upArrow: View
 
     private var currentState: Checkout.State? = null
 
     init {
-        inflate(context, R.layout.snabble_view_routing_supervisor, this)
+        inflate(context, R.layout.snabble_view_routing_gatekeeper, this)
         val project = project
         checkout = project.checkout
 
@@ -58,7 +58,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
 
         helperTextNoImage = findViewById(R.id.helper_text_no_image)
         helperImage = findViewById(R.id.helper_image)
-        progressIndicator = findViewById(R.id.progress_indicator)
+        upArrow  = findViewById(R.id.arrow)
 
         cancel.setOnClickListener {
             abort()
@@ -135,7 +135,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         }
 
         when (state) {
-            Checkout.State.WAIT_FOR_APPROVAL -> {
+            Checkout.State.WAIT_FOR_GATEKEEPER -> {
                 checkoutIdCode.visibility = VISIBLE
                 val id = checkout.id
                 if (id != null) {
@@ -165,20 +165,12 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         if (bitmap != null) {
             helperImage.setImageBitmap(bitmap)
             helperImage.visibility = VISIBLE
+            upArrow.visibility = VISIBLE
             helperTextNoImage.visibility = GONE
-            progressIndicator.visibility = GONE
         } else {
             helperImage.visibility = GONE
+            upArrow.visibility = GONE
             helperTextNoImage.visibility = VISIBLE
-            progressIndicator.visibility = GONE
-        }
-        if (currentState == Checkout.State.PAYMENT_PROCESSING) {
-            checkoutIdCode.visibility = GONE
-            helperTextNoImage.visibility = GONE
-            helperImage.visibility = GONE
-            progressIndicator.visibility = VISIBLE
-            cancel.visibility = INVISIBLE
-            cancelProgress.visibility = INVISIBLE
         }
     }
 }

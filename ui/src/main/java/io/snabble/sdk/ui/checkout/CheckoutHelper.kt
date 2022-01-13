@@ -17,6 +17,8 @@ val Checkout.State.isCheckoutState: Boolean
             Checkout.State.NO_SHOP -> false
 
             Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN,
+            Checkout.State.WAIT_FOR_SUPERVISOR,
+            Checkout.State.WAIT_FOR_GATEKEEPER,
             Checkout.State.WAIT_FOR_APPROVAL,
             Checkout.State.PAYMENT_PROCESSING,
             Checkout.State.PAYMENT_APPROVED,
@@ -26,5 +28,6 @@ val Checkout.State.isCheckoutState: Boolean
             Checkout.State.PAYMENT_ABORTED,
             Checkout.State.PAYMENT_ABORT_FAILED,
             Checkout.State.PAYMENT_PROCESSING_ERROR -> true
+
         }
     }

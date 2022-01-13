@@ -34,7 +34,6 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
     private var helperTextNoImage: TextView
     private var helperImage: ImageView
     private var upArrow: View
-    private var progressIndicator: View
 
     private var currentState: Checkout.State? = null
 
@@ -60,7 +59,6 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
         helperTextNoImage = findViewById(R.id.helper_text_no_image)
         helperImage = findViewById(R.id.helper_image)
         upArrow = findViewById(R.id.arrow)
-        progressIndicator = findViewById(R.id.progress_indicator)
 
         cancel.setOnClickListener {
             abort()
@@ -137,7 +135,7 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
         }
 
         when (state) {
-            Checkout.State.WAIT_FOR_APPROVAL -> {
+            Checkout.State.WAIT_FOR_SUPERVISOR -> {
                 checkoutIdCode.visibility = VISIBLE
                 val id = checkout.id
                 if (id != null) {
@@ -169,21 +167,10 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
             upArrow.visibility = VISIBLE
             helperImage.visibility = VISIBLE
             helperTextNoImage.visibility = GONE
-            progressIndicator.visibility = GONE
         } else {
             upArrow.visibility = GONE
             helperImage.visibility = GONE
             helperTextNoImage.visibility = VISIBLE
-            progressIndicator.visibility = GONE
-        }
-        if (currentState == Checkout.State.PAYMENT_PROCESSING) {
-            checkoutIdCode.visibility = GONE
-            helperTextNoImage.visibility = GONE
-            helperImage.visibility = GONE
-            upArrow.visibility = GONE
-            progressIndicator.visibility = VISIBLE
-            cancel.visibility = INVISIBLE
-            cancelProgress.visibility = INVISIBLE
         }
     }
 }

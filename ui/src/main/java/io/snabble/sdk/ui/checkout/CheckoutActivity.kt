@@ -92,41 +92,36 @@ class CheckoutActivity : FragmentActivity() {
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
 
-        if (checkout.state == Checkout.State.WAIT_FOR_APPROVAL) {
-            when(checkout.routingTarget) {
-                CheckoutApi.RoutingTarget.GATEKEEPER -> {
-                    return R.id.snabble_nav_routing_supervisor
-                }
-                CheckoutApi.RoutingTarget.SUPERVISOR -> {
-                    return R.id.snabble_nav_routing_supervisor
-                }
-                CheckoutApi.RoutingTarget.NONE -> {
-                    val selectedPaymentMethod = checkout.selectedPaymentMethod
-                    selectedPaymentMethod?.let {
-                        when (it) {
-                            PaymentMethod.GATEKEEPER_TERMINAL -> {
-                                return R.id.snabble_nav_checkout_sco
-                            }
-                            PaymentMethod.QRCODE_POS -> {
-                                return R.id.snabble_nav_checkout_pos
-                            }
-                            PaymentMethod.CUSTOMERCARD_POS -> {
-                                return R.id.snabble_nav_checkout_customercard
-                            }
-                            PaymentMethod.QRCODE_OFFLINE -> {
-                                return R.id.snabble_nav_checkout_offline
-                            }
-                            else -> {
-                                // unsupported case
-                            }
+        when(checkout.state) {
+            Checkout.State.WAIT_FOR_GATEKEEPER -> {
+                return R.id.snabble_nav_routing_gatekeeper
+            }
+            Checkout.State.WAIT_FOR_SUPERVISOR -> {
+                return R.id.snabble_nav_routing_supervisor
+            }
+            Checkout.State.WAIT_FOR_APPROVAL -> {
+                val selectedPaymentMethod = checkout.selectedPaymentMethod
+                selectedPaymentMethod?.let {
+                    when (it) {
+                        PaymentMethod.CUSTOMERCARD_POS -> {
+                            return R.id.snabble_nav_checkout_customercard
+                        }
+                        PaymentMethod.QRCODE_POS -> {
+                            return R.id.snabble_nav_checkout_pos
+                        }
+                        PaymentMethod.QRCODE_OFFLINE -> {
+                            return R.id.snabble_nav_checkout_offline
+                        }
+                        else -> {
+                            // unsupported case
                         }
                     }
                 }
             }
-        } else if (checkout.state == Checkout.State.PAYMENT_ABORTED) {
-            finish()
-        } else {
-            return R.id.snabble_nav_payment_status
+            Checkout.State.PAYMENT_ABORTED -> {
+                finish()
+            }
+            else -> R.id.snabble_nav_payment_status
         }
 
         return null

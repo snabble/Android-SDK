@@ -308,7 +308,9 @@ open class CheckoutBar @JvmOverloads constructor(
             } else {
                 project.checkout.abort()
             }
-        } else if (state == Checkout.State.WAIT_FOR_APPROVAL
+        } else if ( state == Checkout.State.WAIT_FOR_GATEKEEPER
+                || state == Checkout.State.WAIT_FOR_SUPERVISOR
+                || state == Checkout.State.WAIT_FOR_APPROVAL
                 || state == Checkout.State.PAYMENT_PROCESSING
                 || state == Checkout.State.PAYMENT_APPROVED
                 || state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER
