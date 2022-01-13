@@ -126,7 +126,6 @@
     <string name="Snabble.PaymentStatus.back">Zurück</string>
     <string name="Snabble.PaymentStatus.close">Schließen</string>
     <string name="Snabble.PaymentStatus.DebitCardAdded.message">Wir haben deine Karte erfolgreich verifiziert. Ab sofort kannst du per SEPA-Lastschrift bezahlen. Deine girocard kannst du zukünftig im Geldbeutel lassen.</string>
-    <string name="Snabble.PaymentStatus.ExitCode.openExitGateTimed">Der Code ist nur kurze Zeit gültig.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Ausgangs-Code</string>
     <string name="Snabble.PaymentStatus.Fulfillment.title">Lieferung</string>
     <string name="Snabble.PaymentStatus.Payment.error">Deine Zahlung konnte nicht durchgeführt werden. Versuche es erneut oder wähle ein anderes Bezahlverfahren.</string>

@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
@@ -307,10 +308,14 @@ public class Events {
         return project;
     }
 
-    public static void logErrorEvent(String projectId, String format, Object... args) {
+    public static void logErrorEvent(@Nullable String projectId, String format, Object... args) {
         Project project = getUsableProject(projectId);
         if (project != null) {
-            project.logErrorEvent(format, args);
+            if (format == null) {
+                project.logErrorEvent("Broken log message");
+            } else {
+                project.logErrorEvent(format, args);
+            }
         }
     }
 

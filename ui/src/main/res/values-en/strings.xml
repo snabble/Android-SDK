@@ -126,7 +126,6 @@
     <string name="Snabble.PaymentStatus.back">Back</string>
     <string name="Snabble.PaymentStatus.close">Close</string>
     <string name="Snabble.PaymentStatus.DebitCardAdded.message">We have successfully verified your card. You can now pay by SEPA direct debit. You can leave your girocard in your wallet in the future.</string>
-    <string name="Snabble.PaymentStatus.ExitCode.openExitGateTimed">The code is only valid for a short time.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Exit-Code</string>
     <string name="Snabble.PaymentStatus.Fulfillment.title">Fulfillment</string>
     <string name="Snabble.PaymentStatus.Payment.error">Your payment could not be processed. Try again or choose another payment method.</string>

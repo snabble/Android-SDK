@@ -126,7 +126,6 @@
     <string name="Snabble.PaymentStatus.back">Späť</string>
     <string name="Snabble.PaymentStatus.close">Zatvoriť</string>
     <string name="Snabble.PaymentStatus.DebitCardAdded.message">Tvoja karta bola úspešne overená. Odteraz môžeš platiť SEPA inkasom. Svoju kartu girocard môžeš v budúcnosti nechať vo svojej peňaženke.</string>
-    <string name="Snabble.PaymentStatus.ExitCode.openExitGateTimed">Platnosť kódu je časovo obmedzená.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Kód ukončenia</string>
     <string name="Snabble.PaymentStatus.Fulfillment.title">Dodanie</string>
     <string name="Snabble.PaymentStatus.Payment.error">Tvoja platba nemohla byť vykonaná. Skús znovu alebo vyber iný spôsob platby.</string>
