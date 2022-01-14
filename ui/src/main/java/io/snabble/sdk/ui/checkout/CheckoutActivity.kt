@@ -36,7 +36,6 @@ class CheckoutActivity : FragmentActivity() {
 
     private lateinit var navGraph: NavGraph
     private lateinit var navController: NavController
-    private lateinit var project: Project
     private var checkout: Checkout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,18 +102,18 @@ class CheckoutActivity : FragmentActivity() {
             Checkout.State.WAIT_FOR_APPROVAL -> {
                 val selectedPaymentMethod = checkout.selectedPaymentMethod
                 selectedPaymentMethod?.let {
-                    when (it) {
+                    return when (it) {
                         PaymentMethod.CUSTOMERCARD_POS -> {
-                            return R.id.snabble_nav_checkout_customercard
+                            R.id.snabble_nav_checkout_customercard
                         }
                         PaymentMethod.QRCODE_POS -> {
-                            return R.id.snabble_nav_checkout_pos
+                            R.id.snabble_nav_checkout_pos
                         }
                         PaymentMethod.QRCODE_OFFLINE -> {
-                            return R.id.snabble_nav_checkout_offline
+                            R.id.snabble_nav_checkout_offline
                         }
                         else -> {
-                            // unsupported case
+                            R.id.snabble_nav_payment_status
                         }
                     }
                 }
@@ -123,12 +122,15 @@ class CheckoutActivity : FragmentActivity() {
                 finish()
             }
             Checkout.State.PAYMENT_APPROVED -> {
-                SnabbleUI.executeAction(this, SnabbleUI.Event.SHOW_CHECKOUT_DONE)
-                finish()
+                if (checkout.selectedPaymentMethod?.isOfflineMethod == true) {
+                    SnabbleUI.executeAction(this, SnabbleUI.Event.SHOW_CHECKOUT_DONE)
+                    finish()
+                } else {
+                    return R.id.snabble_nav_payment_status
+                }
             }
-            else -> R.id.snabble_nav_payment_status
+            else -> return R.id.snabble_nav_payment_status
         }
-
         return null
     }
 

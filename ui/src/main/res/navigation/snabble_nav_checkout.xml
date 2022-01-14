@@ -12,11 +12,6 @@
         android:label="@string/Snabble.Checkout.title" />
 
     <fragment
-        android:id="@+id/snabble_nav_checkout_sco"
-        android:name="io.snabble.sdk.ui.checkout.CheckoutSCOFragment"
-        android:label="@string/Snabble.Checkout.title" />
-
-    <fragment
         android:id="@+id/snabble_nav_checkout_pos"
         android:name="io.snabble.sdk.ui.checkout.CheckoutPOSFragment"
         android:label="@string/Snabble.Checkout.title" />

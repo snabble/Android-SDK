@@ -139,7 +139,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
                 checkoutIdCode.visibility = VISIBLE
                 val id = checkout.id
                 if (id != null) {
-                    checkoutIdCode.setText(id)
+                    checkoutIdCode.setText("snabble:checkoutProcess:$id")
                 }
             }
             Checkout.State.PAYMENT_ABORT_FAILED -> {
@@ -150,7 +150,6 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
                     .setMessage(R.string.Snabble_Payment_cancelError_message)
                     .setPositiveButton(R.string.Snabble_OK) { dialog: DialogInterface, _: Int ->
                         dialog.dismiss()
-                        checkout.resume()
                     }
                     .setCancelable(false)
                     .create()

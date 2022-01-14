@@ -72,6 +72,10 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
             checkoutId.visibility = GONE
         }
 
+        // TODO get from paymentInformation
+        checkoutIdCode.visibility = VISIBLE
+        checkoutIdCode.setText(id)
+
         project.assets["checkout-online", { bitmap: Bitmap? -> setHelperImage(bitmap) }]
 
         onStateChanged(checkout.state)
@@ -136,11 +140,7 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
 
         when (state) {
             Checkout.State.WAIT_FOR_SUPERVISOR -> {
-                checkoutIdCode.visibility = VISIBLE
-                val id = checkout.id
-                if (id != null) {
-                    checkoutIdCode.setText(id)
-                }
+
             }
             Checkout.State.PAYMENT_ABORT_FAILED -> {
                 cancelProgress.visibility = INVISIBLE
@@ -150,7 +150,6 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
                     .setMessage(R.string.Snabble_Payment_cancelError_message)
                     .setPositiveButton(R.string.Snabble_OK) { dialog: DialogInterface, _: Int ->
                         dialog.dismiss()
-                        checkout.resume()
                     }
                     .setCancelable(false)
                     .create()
