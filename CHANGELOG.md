@@ -14,9 +14,22 @@ All notable changes to this project will be documented in this file.
   - Upgrading from 0.52.x requires the callbacks to be changed, but the general flow is the same if you were using Fragments
   - Cleanup is done automatically, no SnabbleUI.unregisterUiCallbacks is necessary anymore!
 - Checkout is now done in it's own Activity and can be started by using CheckoutActivity.startCheckoutFlow
-  
+
 ### Notes
 - Toolbar can be enabled in Activities by setting **snabbleToolbarStyle** in your Application theme
+
+## [0.53.0]
+
+### Changed
+- IBAN transfer flow
+- Hide payment selection when cart price is 0
+- Added missing discount line
+- Added support for Leinweber billing with customer number
+  
+### Fixed
+- Multiple lint warnings
+- Payone credit card input issues on legecy devices which no EM6 support
+- Fixed potential crash bugs
 
 ## [0.52.0]
 
