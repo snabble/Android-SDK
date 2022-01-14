@@ -10,6 +10,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
@@ -119,6 +120,10 @@ class CheckoutActivity : FragmentActivity() {
                 }
             }
             Checkout.State.PAYMENT_ABORTED -> {
+                finish()
+            }
+            Checkout.State.PAYMENT_APPROVED -> {
+                SnabbleUI.executeAction(this, SnabbleUI.Event.SHOW_CHECKOUT_DONE)
                 finish()
             }
             else -> R.id.snabble_nav_payment_status
