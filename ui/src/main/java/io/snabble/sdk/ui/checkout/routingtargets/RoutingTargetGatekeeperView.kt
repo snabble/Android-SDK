@@ -72,6 +72,14 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             checkoutId.visibility = GONE
         }
 
+        checkoutIdCode.visibility = VISIBLE
+        val handoverInformation = checkout.checkoutProcess?.paymentInformation?.handoverInformation
+        if (handoverInformation != null) {
+            checkoutIdCode.setText("snabble:checkoutProcess:$id")
+        } else {
+            checkoutIdCode.setText(id)
+        }
+
         project.assets["checkout-online", { bitmap: Bitmap? -> setHelperImage(bitmap) }]
 
         onStateChanged(checkout.state)
@@ -135,13 +143,6 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         }
 
         when (state) {
-            Checkout.State.WAIT_FOR_GATEKEEPER -> {
-                checkoutIdCode.visibility = VISIBLE
-                val id = checkout.id
-                if (id != null) {
-                    checkoutIdCode.setText("snabble:checkoutProcess:$id")
-                }
-            }
             Checkout.State.PAYMENT_ABORT_FAILED -> {
                 cancelProgress.visibility = INVISIBLE
                 cancel.isEnabled = true

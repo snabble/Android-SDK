@@ -193,6 +193,7 @@ public class CheckoutApi {
         public String deviceName;
         public String deviceFingerprint;
         public String deviceIPAddress;
+        public String handoverInformation;
     }
 
     public static class CheckoutProcessRequest {
