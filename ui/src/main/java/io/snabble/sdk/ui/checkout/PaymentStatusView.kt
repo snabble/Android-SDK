@@ -346,6 +346,11 @@ class PaymentStatusView @JvmOverloads constructor(
                     itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                     itemView.state = PaymentStatusItemView.State.IN_PROGRESS
                 } else if (it.state.isFailure) {
+                    if (it.state == FulfillmentState.ALLOCATION_FAILED
+                        || it.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
+                        handlePaymentAborted()
+                    }
+
                     itemView.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_error))
                     itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                     itemView.state = PaymentStatusItemView.State.FAILED
