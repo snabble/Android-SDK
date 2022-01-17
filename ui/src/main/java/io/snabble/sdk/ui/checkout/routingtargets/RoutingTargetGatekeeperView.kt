@@ -22,6 +22,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
 class RoutingTargetGatekeeperView @JvmOverloads constructor(
@@ -73,12 +74,22 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         }
 
         checkoutIdCode.visibility = VISIBLE
+
         val handoverInformation = checkout.checkoutProcess?.paymentInformation?.handoverInformation
-        if (handoverInformation != null) {
-            checkoutIdCode.setText("snabble:checkoutProcess:$id")
-        } else {
-            checkoutIdCode.setText(id)
+        val qrCodeContent = checkout.checkoutProcess?.paymentInformation?.qrCodeContent
+        val content = when {
+            handoverInformation != null -> {
+                handoverInformation
+            }
+            qrCodeContent != null -> {
+                qrCodeContent
+            }
+            else -> {
+                id
+            }
         }
+        Logger.d("QRCode content: $content")
+        checkoutIdCode.setText(content)
 
         project.assets["checkout-online", { bitmap: Bitmap? -> setHelperImage(bitmap) }]
 
@@ -142,22 +153,20 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             return
         }
 
-        when (state) {
-            Checkout.State.PAYMENT_ABORT_FAILED -> {
-                cancelProgress.visibility = INVISIBLE
-                cancel.isEnabled = true
-                AlertDialog.Builder(context)
-                    .setTitle(R.string.Snabble_Payment_cancelError_title)
-                    .setMessage(R.string.Snabble_Payment_cancelError_message)
-                    .setPositiveButton(R.string.Snabble_OK) { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
-                    }
-                    .setCancelable(false)
-                    .create()
-                    .show()
-            }
-            else -> {}
+        if (state == Checkout.State.PAYMENT_ABORT_FAILED) {
+            cancelProgress.visibility = INVISIBLE
+            cancel.isEnabled = true
+            AlertDialog.Builder(context)
+                .setTitle(R.string.Snabble_Payment_cancelError_title)
+                .setMessage(R.string.Snabble_Payment_cancelError_message)
+                .setPositiveButton(R.string.Snabble_OK) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+                .create()
+                .show()
         }
+
         currentState = state
     }
 

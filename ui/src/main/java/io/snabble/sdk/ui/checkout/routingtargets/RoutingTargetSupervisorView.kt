@@ -22,6 +22,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
 class RoutingTargetSupervisorView @JvmOverloads constructor(
@@ -33,7 +34,6 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
     private var cancelProgress: View
     private var helperTextNoImage: TextView
     private var helperImage: ImageView
-    private var upArrow: View
 
     private var currentState: Checkout.State? = null
 
@@ -58,7 +58,6 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
 
         helperTextNoImage = findViewById(R.id.helper_text_no_image)
         helperImage = findViewById(R.id.helper_image)
-        upArrow = findViewById(R.id.arrow)
 
         cancel.setOnClickListener {
             abort()
@@ -72,9 +71,20 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
             checkoutId.visibility = GONE
         }
 
-        // TODO get from paymentInformation
         checkoutIdCode.visibility = VISIBLE
         checkoutIdCode.setText(id)
+
+        val qrCodeContent = checkout.checkoutProcess?.paymentInformation?.qrCodeContent
+        val content = when {
+            qrCodeContent != null -> {
+                qrCodeContent
+            }
+            else -> {
+                id
+            }
+        }
+        Logger.d("QRCode content: $content")
+        checkoutIdCode.setText(content)
 
         project.assets["checkout-online", { bitmap: Bitmap? -> setHelperImage(bitmap) }]
 
@@ -138,36 +148,29 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
             return
         }
 
-        when (state) {
-            Checkout.State.WAIT_FOR_SUPERVISOR -> {
-
-            }
-            Checkout.State.PAYMENT_ABORT_FAILED -> {
-                cancelProgress.visibility = INVISIBLE
-                cancel.isEnabled = true
-                AlertDialog.Builder(context)
-                    .setTitle(R.string.Snabble_Payment_cancelError_title)
-                    .setMessage(R.string.Snabble_Payment_cancelError_message)
-                    .setPositiveButton(R.string.Snabble_OK) { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
-                    }
-                    .setCancelable(false)
-                    .create()
-                    .show()
-            }
-            else -> {}
+        if (state == Checkout.State.PAYMENT_ABORT_FAILED) {
+            cancelProgress.visibility = INVISIBLE
+            cancel.isEnabled = true
+            AlertDialog.Builder(context)
+                .setTitle(R.string.Snabble_Payment_cancelError_title)
+                .setMessage(R.string.Snabble_Payment_cancelError_message)
+                .setPositiveButton(R.string.Snabble_OK) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+                .create()
+                .show()
         }
+
         currentState = state
     }
 
     fun setHelperImage(bitmap: Bitmap?) {
         if (bitmap != null) {
             helperImage.setImageBitmap(bitmap)
-            upArrow.visibility = VISIBLE
             helperImage.visibility = VISIBLE
             helperTextNoImage.visibility = GONE
         } else {
-            upArrow.visibility = GONE
             helperImage.visibility = GONE
             helperTextNoImage.visibility = VISIBLE
         }

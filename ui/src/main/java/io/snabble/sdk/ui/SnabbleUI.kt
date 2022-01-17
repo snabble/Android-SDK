@@ -108,7 +108,7 @@ object SnabbleUI {
             when(event) {
                 SHOW_CHECKOUT -> CheckoutActivity.startCheckoutFlow(context, args)
                 SHOW_SCANNER -> startActivity(context, SelfScanningActivity::class.java, args,
-                    canGoBack = false,
+                    canGoBack = true,
                     unique = true
                 )
                 SHOW_BARCODE_SEARCH -> startActivity(context, ProductSearchActivity::class.java, args,

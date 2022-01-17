@@ -102,7 +102,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showScanner() {
         Intent intent = new Intent(this, SelfScanningActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
