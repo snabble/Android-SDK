@@ -205,7 +205,7 @@ public class PaymentSelectionHelper {
                 }
             }
 
-            if (entries.size() == 1 && cart.getTotalPrice() > 0) {
+            if (entries.size() == 1 && cart.getTotalPrice() >= 0) {
                 preferredDefaultEntry = entries.get(0);
             }
 
@@ -424,7 +424,7 @@ public class PaymentSelectionHelper {
 
     public boolean shouldShowPayButton() {
         boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && cart.getAvailablePaymentMethods().length > 0;
-        return cart.getTotalPrice() > 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
+        return cart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
     }
 
     public boolean shouldShowGooglePayButton() {
