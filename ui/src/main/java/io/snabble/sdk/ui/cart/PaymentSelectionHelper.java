@@ -433,7 +433,15 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowSmallSelector() {
-        return entries.size() > 1 && !shouldShowBigSelector();
+        boolean hasCredentialsPaymentMethod = false;
+        for (Entry e : entries) {
+            if (e.paymentMethod.isRequiringCredentials()) {
+                hasCredentialsPaymentMethod = true;
+                break;
+            }
+        }
+
+        return (entries.size() > 1 || hasCredentialsPaymentMethod) && !shouldShowBigSelector();
     }
 
     private void setSelectedEntry(Entry entry) {
