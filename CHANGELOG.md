@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.60.0-alpha02]
+
+### Changes
+- Add support for new Routing Targets API
+
 ## [0.60.0-alpha01]
 
 ### Breaking Changes
