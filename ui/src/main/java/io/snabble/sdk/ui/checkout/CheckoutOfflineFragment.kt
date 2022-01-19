@@ -8,11 +8,6 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.R
 
 open class CheckoutOfflineFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

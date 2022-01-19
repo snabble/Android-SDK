@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.checkout.routingtargets
 
-import io.snabble.sdk.ui.SnabbleUI.project
 import android.widget.FrameLayout
 import io.snabble.sdk.Checkout.OnCheckoutStateChangedListener
 import io.snabble.sdk.Checkout
@@ -22,6 +21,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.utils.setOrHide
 import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
@@ -40,7 +41,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
 
     init {
         inflate(context, R.layout.snabble_view_routing_gatekeeper, this)
-        val project = project
+        val project = SnabbleUI.project
         checkout = project.checkout
 
         checkoutIdCode = findViewById(R.id.checkout_id_code)
@@ -49,13 +50,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
 
         val helperText = findViewById<TextView>(R.id.helper_text)
         val text = I18nUtils.getString(resources, "Snabble.Payment.Online.message")
-
-        if (text != null) {
-            helperText.visibility = VISIBLE
-            helperText.text = text
-        } else {
-            helperText.visibility = GONE
-        }
+        helperText.setOrHide(text)
 
         helperTextNoImage = findViewById(R.id.helper_text_no_image)
         helperImage = findViewById(R.id.helper_image)
@@ -91,8 +86,9 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         Logger.d("QRCode content: $content")
         checkoutIdCode.setText(content)
 
-        project.assets["checkout-online", { bitmap: Bitmap? -> setHelperImage(bitmap) }]
-
+        project.assets.get("checkout-online") {
+                bitmap: Bitmap? -> setHelperImage(bitmap)
+        }
         onStateChanged(checkout.state)
     }
 
@@ -104,14 +100,16 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
     @SuppressLint("DrawAllocation")
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+
+        // if layout is starved for space, hide the helper image
         if (changed) {
             val dm = resources.displayMetrics
             val dpHeight = (height / dm.density).roundToInt()
             if (dpHeight < 500) {
                 if (helperImage.layoutParams.width == ViewGroup.LayoutParams.WRAP_CONTENT) {
                     helperImage.layoutParams = LinearLayout.LayoutParams(
-                        (helperImage.width * 0.5f).roundToInt(),
-                        (helperImage.height * 0.5f).roundToInt()
+                        helperImage.width / 2,
+                        helperImage.height / 2
                     )
                 }
             } else {
@@ -159,7 +157,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             AlertDialog.Builder(context)
                 .setTitle(R.string.Snabble_Payment_cancelError_title)
                 .setMessage(R.string.Snabble_Payment_cancelError_message)
-                .setPositiveButton(R.string.Snabble_OK) { dialog: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.Snabble_OK) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .setCancelable(false)

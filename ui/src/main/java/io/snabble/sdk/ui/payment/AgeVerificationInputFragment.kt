@@ -8,10 +8,6 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.R
 
 open class AgeVerificationInputFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

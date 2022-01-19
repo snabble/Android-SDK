@@ -19,7 +19,6 @@ open class CreditCardInputFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
         projectId = arguments?.getString(ARG_PROJECT_ID, null)
         paymentMethod = arguments?.getSerializable(ARG_PAYMENT_TYPE) as PaymentMethod?

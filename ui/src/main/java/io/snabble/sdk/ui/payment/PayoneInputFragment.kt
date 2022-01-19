@@ -21,7 +21,6 @@ open class PayoneInputFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
         projectId = requireNotNull(arguments?.getString(ARG_PROJECT_ID, null))
         paymentMethod = requireNotNull(arguments?.getSerializable(ARG_PAYMENT_TYPE) as? PaymentMethod)

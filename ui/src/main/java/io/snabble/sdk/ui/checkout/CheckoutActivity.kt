@@ -92,17 +92,17 @@ class CheckoutActivity : FragmentActivity() {
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
 
-        when(checkout.state) {
+        return when(checkout.state) {
             Checkout.State.WAIT_FOR_GATEKEEPER -> {
-                return R.id.snabble_nav_routing_gatekeeper
+                R.id.snabble_nav_routing_gatekeeper
             }
             Checkout.State.WAIT_FOR_SUPERVISOR -> {
-                return R.id.snabble_nav_routing_supervisor
+                R.id.snabble_nav_routing_supervisor
             }
             Checkout.State.WAIT_FOR_APPROVAL -> {
                 val selectedPaymentMethod = checkout.selectedPaymentMethod
                 selectedPaymentMethod?.let {
-                    return when (it) {
+                    when (it) {
                         PaymentMethod.CUSTOMERCARD_POS -> {
                             R.id.snabble_nav_checkout_customercard
                         }
@@ -120,22 +120,23 @@ class CheckoutActivity : FragmentActivity() {
             }
             Checkout.State.PAYMENT_ABORTED -> {
                 finish()
+                null
             }
             Checkout.State.PAYMENT_APPROVED -> {
                 if (checkout.selectedPaymentMethod?.isOfflineMethod == true) {
                     SnabbleUI.executeAction(this, SnabbleUI.Event.SHOW_CHECKOUT_DONE)
                     finish()
+                    null
                 } else {
-                    return R.id.snabble_nav_payment_status
+                    R.id.snabble_nav_payment_status
                 }
             }
-            else -> return R.id.snabble_nav_payment_status
+            else -> R.id.snabble_nav_payment_status
         }
-        return null
     }
 
     override fun onBackPressed() {
-
+        // prevent user from backing out
     }
 
     private fun onStateChanged() {
@@ -144,7 +145,7 @@ class CheckoutActivity : FragmentActivity() {
         if (currentNavigationId == navigationId) return
 
         navController.navigate(navigationId, null, NavOptions.Builder().apply {
-                setPopUpTo(currentNavigationId ?: 0, true)
+            setPopUpTo(currentNavigationId ?: 0, true)
         }.build())
     }
 }

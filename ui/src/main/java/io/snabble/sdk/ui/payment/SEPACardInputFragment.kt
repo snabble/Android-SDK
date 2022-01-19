@@ -18,7 +18,6 @@ open class SEPACardInputFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
         paymentOriginCandidate = arguments?.getSerializable(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE)
                 as? PaymentOriginCandidateHelper.PaymentOriginCandidate
