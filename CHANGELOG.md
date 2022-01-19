@@ -10,14 +10,14 @@ All notable changes to this project will be documented in this file.
 
 ### Breaking Changes
 - Removed 'ui-integration' module and integrated it into 'ui'
-  - All Fragments have its package name changed due to this.
-- Now supporting Activities for all screens. For example 'SelfScanningActivity" for the Scanner.
+    - All Fragments have its package name changed due to this.
+- Now supporting Activities for all screens. For example 'SelfScanningActivity' for the Scanner.
   Refer to the Documentation for a list of all Activites/Fragments and View's
 - Removed SnabbleUI.registerUiCallbacks in favor of SnabbleUI.setUiAction
-  - UI Callback are now entirely optional, and Activites will be launched if a UI Event is not implemented
-    by the hosting application
-  - Upgrading from 0.52.x requires the callbacks to be changed, but the general flow is the same if you were using Fragments
-  - Cleanup is done automatically, no SnabbleUI.unregisterUiCallbacks is necessary anymore!
+    - UI Callback are now entirely optional, and Activites will be launched if a UI Event is not implemented
+      by the hosting application
+    - Upgrading from 0.52.x requires the callbacks to be changed, but the general flow is the same if you were using Fragments
+    - Cleanup is done automatically, no SnabbleUI.unregisterUiCallbacks is necessary anymore!
 - Checkout is now done in it's own Activity and can be started by using CheckoutActivity.startCheckoutFlow
 
 ### Notes

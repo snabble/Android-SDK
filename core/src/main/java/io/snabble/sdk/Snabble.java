@@ -567,7 +567,7 @@ public class Snabble {
         void onMetaDataUpdated();
     }
 
-    private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
+    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
 
         @Override
         public void onActivityStarted(Activity activity) {

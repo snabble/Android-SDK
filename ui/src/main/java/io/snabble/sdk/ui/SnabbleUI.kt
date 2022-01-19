@@ -61,7 +61,11 @@ object SnabbleUI {
         get() = projectLiveData
 
     /**
-     * Sets an action handler for custom implementations of screens.
+     * Sets an action handler for custom implementations of events.
+     *
+     * If no event is set, a new Activity with a default implementation will be started.
+     *
+     * @see Event for a list of all available events.
      */
     @JvmStatic
     fun setUiAction(activity: AppCompatActivity, event: Event, action: Action) {
