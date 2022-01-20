@@ -189,7 +189,7 @@ open class CheckoutBar @JvmOverloads constructor(
             }
 
             binding.paymentSelectorButtonBig.isVisible = showBigSelector
-            binding.paymentSelector.isVisible = price > 0 && showSmallSelector
+            binding.paymentSelector.isVisible = price >= 0 && showSmallSelector
             binding.paymentActive.isVisible = !showBigSelector
 
             if (cart.isRestorable) {

@@ -411,7 +411,7 @@ public class PaymentSelectionHelper {
             return false;
         }
 
-        if (cart.getTotalPrice() <= 0) {
+        if (cart.getTotalPrice() < 0) {
             return false;
         }
 
@@ -433,15 +433,7 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowSmallSelector() {
-        boolean hasCredentialsPaymentMethod = false;
-        for (Entry e : entries) {
-            if (e.paymentMethod.isRequiringCredentials()) {
-                hasCredentialsPaymentMethod = true;
-                break;
-            }
-        }
-
-        return (entries.size() > 1 || hasCredentialsPaymentMethod) && !shouldShowBigSelector();
+        return selectedEntry.getValue() != null || !shouldShowBigSelector();
     }
 
     private void setSelectedEntry(Entry entry) {
