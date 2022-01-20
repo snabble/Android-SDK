@@ -131,6 +131,10 @@ class CheckoutActivity : FragmentActivity() {
                     R.id.snabble_nav_payment_status
                 }
             }
+            Checkout.State.NONE -> {
+                finish()
+                null
+            }
             else -> R.id.snabble_nav_payment_status
         }
     }
