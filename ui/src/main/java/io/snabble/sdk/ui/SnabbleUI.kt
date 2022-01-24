@@ -16,6 +16,14 @@ import io.snabble.sdk.ui.search.ProductSearchActivity
 import io.snabble.sdk.ui.utils.UIUtils
 import java.lang.ref.WeakReference
 
+/***
+ * The heart of the snabble UI components where everything connects.
+ *
+ * To use snabble UI components, you need to set a project you get from the core SDK using setProject.
+ *
+ * You can use setUiAction to implement custom behaviour or deeply integrated fragments instead
+ * of the default Activites.
+ */
 object SnabbleUI {
     enum class Event {
         SHOW_CHECKOUT,
