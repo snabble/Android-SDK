@@ -433,7 +433,7 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowSmallSelector() {
-        return selectedEntry.getValue() != null || !shouldShowBigSelector();
+        return cart.size() > 0 && (selectedEntry.getValue() != null || !shouldShowBigSelector());
     }
 
     private void setSelectedEntry(Entry entry) {
