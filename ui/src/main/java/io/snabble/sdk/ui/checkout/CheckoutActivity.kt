@@ -123,13 +123,7 @@ class CheckoutActivity : FragmentActivity() {
                 null
             }
             Checkout.State.PAYMENT_APPROVED -> {
-                if (checkout.selectedPaymentMethod?.isOfflineMethod == true) {
-                    SnabbleUI.executeAction(this, SnabbleUI.Event.SHOW_CHECKOUT_DONE)
-                    finish()
-                    null
-                } else {
-                    R.id.snabble_nav_payment_status
-                }
+                R.id.snabble_nav_payment_status
             }
             Checkout.State.NONE -> {
                 finish()
