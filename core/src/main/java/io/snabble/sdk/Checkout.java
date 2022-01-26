@@ -55,7 +55,15 @@ public class Checkout {
          */
         REQUEST_PAYMENT_AUTHORIZATION_TOKEN,
         /**
-         * Payment was received by the backend and we are waiting for confirmation of the payment provider
+         * Checkout was received and we wait for confirmation by the supervisor
+         */
+        WAIT_FOR_SUPERVISOR,
+        /**
+         * Checkout was received and we wait for confirmation by the gatekeeper
+         */
+        WAIT_FOR_GATEKEEPER,
+        /**
+         * Payment was received by the backend and we are waiting for confirmation by the payment provider
          */
         WAIT_FOR_APPROVAL,
         /**
@@ -158,8 +166,6 @@ public class Checkout {
      * was cancelled
      */
     public void abort(boolean error) {
-        cancelOutstandingCalls();
-
         if (state != Checkout.State.PAYMENT_APPROVED
                 && state != Checkout.State.DENIED_BY_PAYMENT_PROVIDER
                 && state != Checkout.State.DENIED_BY_SUPERVISOR
@@ -167,6 +173,8 @@ public class Checkout {
             checkoutApi.abort(checkoutProcess, new CheckoutApi.PaymentAbortResult() {
                 @Override
                 public void success() {
+                    cancelOutstandingCalls();
+
                     synchronized (Checkout.this) {
                         if (error) {
                             notifyStateChanged(Checkout.State.PAYMENT_PROCESSING_ERROR);
@@ -234,13 +242,6 @@ public class Checkout {
         paymentMethod = null;
         shoppingCart.generateNewUUID();
         shop = null;
-    }
-
-    public void resume() {
-        if (lastState == Checkout.State.WAIT_FOR_APPROVAL || lastState == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN) {
-            notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
-            pollForResult();
-        }
     }
 
     public boolean isAvailable() {
@@ -397,22 +398,6 @@ public class Checkout {
                         rawCheckoutProcess = rawResponse;
 
                         if (!handleProcessResponse()) {
-                            boolean allChecksOk = areAllChecksSucceeded(checkoutProcessResponse);
-
-                            if (allChecksOk) {
-                                if (checkoutProcessResponse.paymentState == CheckoutApi.State.PROCESSING) {
-                                    Logger.d("Processing payment...");
-                                    notifyStateChanged(Checkout.State.PAYMENT_PROCESSING);
-                                } else {
-                                    Logger.d("Waiting for approval...");
-                                    if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
-                                        notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
-                                    }
-                                }
-                            } else {
-                                notifyStateChanged(Checkout.State.WAIT_FOR_APPROVAL);
-                            }
-
                             if (!paymentMethod.isOfflineMethod()) {
                                 scheduleNextPoll();
                             }
@@ -457,7 +442,7 @@ public class Checkout {
 
         if (checkoutProcessResponse.checks != null) {
             for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
-                if (check.state == CheckoutApi.State.FAILED) {
+                if (check.state != CheckoutApi.State.SUCCESSFUL) {
                     return false;
                 }
 
@@ -491,6 +476,30 @@ public class Checkout {
         }
 
         return allChecksOk;
+    }
+
+    private boolean hasAnyCheckFailed(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+        if (checkoutProcessResponse.checks != null) {
+            for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
+                if (check.state == CheckoutApi.State.FAILED) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasAnyFulfillmentAllocationFailed() {
+        if (checkoutProcess.fulfillments != null) {
+            for (CheckoutApi.Fulfillment fulfillment : checkoutProcess.fulfillments) {
+                if (fulfillment.state == FulfillmentState.ALLOCATION_FAILED || fulfillment.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private boolean hasStillPendingChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
@@ -569,6 +578,8 @@ public class Checkout {
 
         Logger.d("Polling for approval state...");
 
+        Logger.d("RoutingTarget = " + getRoutingTarget());
+
         checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
             @Override
             public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
@@ -589,6 +600,8 @@ public class Checkout {
         });
 
         if (state == Checkout.State.WAIT_FOR_APPROVAL
+                || state == State.WAIT_FOR_GATEKEEPER
+                || state == State.WAIT_FOR_SUPERVISOR
                 || state == State.VERIFYING_PAYMENT_METHOD
                 || state == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
                 || state == Checkout.State.PAYMENT_PROCESSING
@@ -606,6 +619,18 @@ public class Checkout {
                 notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
             }
             return true;
+        }
+
+        if (state == State.VERIFYING_PAYMENT_METHOD) {
+            if (checkoutProcess.routingTarget == CheckoutApi.RoutingTarget.SUPERVISOR) {
+                notifyStateChanged(State.WAIT_FOR_SUPERVISOR);
+            } else if (checkoutProcess.routingTarget == CheckoutApi.RoutingTarget.GATEKEEPER) {
+                notifyStateChanged(State.WAIT_FOR_GATEKEEPER);
+            } else {
+                notifyStateChanged(State.WAIT_FOR_APPROVAL);
+            }
+
+            return false;
         }
 
         String authorizePaymentUrl = checkoutProcess.getAuthorizePaymentLink();
@@ -651,11 +676,12 @@ public class Checkout {
                 return false;
             }
 
-            if (hasStillPendingChecks(checkoutProcess)) {
-                notifyStateChanged(State.WAIT_FOR_APPROVAL);
+            if (hasAnyFulfillmentAllocationFailed()) {
+                notifyStateChanged(State.PAYMENT_ABORTED);
+                return true;
             }
 
-            if (!areAllChecksSucceeded(checkoutProcess)) {
+            if (hasAnyCheckFailed(checkoutProcess)) {
                 Logger.d("Payment denied by supervisor");
                 shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
@@ -708,6 +734,7 @@ public class Checkout {
     public void approveOfflineMethod() {
         if (paymentMethod != null && paymentMethod.isOfflineMethod()
          || paymentMethod == PaymentMethod.CUSTOMERCARD_POS) {
+            shoppingCart.generateNewUUID();
             approve();
         }
     }
@@ -785,6 +812,14 @@ public class Checkout {
         }
 
         return -1;
+    }
+
+    public CheckoutApi.RoutingTarget getRoutingTarget() {
+        if (checkoutProcess != null && checkoutProcess.routingTarget != null) {
+            return checkoutProcess.routingTarget;
+        }
+
+        return CheckoutApi.RoutingTarget.NONE;
     }
 
     public List<Product> getInvalidProducts() {

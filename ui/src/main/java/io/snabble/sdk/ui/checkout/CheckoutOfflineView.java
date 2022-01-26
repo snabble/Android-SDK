@@ -34,15 +34,14 @@ import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
+import io.snabble.sdk.utils.Utils;
 import me.relex.circleindicator.CircleIndicator3;
 
-public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutOfflineView extends FrameLayout {
     private Project project;
     private EncodedCodesGenerator encodedCodesGenerator;
     private int maxSizeMm;
     private Button paidButton;
-    private Checkout checkout;
-    private Checkout.State currentState;
     private ViewPager2 viewPager;
     private ImageView helperImage;
     private View upArrow;
@@ -145,9 +144,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
         } else {
             checkoutId.setVisibility(View.GONE);
         }
-
-        checkout = SnabbleUI.getProject().getCheckout();
-        onStateChanged(checkout.getState());
     }
 
     @SuppressLint("DrawAllocation")
@@ -185,66 +181,6 @@ public class CheckoutOfflineView extends FrameLayout implements Checkout.OnCheck
         }
 
         helperImage.setImageBitmap(bitmap);
-    }
-
-    @Override
-    public void onStateChanged(Checkout.State state) {
-        if (state == currentState) {
-            return;
-        }
-
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback == null) {
-            Logger.e("ui action could not be performed: callback is null");
-            return;
-        }
-
-        switch (state) {
-            case PAYMENT_APPROVED:
-                if (currentState == Checkout.State.PAYMENT_APPROVED) {
-                    break;
-                }
-                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_ABORTED:
-                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
-                break;
-            case DENIED_BY_PAYMENT_PROVIDER:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case DENIED_BY_SUPERVISOR:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_PROCESSING:
-            case PAYMENT_PROCESSING_ERROR:
-            case DENIED_TOO_YOUNG:
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-        }
-
-        currentState = state;
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        if (checkout != null) {
-            checkout.addOnCheckoutStateChangedListener(this);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (checkout != null) {
-            checkout.removeOnCheckoutStateChangedListener(this);
-        }
     }
 
     private class ViewHolder extends RecyclerView.ViewHolder {

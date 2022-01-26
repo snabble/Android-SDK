@@ -336,7 +336,7 @@ public class CreditCardInputView extends FrameLayout {
     }
 
     private void finish() {
-        SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
+        SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
     }
 
     private void finishWithError(String failReason) {

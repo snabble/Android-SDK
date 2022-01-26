@@ -23,13 +23,14 @@ import io.snabble.sdk.*
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.checkout.CheckoutHelper
+import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.databinding.SnabbleViewCheckoutBarBinding
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.*
+import io.snabble.sdk.utils.Logger
 
 
 open class CheckoutBar @JvmOverloads constructor(
@@ -40,7 +41,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private val binding: SnabbleViewCheckoutBarBinding
     
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
-    private val project by lazy { SnabbleUI.getProject() }
+    private val project by lazy { SnabbleUI.project }
     private val cart: ShoppingCart by lazy { project.shoppingCart }
     private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
@@ -188,7 +189,7 @@ open class CheckoutBar @JvmOverloads constructor(
             }
 
             binding.paymentSelectorButtonBig.isVisible = showBigSelector
-            binding.paymentSelector.isVisible = price > 0 && showSmallSelector
+            binding.paymentSelector.isVisible = price >= 0 && showSmallSelector
             binding.paymentActive.isVisible = !showBigSelector
 
             if (cart.isRestorable) {
@@ -234,7 +235,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     if (activity is FragmentActivity) {
                         val dialogFragment = SelectPaymentMethodFragment()
                         val bundle = Bundle()
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.getProject().id)
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.project.id)
                         dialogFragment.arguments = bundle
                         dialogFragment.show(activity.supportFragmentManager, null)
                     }
@@ -267,138 +268,140 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     override fun onStateChanged(state: Checkout.State) {
-        if (state == Checkout.State.HANDSHAKING) {
-            progressDialog.showAfterDelay(300)
-        } else if (state == Checkout.State.REQUEST_PAYMENT_METHOD) {
-            val entry = paymentSelectionHelper.selectedEntry.value
-            if (entry == null) {
-                progressDialog.dismiss()
-                Toast.makeText(context, R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show()
-                return
-            }
-            if (entry.paymentCredentials != null) {
-                progressDialog.dismiss()
-                if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
-                    project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                } else {
-                    Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
-                        override fun success() {
-                            progressDialog.showAfterDelay(300)
-                            project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                        }
-
-                        override fun error() {
-                            progressDialog.dismiss()
-                        }
-                    })
-                }
-            } else {
+        when(state) {
+            Checkout.State.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)
-                project.checkout.pay(entry.paymentMethod, null)
             }
-        } else if (state == Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN) {
-            val price = project.checkout.verifiedOnlinePrice
-            if (price != Checkout.INVALID_PRICE) {
-                val googlePayHelper = project.googlePayHelper
-                if (googlePayHelper != null) {
-                    googlePayHelper.requestPayment(price)
+            Checkout.State.REQUEST_PAYMENT_METHOD -> {
+                val entry = paymentSelectionHelper.selectedEntry.value
+                if (entry == null) {
+                    progressDialog.dismiss()
+                    Toast.makeText(context, R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show()
+                    return
+                }
+                if (entry.paymentCredentials != null) {
+                    progressDialog.dismiss()
+                    if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
+                        project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                    } else {
+                        Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
+                            override fun success() {
+                                progressDialog.showAfterDelay(300)
+                                project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                            }
+
+                            override fun error() {
+                                progressDialog.dismiss()
+                            }
+                        })
+                    }
+                } else {
+                    progressDialog.showAfterDelay(300)
+                    project.checkout.pay(entry.paymentMethod, null)
+                }
+            }
+            Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
+                val price = project.checkout.verifiedOnlinePrice
+                if (price != Checkout.INVALID_PRICE) {
+                    val googlePayHelper = project.googlePayHelper
+                    if (googlePayHelper != null) {
+                        googlePayHelper.requestPayment(price)
+                    } else {
+                        project.checkout.abort()
+                    }
                 } else {
                     project.checkout.abort()
                 }
-            } else {
-                project.checkout.abort()
             }
-        } else if (state == Checkout.State.WAIT_FOR_APPROVAL) {
-            CheckoutHelper.displayPaymentView(UIUtils.getHostFragmentActivity(context), project.checkout)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.PAYMENT_PROCESSING) {
-            Telemetry.event(Telemetry.Event.CheckoutSuccessful)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.PAYMENT_APPROVED) {
-            Telemetry.event(Telemetry.Event.CheckoutSuccessful)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.DENIED_BY_PAYMENT_PROVIDER) {
-            Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.DENIED_BY_SUPERVISOR) {
-            Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS)
-            progressDialog.dismiss()
-            unregisterListeners()
-        } else if (state == Checkout.State.INVALID_PRODUCTS) {
-            val invalidProducts = project.checkout.invalidProducts
-            if (invalidProducts != null && invalidProducts.size > 0) {
-                val res = resources
-                val sb = StringBuilder()
-                if (invalidProducts.size == 1) {
-                    sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg_one))
-                } else {
-                    sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg))
-                }
-                sb.append("\n\n")
-                for (product in invalidProducts) {
-                    if (product.subtitle != null) {
-                        sb.append(product.subtitle)
-                        sb.append(" ")
+            Checkout.State.WAIT_FOR_GATEKEEPER,
+            Checkout.State.WAIT_FOR_SUPERVISOR,
+            Checkout.State.WAIT_FOR_APPROVAL,
+            Checkout.State.PAYMENT_APPROVED,
+            Checkout.State.DENIED_BY_PAYMENT_PROVIDER,
+            Checkout.State.DENIED_BY_SUPERVISOR,
+            Checkout.State.PAYMENT_PROCESSING -> {
+                executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT, Bundle().apply {
+                    putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
+                })
+                progressDialog.dismiss()
+                unregisterListeners()
+            }
+            Checkout.State.INVALID_PRODUCTS -> {
+                val invalidProducts = project.checkout.invalidProducts
+                if (invalidProducts != null && invalidProducts.size > 0) {
+                    val res = resources
+                    val sb = StringBuilder()
+                    if (invalidProducts.size == 1) {
+                        sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg_one))
+                    } else {
+                        sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg))
                     }
-                    sb.append(product.name)
-                    sb.append("\n")
-                }
-                AlertDialog.Builder(context)
+                    sb.append("\n\n")
+                    for (product in invalidProducts) {
+                        if (product.subtitle != null) {
+                            sb.append(product.subtitle)
+                            sb.append(" ")
+                        }
+                        sb.append(product.name)
+                        sb.append("\n")
+                    }
+                    AlertDialog.Builder(context)
                         .setCancelable(false)
                         .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_saleStop_errorMsg_title))
                         .setMessage(sb.toString())
                         .setPositiveButton(R.string.Snabble_OK, null)
                         .show()
-            } else {
-                SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
-            }
-            progressDialog.dismiss()
-        } else if (state == Checkout.State.CONNECTION_ERROR
-            || state == Checkout.State.NO_SHOP
-            || state == Checkout.State.PAYMENT_PROCESSING_ERROR) {
-            SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
-            progressDialog.dismiss()
-        } else if (state == Checkout.State.PAYMENT_ABORTED) {
-            progressDialog.dismiss()
-        } else if (state == Checkout.State.REQUEST_VERIFY_AGE) {
-            SnabbleUI.executeAction(SnabbleUI.Action.SHOW_AGE_VERIFICATION)
-            progressDialog.dismiss()
-        } else if (state == Checkout.State.REQUEST_TAXATION) {
-            progressDialog.dismiss()
-            val dialog = AlertDialog.Builder(context)
-                .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
-                .setAdapter(
-                    ArrayAdapter(context, R.layout.snabble_item_taxation, listOf(
-                        context.getString(R.string.Snabble_Taxation_consume_inhouse),
-                        context.getString(R.string.Snabble_Taxation_consume_takeaway)
-                    ))
-                ) { dialog, which ->
-                    if (which == 0) {
-                        cart.taxation = ShoppingCart.Taxation.IN_HOUSE
-                    } else {
-                        cart.taxation = ShoppingCart.Taxation.TAKEAWAY
-                    }
-                    dialog.dismiss()
-                    project.checkout.checkout()
+                } else {
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
                 }
-                .create()
-                .show()
-        } else if (state == Checkout.State.NO_PAYMENT_METHOD_AVAILABLE) {
-            AlertDialog.Builder(context)
+                progressDialog.dismiss()
+            }
+            Checkout.State.CONNECTION_ERROR,
+            Checkout.State.NO_SHOP,
+            Checkout.State.PAYMENT_PROCESSING_ERROR -> {
+                SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+                progressDialog.dismiss()
+            }
+            Checkout.State.PAYMENT_ABORTED -> {
+                progressDialog.dismiss()
+            }
+            Checkout.State.REQUEST_VERIFY_AGE -> {
+                SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.SHOW_AGE_VERIFICATION)
+                progressDialog.dismiss()
+            }
+            Checkout.State.REQUEST_TAXATION -> {
+                progressDialog.dismiss()
+                AlertDialog.Builder(context)
+                    .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
+                    .setAdapter(
+                        ArrayAdapter(context, R.layout.snabble_item_taxation, listOf(
+                            context.getString(R.string.Snabble_Taxation_consume_inhouse),
+                            context.getString(R.string.Snabble_Taxation_consume_takeaway)
+                        ))
+                    ) { dialog, which ->
+                        if (which == 0) {
+                            cart.taxation = ShoppingCart.Taxation.IN_HOUSE
+                        } else {
+                            cart.taxation = ShoppingCart.Taxation.TAKEAWAY
+                        }
+                        dialog.dismiss()
+                        project.checkout.checkout()
+                    }
+                    .create()
+                    .show()
+            }
+            Checkout.State.NO_PAYMENT_METHOD_AVAILABLE -> {
+                AlertDialog.Builder(context)
                     .setCancelable(false)
                     .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_saleStop_errorMsg_title))
                     .setMessage(I18nUtils.getIdentifier(resources, R.string.Snabble_Payment_noMethodAvailable))
                     .setPositiveButton(R.string.Snabble_OK, null)
                     .show()
-            progressDialog.dismiss()
+                progressDialog.dismiss()
+            }
+            else -> {
+                Logger.d("Unhandled event in CheckoutBar: $state")
+            }
         }
     }
 }

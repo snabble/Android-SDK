@@ -23,7 +23,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 
-public class CheckoutCustomerCardView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutCustomerCardView extends FrameLayout {
     private Project project;
     private Checkout checkout;
     private Checkout.State currentState;
@@ -48,7 +48,6 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
 
     private void init() {
         project = SnabbleUI.getProject();
-        checkout = SnabbleUI.getProject().getCheckout();
 
         inflate(getContext(), R.layout.snabble_view_checkout_customercard, this);
 
@@ -77,7 +76,6 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
         }
 
         barcodeView.setText(project.getCustomerCardId());
-        onStateChanged(checkout.getState());
     }
 
     @SuppressLint("DrawAllocation")
@@ -112,60 +110,6 @@ public class CheckoutCustomerCardView extends FrameLayout implements Checkout.On
             upArrow.setVisibility(View.GONE);
             helperImage.setVisibility(View.GONE);
             helperText.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onStateChanged(Checkout.State state) {
-        if (state == currentState) {
-            return;
-        }
-
-        switch (state) {
-            case PAYMENT_APPROVED:
-                if (currentState == Checkout.State.PAYMENT_APPROVED) {
-                    break;
-                }
-                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_ABORTED:
-                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
-                break;
-            case DENIED_BY_PAYMENT_PROVIDER:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case DENIED_BY_SUPERVISOR:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_PROCESSING:
-            case PAYMENT_PROCESSING_ERROR:
-            case DENIED_TOO_YOUNG:
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-        }
-
-        currentState = state;
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        if (checkout != null) {
-            checkout.addOnCheckoutStateChangedListener(this);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (checkout != null) {
-            checkout.removeOnCheckoutStateChangedListener(this);
         }
     }
 }

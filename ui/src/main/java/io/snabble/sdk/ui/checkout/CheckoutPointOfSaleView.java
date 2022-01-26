@@ -14,10 +14,8 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
-import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Dispatch;
-import io.snabble.sdk.utils.Logger;
 
 public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private BarcodeView barcodeView;
@@ -60,7 +58,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             @Override
             public void click() {
                 SnabbleUI.getProject().getCheckout().abortSilently();
-                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
+                SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
             }
         });
 
@@ -76,11 +74,6 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
         } else {
             payAmount.setVisibility(View.GONE);
             findViewById(R.id.explanation2).setVisibility(View.GONE);
-        }
-
-        if (SnabbleUI.getActionBar() != null) {
-            findViewById(R.id.explanation1).setVisibility(View.GONE);
-            SnabbleUI.getActionBar().setTitle(R.string.Snabble_QRCode_showThisCode);
         }
 
         TextView checkoutId = findViewById(R.id.checkout_id);
@@ -120,40 +113,8 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             return;
         }
 
-        SnabbleUI.Callback callback = SnabbleUI.getUiCallback();
-        if (callback == null) {
-            Logger.e("ui action could not be performed: callback is null");
-            return;
-        }
-
-        switch (state) {
-            case WAIT_FOR_APPROVAL:
-                setQRCodeText(checkout.getQRCodePOSContent());
-                break;
-            case PAYMENT_APPROVED:
-                if (currentState == Checkout.State.PAYMENT_APPROVED) {
-                    break;
-                }
-                Telemetry.event(Telemetry.Event.CheckoutSuccessful);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_ABORTED:
-                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
-                SnabbleUI.executeAction(SnabbleUI.Action.GO_BACK);
-                break;
-            case DENIED_BY_PAYMENT_PROVIDER:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case DENIED_BY_SUPERVISOR:
-                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
-            case PAYMENT_PROCESSING:
-            case PAYMENT_PROCESSING_ERROR:
-            case DENIED_TOO_YOUNG:
-                SnabbleUI.executeAction(SnabbleUI.Action.SHOW_PAYMENT_STATUS);
-                break;
+        if (state == Checkout.State.WAIT_FOR_APPROVAL) {
+            setQRCodeText(checkout.getQRCodePOSContent());
         }
 
         currentState = state;

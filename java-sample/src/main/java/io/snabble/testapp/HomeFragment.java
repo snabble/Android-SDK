@@ -41,11 +41,9 @@ public class HomeFragment extends Fragment {
 
         v.findViewById(R.id.delete_db).setOnClickListener(btn -> App.get().getProject().getProductDatabase().delete());
 
-        v.findViewById(R.id.show_pm).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentCredentialsList(null));
+        v.findViewById(R.id.show_pm).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentCredentialsList());
 
         v.findViewById(R.id.show_po).setOnClickListener(btn -> ((BaseActivity)getActivity()).showPaymentOptions());
-
-        v.findViewById(R.id.age_verification).setOnClickListener(btn -> ((BaseActivity)getActivity()).showAgeVerification());
 
         v.findViewById(R.id.clear_cache).setOnClickListener(btn -> {
             try {
@@ -93,7 +91,7 @@ public class HomeFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Project project = projectList.get(position);
 
-                SnabbleUI.useProject(project);
+                SnabbleUI.setProject(project);
 
                 updateShops(v);
 
@@ -156,4 +154,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+
 }

@@ -5,7 +5,6 @@ apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion project.compileSdkVersion
-    buildToolsVersion project.buildToolsVersion
 
     defaultConfig {
         minSdkVersion project.minSdkVersion

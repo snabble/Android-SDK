@@ -78,7 +78,7 @@
         android:textSize="12sp"
         tools:text="+ 0,45 € deposit" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/enterReducedPrice"
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
@@ -106,7 +106,7 @@
             android:src="@drawable/snabble_ic_minus_content"
             app:tint="?attr/colorOnSurface" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/minus"
             style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="48dp"
@@ -159,7 +159,8 @@
             android:src="@drawable/snabble_ic_plus_content"
             app:tint="?attr/colorOnSurface" />
 
-        <Button style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        <com.google.android.material.button.MaterialButton
+            style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:id="@+id/plus"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -181,7 +182,7 @@
         android:visibility="gone"
         tools:text="g" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addToCart"
         style="@style/Snabble.Widget.MaterialComponents.Button"
         android:layout_width="match_parent"

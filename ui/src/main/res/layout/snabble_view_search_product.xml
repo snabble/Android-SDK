@@ -28,14 +28,15 @@
         android:layout_below="@+id/search_bar_layout"
         android:id="@+id/recycler_view" />
 
-    <Button style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/add_code_as_is"
+        style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/search_bar_layout"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="56dp"
-        android:padding="16dp"
         android:gravity="center"
+        android:padding="16dp"
         tools:text="Add 2623237002494 as is" />
 </RelativeLayout>

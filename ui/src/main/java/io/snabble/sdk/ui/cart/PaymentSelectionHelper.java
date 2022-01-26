@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.cart;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -49,9 +50,10 @@ public class PaymentSelectionHelper {
     private final Map<PaymentMethod, String> names = new HashMap<>();
     private final List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
 
-    private final Context context;
-    private final PaymentCredentialsStore paymentCredentialsStore;
-    private final MutableLiveData<Entry> selectedEntry;
+    private Application application;
+    private PaymentCredentialsStore paymentCredentialsStore;
+    private List<PaymentCredentials> paymentCredentials;
+    private MutableLiveData<Entry> selectedEntry;
     private Project project;
     private ShoppingCart cart;
     private final SharedPreferences sharedPreferences;
@@ -70,7 +72,7 @@ public class PaymentSelectionHelper {
             };
 
     private PaymentSelectionHelper() {
-        context = Snabble.getInstance().getApplication();
+        application = Snabble.getInstance().getApplication();
 
         icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.snabble_ic_payment_select_sepa);
         icons.put(PaymentMethod.VISA, R.drawable.snabble_ic_payment_select_visa);
@@ -94,10 +96,10 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.PAYDIREKT, "Paydirekt");
         names.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, "Tegut... Mitarbeiterkarte");
         names.put(PaymentMethod.LEINWEBER_CUSTOMER_ID, "Leinweber Rechnungskauf");
-        names.put(PaymentMethod.GATEKEEPER_TERMINAL, context.getString(R.string.Snabble_Payment_payAtSCO));
-        names.put(PaymentMethod.QRCODE_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
-        names.put(PaymentMethod.CUSTOMERCARD_POS, context.getString(R.string.Snabble_Payment_payAtCashDesk));
-        names.put(PaymentMethod.QRCODE_OFFLINE, context.getString(R.string.Snabble_Payment_payAtCashDesk));
+        names.put(PaymentMethod.GATEKEEPER_TERMINAL, application.getString(R.string.Snabble_Payment_payAtSCO));
+        names.put(PaymentMethod.QRCODE_POS, application.getString(R.string.Snabble_Payment_payAtCashDesk));
+        names.put(PaymentMethod.CUSTOMERCARD_POS, application.getString(R.string.Snabble_Payment_payAtCashDesk));
+        names.put(PaymentMethod.QRCODE_OFFLINE, application.getString(R.string.Snabble_Payment_payAtCashDesk));
         names.put(PaymentMethod.POST_FINANCE_CARD, "PostFinance Card");
         names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
@@ -203,7 +205,7 @@ public class PaymentSelectionHelper {
                 }
             }
 
-            if (entries.size() == 1 && cart.getTotalPrice() > 0) {
+            if (entries.size() == 1 && cart.getTotalPrice() >= 0) {
                 preferredDefaultEntry = entries.get(0);
             }
 
@@ -331,7 +333,7 @@ public class PaymentSelectionHelper {
                 e.isAvailable = true;
                 e.hint = pc.getObfuscatedId();
             } else if (projectPaymentMethods.contains(e.paymentMethod)){
-                e.hint = context.getString(R.string.Snabble_Shoppingcart_notForThisPurchase);
+                e.hint = application.getString(R.string.Snabble_Shoppingcart_notForThisPurchase);
                 e.isAvailable = false;
             } else {
                 continue;
@@ -370,7 +372,7 @@ public class PaymentSelectionHelper {
             e.isAdded = !pm.isRequiringCredentials();
 
             if (pm.isRequiringCredentials()) {
-                e.hint = context.getString(R.string.Snabble_Shoppingcart_noPaymentData);
+                e.hint = application.getString(R.string.Snabble_Shoppingcart_noPaymentData);
             }
 
             Integer iconResId = icons.get(pm);
@@ -409,7 +411,7 @@ public class PaymentSelectionHelper {
             return false;
         }
 
-        if (cart.getTotalPrice() <= 0) {
+        if (cart.getTotalPrice() < 0) {
             return false;
         }
 
@@ -422,7 +424,7 @@ public class PaymentSelectionHelper {
 
     public boolean shouldShowPayButton() {
         boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && cart.getAvailablePaymentMethods().length > 0;
-        return cart.getTotalPrice() > 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
+        return cart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
     }
 
     public boolean shouldShowGooglePayButton() {
@@ -431,7 +433,7 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowSmallSelector() {
-        return entries.size() > 1 && !shouldShowBigSelector();
+        return cart.size() > 0 && (selectedEntry.getValue() != null || !shouldShowBigSelector());
     }
 
     private void setSelectedEntry(Entry entry) {

@@ -2,7 +2,6 @@ package io.snabble.sdk.sample
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -14,10 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.integration.SelfScanningFragment
-import io.snabble.sdk.ui.scanner.BarcodeDetector
-import io.snabble.sdk.ui.scanner.BarcodeDetectorFactory
-import io.snabble.sdk.ui.scanner.ZXingBarcodeDetector
+import io.snabble.sdk.ui.checkout.CheckoutActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
@@ -46,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
+            toolbar.setNavigationOnClickListener { onBackPressed() }
 
             navController.addOnDestinationChangedListener { controller, destination, arguments ->
                 when (destination.id) {
@@ -56,11 +53,41 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-//            BarcodeDetectorFactory.setDefaultBarcodeDetectorFactory(object : BarcodeDetectorFactory() {
-//                override fun create(): BarcodeDetector {
-//                    return ZXingBarcodeDetector()
-//                }
-//            })
+            with(navController) {
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, _ ->
+                    navigate(R.id.navigation_barcode_search)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_CHECKOUT) { context, args ->
+                    CheckoutActivity.startCheckoutFlow(context, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SCANNER) { _, args ->
+                    navigate(R.id.navigation_scanner, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
+                    navigate(R.id.navigation_sepa_card_input, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT) { _, args ->
+                    navigate(R.id.navigation_credit_card_input, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT) { _, args ->
+                    navigate(R.id.navigation_paydirekt_input, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYONE_INPUT) { _, args ->
+                    navigate(R.id.navigation_payone_input, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
+                    navigate(R.id.navigation_cart, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST) { _, args ->
+                    navigate(R.id.navigation_payment_credentials, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
+                    navigate(R.id.navigation_age_verification, args)
+                }
+                SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
+                    popBackStack()
+                }
+            }
         }
     }
 
@@ -78,75 +105,5 @@ class MainActivity : AppCompatActivity() {
             toolbar.visibility = View.GONE
             navView.visibility = View.GONE
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val navController = findNavController(R.id.nav_host_fragment)
-        with(navController) {
-            SnabbleUI.registerUiCallbacks { action, data ->
-                when(action) {
-                    SnabbleUI.Action.SHOW_BARCODE_SEARCH -> {
-                        navigate(R.id.navigation_barcode_search)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_ONLINE -> {
-                        navigate(R.id.navigation_checkout_online)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_OFFLINE -> {
-                        navigate(R.id.navigation_checkout_offline)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_CUSTOMERCARD -> {
-                        navigate(R.id.navigation_checkout_customer_card_fragment)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_POINT_OF_SALE -> {
-                        navigate(R.id.navigation_checkout_pos_fragment)
-                    }
-                    SnabbleUI.Action.SHOW_CHECKOUT_GATEKEEPER -> {
-                        navigate(R.id.navigation_checkout_gatekeeper_fragment)
-                    }
-                    SnabbleUI.Action.SHOW_PAYMENT_STATUS -> {
-                        navigate(R.id.navigation_payment_status)
-                    }
-                    SnabbleUI.Action.SHOW_SCANNER -> {
-                        val args = Bundle()
-                        if (data != null) {
-                            args.putString(SelfScanningFragment.ARG_SHOW_PRODUCT_CODE, data as String)
-                        }
-                        navigate(R.id.navigation_scanner, args)
-                    }
-                    SnabbleUI.Action.SHOW_SEPA_CARD_INPUT -> {
-                        navigate(R.id.navigation_sepa_card_input)
-                    }
-                    SnabbleUI.Action.SHOW_CREDIT_CARD_INPUT -> {
-                        navigate(R.id.navigation_credit_card_input)
-                    }
-                    SnabbleUI.Action.SHOW_PAYDIREKT_INPUT -> {
-                        navigate(R.id.navigation_paydirekt_input)
-                    }
-                    SnabbleUI.Action.SHOW_SHOPPING_CART -> {
-                        navigate(R.id.navigation_cart)
-                    }
-                    SnabbleUI.Action.SHOW_PAYMENT_CREDENTIALS_LIST -> {
-                        navigate(R.id.navigation_payment_credentials)
-                    }
-                    SnabbleUI.Action.SHOW_AGE_VERIFICATION -> {
-                        navigate(R.id.navigation_age_verification)
-                    }
-                    SnabbleUI.Action.GO_BACK -> popBackStack()
-
-                    // optional
-                    SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_SHOW -> {
-                    }
-                    SnabbleUI.Action.EVENT_PRODUCT_CONFIRMATION_HIDE -> {
-                    }
-                    else -> {}
-                }
-            }
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        SnabbleUI.registerUiCallbacks(null)
     }
 }

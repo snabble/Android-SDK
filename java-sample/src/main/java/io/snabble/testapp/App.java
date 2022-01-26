@@ -31,10 +31,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-
-        // if you are using a light mode theme, disable night mode resources
-        // this seems like a bug in android
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     public void initBlocking() {
@@ -72,7 +68,7 @@ public class App extends Application {
         config.endpointBaseUrl = getString(R.string.endpoint);
         config.secret = getString(R.string.secret);
         config.appId = getString(R.string.app_id);
-        //}
+        // }
 
         final Snabble snabble = Snabble.getInstance();
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
@@ -81,7 +77,7 @@ public class App extends Application {
                 project = snabble.getProjects().get(0);
 
                 // registers this project globally for use with ui components
-                SnabbleUI.useProject(project);
+                SnabbleUI.setProject(project);
 
                 // select the first shop for demo purposes
                 if (project.getShops().size() > 0) {

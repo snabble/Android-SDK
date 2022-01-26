@@ -98,7 +98,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
 
             holder.itemView.setOnClickListener {
                 if (count > 0) {
-                    PaymentInputViewHelper.showPaymentList(project)
+                    PaymentInputViewHelper.showPaymentList(context, project)
                 } else {
                     PaymentInputViewHelper.showPaymentSelectionForAdding(context, project)
                 }

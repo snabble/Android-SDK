@@ -40,7 +40,7 @@
         android:layout_marginBottom="16dp"
         android:id="@+id/bottom_bar">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/goto_cart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

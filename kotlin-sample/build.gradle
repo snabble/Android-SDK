@@ -1,10 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 31
-    buildToolsVersion '29.0.3'
 
     defaultConfig {
         applicationId 'io.snabble.sdk.sample'
@@ -50,31 +48,25 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
+
+    implementation project(':core')
+    implementation project(':ui')
+
+    // in your app you need to use those dependencies:
+    // implementation 'io.snabble.sdk:core:{currentVersion}'
+    // implementation 'io.snabble.sdk:ui:{currentVersion}'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
-    implementation 'androidx.navigation:navigation-fragment:2.3.5'
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
-
-    // just for simplicity
-    implementation project(':core')
-    implementation project(':ui')
-    implementation project(':ui-integration')
-    implementation project(':utils')
-
-    // in your app you need to use those dependencies:
-    //implementation 'io.snabble.sdk:core:0.50.6'
-    //implementation 'io.snabble.sdk:ui:0.50.6'
-    //implementation 'io.snabble.sdk:ui-integration:0.50.6'
-    //implementation 'io.snabble.sdk:utils:0.50.6'
-
-    // TODO verify this one
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

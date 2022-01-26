@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/cancel_layout"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/helper_text_no_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/Snabble.Payment.presentCode"
+                android:textSize="17sp" />
+
+            <ImageView
+                android:id="@+id/helper_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/helper_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:visibility="gone"
+                android:textSize="17sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <io.snabble.sdk.ui.scanner.BarcodeView
+        android:id="@+id/checkout_id_code"
+        android:layout_above="@+id/checkout_id"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:format="PDF_417"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/checkout_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        tools:text="A64B"
+        android:layout_above="@+id/cancel_layout"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="17sp" />
+
+    <FrameLayout android:id="@+id/cancel_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+        <com.google.android.material.button.MaterialButton
+            style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@string/Snabble.Cancel"/>
+
+        <ProgressBar
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:indeterminateOnly="true"
+            android:indeterminate="true"
+            android:id="@+id/cancel_progress"
+            android:visibility="invisible"
+            android:layout_gravity="end|center_vertical" />
+    </FrameLayout>
+</RelativeLayout>

@@ -73,12 +73,5 @@
             android:id="@+id/show_po"
             android:text="Show Payment Options" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:id="@+id/age_verification"
-            android:text="Age Verification" />
-
     </LinearLayout>
 </ScrollView>

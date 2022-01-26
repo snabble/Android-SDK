@@ -5,8 +5,7 @@
 minSdkVersion = 21  
 compileSdkVersion = 29  
 java 8
-
-androidx and a material 3 theme for ui components
+androidx
 
 ### Using the snabble GitHub Repository
 
@@ -29,10 +28,6 @@ dependencies {
     
     // user interface library
     implementation 'io.snabble.sdk:ui:{{ extra.sdk_version }}'
-    
-    // user interface integration library, entirely optional,
-    // for more seamless and easier integration in apps
-    implementation 'io.snabble.sdk:ui-integration:{{ extra.sdk_version }}'
 }
 ```
 
@@ -83,7 +78,7 @@ snabble.setup(this, config, new Snabble.SetupCompletionListener() {
         project = snabble.getProjects().get(0);
 
         // registers this project globally for use with ui components
-        SnabbleUI.useProject(project);
+        SnabbleUI.setProject(project);
 
         // select the first shop for demo purposes, ideally this should be done with
         // geofencing or a manual user selection

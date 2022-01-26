@@ -24,14 +24,15 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.snippets
 nav:
-  - Home: index.md
+  - Home:
+    - Introduction: index.md
+    - UI: docs/ui-api.md
   - Changelog: changelog.md
   - API:
     - Overview: android-api.md
     - Core: api/core/index.md
     - Firebase Detector: api/firebase-detector/index.md
     - UI: api/ui/index.md
-    - UI integration: api/ui-integration/index.md
     - Utils: api/utils/index.md
   - News: https://snabble.io/en/latest/
   - Stores: https://snabble.io/en/stores/

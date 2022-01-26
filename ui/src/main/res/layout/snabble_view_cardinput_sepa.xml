@@ -95,7 +95,7 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/input_iban_layout">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/save"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

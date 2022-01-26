@@ -335,7 +335,7 @@ class ProductResolver private constructor(private val context: Context, private 
         fun onAlreadyScanned()
     }
 
-    class Builder @JvmOverloads constructor(context: Context, private val project: Project = SnabbleUI.getProject()) {
+    class Builder @JvmOverloads constructor(context: Context, private val project: Project = SnabbleUI.project) {
         private val productResolver: ProductResolver = ProductResolver(context, project)
 
         fun setCodes(codes: List<ScannedCode>) = apply {

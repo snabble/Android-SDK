@@ -448,6 +448,10 @@ public class Snabble {
     }
 
     public Project getProjectById(String projectId) {
+        if (projects == null) {
+            return null;
+        }
+
         for (Project project : projects) {
             if (project.getId().equals(projectId)) {
                 return project;
@@ -563,20 +567,6 @@ public class Snabble {
         void onMetaDataUpdated();
     }
 
-    /**
-     * Sets the current activity context.
-     *
-     * This is an internal method and should not be called.
-     */
-    public void _setCurrentActivity(Activity activity) {
-        if (currentActivity != null) {
-            currentActivity.clear();
-            currentActivity = null;
-        }
-
-        currentActivity = new WeakReference<>(activity);
-    }
-
     private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
 
         @Override
@@ -690,7 +680,7 @@ public class Snabble {
             return error;
         }
 
-        @NonNull 
+        @NonNull
         @Override
         public String toString() {
             return "SnabbleException{" +
