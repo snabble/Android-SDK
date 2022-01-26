@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.60.0]
+
+### Fixed
+- "qrCodeOffline" checkouts now always result in a PaymentStatus page
+- Allow 0 cost checkouts
+
 ## [0.60.0-alpha02]
 
 ### Changes
