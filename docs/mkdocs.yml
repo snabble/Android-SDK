@@ -26,7 +26,7 @@ markdown_extensions:
 nav:
   - Home:
     - Introduction: index.md
-    - UI: docs/ui-api.md
+    - UI: ui-api.md
   - Changelog: changelog.md
   - API:
     - Overview: android-api.md
