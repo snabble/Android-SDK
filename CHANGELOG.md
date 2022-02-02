@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.60.1]
+
+### Added
+- Added customizable Snabble.Widget.MaterialComponents.Button.Passive style
+
 ## [0.60.0]
 
 ### Fixed

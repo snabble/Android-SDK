@@ -113,7 +113,7 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Snabble.Widget.MaterialComponents.Button"
+            style="@style/Snabble.Widget.MaterialComponents.Button.Passive"
             android:id="@+id/payment_selector_button_big"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -128,8 +128,6 @@
             app:autoSizeTextType="uniform"
             app:autoSizeMinTextSize="8sp"
             app:autoSizeMaxTextSize="16sp"
-            android:backgroundTint="?attr/colorSurface"
-            android:textColor="?attr/colorOnSurface"
             android:maxLines="1"
             android:text="@string/Snabble.Shoppingcart.buyProducts.selectPaymentMethod" />
 </merge>

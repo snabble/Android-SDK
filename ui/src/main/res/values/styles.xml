@@ -10,6 +10,10 @@
     </style>
 
     <style name="Snabble.Widget.MaterialComponents.Button" parent="Widget.Material3.Button"  />
+    <style name="Snabble.Widget.MaterialComponents.Button.Passive" parent="Snabble.Widget.MaterialComponents.Button">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
     <style name="Snabble.Widget.MaterialComponents.Button.TextButton" parent="Widget.Material3.Button.TextButton" />
     <style name="Snabble.Widget.MaterialComponents.Button.Icon" parent="Widget.Material3.Button.Icon" />
     <style name="Snabble.Widget.MaterialComponents.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton" />
