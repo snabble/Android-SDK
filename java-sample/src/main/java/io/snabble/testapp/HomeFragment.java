@@ -23,14 +23,58 @@ import java.util.List;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.SnabbleBaseFragment;
 import io.snabble.sdk.ui.SnabbleUI;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends SnabbleBaseFragment {
+    private void updateShops(View v) {
+        Project project = SnabbleUI.getProject();
+        final List<Shop> shopList = project.getShops();
+        Spinner shops = v.findViewById(R.id.shops);
+        shops.setAdapter(new ArrayAdapter<Shop>(requireContext(), R.layout.item_dropdown, shopList) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView v = (TextView) super.getView(position, convertView, parent);
+                Shop shop = shopList.get(position);
+                v.setText(shop.getName() + " (" + shop.getId() + ")");
+                return v;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView v = (TextView) super.getDropDownView(position, convertView, parent);
+                Shop shop = shopList.get(position);
+                v.setText(shop.getName() + " (" + shop.getId() + ")");
+                return v;
+            }
+        });
+
+        for (int i=0; i<shopList.size(); i++) {
+            if (project.getCheckedInShop() == shopList.get(i)) {
+                shops.setSelection(i);
+                break;
+            }
+        }
+
+        shops.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Shop shop = shopList.get(position);
+                project.setCheckedInShop(shop);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateViewInternal(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.fragment_home, container, false);
 
         v.findViewById(R.id.scanner).setOnClickListener(btn -> ((BaseActivity)getActivity()).showScanner());
@@ -110,50 +154,4 @@ public class HomeFragment extends Fragment {
 
         return v;
     }
-
-    private void updateShops(View v) {
-        Project project = SnabbleUI.getProject();
-        final List<Shop> shopList = project.getShops();
-        Spinner shops = v.findViewById(R.id.shops);
-        shops.setAdapter(new ArrayAdapter<Shop>(requireContext(), R.layout.item_dropdown, shopList) {
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                TextView v = (TextView) super.getView(position, convertView, parent);
-                Shop shop = shopList.get(position);
-                v.setText(shop.getName() + " (" + shop.getId() + ")");
-                return v;
-            }
-
-            @Override
-            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                TextView v = (TextView) super.getDropDownView(position, convertView, parent);
-                Shop shop = shopList.get(position);
-                v.setText(shop.getName() + " (" + shop.getId() + ")");
-                return v;
-            }
-        });
-
-        for (int i=0; i<shopList.size(); i++) {
-            if (project.getCheckedInShop() == shopList.get(i)) {
-                shops.setSelection(i);
-                break;
-            }
-        }
-
-        shops.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Shop shop = shopList.get(position);
-                project.setCheckedInShop(shop);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-
 }

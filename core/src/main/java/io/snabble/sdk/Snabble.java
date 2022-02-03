@@ -12,6 +12,8 @@ import android.net.NetworkRequest;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -81,12 +83,15 @@ public class Snabble {
     private String createAppUserUrl;
     private OkHttpClient okHttpClient;
     private WeakReference<Activity> currentActivity;
+    private MutableLiveData<InitializationState> initializationState = new MutableLiveData<InitializationState>(InitializationState.NONE);
 
     private Snabble() {
 
     }
 
     public void setup(Application app, Config config, final SetupCompletionListener setupCompletionListener) {
+        initializationState.postValue(InitializationState.INITIALIZING);
+
         this.application = app;
         this.config = config;
 
@@ -149,6 +154,7 @@ public class Snabble {
         if (config.bundledMetadataAssetPath != null) {
             readMetadata();
             setupCompletionListener.onReady();
+            initializationState.postValue(InitializationState.INITIALIZED);
 
             if (config.loadActiveShops) {
                 loadActiveShops();
@@ -164,11 +170,13 @@ public class Snabble {
                         Token token = tokenRegistry.getToken(projects.get(0));
                         if (token == null) {
                             setupCompletionListener.onError(Error.CONNECTION_TIMEOUT);
+                            initializationState.postValue(InitializationState.ERROR);
                             return;
                         }
                     }
 
                     setupCompletionListener.onReady();
+                    initializationState.postValue(InitializationState.INITIALIZED);
 
                     if (config.loadActiveShops) {
                         loadActiveShops();
@@ -180,8 +188,10 @@ public class Snabble {
                     if (metadataDownloader.hasData()) {
                         readMetadata();
                         setupCompletionListener.onReady();
+                        initializationState.postValue(InitializationState.INITIALIZED);
                     } else {
                         setupCompletionListener.onError(Error.CONNECTION_TIMEOUT);
+                        initializationState.postValue(InitializationState.ERROR);
                     }
                 }
             });
@@ -198,6 +208,10 @@ public class Snabble {
                 .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
                 .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build(),
                 networkCallback);
+    }
+
+    public LiveData<InitializationState> getInitializationState() {
+        return initializationState;
     }
 
     public String getVersionName() {

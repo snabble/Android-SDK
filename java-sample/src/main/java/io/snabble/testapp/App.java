@@ -33,27 +33,6 @@ public class App extends Application {
         instance = this;
     }
 
-    public void initBlocking() {
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        init(new InitCallback() {
-            @Override
-            public void done() {
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void error(String text) {
-                countDownLatch.countDown();
-            }
-        });
-
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void init(final InitCallback callback) {
         if(project != null){
             callback.done();

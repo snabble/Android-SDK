@@ -42,10 +42,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState != null) {
-            App.get().initBlocking();
-        }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -53,29 +49,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         content = findViewById(R.id.content);
         sdkError = findViewById(R.id.sdk_error);
 
-        App.get().init(new App.InitCallback() {
-            @Override
-            public void done() {
-                runOnUiThread(() -> {
-                    progressIndicator.setVisibility(View.GONE);
-                    content.setVisibility(View.VISIBLE);
+        progressIndicator.setVisibility(View.GONE);
+        content.setVisibility(View.VISIBLE);
 
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.content, onCreateFragment())
-                            .commitAllowingStateLoss();
-                });
-            }
-
-            @Override
-            public void error(final String text) {
-                runOnUiThread(() -> {
-                    progressIndicator.setVisibility(View.GONE);
-                    sdkError.setVisibility(View.VISIBLE);
-                    sdkError.setText(text);
-                });
-            }
-        });
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, onCreateFragment())
+                .commitAllowingStateLoss();
     }
 
     @Override

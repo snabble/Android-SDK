@@ -8,13 +8,14 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
+import io.snabble.sdk.ui.SnabbleBaseFragment
 import io.snabble.sdk.ui.SnabbleUI
 
-open class ShoppingCartFragment : Fragment() {
+open class ShoppingCartFragment : SnabbleBaseFragment() {
     var shoppingCartView: ShoppingCartView? = null
         private set
 
-    override fun onCreateView(
+    override fun onCreateViewInternal(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -50,8 +50,9 @@ object SnabbleUI {
         val action: Action
     )
 
-    private val projectLiveData = MutableLiveData<Project?>()
     private var actions = mutableMapOf<Event, ActivityCallback?>()
+
+    private val projectLiveData = MutableLiveData<Project?>()
     private var nullableProject: Project? = null
 
     @JvmStatic
