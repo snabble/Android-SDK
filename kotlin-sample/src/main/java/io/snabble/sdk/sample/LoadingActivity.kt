@@ -27,8 +27,6 @@ class LoadingActivity : AppCompatActivity() {
         val snabble = Snabble.getInstance()
         snabble.setup(application, config, object : Snabble.SetupCompletionListener {
             override fun onReady() {
-                //snabble.userPreferences.setRequireKeyguardAuthenticationForPayment(true)
-
                 // an application can have multiple projects
                 val project = snabble.projects.first()
                 SnabbleUI.project = project
@@ -43,10 +41,10 @@ class LoadingActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onError(error: Snabble.Error) {
+            override fun onError(error: Snabble.Error?) {
                 runOnUiThread {
                     AlertDialog.Builder(this@LoadingActivity)
-                        .setMessage(error.name)
+                        .setMessage(error?.name)
                         .setPositiveButton("Retry") { _, _ ->
                             initSdk()
                         }

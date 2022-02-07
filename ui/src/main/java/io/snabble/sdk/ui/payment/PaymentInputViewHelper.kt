@@ -16,7 +16,7 @@ import io.snabble.sdk.utils.Logger
 
 object PaymentInputViewHelper {
     @JvmStatic
-    fun openPaymentInputView(context: Context, paymentMethod: PaymentMethod?, projectId: String?) {
+    fun openPaymentInputView(context: Context, paymentMethod: PaymentMethod?, projectId: String) {
         if (KeyguardUtils.isDeviceSecure()) {
             val project = Snabble.getInstance().getProjectById(projectId)
             val acceptedOriginTypes = project?.paymentMethodDescriptors
@@ -27,35 +27,46 @@ object PaymentInputViewHelper {
             val activity = UIUtils.getHostFragmentActivity(context)
             val args = Bundle()
 
-            if (useDatatrans && paymentMethod != null) {
-                Datatrans.registerCard(activity, project, paymentMethod)
-            } else if (usePayone && paymentMethod != null) {
-                Payone.registerCard(activity, project, paymentMethod)
-            } else {
-                when (paymentMethod) {
-                    PaymentMethod.VISA -> {
-                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
-                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
-                    }
-                    PaymentMethod.AMEX -> {
-                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
-                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
-                    }
-                    PaymentMethod.MASTERCARD -> {
-                        args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                        args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
-                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
-                    }
-                    PaymentMethod.PAYDIREKT -> {
-                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)
-                    }
-                    PaymentMethod.DE_DIRECT_DEBIT -> {
-                        SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT)
-                    }
-                    else -> {
-                        Logger.e("Payment method requires no credentials or is unsupported")
+            if (project != null) {
+                if (useDatatrans && paymentMethod != null) {
+                    Datatrans.registerCard(activity, project, paymentMethod)
+                } else if (usePayone && paymentMethod != null) {
+                    Payone.registerCard(activity, project, paymentMethod)
+                } else {
+                    when (paymentMethod) {
+                        PaymentMethod.VISA -> {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE,
+                                PaymentMethod.VISA)
+                            SnabbleUI.executeAction(context,
+                                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT,
+                                args)
+                        }
+                        PaymentMethod.AMEX -> {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE,
+                                PaymentMethod.AMEX)
+                            SnabbleUI.executeAction(context,
+                                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT,
+                                args)
+                        }
+                        PaymentMethod.MASTERCARD -> {
+                            args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE,
+                                PaymentMethod.MASTERCARD)
+                            SnabbleUI.executeAction(context,
+                                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT,
+                                args)
+                        }
+                        PaymentMethod.PAYDIREKT -> {
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)
+                        }
+                        PaymentMethod.DE_DIRECT_DEBIT -> {
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT)
+                        }
+                        else -> {
+                            Logger.e("Payment method requires no credentials or is unsupported")
+                        }
                     }
                 }
             }

@@ -18,14 +18,17 @@ object UIPersistence {
 
     init {
         application = snabble.application
-        snabble.addOnMetadataUpdateListener {
-            if (!isInitialized) {
-                isInitialized = true
-                sharedPreferences = application.getSharedPreferences("snabble_ui_persistence", Context.MODE_PRIVATE)
-            }
 
-            update()
-        }
+        snabble.addOnMetadataUpdateListener(object : Snabble.OnMetadataUpdateListener {
+            override fun onMetaDataUpdated() {
+                if (!isInitialized) {
+                    isInitialized = true
+                    sharedPreferences = application.getSharedPreferences("snabble_ui_persistence", Context.MODE_PRIVATE)
+                }
+
+                update()
+            }
+        })
     }
 
     fun update() {

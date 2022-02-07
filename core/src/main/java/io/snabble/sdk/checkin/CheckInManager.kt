@@ -108,8 +108,10 @@ class CheckInManager(val snabble: Snabble,
             update()
         }
 
-    private val metadataListener = Snabble.OnMetadataUpdateListener {
-        update()
+    private val metadataListener = object : Snabble.OnMetadataUpdateListener {
+        override fun onMetaDataUpdated() {
+            update()
+        }
     }
 
     fun update() {

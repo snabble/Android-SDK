@@ -1,790 +1,676 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
-import android.util.Base64;
+import io.snabble.sdk.Project
+import io.snabble.sdk.auth.TokenRegistry
+import io.snabble.sdk.Receipts
+import io.snabble.sdk.Users
+import io.snabble.sdk.MetadataDownloader
+import io.snabble.sdk.UserPreferences
+import io.snabble.sdk.payment.PaymentCredentialsStore
+import io.snabble.sdk.checkin.CheckInLocationManager
+import io.snabble.sdk.checkin.CheckInManager
+import io.snabble.sdk.TermsOfService
+import okhttp3.OkHttpClient
+import android.app.Activity
+import android.app.Application
+import androidx.lifecycle.MutableLiveData
+import io.snabble.sdk.InitializationState
+import io.snabble.sdk.Snabble.SetupCompletionListener
+import io.snabble.sdk.utils.Logger.ErrorEventHandler
+import io.snabble.sdk.utils.Logger.LogEventHandler
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import io.snabble.sdk.OkHttpClientFactory
+import io.snabble.sdk.auth.AppUser
+import android.net.ConnectivityManager
+import android.net.NetworkRequest
+import android.net.NetworkCapabilities
+import androidx.lifecycle.LiveData
+import com.google.gson.JsonObject
+import com.google.gson.JsonElement
+import com.google.gson.JsonArray
+import kotlin.Throws
+import io.snabble.sdk.Snabble.SnabbleException
+import android.app.Application.ActivityLifecycleCallbacks
+import android.content.Context
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import android.util.Base64
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.utils.*
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.InputStream
+import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.lang.ref.WeakReference
+import java.security.cert.CertificateException
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.X509TrustManager
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+class Snabble private constructor() {
+    lateinit var okHttpClient: OkHttpClient
+        private set
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+    lateinit var tokenRegistry: TokenRegistry
+        private set
+    
+    lateinit var projects: List<Project>
+        private set
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.lang.ref.WeakReference;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+    var brands: Map<String, Brand>? = null
+        private set
 
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
+    lateinit var receipts: Receipts
+        private set
 
-import io.snabble.sdk.checkin.CheckInLocationManager;
-import io.snabble.sdk.checkin.CheckInManager;
-import io.snabble.sdk.auth.AppUser;
-import io.snabble.sdk.auth.Token;
-import io.snabble.sdk.auth.TokenRegistry;
-import io.snabble.sdk.payment.PaymentCredentialsStore;
-import io.snabble.sdk.utils.Downloader;
-import io.snabble.sdk.utils.GsonHolder;
-import io.snabble.sdk.utils.JsonUtils;
-import io.snabble.sdk.utils.Logger;
-import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
-import okhttp3.OkHttpClient;
+    lateinit var users: Users
+        private set
 
-public class Snabble {
-    private static final Snabble instance = new Snabble();
+    lateinit var application: Application
+        private set
 
-    private Map<String, Brand> brands;
-    private List<Project> projects;
-    private TokenRegistry tokenRegistry;
-    private Receipts receipts;
-    private Users users;
-    private Application application;
-    private MetadataDownloader metadataDownloader;
-    private UserPreferences userPreferences;
-    private PaymentCredentialsStore paymentCredentialsStore;
-    private CheckInLocationManager checkInLocationManager;
-    private CheckInManager checkInManager;
-    private File internalStorageDirectory;
-    private String metadataUrl;
-    private Config config;
-    private final List<OnMetadataUpdateListener> onMetaDataUpdateListeners = new CopyOnWriteArrayList<>();
-    private String versionName;
-    private Environment environment;
-    private TermsOfService termsOfService;
-    private List<X509Certificate> paymentCertificates;
-    private String receiptsUrl;
-    private String usersUrl;
-    private String consentUrl;
-    private String telecashSecretUrl;
-    private String telecashPreAuthUrl;
-    private String paydirektAuthUrl;
-    private String createAppUserUrl;
-    private OkHttpClient okHttpClient;
-    private WeakReference<Activity> currentActivity;
-    private MutableLiveData<InitializationState> initializationState = new MutableLiveData<InitializationState>(InitializationState.NONE);
+    lateinit var userPreferences: UserPreferences
+        private set
 
-    private Snabble() {
+    lateinit var paymentCredentialsStore: PaymentCredentialsStore
+        private set
 
-    }
+    lateinit var checkInLocationManager: CheckInLocationManager
+        private set
 
-    public void setup(Application app, Config config, final SetupCompletionListener setupCompletionListener) {
-        initializationState.postValue(InitializationState.INITIALIZING);
+    lateinit var checkInManager: CheckInManager
+        private set
 
-        this.application = app;
-        this.config = config;
+    lateinit var internalStorageDirectory: File
+        private set
 
-        Logger.setErrorEventHandler((message, args) -> Events.logErrorEvent(null, message, args));
-        Logger.setLogEventHandler((message, args) -> Events.logErrorEvent(null, message, args));
+    lateinit var termsOfService: TermsOfService
+        private set
 
-        if (config.appId == null || config.secret == null) {
-            setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING);
-            return;
-        }
+    lateinit var config: Config
+        private set
 
-        String version = config.versionName;
-        if (version == null) {
-            try {
-                PackageInfo pInfo = app.getPackageManager().getPackageInfo(app.getPackageName(), 0);
-                if (pInfo != null && pInfo.versionName != null) {
-                    version = pInfo.versionName.toLowerCase(Locale.ROOT).replace(" ", "");
-                } else {
-                    version = "1.0";
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                version = "1.0";
+    var versionName: String? = null
+        private set
+
+    var environment: Environment? = null
+        private set
+    
+    var paymentCertificates: List<X509Certificate>? = null
+        private set
+
+    var metadataUrl: String? = null
+        private set
+    
+    var receiptsUrl: String? = null
+        get() {
+            val url = receiptsUrl
+            val appUser = userPreferences.appUser
+            return if (appUser != null && url != null) {
+                url.replace("{appUserID}", appUser.id)
+            } else {
+                null
             }
         }
+        private set
 
-        versionName = version;
+    var usersUrl: String? = null
+        private set
 
-        internalStorageDirectory = new File(application.getFilesDir(), "snabble/" + config.appId + "/");
-        //noinspection ResultOfMethodCallIgnored
-        internalStorageDirectory.mkdirs();
+    var consentUrl: String? = null
+        private set
 
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(app);
-        userPreferences = new UserPreferences(app);
-        tokenRegistry = new TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret);
-        receipts = new Receipts();
-        users = new Users(userPreferences);
+    var telecashSecretUrl: String? = null
+        private set
 
-        brands = Collections.unmodifiableMap(new HashMap<>());
-        projects = Collections.unmodifiableList(new ArrayList<>());
+    var telecashPreAuthUrl: String? = null
+        private set
+
+    var paydirektAuthUrl: String? = null
+        private set
+
+    var createAppUserUrl: String? = null
+        private set
+
+    var initializationState = MutableLiveData(InitializationState.NONE)
+        private set
+
+    private var currentActivity: WeakReference<Activity>? = null
+
+    private lateinit var metadataDownloader: MetadataDownloader
+
+    private val onMetaDataUpdateListeners: MutableList<OnMetadataUpdateListener> = CopyOnWriteArrayList()
+
+    fun setup(app: Application, config: Config, setupCompletionListener: SetupCompletionListener) {
+        initializationState.postValue(InitializationState.INITIALIZING)
+        
+        application = app
+        this.config = config
+        
+        Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
+        Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
+        
+        if (config.appId == null || config.secret == null) {
+            setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING)
+            return
+        }
+        
+        var version = config.versionName
+        if (version == null) {
+            version = try {
+                val pInfo = app.packageManager.getPackageInfo(app.packageName, 0)
+                if (pInfo != null && pInfo.versionName != null) {
+                    pInfo.versionName.toLowerCase(Locale.ROOT).replace(" ", "")
+                } else {
+                    "1.0"
+                }
+            } catch (e: PackageManager.NameNotFoundException) {
+                "1.0"
+            }
+        }
+        versionName = version
+        
+        internalStorageDirectory = File(application.filesDir, "snabble/" + config.appId + "/")
+        internalStorageDirectory.mkdirs()
+        
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(app)
+        userPreferences = UserPreferences(app)
+        tokenRegistry = TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret)
+        receipts = Receipts()
+        users = Users(userPreferences)
+        brands = Collections.unmodifiableMap(HashMap())
+        projects = Collections.unmodifiableList(ArrayList())
 
         if (config.endpointBaseUrl == null) {
-            config.endpointBaseUrl = Environment.PRODUCTION.getBaseUrl();
-        } else if (!config.endpointBaseUrl.startsWith("http://") && !config.endpointBaseUrl.startsWith("https://")) {
-            config.endpointBaseUrl = "https://" + config.endpointBaseUrl;
+            config.endpointBaseUrl = Environment.PRODUCTION.baseUrl
+        } else if (!config.endpointBaseUrl!!.startsWith("http://") && !config.endpointBaseUrl!!.startsWith("https://")) {
+            config.endpointBaseUrl = "https://" + config.endpointBaseUrl
         }
+        
+        environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl)
+        metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version)
+        paymentCredentialsStore = PaymentCredentialsStore()
 
-        environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl);
-        metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version);
-        paymentCredentialsStore = new PaymentCredentialsStore();
-        checkInLocationManager = new CheckInLocationManager(application);
-        checkInManager = new CheckInManager(this,
-                checkInLocationManager,
-                config.checkInRadius,
-                config.checkOutRadius,
-                config.lastSeenThreshold
-        );
+        checkInLocationManager = CheckInLocationManager(application)
+        checkInManager = CheckInManager(this,
+            checkInLocationManager,
+            config.checkInRadius,
+            config.checkOutRadius,
+            config.lastSeenThreshold
+        )
 
-        this.metadataDownloader = new MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath);
-
+        metadataDownloader = MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath)
+        
         if (config.bundledMetadataAssetPath != null) {
-            readMetadata();
-            setupCompletionListener.onReady();
-            initializationState.postValue(InitializationState.INITIALIZED);
-
+            readMetadata()
+            setupCompletionListener.onReady()
+            initializationState.postValue(InitializationState.INITIALIZED)
             if (config.loadActiveShops) {
-                loadActiveShops();
+                loadActiveShops()
             }
         } else {
-            metadataDownloader.loadAsync(new Downloader.Callback() {
-                @Override
-                protected void onDataLoaded(boolean wasStillValid) {
-                    readMetadata();
-
-                    AppUser appUser = userPreferences.getAppUser();
-                    if (appUser == null && projects.size() > 0) {
-                        Token token = tokenRegistry.getToken(projects.get(0));
+            metadataDownloader.loadAsync(object : Downloader.Callback() {
+                override fun onDataLoaded(wasStillValid: Boolean) {
+                    readMetadata()
+                    val appUser = userPreferences.appUser
+                    if (appUser == null && projects.size > 0) {
+                        val token = tokenRegistry.getToken(projects.get(0))
                         if (token == null) {
-                            setupCompletionListener.onError(Error.CONNECTION_TIMEOUT);
-                            initializationState.postValue(InitializationState.ERROR);
-                            return;
+                            setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
+                            initializationState.postValue(InitializationState.ERROR)
+                            return
                         }
                     }
-
-                    setupCompletionListener.onReady();
-                    initializationState.postValue(InitializationState.INITIALIZED);
-
+                    setupCompletionListener.onReady()
+                    initializationState.postValue(InitializationState.INITIALIZED)
                     if (config.loadActiveShops) {
-                        loadActiveShops();
+                        loadActiveShops()
                     }
                 }
 
-                @Override
-                protected void onError() {
+                override fun onError() {
                     if (metadataDownloader.hasData()) {
-                        readMetadata();
-                        setupCompletionListener.onReady();
-                        initializationState.postValue(InitializationState.INITIALIZED);
+                        readMetadata()
+                        setupCompletionListener.onReady()
+                        initializationState.postValue(InitializationState.INITIALIZED)
                     } else {
-                        setupCompletionListener.onError(Error.CONNECTION_TIMEOUT);
-                        initializationState.postValue(InitializationState.ERROR);
+                        setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
+                        initializationState.postValue(InitializationState.ERROR)
                     }
                 }
-            });
+            })
         }
-
-        app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
-        registerNetworkCallback(app);
+        
+        app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        registerNetworkCallback(app)
     }
 
-    private void registerNetworkCallback(Application app) {
-        ConnectivityManager cm = (ConnectivityManager) app.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        cm.registerNetworkCallback(new NetworkRequest.Builder()
-                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build(),
-                networkCallback);
+    private fun registerNetworkCallback(app: Application) {
+        val cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        cm.registerNetworkCallback(NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build(),
+            networkCallback)
     }
 
-    public LiveData<InitializationState> getInitializationState() {
-        return initializationState;
-    }
-
-    public String getVersionName() {
-        return versionName;
+    fun getInitializationState(): LiveData<InitializationState> {
+        return initializationState
     }
 
     /**
      * Returns true when the SDK is not compatible with the backend anymore and the app should
      * notify the user that it will not function anymore.
      */
-    public boolean isOutdatedSDK() {
-        JsonObject jsonObject = getAdditionalMetadata();
-        if (jsonObject != null) {
-            return JsonUtils.getBooleanOpt(jsonObject, "kill", false);
+    val isOutdatedSDK: Boolean
+        get() {
+            val jsonObject = additionalMetadata
+            return if (jsonObject != null) {
+                JsonUtils.getBooleanOpt(jsonObject, "kill", false)
+            } else false
         }
 
-        return false;
-    }
-
-    /** Returns additional metadata that may be provided for apps unrelated to the SDK **/
-    public JsonObject getAdditionalMetadata() {
-        JsonObject jsonObject = metadataDownloader.getJsonObject();
-
-        JsonElement jsonElement = jsonObject.get("metadata");
-        if (jsonElement != null) {
-            return jsonElement.getAsJsonObject();
+    /** Returns additional metadata that may be provided for apps unrelated to the SDK  */
+    val additionalMetadata: JsonObject?
+        get() {
+            val jsonObject = metadataDownloader.jsonObject
+            val jsonElement = jsonObject["metadata"]
+            return jsonElement?.asJsonObject
         }
 
-        return null;
-    }
-
-    private synchronized void readMetadata() {
-        JsonObject jsonObject = metadataDownloader.getJsonObject();
+    @Synchronized
+    private fun readMetadata() {
+        val jsonObject = metadataDownloader.jsonObject
         if (jsonObject != null) {
-            createAppUserUrl = getUrl(jsonObject, "createAppUser");
-            telecashSecretUrl = getUrl(jsonObject, "telecashSecret");
-            telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth");
-            paydirektAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization");
-
+            createAppUserUrl = getUrl(jsonObject, "createAppUser")
+            telecashSecretUrl = getUrl(jsonObject, "telecashSecret")
+            telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth")
+            paydirektAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization")
+            
             if (jsonObject.has("brands")) {
-                parseBrands(jsonObject);
+                parseBrands(jsonObject)
             }
-
+            
             if (jsonObject.has("projects")) {
-                parseProjects(jsonObject);
+                parseProjects(jsonObject)
             }
-
+            
             if (jsonObject.has("gatewayCertificates")) {
-                parsePaymentCertificates(jsonObject);
+                parsePaymentCertificates(jsonObject)
             }
-
-            receiptsUrl = getUrl(jsonObject, "appUserOrders");
-            usersUrl = getUrl(jsonObject, "appUser");
-            consentUrl = getUrl(jsonObject, "consents");
-
+            
+            receiptsUrl = getUrl(jsonObject, "appUserOrders")
+            usersUrl = getUrl(jsonObject, "appUser")
+            consentUrl = getUrl(jsonObject, "consents")
             if (jsonObject.has("terms")) {
-                termsOfService = GsonHolder.get().fromJson(jsonObject.get("terms"), TermsOfService.class);
+                termsOfService =
+                    GsonHolder.get().fromJson(jsonObject["terms"], TermsOfService::class.java)
             }
         }
-
-        paymentCredentialsStore.init(application, environment);
-        users.postPendingConsents();
-        checkInManager.update();
+        
+        paymentCredentialsStore.init(application, environment)
+        users.postPendingConsents()
+        checkInManager.update()
     }
 
-    private String getUrl(JsonObject jsonObject, String urlName) {
-        try {
-            return absoluteUrl(jsonObject.get("links").getAsJsonObject()
-                    .get(urlName).getAsJsonObject()
-                    .get("href").getAsString());
-        } catch (Exception e) {
-            return null;
+    private fun getUrl(jsonObject: JsonObject, urlName: String): String? {
+        return try {
+            absoluteUrl(jsonObject["links"].asJsonObject[urlName].asJsonObject["href"].asString)
+        } catch (e: Exception) {
+            null
         }
     }
 
-    private void parseBrands(JsonObject jsonObject) {
-       Brand[] jsonBrands = GsonHolder.get().fromJson(jsonObject.get("brands"), Brand[].class);
-       HashMap<String, Brand> map = new HashMap<>();
-       for (Brand brand : jsonBrands) {
-           map.put(brand.getId(), brand);
-       }
-       brands = Collections.unmodifiableMap(map);
+    private fun parseBrands(jsonObject: JsonObject) {
+        val jsonBrands = GsonHolder.get().fromJson(jsonObject["brands"], Array<Brand>::class.java)
+        val map = HashMap<String, Brand>()
+        for (brand in jsonBrands) {
+            map[brand.id] = brand
+        }
+        brands = Collections.unmodifiableMap(map)
     }
 
-    private void parseProjects(JsonObject jsonObject) {
-        JsonArray jsonArray = jsonObject.get("projects").getAsJsonArray();
-        List<Project> newProjects = new ArrayList<>();
-
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject jsonProject = jsonArray.get(i).getAsJsonObject();
+    private fun parseProjects(jsonObject: JsonObject) {
+        val jsonArray = jsonObject["projects"].asJsonArray
+        val newProjects: MutableList<Project> = ArrayList()
+        for (i in 0 until jsonArray.size()) {
+            val jsonProject = jsonArray[i].asJsonObject
 
             // first try to find an already existing project and update it, so that
             // the object reference can be stored somewhere and still be up to date
-            boolean updated = false;
+            var updated = false
             if (jsonProject.has("id")) {
-                for (Project p : projects) {
-                    if (p.getId().equals(jsonProject.get("id").getAsString())) {
+                for (p in projects) {
+                    if (p.id == jsonProject["id"].asString) {
                         try {
-                            p.parse(jsonProject);
-                            newProjects.add(p);
-                        } catch (IllegalArgumentException e) {
+                            p.parse(jsonProject)
+                            newProjects.add(p)
+                        } catch (e: IllegalArgumentException) {
                             // malformed project, do nothing
                         }
-
-                        updated = true;
-                        break;
+                        updated = true
+                        break
                     }
                 }
 
                 // if it does not exist, add it
                 if (!updated) {
                     try {
-                        Project project = new Project(jsonProject);
-                        newProjects.add(project);
-                    } catch (IllegalArgumentException e) {
-                        Logger.d(e.getMessage());
+                        val project = Project(jsonProject)
+                        newProjects.add(project)
+                    } catch (e: IllegalArgumentException) {
+                        Logger.d(e.message)
                         // malformed project, do nothing
                     }
                 }
             }
         }
-
-        projects = Collections.unmodifiableList(newProjects);
+        
+        projects = Collections.unmodifiableList(newProjects)
     }
 
-    private void parsePaymentCertificates(JsonObject jsonObject) {
-        List<X509Certificate> certificates = new ArrayList<>();
-
-        JsonArray certs = jsonObject.get("gatewayCertificates").getAsJsonArray();
-        for (int i=0; i<certs.size(); i++) {
-            JsonElement jsonElement = certs.get(i);
-            if (jsonElement.isJsonObject()) {
-                JsonObject cert = jsonElement.getAsJsonObject();
-                JsonElement value = cert.get("value");
+    private fun parsePaymentCertificates(jsonObject: JsonObject) {
+        val certificates: MutableList<X509Certificate> = ArrayList()
+        val certs = jsonObject["gatewayCertificates"].asJsonArray
+        for (i in 0 until certs.size()) {
+            val jsonElement = certs[i]
+            if (jsonElement.isJsonObject) {
+                val cert = jsonElement.asJsonObject
+                val value = cert["value"]
                 if (value != null) {
-                    byte[] bytes = Base64.decode(value.getAsString(), Base64.DEFAULT);
-                    InputStream is = new ByteArrayInputStream(bytes);
-
+                    val bytes = Base64.decode(value.asString, Base64.DEFAULT)
+                    val `is`: InputStream = ByteArrayInputStream(bytes)
                     try {
-                        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-                        X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(is);
-                        certificates.add(certificate);
-                    } catch (CertificateException e) {
-                        e.printStackTrace();
+                        val certificateFactory = CertificateFactory.getInstance("X.509")
+                        val certificate =
+                            certificateFactory.generateCertificate(`is`) as X509Certificate
+                        certificates.add(certificate)
+                    } catch (e: CertificateException) {
+                        e.printStackTrace()
                     }
                 }
             }
         }
-
-        paymentCertificates = Collections.unmodifiableList(certificates);
+        
+        paymentCertificates = Collections.unmodifiableList(certificates)
     }
 
-    public String absoluteUrl(String url) {
-        if (url == null) {
-            return null;
-        }
-
-        if (url.startsWith("http")) {
-            return url;
+    fun absoluteUrl(url: String): String {
+        return if (url.startsWith("http")) {
+            url
         } else {
-            return getEndpointBaseUrl() + url;
+            endpointBaseUrl + url
         }
     }
 
-    public String getEndpointBaseUrl() {
-        return config.endpointBaseUrl;
-    }
+    val endpointBaseUrl: String?
+        get() = config.endpointBaseUrl
 
-    public String getMetadataUrl() {
-        return metadataUrl;
-    }
-
-    public String getReceiptsUrl() {
-        AppUser appUser = userPreferences.getAppUser();
-        if (appUser != null && receiptsUrl != null) {
-            return receiptsUrl.replace("{appUserID}", userPreferences.getAppUser().id);
-        } else {
-            return null;
-        }
-    }
-
-    public String getTelecashSecretUrl() {
-        return telecashSecretUrl;
-    }
-
-    public String getTelecashPreAuthUrl() {
-        return telecashPreAuthUrl;
-    }
-
-    public String getPaydirektAuthUrl() {
-        return paydirektAuthUrl;
-    }
-
-    public String getCreateAppUserUrl() {
-        return createAppUserUrl;
-    }
-
-    public String getUsersUrl() {
-        return usersUrl;
-    }
-
-    public String getConsentUrl() {
-        return consentUrl;
-    }
-
-    public File getInternalStorageDirectory() {
-        return internalStorageDirectory;
-    }
-
-    public Application getApplication() {
-        return application;
-    }
-
-    public OkHttpClient getOkHttpClient() {
-        return okHttpClient;
-    }
-
-    public TokenRegistry getTokenRegistry() {
-        return tokenRegistry;
-    }
-
-    public Receipts getReceipts() {
-        return receipts;
-    }
-
-    public Users getUsers() {
-        return users;
-    }
-
-    public TermsOfService getTermsOfService() {
-        return termsOfService;
-    }
-
-    public CheckInLocationManager getCheckInLocationManager() {
-        return checkInLocationManager;
-    }
-
-    public CheckInManager getCheckInManager() {
-        return checkInManager;
-    }
-
-    public Map<String, Brand> getBrands() {
-        return brands;
-    }
-
-    public List<Project> getProjects() {
-        return projects;
-    }
-
-    public Project getProjectById(String projectId) {
-        if (projects == null) {
-            return null;
-        }
-
-        for (Project project : projects) {
-            if (project.getId().equals(projectId)) {
-                return project;
+    fun getProjectById(projectId: String): Project? {
+        for (project in projects) {
+            if (project.id == projectId) {
+                return project
             }
         }
-
-        return null;
-    }
-
-    public List<X509Certificate> getPaymentSigningCertificates() {
-        return Collections.unmodifiableList(paymentCertificates);
+        return null
     }
 
     /**
-     * The blocking version of {@link #setup(Application, Config, SetupCompletionListener)}
-     * <p>
+     * The blocking version of [.setup]
+     *
+     *
      * Blocks until every initialization is completed, that includes waiting for necessary
      * network calls if bundled data is not provided.
-     * <p>
-     * If all needed bundled data is provided (See {@link Config}), initialization requires
+     *
+     *
+     * If all needed bundled data is provided (See [Config]), initialization requires
      * no network calls.
      *
      * @throws SnabbleException If an error occurs while initializing the sdk.
      */
-    public void setupBlocking(Application app, Config config) throws SnabbleException {
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        final Error[] snabbleError = new Error[1];
-
-        setup(app, config, new SetupCompletionListener() {
-            @Override
-            public void onReady() {
-                countDownLatch.countDown();
+    @Throws(SnabbleException::class)
+    fun setupBlocking(app: Application, config: Config) {
+        val countDownLatch = CountDownLatch(1)
+        val snabbleError = arrayOfNulls<Error>(1)
+        setup(app, config, object : SetupCompletionListener {
+            override fun onReady() {
+                countDownLatch.countDown()
             }
 
-            @Override
-            public void onError(Error error) {
-                snabbleError[0] = error;
-                countDownLatch.countDown();
+            override fun onError(error: Error?) {
+                snabbleError[0] = error
+                countDownLatch.countDown()
             }
-        });
-
+        })
         try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            throw new SnabbleException(Error.UNSPECIFIED_ERROR);
+            countDownLatch.await()
+        } catch (e: InterruptedException) {
+            throw SnabbleException(Error.UNSPECIFIED_ERROR)
         }
-
         if (snabbleError[0] != null) {
-            throw new SnabbleException(snabbleError[0]);
+            throw SnabbleException(snabbleError[0])
         }
     }
 
-    public static String getVersion() {
-        return BuildConfig.VERSION_NAME;
-    }
-
-    private void updateMetadata() {
-        metadataDownloader.setUrl(getMetadataUrl());
-        metadataDownloader.loadAsync(new Downloader.Callback() {
-            @Override
-            protected void onDataLoaded(boolean wasStillValid) {
+    private fun updateMetadata() {
+        metadataDownloader.url = metadataUrl
+        metadataDownloader.loadAsync(object : Downloader.Callback() {
+            override fun onDataLoaded(wasStillValid: Boolean) {
                 if (!wasStillValid) {
-                    readMetadata();
-                    notifyMetadataUpdated();
+                    readMetadata()
+                    notifyMetadataUpdated()
                 }
-
                 if (config.loadActiveShops) {
-                    loadActiveShops();
+                    loadActiveShops()
                 }
             }
-        });
+        })
     }
 
-    private void loadActiveShops() {
-        for (Project project : projects) {
-            project.loadActiveShops(this::notifyMetadataUpdated);
+    private fun loadActiveShops() {
+        for (project in projects) {
+            project.loadActiveShops { notifyMetadataUpdated() }
         }
     }
 
-    private void notifyMetadataUpdated() {
-        for (OnMetadataUpdateListener listener : onMetaDataUpdateListeners) {
-            listener.onMetaDataUpdated();
+    private fun notifyMetadataUpdated() {
+        for (listener in onMetaDataUpdateListeners) {
+            listener.onMetaDataUpdated()
         }
     }
 
-    private void checkCartTimeouts() {
-        for (Project project : projects) {
-            project.getShoppingCart().checkForTimeout();
+    private fun checkCartTimeouts() {
+        for (project in projects) {
+            project.shoppingCart.checkForTimeout()
         }
     }
 
-    private void processPendingCheckouts() {
-        for (Project project : projects) {
-            project.getCheckout().processPendingCheckouts();
+    private fun processPendingCheckouts() {
+        for (project in projects) {
+            project.checkout.processPendingCheckouts()
         }
     }
 
     /**
      * Adds a listener that gets called every time the metadata updates
      */
-    public void addOnMetadataUpdateListener(OnMetadataUpdateListener onMetaDataUpdateListener) {
-        onMetaDataUpdateListeners.add(onMetaDataUpdateListener);
+    fun addOnMetadataUpdateListener(onMetaDataUpdateListener: OnMetadataUpdateListener) {
+        onMetaDataUpdateListeners.add(onMetaDataUpdateListener)
     }
 
     /**
      * Removes an already added listener
      */
-    public void removeOnMetadataUpdateListener(OnMetadataUpdateListener onMetaDataUpdateListener) {
-        onMetaDataUpdateListeners.remove(onMetaDataUpdateListener);
+    fun removeOnMetadataUpdateListener(onMetaDataUpdateListener: OnMetadataUpdateListener) {
+        onMetaDataUpdateListeners.remove(onMetaDataUpdateListener)
     }
 
-    public interface OnMetadataUpdateListener {
-        void onMetaDataUpdated();
+    interface OnMetadataUpdateListener {
+        fun onMetaDataUpdated()
     }
 
-    private final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new SimpleActivityLifecycleCallbacks() {
-
-        @Override
-        public void onActivityStarted(Activity activity) {
-            if (currentActivity != null) {
-                currentActivity.clear();
-                currentActivity = null;
+    private val activityLifecycleCallbacks: ActivityLifecycleCallbacks =
+        object : SimpleActivityLifecycleCallbacks() {
+            override fun onActivityStarted(activity: Activity) {
+                currentActivity?.clear()
+                currentActivity = null
+                currentActivity = WeakReference(activity)
+                updateMetadata()
+                checkCartTimeouts()
+                processPendingCheckouts()
             }
 
-            currentActivity = new WeakReference<>(activity);
-            updateMetadata();
-            checkCartTimeouts();
-            processPendingCheckouts();
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity) {
-            if (currentActivity != null) {
-                if (currentActivity.get() == activity) {
-                    currentActivity.clear();
-                    currentActivity = null;
+            override fun onActivityStopped(activity: Activity) {
+                if (currentActivity?.get() === activity) {
+                    currentActivity?.clear()
+                    currentActivity = null
                 }
             }
         }
-    };
-
-
-    private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
-        @Override
-        public void onAvailable(@NonNull Network network) {
-            onConnectionStateChanged(true);
+    private val networkCallback: NetworkCallback = object : NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            onConnectionStateChanged(true)
         }
 
-        @Override
-        public void onLost(@NonNull Network network) {
-            onConnectionStateChanged(false);
+        override fun onLost(network: Network) {
+            onConnectionStateChanged(false)
         }
 
-        @Override
-        public void onUnavailable() {
-            onConnectionStateChanged(false);
+        override fun onUnavailable() {
+            onConnectionStateChanged(false)
         }
-    };
+    }
 
-    private void onConnectionStateChanged(boolean isConnected) {
+    private fun onConnectionStateChanged(isConnected: Boolean) {
         if (isConnected) {
-            processPendingCheckouts();
+            processPendingCheckouts()
         }
-
-        for (Project project : projects) {
-            project.getShoppingCart().updatePrices(false);
+        for (project in projects) {
+            project.shoppingCart.updatePrices(false)
         }
-    }
-
-    /**
-     * Enables debug logging.
-     */
-    public static void setDebugLoggingEnabled(boolean enabled) {
-        Logger.setEnabled(enabled);
-    }
-
-    public Config getConfig() {
-        return config;
     }
 
     /**
      * Unique identifier, different over device installations
      */
-    public String getClientId() {
-        return userPreferences.getClientId();
+    val clientId: String
+        get() = userPreferences.clientId
+
+    interface SetupCompletionListener {
+        fun onReady()
+        fun onError(error: Error?)
     }
 
-    public Environment getEnvironment() {
-        return environment;
-    }
-
-    public UserPreferences getUserPreferences() {
-        return userPreferences;
-    }
-
-    public PaymentCredentialsStore getPaymentCredentialsStore() {
-        return paymentCredentialsStore;
-    }
-
-    public static Snabble getInstance() {
-        return instance;
-    }
-
-    public Activity getCurrentActivity() {
-        if (currentActivity != null) {
-            return currentActivity.get();
-        }
-
-        return null;
-    }
-
-    public interface SetupCompletionListener {
-        void onReady();
-
-        void onError(Error error);
-    }
-
-    public static class SnabbleException extends Exception {
-        private final Error error;
-
-        SnabbleException(Error error) {
-            this.error = error;
-        }
-
-        public Error getError() {
-            return error;
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
+    class SnabbleException internal constructor(val error: Error?) : Exception() {
+        override fun toString(): String {
             return "SnabbleException{" +
                     "error=" + error +
-                    '}';
+                    '}'
         }
     }
 
-    public enum Error {
-        UNSPECIFIED_ERROR,
-        CONFIG_PARAMETER_MISSING,
-        CONNECTION_TIMEOUT,
-        INVALID_METADATA_FORMAT,
-        INTERNAL_STORAGE_FULL
+    enum class Error {
+        UNSPECIFIED_ERROR, CONFIG_PARAMETER_MISSING, CONNECTION_TIMEOUT, INVALID_METADATA_FORMAT, INTERNAL_STORAGE_FULL
     }
 
-    public static class Config {
+    class Config {
         /**
          * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
          *
          * If null points to the Production Environment
          */
-        public String endpointBaseUrl;
+        @JvmField
+        var endpointBaseUrl: String? = null
 
         /**
          * Relative path from the assets folder which points to a bundled file which contains the metadata
-         * <p>
+         *
+         *
          * This file gets initially used to initialize the sdk before network requests are made,
          * or be able to use the sdk in the case of no network connection.
-         * <p>
+         *
+         *
          * Optional. If no file is specified every time the sdk is initialized we wait for a network response
          * from the backend.
-         * <p>
+         *
+         *
          * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
          * without having a network connection.
          */
-        public String bundledMetadataAssetPath;
+        @JvmField
+        var bundledMetadataAssetPath: String? = null
 
         /**
          * The project identifier, which is used in the communication with the backend.
          */
-        public String appId;
+        @JvmField
+        var appId: String? = null
 
         /**
          * The secret needed for Totp token generation
          */
-        public String secret;
+        @JvmField
+        var secret: String? = null
+
         /**
          * Optional. Used to override the versionName appended to the metadata url.
-         * <p>
+         *
+         *
          * Defaults to the versionName in the app package.
-         * <p>
+         *
+         *
          * Must be in the format %d.%d
          */
-        public String versionName;
+        @JvmField
+        var versionName: String? = null
 
         /**
          * Optional SSLSocketFactory that gets used for HTTPS requests.
-         * <p>
+         *
+         *
          * Requires also x509TrustManager to be set.
          */
-        public SSLSocketFactory sslSocketFactory = null;
+        @JvmField
+        var sslSocketFactory: SSLSocketFactory? = null
 
         /**
          * Optional X509TrustManager that gets used for HTTPS requests.
-         * <p>
+         *
+         *
          * Requires also sslSocketFactory to be set.
          */
-        public X509TrustManager x509TrustManager = null;
+        @JvmField
+        var x509TrustManager: X509TrustManager? = null
 
         /**
          * If set to true, creates an full text index to support searching in the product database
          * using findByName or searchByName.
-         * <p>
+         *
+         *
          * Note that this increases setup time of the ProductDatabase, and it may not be
          * immediately available offline.
          */
-        public boolean generateSearchIndex;
+        @JvmField
+        var generateSearchIndex = false
 
         /**
          * The time that the database is allowed to be out of date. After the specified time in
          * milliseconds the database only uses online requests for asynchronous requests.
          *
-         * Successfully calling {@link ProductDatabase#update()} resets the timer.
+         * Successfully calling [ProductDatabase.update] resets the timer.
          *
          * The time is specified in milliseconds.
          *
          * The default value is 1 hour.
          */
-        public long maxProductDatabaseAge = TimeUnit.HOURS.toMillis(1);
+        @JvmField
+        var maxProductDatabaseAge = TimeUnit.HOURS.toMillis(1)
 
         /**
          * The time that the shopping cart is allowed to be alive after the last modification.
@@ -793,34 +679,41 @@ public class Snabble {
          *
          * The default value is 4 hours.
          */
-        public long maxShoppingCartAge = TimeUnit.HOURS.toMillis(4);
+        @JvmField
+        var maxShoppingCartAge = TimeUnit.HOURS.toMillis(4)
 
-        /** If set to true, disables certificate pinning **/
-        public boolean disableCertificatePinning;
+        /** If set to true, disables certificate pinning  */
+        @JvmField
+        var disableCertificatePinning = false
 
-        /** SQL queries that will get executed in order on the product database **/
-        public String[] initialSQL = null;
+        /** SQL queries that will get executed in order on the product database  */
+        @JvmField
+        var initialSQL: Array<String>? = null
 
-        /** Vibrate while adding a product to the cart, by default false */
-        public boolean vibrateToConfirmCartFilled = false;
+        /** Vibrate while adding a product to the cart, by default false  */
+        @JvmField
+        var vibrateToConfirmCartFilled = false
 
         /** Set to true, to load shops that are marked as pre launch
-         *  and are not part of the original metadata in the backend
-         *  (for example for testing shops in production before a go-live) **/
-        public boolean loadActiveShops = false;
+         * and are not part of the original metadata in the backend
+         * (for example for testing shops in production before a go-live)  */
+        @JvmField
+        var loadActiveShops = false
 
         /**
          * The radius in which the CheckInManager tries to check in a shop.
          *
          * In meters.
          */
-        public float checkInRadius = 500.0f;
+        @JvmField
+        var checkInRadius = 500.0f
 
         /**
          * The radius in which the CheckInManager tries to stay in a shop, if already in it.
          * If outside of this radius and the lastSeenThreshold, you will be checked out.
          */
-        public float checkOutRadius = 1000.0f;
+        @JvmField
+        var checkOutRadius = 1000.0f
 
         /**
          * The time in milliseconds which we keep you checked in at a shop.
@@ -828,6 +721,28 @@ public class Snabble {
          * The timer will be refreshed while you are still inside the shop
          * and only begins to run if you are not inside the checkOutRadius anymore.
          */
-        public long lastSeenThreshold = TimeUnit.MINUTES.toMillis(15);
+        @JvmField
+        var lastSeenThreshold = TimeUnit.MINUTES.toMillis(15)
+    }
+
+    companion object {
+        private val _instance = Snabble()
+
+        @JvmStatic
+        fun getInstance() : Snabble {
+            return _instance
+        }
+
+        @JvmStatic
+        val version: String
+            get() = BuildConfig.VERSION_NAME
+
+        /**
+         * Enables debug logging.
+         */
+        @JvmStatic
+        fun setDebugLoggingEnabled(enabled: Boolean) {
+            Logger.setEnabled(enabled)
+        }
     }
 }

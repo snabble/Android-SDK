@@ -242,29 +242,36 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private fun authenticate(creditCardInfo: CreditCardInfo) {
         val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
-        val request = Request.Builder()
-            .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(tokenizationData.links["preAuth"]?.href)))
+        val link = tokenizationData.links["preAuth"]
+        if (link != null) {
+            val request = Request.Builder()
+                .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(link.href)))
             .post(req.toJsonRequest())
-            .build()
+                .build()
 
-        project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<Payone.PreAuthResponse>(Payone.PreAuthResponse::class.java), Callback {
-            override fun success(response: Payone.PreAuthResponse?) {
-                response?.let {
-                    lastPreAuthResponse = it
-                    response.links["scaChallenge"]?.href?.let { url ->
-                        Dispatch.mainThread {
-                            threeDHint.isVisible = false
-                            webView.loadUrl(url)
-                        }
+            project.okHttpClient.newCall(request).enqueue(object :
+                SimpleJsonCallback<Payone.PreAuthResponse>(Payone.PreAuthResponse::class.java),
+                Callback {
+                override fun success(response: Payone.PreAuthResponse?) {
+                    response?.let {
+                        lastPreAuthResponse = it
+                        response.links["scaChallenge"]?.href?.let { url ->
+                            Dispatch.mainThread {
+                                threeDHint.isVisible = false
+                                webView.loadUrl(url)
+                            }
+                        } ?: error(null)
                     } ?: error(null)
-                } ?: error(null)
-            }
+                }
 
-            override fun error(t: Throwable?) {
-                t?.printStackTrace()
-                Dispatch.mainThread { finishWithError() }
-            }
-        })
+                override fun error(t: Throwable?) {
+                    t?.printStackTrace()
+                    Dispatch.mainThread { finishWithError() }
+                }
+            })
+        } else {
+            Dispatch.mainThread { finishWithError() }
+        }
     }
 
 

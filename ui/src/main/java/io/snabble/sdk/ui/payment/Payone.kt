@@ -36,7 +36,7 @@ object Payone {
 
     @Parcelize
     data class Link(
-        val href: String?
+        val href: String
     ) : Parcelable
 
     data class PreAuthRequest(
