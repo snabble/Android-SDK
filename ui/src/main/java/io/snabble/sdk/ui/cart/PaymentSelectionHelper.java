@@ -132,22 +132,24 @@ public class PaymentSelectionHelper {
         sharedPreferences = Snabble.getInstance().getApplication()
                 .getSharedPreferences("snabble_cart", Context.MODE_PRIVATE);
 
+        setProject(SnabbleUI.getProjectAsLiveData().getValue());
+        SnabbleUI.getProjectAsLiveData().observeForever(this::setProject);
         update();
+    }
 
-        SnabbleUI.getProjectAsLiveData().observeForever(project -> {
-            if (project != null) {
-                PaymentSelectionHelper.this.project = project;
+    private void setProject(Project project) {
+        if (project != null) {
+            PaymentSelectionHelper.this.project = project;
 
-                if (cart != null) {
-                    cart.removeListener(shoppingCartListener);
-                }
-
-                cart = project.getShoppingCart();
-                cart.addListener(shoppingCartListener);
-
-                update();
+            if (cart != null) {
+                cart.removeListener(shoppingCartListener);
             }
-        });
+
+            cart = project.getShoppingCart();
+            cart.addListener(shoppingCartListener);
+
+            update();
+        }
     }
 
     private void update() {

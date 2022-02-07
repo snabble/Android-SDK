@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class RoutingTargetSupervisorFragment : Fragment() {
-    override fun onCreateView(
+open class RoutingTargetSupervisorFragment : BaseFragment() {
+    override fun onCreateViewInternal(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

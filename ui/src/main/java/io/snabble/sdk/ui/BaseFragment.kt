@@ -8,14 +8,13 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
 
-abstract class SnabbleBaseFragment : Fragment() {
+abstract class BaseFragment : Fragment() {
     private lateinit var sdkNotInitialized: TextView
     private lateinit var progress: ProgressBar
-    private lateinit var fragmentContainer: FragmentContainerView
+    private lateinit var fragmentContainer: ViewGroup
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,13 +33,13 @@ abstract class SnabbleBaseFragment : Fragment() {
             when(it) {
                 InitializationState.NONE -> {
                     // TODO init
-                    observeProject(savedInstanceState)
+                    waitForProjectAndAdd(savedInstanceState)
                 }
                 InitializationState.INITIALIZED -> {
-                    observeProject(savedInstanceState)
+                    waitForProjectAndAdd(savedInstanceState)
                 }
                 InitializationState.INITIALIZING -> {
-                    observeProject(savedInstanceState)
+                    waitForProjectAndAdd(savedInstanceState)
                 }
                 InitializationState.ERROR -> {
                     progress.isVisible = false
@@ -50,11 +49,13 @@ abstract class SnabbleBaseFragment : Fragment() {
         }
     }
 
-    private fun observeProject(savedInstanceState: Bundle?) {
+    private fun waitForProjectAndAdd(savedInstanceState: Bundle?) {
+        sdkNotInitialized.isVisible = false
+
         SnabbleUI.projectAsLiveData.observe(viewLifecycleOwner) {
             progress.isVisible = it == null
 
-            if (it != null) {
+            if (it != null && fragmentContainer.childCount == 0) {
                 val fragmentView = onCreateViewInternal(layoutInflater, fragmentContainer, savedInstanceState)
                 if (fragmentView != null) {
                     fragmentContainer.addView(fragmentView)

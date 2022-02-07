@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import org.apache.commons.io.FileUtils;
 
@@ -23,10 +22,10 @@ import java.util.List;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.ui.SnabbleBaseFragment;
+import io.snabble.sdk.ui.BaseFragment;
 import io.snabble.sdk.ui.SnabbleUI;
 
-public class HomeFragment extends SnabbleBaseFragment {
+public class HomeFragment extends BaseFragment {
     private void updateShops(View v) {
         Project project = SnabbleUI.getProject();
         final List<Shop> shopList = project.getShops();

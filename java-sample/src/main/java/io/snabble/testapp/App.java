@@ -31,13 +31,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-    }
-
-    public void init(final InitCallback callback) {
-        if(project != null){
-            callback.done();
-            return;
-        }
 
         //you may enable debug logging to see requests made by the sdk, and other various logs
         Snabble.setDebugLoggingEnabled(true);
@@ -73,17 +66,11 @@ public class App extends Application {
 
                 // optional: preload assets
                 project.getAssets().update();
-
-                callback.done();
             }
 
             @Override
             public void onError(Snabble.Error error) {
-                if(config.appId.equals("<missing app id>") || config.secret.equals("<missing secret>")) {
-                    callback.error("SdkError: You did not setup any secrets yet.\nSee README.md for more details.");
-                } else {
-                    callback.error("SdkError: " + error.toString());
-                }
+
             }
         });
 

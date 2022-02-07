@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.PaymentOriginCandidateHelper
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class SEPACardInputFragment : Fragment() {
+open class SEPACardInputFragment : BaseFragment() {
     companion object {
         const val ARG_PAYMENT_ORIGIN_CANDIDATE = "paymentOriginCandidate"
     }
@@ -23,7 +24,7 @@ open class SEPACardInputFragment : Fragment() {
                 as? PaymentOriginCandidateHelper.PaymentOriginCandidate
     }
 
-    override fun onCreateView(
+    override fun onCreateViewInternal(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

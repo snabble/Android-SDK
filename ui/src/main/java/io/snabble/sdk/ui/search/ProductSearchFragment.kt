@@ -5,10 +5,11 @@ import android.view.ViewGroup
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class ProductSearchFragment : Fragment() {
-    override fun onCreateView(
+open class ProductSearchFragment : BaseFragment() {
+    override fun onCreateViewInternal(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

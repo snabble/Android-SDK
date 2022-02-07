@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class ProjectPaymentOptionsFragment : Fragment() {
+open class ProjectPaymentOptionsFragment : BaseFragment() {
     companion object {
         const val ARG_BRAND = ProjectPaymentOptionsView.ARG_BRAND
     }
@@ -24,7 +25,7 @@ open class ProjectPaymentOptionsFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateViewInternal(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v =  inflater.inflate(
             R.layout.snabble_fragment_select_payment_project,
             container,

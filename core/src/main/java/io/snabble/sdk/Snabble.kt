@@ -111,7 +111,7 @@ class Snabble private constructor() {
     
     var receiptsUrl: String? = null
         get() {
-            val url = receiptsUrl
+            val url = field
             val appUser = userPreferences.appUser
             return if (appUser != null && url != null) {
                 url.replace("{appUserID}", appUser.id)
