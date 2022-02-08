@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -198,7 +199,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
     }
 
-    private class ViewHolder extends RecyclerView.ViewHolder {
+    private static class ViewHolder extends RecyclerView.ViewHolder {
         TextView text;
         ImageView image;
 
@@ -211,14 +212,15 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     }
 
     private class Adapter extends RecyclerView.Adapter<SelectPaymentMethodFragment.ViewHolder> {
+        @NonNull
         @Override
-        public SelectPaymentMethodFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public SelectPaymentMethodFragment.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_select, parent, false);
-            return new SelectPaymentMethodFragment.ViewHolder(v);
+            return new ViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(final SelectPaymentMethodFragment.ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull final SelectPaymentMethodFragment.ViewHolder holder, final int position) {
             SelectPaymentMethodFragment.Entry e = entries.get(position);
 
             if (e.drawableRes != 0) {
@@ -235,4 +237,3 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
     }
 }
-
