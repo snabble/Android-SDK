@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import io.snabble.sdk.Config
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
 
@@ -32,7 +33,6 @@ abstract class BaseFragment : Fragment() {
         Snabble.getInstance().initializationState.observe(viewLifecycleOwner) {
             when(it) {
                 InitializationState.NONE -> {
-                    // TODO init
                     waitForProjectAndAdd(savedInstanceState)
                 }
                 InitializationState.INITIALIZED -> {
@@ -55,11 +55,16 @@ abstract class BaseFragment : Fragment() {
         SnabbleUI.projectAsLiveData.observe(viewLifecycleOwner) {
             progress.isVisible = it == null
 
-            if (it != null && fragmentContainer.childCount == 0) {
-                val fragmentView = onCreateViewInternal(layoutInflater, fragmentContainer, savedInstanceState)
-                if (fragmentView != null) {
-                    fragmentContainer.addView(fragmentView)
+            if (it != null) {
+                if (fragmentContainer.childCount == 0) {
+                    val fragmentView =
+                        onCreateViewInternal(layoutInflater, fragmentContainer, savedInstanceState)
+                    if (fragmentView != null) {
+                        fragmentContainer.addView(fragmentView)
+                    }
                 }
+            } else {
+                fragmentContainer.removeAllViews()
             }
         }
     }

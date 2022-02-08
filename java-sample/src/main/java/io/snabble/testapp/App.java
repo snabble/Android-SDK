@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.Config;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -36,7 +37,7 @@ public class App extends Application {
         Snabble.setDebugLoggingEnabled(true);
 
         // config {
-        Snabble.Config config = new Snabble.Config();
+        Config config = new Config();
         config.endpointBaseUrl = getString(R.string.endpoint);
         config.secret = getString(R.string.secret);
         config.appId = getString(R.string.app_id);

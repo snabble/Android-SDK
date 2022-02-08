@@ -26,51 +26,6 @@ import io.snabble.sdk.ui.BaseFragment;
 import io.snabble.sdk.ui.SnabbleUI;
 
 public class HomeFragment extends BaseFragment {
-    private void updateShops(View v) {
-        Project project = SnabbleUI.getProject();
-        final List<Shop> shopList = project.getShops();
-        Spinner shops = v.findViewById(R.id.shops);
-        shops.setAdapter(new ArrayAdapter<Shop>(requireContext(), R.layout.item_dropdown, shopList) {
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                TextView v = (TextView) super.getView(position, convertView, parent);
-                Shop shop = shopList.get(position);
-                v.setText(shop.getName() + " (" + shop.getId() + ")");
-                return v;
-            }
-
-            @Override
-            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                TextView v = (TextView) super.getDropDownView(position, convertView, parent);
-                Shop shop = shopList.get(position);
-                v.setText(shop.getName() + " (" + shop.getId() + ")");
-                return v;
-            }
-        });
-
-        for (int i=0; i<shopList.size(); i++) {
-            if (project.getCheckedInShop() == shopList.get(i)) {
-                shops.setSelection(i);
-                break;
-            }
-        }
-
-        shops.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Shop shop = shopList.get(position);
-                project.setCheckedInShop(shop);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-
     @Nullable
     @Override
     public View onCreateViewInternal(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -152,5 +107,49 @@ public class HomeFragment extends BaseFragment {
         updateShops(v);
 
         return v;
+    }
+
+    private void updateShops(View v) {
+        Project project = SnabbleUI.getProject();
+        final List<Shop> shopList = project.getShops();
+        Spinner shops = v.findViewById(R.id.shops);
+        shops.setAdapter(new ArrayAdapter<Shop>(requireContext(), R.layout.item_dropdown, shopList) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView v = (TextView) super.getView(position, convertView, parent);
+                Shop shop = shopList.get(position);
+                v.setText(shop.getName() + " (" + shop.getId() + ")");
+                return v;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView v = (TextView) super.getDropDownView(position, convertView, parent);
+                Shop shop = shopList.get(position);
+                v.setText(shop.getName() + " (" + shop.getId() + ")");
+                return v;
+            }
+        });
+
+        for (int i=0; i<shopList.size(); i++) {
+            if (project.getCheckedInShop() == shopList.get(i)) {
+                shops.setSelection(i);
+                break;
+            }
+        }
+
+        shops.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Shop shop = shopList.get(position);
+                project.setCheckedInShop(shop);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 }

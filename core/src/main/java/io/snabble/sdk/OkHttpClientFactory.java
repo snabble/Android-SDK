@@ -42,7 +42,7 @@ class OkHttpClientFactory {
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
         builder.addInterceptor(logging);
 
-        Snabble.Config config = Snabble.getInstance().getConfig();
+        Config config = Snabble.getInstance().getConfig();
         builder.addInterceptor(new UserAgentInterceptor(application));
 
         if (!Snabble.getInstance().getConfig().disableCertificatePinning) {
@@ -56,11 +56,7 @@ class OkHttpClientFactory {
             builder.certificatePinner(certificatePinnerBuilder.build());
         }
 
-        if (config.sslSocketFactory != null && config.x509TrustManager != null) {
-            builder.sslSocketFactory(config.sslSocketFactory, config.x509TrustManager);
-        } else {
-            LetsEncryptCertHelper.addLetsEncryptCertificatesForMarshmallowOrEarlier(builder);
-        }
+        LetsEncryptCertHelper.addLetsEncryptCertificatesForMarshmallowOrEarlier(builder);
 
         return builder.build();
     }

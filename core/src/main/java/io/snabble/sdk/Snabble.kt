@@ -1,42 +1,25 @@
 package io.snabble.sdk
 
-import io.snabble.sdk.Project
 import io.snabble.sdk.auth.TokenRegistry
-import io.snabble.sdk.Receipts
-import io.snabble.sdk.Users
-import io.snabble.sdk.MetadataDownloader
-import io.snabble.sdk.UserPreferences
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
-import io.snabble.sdk.TermsOfService
 import okhttp3.OkHttpClient
 import android.app.Activity
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import io.snabble.sdk.InitializationState
-import io.snabble.sdk.Snabble.SetupCompletionListener
-import io.snabble.sdk.utils.Logger.ErrorEventHandler
-import io.snabble.sdk.utils.Logger.LogEventHandler
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import io.snabble.sdk.OkHttpClientFactory
-import io.snabble.sdk.auth.AppUser
 import android.net.ConnectivityManager
 import android.net.NetworkRequest
 import android.net.NetworkCapabilities
 import androidx.lifecycle.LiveData
 import com.google.gson.JsonObject
-import com.google.gson.JsonElement
-import com.google.gson.JsonArray
 import kotlin.Throws
-import io.snabble.sdk.Snabble.SnabbleException
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.util.Base64
-import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.*
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -50,9 +33,7 @@ import java.security.cert.X509Certificate
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLSocketFactory
-import javax.net.ssl.X509TrustManager
+import java.util.concurrent.atomic.AtomicBoolean
 
 class Snabble private constructor() {
     lateinit var okHttpClient: OkHttpClient
@@ -148,7 +129,14 @@ class Snabble private constructor() {
 
     private val onMetaDataUpdateListeners: MutableList<OnMetadataUpdateListener> = CopyOnWriteArrayList()
 
+    private val isInitializing = AtomicBoolean(false)
+
     fun setup(app: Application, config: Config, setupCompletionListener: SetupCompletionListener) {
+        if (isInitializing.get()) {
+            return
+        }
+
+        isInitializing.set(true)
         initializationState.postValue(InitializationState.INITIALIZING)
         
         application = app
@@ -156,12 +144,13 @@ class Snabble private constructor() {
         
         Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
         Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
-        
-        if (config.appId == null || config.secret == null) {
-            setupCompletionListener.onError(Error.CONFIG_PARAMETER_MISSING)
+
+        if (!config.endpointBaseUrl.startsWith("http://")
+         && !config.endpointBaseUrl.startsWith("https://")) {
+            setupCompletionListener.onError(Error.CONFIG_ERROR)
             return
         }
-        
+
         var version = config.versionName
         if (version == null) {
             version = try {
@@ -179,6 +168,8 @@ class Snabble private constructor() {
         
         internalStorageDirectory = File(application.filesDir, "snabble/" + config.appId + "/")
         internalStorageDirectory.mkdirs()
+
+        Config.store(config)
         
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app)
         userPreferences = UserPreferences(app)
@@ -188,12 +179,6 @@ class Snabble private constructor() {
         brands = Collections.unmodifiableMap(HashMap())
         projects = Collections.unmodifiableList(ArrayList())
 
-        if (config.endpointBaseUrl == null) {
-            config.endpointBaseUrl = Environment.PRODUCTION.baseUrl
-        } else if (!config.endpointBaseUrl!!.startsWith("http://") && !config.endpointBaseUrl!!.startsWith("https://")) {
-            config.endpointBaseUrl = "https://" + config.endpointBaseUrl
-        }
-        
         environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl)
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version)
         paymentCredentialsStore = PaymentCredentialsStore()
@@ -212,6 +197,7 @@ class Snabble private constructor() {
             readMetadata()
             setupCompletionListener.onReady()
             initializationState.postValue(InitializationState.INITIALIZED)
+            isInitializing.set(false)
             if (config.loadActiveShops) {
                 loadActiveShops()
             }
@@ -225,11 +211,13 @@ class Snabble private constructor() {
                         if (token == null) {
                             setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
                             initializationState.postValue(InitializationState.ERROR)
+                            isInitializing.set(false)
                             return
                         }
                     }
                     setupCompletionListener.onReady()
                     initializationState.postValue(InitializationState.INITIALIZED)
+                    isInitializing.set(false)
                     if (config.loadActiveShops) {
                         loadActiveShops()
                     }
@@ -240,9 +228,11 @@ class Snabble private constructor() {
                         readMetadata()
                         setupCompletionListener.onReady()
                         initializationState.postValue(InitializationState.INITIALIZED)
+                        isInitializing.set(false)
                     } else {
                         setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
                         initializationState.postValue(InitializationState.ERROR)
+                        isInitializing.set(false)
                     }
                 }
             })
@@ -250,6 +240,41 @@ class Snabble private constructor() {
         
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
         registerNetworkCallback(app)
+    }
+
+    /**
+     * The blocking version of [.setup]
+     *
+     * Blocks until every initialization is completed, that includes waiting for necessary
+     * network calls if bundled data is not provided.
+     *
+     * If all needed bundled data is provided (See [Config]), initialization requires
+     * no network calls.
+     *
+     * @throws SnabbleException If an error occurs while initializing the sdk.
+     */
+    @Throws(SnabbleException::class)
+    fun setupBlocking(app: Application, config: Config) {
+        val countDownLatch = CountDownLatch(1)
+        val snabbleError = arrayOfNulls<Error>(1)
+        setup(app, config, object : SetupCompletionListener {
+            override fun onReady() {
+                countDownLatch.countDown()
+            }
+
+            override fun onError(error: Error?) {
+                snabbleError[0] = error
+                countDownLatch.countDown()
+            }
+        })
+        try {
+            countDownLatch.await()
+        } catch (e: InterruptedException) {
+            throw SnabbleException(Error.UNSPECIFIED_ERROR)
+        }
+        if (snabbleError[0] != null) {
+            throw SnabbleException(snabbleError[0])
+        }
     }
 
     private fun registerNetworkCallback(app: Application) {
@@ -388,8 +413,7 @@ class Snabble private constructor() {
                     val `is`: InputStream = ByteArrayInputStream(bytes)
                     try {
                         val certificateFactory = CertificateFactory.getInstance("X.509")
-                        val certificate =
-                            certificateFactory.generateCertificate(`is`) as X509Certificate
+                        val certificate = certificateFactory.generateCertificate(`is`) as X509Certificate
                         certificates.add(certificate)
                     } catch (e: CertificateException) {
                         e.printStackTrace()
@@ -419,43 +443,6 @@ class Snabble private constructor() {
             }
         }
         return null
-    }
-
-    /**
-     * The blocking version of [.setup]
-     *
-     *
-     * Blocks until every initialization is completed, that includes waiting for necessary
-     * network calls if bundled data is not provided.
-     *
-     *
-     * If all needed bundled data is provided (See [Config]), initialization requires
-     * no network calls.
-     *
-     * @throws SnabbleException If an error occurs while initializing the sdk.
-     */
-    @Throws(SnabbleException::class)
-    fun setupBlocking(app: Application, config: Config) {
-        val countDownLatch = CountDownLatch(1)
-        val snabbleError = arrayOfNulls<Error>(1)
-        setup(app, config, object : SetupCompletionListener {
-            override fun onReady() {
-                countDownLatch.countDown()
-            }
-
-            override fun onError(error: Error?) {
-                snabbleError[0] = error
-                countDownLatch.countDown()
-            }
-        })
-        try {
-            countDownLatch.await()
-        } catch (e: InterruptedException) {
-            throw SnabbleException(Error.UNSPECIFIED_ERROR)
-        }
-        if (snabbleError[0] != null) {
-            throw SnabbleException(snabbleError[0])
-        }
     }
 
     private fun updateMetadata() {
@@ -576,153 +563,7 @@ class Snabble private constructor() {
     }
 
     enum class Error {
-        UNSPECIFIED_ERROR, CONFIG_PARAMETER_MISSING, CONNECTION_TIMEOUT, INVALID_METADATA_FORMAT, INTERNAL_STORAGE_FULL
-    }
-
-    class Config {
-        /**
-         * The endpoint url of the snabble backend. For example "snabble.io" for the Production environment.
-         *
-         * If null points to the Production Environment
-         */
-        @JvmField
-        var endpointBaseUrl: String? = null
-
-        /**
-         * Relative path from the assets folder which points to a bundled file which contains the metadata
-         *
-         *
-         * This file gets initially used to initialize the sdk before network requests are made,
-         * or be able to use the sdk in the case of no network connection.
-         *
-         *
-         * Optional. If no file is specified every time the sdk is initialized we wait for a network response
-         * from the backend.
-         *
-         *
-         * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
-         * without having a network connection.
-         */
-        @JvmField
-        var bundledMetadataAssetPath: String? = null
-
-        /**
-         * The project identifier, which is used in the communication with the backend.
-         */
-        @JvmField
-        var appId: String? = null
-
-        /**
-         * The secret needed for Totp token generation
-         */
-        @JvmField
-        var secret: String? = null
-
-        /**
-         * Optional. Used to override the versionName appended to the metadata url.
-         *
-         *
-         * Defaults to the versionName in the app package.
-         *
-         *
-         * Must be in the format %d.%d
-         */
-        @JvmField
-        var versionName: String? = null
-
-        /**
-         * Optional SSLSocketFactory that gets used for HTTPS requests.
-         *
-         *
-         * Requires also x509TrustManager to be set.
-         */
-        @JvmField
-        var sslSocketFactory: SSLSocketFactory? = null
-
-        /**
-         * Optional X509TrustManager that gets used for HTTPS requests.
-         *
-         *
-         * Requires also sslSocketFactory to be set.
-         */
-        @JvmField
-        var x509TrustManager: X509TrustManager? = null
-
-        /**
-         * If set to true, creates an full text index to support searching in the product database
-         * using findByName or searchByName.
-         *
-         *
-         * Note that this increases setup time of the ProductDatabase, and it may not be
-         * immediately available offline.
-         */
-        @JvmField
-        var generateSearchIndex = false
-
-        /**
-         * The time that the database is allowed to be out of date. After the specified time in
-         * milliseconds the database only uses online requests for asynchronous requests.
-         *
-         * Successfully calling [ProductDatabase.update] resets the timer.
-         *
-         * The time is specified in milliseconds.
-         *
-         * The default value is 1 hour.
-         */
-        @JvmField
-        var maxProductDatabaseAge = TimeUnit.HOURS.toMillis(1)
-
-        /**
-         * The time that the shopping cart is allowed to be alive after the last modification.
-         *
-         * The time is specified in milliseconds.
-         *
-         * The default value is 4 hours.
-         */
-        @JvmField
-        var maxShoppingCartAge = TimeUnit.HOURS.toMillis(4)
-
-        /** If set to true, disables certificate pinning  */
-        @JvmField
-        var disableCertificatePinning = false
-
-        /** SQL queries that will get executed in order on the product database  */
-        @JvmField
-        var initialSQL: Array<String>? = null
-
-        /** Vibrate while adding a product to the cart, by default false  */
-        @JvmField
-        var vibrateToConfirmCartFilled = false
-
-        /** Set to true, to load shops that are marked as pre launch
-         * and are not part of the original metadata in the backend
-         * (for example for testing shops in production before a go-live)  */
-        @JvmField
-        var loadActiveShops = false
-
-        /**
-         * The radius in which the CheckInManager tries to check in a shop.
-         *
-         * In meters.
-         */
-        @JvmField
-        var checkInRadius = 500.0f
-
-        /**
-         * The radius in which the CheckInManager tries to stay in a shop, if already in it.
-         * If outside of this radius and the lastSeenThreshold, you will be checked out.
-         */
-        @JvmField
-        var checkOutRadius = 1000.0f
-
-        /**
-         * The time in milliseconds which we keep you checked in at a shop.
-         *
-         * The timer will be refreshed while you are still inside the shop
-         * and only begins to run if you are not inside the checkOutRadius anymore.
-         */
-        @JvmField
-        var lastSeenThreshold = TimeUnit.MINUTES.toMillis(15)
+        UNSPECIFIED_ERROR, CONFIG_ERROR, CONNECTION_TIMEOUT, INVALID_METADATA_FORMAT, INTERNAL_STORAGE_FULL
     }
 
     companion object {

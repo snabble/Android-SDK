@@ -52,22 +52,18 @@ object SnabbleUI {
 
     private var actions = mutableMapOf<Event, ActivityCallback?>()
 
-    private val projectLiveData = MutableLiveData<Project?>()
-    private var nullableProject: Project? = null
-
     @JvmStatic
     var project: Project
         get() {
-            return requireNotNull(nullableProject)
+            return requireNotNull(UIPersistenceStore.project.value)
         }
         set(value) {
-            nullableProject = value
-            projectLiveData.postValue(value)
+            UIPersistenceStore.updateProject(value)
         }
 
     @JvmStatic
     val projectAsLiveData: LiveData<Project?>
-        get() = projectLiveData
+        get() = UIPersistenceStore.project
 
     /**
      * Sets an action handler for custom implementations of events.
