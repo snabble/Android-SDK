@@ -55,15 +55,15 @@ object SnabbleUI {
     @JvmStatic
     var project: Project
         get() {
-            return requireNotNull(UIPersistenceStore.project.value)
+            return requireNotNull(UIProjectManager.project.value)
         }
         set(value) {
-            UIPersistenceStore.updateProject(value)
+            UIProjectManager.updateProject(value)
         }
 
     @JvmStatic
     val projectAsLiveData: LiveData<Project?>
-        get() = UIPersistenceStore.project
+        get() = UIProjectManager.project
 
     /**
      * Sets an action handler for custom implementations of events.

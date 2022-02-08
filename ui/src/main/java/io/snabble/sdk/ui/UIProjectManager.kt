@@ -7,10 +7,10 @@ import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.utils.Dispatch
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal object UIPersistenceStore {
-
+internal object UIProjectManager {
     private val snabble = Snabble.getInstance()
     private var application = snabble.application
     private val sharedPreferences: SharedPreferences = application.getSharedPreferences("snabble_ui_persistence", Context.MODE_PRIVATE)
@@ -18,16 +18,22 @@ internal object UIPersistenceStore {
     val project = MutableLiveData<Project?>()
 
     init {
-        snabble.addOnMetadataUpdateListener(object : Snabble.OnMetadataUpdateListener {
-            override fun onMetaDataUpdated() {
+        Dispatch.mainThread {
+            snabble.initializationState.observeForever {
                 update()
             }
-        })
+
+            snabble.addOnMetadataUpdateListener(object : Snabble.OnMetadataUpdateListener {
+                override fun onMetaDataUpdated() {
+                    update()
+                }
+            })
+        }
     }
 
     internal fun updateProject(p: Project?) {
         project.postValue(p)
-        sharedPreferences.edit().putString("id", null).apply()
+        sharedPreferences.edit().putString("id", p?.id).apply()
     }
 
     private fun update() {

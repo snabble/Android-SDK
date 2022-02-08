@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import io.snabble.sdk.Config
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI
 
@@ -16,10 +17,11 @@ class LoadingActivity : AppCompatActivity() {
 
     fun initSdk() {
         // config {
-        val config = Snabble.Config()
-        config.endpointBaseUrl = getString(R.string.endpoint)
-        config.secret = getString(R.string.secret)
-        config.appId = getString(R.string.app_id)
+        val config = Config(
+            endpointBaseUrl = getString(R.string.endpoint),
+            appId = getString(R.string.app_id),
+            secret = getString(R.string.secret),
+        )
         //}
 
         Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
