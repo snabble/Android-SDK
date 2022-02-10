@@ -3,6 +3,8 @@ package io.snabble.testapp;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TimingLogger;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,6 +136,7 @@ public class HomeFragment extends BaseFragment {
 
         for (int i=0; i<shopList.size(); i++) {
             if (project.getCheckedInShop() == shopList.get(i)) {
+                Log.d("Restoring", "shop id = " + shopList.get(i).getId());
                 shops.setSelection(i);
                 break;
             }

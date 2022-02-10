@@ -192,45 +192,18 @@ class Snabble private constructor() {
         metadataDownloader = MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath)
         
         if (config.bundledMetadataAssetPath != null) {
-            readMetadata()
-            setupCompletionListener.onReady()
-            initializationState.postValue(InitializationState.INITIALIZED)
-            isInitializing.set(false)
-            if (config.loadActiveShops) {
-                loadActiveShops()
-            }
+            dispatchOnReady(setupCompletionListener)
         } else {
             metadataDownloader.loadAsync(object : Downloader.Callback() {
                 override fun onDataLoaded(wasStillValid: Boolean) {
-                    readMetadata()
-                    val appUser = userPreferences.appUser
-                    if (appUser == null && projects.size > 0) {
-                        val token = tokenRegistry.getToken(projects.get(0))
-                        if (token == null) {
-                            setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
-                            initializationState.postValue(InitializationState.ERROR)
-                            isInitializing.set(false)
-                            return
-                        }
-                    }
-                    setupCompletionListener.onReady()
-                    initializationState.postValue(InitializationState.INITIALIZED)
-                    isInitializing.set(false)
-                    if (config.loadActiveShops) {
-                        loadActiveShops()
-                    }
+                    dispatchOnReady(setupCompletionListener)
                 }
 
                 override fun onError() {
                     if (metadataDownloader.hasData()) {
-                        readMetadata()
-                        setupCompletionListener.onReady()
-                        initializationState.postValue(InitializationState.INITIALIZED)
-                        isInitializing.set(false)
+                        dispatchOnReady(setupCompletionListener)
                     } else {
-                        setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
-                        initializationState.postValue(InitializationState.ERROR)
-                        isInitializing.set(false)
+                        dispatchError(setupCompletionListener)
                     }
                 }
             })
@@ -238,6 +211,36 @@ class Snabble private constructor() {
         
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
         registerNetworkCallback(app)
+    }
+
+    fun dispatchOnReady(setupCompletionListener: SetupCompletionListener) {
+        Dispatch.mainThread {
+            readMetadata()
+            val appUser = userPreferences.appUser
+            if (appUser == null && projects.size > 0) {
+                val token = tokenRegistry.getToken(projects.get(0))
+                if (token == null) {
+                    setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
+                    initializationState.postValue(InitializationState.ERROR)
+                    isInitializing.set(false)
+                    return@mainThread
+                }
+            }
+            initializationState.postValue(InitializationState.INITIALIZED)
+            isInitializing.set(false)
+            setupCompletionListener.onReady()
+            if (config.loadActiveShops) {
+                loadActiveShops()
+            }
+        }
+    }
+
+    fun dispatchError(setupCompletionListener: SetupCompletionListener) {
+        Dispatch.mainThread {
+            initializationState.postValue(InitializationState.ERROR)
+            setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
+            isInitializing.set(false)
+        }
     }
 
     /**
@@ -336,10 +339,26 @@ class Snabble private constructor() {
                     GsonHolder.get().fromJson(jsonObject["terms"], TermsOfService::class.java)
             }
         }
-        
+        restoreCheckedInShop()
         paymentCredentialsStore.init(application, environment)
         users.postPendingConsents()
         checkInManager.update()
+    }
+
+    private fun restoreCheckedInShop() {
+        val lastCheckedInShopId = userPreferences.lastCheckedInShopId
+        if (lastCheckedInShopId != null) {
+            for (project in projects) {
+                val shop = project.shops.find {
+                        shop -> shop.id == lastCheckedInShopId
+                }
+                if (shop != null) {
+                    Logger.d("Restoring last checked in shop " + shop?.id + ", " + shop?.name)
+                    project.checkedInShop = shop
+                    break;
+                }
+            }
+        }
     }
 
     private fun getUrl(jsonObject: JsonObject, urlName: String): String? {
@@ -544,7 +563,7 @@ class Snabble private constructor() {
     /**
      * Unique identifier, different over device installations
      */
-    val clientId: String
+    val clientId: String?
         get() = userPreferences.clientId
 
     interface SetupCompletionListener {

@@ -47,26 +47,7 @@ public class App extends Application {
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
             @Override
             public void onReady() {
-                project = snabble.getProjects().get(0);
-
-                // registers this project globally for use with ui components
-                SnabbleUI.setProject(project);
-
-                // select the first shop for demo purposes
-                if (project.getShops().size() > 0) {
-                    project.setCheckedInShop(project.getShops().get(0));
-                }
-
-                // you can update the local database asynchronously, you can still query
-                // the database while this is running
-                // project.getProductDatabase().update();
-
-                // optionally set a loyalty card id for identification, for demo purposes
-                // we invent one here
-                project.setCustomerCardId("2206467131013");
-
-                // optional: preload assets
-                project.getAssets().update();
+                
             }
 
             @Override

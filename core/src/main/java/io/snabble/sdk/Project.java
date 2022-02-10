@@ -496,6 +496,7 @@ public class Project {
 
         if (!currentShopId.equals(newShopId)) {
             this.checkedInShop = checkedInShop;
+            snabble.getUserPreferences().setLastCheckedInShopId(checkedInShop.getId());
             events.updateShop(checkedInShop);
             getShoppingCart().updatePrices(false);
         }

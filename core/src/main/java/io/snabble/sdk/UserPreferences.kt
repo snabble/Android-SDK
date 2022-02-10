@@ -1,225 +1,208 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Base64;
+import android.annotation.SuppressLint
+import android.content.Context
+import io.snabble.sdk.Snabble.Companion.getInstance
+import android.util.Base64
+import io.snabble.sdk.auth.AppUser
+import io.snabble.sdk.utils.Logger
+import java.io.UnsupportedEncodingException
+import java.lang.Exception
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import io.snabble.sdk.auth.AppUser;
-import io.snabble.sdk.utils.Logger;
-
-public class UserPreferences {
-    enum ConsentStatus {
+class UserPreferences internal constructor(context: Context) {
+    enum class ConsentStatus {
         UNDECIDED,
         TRANSMITTING,
         TRANSMIT_FAILED,
         ACCEPTED
     }
 
-    private static final String SHARED_PREFERENCES_TAG = "snabble_prefs";
-    private static final String SHARED_PREFERENCES_CLIENT_ID = "Client-ID";
-    private static final String SHARED_PREFERENCES_APPUSER_ID = "AppUser-ID";
-    private static final String SHARED_PREFERENCES_APPUSER_SECRET = "AppUser-Secret";
-    private static final String SHARED_PREFERENCES_BIRTHDAY = "Birthday_v2";
-    private static final String SHARED_PREFERENCES_CONSENT_STATUS = "ConsentStatus";
-    private static final String SHARED_PREFERENCES_CONSENT_VERSION = "ConsentVersion";
-    private static final String SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard";
+    companion object {
+        private const val SHARED_PREFERENCES_TAG = "snabble_prefs"
+        private const val SHARED_PREFERENCES_CLIENT_ID = "Client-ID"
+        private const val SHARED_PREFERENCES_APPUSER_ID = "AppUser-ID"
+        private const val SHARED_PREFERENCES_APPUSER_SECRET = "AppUser-Secret"
+        private const val SHARED_PREFERENCES_BIRTHDAY = "Birthday_v2"
+        private const val SHARED_PREFERENCES_CONSENT_STATUS = "ConsentStatus"
+        private const val SHARED_PREFERENCES_CONSENT_VERSION = "ConsentVersion"
+        private const val SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard"
+        private const val SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP = "lastShop"
 
-    private static final SimpleDateFormat BIRTHDAY_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
+        @SuppressLint("SimpleDateFormat")
+        private val BIRTHDAY_FORMAT = SimpleDateFormat("yyyy/MM/dd")
+    }
 
-    private final SharedPreferences sharedPreferences;
-    private final List<OnNewAppUserListener> onNewAppUserListeners;
+    private val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE)
+    private val onNewAppUserListeners: MutableList<OnNewAppUserListener> = CopyOnWriteArrayList()
 
-    UserPreferences(Context context) {
-        this.sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
-        this.onNewAppUserListeners = new CopyOnWriteArrayList<>();
-
-        if (getClientId() == null) {
-            generateClientId();
+    init {
+        if (clientId == null) {
+            generateClientId()
         }
     }
 
-    private void generateClientId() {
-        String clientId = UUID.randomUUID().toString()
-                .replace("-", "")
-                .toLowerCase(Locale.ROOT);
-
-        setClientId(clientId);
+    private fun generateClientId() {
+        clientId = UUID.randomUUID().toString()
+            .replace("-", "")
+            .lowercase(Locale.ROOT)
     }
 
-    private String getEnvironmentKey() {
-        Environment environment = Snabble.getInstance().getEnvironment();
-        if (environment != null) {
-            return environment.name();
-        } else {
-            return "UNKNOWN";
-        }
-    }
-
-    private String getAppUserIdKey() {
-        Config config = Snabble.getInstance().getConfig();
-        return SHARED_PREFERENCES_APPUSER_ID + "_" + getEnvironmentKey() + config.appId;
-    }
-
-    private String getAppUserIdSecret() {
-        Config config = Snabble.getInstance().getConfig();
-        return SHARED_PREFERENCES_APPUSER_SECRET + "_" + getEnvironmentKey() + config.appId;
-    }
-
-    public AppUser getAppUser() {
-        Config config = Snabble.getInstance().getConfig();
-        if (config == null) {
-            return null;
+    private val environmentKey: String
+        get() {
+            val environment = getInstance().environment
+            return environment?.name ?: "UNKNOWN"
         }
 
-        String appUserId = sharedPreferences.getString(getAppUserIdKey(), null);
-        String appUserSecret = sharedPreferences.getString(getAppUserIdSecret(), null);
-
-        if (appUserId != null && appUserSecret != null) {
-            return new AppUser(appUserId, appUserSecret);
-        } else {
-            return null;
-        }
-    }
-
-    public void setAppUser(AppUser appUser) {
-        if (appUser == null) {
-            sharedPreferences.edit()
-                    .putString(getAppUserIdKey(), null)
-                    .putString(getAppUserIdSecret(), null)
-                    .apply();
-
-            Logger.d("Clearing app user");
-            notifyOnNewAppUser(null);
-            return;
+    private val appUserIdKey: String
+        get() {
+            val (_, appId) = getInstance().config
+            return SHARED_PREFERENCES_APPUSER_ID + "_" + environmentKey + appId
         }
 
-        if (appUser.id != null && appUser.secret != null) {
-            sharedPreferences.edit()
-                    .putString(getAppUserIdKey(), appUser.id)
-                    .putString(getAppUserIdSecret(), appUser.secret)
-                    .apply();
-
-            Logger.d("Setting app user to %s", appUser.id);
-            notifyOnNewAppUser(appUser);
+    private val appUserIdSecret: String
+        get() {
+            val (_, appId) = getInstance().config
+            return SHARED_PREFERENCES_APPUSER_SECRET + "_" + environmentKey + appId
         }
-    }
 
-    public String getAppUserBase64() {
-        AppUser appUser = getAppUser();
-        if (appUser != null) {
-            String content = appUser.id + ":" + appUser.secret;
+    var appUser: AppUser?
+        get() {
+            val appUserId = sharedPreferences.getString(appUserIdKey, null)
+            val appUserSecret = sharedPreferences.getString(appUserIdSecret, null)
 
-            try {
-                return Base64.encodeToString(content.getBytes("UTF-8"), Base64.NO_WRAP);
-            } catch (UnsupportedEncodingException e) {
-                return null;
+            return if (appUserId != null && appUserSecret != null) {
+                AppUser(appUserId, appUserSecret)
+            } else {
+                null
+            }
+        }
+        set(appUser) {
+            if (appUser == null) {
+                sharedPreferences.edit()
+                    .putString(appUserIdKey, null)
+                    .putString(appUserIdSecret, null)
+                    .apply()
+                Logger.d("Clearing app user")
+                notifyOnNewAppUser(null)
+                return
+            }
+            if (appUser.id != null && appUser.secret != null) {
+                sharedPreferences.edit()
+                    .putString(appUserIdKey, appUser.id)
+                    .putString(appUserIdSecret, appUser.secret)
+                    .apply()
+                Logger.d("Setting app user to %s", appUser.id)
+                notifyOnNewAppUser(appUser)
             }
         }
 
-        return null;
-    }
-
-    public void setAppUserBase64(String appUserBase64) {
-        if (appUserBase64 == null) {
-            setAppUser(null);
-            return;
+    var appUserBase64: String?
+        get() {
+            val appUser = appUser
+            if (appUser != null) {
+                val content = appUser.id + ":" + appUser.secret
+                return try {
+                    Base64.encodeToString(content.toByteArray(charset("UTF-8")), Base64.NO_WRAP)
+                } catch (e: UnsupportedEncodingException) {
+                    null
+                }
+            }
+            return null
         }
-
-        String appUser = new String(Base64.decode(appUserBase64, Base64.DEFAULT));
-        String[] split = appUser.split(":");
-
-        if (split.length == 2) {
-            String appUserId = split[0];
-            String appUserSecret = split[1];
-
-            if (appUserId.length() > 0 && appUserSecret.length() > 0) {
-                setAppUser(new AppUser(appUserId, appUserSecret));
+        set(appUserBase64) {
+            if (appUserBase64 == null) {
+                appUser = null
+                return
+            }
+            var appUserString = String(Base64.decode(appUserBase64, Base64.DEFAULT))
+            val split = appUserString.split(":").toTypedArray()
+            if (split.size == 2) {
+                val appUserId = split[0]
+                val appUserSecret = split[1]
+                if (appUserId.length > 0 && appUserSecret.length > 0) {
+                    appUser = AppUser(appUserId, appUserSecret)
+                }
             }
         }
-    }
 
-    private void setClientId(String clientId) {
-        sharedPreferences.edit().putString(SHARED_PREFERENCES_CLIENT_ID, clientId).apply();
-    }
+    var clientId: String?
+        get() =
+            sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null)
+        set(clientId) {
+            sharedPreferences.edit()
+                .putString(SHARED_PREFERENCES_CLIENT_ID, clientId)
+                .apply()
+        }
 
-    public String getClientId() {
-        return sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null);
-    }
+    var lastCheckedInShopId: String?
+        get() =
+            sharedPreferences.getString(SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP, null)
+        set(shopId) {
+            sharedPreferences.edit()
+                .putString(SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP, shopId)
+                .apply()
+        }
 
-    public void setBirthday(Date date) {
-        sharedPreferences.edit()
+    var birthday: Date?
+        get() {
+            val s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null)
+                ?: return null
+            return try {
+                BIRTHDAY_FORMAT.parse(s)
+            } catch (e: ParseException) {
+                null
+            }
+        }
+        set(date) {
+            sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_BIRTHDAY, BIRTHDAY_FORMAT.format(date))
-                .apply();
-    }
-
-    public Date getBirthday() {
-        String s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null);
-        if (s == null) {
-            return null;
+                .apply()
         }
 
-        try {
-            return BIRTHDAY_FORMAT.parse(s);
-        } catch (ParseException e) {
-            return null;
+    var consentStatus: ConsentStatus
+        get() {
+            val s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null)
+                ?: return ConsentStatus.UNDECIDED
+            return try {
+                ConsentStatus.valueOf(s)
+            } catch (e: Exception) {
+                return ConsentStatus.UNDECIDED
+            }
         }
-    }
+        set(consent) =
+            sharedPreferences.edit()
+                .putString(SHARED_PREFERENCES_CONSENT_STATUS, consent.name)
+                .apply()
 
-    public void setConsentStatus(ConsentStatus consent) {
-        sharedPreferences.edit()
-                .putString(SHARED_PREFERENCES_CONSENT_STATUS, consent.name())
-                .apply();
-    }
-
-    public ConsentStatus getConsentStatus() {
-        String s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null);
-        if (s == null) {
-            return ConsentStatus.UNDECIDED;
-        }
-
-        try {
-            return ConsentStatus.valueOf(s);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public void setConsentVersion(String version) {
-        sharedPreferences.edit()
+    var consentVersion: String?
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_CONSENT_VERSION, null)
+        set(version) {
+            sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_CONSENT_VERSION, version)
-                .apply();
-    }
+                .apply()
+        }
 
-    public String getConsentVersion() {
-        return sharedPreferences.getString(SHARED_PREFERENCES_CONSENT_VERSION, null);
-    }
-
-    public void addOnNewAppUserListener(OnNewAppUserListener onNewAppUserListener) {
+    fun addOnNewAppUserListener(onNewAppUserListener: OnNewAppUserListener) {
         if (!onNewAppUserListeners.contains(onNewAppUserListener)) {
-            onNewAppUserListeners.add(onNewAppUserListener);
+            onNewAppUserListeners.add(onNewAppUserListener)
         }
     }
 
-    public void removeOnNewAppUserListener(OnNewAppUserListener onNewAppUserListener) {
-        onNewAppUserListeners.remove(onNewAppUserListener);
+    fun removeOnNewAppUserListener(onNewAppUserListener: OnNewAppUserListener) {
+        onNewAppUserListeners.remove(onNewAppUserListener)
     }
 
-    private void notifyOnNewAppUser(AppUser appUser) {
-        for (OnNewAppUserListener listener : onNewAppUserListeners) {
-            listener.onNewAppUser(appUser);
+    private fun notifyOnNewAppUser(appUser: AppUser?) {
+        for (listener in onNewAppUserListeners) {
+            listener.onNewAppUser(appUser)
         }
     }
 
-    public interface OnNewAppUserListener {
-        void onNewAppUser(AppUser appUser);
+    interface OnNewAppUserListener {
+        fun onNewAppUser(appUser: AppUser?)
     }
 }
