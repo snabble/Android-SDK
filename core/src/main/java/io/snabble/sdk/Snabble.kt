@@ -169,8 +169,6 @@ class Snabble private constructor() {
         internalStorageDirectory = File(application.filesDir, "snabble/" + config.appId + "/")
         internalStorageDirectory.mkdirs()
 
-        Config.store(config)
-        
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app)
         userPreferences = UserPreferences(app)
         tokenRegistry = TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret)

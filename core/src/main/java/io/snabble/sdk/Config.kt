@@ -130,25 +130,4 @@ data class Config (
      */
     @JvmField
     var lastSeenThreshold: Long = TimeUnit.MINUTES.toMillis(15),
-) {
-    companion object {
-        fun store(config: Config) {
-            try {
-                val snabble = Snabble.getInstance()
-                val file = File(snabble.internalStorageDirectory, "config.json")
-                IOUtils.write(GsonHolder.get().toJson(config), FileOutputStream(file), Charset.forName("UTF-8"))
-            } catch (ignored: Exception) {}
-        }
-
-        fun load(): Config? {
-            try {
-                val snabble = Snabble.getInstance()
-                val file = File(snabble.internalStorageDirectory, "config.json")
-                val content = IOUtils.toString(FileInputStream(file), Charset.forName("UTF-8"))
-                return GsonHolder.get().fromJson<Config>(content, Config::class.java)
-            } catch (e: Exception) {
-                return null
-            }
-        }
-    }
-}
+)
