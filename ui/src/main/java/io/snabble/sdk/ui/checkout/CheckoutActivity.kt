@@ -50,37 +50,44 @@ class CheckoutActivity : FragmentActivity() {
         navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
         navController = navHostFragment.navController
 
-        val projectId = intent.getStringExtra(ARG_PROJECT_ID)
-        if (projectId == null) {
-            finishWithError("No project id set")
-            return
-        }
+        Snabble.getInstance().initializationState.observe(this) {
+            when(it) {
+                InitializationState.INITIALIZED -> {
+                    val projectId = intent.getStringExtra(ARG_PROJECT_ID)
+                    if (projectId == null) {
+                        finishWithError("No project id set")
+                        return@observe
+                    }
 
-        val project = Snabble.getInstance().getProjectById(projectId)
-        if (project == null) {
-            finishWithError("Project with id $projectId not found")
-            return
-        }
+                    val project = Snabble.getInstance().getProjectById(projectId)
+                    if (project == null) {
+                        finishWithError("Project with id $projectId not found")
+                        return@observe
+                    }
 
-        val checkout = project.checkout
-        if (!checkout.state.isCheckoutState) {
-            finishWithError("Unexpected checkout state ${checkout.state.name}")
-            return
-        }
-        this.checkout = checkout
+                    val checkout = project.checkout
+                    if (!checkout.state.isCheckoutState) {
+                        finishWithError("Unexpected checkout state ${checkout.state.name}")
+                        return@observe
+                    }
+                    this.checkout = checkout
 
-        val startDestinationId = getNavigationId()
-        if (startDestinationId == null) {
-            finish()
-            return
-        } else {
-            navGraph.startDestination = startDestinationId
-        }
+                    val startDestinationId = getNavigationId()
+                    if (startDestinationId == null) {
+                        finish()
+                        return@observe
+                    } else {
+                        navGraph.startDestination = startDestinationId
+                    }
 
-        navController.graph = navGraph
+                    navController.graph = navGraph
 
-        checkout.checkoutState.observe(this) {
-            onStateChanged()
+                    checkout.checkoutState.observe(this) {
+                        onStateChanged()
+                    }
+                }
+                else -> {}
+            }
         }
     }
 
