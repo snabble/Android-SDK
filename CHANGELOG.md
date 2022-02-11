@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.60.2]
+
+### Changed
+- Updated Datatrans SDK and other dependencies
+
 ## [0.60.1]
 
 ### Added

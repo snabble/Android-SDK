@@ -77,7 +77,7 @@ class CheckoutActivity : FragmentActivity() {
                         finish()
                         return@observe
                     } else {
-                        navGraph.startDestination = startDestinationId
+                        navGraph.setStartDestination(startDestinationId)
                     }
 
                     navController.graph = navGraph

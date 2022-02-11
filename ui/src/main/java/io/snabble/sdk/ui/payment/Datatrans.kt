@@ -10,8 +10,8 @@ import ch.datatrans.payment.api.TransactionListener
 import ch.datatrans.payment.api.TransactionRegistry
 import ch.datatrans.payment.api.TransactionSuccess
 import ch.datatrans.payment.exception.TransactionException
-import ch.datatrans.payment.paymentmethods.CardToken
-import ch.datatrans.payment.paymentmethods.PostFinanceCardToken
+import ch.datatrans.payment.paymentmethods.SavedCard
+import ch.datatrans.payment.paymentmethods.SavedPostFinanceCard
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
@@ -111,18 +111,18 @@ object Datatrans {
         transaction.listener = object : TransactionListener {
             override fun onTransactionSuccess(result: TransactionSuccess) {
                 activity.runOnUiThreadWhenResumed {
-                    val token = result.paymentMethodToken
+                    val token = result.savedPaymentMethod
                     var month = ""
                     var year = ""
 
                     when (token) {
-                        is PostFinanceCardToken -> {
+                        is SavedPostFinanceCard -> {
                             token.cardExpiryDate?.let {
                                 month = it.formattedMonth
                                 year = it.formattedYear
                             }
                         }
-                        is CardToken -> {
+                        is SavedCard -> {
                             token.cardExpiryDate?.let {
                                 month = it.formattedMonth
                                 year = it.formattedYear
@@ -135,9 +135,9 @@ object Datatrans {
                             override fun success() {
                                 val store = Snabble.getInstance().paymentCredentialsStore
                                 val credentials = PaymentCredentials.fromDatatrans(
-                                    token.token,
+                                    token.alias,
                                     PaymentCredentials.Brand.fromPaymentMethod(paymentMethod),
-                                    result.paymentMethodToken?.getDisplayTitle(activity),
+                                    result.savedPaymentMethod?.getDisplayTitle(activity),
                                     month,
                                     year,
                                     project.id,

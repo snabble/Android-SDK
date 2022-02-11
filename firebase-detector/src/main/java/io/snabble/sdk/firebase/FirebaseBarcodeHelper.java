@@ -1,7 +1,6 @@
 package io.snabble.sdk.firebase;
 
-
-import com.google.mlkit.vision.barcode.Barcode;
+import com.google.mlkit.vision.barcode.common.Barcode;
 
 import io.snabble.sdk.BarcodeFormat;
 

@@ -20,7 +20,7 @@ androidx and a material 3 theme for ui components
 
 Add the snabble and Datatrans Repository to your gradle Repositories
 
-```
+```groovy
 repositories {
     maven {
         url 'https://raw.githubusercontent.com/snabble/maven-repository/releases'
@@ -30,7 +30,7 @@ repositories {
 
 Then add the library to your dependencies. 
 
-```gradle
+```groovy
 dependencies {
     // core library
     implementation 'io.snabble.sdk:core:{currentVersion}'
@@ -44,13 +44,13 @@ dependencies {
 
 The library can be installed to the local maven repository using:
 
-```sh
+```shell
 ./gradlew publishToMavenLocal
 ```
 
 Make sure you add maven local to your repositories in your gradle script.
 
-```gradle
+```groovy
 repositories {
     mavenLocal()
 }
@@ -67,7 +67,7 @@ dependencies {
 ```
 
 ## Usage
-```
+```java
 //you may enable debug logging to see requests made by the sdk, and other various logs
 Snabble.setDebugLoggingEnabled(true);
 
