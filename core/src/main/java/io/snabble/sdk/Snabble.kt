@@ -19,6 +19,7 @@ import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
+import android.os.Debug
 import android.util.Base64
 import io.snabble.sdk.utils.*
 import java.io.ByteArrayInputStream
@@ -123,7 +124,13 @@ class Snabble private constructor() {
     var initializationState = MutableLiveData(InitializationState.NONE)
         private set
 
-    private var currentActivity: WeakReference<Activity>? = null
+    var currentActivity: WeakReference<Activity>? = null
+
+    /**
+     * Unique identifier, different over device installations
+     */
+    val clientId: String?
+        get() = userPreferences.clientId
 
     private lateinit var metadataDownloader: MetadataDownloader
 
@@ -155,11 +162,7 @@ class Snabble private constructor() {
         if (version == null) {
             version = try {
                 val pInfo = app.packageManager.getPackageInfo(app.packageName, 0)
-                if (pInfo != null && pInfo.versionName != null) {
-                    pInfo.versionName.toLowerCase(Locale.ROOT).replace(" ", "")
-                } else {
-                    "1.0"
-                }
+                pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
             } catch (e: PackageManager.NameNotFoundException) {
                 "1.0"
             }
@@ -213,31 +216,36 @@ class Snabble private constructor() {
         registerNetworkCallback(app)
     }
 
-    fun dispatchOnReady(setupCompletionListener: SetupCompletionListener) {
-        Dispatch.mainThread {
+    private fun dispatchOnReady(setupCompletionListener: SetupCompletionListener) {
+        Dispatch.background {
             readMetadata()
             val appUser = userPreferences.appUser
-            if (appUser == null && projects.size > 0) {
-                val token = tokenRegistry.getToken(projects.get(0))
+            if (appUser == null && projects.isNotEmpty()) {
+                val token = tokenRegistry.getToken(projects[0])
                 if (token == null) {
-                    setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
-                    initializationState.postValue(InitializationState.ERROR)
-                    isInitializing.set(false)
-                    return@mainThread
+                    Dispatch.mainThread {
+                        setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
+                        initializationState.value = InitializationState.ERROR
+                        isInitializing.set(false)
+                    }
+                    return@background
                 }
             }
-            initializationState.postValue(InitializationState.INITIALIZED)
-            isInitializing.set(false)
-            setupCompletionListener.onReady()
-            if (config.loadActiveShops) {
-                loadActiveShops()
+
+            Dispatch.mainThread {
+                initializationState.value = InitializationState.INITIALIZED
+                isInitializing.set(false)
+                setupCompletionListener.onReady()
+                if (config.loadActiveShops) {
+                    loadActiveShops()
+                }
             }
         }
     }
 
-    fun dispatchError(setupCompletionListener: SetupCompletionListener) {
+    private fun dispatchError(setupCompletionListener: SetupCompletionListener) {
         Dispatch.mainThread {
-            initializationState.postValue(InitializationState.ERROR)
+            initializationState.value = InitializationState.ERROR
             setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
             isInitializing.set(false)
         }
@@ -353,7 +361,7 @@ class Snabble private constructor() {
                         shop -> shop.id == lastCheckedInShopId
                 }
                 if (shop != null) {
-                    Logger.d("Restoring last checked in shop " + shop?.id + ", " + shop?.name)
+                    Logger.d("Restoring last checked in shop " + shop.id + ", " + shop.name)
                     project.checkedInShop = shop
                     break;
                 }
@@ -483,12 +491,6 @@ class Snabble private constructor() {
         }
     }
 
-    private fun notifyMetadataUpdated() {
-        for (listener in onMetaDataUpdateListeners) {
-            listener.onMetaDataUpdated()
-        }
-    }
-
     private fun checkCartTimeouts() {
         for (project in projects) {
             project.shoppingCart.checkForTimeout()
@@ -498,6 +500,12 @@ class Snabble private constructor() {
     private fun processPendingCheckouts() {
         for (project in projects) {
             project.checkout.processPendingCheckouts()
+        }
+    }
+
+    private fun notifyMetadataUpdated() {
+        for (listener in onMetaDataUpdateListeners) {
+            listener.onMetaDataUpdated()
         }
     }
 
@@ -515,7 +523,7 @@ class Snabble private constructor() {
         onMetaDataUpdateListeners.remove(onMetaDataUpdateListener)
     }
 
-    interface OnMetadataUpdateListener {
+    fun interface OnMetadataUpdateListener {
         fun onMetaDataUpdated()
     }
 
@@ -560,12 +568,6 @@ class Snabble private constructor() {
         }
     }
 
-    /**
-     * Unique identifier, different over device installations
-     */
-    val clientId: String?
-        get() = userPreferences.clientId
-
     interface SetupCompletionListener {
         fun onReady()
         fun onError(error: Error?)
@@ -580,7 +582,9 @@ class Snabble private constructor() {
     }
 
     enum class Error {
-        UNSPECIFIED_ERROR, CONFIG_ERROR, CONNECTION_TIMEOUT, INVALID_METADATA_FORMAT, INTERNAL_STORAGE_FULL
+        UNSPECIFIED_ERROR,
+        CONFIG_ERROR,
+        CONNECTION_TIMEOUT
     }
 
     companion object {

@@ -62,6 +62,7 @@ public class Project {
 
     private RoundingMode roundingMode;
     private BarcodeFormat[] supportedBarcodeFormats;
+    @Nullable
     private Shop checkedInShop;
     private CustomerCardInfo[] acceptedCustomerCardInfos;
     private CustomerCardInfo requiredCustomerCardInfo;
@@ -490,13 +491,17 @@ public class Project {
      * Sets the shop used for receiving store specific prices and identification in the
      * payment process.
      */
-    public void setCheckedInShop(Shop checkedInShop) {
+    public void setCheckedInShop(@Nullable Shop checkedInShop) {
         String currentShopId = this.checkedInShop != null ? this.checkedInShop.getId() : "";
         String newShopId = checkedInShop != null ? checkedInShop.getId() : "";
 
         if (!currentShopId.equals(newShopId)) {
             this.checkedInShop = checkedInShop;
-            snabble.getUserPreferences().setLastCheckedInShopId(checkedInShop.getId());
+            if (newShopId.equals("")) {
+                snabble.getUserPreferences().setLastCheckedInShopId(null);
+            } else {
+                snabble.getUserPreferences().setLastCheckedInShopId(newShopId);
+            }
             events.updateShop(checkedInShop);
             getShoppingCart().updatePrices(false);
         }
