@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="16dp"
@@ -10,15 +11,15 @@
     tools:ignore="RtlHardcoded">
 
     <ImageView
+        android:id="@+id/helper_image"
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:layout_marginEnd="8dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/snabble_ic_deposit"
+        android:layout_marginEnd="8dp"
         android:scaleType="fitCenter"
+        android:src="@drawable/snabble_ic_deposit"
         app:tint="?attr/colorPrimary"
-        app:tintMode="multiply"
-        android:id="@+id/helper_image" />
+        app:tintMode="multiply" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -26,20 +27,19 @@
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/helper_image"
         android:orientation="vertical">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/title"
-            android:text="@string/Snabble.Shoppingcart.deposit"
-            android:textSize="17dp"/>
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/Snabble.Shoppingcart.deposit"
+            android:textSize="17sp" />
+
+        <TextView
             android:id="@+id/text"
-            tools:text="0,25 €"
-            android:textSize="12dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            tools:text="0,25 €" />
     </LinearLayout>
-
-
 </RelativeLayout>
