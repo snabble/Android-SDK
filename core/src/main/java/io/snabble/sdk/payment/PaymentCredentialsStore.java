@@ -80,7 +80,6 @@ public class PaymentCredentialsStore {
             if (!id.equals(data.id)) {
                 data.id = keyStoreCipher.id();
                 data.isKeyguarded = true;
-                Logger.errorEvent("Removing payment credentials, because key store id differs");
                 removeInvalidCredentials();
             }
         }
@@ -163,6 +162,8 @@ public class PaymentCredentialsStore {
             return;
         }
 
+        Logger.errorEvent("Removing payment credentials, because key store id differs");
+        
         List<PaymentCredentials> removals = new ArrayList<>();
         for (PaymentCredentials credentials : data.credentialsList) {
             if (!credentials.canBypassKeyStore()) {

@@ -461,7 +461,7 @@ class Snabble private constructor() {
     val endpointBaseUrl: String?
         get() = config.endpointBaseUrl
 
-    fun getProjectById(projectId: String): Project? {
+    fun getProjectById(projectId: String?): Project? {
         for (project in projects) {
             if (project.id == projectId) {
                 return project
