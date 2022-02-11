@@ -8,7 +8,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import io.snabble.sdk.Config
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
 
@@ -16,6 +15,8 @@ abstract class BaseFragment : Fragment() {
     private lateinit var sdkNotInitialized: TextView
     private lateinit var progress: ProgressBar
     private lateinit var fragmentContainer: ViewGroup
+
+    var isReady = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,10 +62,13 @@ abstract class BaseFragment : Fragment() {
                         onCreateViewInternal(layoutInflater, fragmentContainer, savedInstanceState)
                     if (fragmentView != null) {
                         fragmentContainer.addView(fragmentView)
+                        isReady = true
                     }
                 }
             } else {
+                isReady = false
                 fragmentContainer.removeAllViews()
+                sdkNotInitialized.isVisible = true
             }
         }
     }
