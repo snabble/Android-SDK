@@ -8,6 +8,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -467,7 +468,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     @Test
     public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
         String[] sql = loadSql("transmission_template").split("\n");
-        withDb("test_1_25.sqlite3", false, sql);
+        withDb("test_1_25.sqlite3", false, Arrays.asList(sql));
 
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("")

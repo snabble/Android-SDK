@@ -1,5 +1,6 @@
 package io.snabble.sdk.utils;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -21,7 +22,7 @@ import okhttp3.Response;
 public abstract class StringDownloader extends Downloader {
     private File storageFile = null;
     private String assetPath;
-    private Context context;
+    private Application context;
 
     public StringDownloader(OkHttpClient okHttpClient) {
         super(okHttpClient);
@@ -33,7 +34,7 @@ public abstract class StringDownloader extends Downloader {
      * Copies the bundled data from the asset folder into the app internal files folder and
      * uses the app files data unless the app gets updated.
      */
-    public void setBundledData(Context context, String assetPath, File storageFile) {
+    public void setBundledData(Application context, String assetPath, File storageFile) {
         this.context = context;
         this.storageFile = storageFile;
         this.assetPath = assetPath;

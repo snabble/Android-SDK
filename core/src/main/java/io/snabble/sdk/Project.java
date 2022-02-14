@@ -96,13 +96,10 @@ public class Project {
                 .addInterceptor(new SnabbleAuthorizationInterceptor(this))
                 .addInterceptor(new AcceptedLanguageInterceptor())
                 .build();
-
         parse(jsonObject);
-
         internalStorageDirectory = new File(snabble.getInternalStorageDirectory(), id + "/");
 
         boolean generateSearchIndex = snabble.getConfig().generateSearchIndex;
-
         productDatabase = new ProductDatabase(this, id + ".sqlite3", generateSearchIndex);
         shoppingCartStorage = new ShoppingCartStorage(this);
         checkout = new Checkout(this);
@@ -321,7 +318,6 @@ public class Project {
             coupons.setInternalProjectCoupons(couponList);
         }
         coupons.update();
-
         notifyUpdate();
     }
 

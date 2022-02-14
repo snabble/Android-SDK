@@ -33,7 +33,7 @@ class CheckInManagerTest : SnabbleSdkTest() {
         time = System.currentTimeMillis()
     }
 
-    override fun onApplyConfig(config: Snabble.Config) {
+    override fun onApplyConfig(config: Config) {
         super.onApplyConfig(config)
 
         config.checkInRadius = 500.0f;

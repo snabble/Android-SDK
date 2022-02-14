@@ -2,7 +2,6 @@ package io.snabble.sdk
 
 import android.annotation.SuppressLint
 import android.content.Context
-import io.snabble.sdk.Snabble.Companion.getInstance
 import android.util.Base64
 import io.snabble.sdk.auth.AppUser
 import io.snabble.sdk.utils.Logger
@@ -53,19 +52,19 @@ class UserPreferences internal constructor(context: Context) {
 
     private val environmentKey: String
         get() {
-            val environment = getInstance().environment
+            val environment = Snabble.environment
             return environment?.name ?: "UNKNOWN"
         }
 
     private val appUserIdKey: String
         get() {
-            val (_, appId) = getInstance().config
+            val (_, appId) = Snabble.config
             return SHARED_PREFERENCES_APPUSER_ID + "_" + environmentKey + appId
         }
 
     private val appUserIdSecret: String
         get() {
-            val (_, appId) = getInstance().config
+            val (_, appId) = Snabble.config
             return SHARED_PREFERENCES_APPUSER_SECRET + "_" + environmentKey + appId
         }
 

@@ -1,32 +1,28 @@
 package io.snabble.sdk
 
-import io.snabble.sdk.auth.TokenRegistry
-import io.snabble.sdk.payment.PaymentCredentialsStore
-import io.snabble.sdk.checkin.CheckInLocationManager
-import io.snabble.sdk.checkin.CheckInManager
-import okhttp3.OkHttpClient
 import android.app.Activity
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
-import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import android.net.NetworkRequest
-import android.net.NetworkCapabilities
-import androidx.lifecycle.LiveData
-import com.google.gson.JsonObject
-import kotlin.Throws
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
+import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
-import android.os.Debug
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.util.Base64
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.google.gson.JsonObject
+import io.snabble.sdk.auth.TokenRegistry
+import io.snabble.sdk.checkin.CheckInLocationManager
+import io.snabble.sdk.checkin.CheckInManager
+import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
+import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
-import java.lang.Exception
-import java.lang.IllegalArgumentException
 import java.lang.ref.WeakReference
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
@@ -36,7 +32,16 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
 
-class Snabble private constructor() {
+object Snabble {
+    @JvmStatic
+    fun getInstance() : Snabble {
+        return this
+    }
+
+    @JvmStatic
+    val version: String
+        get() = BuildConfig.VERSION_NAME
+
     lateinit var okHttpClient: OkHttpClient
         private set
 
@@ -144,7 +149,7 @@ class Snabble private constructor() {
         }
 
         isInitializing.set(true)
-        initializationState.postValue(InitializationState.INITIALIZING)
+        initializationState.value = InitializationState.INITIALIZING
         
         application = app
         this.config = config
@@ -223,31 +228,33 @@ class Snabble private constructor() {
             if (appUser == null && projects.isNotEmpty()) {
                 val token = tokenRegistry.getToken(projects[0])
                 if (token == null) {
+                    isInitializing.set(false)
+                    initializationState.postValue(InitializationState.ERROR)
+
                     Dispatch.mainThread {
                         setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
-                        initializationState.value = InitializationState.ERROR
-                        isInitializing.set(false)
                     }
                     return@background
                 }
             }
 
+            isInitializing.set(false)
+            initializationState.postValue(InitializationState.INITIALIZED)
             Dispatch.mainThread {
-                initializationState.value = InitializationState.INITIALIZED
-                isInitializing.set(false)
                 setupCompletionListener.onReady()
-                if (config.loadActiveShops) {
-                    loadActiveShops()
-                }
+            }
+            if (config.loadActiveShops) {
+                loadActiveShops()
             }
         }
     }
 
     private fun dispatchError(setupCompletionListener: SetupCompletionListener) {
+        isInitializing.set(false)
+        initializationState.postValue(InitializationState.ERROR)
+
         Dispatch.mainThread {
-            initializationState.value = InitializationState.ERROR
             setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
-            isInitializing.set(false)
         }
     }
 
@@ -326,19 +333,15 @@ class Snabble private constructor() {
             telecashSecretUrl = getUrl(jsonObject, "telecashSecret")
             telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth")
             paydirektAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization")
-            
             if (jsonObject.has("brands")) {
                 parseBrands(jsonObject)
             }
-            
             if (jsonObject.has("projects")) {
                 parseProjects(jsonObject)
             }
-            
             if (jsonObject.has("gatewayCertificates")) {
                 parsePaymentCertificates(jsonObject)
             }
-            
             receiptsUrl = getUrl(jsonObject, "appUserOrders")
             usersUrl = getUrl(jsonObject, "appUser")
             consentUrl = getUrl(jsonObject, "consents")
@@ -408,7 +411,6 @@ class Snabble private constructor() {
                         break
                     }
                 }
-
                 // if it does not exist, add it
                 if (!updated) {
                     try {
@@ -421,7 +423,6 @@ class Snabble private constructor() {
                 }
             }
         }
-        
         projects = Collections.unmodifiableList(newProjects)
     }
 
@@ -587,24 +588,11 @@ class Snabble private constructor() {
         CONNECTION_TIMEOUT
     }
 
-    companion object {
-        private val _instance = Snabble()
-
-        @JvmStatic
-        fun getInstance() : Snabble {
-            return _instance
-        }
-
-        @JvmStatic
-        val version: String
-            get() = BuildConfig.VERSION_NAME
-
-        /**
-         * Enables debug logging.
-         */
-        @JvmStatic
-        fun setDebugLoggingEnabled(enabled: Boolean) {
-            Logger.setEnabled(enabled)
-        }
+    /**
+     * Enables debug logging.
+     */
+    @JvmStatic
+    fun setDebugLoggingEnabled(enabled: Boolean) {
+        Logger.setEnabled(enabled)
     }
 }
