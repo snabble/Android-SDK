@@ -9,7 +9,7 @@ import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
 open class PaymentStatusFragment : BaseFragment() {
-    override fun onCreateViewInternal(
+    override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

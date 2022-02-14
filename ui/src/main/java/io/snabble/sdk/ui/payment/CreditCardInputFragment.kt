@@ -25,7 +25,7 @@ open class CreditCardInputFragment : BaseFragment() {
         paymentMethod = arguments?.getSerializable(ARG_PAYMENT_TYPE) as PaymentMethod?
     }
 
-    override fun onCreateViewInternal(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateActualView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.snabble_fragment_cardinput_creditcard, container, false) as CreditCardInputView
         v.load(projectId, paymentMethod)
         return v

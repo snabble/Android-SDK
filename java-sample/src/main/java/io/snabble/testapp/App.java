@@ -47,7 +47,7 @@ public class App extends Application {
         snabble.setup(this, config, new Snabble.SetupCompletionListener() {
             @Override
             public void onReady() {
-                
+                SnabbleUI.setProject(snabble.getProjects().get(0));
             }
 
             @Override

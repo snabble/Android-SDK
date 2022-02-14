@@ -28,7 +28,7 @@ open class PayoneInputFragment : BaseFragment() {
         tokenizationData = requireNotNull(arguments?.getParcelable(ARG_TOKEN_DATA))
     }
 
-    override fun onCreateViewInternal(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+    override fun onCreateActualView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.snabble_fragment_cardinput_payone, container, false).apply {
             findViewById<PayoneInputView>(R.id.user_payment_method_view).load(projectId, paymentMethod, tokenizationData)
         }

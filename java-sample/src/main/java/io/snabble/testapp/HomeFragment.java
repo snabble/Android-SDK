@@ -30,7 +30,9 @@ import io.snabble.sdk.ui.SnabbleUI;
 public class HomeFragment extends BaseFragment {
     @Nullable
     @Override
-    public View onCreateViewInternal(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateActualView(@NonNull LayoutInflater inflater,
+                                   @Nullable ViewGroup container,
+                                   @Nullable Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.fragment_home, container, false);
 
         v.findViewById(R.id.scanner).setOnClickListener(btn -> ((BaseActivity)getActivity()).showScanner());

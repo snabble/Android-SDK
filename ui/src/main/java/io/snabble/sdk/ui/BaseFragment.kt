@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -13,7 +12,6 @@ import io.snabble.sdk.Snabble
 
 abstract class BaseFragment : Fragment() {
     private lateinit var sdkNotInitialized: TextView
-    private lateinit var progress: ProgressBar
     private lateinit var fragmentContainer: ViewGroup
 
     var isReady = false
@@ -28,14 +26,10 @@ abstract class BaseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         fragmentContainer = view.findViewById(R.id.fragment_container)
-        progress = view.findViewById(R.id.progress)
         sdkNotInitialized = view.findViewById(R.id.sdk_not_initialized)
 
-        Snabble.getInstance().initializationState.observe(viewLifecycleOwner) {
+        Snabble.initializationState.observe(viewLifecycleOwner) {
             when(it) {
-                InitializationState.NONE -> {
-                    waitForProjectAndAdd(savedInstanceState)
-                }
                 InitializationState.INITIALIZED -> {
                     waitForProjectAndAdd(savedInstanceState)
                 }
@@ -43,7 +37,6 @@ abstract class BaseFragment : Fragment() {
                     waitForProjectAndAdd(savedInstanceState)
                 }
                 InitializationState.ERROR -> {
-                    progress.isVisible = false
                     sdkNotInitialized.isVisible = true
                 }
             }
@@ -54,13 +47,12 @@ abstract class BaseFragment : Fragment() {
         sdkNotInitialized.isVisible = false
 
         SnabbleUI.projectAsLiveData.observe(viewLifecycleOwner) {
-            progress.isVisible = it == null
-
             if (it != null) {
                 if (fragmentContainer.childCount == 0) {
                     val fragmentView =
-                        onCreateViewInternal(layoutInflater, fragmentContainer, savedInstanceState)
+                        onCreateActualView(layoutInflater, fragmentContainer, savedInstanceState)
                     if (fragmentView != null) {
+                        sdkNotInitialized.isVisible = false
                         fragmentContainer.addView(fragmentView)
                         isReady = true
                     }
@@ -73,7 +65,7 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    abstract fun onCreateViewInternal(
+    abstract fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?)

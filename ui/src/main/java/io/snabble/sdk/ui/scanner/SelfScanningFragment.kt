@@ -36,7 +36,7 @@ open class SelfScanningFragment : BaseFragment() {
     val hasSelfScanningView
         get() = selfScanningView != null
 
-    override fun onCreateViewInternal(
+    override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

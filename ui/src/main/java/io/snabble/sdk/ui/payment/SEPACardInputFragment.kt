@@ -24,7 +24,7 @@ open class SEPACardInputFragment : BaseFragment() {
                 as? PaymentOriginCandidateHelper.PaymentOriginCandidate
     }
 
-    override fun onCreateViewInternal(
+    override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

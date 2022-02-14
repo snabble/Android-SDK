@@ -28,7 +28,7 @@ open class PaymentCredentialsListFragment : BaseFragment() {
         project = Snabble.getInstance().projects.firstOrNull { it.id == projectId }
     }
 
-    override fun onCreateViewInternal(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateActualView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.snabble_fragment_payment_credentials_list, container, false) as PaymentCredentialsListView
         type?.let { v.show(it, project) }
         return v

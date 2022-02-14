@@ -11,7 +11,7 @@ open class ShoppingCartFragment : BaseFragment() {
     var shoppingCartView: ShoppingCartView? = null
         private set
 
-    override fun onCreateViewInternal(
+    override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?

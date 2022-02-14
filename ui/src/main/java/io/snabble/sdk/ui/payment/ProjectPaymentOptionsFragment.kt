@@ -25,7 +25,7 @@ open class ProjectPaymentOptionsFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateViewInternal(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateActualView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v =  inflater.inflate(
             R.layout.snabble_fragment_select_payment_project,
             container,

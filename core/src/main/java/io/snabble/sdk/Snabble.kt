@@ -126,7 +126,7 @@ object Snabble {
     var createAppUserUrl: String? = null
         private set
 
-    var initializationState = MutableLiveData(InitializationState.NONE)
+    var initializationState = MutableLiveData<InitializationState>()
         private set
 
     var currentActivity: WeakReference<Activity>? = null
