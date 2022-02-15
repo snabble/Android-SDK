@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.views
 
 import android.animation.*
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
@@ -10,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
+import com.google.android.material.animation.AnimationUtils
 import com.google.android.material.animation.AnimationUtils.LINEAR_INTERPOLATOR
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Dispatch
@@ -60,16 +62,18 @@ class MessageBox @JvmOverloads constructor(
         animator.start()
     }
 
+    @SuppressLint("RestrictedApi")
     private fun getAlphaAnimator(vararg alphaValues: Float): ValueAnimator {
         val animator = ValueAnimator.ofFloat(*alphaValues)
-        animator.interpolator = LINEAR_INTERPOLATOR
+        animator.interpolator = AnimationUtils.LINEAR_INTERPOLATOR
         animator.addUpdateListener { valueAnimator -> alpha = valueAnimator.animatedValue as Float }
         return animator
     }
 
+    @SuppressLint("RestrictedApi")
     private fun getScaleAnimator(vararg scaleValues: Float): ValueAnimator {
         val animator = ValueAnimator.ofFloat(*scaleValues)
-        animator.interpolator = com.google.android.material.animation.AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR
+        animator.interpolator = AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR
         animator.addUpdateListener { valueAnimator ->
             val scale = valueAnimator.animatedValue as Float
             scaleX = scale
