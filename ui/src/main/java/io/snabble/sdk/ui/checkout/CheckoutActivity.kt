@@ -86,7 +86,8 @@ class CheckoutActivity : FragmentActivity() {
                         onStateChanged()
                     }
                 }
-                else -> {}
+                InitializationState.INITIALIZING,
+                InitializationState.ERROR -> {} // ignored
             }
         }
     }
