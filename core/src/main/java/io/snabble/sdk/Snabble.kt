@@ -140,7 +140,8 @@ object Snabble {
 
     private val isInitializing = AtomicBoolean(false)
 
-    fun setup(app: Application, config: Config, setupCompletionListener: SetupCompletionListener) {
+    @JvmOverloads
+    fun setup(app: Application, config: Config, setupCompletionListener: SetupCompletionListener? = null) {
         if (isInitializing.get()) {
             return
         }
@@ -156,7 +157,7 @@ object Snabble {
 
         if (!config.endpointBaseUrl.startsWith("http://")
          && !config.endpointBaseUrl.startsWith("https://")) {
-            setupCompletionListener.onError(Error.CONFIG_ERROR)
+            setupCompletionListener?.onError(Error.CONFIG_ERROR)
             return
         }
 
@@ -214,7 +215,7 @@ object Snabble {
         registerNetworkCallback(app)
     }
 
-    private fun dispatchOnReady(setupCompletionListener: SetupCompletionListener) {
+    private fun dispatchOnReady(setupCompletionListener: SetupCompletionListener?) {
         Dispatch.background {
             readMetadata()
             val appUser = userPreferences.appUser
@@ -225,7 +226,7 @@ object Snabble {
                     mutableInitializationState.postValue(InitializationState.ERROR)
 
                     Dispatch.mainThread {
-                        setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
+                        setupCompletionListener?.onError(Error.CONNECTION_TIMEOUT)
                     }
                     return@background
                 }
@@ -234,7 +235,7 @@ object Snabble {
             isInitializing.set(false)
             mutableInitializationState.postValue(InitializationState.INITIALIZED)
             Dispatch.mainThread {
-                setupCompletionListener.onReady()
+                setupCompletionListener?.onReady()
             }
             if (config.loadActiveShops) {
                 loadActiveShops()
@@ -242,12 +243,12 @@ object Snabble {
         }
     }
 
-    private fun dispatchError(setupCompletionListener: SetupCompletionListener) {
+    private fun dispatchError(setupCompletionListener: SetupCompletionListener?) {
         isInitializing.set(false)
         mutableInitializationState.postValue(InitializationState.ERROR)
 
         Dispatch.mainThread {
-            setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
+            setupCompletionListener?.onError(Error.CONNECTION_TIMEOUT)
         }
     }
 
@@ -299,12 +300,9 @@ object Snabble {
      * notify the user that it will not function anymore.
      */
     val isOutdatedSDK: Boolean
-        get() {
-            val jsonObject = additionalMetadata
-            return if (jsonObject != null) {
-                JsonUtils.getBooleanOpt(jsonObject, "kill", false)
-            } else false
-        }
+        get() = additionalMetadata?.let { json ->
+            JsonUtils.getBooleanOpt(json, "kill", false)
+        } ?: false
 
     /** Returns additional metadata that may be provided for apps unrelated to the SDK  */
     val additionalMetadata: JsonObject?
@@ -316,8 +314,7 @@ object Snabble {
 
     @Synchronized
     private fun readMetadata() {
-        val jsonObject = metadataDownloader.jsonObject
-        if (jsonObject != null) {
+        metadataDownloader.jsonObject?.let { jsonObject ->
             createAppUserUrl = getUrl(jsonObject, "createAppUser")
             telecashSecretUrl = getUrl(jsonObject, "telecashSecret")
             telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth")
@@ -339,6 +336,7 @@ object Snabble {
                     GsonHolder.get().fromJson(jsonObject["terms"], TermsOfService::class.java)
             }
         }
+
         restoreCheckedInShop()
         paymentCredentialsStore.init(application, environment)
         users.postPendingConsents()
@@ -371,11 +369,7 @@ object Snabble {
 
     private fun parseBrands(jsonObject: JsonObject) {
         val jsonBrands = GsonHolder.get().fromJson(jsonObject["brands"], Array<Brand>::class.java)
-        val map = HashMap<String, Brand>()
-        for (brand in jsonBrands) {
-            map[brand.id] = brand
-        }
-        brands = Collections.unmodifiableMap(map)
+        brands = jsonBrands.map { it.id to it }.toMap()
     }
 
     private fun parseProjects(jsonObject: JsonObject) {
@@ -418,17 +412,16 @@ object Snabble {
     private fun parsePaymentCertificates(jsonObject: JsonObject) {
         val certificates: MutableList<X509Certificate> = ArrayList()
         val certs = jsonObject["gatewayCertificates"].asJsonArray
-        for (i in 0 until certs.size()) {
-            val jsonElement = certs[i]
+        certs.forEach { jsonElement ->
             if (jsonElement.isJsonObject) {
                 val cert = jsonElement.asJsonObject
                 val value = cert["value"]
                 if (value != null) {
                     val bytes = Base64.decode(value.asString, Base64.DEFAULT)
-                    val `is`: InputStream = ByteArrayInputStream(bytes)
+                    val inputStream: InputStream = ByteArrayInputStream(bytes)
                     try {
                         val certificateFactory = CertificateFactory.getInstance("X.509")
-                        val certificate = certificateFactory.generateCertificate(`is`) as X509Certificate
+                        val certificate = certificateFactory.generateCertificate(inputStream) as X509Certificate
                         certificates.add(certificate)
                     } catch (e: CertificateException) {
                         e.printStackTrace()
@@ -448,16 +441,11 @@ object Snabble {
         }
     }
 
-    val endpointBaseUrl: String?
+    val endpointBaseUrl: String
         get() = config.endpointBaseUrl
 
     fun getProjectById(projectId: String?): Project? {
-        for (project in projects) {
-            if (project.id == projectId) {
-                return project
-            }
-        }
-        return null
+        return projects.firstOrNull { it.id == projectId }
     }
 
     private fun updateMetadata() {
@@ -476,25 +464,25 @@ object Snabble {
     }
 
     private fun loadActiveShops() {
-        for (project in projects) {
+        projects.forEach { project ->
             project.loadActiveShops { notifyMetadataUpdated() }
         }
     }
 
     private fun checkCartTimeouts() {
-        for (project in projects) {
+        projects.forEach { project ->
             project.shoppingCart.checkForTimeout()
         }
     }
 
     private fun processPendingCheckouts() {
-        for (project in projects) {
+        projects.forEach { project ->
             project.checkout.processPendingCheckouts()
         }
     }
 
     private fun notifyMetadataUpdated() {
-        for (listener in onMetaDataUpdateListeners) {
+        onMetaDataUpdateListeners.forEach { listener ->
             listener.onMetaDataUpdated()
         }
     }

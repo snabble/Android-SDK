@@ -26,17 +26,18 @@ import io.snabble.sdk.InitializationState;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ui.BaseFragment;
 import io.snabble.sdk.ui.SnabbleUI;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment {
     private Project currentProject;
 
-    @Nullable
+    public HomeFragment() {
+        super(R.layout.fragment_home, false);
+    }
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                                   @Nullable ViewGroup container,
-                                   @Nullable Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.fragment_home, container, false);
+    public void onActualViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
 
         v.findViewById(R.id.scanner).setOnClickListener(btn -> ((BaseActivity)getActivity()).showScanner());
 
@@ -126,8 +127,6 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
-
-        return v;
     }
 
     private void updateShops(View v) {

@@ -44,17 +44,7 @@ public class App extends Application {
         // }
 
         final Snabble snabble = Snabble.getInstance();
-        snabble.setup(this, config, new Snabble.SetupCompletionListener() {
-            @Override
-            public void onReady() {
-                
-            }
-
-            @Override
-            public void onError(Snabble.Error error) {
-
-            }
-        });
+        snabble.setup(this, config);
 
         // sets a ui event listener for telemetry events, which can you redirect to any
         // telemetry provider

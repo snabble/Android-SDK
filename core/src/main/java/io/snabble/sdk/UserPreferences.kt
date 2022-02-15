@@ -58,14 +58,14 @@ class UserPreferences internal constructor(context: Context) {
 
     private val appUserIdKey: String
         get() {
-            val (_, appId) = Snabble.config
-            return SHARED_PREFERENCES_APPUSER_ID + "_" + environmentKey + appId
+            val appId = Snabble.config.appId
+            return "${SHARED_PREFERENCES_APPUSER_ID}_$environmentKey$appId"
         }
 
     private val appUserIdSecret: String
         get() {
-            val (_, appId) = Snabble.config
-            return SHARED_PREFERENCES_APPUSER_SECRET + "_" + environmentKey + appId
+            val appId = Snabble.config.appId
+            return "${SHARED_PREFERENCES_APPUSER_SECRET}_$environmentKey$appId"
         }
 
     var appUser: AppUser?
@@ -118,7 +118,7 @@ class UserPreferences internal constructor(context: Context) {
                 return
             }
             var appUserString = String(Base64.decode(appUserBase64, Base64.DEFAULT))
-            val split = appUserString.split(":").toTypedArray()
+            val split = appUserString.split(":")
             if (split.size == 2) {
                 val appUserId = split[0]
                 val appUserSecret = split[1]
@@ -158,7 +158,7 @@ class UserPreferences internal constructor(context: Context) {
         }
         set(date) {
             sharedPreferences.edit()
-                .putString(SHARED_PREFERENCES_BIRTHDAY, BIRTHDAY_FORMAT.format(date))
+                .putString(SHARED_PREFERENCES_BIRTHDAY, date?.let { BIRTHDAY_FORMAT.format(date) })
                 .apply()
         }
 
@@ -201,7 +201,7 @@ class UserPreferences internal constructor(context: Context) {
         }
     }
 
-    interface OnNewAppUserListener {
+    fun interface OnNewAppUserListener {
         fun onNewAppUser(appUser: AppUser?)
     }
 }
