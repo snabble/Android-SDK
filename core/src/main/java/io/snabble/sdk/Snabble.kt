@@ -48,13 +48,13 @@ object Snabble {
     lateinit var tokenRegistry: TokenRegistry
         private set
     
-    lateinit var projects: List<Project>
+    var projects: List<Project> = emptyList()
         private set
 
-    var brands: Map<String, Brand>? = null
+    var brands: Map<String, Brand> = emptyMap()
         private set
 
-    lateinit var receipts: Receipts
+    var receipts: Receipts = Receipts()
         private set
 
     lateinit var users: Users
@@ -66,7 +66,7 @@ object Snabble {
     lateinit var userPreferences: UserPreferences
         private set
 
-    lateinit var paymentCredentialsStore: PaymentCredentialsStore
+    var paymentCredentialsStore: PaymentCredentialsStore = PaymentCredentialsStore()
         private set
 
     lateinit var checkInLocationManager: CheckInLocationManager
@@ -171,20 +171,16 @@ object Snabble {
         }
         versionName = version
         
-        internalStorageDirectory = File(application.filesDir, "snabble/" + config.appId + "/")
+        internalStorageDirectory = File(application.filesDir, "snabble/${config.appId}/")
         internalStorageDirectory.mkdirs()
 
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app)
         userPreferences = UserPreferences(app)
         tokenRegistry = TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret)
-        receipts = Receipts()
         users = Users(userPreferences)
-        brands = Collections.unmodifiableMap(HashMap())
-        projects = Collections.unmodifiableList(ArrayList())
 
         environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl)
         metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version)
-        paymentCredentialsStore = PaymentCredentialsStore()
 
         checkInLocationManager = CheckInLocationManager(application)
         checkInManager = CheckInManager(this,
