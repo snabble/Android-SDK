@@ -17,7 +17,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
 
     var isReady = false
 
-    override fun onCreateView(
+    final override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -25,7 +25,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
         return inflater.inflate(R.layout.snabble_fragment_base, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         fragmentContainer = view.findViewById(R.id.fragment_container)
         sdkNotInitialized = view.findViewById(R.id.sdk_not_initialized)
 
