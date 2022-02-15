@@ -18,7 +18,7 @@ object PaymentInputViewHelper {
     @JvmStatic
     fun openPaymentInputView(context: Context, paymentMethod: PaymentMethod?, projectId: String) {
         if (KeyguardUtils.isDeviceSecure()) {
-            val project = Snabble.getInstance().getProjectById(projectId)
+            val project = Snabble.getProjectById(projectId)
             val acceptedOriginTypes = project?.paymentMethodDescriptors
                 ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
             val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
@@ -36,27 +36,18 @@ object PaymentInputViewHelper {
                     when (paymentMethod) {
                         PaymentMethod.VISA -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE,
-                                PaymentMethod.VISA)
-                            SnabbleUI.executeAction(context,
-                                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT,
-                                args)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
                         PaymentMethod.AMEX -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE,
-                                PaymentMethod.AMEX)
-                            SnabbleUI.executeAction(context,
-                                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT,
-                                args)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
                         PaymentMethod.MASTERCARD -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
-                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE,
-                                PaymentMethod.MASTERCARD)
-                            SnabbleUI.executeAction(context,
-                                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT,
-                                args)
+                            args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
                         PaymentMethod.PAYDIREKT -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)

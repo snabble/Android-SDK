@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.LayoutRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProject: Boolean = true) : Fragment() {
     private lateinit var sdkNotInitialized: TextView
     private lateinit var fragmentContainer: ViewGroup
 
@@ -33,12 +34,10 @@ abstract class BaseFragment : Fragment() {
                 InitializationState.INITIALIZED -> {
                     waitForProjectAndAdd(savedInstanceState)
                 }
-                InitializationState.INITIALIZING -> {
-                    waitForProjectAndAdd(savedInstanceState)
-                }
                 InitializationState.ERROR -> {
                     sdkNotInitialized.isVisible = true
                 }
+                InitializationState.INITIALIZING -> {} // ignore
             }
         }
     }
@@ -46,27 +45,48 @@ abstract class BaseFragment : Fragment() {
     private fun waitForProjectAndAdd(savedInstanceState: Bundle?) {
         sdkNotInitialized.isVisible = false
 
-        SnabbleUI.projectAsLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                if (fragmentContainer.childCount == 0) {
-                    val fragmentView =
-                        onCreateActualView(layoutInflater, fragmentContainer, savedInstanceState)
-                    if (fragmentView != null) {
-                        sdkNotInitialized.isVisible = false
-                        fragmentContainer.addView(fragmentView)
-                        isReady = true
-                    }
+        if (waitForProject) {
+            SnabbleUI.projectAsLiveData.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    commitView(savedInstanceState)
+                } else {
+                    isReady = false
+                    fragmentContainer.removeAllViews()
                 }
-            } else {
-                isReady = false
-                fragmentContainer.removeAllViews()
+            }
+        } else {
+            commitView(savedInstanceState)
+        }
+    }
+
+    private fun commitView(savedInstanceState: Bundle?) {
+        if (fragmentContainer.childCount == 0) {
+            val fragmentView =
+                onCreateActualView(layoutInflater,
+                    fragmentContainer,
+                    savedInstanceState)
+            if (fragmentView != null) {
+                sdkNotInitialized.isVisible = false
+                fragmentContainer.addView(fragmentView)
+                isReady = true
+                onActualViewCreated(fragmentView, savedInstanceState)
             }
         }
     }
 
-    abstract fun onCreateActualView(
+    open fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?)
-    : View?
+    : View? {
+        if (layoutResId != 0) {
+            return inflater.inflate(layoutResId, container, false)
+        }
+
+        return null
+    }
+
+    open fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+
+    }
 }

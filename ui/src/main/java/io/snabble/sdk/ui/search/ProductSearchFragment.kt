@@ -8,14 +8,9 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class ProductSearchFragment : BaseFragment() {
-    override fun onCreateActualView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val v = inflater.inflate(R.layout.snabble_fragment_productsearch, container, false) as ProductSearchView
+open class ProductSearchFragment : BaseFragment(R.layout.snabble_fragment_productsearch) {
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        val v = view as ProductSearchView
         v.allowAnyCode = true
-        return v
     }
 }

@@ -7,18 +7,12 @@ import androidx.appcompat.app.AlertDialog
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.SnabbleUI
 
-open class ShoppingCartFragment : BaseFragment() {
+open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppingcart) {
     var shoppingCartView: ShoppingCartView? = null
         private set
 
-    override fun onCreateActualView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val v = inflater.inflate(R.layout.snabble_fragment_shoppingcart, container, false)
-        shoppingCartView = v.findViewById(R.id.shopping_cart_view)
-        return v
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        shoppingCartView = view.findViewById(R.id.shopping_cart_view)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

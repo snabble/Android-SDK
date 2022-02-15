@@ -66,7 +66,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.DE_DIRECT_DEBIT, null);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.DE_DIRECT_DEBIT, projectId);
                     dismissAllowingStateLoss();
                 }
             }));

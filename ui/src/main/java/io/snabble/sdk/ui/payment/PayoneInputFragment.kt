@@ -9,7 +9,10 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class PayoneInputFragment : BaseFragment() {
+open class PayoneInputFragment : BaseFragment(
+    layoutResId = R.layout.snabble_fragment_cardinput_payone,
+    waitForProject = false
+) {
     companion object {
         const val ARG_PROJECT_ID = PayoneInputView.ARG_PROJECT_ID
         const val ARG_PAYMENT_TYPE = PayoneInputView.ARG_PAYMENT_TYPE
@@ -28,8 +31,8 @@ open class PayoneInputFragment : BaseFragment() {
         tokenizationData = requireNotNull(arguments?.getParcelable(ARG_TOKEN_DATA))
     }
 
-    override fun onCreateActualView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.snabble_fragment_cardinput_payone, container, false).apply {
-            findViewById<PayoneInputView>(R.id.user_payment_method_view).load(projectId, paymentMethod, tokenizationData)
-        }
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.findViewById<PayoneInputView>(R.id.user_payment_method_view)
+            .load(projectId, paymentMethod, tokenizationData)
+    }
 }

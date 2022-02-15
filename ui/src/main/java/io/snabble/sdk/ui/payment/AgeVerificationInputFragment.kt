@@ -8,12 +8,7 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class AgeVerificationInputFragment : BaseFragment() {
-    override fun onCreateActualView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.snabble_fragment_age_verification, container, false)
-    }
-}
+open class AgeVerificationInputFragment : BaseFragment(
+    layoutResId = R.layout.snabble_fragment_age_verification,
+    waitForProject = false
+)

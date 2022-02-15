@@ -8,12 +8,4 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class CheckoutCustomerCardFragment : BaseFragment() {
-    override fun onCreateActualView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.snabble_fragment_checkout_customercard, container, false)
-    }
-}
+open class CheckoutCustomerCardFragment : BaseFragment(R.layout.snabble_fragment_checkout_customercard)
