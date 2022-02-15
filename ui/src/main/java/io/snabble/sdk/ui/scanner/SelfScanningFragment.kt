@@ -42,9 +42,13 @@ open class SelfScanningFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(false)
+        return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false) as ViewGroup
+    }
 
-        rootView = inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false) as ViewGroup
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onActualViewCreated(view, savedInstanceState)
 
+        rootView = view as ViewGroup
         selfScanningView = null
         permissionContainer = rootView.findViewById(R.id.permission_denied_container)
         askForPermission = rootView.findViewById(R.id.open_settings)
@@ -52,8 +56,6 @@ open class SelfScanningFragment : BaseFragment() {
         if (isPermissionGranted) {
             createSelfScanningView()
         }
-
-        return rootView
     }
 
     override fun onStart() {
@@ -78,8 +80,6 @@ open class SelfScanningFragment : BaseFragment() {
     }
 
     private fun createSelfScanningView() {
-        if (!isReady) return
-
         if (selfScanningView == null) {
             selfScanningView = SelfScanningView(context).apply {
                 setAllowShowingHints(allowShowingHints)

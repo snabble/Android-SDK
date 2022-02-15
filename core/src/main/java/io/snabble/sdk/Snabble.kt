@@ -147,7 +147,7 @@ object Snabble {
         }
 
         isInitializing.set(true)
-        mutableInitializationState.value = InitializationState.INITIALIZING
+        mutableInitializationState.postValue(InitializationState.INITIALIZING)
         
         application = app
         this.config = config
