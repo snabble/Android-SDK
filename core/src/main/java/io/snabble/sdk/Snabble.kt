@@ -97,14 +97,10 @@ object Snabble {
         private set
     
     var receiptsUrl: String? = null
-        get() {
-            val url = field
-            val appUser = userPreferences.appUser
-            return if (appUser != null && url != null) {
+        get() = field?.let { url ->
+            userPreferences.appUser?.let { appUser ->
                 url.replace("{appUserID}", appUser.id)
-            } else {
-                null
-            }
+            } ?: url
         }
         private set
 
@@ -126,8 +122,9 @@ object Snabble {
     var createAppUserUrl: String? = null
         private set
 
-    var initializationState = MutableLiveData<InitializationState>()
-        private set
+    private val mutableInitializationState = MutableLiveData<InitializationState>()
+
+    val initializationState: LiveData<InitializationState> = mutableInitializationState
 
     var currentActivity: WeakReference<Activity>? = null
 
@@ -149,7 +146,7 @@ object Snabble {
         }
 
         isInitializing.set(true)
-        initializationState.value = InitializationState.INITIALIZING
+        mutableInitializationState.value = InitializationState.INITIALIZING
         
         application = app
         this.config = config
@@ -229,7 +226,7 @@ object Snabble {
                 val token = tokenRegistry.getToken(projects[0])
                 if (token == null) {
                     isInitializing.set(false)
-                    initializationState.postValue(InitializationState.ERROR)
+                    mutableInitializationState.postValue(InitializationState.ERROR)
 
                     Dispatch.mainThread {
                         setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
@@ -239,7 +236,7 @@ object Snabble {
             }
 
             isInitializing.set(false)
-            initializationState.postValue(InitializationState.INITIALIZED)
+            mutableInitializationState.postValue(InitializationState.INITIALIZED)
             Dispatch.mainThread {
                 setupCompletionListener.onReady()
             }
@@ -251,7 +248,7 @@ object Snabble {
 
     private fun dispatchError(setupCompletionListener: SetupCompletionListener) {
         isInitializing.set(false)
-        initializationState.postValue(InitializationState.ERROR)
+        mutableInitializationState.postValue(InitializationState.ERROR)
 
         Dispatch.mainThread {
             setupCompletionListener.onError(Error.CONNECTION_TIMEOUT)
@@ -299,10 +296,6 @@ object Snabble {
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build(),
             networkCallback)
-    }
-
-    fun getInitializationState(): LiveData<InitializationState> {
-        return initializationState
     }
 
     /**

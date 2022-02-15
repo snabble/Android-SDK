@@ -60,7 +60,6 @@ abstract class BaseFragment : Fragment() {
             } else {
                 isReady = false
                 fragmentContainer.removeAllViews()
-                sdkNotInitialized.isVisible = true
             }
         }
     }

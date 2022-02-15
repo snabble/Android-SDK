@@ -65,11 +65,6 @@ object SnabbleUI {
     val projectAsLiveData: LiveData<Project?>
         get() = ProjectPersistence.projectAsLiveData
 
-    @JvmStatic
-    fun hasProject(): Boolean {
-        return ProjectPersistence.project != null
-    }
-
     /**
      * Sets an action handler for custom implementations of events.
      *
