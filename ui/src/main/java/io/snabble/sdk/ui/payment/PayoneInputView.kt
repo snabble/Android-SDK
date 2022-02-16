@@ -243,7 +243,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     private fun authenticate(creditCardInfo: CreditCardInfo) {
         val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
         val link = tokenizationData.links["preAuth"]
-        if (link != null) {
+        if (link != null && link.href != null) {
             val request = Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(link.href)))
             .post(req.toJsonRequest())
