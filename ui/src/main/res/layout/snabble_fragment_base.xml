@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:text="The snabble SDK is not initialized."/>
 
     <FrameLayout

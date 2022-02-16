@@ -7,7 +7,7 @@
     android:paddingEnd="24dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
-    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+    android:textAppearance="?attr/textAppearanceBodyLarge"
     tools:text="zum Mitnehmen">
 
 </TextView>

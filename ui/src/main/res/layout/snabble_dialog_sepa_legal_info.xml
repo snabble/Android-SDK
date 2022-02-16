@@ -27,8 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textSize="17sp"
-            android:textStyle="bold"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             android:text="@string/Snabble.SEPA.mandate"/>
 
         <ScrollView
@@ -40,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="13sp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
                 tools:text="Ich ermächtige Lebensmittelmärkte snabble GmbH, einmalig eine Zahlung von meinem Konto mittels Lastschrift einzuziehen."/>
         </ScrollView>
     </LinearLayout>

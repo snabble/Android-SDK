@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/name"
-                android:textSize="14sp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 tools:text="SEPA-Lastschrift"
                 tools:visibility="visible" />
 
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/id"
-                android:textSize="12sp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
                 android:enabled="false"
                 tools:text="*****************1234"
                 tools:visibility="visible" />

@@ -25,7 +25,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/Snabble.Payment.presentCode"
-                android:textSize="17sp"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:visibility="gone"/>
 
             <ImageView

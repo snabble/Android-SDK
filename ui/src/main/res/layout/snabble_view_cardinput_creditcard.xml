@@ -7,6 +7,7 @@
         android:id="@+id/threed_secure_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         android:padding="16dp" />
 
     <WebView

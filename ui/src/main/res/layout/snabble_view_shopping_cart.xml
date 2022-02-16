@@ -59,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:text="@string/Snabble.Shoppingcart.emptyState.description" />
 
             <com.google.android.material.button.MaterialButton

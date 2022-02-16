@@ -19,6 +19,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:text="@string/Snabble.Payment.SEPA.hint" />
 
         <com.google.android.material.textfield.TextInputLayout
