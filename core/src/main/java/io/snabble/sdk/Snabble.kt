@@ -34,9 +34,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 object Snabble {
     @JvmStatic
-    fun getInstance() : Snabble {
-        return this
-    }
+    val instance: Snabble
+        get() = this
 
     @JvmStatic
     val version: String

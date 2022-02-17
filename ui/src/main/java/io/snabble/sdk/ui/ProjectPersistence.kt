@@ -11,8 +11,7 @@ import io.snabble.sdk.utils.Dispatch
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal object ProjectPersistence {
-    private val snabble = Snabble.getInstance()
-    private var application = snabble.application
+    private var application = Snabble.application
     private val sharedPreferences: SharedPreferences = application.getSharedPreferences("snabble_ui_persistence", Context.MODE_PRIVATE)
 
     val projectAsLiveData = MutableLiveData<Project?>()
@@ -20,15 +19,8 @@ internal object ProjectPersistence {
 
     init {
         Dispatch.mainThread {
-            snabble.initializationState.observeForever {
-                update()
-            }
-
-            snabble.addOnMetadataUpdateListener(object : Snabble.OnMetadataUpdateListener {
-                override fun onMetaDataUpdated() {
-                    update()
-                }
-            })
+            Snabble.initializationState.observeForever { update() }
+            Snabble.addOnMetadataUpdateListener { update() }
         }
     }
 
@@ -39,7 +31,7 @@ internal object ProjectPersistence {
     }
 
     private fun update() {
-        val p = snabble.projects.find {
+        val p = Snabble.projects.find {
             it.id == sharedPreferences.getString("id", null)
         }
         project = p

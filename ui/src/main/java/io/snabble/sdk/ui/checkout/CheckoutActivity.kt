@@ -50,7 +50,7 @@ class CheckoutActivity : FragmentActivity() {
         navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
         navController = navHostFragment.navController
 
-        Snabble.getInstance().initializationState.observe(this) {
+        Snabble.initializationState.observe(this) {
             when(it) {
                 InitializationState.INITIALIZED -> {
                     val projectId = intent.getStringExtra(ARG_PROJECT_ID)
@@ -59,7 +59,7 @@ class CheckoutActivity : FragmentActivity() {
                         return@observe
                     }
 
-                    val project = Snabble.getInstance().getProjectById(projectId)
+                    val project = Snabble.getProjectById(projectId)
                     if (project == null) {
                         finishWithError("Project with id $projectId not found")
                         return@observe

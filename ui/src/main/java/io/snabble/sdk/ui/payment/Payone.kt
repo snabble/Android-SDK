@@ -84,7 +84,7 @@ object Payone {
         }
 
         val request: Request = Request.Builder()
-            .url(Snabble.getInstance().absoluteUrl(url.href))
+            .url(Snabble.absoluteUrl(url.href))
             .build()
 
         project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<PayoneTokenizationData>(PayoneTokenizationData::class.java), Callback {

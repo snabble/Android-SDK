@@ -29,7 +29,7 @@ open class ProjectPaymentOptionsFragment : BaseFragment(
         val v = view as ProjectPaymentOptionsView
         brand?.let { brand ->
             val projects = ArrayList<Project>()
-            Snabble.getInstance().projects.forEach { project ->
+            Snabble.projects.forEach { project ->
                 if (project.brand?.id == brand) {
                     projects.add(project)
                 }

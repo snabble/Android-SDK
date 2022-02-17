@@ -44,7 +44,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
             adapter.submitList(getEntries())
         }
 
-        Snabble.getInstance().paymentCredentialsStore.addCallback(listener)
+        Snabble.paymentCredentialsStore.addCallback(listener)
 
         getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -55,21 +55,21 @@ open class PaymentOptionsView @JvmOverloads constructor(
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 getFragmentActivity()?.lifecycle?.removeObserver(this)
-                Snabble.getInstance().paymentCredentialsStore.removeCallback(listener)
+                Snabble.paymentCredentialsStore.removeCallback(listener)
             }
         })
     }
 
     private fun getEntries(): List<Entry> {
-        val projects = Snabble.getInstance().projects.filter { project ->
+        val projects = Snabble.projects.filter { project ->
             project.availablePaymentMethods.count { it.isRequiringCredentials } > 0
         }
 
         val projectList = ArrayList<Entry>()
-        val store = Snabble.getInstance().paymentCredentialsStore
+        val store = Snabble.paymentCredentialsStore
 
         projects.filter { it.brand == null }
-                .forEachIndexed { i, project ->
+                .forEach { project ->
                     val count = store.getCountForProject(project)
 
                     projectList.add(

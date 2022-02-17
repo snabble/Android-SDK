@@ -59,7 +59,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     private var polling = LazyWorker.createLifeCycleAwareJob(context) {
         lastPreAuthResponse?.links?.get("preAuthStatus")?.href?.let { statusUrl ->
             val request = Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(statusUrl)))
+                .url(Snabble.absoluteUrl(Snabble.absoluteUrl(statusUrl)))
                 .build()
             project.okHttpClient.newCall(request).enqueue(object :
                 SimpleJsonCallback<Payone.PreAuthResponse>(Payone.PreAuthResponse::class.java),
@@ -176,7 +176,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         paymentType: PaymentMethod,
         tokenizationData: PayoneTokenizationData
     ) {
-        this.project = Snabble.getInstance().projects.first { it.id == projectId }
+        this.project = Snabble.projects.first { it.id == projectId }
         this.paymentType = paymentType
         this.tokenizationData = tokenizationData
         inflateView()
@@ -247,10 +247,10 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     private fun authenticate(creditCardInfo: CreditCardInfo) {
         val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
         val link = tokenizationData.links["preAuth"]
-        if (link != null && link.href != null) {
+        if (link?.href != null) {
             val request = Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(Snabble.getInstance().absoluteUrl(link.href)))
-            .post(req.toJsonRequest())
+                .url(Snabble.absoluteUrl(Snabble.absoluteUrl(link.href)))
+                .post(req.toJsonRequest())
                 .build()
 
             project.okHttpClient.newCall(request).enqueue(object :
@@ -277,7 +277,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             Dispatch.mainThread { finishWithError() }
         }
     }
-
 
     private fun authenticateAndSave(creditCardInfo: CreditCardInfo) {
         Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
@@ -313,7 +312,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             Toast.makeText(context, "Could not verify payment credentials", Toast.LENGTH_LONG)
                 .show()
         } else {
-            Snabble.getInstance().paymentCredentialsStore.add(pc)
+            Snabble.paymentCredentialsStore.add(pc)
             Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type.name)
         }
         finish()

@@ -43,10 +43,10 @@ class ProductResolver private constructor(private val context: Context, private 
     private fun checkMinAge(product: Product) {
         if (product.saleRestriction.isAgeRestriction) {
             val minAge = product.saleRestriction.value
-            val birthday = Snabble.getInstance().userPreferences.birthday
+            val birthday = Snabble.userPreferences.birthday
             var isOldEnough = false
             if (birthday != null) {
-                val age = Age.calculateAge(Snabble.getInstance().userPreferences.birthday)
+                val age = Age.calculateAge(Snabble.userPreferences.birthday)
                 if (age.years >= minAge) {
                     isOldEnough = true
                 }

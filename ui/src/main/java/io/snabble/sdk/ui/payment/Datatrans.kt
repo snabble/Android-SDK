@@ -63,7 +63,7 @@ object Datatrans {
         }
 
         val request: Request = Request.Builder()
-            .url(Snabble.getInstance().absoluteUrl(url.href))
+            .url(Snabble.absoluteUrl(url.href))
             .post(GsonHolder.get().toJson(
                 DatatransTokenizationRequest(paymentMethod)
             ).toRequestBody("application/json".toMediaType()))
@@ -133,7 +133,7 @@ object Datatrans {
                     if (token != null) {
                         Keyguard.unlock(activity, object :  Keyguard.Callback {
                             override fun success() {
-                                val store = Snabble.getInstance().paymentCredentialsStore
+                                val store = Snabble.paymentCredentialsStore
                                 val credentials = PaymentCredentials.fromDatatrans(
                                     token.alias,
                                     PaymentCredentials.Brand.fromPaymentMethod(paymentMethod),

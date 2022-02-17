@@ -306,7 +306,7 @@ class PaymentStatusView @JvmOverloads constructor(
             return
         }
 
-        val receipts = Snabble.getInstance().receipts
+        val receipts = Snabble.receipts
         receipts.getReceiptInfos(object : Receipts.ReceiptInfoCallback {
             override fun success(receiptInfos: Array<out ReceiptInfo>?) {
                 val receipt = receiptInfos?.filter { it.id == orderId }?.firstOrNull()

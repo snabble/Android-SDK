@@ -50,7 +50,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             adapter.notifyDataSetChanged()
         }
 
-        Snabble.getInstance().paymentCredentialsStore.addCallback(listener)
+        Snabble.paymentCredentialsStore.addCallback(listener)
 
         getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -61,7 +61,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 getFragmentActivity()?.lifecycle?.removeObserver(this)
-                Snabble.getInstance().paymentCredentialsStore.removeCallback(listener)
+                Snabble.paymentCredentialsStore.removeCallback(listener)
             }
         })
     }
@@ -83,7 +83,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             holder.text.text = project.name
             holder.image.loadAsset(project.assets, "icon")
 
-            val store = Snabble.getInstance().paymentCredentialsStore
+            val store = Snabble.paymentCredentialsStore
             val count = store.getCountForProject(project)
 
             if (count > 0) {

@@ -24,7 +24,7 @@ open class PaymentCredentialsListFragment : BaseFragment(
         super.onCreate(savedInstanceState)
         type = arguments?.getSerializable(ARG_PAYMENT_TYPE) as ArrayList<PaymentCredentials.Type>?
         val projectId = arguments?.getString(ARG_PROJECT_ID)
-        project = Snabble.getInstance().projects.firstOrNull { it.id == projectId }
+        project = Snabble.projects.firstOrNull { it.id == projectId }
     }
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {

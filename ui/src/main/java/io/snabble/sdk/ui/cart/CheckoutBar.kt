@@ -150,7 +150,7 @@ open class CheckoutBar @JvmOverloads constructor(
         if (entry == null) {
             binding.paymentSelector.visibility = GONE
         } else {
-            val pcs = Snabble.getInstance().paymentCredentialsStore
+            val pcs = Snabble.paymentCredentialsStore
             val hasNoPaymentMethods = pcs.usablePaymentCredentialsCount == 0
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             binding.paymentSelector.isVisible = !isHidden

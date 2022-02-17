@@ -97,7 +97,7 @@ class Coupons (
             }
         }
         project.urls["coupons"]?.let { path ->
-            val couponsUrl = Snabble.getInstance().absoluteUrl(path) ?: return
+            val couponsUrl = Snabble.absoluteUrl(path)
             isLoading.setAsap(true)
 
             val request = Request.Builder()

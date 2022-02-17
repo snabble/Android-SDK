@@ -36,7 +36,7 @@ class GooglePayHelper(
             .setEnvironment(env)
             .build()
 
-        return Wallet.getPaymentsClient(Snabble.getInstance().application, walletOptions)
+        return Wallet.getPaymentsClient(Snabble.application, walletOptions)
     }
 
     fun setUseTestEnvironment(boolean: Boolean) {

@@ -39,7 +39,7 @@ class GooglePayHelperActivity : AppCompatActivity() {
     private val googlePayHelper: GooglePayHelper?
         get() {
             val projectId = intent.getStringExtra(INTENT_EXTRA_PROJECT_ID)
-            val project = Snabble.getInstance().projects.firstOrNull { it.id == projectId }
+            val project = Snabble.projects.firstOrNull { it.id == projectId }
             if (project != null) {
                 return project.googlePayHelper
             }
