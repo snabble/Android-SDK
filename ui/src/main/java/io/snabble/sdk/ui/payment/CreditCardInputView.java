@@ -13,8 +13,8 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +52,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class CreditCardInputView extends FrameLayout {
+public class CreditCardInputView extends RelativeLayout {
     public static final String ARG_PROJECT_ID = "projectId";
     public static final String ARG_PAYMENT_TYPE = "paymentType";
 
@@ -69,6 +69,7 @@ public class CreditCardInputView extends FrameLayout {
     private String projectId;
     private Project lastProject;
     private TextView threeDHint;
+    private boolean isLoaded;
 
     public CreditCardInputView(Context context) {
         super(context);
@@ -130,7 +131,34 @@ public class CreditCardInputView extends FrameLayout {
         threeDHint = findViewById(R.id.threed_secure_hint);
         threeDHint.setVisibility(View.GONE);
 
+        watchForBigSizeChanges();
         requestHash();
+    }
+
+    public void watchForBigSizeChanges() {
+        addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            int highestHeight = 0;
+
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                int height = bottom - top;
+                highestHeight = Math.max(highestHeight, height);
+                if (height < highestHeight) {
+                    threeDHint.setVisibility(View.GONE);
+
+                    // for some reason the WebView bounds do not update itself on layout changes
+                    webView.setLeft(getLeft());
+                    webView.setTop(getTop());
+                    webView.setRight(getRight());
+                    webView.setBottom(getBottom());
+                } else {
+                    if (isLoaded) {
+                        threeDHint.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
     }
 
     public void load(String projectId, PaymentMethod paymentType) {
@@ -232,7 +260,12 @@ public class CreditCardInputView extends FrameLayout {
             NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
             BigDecimal chargeTotal = new BigDecimal(hashResponse.chargeTotal);
             threeDHint.setVisibility(View.VISIBLE);
-            threeDHint.setText(resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice, numberFormat.format(chargeTotal), companyName));
+            threeDHint.setText(
+                    resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
+                    numberFormat.format(chargeTotal),
+                    companyName)
+            );
+            isLoaded = true;
         } catch (IOException e) {
             Logger.e(e.getMessage());
             threeDHint.setVisibility(View.GONE);
