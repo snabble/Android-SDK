@@ -27,7 +27,8 @@ class SelectReducedPriceDialogFragment(
         val item = cartItem
         val cart = shoppingCart
 
-        val adapter = ArrayAdapter(requireContext(),
+        val adapter = ArrayAdapter(
+            requireContext(),
             R.layout.snabble_item_pricereduction_select,
             R.id.label,
             listOf(getString(R.string.Snabble_noDiscount)) + (discounts.map { it.name })

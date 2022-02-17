@@ -13,7 +13,8 @@ import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleJsonCallback
 import kotlinx.parcelize.Parcelize
-import okhttp3.*
+import okhttp3.Callback
+import okhttp3.Request
 
 object Payone {
 
@@ -83,7 +84,7 @@ object Payone {
         }
 
         val request: Request = Request.Builder()
-            .url(Snabble.getInstance().absoluteUrl(url.href))
+            .url(Snabble.absoluteUrl(url.href))
             .build()
 
         project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<PayoneTokenizationData>(PayoneTokenizationData::class.java), Callback {

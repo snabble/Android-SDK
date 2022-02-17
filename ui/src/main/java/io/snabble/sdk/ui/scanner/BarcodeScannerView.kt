@@ -8,7 +8,10 @@ import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.Size
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,7 +27,6 @@ import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import java.nio.ByteBuffer
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

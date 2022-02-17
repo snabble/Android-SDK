@@ -11,12 +11,10 @@ import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.Fragment
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.payment.PayoneInputView
 import io.snabble.sdk.ui.search.SearchHelper
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 
@@ -150,7 +148,7 @@ open class SelfScanningFragment : BaseFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.snabble_action_search -> {
                 selfScanningView?.searchWithBarcode()
             }
@@ -165,7 +163,7 @@ open class SelfScanningFragment : BaseFragment() {
 
     private fun updateTorchIcon() {
         val menuItem = optionsMenu?.findItem(R.id.snabble_action_torch)
-        if (selfScanningView?.isTorchEnabled ?: false) {
+        if (selfScanningView?.isTorchEnabled == true) {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_on, null)
         } else {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)

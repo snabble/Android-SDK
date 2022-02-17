@@ -1,10 +1,13 @@
 package io.snabble.sdk.ui.cart
 
 import android.os.Bundle
-import io.snabble.sdk.ui.R
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import io.snabble.sdk.ui.BaseFragment
+import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 
 open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppingcart) {

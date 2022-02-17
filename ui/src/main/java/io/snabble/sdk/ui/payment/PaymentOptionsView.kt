@@ -12,16 +12,19 @@ import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.Brand
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.utils.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import io.snabble.sdk.ui.utils.executeUiAction
+import io.snabble.sdk.ui.utils.getFragmentActivity
+import io.snabble.sdk.ui.utils.loadAsset
 
 open class PaymentOptionsView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -41,7 +44,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
             adapter.submitList(getEntries())
         }
 
-        Snabble.getInstance().paymentCredentialsStore.addCallback(listener)
+        Snabble.paymentCredentialsStore.addCallback(listener)
 
         getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -52,55 +55,57 @@ open class PaymentOptionsView @JvmOverloads constructor(
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 getFragmentActivity()?.lifecycle?.removeObserver(this)
-                Snabble.getInstance().paymentCredentialsStore.removeCallback(listener)
+                Snabble.paymentCredentialsStore.removeCallback(listener)
             }
         })
     }
 
     private fun getEntries(): List<Entry> {
-        val projects = Snabble.getInstance().projects.filter { project ->
+        val projects = Snabble.projects.filter { project ->
             project.availablePaymentMethods.count { it.isRequiringCredentials } > 0
         }
 
         val projectList = ArrayList<Entry>()
-        val store = Snabble.getInstance().paymentCredentialsStore
+        val store = Snabble.paymentCredentialsStore
 
-        projects.filter { it.brand == null }
-                .forEachIndexed { i, project ->
-                    val count = store.getCountForProject(project)
+        projects
+            .filter { it.brand == null }
+            .forEach { project ->
+                val count = store.getCountForProject(project)
 
-                    projectList.add(
-                        Entry(
-                            text = project.name,
-                            project = project,
-                            count = count,
-                            click = {
-                                if (count > 0) {
-                                    PaymentInputViewHelper.showPaymentList(context, project)
-                                } else {
-                                    PaymentInputViewHelper.showPaymentSelectionForAdding(context, project)
-                                }
+                projectList.add(
+                    Entry(
+                        text = project.name,
+                        project = project,
+                        count = count,
+                        click = {
+                            if (count > 0) {
+                                PaymentInputViewHelper.showPaymentList(context, project)
+                            } else {
+                                PaymentInputViewHelper.showPaymentSelectionForAdding(context, project)
                             }
-                        )
+                        }
                     )
-        }
+                )
+            }
 
         val brands = ArrayList<Brand>()
         val counts = HashMap<Brand, Int>()
         val projectCount = HashMap<Brand, Int>()
 
-        projects.filter { it.brand != null }
-                .forEach { project ->
-                    val count = store.getCountForProject(project)
+        projects
+            .filter { it.brand != null }
+            .forEach { project ->
+                val count = store.getCountForProject(project)
 
-                    if (!brands.contains(project.brand)) {
-                        brands.add(project.brand)
-                    }
+                if (!brands.contains(project.brand)) {
+                    brands.add(project.brand)
+                }
 
-                    val currentCount = counts.getOrPut(project.brand) { 0 }
-                    counts[project.brand] = currentCount + count
-                    projectCount[project.brand] = projectCount.getOrPut(project.brand) { 0 } + 1
-        }
+                val currentCount = counts.getOrPut(project.brand) { 0 }
+                counts[project.brand] = currentCount + count
+                projectCount[project.brand] = projectCount.getOrPut(project.brand) { 0 } + 1
+            }
 
         brands.forEach { brand ->
             val project = projects.firstOrNull { it.brand?.id == brand.id }

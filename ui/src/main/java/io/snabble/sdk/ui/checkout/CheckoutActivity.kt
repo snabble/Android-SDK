@@ -10,7 +10,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
@@ -50,8 +49,8 @@ class CheckoutActivity : FragmentActivity() {
         navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
         navController = navHostFragment.navController
 
-        Snabble.getInstance().initializationState.observe(this) {
-            when(it) {
+        Snabble.initializationState.observe(this) {
+            when (it) {
                 InitializationState.INITIALIZED -> {
                     val projectId = intent.getStringExtra(ARG_PROJECT_ID)
                     if (projectId == null) {
@@ -59,7 +58,7 @@ class CheckoutActivity : FragmentActivity() {
                         return@observe
                     }
 
-                    val project = Snabble.getInstance().getProjectById(projectId)
+                    val project = Snabble.getProjectById(projectId)
                     if (project == null) {
                         finishWithError("Project with id $projectId not found")
                         return@observe
@@ -100,7 +99,7 @@ class CheckoutActivity : FragmentActivity() {
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
 
-        return when(checkout.state) {
+        return when (checkout.state) {
             Checkout.State.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
             }

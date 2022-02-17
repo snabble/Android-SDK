@@ -3,7 +3,7 @@ package io.snabble.sdk.ui.checkout
 import io.snabble.sdk.Checkout
 
 val Checkout.State.isCheckoutState: Boolean
-    get() = when(this) {
+    get() = when (this) {
         Checkout.State.NONE,
         Checkout.State.HANDSHAKING,
         Checkout.State.REQUEST_PAYMENT_METHOD,

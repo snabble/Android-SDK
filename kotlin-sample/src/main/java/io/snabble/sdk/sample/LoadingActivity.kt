@@ -26,11 +26,10 @@ class LoadingActivity : AppCompatActivity() {
 
         Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
 
-        val snabble = Snabble.getInstance()
-        snabble.setup(application, config, object : Snabble.SetupCompletionListener {
+        Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
             override fun onReady() {
                 // an application can have multiple projects
-                val project = snabble.projects.first()
+                val project = Snabble.projects.first()
                 SnabbleUI.project = project
                 project.checkedInShop = project.shops.first()
 

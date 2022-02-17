@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // for simplicity sake we are reloading the whole application on state loss
-        if (Snabble.getInstance().application == null) {
+        if (Snabble.application == null) {
             startActivity(Intent(this, LoadingActivity::class.java))
             finish()
         } else {
