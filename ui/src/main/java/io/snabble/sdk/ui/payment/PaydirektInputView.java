@@ -194,26 +194,26 @@ public class PaydirektInputView extends FrameLayout {
         okHttpClient.newCall(request).enqueue(
                 new SimpleJsonCallback<AuthorizationResult>(AuthorizationResult.class) {
                     @Override
-            public void success(AuthorizationResult result) {
-                Dispatch.mainThread(() -> {
-                    authorizationResult = result;
-                    String webLink = result.getWebLink();
-                    if (webLink == null) {
-                        finishWithError();
-                        return;
+                    public void success(AuthorizationResult result) {
+                        Dispatch.mainThread(() -> {
+                            authorizationResult = result;
+                            String webLink = result.getWebLink();
+                            if (webLink == null) {
+                                finishWithError();
+                                return;
+                            }
+
+                            webView.loadUrl(webLink);
+                        });
                     }
 
-                    webView.loadUrl(webLink);
+                    @Override
+                    public void error(Throwable t) {
+                        Dispatch.mainThread(() -> {
+                            finishWithError();
+                        });
+                    }
                 });
-            }
-
-            @Override
-            public void error(Throwable t) {
-                Dispatch.mainThread(() -> {
-                    finishWithError();
-                });
-            }
-        });
     }
 
     private void authenticateAndSave() {

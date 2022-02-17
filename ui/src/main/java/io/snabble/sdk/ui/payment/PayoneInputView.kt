@@ -1,41 +1,45 @@
 package io.snabble.sdk.ui.payment
 
-import android.widget.FrameLayout
-import android.widget.ProgressBar
-import io.snabble.sdk.Project
-import android.widget.TextView
 import android.annotation.SuppressLint
-import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.Payone.PayoneTokenizationData
-import androidx.lifecycle.Lifecycle
-import io.snabble.sdk.Snabble
-import io.snabble.sdk.payment.PaymentCredentials
-import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.SnabbleUI
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.webkit.*
+import android.widget.FrameLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import eu.rekisoft.android.util.LazyWorker
 import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.Keyguard
+import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.payment.Payone.PayoneTokenizationData
+import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.UIUtils
-import io.snabble.sdk.utils.*
-import okhttp3.*
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
+import io.snabble.sdk.utils.Logger
+import io.snabble.sdk.utils.SimpleJsonCallback
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.commons.io.IOUtils
 import java.io.IOException
-import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.nio.charset.Charset
 import java.text.NumberFormat
@@ -135,7 +139,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                     val url = uri.toString()
                     Logger.d("shouldOverrideUrlLoading $url")
                     lastPreAuthResponse?.links?.let { links ->
-                        when(url) {
+                        when (url) {
                             links["redirectBack"]?.href -> finish()
                             links["redirectError"]?.href -> finishWithError()
                             links["redirectSuccess"]?.href -> polling.doNow()
@@ -160,7 +164,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             // Force dark mode when in dark mode
-            WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_ON);
+            WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_ON)
         }
         if (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
             WebView.setWebContentsDebuggingEnabled(true)
@@ -183,7 +187,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private fun loadForm() {
         try {
-            val ccType = when(paymentType) {
+            val ccType = when (paymentType) {
                 PaymentMethod.AMEX -> "A"
                 PaymentMethod.MASTERCARD -> "M"
                 PaymentMethod.VISA -> "V"
@@ -237,7 +241,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         }
     }
 
-    fun Any.toJsonRequest() : RequestBody =
+    fun Any.toJsonRequest(): RequestBody =
         GsonHolder.get().toJson(this).toRequestBody("application/json".toMediaTypeOrNull())
 
     private fun authenticate(creditCardInfo: CreditCardInfo) {

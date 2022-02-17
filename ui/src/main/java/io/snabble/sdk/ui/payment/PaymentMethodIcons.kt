@@ -5,7 +5,7 @@ import io.snabble.sdk.PaymentMethodDescriptor
 import io.snabble.sdk.ui.R
 
 val PaymentMethodDescriptor.icon: Int
-    get() = when(id) {
+    get() = when (id) {
         PaymentMethod.QRCODE_POS.id -> R.drawable.snabble_ic_payment_select_pos
         PaymentMethod.QRCODE_OFFLINE.id -> R.drawable.snabble_ic_payment_select_pos
         PaymentMethod.DE_DIRECT_DEBIT.id -> R.drawable.snabble_ic_payment_select_sepa
@@ -18,7 +18,7 @@ val PaymentMethodDescriptor.icon: Int
         PaymentMethod.GATEKEEPER_TERMINAL.id -> R.drawable.snabble_ic_payment_select_sco
         PaymentMethod.PAYDIREKT.id -> R.drawable.snabble_ic_payment_select_paydirekt
         PaymentMethod.GOOGLE_PAY.id -> R.drawable.snabble_ic_payment_select_gpay
-        "externalBilling" -> when(acceptedOriginTypes?.first()) {
+        "externalBilling" -> when (acceptedOriginTypes?.first()) {
             "tegutEmployeeID" -> R.drawable.snabble_ic_payment_select_tegut
             "leinweberCustomerID" -> R.drawable.snabble_ic_payment_select_leinweber
             else -> 0

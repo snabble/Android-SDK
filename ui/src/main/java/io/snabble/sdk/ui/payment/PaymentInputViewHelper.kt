@@ -1,17 +1,17 @@
 package io.snabble.sdk.ui.payment
 
 import android.content.Context
-import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.utils.KeyguardUtils
-import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.utils.UIUtils
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
+import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.utils.KeyguardUtils
+import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
 
 object PaymentInputViewHelper {

@@ -228,7 +228,7 @@ public class SEPACardInputView extends FrameLayout {
         final String name = nameInput.getText().toString();
         final String iban = ibanCountryCode.getText().toString() + ibanInput.getText().toString().replace(" ", "");
 
-        if(name.length() > 0) {
+        if (name.length() > 0) {
             nameTextInputLayout.setErrorEnabled(false);
         } else {
             nameTextInputLayout.setErrorEnabled(true);
@@ -236,7 +236,7 @@ public class SEPACardInputView extends FrameLayout {
             ok = false;
         }
 
-        if(IBAN.validate(iban)) {
+        if (IBAN.validate(iban)) {
             ibanTextInputLayout.setErrorEnabled(false);
         } else {
             ibanTextInputLayout.setErrorEnabled(true);
