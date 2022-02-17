@@ -96,11 +96,7 @@
                 android:insetRight="0dp"
                 android:insetLeft="0dp"
                 android:insetBottom="0dp"
-                app:autoSizeTextType="uniform"
-                app:autoSizeMinTextSize="8sp"
-                app:autoSizeMaxTextSize="16sp"
                 tools:visibility="gone"
-                android:maxLines="1"
                 android:text="@string/Snabble.Shoppingcart.buyProducts.now" />
 
             <include android:id="@+id/google_pay_button_layout"
@@ -124,9 +120,5 @@
             android:insetBottom="0dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMinTextSize="8sp"
-            app:autoSizeMaxTextSize="16sp"
-            android:maxLines="1"
             android:text="@string/Snabble.Shoppingcart.buyProducts.selectPaymentMethod" />
 </merge>
