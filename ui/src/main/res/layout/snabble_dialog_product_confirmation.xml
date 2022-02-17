@@ -192,10 +192,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:text="@string/Snabble.Scanner.addToCart"
-        app:autoSizeMaxTextSize="16sp"
-        app:autoSizeMinTextSize="8sp"
-        app:autoSizeTextType="uniform" />
+        android:text="@string/Snabble.Scanner.addToCart" />
 
 
     <!-- invisible view as a margin, marginBottom does not work on API 16-18 -->

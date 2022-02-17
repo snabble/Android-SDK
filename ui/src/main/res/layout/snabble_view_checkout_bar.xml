@@ -9,32 +9,36 @@
     tools:orientation="vertical"
     tools:background="#ededed">
 
-        <FrameLayout
+        <RelativeLayout
             android:id="@+id/sum_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp">
+
             <TextView
                 android:id="@+id/article_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|start"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:layout_toStartOf="@+id/price_sum"
                 android:enabled="false"
-                tools:text="2 Artikel"/>
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                tools:text="2 Artikel" />
 
             <TextView
                 android:id="@+id/price_sum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|end"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
                 tools:text="13,37 €"/>
-        </FrameLayout>
+        </RelativeLayout>
         <LinearLayout
             android:id="@+id/payment_active"
             android:layout_width="match_parent"
