@@ -22,8 +22,9 @@ import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleJsonCallback
-import okhttp3.*
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.*
 
@@ -131,7 +132,7 @@ object Datatrans {
                     }
 
                     if (token != null) {
-                        Keyguard.unlock(activity, object :  Keyguard.Callback {
+                        Keyguard.unlock(activity, object : Keyguard.Callback {
                             override fun success() {
                                 val store = Snabble.paymentCredentialsStore
                                 val credentials = PaymentCredentials.fromDatatrans(

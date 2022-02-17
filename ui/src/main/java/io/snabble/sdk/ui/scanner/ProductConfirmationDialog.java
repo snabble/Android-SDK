@@ -235,7 +235,7 @@ public class ProductConfirmationDialog {
                 inputMethodManager.showSoftInput(quantity, 0);
             });
         }
-        
+
         SnabbleUI.executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_SHOWN);
     }
 
@@ -334,7 +334,7 @@ public class ProductConfirmationDialog {
         if (imageUrl != null && imageUrl.length() > 0) {
             Picasso.get().load(cartItem.getProduct().getImageUrl()).fetch();
         }
-        
+
         Bundle args = new Bundle();
         args.putString("cartItem", GsonHolder.get().toJson(cartItem));
         SnabbleUI.executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_HIDDEN, args);

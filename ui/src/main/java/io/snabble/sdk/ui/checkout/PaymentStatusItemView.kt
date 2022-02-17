@@ -5,20 +5,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.*
 import androidx.core.view.isVisible
-import androidx.core.widget.TextViewCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import com.google.android.material.progressindicator.CircularProgressIndicator
-import io.snabble.sdk.BarcodeFormat
-import io.snabble.sdk.Checkout
-import io.snabble.sdk.Project
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.scanner.BarcodeView
-import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.setOrHide
-import io.snabble.sdk.utils.Utils.dp2px
 
 @Suppress("LeakingThis")
 open class PaymentStatusItemView @JvmOverloads constructor(

@@ -4,30 +4,31 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.view.isVisible
-import androidx.lifecycle.*
-import io.snabble.sdk.*
-import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.utils.getFragmentActivity
-import io.snabble.sdk.ui.utils.observeView
-import io.snabble.sdk.utils.Dispatch
+import android.view.ViewGroup
 import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isInvisible
-import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
-import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.utils.executeUiAction
-import android.text.Editable
-
-import android.text.TextWatcher
-import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import io.snabble.sdk.*
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
+import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.executeUiAction
+import io.snabble.sdk.ui.utils.getFragmentActivity
+import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
+import io.snabble.sdk.utils.Dispatch
 
 
 class PaymentStatusView @JvmOverloads constructor(
@@ -204,7 +205,9 @@ class PaymentStatusView @JvmOverloads constructor(
             if (it.value != null && it.format != null) {
                 val format = BarcodeFormat.parse(it.format)
                 if (format != null) {
-                    SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.EXIT_TOKEN_AVAILABLE,
+                    SnabbleUI.executeAction(
+                        requireFragmentActivity(),
+                        SnabbleUI.Event.EXIT_TOKEN_AVAILABLE,
                         Bundle().apply {
                             putString("token", it.value)
                             putString("format", it.format)
@@ -253,7 +256,7 @@ class PaymentStatusView @JvmOverloads constructor(
         }
     }
 
-    private fun stopPollingForPaymentOriginCandidate(){
+    private fun stopPollingForPaymentOriginCandidate() {
         paymentOriginCandidateHelper.removePaymentOriginCandidateAvailableListener(this)
         paymentOriginCandidateHelper.stopPolling()
     }
@@ -335,9 +338,11 @@ class PaymentStatusView @JvmOverloads constructor(
             if (itemView == null) {
                 itemView = PaymentStatusItemView(context)
                 itemView.tag = it.type
-                binding.fulfillmentContainer.addView(itemView,
+                binding.fulfillmentContainer.addView(
+                    itemView,
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT)
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
             }
 
             if (it.type == "tobaccolandEWA") {

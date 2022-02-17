@@ -1,6 +1,9 @@
 package io.snabble.sdk.ui.views
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
@@ -12,7 +15,6 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import com.google.android.material.animation.AnimationUtils
-import com.google.android.material.animation.AnimationUtils.LINEAR_INTERPOLATOR
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Utils

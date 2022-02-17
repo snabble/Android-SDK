@@ -1,14 +1,11 @@
 package io.snabble.sdk.ui
 
-import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.Dispatch
-import java.util.concurrent.atomic.AtomicBoolean
 
 internal object ProjectPersistence {
     private var application = Snabble.application

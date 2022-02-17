@@ -21,7 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.snabble.sdk.*;
+import io.snabble.sdk.CheckoutApi;
+import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
@@ -302,7 +306,7 @@ public class PaymentSelectionHelper {
         List<PaymentMethod> availablePaymentMethodsList = new ArrayList<>();
         for (final CheckoutApi.PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
             String[] origins = paymentMethodInfo.acceptedOriginTypes;
-            if(origins == null) origins = new String[0];
+            if (origins == null) origins = new String[0];
             PaymentMethod paymentMethod = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.id, Arrays.asList(origins));
             if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
                 availablePaymentMethodsList.add(paymentMethod);
@@ -334,7 +338,7 @@ public class PaymentSelectionHelper {
             if (availablePaymentMethodsList.contains(e.paymentMethod)) {
                 e.isAvailable = true;
                 e.hint = pc.getObfuscatedId();
-            } else if (projectPaymentMethods.contains(e.paymentMethod)){
+            } else if (projectPaymentMethods.contains(e.paymentMethod)) {
                 e.hint = application.getString(R.string.Snabble_Shoppingcart_notForThisPurchase);
                 e.isAvailable = false;
             } else {

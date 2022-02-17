@@ -68,42 +68,44 @@ open class PaymentOptionsView @JvmOverloads constructor(
         val projectList = ArrayList<Entry>()
         val store = Snabble.paymentCredentialsStore
 
-        projects.filter { it.brand == null }
-                .forEach { project ->
-                    val count = store.getCountForProject(project)
+        projects
+            .filter { it.brand == null }
+            .forEach { project ->
+                val count = store.getCountForProject(project)
 
-                    projectList.add(
-                        Entry(
-                            text = project.name,
-                            project = project,
-                            count = count,
-                            click = {
-                                if (count > 0) {
-                                    PaymentInputViewHelper.showPaymentList(context, project)
-                                } else {
-                                    PaymentInputViewHelper.showPaymentSelectionForAdding(context, project)
-                                }
+                projectList.add(
+                    Entry(
+                        text = project.name,
+                        project = project,
+                        count = count,
+                        click = {
+                            if (count > 0) {
+                                PaymentInputViewHelper.showPaymentList(context, project)
+                            } else {
+                                PaymentInputViewHelper.showPaymentSelectionForAdding(context, project)
                             }
-                        )
+                        }
                     )
-        }
+                )
+            }
 
         val brands = ArrayList<Brand>()
         val counts = HashMap<Brand, Int>()
         val projectCount = HashMap<Brand, Int>()
 
-        projects.filter { it.brand != null }
-                .forEach { project ->
-                    val count = store.getCountForProject(project)
+        projects
+            .filter { it.brand != null }
+            .forEach { project ->
+                val count = store.getCountForProject(project)
 
-                    if (!brands.contains(project.brand)) {
-                        brands.add(project.brand)
-                    }
+                if (!brands.contains(project.brand)) {
+                    brands.add(project.brand)
+                }
 
-                    val currentCount = counts.getOrPut(project.brand) { 0 }
-                    counts[project.brand] = currentCount + count
-                    projectCount[project.brand] = projectCount.getOrPut(project.brand) { 0 } + 1
-        }
+                val currentCount = counts.getOrPut(project.brand) { 0 }
+                counts[project.brand] = currentCount + count
+                projectCount[project.brand] = projectCount.getOrPut(project.brand) { 0 } + 1
+            }
 
         brands.forEach { brand ->
             val project = projects.firstOrNull { it.brand?.id == brand.id }

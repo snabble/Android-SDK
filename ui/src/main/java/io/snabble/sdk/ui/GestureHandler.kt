@@ -46,14 +46,15 @@ abstract class GestureHandler<T>(resources: Resources) : ItemTouchHelper.SimpleC
         get() = (adapter as? SortableAdapter)?.sortMode ?: false
 
     override fun getDragDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
-            if (recyclerView.isInSortMode) ItemTouchHelper.UP + ItemTouchHelper.DOWN else 0
+        if (recyclerView.isInSortMode) ItemTouchHelper.UP + ItemTouchHelper.DOWN else 0
 
     override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
-            if (recyclerView.isInSortMode) 0 else ItemTouchHelper.LEFT + ItemTouchHelper.RIGHT
+        if (recyclerView.isInSortMode) 0 else ItemTouchHelper.LEFT + ItemTouchHelper.RIGHT
 
-    override fun onMove(recyclerView: RecyclerView,
-                        viewHolder: RecyclerView.ViewHolder,
-                        target: RecyclerView.ViewHolder
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
     ): Boolean {
         val adapter = recyclerView.adapter as SortableAdapter
         val from = viewHolder.bindingAdapterPosition
@@ -63,7 +64,15 @@ abstract class GestureHandler<T>(resources: Resources) : ItemTouchHelper.SimpleC
     }
 
     // based on https://stackoverflow.com/a/45565493/995926
-    override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+    override fun onChildDraw(
+        c: Canvas,
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        dX: Float,
+        dY: Float,
+        actionState: Int,
+        isCurrentlyActive: Boolean
+    ) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             val itemView = viewHolder.itemView
             val height = itemView.bottom.toFloat() - itemView.top.toFloat()
@@ -83,7 +92,7 @@ abstract class GestureHandler<T>(resources: Resources) : ItemTouchHelper.SimpleC
                     itemView.bottom - width
                 )
                 c.drawBitmap(icon, null, iconDest, paint)
-            } else if(dX > 0) {
+            } else if (dX > 0) {
                 val background = Rect(
                     itemView.left, itemView.top,
                     itemView.left + dX.toInt(), itemView.bottom
@@ -112,7 +121,7 @@ abstract class GestureHandler<T>(resources: Resources) : ItemTouchHelper.SimpleC
         viewHolder: RecyclerView.ViewHolder
     ): Int {
         val adapter = recyclerView.adapter as? DismissibleAdapter
-        return if(viewHolder.bindingAdapterPosition >= 0 && adapter?.isDismissible(viewHolder.bindingAdapterPosition) == false) {
+        return if (viewHolder.bindingAdapterPosition >= 0 && adapter?.isDismissible(viewHolder.bindingAdapterPosition) == false) {
             0
         } else {
             super.getMovementFlags(recyclerView, viewHolder)

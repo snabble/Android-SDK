@@ -30,7 +30,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
         sdkNotInitialized = view.findViewById(R.id.sdk_not_initialized)
 
         Snabble.initializationState.observe(viewLifecycleOwner) {
-            when(it) {
+            when (it) {
                 InitializationState.INITIALIZED -> {
                     waitForProjectAndAdd(savedInstanceState)
                 }

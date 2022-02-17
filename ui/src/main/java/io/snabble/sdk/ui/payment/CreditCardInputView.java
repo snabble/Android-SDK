@@ -209,7 +209,7 @@ public class CreditCardInputView extends FrameLayout {
             data = data.replace("{{hash}}", hashResponse.hash);
 
             // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
-            switch(paymentType) {
+            switch (paymentType) {
                 case MASTERCARD:
                     data = data.replace("{{paymentMethod}}", "M");
                     break;
