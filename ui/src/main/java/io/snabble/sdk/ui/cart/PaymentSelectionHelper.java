@@ -54,10 +54,8 @@ public class PaymentSelectionHelper {
     private final Map<PaymentMethod, String> names = new HashMap<>();
     private final List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
 
-    private Application application;
-    private PaymentCredentialsStore paymentCredentialsStore;
-    private List<PaymentCredentials> paymentCredentials;
-    private MutableLiveData<Entry> selectedEntry;
+    private final Application application;
+    private final MutableLiveData<Entry> selectedEntry;
     private Project project;
     private ShoppingCart cart;
     private final SharedPreferences sharedPreferences;
@@ -125,7 +123,7 @@ public class PaymentSelectionHelper {
 
         selectedEntry = new MutableLiveData<>();
 
-        paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
+        PaymentCredentialsStore paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
         paymentCredentialsStore.addCallback(this::update);
 
         paymentCredentialsStore.addOnPaymentCredentialsAddedListener(paymentCredentials -> {

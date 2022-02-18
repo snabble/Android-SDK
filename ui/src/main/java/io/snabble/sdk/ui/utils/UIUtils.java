@@ -31,8 +31,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import eu.rekisoft.android.util.LazyWorker;
 import io.snabble.sdk.ui.R;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
 
 public class UIUtils {
     @RestrictTo(LIBRARY_GROUP)
@@ -154,9 +152,9 @@ public class UIUtils {
     }
 
     public static final class TopDownInfoBoxController {
-        private final LazyWorker.Job hide;
+        private final LazyWorker.Job<?> hide;
 
-        private TopDownInfoBoxController(LazyWorker.Job hideJob) {
+        private TopDownInfoBoxController(LazyWorker.Job<?> hideJob) {
             hide = hideJob;
         }
 

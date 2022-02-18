@@ -167,27 +167,27 @@ class PaymentStatusView @JvmOverloads constructor(
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
             Checkout.State.PAYMENT_PROCESSING_ERROR -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
             Checkout.State.DENIED_TOO_YOUNG -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung)
                 handlePaymentAborted()
             }
             Checkout.State.DENIED_BY_PAYMENT_PROVIDER -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
             Checkout.State.DENIED_BY_SUPERVISOR -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
                 handlePaymentAborted()
             }
             Checkout.State.PAYMENT_ABORTED -> {
-                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
+                Telemetry.event(Telemetry.Event.CheckoutAbortByUser)
                 handlePaymentAborted()
             }
             Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
-                val price = checkout.verifiedOnlinePrice;
+                val price = checkout.verifiedOnlinePrice
                 if (price != -1) {
                     val googlePayHelper = project.googlePayHelper
                     if (googlePayHelper != null) {
@@ -226,7 +226,7 @@ class PaymentStatusView @JvmOverloads constructor(
             }
         }
 
-        binding.statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+        binding.statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     private fun handlePaymentAborted() {
@@ -312,7 +312,7 @@ class PaymentStatusView @JvmOverloads constructor(
         val receipts = Snabble.receipts
         receipts.getReceiptInfos(object : Receipts.ReceiptInfoCallback {
             override fun success(receiptInfos: Array<out ReceiptInfo>?) {
-                val receipt = receiptInfos?.filter { it.id == orderId }?.firstOrNull()
+                val receipt = receiptInfos?.firstOrNull { it.id == orderId }
                 if (receipt != null) {
                     Dispatch.mainThread {
                         binding.receipt.state = PaymentStatusItemView.State.SUCCESS

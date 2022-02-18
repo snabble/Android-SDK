@@ -16,8 +16,7 @@ import io.snabble.sdk.ui.utils.setOrHide
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.StringNormalizer
 
-class SearchableProductAdapter :
-    RecyclerView.Adapter<SearchableProductAdapter.ProductViewHolder>() {
+class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.ProductViewHolder>() {
     enum class SearchType {
         BARCODE, FOLDED_NAME
     }

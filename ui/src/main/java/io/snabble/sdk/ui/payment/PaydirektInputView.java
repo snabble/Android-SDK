@@ -209,9 +209,7 @@ public class PaydirektInputView extends FrameLayout {
 
                     @Override
                     public void error(Throwable t) {
-                        Dispatch.mainThread(() -> {
-                            finishWithError();
-                        });
+                        Dispatch.mainThread(() -> finishWithError());
                     }
                 });
     }

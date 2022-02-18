@@ -109,7 +109,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
         brands.forEach { brand ->
             val project = projects.firstOrNull { it.brand?.id == brand.id }
-            val projectBrandCount = projectCount.get(project?.brand) ?: 0
+            val projectBrandCount = projectCount[project?.brand] ?: 0
             projectList.add(
                 Entry(
                     text = brand.name,

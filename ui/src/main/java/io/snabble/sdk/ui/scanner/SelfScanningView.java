@@ -307,9 +307,7 @@ public class SelfScanningView extends FrameLayout {
             new AlertDialog.Builder(getContext())
                     .setView(input)
                     .setTitle(R.string.Snabble_Scanner_enterBarcode)
-                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> {
-                        lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
-                    })
+                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString())))
                     .setNegativeButton(R.string.Snabble_Cancel, null)
                     .setOnDismissListener(dialog -> resumeBarcodeScanner())
                     .create()

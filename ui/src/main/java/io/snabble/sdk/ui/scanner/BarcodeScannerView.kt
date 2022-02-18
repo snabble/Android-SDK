@@ -153,9 +153,9 @@ open class BarcodeScannerView @JvmOverloads constructor(
                     .build()
                     .also {
                         cameraExecutor?.let { exec ->
-                            it.setAnalyzer(exec, { image ->
+                            it.setAnalyzer(exec) { image ->
                                 processImage(image)
-                            })
+                            }
                         }
                     }
 

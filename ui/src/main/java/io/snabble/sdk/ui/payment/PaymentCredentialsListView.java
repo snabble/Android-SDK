@@ -237,6 +237,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     }
 
     private class Adapter extends RecyclerView.Adapter<EntryViewHolder> {
+        @NonNull
         @Override
         public EntryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(getContext()).inflate(R.layout.snabble_item_payment_credentials_list_entry, parent, false);
@@ -270,9 +271,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 vh.delete.setOnClickListener(view -> {
                     new AlertDialog.Builder(getContext())
                             .setMessage(R.string.Snabble_Payment_delete_message)
-                            .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> {
-                                paymentCredentialsStore.remove(e.paymentCredentials);
-                            })
+                            .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> paymentCredentialsStore.remove(e.paymentCredentials))
                             .setNegativeButton(R.string.Snabble_No, null)
                             .create()
                             .show();

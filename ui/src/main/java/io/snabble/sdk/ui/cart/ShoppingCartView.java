@@ -165,9 +165,7 @@ public class ShoppingCartView extends FrameLayout {
         paymentContainer = findViewById(R.id.bottom_payment_container);
 
         scanProducts = findViewById(R.id.scan_products);
-        scanProducts.setOnClickListener(view -> {
-            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SCANNER);
-        });
+        scanProducts.setOnClickListener(view -> SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SCANNER));
 
         restore = findViewById(R.id.restore);
         restore.setOnClickListener(v -> cart.restore());

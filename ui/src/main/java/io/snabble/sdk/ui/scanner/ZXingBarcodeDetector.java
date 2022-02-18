@@ -74,7 +74,7 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
 
             Barcode filtered = falsePositiveFilter.filter(barcode);
             if (filtered != null) {
-                Logger.d("Detected barcode: " + barcode.toString());
+                Logger.d("Detected barcode: " + barcode);
                 return filtered;
             }
         }

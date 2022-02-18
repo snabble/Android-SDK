@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
     public static final String ARG_SELECTED_ENTRY = "selectedEntry";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = View.inflate(requireContext(), R.layout.snabble_dialog_payment_selection, null);
         LinearLayout options = view.findViewById(R.id.options);
 
