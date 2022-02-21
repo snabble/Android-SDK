@@ -13,6 +13,16 @@ public class Dispatch {
     private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(0);
     private static final ScheduledExecutorService ioScheduler = Executors.newSingleThreadScheduledExecutor();
 
+    private static MainThreadHandler mainThreadHandler;
+
+    public interface MainThreadHandler {
+        void handle(Runnable runnable);
+    }
+
+    public static void setMainThreadHandler(MainThreadHandler runnable) {
+        Dispatch.mainThreadHandler = runnable;
+    }
+
     public static Future<?> background(Runnable runnable) {
         return executorService.submit(runnable);
     }
@@ -29,6 +39,11 @@ public class Dispatch {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             runnable.run();
         } else {
+            if (mainThreadHandler != null) {
+                mainThreadHandler.handle(runnable);
+                return;
+            }
+
             handler.post(runnable);
         }
     }

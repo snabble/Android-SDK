@@ -12,7 +12,7 @@ class SnackbarUtils {
             val snackbar: Snackbar = Snackbar.make(parentView, string, duration)
             ViewCompat.setFitsSystemWindows(snackbar.view, false)
             ViewCompat.setOnApplyWindowInsetsListener(snackbar.view, null)
-            return snackbar;
+            return snackbar
         }
 
         @JvmStatic
@@ -20,7 +20,7 @@ class SnackbarUtils {
             val snackbar: Snackbar = Snackbar.make(parentView, resId, duration)
             ViewCompat.setFitsSystemWindows(snackbar.view, false)
             ViewCompat.setOnApplyWindowInsetsListener(snackbar.view, null)
-            return snackbar;
+            return snackbar
         }
     }
 }

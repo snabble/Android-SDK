@@ -11,15 +11,14 @@ import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.Fragment
 import io.snabble.sdk.codes.ScannedCode
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.payment.PayoneInputView
 import io.snabble.sdk.ui.search.SearchHelper
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 
-open class SelfScanningFragment : Fragment() {
+open class SelfScanningFragment : BaseFragment() {
     companion object {
         const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
     }
@@ -35,17 +34,18 @@ open class SelfScanningFragment : Fragment() {
     val hasSelfScanningView
         get() = selfScanningView != null
 
-    override fun onCreateView(
+    override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(false)
-        return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false)
+        return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false) as ViewGroup
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onActualViewCreated(view, savedInstanceState)
+
         rootView = view as ViewGroup
         selfScanningView = null
         permissionContainer = rootView.findViewById(R.id.permission_denied_container)
@@ -148,7 +148,7 @@ open class SelfScanningFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.snabble_action_search -> {
                 selfScanningView?.searchWithBarcode()
             }
@@ -163,7 +163,7 @@ open class SelfScanningFragment : Fragment() {
 
     private fun updateTorchIcon() {
         val menuItem = optionsMenu?.findItem(R.id.snabble_action_torch)
-        if (selfScanningView?.isTorchEnabled ?: false) {
+        if (selfScanningView?.isTorchEnabled == true) {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_on, null)
         } else {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)

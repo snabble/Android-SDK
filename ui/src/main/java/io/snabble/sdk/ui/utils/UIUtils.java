@@ -1,5 +1,7 @@
 package io.snabble.sdk.ui.utils;
 
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -30,8 +32,6 @@ import java.lang.annotation.RetentionPolicy;
 import eu.rekisoft.android.util.LazyWorker;
 import io.snabble.sdk.ui.R;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
-
 public class UIUtils {
     @RestrictTo(LIBRARY_GROUP)
     @IntDef({INFO_NEUTRAL, INFO_WARNING, INFO_POSITIVE})
@@ -42,7 +42,7 @@ public class UIUtils {
     public static final int INFO_NEUTRAL = 0;
     public static final int INFO_WARNING = 1;
     public static final int INFO_POSITIVE = 2;
-    
+
     @BaseTransientBottomBar.Duration
     public static final int SNACKBAR_LENGTH_VERY_LONG = 5000;
 
@@ -92,7 +92,7 @@ public class UIUtils {
     @Deprecated
     public static TopDownInfoBoxController showTopDownInfoBox(ViewGroup parent, String text, int duration, int type, int offsetY) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final TextView info = (TextView)inflater.inflate(R.layout.snabble_view_info, parent, false);
+        final TextView info = (TextView) inflater.inflate(R.layout.snabble_view_info, parent, false);
 
         parent.addView(info, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         info.setVisibility(View.INVISIBLE);
@@ -128,8 +128,8 @@ public class UIUtils {
 
         Handler infoHandler = new Handler(Looper.getMainLooper());
         infoHandler.removeCallbacksAndMessages(null);
-        LazyWorker.Job hide = LazyWorker.createLifeCycleAwareJob(parent.getContext(), (job) -> {
-            if(info.isAttachedToWindow()) {
+        LazyWorker.Job<?> hide = LazyWorker.createLifeCycleAwareJob(parent.getContext(), (job) -> {
+            if (info.isAttachedToWindow()) {
                 info.animate()
                         .translationY(-offsetY - info.getHeight())
                         .setListener(new AnimatorListenerAdapter() {
@@ -152,9 +152,9 @@ public class UIUtils {
     }
 
     public static final class TopDownInfoBoxController {
-        private final LazyWorker.Job hide;
+        private final LazyWorker.Job<?> hide;
 
-        private TopDownInfoBoxController(LazyWorker.Job hideJob) {
+        private TopDownInfoBoxController(LazyWorker.Job<?> hideJob) {
             hide = hideJob;
         }
 

@@ -81,7 +81,7 @@ class CheckInLocationManager(val application: Application) {
     fun isLocationAvailable(): Boolean {
         return if (!checkLocationPermission()) {
             false
-        } else isEnabled(Snabble.getInstance().application)
+        } else isEnabled(Snabble.application)
     }
 
     /**

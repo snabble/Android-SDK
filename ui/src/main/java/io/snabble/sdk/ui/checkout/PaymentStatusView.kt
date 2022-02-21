@@ -4,30 +4,31 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.view.isVisible
-import androidx.lifecycle.*
-import io.snabble.sdk.*
-import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.utils.getFragmentActivity
-import io.snabble.sdk.ui.utils.observeView
-import io.snabble.sdk.utils.Dispatch
+import android.view.ViewGroup
 import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isInvisible
-import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
-import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.utils.executeUiAction
-import android.text.Editable
-
-import android.text.TextWatcher
-import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import io.snabble.sdk.*
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
+import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.executeUiAction
+import io.snabble.sdk.ui.utils.getFragmentActivity
+import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
+import io.snabble.sdk.utils.Dispatch
 
 
 class PaymentStatusView @JvmOverloads constructor(
@@ -166,27 +167,27 @@ class PaymentStatusView @JvmOverloads constructor(
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
             Checkout.State.PAYMENT_PROCESSING_ERROR -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
             Checkout.State.DENIED_TOO_YOUNG -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung)
                 handlePaymentAborted()
             }
             Checkout.State.DENIED_BY_PAYMENT_PROVIDER -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
             Checkout.State.DENIED_BY_SUPERVISOR -> {
-                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor);
+                Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
                 handlePaymentAborted()
             }
             Checkout.State.PAYMENT_ABORTED -> {
-                Telemetry.event(Telemetry.Event.CheckoutAbortByUser);
+                Telemetry.event(Telemetry.Event.CheckoutAbortByUser)
                 handlePaymentAborted()
             }
             Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
-                val price = checkout.verifiedOnlinePrice;
+                val price = checkout.verifiedOnlinePrice
                 if (price != -1) {
                     val googlePayHelper = project.googlePayHelper
                     if (googlePayHelper != null) {
@@ -204,7 +205,9 @@ class PaymentStatusView @JvmOverloads constructor(
             if (it.value != null && it.format != null) {
                 val format = BarcodeFormat.parse(it.format)
                 if (format != null) {
-                    SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.EXIT_TOKEN_AVAILABLE,
+                    SnabbleUI.executeAction(
+                        requireFragmentActivity(),
+                        SnabbleUI.Event.EXIT_TOKEN_AVAILABLE,
                         Bundle().apply {
                             putString("token", it.value)
                             putString("format", it.format)
@@ -223,7 +226,7 @@ class PaymentStatusView @JvmOverloads constructor(
             }
         }
 
-        binding.statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+        binding.statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     private fun handlePaymentAborted() {
@@ -253,7 +256,7 @@ class PaymentStatusView @JvmOverloads constructor(
         }
     }
 
-    private fun stopPollingForPaymentOriginCandidate(){
+    private fun stopPollingForPaymentOriginCandidate() {
         paymentOriginCandidateHelper.removePaymentOriginCandidateAvailableListener(this)
         paymentOriginCandidateHelper.stopPolling()
     }
@@ -306,10 +309,10 @@ class PaymentStatusView @JvmOverloads constructor(
             return
         }
 
-        val receipts = Snabble.getInstance().receipts
+        val receipts = Snabble.receipts
         receipts.getReceiptInfos(object : Receipts.ReceiptInfoCallback {
             override fun success(receiptInfos: Array<out ReceiptInfo>?) {
-                val receipt = receiptInfos?.filter { it.id == orderId }?.firstOrNull()
+                val receipt = receiptInfos?.firstOrNull { it.id == orderId }
                 if (receipt != null) {
                     Dispatch.mainThread {
                         binding.receipt.state = PaymentStatusItemView.State.SUCCESS
@@ -335,9 +338,11 @@ class PaymentStatusView @JvmOverloads constructor(
             if (itemView == null) {
                 itemView = PaymentStatusItemView(context)
                 itemView.tag = it.type
-                binding.fulfillmentContainer.addView(itemView,
+                binding.fulfillmentContainer.addView(
+                    itemView,
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT)
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
             }
 
             if (it.type == "tobaccolandEWA") {

@@ -4,7 +4,7 @@ import io.snabble.sdk.BarcodeFormat;
 
 class ZXingHelper {
     public static com.google.zxing.BarcodeFormat toZXingFormat(BarcodeFormat barcodeFormat) {
-        switch(barcodeFormat) {
+        switch (barcodeFormat) {
             case EAN_8:
                 return com.google.zxing.BarcodeFormat.EAN_8;
             case EAN_13:

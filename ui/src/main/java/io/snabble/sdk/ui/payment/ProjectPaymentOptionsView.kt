@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.payment
 
 import android.content.Context
-import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -9,21 +8,19 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.recyclerview.widget.*
-import io.snabble.sdk.PaymentMethod
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.utils.*
-import java.util.*
+import io.snabble.sdk.ui.utils.getFragmentActivity
+import io.snabble.sdk.ui.utils.loadAsset
 
 open class ProjectPaymentOptionsView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -53,7 +50,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             adapter.notifyDataSetChanged()
         }
 
-        Snabble.getInstance().paymentCredentialsStore.addCallback(listener)
+        Snabble.paymentCredentialsStore.addCallback(listener)
 
         getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -64,7 +61,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 getFragmentActivity()?.lifecycle?.removeObserver(this)
-                Snabble.getInstance().paymentCredentialsStore.removeCallback(listener)
+                Snabble.paymentCredentialsStore.removeCallback(listener)
             }
         })
     }
@@ -86,7 +83,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
             holder.text.text = project.name
             holder.image.loadAsset(project.assets, "icon")
 
-            val store = Snabble.getInstance().paymentCredentialsStore
+            val store = Snabble.paymentCredentialsStore
             val count = store.getCountForProject(project)
 
             if (count > 0) {

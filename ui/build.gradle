@@ -10,8 +10,6 @@ android {
     defaultConfig {
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
-        versionCode project.versionCode
-        versionName project.sdkVersion
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
@@ -31,9 +29,6 @@ android {
         viewBinding = true
     }
 
-    lintOptions {
-        disable 'LabelFor', 'ContentDescription', 'MissingTranslation'
-    }
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -44,6 +39,9 @@ android {
     kotlinOptions {
         freeCompilerArgs = ['-Xjvm-default=all']
         jvmTarget = '1.8'
+    }
+    lint {
+        disable 'LabelFor', 'MissingTranslation'
     }
 }
 

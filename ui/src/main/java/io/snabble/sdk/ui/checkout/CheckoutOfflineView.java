@@ -33,8 +33,6 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Dispatch;
-import io.snabble.sdk.utils.Logger;
-import io.snabble.sdk.utils.Utils;
 import me.relex.circleindicator.CircleIndicator3;
 
 public class CheckoutOfflineView extends FrameLayout {
@@ -210,7 +208,7 @@ public class CheckoutOfflineView extends FrameLayout {
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             return new ViewHolder(layoutInflater.inflate(R.layout.snabble_item_checkout_offline_qrcode, parent, false));
         }
 

@@ -1,15 +1,15 @@
 package io.snabble.sdk.ui.payment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.PaymentOriginCandidateHelper
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 
-open class SEPACardInputFragment : Fragment() {
+open class SEPACardInputFragment : BaseFragment(
+    layoutResId = R.layout.snabble_fragment_cardinput_sepa,
+    waitForProject = false
+) {
     companion object {
         const val ARG_PAYMENT_ORIGIN_CANDIDATE = "paymentOriginCandidate"
     }
@@ -23,15 +23,10 @@ open class SEPACardInputFragment : Fragment() {
                 as? PaymentOriginCandidateHelper.PaymentOriginCandidate
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val v = inflater.inflate(R.layout.snabble_fragment_cardinput_sepa, container, false) as SEPACardInputView
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        val v = view as SEPACardInputView
         paymentOriginCandidate?.let {
             v.setPrefilledPaymentOriginCandidate(paymentOriginCandidate)
         }
-        return v
     }
 }

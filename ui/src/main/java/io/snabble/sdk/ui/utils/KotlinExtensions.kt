@@ -76,7 +76,7 @@ fun Snackbar.setGravity(gravity: Int) = apply {
     // if the view is rendered at the location y == 0 then this snackbar could be hidden behind a toolbar. Checking this and move it below.
     if (gravity == Gravity.TOP && view.y.absoluteValue < 0.0001) {
         (view.requireFragmentActivity() as AppCompatActivity).supportActionBar?.let { actionBar ->
-            val y = if(actionBar.customView != null) {
+            val y = if (actionBar.customView != null) {
                 max(
                     actionBar.customView.y,
                     actionBar.customView.y + actionBar.customView.translationY + (actionBar.customView.parent as View).translationY + actionBar.height

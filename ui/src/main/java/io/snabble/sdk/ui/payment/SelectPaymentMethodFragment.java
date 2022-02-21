@@ -66,7 +66,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                     "SEPA", getUsableAtText(PaymentMethod.DE_DIRECT_DEBIT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.DE_DIRECT_DEBIT, null);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.DE_DIRECT_DEBIT, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -154,7 +154,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         return v;
     }
 
-    private String getUsableAtText(PaymentMethod...paymentMethods) {
+    private String getUsableAtText(PaymentMethod... paymentMethods) {
         List<Project> projects = Snabble.getInstance().getProjects();
         if (projects.size() == 1) {
             return null;
@@ -167,7 +167,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             List<PaymentMethod> availablePaymentMethods = project.getAvailablePaymentMethods();
             for (PaymentMethod pm : paymentMethods) {
                 if (availablePaymentMethods.contains(pm)) {
-                    if (count > 0 ) {
+                    if (count > 0) {
                         sb.append(", ");
                     }
 

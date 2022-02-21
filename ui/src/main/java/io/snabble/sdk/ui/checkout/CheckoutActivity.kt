@@ -10,7 +10,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
@@ -50,37 +49,45 @@ class CheckoutActivity : FragmentActivity() {
         navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
         navController = navHostFragment.navController
 
-        val projectId = intent.getStringExtra(ARG_PROJECT_ID)
-        if (projectId == null) {
-            finishWithError("No project id set")
-            return
-        }
+        Snabble.initializationState.observe(this) {
+            when (it) {
+                InitializationState.INITIALIZED -> {
+                    val projectId = intent.getStringExtra(ARG_PROJECT_ID)
+                    if (projectId == null) {
+                        finishWithError("No project id set")
+                        return@observe
+                    }
 
-        val project = Snabble.getInstance().getProjectById(projectId)
-        if (project == null) {
-            finishWithError("Project with id $projectId not found")
-            return
-        }
+                    val project = Snabble.getProjectById(projectId)
+                    if (project == null) {
+                        finishWithError("Project with id $projectId not found")
+                        return@observe
+                    }
 
-        val checkout = project.checkout
-        if (!checkout.state.isCheckoutState) {
-            finishWithError("Unexpected checkout state ${checkout.state.name}")
-            return
-        }
-        this.checkout = checkout
+                    val checkout = project.checkout
+                    if (!checkout.state.isCheckoutState) {
+                        finishWithError("Unexpected checkout state ${checkout.state.name}")
+                        return@observe
+                    }
+                    this.checkout = checkout
 
-        val startDestinationId = getNavigationId()
-        if (startDestinationId == null) {
-            finish()
-            return
-        } else {
-            navGraph.setStartDestination(startDestinationId)
-        }
+                    val startDestinationId = getNavigationId()
+                    if (startDestinationId == null) {
+                        finish()
+                        return@observe
+                    } else {
+                        navGraph.setStartDestination(startDestinationId)
+                    }
 
-        navController.graph = navGraph
+                    navController.graph = navGraph
 
-        checkout.checkoutState.observe(this) {
-            onStateChanged()
+                    checkout.checkoutState.observe(this) {
+                        onStateChanged()
+                    }
+                }
+                InitializationState.INITIALIZING,
+                InitializationState.ERROR -> {} // ignored
+            }
         }
     }
 
@@ -92,7 +99,7 @@ class CheckoutActivity : FragmentActivity() {
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
 
-        return when(checkout.state) {
+        return when (checkout.state) {
             Checkout.State.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
             }

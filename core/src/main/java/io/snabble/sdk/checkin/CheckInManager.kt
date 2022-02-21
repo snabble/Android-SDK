@@ -195,7 +195,7 @@ class CheckInManager(val snabble: Snabble,
         Dispatch.mainThread {
             locationManager.startTrackingLocation()
             locationManager.location.observeForever(locationObserver)
-            Snabble.getInstance().addOnMetadataUpdateListener(metadataListener)
+            Snabble.addOnMetadataUpdateListener(metadataListener)
         }
     }
 
@@ -203,7 +203,7 @@ class CheckInManager(val snabble: Snabble,
         Dispatch.mainThread {
             locationManager.stopTrackingLocation()
             locationManager.location.removeObserver(locationObserver)
-            Snabble.getInstance().removeOnMetadataUpdateListener(metadataListener)
+            Snabble.removeOnMetadataUpdateListener(metadataListener)
         }
     }
 
@@ -250,7 +250,7 @@ class CheckInManager(val snabble: Snabble,
 
 
     private fun updateShopProjectsMap() {
-        val projects = Snabble.getInstance().projects
+        val projects = Snabble.projects
         projectByShopId = projects.flatMap { project -> project.shops.map { it.id to project } }.toMap()
     }
 

@@ -1,27 +1,26 @@
 package io.snabble.sdk.ui.checkout.routingtargets
 
-import android.widget.FrameLayout
-import io.snabble.sdk.Checkout.OnCheckoutStateChangedListener
-import io.snabble.sdk.Checkout
-import io.snabble.sdk.ui.scanner.BarcodeView
-import android.widget.TextView
-import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.utils.I18nUtils
-import android.graphics.Bitmap
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import io.snabble.sdk.ui.utils.UIUtils
-import android.content.DialogInterface
+import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import io.snabble.sdk.Checkout
+import io.snabble.sdk.Checkout.OnCheckoutStateChangedListener
+import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.scanner.BarcodeView
+import io.snabble.sdk.ui.utils.I18nUtils
+import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.setOrHide
 import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
@@ -54,7 +53,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
 
         helperTextNoImage = findViewById(R.id.helper_text_no_image)
         helperImage = findViewById(R.id.helper_image)
-        upArrow  = findViewById(R.id.arrow)
+        upArrow = findViewById(R.id.arrow)
 
         cancel.setOnClickListener {
             abort()
@@ -86,8 +85,8 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         Logger.d("QRCode content: $content")
         checkoutIdCode.setText(content)
 
-        project.assets.get("checkout-online") {
-                bitmap: Bitmap? -> setHelperImage(bitmap)
+        project.assets.get("checkout-online") { bitmap: Bitmap? ->
+            setHelperImage(bitmap)
         }
         onStateChanged(checkout.state)
     }

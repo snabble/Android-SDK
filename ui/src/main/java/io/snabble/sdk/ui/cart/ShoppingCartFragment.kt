@@ -1,27 +1,21 @@
 package io.snabble.sdk.ui.cart
 
 import android.os.Bundle
-import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.utils.UIUtils
-import android.content.res.ColorStateList
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.MenuItemCompat
-import androidx.fragment.app.Fragment
+import io.snabble.sdk.ui.BaseFragment
+import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 
-open class ShoppingCartFragment : Fragment() {
+open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppingcart) {
     var shoppingCartView: ShoppingCartView? = null
         private set
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val v = inflater.inflate(R.layout.snabble_fragment_shoppingcart, container, false)
-        shoppingCartView = v.findViewById(R.id.shopping_cart_view)
-        return v
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        shoppingCartView = view.findViewById(R.id.shopping_cart_view)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

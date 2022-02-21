@@ -10,6 +10,7 @@ public class FalsePositiveFilter {
     public FalsePositiveFilter() {
         this.repeatsNeeded = 2;
     }
+
     public FalsePositiveFilter(int repeatsNeeded) {
         this.repeatsNeeded = repeatsNeeded;
     }

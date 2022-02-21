@@ -54,9 +54,7 @@ public class Keyguard {
                 new BiometricPrompt.Builder(activity)
                         .setTitle(activity.getString(R.string.Snabble_Keyguard_title))
                         .setDescription(activity.getString(R.string.Snabble_Keyguard_message))
-                        .setNegativeButton(activity.getString(R.string.Snabble_Cancel), Executors.newSingleThreadExecutor(), (dialogInterface, i) -> {
-                            error(callback);
-                        })
+                        .setNegativeButton(activity.getString(R.string.Snabble_Cancel), Executors.newSingleThreadExecutor(), (dialogInterface, i) -> error(callback))
                         .build()
                         .authenticate(new CancellationSignal(), Executors.newSingleThreadExecutor(),
                                 new BiometricPrompt.AuthenticationCallback() {

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import io.snabble.sdk.Config
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI
 
@@ -16,21 +17,19 @@ class LoadingActivity : AppCompatActivity() {
 
     fun initSdk() {
         // config {
-        val config = Snabble.Config()
-        config.endpointBaseUrl = getString(R.string.endpoint)
-        config.secret = getString(R.string.secret)
-        config.appId = getString(R.string.app_id)
+        val config = Config(
+            endpointBaseUrl = getString(R.string.endpoint),
+            appId = getString(R.string.app_id),
+            secret = getString(R.string.secret),
+        )
         //}
 
         Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
 
-        val snabble = Snabble.getInstance()
-        snabble.setup(application, config, object : Snabble.SetupCompletionListener {
+        Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
             override fun onReady() {
-                //snabble.userPreferences.setRequireKeyguardAuthenticationForPayment(true)
-
                 // an application can have multiple projects
-                val project = snabble.projects.first()
+                val project = Snabble.projects.first()
                 SnabbleUI.project = project
                 project.checkedInShop = project.shops.first()
 
@@ -43,10 +42,10 @@ class LoadingActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onError(error: Snabble.Error) {
+            override fun onError(error: Snabble.Error?) {
                 runOnUiThread {
                     AlertDialog.Builder(this@LoadingActivity)
-                        .setMessage(error.name)
+                        .setMessage(error?.name)
                         .setPositiveButton("Retry") { _, _ ->
                             initSdk()
                         }

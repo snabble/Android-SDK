@@ -181,7 +181,7 @@ public class PaymentCredentials {
         pc.generateId();
         pc.type = Type.SEPA;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
@@ -227,7 +227,7 @@ public class PaymentCredentials {
         pc.generateId();
         pc.type = Type.CREDIT_CARD_PSD2;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
@@ -312,7 +312,7 @@ public class PaymentCredentials {
         pc.generateId();
         pc.type = Type.PAYDIREKT;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
@@ -359,7 +359,7 @@ public class PaymentCredentials {
         }
         pc.projectId = projectId;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
@@ -411,7 +411,7 @@ public class PaymentCredentials {
         }
         pc.projectId = projectId;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
@@ -446,7 +446,7 @@ public class PaymentCredentials {
         pc.generateId();
         pc.type = Type.TEGUT_EMPLOYEE_CARD;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
@@ -481,7 +481,7 @@ public class PaymentCredentials {
         pc.generateId();
         pc.type = Type.LEINWEBER_CUSTOMER_ID;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
@@ -671,7 +671,7 @@ public class PaymentCredentials {
             return false;
         }
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentSigningCertificates();
+        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         for (X509Certificate cert : certificates) {
             if (sha256Signature(cert).equals(signature)) {
                 return true;

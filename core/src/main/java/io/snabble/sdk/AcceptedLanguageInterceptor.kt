@@ -28,7 +28,8 @@ class AcceptedLanguageInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         var request: Request = chain.request()
         val url = request.url.toString()
-        if (url.startsWith(Snabble.getInstance().endpointBaseUrl)) {
+        val baseUrl = Snabble.endpointBaseUrl
+        if (url.startsWith(baseUrl)) {
             request = request.newBuilder()
                 .addHeader("Accept-Language", acceptedLanguagesHeader)
                 .build()

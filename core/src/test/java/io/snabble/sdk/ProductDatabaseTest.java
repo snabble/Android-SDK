@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -42,7 +43,6 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testTextSearchNoFTS() throws IOException, Snabble.SnabbleException {
         withDb("test_1_25.sqlite3", true, null);
-
         ProductDatabase productDatabase = project.getProductDatabase();
         Cursor cursor = productDatabase.searchByFoldedName("gold", null);
         cursor.moveToFirst();
@@ -50,7 +50,6 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         assertEquals(product.getSku(), "31");
         assertEquals(product.getName(), "Goldbären 200g");
         cursor.close();
-
         cursor = productDatabase.searchByFoldedName("foo", null);
         assertEquals(0, cursor.getCount());
         cursor.close();
@@ -447,7 +446,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
         String[] sql = loadSql("transmission_template").split("\n");
-        withDb("test_1_25.sqlite3", false, sql);
+        withDb("test_1_25.sqlite3", false, Arrays.asList(sql));
 
         ProductDatabase productDatabase = project.getProductDatabase();
         Product product = productDatabase.findBySku("34-tt");

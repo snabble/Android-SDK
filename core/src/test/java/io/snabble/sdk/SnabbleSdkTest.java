@@ -2,6 +2,8 @@ package io.snabble.sdk;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
@@ -15,18 +17,24 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.auth.AppUser;
 import io.snabble.sdk.auth.AppUserAndToken;
 import io.snabble.sdk.auth.Token;
+import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
@@ -35,6 +43,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 
 @RunWith(RobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class SnabbleSdkTest {
     protected Project project;
     protected Context context;
@@ -135,6 +144,8 @@ public class SnabbleSdkTest {
 
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
+        Dispatch.setMainThreadHandler(Runnable::run);
+
         // Disable close guard warnings
         StrictMode.enableDefaults();
 
@@ -146,7 +157,7 @@ public class SnabbleSdkTest {
         withDb(testDbName, false, null);
     }
 
-    public void withDb(String testDbName, boolean generateSearchIndex, String[] initialSQL) throws IOException, Snabble.SnabbleException {
+    public void withDb(String testDbName, boolean generateSearchIndex, List<String> initialSQL) throws IOException, Snabble.SnabbleException {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -154,18 +165,20 @@ public class SnabbleSdkTest {
 
         prepareUpdateDb(testDbName);
 
-        final Snabble.Config config = new Snabble.Config();
+        final Config config = new Config();
         config.appId = "test";
         config.endpointBaseUrl = "http://" + mockWebServer.getHostName() + ":" + mockWebServer.getPort();
         config.secret = "asdf";
         config.generateSearchIndex = generateSearchIndex;
-        config.initialSQL = initialSQL;
+
+        if (initialSQL != null) {
+            config.initialSQL = initialSQL;
+        }
 
         onApplyConfig(config);
 
         Snabble snabble = Snabble.getInstance();
         snabble.setupBlocking((Application) context.getApplicationContext(), config);
-
         project = snabble.getProjects().get(0);
         project.getShoppingCart().clear();
         project.setCheckedInShop(null);
@@ -190,7 +203,7 @@ public class SnabbleSdkTest {
         }
     }
 
-    public void onApplyConfig(@NonNull Snabble.Config config) {
+    public void onApplyConfig(@NonNull Config config) {
 
     }
 

@@ -6,18 +6,16 @@ import android.content.DialogInterface
 import android.view.KeyEvent
 import io.snabble.sdk.*
 import io.snabble.sdk.Unit
-import java.math.BigDecimal
-import java.util.concurrent.CountDownLatch
-
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.gs1.GS1Code
 import io.snabble.sdk.ui.R
-
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.utils.Age
 import io.snabble.sdk.utils.Dispatch
+import java.math.BigDecimal
+import java.util.concurrent.CountDownLatch
 
 class ProductResolver private constructor(private val context: Context, private val project: Project) {
     private var resolveBundles = true
@@ -43,10 +41,10 @@ class ProductResolver private constructor(private val context: Context, private 
     private fun checkMinAge(product: Product) {
         if (product.saleRestriction.isAgeRestriction) {
             val minAge = product.saleRestriction.value
-            val birthday = Snabble.getInstance().userPreferences.birthday
+            val birthday = Snabble.userPreferences.birthday
             var isOldEnough = false
             if (birthday != null) {
-                val age = Age.calculateAge(Snabble.getInstance().userPreferences.birthday)
+                val age = Age.calculateAge(Snabble.userPreferences.birthday)
                 if (age.years >= minAge) {
                     isOldEnough = true
                 }
@@ -59,11 +57,11 @@ class ProductResolver private constructor(private val context: Context, private 
     }
 
     private data class Result(
-            var product: Product? = null,
-            var wasOnlineProduct: Boolean = false,
-            var code: ScannedCode? = null,
-            var error: Boolean = false,
-            var matchCount: Int = 0
+        var product: Product? = null,
+        var wasOnlineProduct: Boolean = false,
+        var code: ScannedCode? = null,
+        var error: Boolean = false,
+        var matchCount: Int = 0
     )
 
     private fun lookupProductData(scannedCodes: List<ScannedCode>, gs1Code: GS1Code?) {
@@ -131,12 +129,14 @@ class ProductResolver private constructor(private val context: Context, private 
                     for (scannedCode in scannedCodes) {
                         newGs1Code = GS1Code(scannedCode.code)
                         val code = project.getCodeTemplate("default")
-                                .match(newGs1Code.gtin)
-                                .buildCode()
+                            .match(newGs1Code.gtin)
+                            .buildCode()
                         if (code != null) {
-                            gs1GtinScannedCodes.add(code.newBuilder()
+                            gs1GtinScannedCodes.add(
+                                code.newBuilder()
                                     .setScannedCode(newGs1Code.code)
-                                    .create())
+                                    .create()
+                            )
                             break
                         }
                     }
@@ -170,9 +170,11 @@ class ProductResolver private constructor(private val context: Context, private 
         var gs1EmbeddedData: BigDecimal? = null
 
         if (gs1Code != null) {
-            gs1EmbeddedData = gs1Code.getEmbeddedData(unit,
-                    project.currency.defaultFractionDigits,
-                    project.roundingMode)
+            gs1EmbeddedData = gs1Code.getEmbeddedData(
+                unit,
+                project.currency.defaultFractionDigits,
+                project.roundingMode
+            )
         }
 
         if (scannedCode.hasEmbeddedDecimalData() || gs1EmbeddedData != null) {
@@ -335,7 +337,10 @@ class ProductResolver private constructor(private val context: Context, private 
         fun onAlreadyScanned()
     }
 
-    class Builder @JvmOverloads constructor(context: Context, private val project: Project = SnabbleUI.project) {
+    class Builder @JvmOverloads constructor(
+        context: Context,
+        private val project: Project = SnabbleUI.project
+    ) {
         private val productResolver: ProductResolver = ProductResolver(context, project)
 
         fun setCodes(codes: List<ScannedCode>) = apply {
@@ -371,29 +376,29 @@ class ProductResolver private constructor(private val context: Context, private 
         }
 
         fun setOnProductNotFoundListener(listener: () -> kotlin.Unit) =
-                setOnProductNotFoundListener(object : OnProductNotFoundListener {
-                    override fun onProductNotFound() = listener.invoke()
-                })
+            setOnProductNotFoundListener(object : OnProductNotFoundListener {
+                override fun onProductNotFound() = listener.invoke()
+            })
 
         fun setOnProductFoundListener(listener: OnProductFoundListener) = apply {
             productResolver.onProductFoundListener = listener
         }
 
         fun setOnProductFoundListener(listener: (product: Product, scannedCode: ScannedCode) -> kotlin.Unit) =
-                setOnProductFoundListener(object : OnProductFoundListener {
-                    override fun onProductFound(product: Product, scannedCode: ScannedCode) {
-                        listener.invoke(product, scannedCode)
-                    }
-                })
+            setOnProductFoundListener(object : OnProductFoundListener {
+                override fun onProductFound(product: Product, scannedCode: ScannedCode) {
+                    listener.invoke(product, scannedCode)
+                }
+            })
 
         fun setOnNetworkErrorListener(listener: OnNetworkErrorListener) = apply {
             productResolver.onNetworkErrorListener = listener
         }
 
         fun setOnNetworkErrorListener(listener: () -> kotlin.Unit) =
-                setOnNetworkErrorListener(object : OnNetworkErrorListener {
-                    override fun onNetworkError() = listener.invoke()
-                })
+            setOnNetworkErrorListener(object : OnNetworkErrorListener {
+                override fun onNetworkError() = listener.invoke()
+            })
 
         fun setOnSaleStopListener(listener: OnSaleStopListener) = apply {
             productResolver.onSaleStopListener = listener

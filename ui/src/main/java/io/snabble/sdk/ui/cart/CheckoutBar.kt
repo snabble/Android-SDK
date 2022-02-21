@@ -11,7 +11,9 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
@@ -19,7 +21,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import io.snabble.sdk.*
+import io.snabble.sdk.Checkout
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -37,9 +42,9 @@ open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
     private lateinit var progressDialog: DelayedProgressDialog
-    
+
     private val binding: SnabbleViewCheckoutBarBinding
-    
+
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
     private val project by lazy { SnabbleUI.project }
     private val cart: ShoppingCart by lazy { project.shoppingCart }
@@ -53,7 +58,7 @@ open class CheckoutBar @JvmOverloads constructor(
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_checkout_bar, this, true)
         binding = SnabbleViewCheckoutBarBinding.bind(this)
-        
+
         orientation = VERTICAL
 
         if (!isInEditMode) {
@@ -62,9 +67,9 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     private fun initBusinessLogic() {
-        paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(context) as FragmentActivity, {
+        paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(context) as FragmentActivity) {
             update()
-        })
+        }
 
         binding.paymentSelectorButton.setOnClickListener {
             paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
@@ -150,7 +155,7 @@ open class CheckoutBar @JvmOverloads constructor(
         if (entry == null) {
             binding.paymentSelector.visibility = GONE
         } else {
-            val pcs = Snabble.getInstance().paymentCredentialsStore
+            val pcs = Snabble.paymentCredentialsStore
             val hasNoPaymentMethods = pcs.usablePaymentCredentialsCount == 0
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             binding.paymentSelector.isVisible = !isHidden
@@ -268,7 +273,7 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     override fun onStateChanged(state: Checkout.State) {
-        when(state) {
+        when (state) {
             Checkout.State.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)
             }

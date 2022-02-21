@@ -217,11 +217,11 @@ public class SelfScanningView extends FrameLayout {
 
     private Pair<Coupon, ScannedCode> lookupCoupon(List<ScannedCode> scannedCodes) {
         Project project = SnabbleUI.getProject();
-        for (Coupon coupon : project.getCoupons().filter(CouponType.PRINTED)){
+        for (Coupon coupon : project.getCoupons().filter(CouponType.PRINTED)) {
             for (CouponCode code : coupon.getCodes()) {
                 for (ScannedCode scannedCode : scannedCodes) {
                     if (scannedCode.getCode().equals(code.getCode())
-                     && scannedCode.getTemplateName().equals(code.getTemplate())) {
+                            && scannedCode.getTemplateName().equals(code.getTemplate())) {
                         return new Pair<>(coupon, scannedCode);
                     }
                 }
@@ -258,7 +258,7 @@ public class SelfScanningView extends FrameLayout {
                 UIUtils.getDurationByLength(text),
                 ResourcesCompat.getColor(getResources(), R.color.snabble_infoColor, null),
                 ResourcesCompat.getColor(getResources(), R.color.snabble_infoTextColor, null)
-                ));
+        ));
     }
 
     private void showWarning(final String text) {
@@ -307,9 +307,7 @@ public class SelfScanningView extends FrameLayout {
             new AlertDialog.Builder(getContext())
                     .setView(input)
                     .setTitle(R.string.Snabble_Scanner_enterBarcode)
-                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> {
-                        lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString()));
-                    })
+                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString())))
                     .setNegativeButton(R.string.Snabble_Cancel, null)
                     .setOnDismissListener(dialog -> resumeBarcodeScanner())
                     .create()

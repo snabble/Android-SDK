@@ -74,11 +74,9 @@ public class ProductDatabase {
         this.productApi = new ProductApi(project);
 
         if (open()) {
-            String[] initialSQL = Snabble.getInstance().getConfig().initialSQL;
-            if (initialSQL != null) {
-                for (String sql : initialSQL) {
-                    exec(sql);
-                }
+            List<String> initialSQL = Snabble.getInstance().getConfig().initialSQL;
+            for (String sql : initialSQL) {
+                exec(sql);
             }
         } else {
             Logger.i("Product database is missing. Offline products are not available.");

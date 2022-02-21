@@ -33,7 +33,7 @@ class CheckInManagerTest : SnabbleSdkTest() {
         time = System.currentTimeMillis()
     }
 
-    override fun onApplyConfig(config: Snabble.Config) {
+    override fun onApplyConfig(config: Config) {
         super.onApplyConfig(config)
 
         config.checkInRadius = 500.0f;
@@ -43,14 +43,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
 
     @Test
     fun testCheckIn() {
-        val checkInManager = Snabble.getInstance().checkInManager
+        val checkInManager = Snabble.checkInManager
         checkInManager.startUpdating()
 
         val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
             countDown()
         })
 
-        val locationManager = Snabble.getInstance().checkInLocationManager
+        val locationManager = Snabble.checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
         listener.await()
@@ -59,14 +59,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
 
     @Test
     fun testCheckOutByDistanceAndTime() {
-        val checkInManager = Snabble.getInstance().checkInManager
+        val checkInManager = Snabble.checkInManager
         checkInManager.startUpdating()
 
         val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
             countDown()
         })
 
-        val locationManager = Snabble.getInstance().checkInLocationManager
+        val locationManager = Snabble.checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
         listener.await()
@@ -86,14 +86,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
 
     @Test
     fun testStillCheckedInWhileInTimeWindow() {
-        val checkInManager = Snabble.getInstance().checkInManager
+        val checkInManager = Snabble.checkInManager
         checkInManager.startUpdating()
 
         val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
             countDown()
         })
 
-        val locationManager = Snabble.getInstance().checkInLocationManager
+        val locationManager = Snabble.checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
         listener.await()
@@ -115,14 +115,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
 
     @Test
     fun testStillCheckedInWhileInCheckOutRadiusButNotInTimeWindow() {
-        val checkInManager = Snabble.getInstance().checkInManager
+        val checkInManager = Snabble.checkInManager
         checkInManager.startUpdating()
 
         val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
             countDown()
         })
 
-        val locationManager = Snabble.getInstance().checkInLocationManager
+        val locationManager = Snabble.checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
         listener.await()
@@ -146,14 +146,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
 
     @Test
     fun testMultipleShopsAvailable() {
-        val checkInManager = Snabble.getInstance().checkInManager
+        val checkInManager = Snabble.checkInManager
         checkInManager.startUpdating()
 
         val listener = CheckInListener(checkInManager, onMultipleCandidatesAvailable = {
             countDown()
         })
 
-        val locationManager = Snabble.getInstance().checkInLocationManager
+        val locationManager = Snabble.checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
         listener.await()
@@ -162,14 +162,14 @@ class CheckInManagerTest : SnabbleSdkTest() {
 
     @Test
     fun testMultipleShopsCheckIn() {
-        val checkInManager = Snabble.getInstance().checkInManager
+        val checkInManager = Snabble.checkInManager
         checkInManager.startUpdating()
 
         val listener = CheckInListener(checkInManager, onCheckIn = {
             countDown()
         })
 
-        val locationManager = Snabble.getInstance().checkInLocationManager
+        val locationManager = Snabble.checkInLocationManager
         locationManager.mockLocation = locationSnabble
 
         listener.await()

@@ -191,7 +191,7 @@ public class BarcodeView extends AppCompatImageView {
 
                         BitMatrix bm = writer.encode(text, ZXingHelper.toZXingFormat(format), tw, th, hints);
                         int[] pixels = new int[w * h];
-                        
+
                         int[] rect = bm.getEnclosingRectangle();
                         int left = rect[0];
                         int top = rect[1];

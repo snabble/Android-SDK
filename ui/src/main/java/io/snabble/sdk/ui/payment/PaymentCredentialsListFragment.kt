@@ -1,17 +1,17 @@
 package io.snabble.sdk.ui.payment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
-import java.util.ArrayList
 
-open class PaymentCredentialsListFragment : Fragment() {
+open class PaymentCredentialsListFragment : BaseFragment(
+    layoutResId = R.layout.snabble_fragment_payment_credentials_list,
+    waitForProject = false
+) {
     companion object {
         const val ARG_PAYMENT_TYPE = PaymentCredentialsListView.ARG_PAYMENT_TYPE
         const val ARG_PROJECT_ID = PaymentCredentialsListView.ARG_PROJECT_ID
@@ -24,12 +24,11 @@ open class PaymentCredentialsListFragment : Fragment() {
         super.onCreate(savedInstanceState)
         type = arguments?.getSerializable(ARG_PAYMENT_TYPE) as ArrayList<PaymentCredentials.Type>?
         val projectId = arguments?.getString(ARG_PROJECT_ID)
-        project = Snabble.getInstance().projects.firstOrNull { it.id == projectId }
+        project = Snabble.projects.firstOrNull { it.id == projectId }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v = inflater.inflate(R.layout.snabble_fragment_payment_credentials_list, container, false) as PaymentCredentialsListView
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        val v = view as PaymentCredentialsListView
         type?.let { v.show(it, project) }
-        return v
     }
 }

@@ -134,7 +134,7 @@ public class ShoppingCartView extends FrameLayout {
 
     private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
-        if(isInEditMode()) return;
+        if (isInEditMode()) return;
         final Project project = SnabbleUI.getProject();
 
         if (cart != null) {
@@ -165,9 +165,7 @@ public class ShoppingCartView extends FrameLayout {
         paymentContainer = findViewById(R.id.bottom_payment_container);
 
         scanProducts = findViewById(R.id.scan_products);
-        scanProducts.setOnClickListener(view -> {
-            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SCANNER);
-        });
+        scanProducts.setOnClickListener(view -> SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SCANNER));
 
         restore = findViewById(R.id.restore);
         restore.setOnClickListener(v -> cart.restore());
@@ -175,7 +173,7 @@ public class ShoppingCartView extends FrameLayout {
         PaymentSelectionHelper
                 .getInstance()
                 .getSelectedEntry()
-                .observe((FragmentActivity)UIUtils.getHostActivity(getContext()), entry -> update());
+                .observe((FragmentActivity) UIUtils.getHostActivity(getContext()), entry -> update());
 
         createItemTouchHelper(context.getResources());
         submitList();
@@ -240,7 +238,7 @@ public class ShoppingCartView extends FrameLayout {
 
             sb.append("\n\n");
 
-            for(Product product : invalidProducts) {
+            for (Product product : invalidProducts) {
                 if (product.getSubtitle() != null) {
                     sb.append(product.getSubtitle());
                     sb.append(" ");
@@ -310,7 +308,7 @@ public class ShoppingCartView extends FrameLayout {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if(!isInEditMode()) {
+        if (!isInEditMode()) {
             Application application = (Application) getContext().getApplicationContext();
             application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
