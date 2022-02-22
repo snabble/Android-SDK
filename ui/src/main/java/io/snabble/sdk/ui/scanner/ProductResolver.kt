@@ -197,34 +197,6 @@ class ProductResolver private constructor(private val context: Context, private 
             resolveBundles && product.bundleProducts.isNotEmpty() && !scannedCode.hasEmbeddedData() -> {
                 showBundleDialog(product, scannedCode)
             }
-            product.saleStop -> {
-                onSaleStopListener?.onSaleStop()
-                progressDialog.dismiss()
-                onDismissListener?.onDismiss()
-            }
-            product.notForSale -> {
-                onNotForSaleListener?.onNotForSale(product)
-                progressDialog.dismiss()
-                onDismissListener?.onDismiss()
-            }
-            product.availability == Product.Availability.NOT_AVAILABLE -> {
-                handleProductNotFound(scannedCode)
-            }
-            product.type == Product.Type.PreWeighed
-                    && (!scannedCode.hasEmbeddedData() || scannedCode.embeddedData == 0) -> {
-                onShelfCodeScannedListener?.onShelfCodeScanned()
-                progressDialog.dismiss()
-                onDismissListener?.onDismiss()
-            }
-            product.type == Product.Type.DepositReturnVoucher
-                    && project.shoppingCart.containsScannedCode(scannedCode) -> {
-                onAlreadyScannedListener?.onAlreadyScanned()
-                progressDialog.dismiss()
-                onDismissListener?.onDismiss()
-            }
-            onProductFoundListener != null -> {
-                onProductFoundListener?.onProductFound(product, scannedCode)
-            }
             else -> {
                 showProduct(product, scannedCode)
                 val event = if (wasOnlineProduct) {
@@ -279,7 +251,42 @@ class ProductResolver private constructor(private val context: Context, private 
 
     private fun showProduct(product: Product?, scannedCode: ScannedCode?) {
         lastProduct = product
-        productConfirmationDialog.show(product, scannedCode)
+
+        if (product != null && scannedCode != null) {
+            when {
+                product.saleStop -> {
+                    onSaleStopListener?.onSaleStop()
+                    progressDialog.dismiss()
+                    onDismissListener?.onDismiss()
+                }
+                product.notForSale -> {
+                    onNotForSaleListener?.onNotForSale(product)
+                    progressDialog.dismiss()
+                    onDismissListener?.onDismiss()
+                }
+                product.availability == Product.Availability.NOT_AVAILABLE -> {
+                    handleProductNotFound(scannedCode)
+                }
+                product.type == Product.Type.PreWeighed
+                        && (!scannedCode.hasEmbeddedData() || scannedCode.embeddedData == 0) -> {
+                    onShelfCodeScannedListener?.onShelfCodeScanned()
+                    progressDialog.dismiss()
+                    onDismissListener?.onDismiss()
+                }
+                product.type == Product.Type.DepositReturnVoucher
+                        && project.shoppingCart.containsScannedCode(scannedCode) -> {
+                    onAlreadyScannedListener?.onAlreadyScanned()
+                    progressDialog.dismiss()
+                    onDismissListener?.onDismiss()
+                }
+                onProductFoundListener != null -> {
+                    onProductFoundListener?.onProductFound(product, scannedCode)
+                }
+                else -> {
+                    productConfirmationDialog.show(product, scannedCode)
+                }
+            }
+        }
     }
 
     @Deprecated("Use resolve() instead")
