@@ -16,6 +16,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:visibility="gone"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:id="@+id/sdk_error" />
 
     <FrameLayout
