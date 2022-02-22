@@ -210,30 +210,32 @@ class ProductResolver private constructor(private val context: Context, private 
     }
 
     private fun showBundleDialog(product: Product, scannedCode: ScannedCode) {
-        SelectBundleDialog.show(context, product, object : SelectBundleDialog.Callback {
-            override fun onProductSelected(product: Product) {
-                Telemetry.event(Telemetry.Event.SelectedBundleProduct, product)
-                val codes = product.scannableCodes
-                if (codes.isNotEmpty() && codes[0].lookupCode != null) {
-                    val newCodes = ScannedCode.parse(project, codes[0].lookupCode)
-                    if (newCodes.size > 0) {
-                        var defaultCode = newCodes[0]
-                        for (newCode in newCodes) {
-                            if (newCode.templateName == "default") {
-                                defaultCode = newCode
+        if (handleProductFlags(product, scannedCode)) {
+            SelectBundleDialog.show(context, product, object : SelectBundleDialog.Callback {
+                override fun onProductSelected(product: Product) {
+                    Telemetry.event(Telemetry.Event.SelectedBundleProduct, product)
+                    val codes = product.scannableCodes
+                    if (codes.isNotEmpty() && codes[0].lookupCode != null) {
+                        val newCodes = ScannedCode.parse(project, codes[0].lookupCode)
+                        if (newCodes.size > 0) {
+                            var defaultCode = newCodes[0]
+                            for (newCode in newCodes) {
+                                if (newCode.templateName == "default") {
+                                    defaultCode = newCode
+                                }
                             }
+                            showProduct(product, defaultCode)
+                        } else {
+                            showProduct(product, scannedCode)
                         }
-                        showProduct(product, defaultCode)
-                    } else {
-                        showProduct(product, scannedCode)
                     }
                 }
-            }
 
-            override fun onDismissed() {
-                onDismissListener?.onDismiss()
-            }
-        })
+                override fun onDismissed() {
+                    onDismissListener?.onDismiss()
+                }
+            })
+        }
     }
 
     private fun handleProductNotFound(scannedCode: ScannedCode) {
@@ -253,40 +255,46 @@ class ProductResolver private constructor(private val context: Context, private 
         lastProduct = product
 
         if (product != null && scannedCode != null) {
-            when {
-                product.saleStop -> {
-                    onSaleStopListener?.onSaleStop()
-                    progressDialog.dismiss()
-                    onDismissListener?.onDismiss()
-                }
-                product.notForSale -> {
-                    onNotForSaleListener?.onNotForSale(product)
-                    progressDialog.dismiss()
-                    onDismissListener?.onDismiss()
-                }
-                product.availability == Product.Availability.NOT_AVAILABLE -> {
-                    handleProductNotFound(scannedCode)
-                }
-                product.type == Product.Type.PreWeighed
-                        && (!scannedCode.hasEmbeddedData() || scannedCode.embeddedData == 0) -> {
-                    onShelfCodeScannedListener?.onShelfCodeScanned()
-                    progressDialog.dismiss()
-                    onDismissListener?.onDismiss()
-                }
-                product.type == Product.Type.DepositReturnVoucher
-                        && project.shoppingCart.containsScannedCode(scannedCode) -> {
-                    onAlreadyScannedListener?.onAlreadyScanned()
-                    progressDialog.dismiss()
-                    onDismissListener?.onDismiss()
-                }
-                onProductFoundListener != null -> {
-                    onProductFoundListener?.onProductFound(product, scannedCode)
-                }
-                else -> {
-                    productConfirmationDialog.show(product, scannedCode)
-                }
+            if (handleProductFlags(product, scannedCode)) {
+                productConfirmationDialog.show(product, scannedCode)
             }
         }
+    }
+
+    private fun handleProductFlags(product: Product, scannedCode: ScannedCode) : Boolean {
+        when {
+            product.saleStop -> {
+                onSaleStopListener?.onSaleStop()
+                progressDialog.dismiss()
+                onDismissListener?.onDismiss()
+            }
+            product.notForSale -> {
+                onNotForSaleListener?.onNotForSale(product)
+                progressDialog.dismiss()
+                onDismissListener?.onDismiss()
+            }
+            product.availability == Product.Availability.NOT_AVAILABLE -> {
+                handleProductNotFound(scannedCode)
+            }
+            product.type == Product.Type.PreWeighed
+                    && (!scannedCode.hasEmbeddedData() || scannedCode.embeddedData == 0) -> {
+                onShelfCodeScannedListener?.onShelfCodeScanned()
+                progressDialog.dismiss()
+                onDismissListener?.onDismiss()
+            }
+            product.type == Product.Type.DepositReturnVoucher
+                    && project.shoppingCart.containsScannedCode(scannedCode) -> {
+                onAlreadyScannedListener?.onAlreadyScanned()
+                progressDialog.dismiss()
+                onDismissListener?.onDismiss()
+            }
+            onProductFoundListener != null -> {
+                onProductFoundListener?.onProductFound(product, scannedCode)
+            }
+            else -> return true
+        }
+
+        return false
     }
 
     @Deprecated("Use resolve() instead")
