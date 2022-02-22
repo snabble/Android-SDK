@@ -194,6 +194,9 @@ class ProductResolver private constructor(private val context: Context, private 
         }
 
         when {
+            resolveBundles && product.bundleProducts.isNotEmpty() && !scannedCode.hasEmbeddedData() -> {
+                showBundleDialog(product, scannedCode)
+            }
             product.saleStop -> {
                 onSaleStopListener?.onSaleStop()
                 progressDialog.dismiss()
@@ -221,9 +224,6 @@ class ProductResolver private constructor(private val context: Context, private 
             }
             onProductFoundListener != null -> {
                 onProductFoundListener?.onProductFound(product, scannedCode)
-            }
-            resolveBundles && product.bundleProducts.isNotEmpty() && !scannedCode.hasEmbeddedData() -> {
-                showBundleDialog(product, scannedCode)
             }
             else -> {
                 showProduct(product, scannedCode)
