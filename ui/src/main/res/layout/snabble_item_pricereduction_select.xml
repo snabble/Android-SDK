@@ -15,7 +15,6 @@
         android:id="@+id/label"
         android:gravity="center"
         android:padding="16dp"
-        android:textSize="17sp"
-        android:textStyle="bold"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
         tools:text="10 %" />
 </LinearLayout>

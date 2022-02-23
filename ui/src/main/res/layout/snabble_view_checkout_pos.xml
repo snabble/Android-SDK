@@ -14,8 +14,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:textStyle="bold"
-        android:textSize="17sp" />
+        android:textAppearance="?attr/textAppearanceTitleMedium" />
 
     <TextView
         android:id="@+id/explanation1"
@@ -28,7 +27,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:textSize="17sp" />
+        android:textAppearance="?attr/textAppearanceBodyLarge" />
 
     <io.snabble.sdk.ui.scanner.BarcodeView
         android:id="@+id/qr_code"
@@ -46,9 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/explanation2"
-        android:textStyle="bold"
         android:gravity="center"
-        android:textSize="19sp"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         tools:text="@string/Snabble.PaymentSelection.title" />
@@ -64,7 +62,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
-        android:textSize="14sp" />
+        android:textAppearance="?attr/textAppearanceBodyMedium" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/abort"

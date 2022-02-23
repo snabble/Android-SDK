@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/offline_hint"
-    android:textSize="14sp"
+    android:textAppearance="?attr/textAppearanceBodyMedium"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="8dp"

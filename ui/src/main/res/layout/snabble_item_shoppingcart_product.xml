@@ -29,17 +29,14 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/red_label"
-            android:layout_width="20dp"
-            android:layout_height="18dp"
+            android:layout_width="20sp"
+            android:layout_height="18sp"
             android:background="@drawable/snabble_ic_round_textview"
             android:layout_marginEnd="8dp"
             android:text="%"
             android:textColor="#ffffff"
             android:gravity="center"
             app:backgroundTint="#ff0000"
-            app:autoSizeMinTextSize="8dp"
-            app:autoSizeMaxTextSize="12dp"
-            app:autoSizeTextType="uniform"
             tools:ignore="HardcodedText" />
     </FrameLayout>
 
@@ -59,7 +56,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textSize="17sp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             tools:text="Schraubendreher Top G" />
 
         <LinearLayout
@@ -74,7 +71,7 @@
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
                 tools:text="26,98 €" />
         </LinearLayout>
     </LinearLayout>
@@ -117,7 +114,7 @@
                 android:minWidth="36dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
-                android:textSize="17sp"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
                 tools:text="3" />
 
             <FrameLayout
@@ -170,7 +167,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="number"
                     android:paddingHorizontal="12dp"
-                    android:textSize="15sp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     tools:text="1" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -182,7 +179,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="4dp"
                 android:gravity="left"
-                android:textSize="15sp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 tools:text="g" />
 
             <FrameLayout

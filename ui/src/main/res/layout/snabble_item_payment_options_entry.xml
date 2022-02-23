@@ -27,7 +27,7 @@
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/helper_image"
         tools:text="SEPA"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -40,7 +40,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         tools:text="1"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </RelativeLayout>

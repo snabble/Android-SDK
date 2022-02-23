@@ -25,7 +25,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:text="@string/Snabble.Payment.presentCode"
-                android:textSize="17sp" />
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <ImageView
                 android:id="@+id/helper_image"
@@ -75,8 +75,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:textStyle="bold"
-                android:textSize="17sp" />
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
         </LinearLayout>
     </ScrollView>
 

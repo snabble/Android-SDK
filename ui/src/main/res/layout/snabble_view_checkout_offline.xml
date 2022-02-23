@@ -41,7 +41,7 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:text="@string/Snabble.QRCode.message"
-            android:textSize="17sp"/>
+            android:textAppearance="?attr/textAppearanceBodyLarge"/>
     </LinearLayout>
 
     <FrameLayout
@@ -66,8 +66,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:textStyle="bold"
-        android:textSize="17sp" />
+        android:textAppearance="?attr/textAppearanceTitleMedium" />
 
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/view_pager_indicator"

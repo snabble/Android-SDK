@@ -19,7 +19,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
-            android:text="@string/Snabble.Payment.SEPA.hint" />
+            android:text="@string/Snabble.Payment.SEPA.hint"
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -30,7 +31,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
             android:hint="@string/Snabble.Payment.SEPA.Name"
-            android:layout_below="@+id/hint">
+            android:layout_below="@+id/hint"
+            tools:errorEnabled="true">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_name"
                 android:layout_width="match_parent"
@@ -51,7 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_below="@+id/input_name_layout">
+            android:layout_below="@+id/input_name_layout"
+            tools:errorEnabled="true">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/prefix"
                 android:layout_width="52sp"
@@ -72,7 +75,8 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="16dp"
             android:layout_toRightOf="@+id/prefix_layout"
-            android:layout_below="@+id/input_name_layout">
+            android:layout_below="@+id/input_name_layout"
+            tools:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_iban"

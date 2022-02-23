@@ -13,11 +13,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         tools:text="Club-Mate" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/code"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         tools:text="4029764001807" />
 </LinearLayout>

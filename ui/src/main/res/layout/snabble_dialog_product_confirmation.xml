@@ -28,7 +28,7 @@
         android:layout_below="@+id/close"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="4dp"
-        android:textSize="14sp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         tools:text="Wiha" />
 
     <TextView
@@ -43,7 +43,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center"
-        android:textSize="16sp"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         tools:text="Schraubendreher Top G 8,0x1,2" />
 
     <TextView
@@ -53,7 +53,7 @@
         android:layout_below="@+id/name"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:textSize="15sp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         android:alpha="0.6"
         android:layout_marginBottom="4dp"
         tools:text="1,29 €" />
@@ -65,7 +65,7 @@
         android:layout_below="@+id/originalPrice"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:textSize="20sp"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
         tools:text="2 × 1,00 € = 2,00 €" />
 
     <TextView
@@ -75,7 +75,7 @@
         android:layout_below="@+id/price"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
-        android:textSize="12sp"
+        android:textAppearance="?attr/textAppearanceBodySmall"
         tools:text="+ 0,45 € deposit" />
 
     <com.google.android.material.button.MaterialButton
@@ -86,7 +86,7 @@
         android:layout_below="@+id/depositPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="-16dp"
-        android:textSize="14sp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         tools:text="Reduzierten Preis eingeben"
         tools:textColor="#c40000" />
 
@@ -138,7 +138,7 @@
             android:focusableInTouchMode="true"
             android:gravity="center"
             android:inputType="number"
-            android:textSize="16sp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             android:text="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -178,7 +178,7 @@
         android:layout_marginStart="4dp"
         android:layout_toEndOf="@+id/quantity_text_input"
         android:layout_toRightOf="@+id/quantity_text_input"
-        android:textSize="17sp"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:visibility="gone"
         tools:text="g" />
 
@@ -192,10 +192,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:text="@string/Snabble.Scanner.addToCart"
-        app:autoSizeMaxTextSize="16sp"
-        app:autoSizeMinTextSize="8sp"
-        app:autoSizeTextType="uniform" />
+        android:text="@string/Snabble.Scanner.addToCart" />
 
 
     <!-- invisible view as a margin, marginBottom does not work on API 16-18 -->

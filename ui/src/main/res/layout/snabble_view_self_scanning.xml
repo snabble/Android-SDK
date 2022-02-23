@@ -29,7 +29,7 @@
         android:textColor="?android:attr/textColorPrimaryInverse"
         android:id="@+id/no_permission"
         android:gravity="center"
-        android:textStyle="bold"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:background="?android:attr/colorBackground"
         android:visibility="gone" />
 
@@ -46,9 +46,6 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMinTextSize="8sp"
-            app:autoSizeMaxTextSize="14sp"
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetLeft="0dp"

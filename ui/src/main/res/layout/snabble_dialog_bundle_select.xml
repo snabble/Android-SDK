@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
-                android:textSize="15sp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:layout_marginBottom="16dp"
                 android:text="@string/Snabble.Scanner.BundleDialog.headline" />
 
