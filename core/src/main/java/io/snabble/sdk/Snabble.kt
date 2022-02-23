@@ -77,7 +77,7 @@ object Snabble {
     lateinit var internalStorageDirectory: File
         private set
 
-    lateinit var termsOfService: TermsOfService
+    var termsOfService: TermsOfService? = null
         private set
 
     lateinit var config: Config

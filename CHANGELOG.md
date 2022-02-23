@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.61.1]
+
+### Fixed 
+- Make termsOfService optional (for demo-projects)
+
 ## [0.61.0]
 
 ### Breaking Changes
