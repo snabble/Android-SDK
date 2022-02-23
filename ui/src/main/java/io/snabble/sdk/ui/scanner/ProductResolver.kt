@@ -197,6 +197,72 @@ class ProductResolver private constructor(private val context: Context, private 
             resolveBundles && product.bundleProducts.isNotEmpty() && !scannedCode.hasEmbeddedData() -> {
                 showBundleDialog(product, scannedCode)
             }
+            else -> {
+                showProduct(product, scannedCode)
+                val event = if (wasOnlineProduct) {
+                    Telemetry.Event.ScannedOnlineProduct
+                } else {
+                    Telemetry.Event.ScannedProduct
+                }
+                Telemetry.event(event, product)
+            }
+        }
+    }
+
+    private fun showBundleDialog(product: Product, scannedCode: ScannedCode) {
+        if (handleProductFlags(product, scannedCode)) {
+            SelectBundleDialog.show(context, product, object : SelectBundleDialog.Callback {
+                override fun onProductSelected(product: Product) {
+                    Telemetry.event(Telemetry.Event.SelectedBundleProduct, product)
+                    val codes = product.scannableCodes
+                    if (codes.isNotEmpty() && codes[0].lookupCode != null) {
+                        val newCodes = ScannedCode.parse(project, codes[0].lookupCode)
+                        if (newCodes.size > 0) {
+                            var defaultCode = newCodes[0]
+                            for (newCode in newCodes) {
+                                if (newCode.templateName == "default") {
+                                    defaultCode = newCode
+                                }
+                            }
+                            showProduct(product, defaultCode)
+                        } else {
+                            showProduct(product, scannedCode)
+                        }
+                    }
+                }
+
+                override fun onDismissed() {
+                    onDismissListener?.onDismiss()
+                }
+            })
+        }
+    }
+
+    private fun handleProductNotFound(scannedCode: ScannedCode) {
+        progressDialog.dismiss()
+        Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.code)
+        onDismissListener?.onDismiss()
+        onProductNotFoundListener?.onProductNotFound()
+    }
+
+    private fun handleProductError() {
+        progressDialog.dismiss()
+        onDismissListener?.onDismiss()
+        onNetworkErrorListener?.onNetworkError()
+    }
+
+    private fun showProduct(product: Product?, scannedCode: ScannedCode?) {
+        lastProduct = product
+
+        if (product != null && scannedCode != null) {
+            if (handleProductFlags(product, scannedCode)) {
+                productConfirmationDialog.show(product, scannedCode)
+            }
+        }
+    }
+
+    private fun handleProductFlags(product: Product, scannedCode: ScannedCode) : Boolean {
+        when {
             product.saleStop -> {
                 onSaleStopListener?.onSaleStop()
                 progressDialog.dismiss()
@@ -225,61 +291,10 @@ class ProductResolver private constructor(private val context: Context, private 
             onProductFoundListener != null -> {
                 onProductFoundListener?.onProductFound(product, scannedCode)
             }
-            else -> {
-                showProduct(product, scannedCode)
-                val event = if (wasOnlineProduct) {
-                    Telemetry.Event.ScannedOnlineProduct
-                } else {
-                    Telemetry.Event.ScannedProduct
-                }
-                Telemetry.event(event, product)
-            }
+            else -> return true
         }
-    }
 
-    private fun showBundleDialog(product: Product, scannedCode: ScannedCode) {
-        SelectBundleDialog.show(context, product, object : SelectBundleDialog.Callback {
-            override fun onProductSelected(product: Product) {
-                Telemetry.event(Telemetry.Event.SelectedBundleProduct, product)
-                val codes = product.scannableCodes
-                if (codes.isNotEmpty() && codes[0].lookupCode != null) {
-                    val newCodes = ScannedCode.parse(project, codes[0].lookupCode)
-                    if (newCodes.size > 0) {
-                        var defaultCode = newCodes[0]
-                        for (newCode in newCodes) {
-                            if (newCode.templateName == "default") {
-                                defaultCode = newCode
-                            }
-                        }
-                        showProduct(product, defaultCode)
-                    } else {
-                        showProduct(product, scannedCode)
-                    }
-                }
-            }
-
-            override fun onDismissed() {
-                onDismissListener?.onDismiss()
-            }
-        })
-    }
-
-    private fun handleProductNotFound(scannedCode: ScannedCode) {
-        progressDialog.dismiss()
-        Telemetry.event(Telemetry.Event.ScannedUnknownCode, scannedCode.code)
-        onDismissListener?.onDismiss()
-        onProductNotFoundListener?.onProductNotFound()
-    }
-
-    private fun handleProductError() {
-        progressDialog.dismiss()
-        onDismissListener?.onDismiss()
-        onNetworkErrorListener?.onNetworkError()
-    }
-
-    private fun showProduct(product: Product?, scannedCode: ScannedCode?) {
-        lastProduct = product
-        productConfirmationDialog.show(product, scannedCode)
+        return false
     }
 
     @Deprecated("Use resolve() instead")
