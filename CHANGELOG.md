@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.61.0]
+
+### Breaking Changes
+- The base Snabble class is now a kotlin object and can be used without using Snabble.getInstance()
+- Setting a project is now persisted and all Fragments are waiting for the SDK initialization to be done.
+- Removed 'x509TrustManager' and 'socketFactory' from the config.
+
+### Changed
+
+- All used TextView's are now using Material3 text appearances
+- Improvements to layouts when using higher font and display scaling settings
+
+### Fixed
+- Fixed a bug that caused product flags (such as notForSale) to be ignored when in a bundle
+
 ## [0.60.2]
 
 ### Changed
