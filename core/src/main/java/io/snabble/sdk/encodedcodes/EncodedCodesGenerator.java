@@ -102,6 +102,10 @@ public class EncodedCodesGenerator {
     }
 
     public ArrayList<String> generate() {
+        return generate(null);
+    }
+
+    public ArrayList<String> generate(String checkoutId) {
         if (options.finalCode != null && !options.finalCode.isEmpty()) {
             if (getCountSeparatorLength() > 0) {
                 append("1" + options.countSeparator + options.finalCode);
@@ -125,6 +129,10 @@ public class EncodedCodesGenerator {
             String code = encodedCodes.get(i);
             code = code.replace("{qrCodeCount}", String.valueOf(encodedCodes.size()));
             code = code.replace("{qrCodeIndex}", String.valueOf(i + 1));
+            if (checkoutId == null) {
+                checkoutId = "";
+            }
+            code = code.replace("{checkoutId}", checkoutId);
             ret.add(code);
         }
 
