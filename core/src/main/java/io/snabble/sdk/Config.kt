@@ -1,15 +1,7 @@
 package io.snabble.sdk
 
-import android.content.Context
-import io.snabble.sdk.utils.GsonHolder
-import org.apache.commons.io.IOUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.nio.charset.Charset
+import okhttp3.Interceptor
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLSocketFactory
-import javax.net.ssl.X509TrustManager
 
 data class Config (
     /**
@@ -130,4 +122,10 @@ data class Config (
      */
     @JvmField
     var lastSeenThreshold: Long = TimeUnit.MINUTES.toMillis(15),
+
+    /**
+     * Network interceptor used for all calls made by the SDK.
+     */
+    @JvmField
+    var networkInterceptor: Interceptor? = null,
 )

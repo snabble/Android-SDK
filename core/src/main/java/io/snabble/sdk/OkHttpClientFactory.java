@@ -45,6 +45,10 @@ class OkHttpClientFactory {
         Config config = Snabble.getInstance().getConfig();
         builder.addInterceptor(new UserAgentInterceptor(application));
 
+        if (config.networkInterceptor != null) {
+            builder.addNetworkInterceptor(config.networkInterceptor);
+        }
+
         if (!Snabble.getInstance().getConfig().disableCertificatePinning) {
             Environment[] environments = Environment.values();
             CertificatePinner.Builder certificatePinnerBuilder = new CertificatePinner.Builder();
