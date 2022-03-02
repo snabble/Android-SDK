@@ -128,7 +128,7 @@ public class ReceiptsApi {
                                         apiOrder.id,
                                         apiOrder.project,
                                         simpleDateFormat.parse(apiOrder.date).getTime(),
-                                        snabble.absoluteUrl(url),
+                                        url != null ? snabble.absoluteUrl(url) : null,
                                         apiOrder.shopName,
                                         priceFormatter.format(apiOrder.price));
 
