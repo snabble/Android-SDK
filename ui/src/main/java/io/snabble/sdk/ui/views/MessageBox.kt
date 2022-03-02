@@ -129,5 +129,6 @@ class MessageBoxStackView @JvmOverloads constructor(
                 }
             }
         }, duration)
+        announceForAccessibility(message)
     }
 }

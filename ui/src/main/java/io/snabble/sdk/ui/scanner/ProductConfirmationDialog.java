@@ -31,6 +31,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.squareup.picasso.Picasso;
@@ -116,12 +119,24 @@ public class ProductConfirmationDialog {
         minusLayout = view.findViewById(R.id.minus_layout);
         enterReducedPrice = view.findViewById(R.id.enterReducedPrice);
 
+        // Change the accessibility order
+        ViewCompat.setAccessibilityDelegate(close, new AccessibilityDelegateCompat() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setTraversalAfter(addToCart);
+            }
+        });
+
         name.setText(product.getName());
 
         if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
             subtitle.setVisibility(View.GONE);
+            name.setContentDescription("Barcode erkannt: " + product.getName() + " für"); // TODO i18n
         } else {
             subtitle.setText(product.getSubtitle());
+            name.setContentDescription("Barcode erkannt: " + product.getSubtitle()); // TODO i18n
+            name.setContentDescription(product.getName() + " für"); // TODO i18n
         }
 
         if (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0) {

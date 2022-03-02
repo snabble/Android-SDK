@@ -8,15 +8,18 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.*
 import android.widget.Button
+import android.widget.FrameLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.ViewCompat
+import com.google.android.material.snackbar.Snackbar
 import io.snabble.sdk.codes.ScannedCode
-import io.snabble.sdk.ui.BaseFragment
-import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.*
 import io.snabble.sdk.ui.search.SearchHelper
 import io.snabble.sdk.ui.utils.setOneShotClickListener
+import io.snabble.sdk.utils.Dispatch
 
 open class SelfScanningFragment : BaseFragment() {
     companion object {
@@ -53,6 +56,10 @@ open class SelfScanningFragment : BaseFragment() {
 
         if (isPermissionGranted) {
             createSelfScanningView()
+            view.announceForAccessibility("Du hast den Scanner geöffnet") // TODO i18n
+            explainScanner()
+        } else {
+            view.announceForAccessibility("Du hast den Scanner geöffnet, zum Scannen benötigen wir noch eine Berechtigung von dir.") // TODO i18n
         }
     }
 
@@ -109,6 +116,8 @@ open class SelfScanningFragment : BaseFragment() {
         if (grantResults.isNotEmpty()) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 createSelfScanningView()
+                requireView().announceForAccessibility("Du bist wieder im Scanner") // TODO i18n
+                explainScanner()
             } else {
                 canAskAgain = ActivityCompat.shouldShowRequestPermissionRationale(
                     requireActivity(),
@@ -142,6 +151,27 @@ open class SelfScanningFragment : BaseFragment() {
         startActivity(intent)
     }
 
+    fun explainScanner() {
+        // TODO formatting
+        if (requireContext().isTalkBackActive && selfScanningView != null && !AccessibilityPreferences.suppressScannerHint) {
+            with(Snackbar.make(requireNotNull(selfScanningView), R.string.Snabble_Scanner_firstScan, Snackbar.LENGTH_INDEFINITE)) {
+                view.fitsSystemWindows = false
+                ViewCompat.setOnApplyWindowInsetsListener(view, null)
+                setAction("Verstanden") { // TODO i18n
+                    AccessibilityPreferences.suppressScannerHint = true
+                    dismiss()
+                }
+                view.findViewById<Button>(com.google.android.material.R.id.snackbar_action)
+                    .setClickDescription("Hinweis dauerhaft ausblenden")  // TODO i18n
+                gravity = Gravity.TOP
+                show()
+                Dispatch.mainThread({
+                    view.focusForAccessibility()
+                }, 100)
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.snabble_menu_scanner, menu)
         optionsMenu = menu
@@ -169,4 +199,17 @@ open class SelfScanningFragment : BaseFragment() {
             menuItem?.icon = ResourcesCompat.getDrawable(resources, R.drawable.snabble_ic_flashlight_off, null)
         }
     }
+
+    var Snackbar.gravity: Int?
+        get() = when(view.layoutParams) {
+            is CoordinatorLayout.LayoutParams -> (view.layoutParams as CoordinatorLayout.LayoutParams).gravity
+            is FrameLayout.LayoutParams -> (view.layoutParams as FrameLayout.LayoutParams).gravity
+            else -> null
+        }
+        set(value) {
+            when(view.layoutParams) {
+                is CoordinatorLayout.LayoutParams -> (view.layoutParams as CoordinatorLayout.LayoutParams).gravity = value ?: Gravity.NO_GRAVITY
+                is FrameLayout.LayoutParams -> (view.layoutParams as FrameLayout.LayoutParams).gravity = value ?: Gravity.NO_GRAVITY
+            }
+        }
 }
