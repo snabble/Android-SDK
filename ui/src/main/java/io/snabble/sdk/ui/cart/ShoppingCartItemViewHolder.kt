@@ -23,7 +23,7 @@ import com.squareup.picasso.Picasso
 import io.snabble.sdk.ui.utils.InputFilterMinMax
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.utils.setOrHide
+import io.snabble.sdk.ui.utils.setTextOrHide
 import java.lang.NumberFormatException
 
 class ShoppingCartItemViewHolder internal constructor(
@@ -49,9 +49,9 @@ class ShoppingCartItemViewHolder internal constructor(
 
     @SuppressLint("SetTextI18n")
     internal fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
-        name.setOrHide(row.name)
-        priceTextView.setOrHide(row.priceText)
-        quantityTextView.setOrHide(row.quantityText)
+        name.setTextOrHide(row.name)
+        priceTextView.setTextOrHide(row.priceText)
+        quantityTextView.setTextOrHide(row.quantityText)
         if (row.imageUrl != null) {
             image.visibility = View.VISIBLE
             picasso.load(row.imageUrl).into(image)

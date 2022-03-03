@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.*
 import androidx.core.view.isVisible
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.utils.setOrHide
+import io.snabble.sdk.ui.utils.setTextOrHide
 
 @Suppress("LeakingThis")
 open class PaymentStatusItemView @JvmOverloads constructor(
@@ -66,11 +66,11 @@ open class PaymentStatusItemView @JvmOverloads constructor(
         }
 
     fun setTitle(title: String?) {
-        titleView.setOrHide(title)
+        titleView.setTextOrHide(title)
     }
 
     fun setText(t: String?) {
-        text.setOrHide(t)
+        text.setTextOrHide(t)
     }
 
     fun setAction(text: String?, onClickListener: OnClickListener) {

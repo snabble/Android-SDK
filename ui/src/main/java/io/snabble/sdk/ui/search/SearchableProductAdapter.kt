@@ -12,7 +12,7 @@ import io.snabble.sdk.Product
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.highlight
-import io.snabble.sdk.ui.utils.setOrHide
+import io.snabble.sdk.ui.utils.setTextOrHide
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.StringNormalizer
 
@@ -74,7 +74,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
                     ssb.append(product.sku)
                 }
             }
-            code.setOrHide(ssb)
+            code.setTextOrHide(ssb)
             if (productSelectedListener != null && selectedCode != null) {
                 val finalCode: Product.Code = selectedCode
                 itemView.setOnClickListener { productSelectedListener?.onProductSelected(finalCode.lookupCode) }

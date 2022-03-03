@@ -72,7 +72,7 @@ inline var View.behavior: CoordinatorLayout.Behavior<*>?
     get() = (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior
     set(value) { (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = value }
 
-fun TextView.setOrHide(text: CharSequence?) {
+fun TextView.setTextOrHide(text: CharSequence?) {
     this.isVisible = text.isNotNullOrBlank()
     this.text = text
 }
