@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
@@ -119,8 +120,13 @@ public class ProductConfirmationDialog {
         minusLayout = view.findViewById(R.id.minus_layout);
         enterReducedPrice = view.findViewById(R.id.enterReducedPrice);
 
-        // Change the accessibility order
         ViewCompat.setAccessibilityDelegate(close, new AccessibilityDelegateCompat() {
+            // Talkback take the first view as dialog title so override it here
+            @Override
+            public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
+                event.getText().add("Barcode erkannt"); // TODO i18n
+            }
+
             @Override
             public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
                 super.onInitializeAccessibilityNodeInfo(host, info);
@@ -132,11 +138,8 @@ public class ProductConfirmationDialog {
 
         if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
             subtitle.setVisibility(View.GONE);
-            name.setContentDescription("Barcode erkannt: " + product.getName() + " für"); // TODO i18n
         } else {
             subtitle.setText(product.getSubtitle());
-            name.setContentDescription("Barcode erkannt: " + product.getSubtitle()); // TODO i18n
-            name.setContentDescription(product.getName() + " für"); // TODO i18n
         }
 
         if (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() > 0) {
@@ -209,6 +212,8 @@ public class ProductConfirmationDialog {
             int q = getQuantity();
             if (q < ShoppingCart.MAX_QUANTITY) {
                 setQuantity(++q);
+            } else {
+                plus.announceForAccessibility("Du kannst nicht mehr Artikel in den Warenkorb legen"); // TODO i18n
             }
         });
 
@@ -272,6 +277,7 @@ public class ProductConfirmationDialog {
         String fullPriceText = cartItem.getFullPriceText();
         if (fullPriceText != null) {
             price.setText(cartItem.getFullPriceText());
+            price.setContentDescription("für " + cartItem.getFullPriceText()); // TODO i18n
             price.setVisibility(View.VISIBLE);
 
             if (product.getListPrice() > product.getPrice(project.getCustomerCardId())) {
@@ -381,7 +387,7 @@ public class ProductConfirmationDialog {
     }
 
     public void setQuantity(int number) {
-        // its possible that the onClickListener gets called before a dismiss is dispatched
+        // It's possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
         if (cartItem == null) {
             dismiss(false);
@@ -426,6 +432,8 @@ public class ProductConfirmationDialog {
 
         cartItem.setQuantity(number);
         updatePrice();
+
+        quantity.announceForAccessibility(number + " mal " + cartItem.getDisplayName() + " für " + cartItem.getTotalPriceText()); // TODO i18n
     }
 
     public void dismiss(boolean addToCart) {
