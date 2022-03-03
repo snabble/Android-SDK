@@ -713,7 +713,9 @@ public class Checkout {
                 shoppingCart.backup();
             }
 
-            redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(project.getCoupons().get());
+            if (signedCheckoutInfo != null) {
+                redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(project.getCoupons().get());
+            }
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
