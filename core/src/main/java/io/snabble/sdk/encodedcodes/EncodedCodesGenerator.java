@@ -131,7 +131,10 @@ public class EncodedCodesGenerator {
             code = code.replace("{qrCodeIndex}", String.valueOf(i + 1));
             if (checkoutId == null) {
                 checkoutId = "";
-                code = code.replace(";{checkoutId}", checkoutId);
+            }
+
+            if (checkoutId.equals("")) {
+                code = code.replace(";{checkoutId}", "");
             }
 
             code = code.replace("{checkoutId}", checkoutId);
