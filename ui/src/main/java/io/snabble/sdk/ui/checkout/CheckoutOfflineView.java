@@ -202,7 +202,7 @@ public class CheckoutOfflineView extends FrameLayout {
             }
 
             encodedCodesGenerator.add(project.getShoppingCart());
-            codes = encodedCodesGenerator.generate();
+            codes = encodedCodesGenerator.generate(checkout.getId());
         }
 
         @NonNull

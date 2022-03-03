@@ -32,7 +32,7 @@ public class PaymentOriginCandidateHelper {
     }
 
     public void startPollingIfLinkIsAvailable(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse.getOriginCandidateLink() == null) {
+        if (checkoutProcessResponse == null || checkoutProcessResponse.getOriginCandidateLink() == null) {
             return;
         }
 
