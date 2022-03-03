@@ -1,238 +1,178 @@
-package io.snabble.sdk.ui.cart;
+package io.snabble.sdk.ui.cart
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.TextView
+import android.widget.EditText
+import android.text.TextWatcher
+import android.annotation.SuppressLint
+import android.content.Context
+import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
+import android.content.res.ColorStateList
+import android.graphics.Color
+import io.snabble.sdk.Product
+import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.OneShotClickListener
+import android.text.Editable
+import android.text.InputFilter
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
+import io.snabble.sdk.ui.utils.InputFilterMinMax
+import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.utils.setOrHide
+import java.lang.NumberFormatException
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.squareup.picasso.Picasso;
-
-import io.snabble.sdk.Product;
-import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Unit;
-import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.telemetry.Telemetry;
-import io.snabble.sdk.ui.utils.InputFilterMinMax;
-import io.snabble.sdk.ui.utils.OneShotClickListener;
-
-public class ShoppingCartItemViewHolder extends RecyclerView.ViewHolder {
-    ImageView image;
-    TextView name;
-    TextView subtitle;
-    TextView quantityTextView;
-    TextView priceTextView;
-    View plus;
-    View minus;
-    EditText quantityEdit;
-    View controlsUserWeighed;
-    View controlsDefault;
-    View quantityEditApply;
-    View quantityEditApplyLayout;
-    TextView quantityAnnotation;
-    TextView redLabel;
-    TextWatcher textWatcher;
-    private final UndoHelper undoHelper;
-    private final Picasso picasso;
-
-    ShoppingCartItemViewHolder(View itemView, UndoHelper undoHelper) {
-        super(itemView);
-        this.undoHelper = undoHelper;
-        this.picasso = Picasso.get();
-
-        image = itemView.findViewById(R.id.helper_image);
-        name = itemView.findViewById(R.id.name);
-        subtitle = itemView.findViewById(R.id.subtitle);
-        quantityTextView = itemView.findViewById(R.id.quantity);
-        priceTextView = itemView.findViewById(R.id.price);
-        plus = itemView.findViewById(R.id.plus);
-        minus = itemView.findViewById(R.id.minus);
-        controlsUserWeighed = itemView.findViewById(R.id.controls_user_weighed);
-        controlsDefault = itemView.findViewById(R.id.controls_default);
-        quantityEdit = itemView.findViewById(R.id.quantity_edit);
-        quantityEditApply = itemView.findViewById(R.id.quantity_edit_apply);
-        quantityEditApplyLayout = itemView.findViewById(R.id.quantity_edit_apply_layout);
-        quantityAnnotation = itemView.findViewById(R.id.quantity_annotation);
-        redLabel = itemView.findViewById(R.id.red_label);
-    }
-
-    private static void setTextOrHide(TextView textView, String text) {
-        if (text != null) {
-            textView.setText(text);
-            textView.setVisibility(View.VISIBLE);
-        } else {
-            textView.setVisibility(View.GONE);
-        }
-    }
+class ShoppingCartItemViewHolder internal constructor(
+    itemView: View,
+    private val undoHelper: UndoHelper
+) : RecyclerView.ViewHolder(itemView) {
+    var image: ImageView = itemView.findViewById(R.id.helper_image)
+    var name: TextView = itemView.findViewById(R.id.name)
+    var subtitle: TextView = itemView.findViewById(R.id.subtitle)
+    var quantityTextView: TextView = itemView.findViewById(R.id.quantity)
+    var priceTextView: TextView = itemView.findViewById(R.id.price)
+    var plus: View = itemView.findViewById(R.id.plus)
+    var minus: View = itemView.findViewById(R.id.minus)
+    var quantityEdit: EditText = itemView.findViewById(R.id.quantity_edit)
+    var controlsUserWeighed: View = itemView.findViewById(R.id.controls_user_weighed)
+    var controlsDefault: View = itemView.findViewById(R.id.controls_default)
+    var quantityEditApply: View = itemView.findViewById(R.id.quantity_edit_apply)
+    var quantityEditApplyLayout: View = itemView.findViewById(R.id.quantity_edit_apply_layout)
+    var quantityAnnotation: TextView = itemView.findViewById(R.id.quantity_annotation)
+    var redLabel: TextView = itemView.findViewById(R.id.red_label)
+    var textWatcher: TextWatcher? = null
+    private val picasso = Picasso.get()
 
     @SuppressLint("SetTextI18n")
-    public void bindTo(final ShoppingCartView.ProductRow row, boolean hasAnyImages) {
-        setTextOrHide(name, row.name);
-        setTextOrHide(priceTextView, row.priceText);
-        setTextOrHide(quantityTextView, row.quantityText);
-
+    internal fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
+        name.setOrHide(row.name)
+        priceTextView.setOrHide(row.priceText)
+        quantityTextView.setOrHide(row.quantityText)
         if (row.imageUrl != null) {
-            image.setVisibility(View.VISIBLE);
-            picasso.load(row.imageUrl).into(image);
+            image.visibility = View.VISIBLE
+            picasso.load(row.imageUrl).into(image)
         } else {
-            image.setVisibility(hasAnyImages ? View.INVISIBLE : View.GONE);
-            image.setImageBitmap(null);
+            image.visibility = if (hasAnyImages) View.INVISIBLE else View.GONE
+            image.setImageBitmap(null)
         }
-
-        boolean hasCoupon = row.item.getCoupon() != null;
-        boolean isAgeRestricted = false;
-
-        redLabel.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ff0000")));
-
-        if (row.item.getProduct() != null) {
-            isAgeRestricted = row.item.getProduct().getSaleRestriction().isAgeRestriction();
+        val hasCoupon = row.item.coupon != null
+        var isAgeRestricted = false
+        redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ff0000"))
+        if (row.item.product != null) {
+            isAgeRestricted = row.item.product!!.saleRestriction.isAgeRestriction
         }
-
-        redLabel.setVisibility(hasCoupon || isAgeRestricted ? View.VISIBLE : View.GONE);
-
+        redLabel.visibility = if (hasCoupon || isAgeRestricted) View.VISIBLE else View.GONE
         if (hasCoupon) {
             if (!row.manualDiscountApplied) {
-                redLabel.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#999999")));
+                redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#999999"))
             }
-
-            redLabel.setText("%");
+            redLabel.text = "%"
         } else {
-            long age = row.item.getProduct().getSaleRestriction().getValue();
-
+            val age = row.item.product!!.saleRestriction.value
             if (age > 0) {
-                redLabel.setText(String.valueOf(age));
+                redLabel.text = age.toString()
             } else {
-                redLabel.setVisibility(View.GONE);
+                redLabel.visibility = View.GONE
             }
         }
-
-        String encodingDisplayValue = "g";
-        Unit encodingUnit = row.encodingUnit;
+        var encodingDisplayValue = "g"
+        val encodingUnit = row.encodingUnit
         if (encodingUnit != null) {
-            encodingDisplayValue = encodingUnit.getDisplayValue();
+            encodingDisplayValue = encodingUnit.displayValue
         }
-        quantityAnnotation.setText(encodingDisplayValue);
-
+        quantityAnnotation.text = encodingDisplayValue
         if (row.editable) {
-            if (row.item.getProduct().getType() == Product.Type.UserWeighed) {
-                controlsDefault.setVisibility(View.GONE);
-                controlsUserWeighed.setVisibility(View.VISIBLE);
+            if (row.item.product!!.type == Product.Type.UserWeighed) {
+                controlsDefault.visibility = View.GONE
+                controlsUserWeighed.visibility = View.VISIBLE
             } else {
-                controlsDefault.setVisibility(View.VISIBLE);
-                controlsUserWeighed.setVisibility(View.GONE);
+                controlsDefault.visibility = View.VISIBLE
+                controlsUserWeighed.visibility = View.GONE
             }
         } else {
-            controlsDefault.setVisibility(View.GONE);
-            controlsUserWeighed.setVisibility(View.GONE);
+            controlsDefault.visibility = View.GONE
+            controlsUserWeighed.visibility = View.GONE
         }
-
-        plus.setOnClickListener(v -> {
-            row.item.setQuantity(row.item.getQuantity() + 1);
-            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.getProduct());
-        });
-
-        minus.setOnClickListener(v -> {
-            int p = getBindingAdapterPosition();
-
-            int newQuantity = row.item.getQuantity() - 1;
+        plus.setOnClickListener { v: View? ->
+            row.item.quantity = row.item.quantity + 1
+            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
+        }
+        minus.setOnClickListener { v: View? ->
+            val p = bindingAdapterPosition
+            val newQuantity = row.item.quantity - 1
             if (newQuantity <= 0) {
-                undoHelper.removeAndShowUndoSnackbar(p, row.item);
+                undoHelper.removeAndShowUndoSnackbar(p, row.item)
             } else {
-                row.item.setQuantity(newQuantity);
-                Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.getProduct());
+                row.item.quantity = newQuantity
+                Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
             }
-        });
-
-        quantityEditApply.setOnClickListener(new OneShotClickListener() {
-            @Override
-            public void click() {
-                row.item.setQuantity(getQuantityEditValue());
-                hideInput();
-                Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.getProduct());
-            }
-        });
-
-        quantityEdit.setText(Integer.toString(row.quantity));
-        itemView.setFocusable(true);
-        itemView.setFocusableInTouchMode(true);
-
-        if (getBindingAdapterPosition() == 0) {
-            itemView.requestFocus();
         }
-
-        quantityEdit.removeTextChangedListener(textWatcher);
-        textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        quantityEditApply.setOnClickListener(object : OneShotClickListener() {
+            override fun click() {
+                row.item.quantity = quantityEditValue
+                hideInput()
+                Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
+            }
+        })
+        quantityEdit.setText(row.quantity.toString())
+        itemView.isFocusable = true
+        itemView.isFocusableInTouchMode = true
+        if (bindingAdapterPosition == 0) {
+            itemView.requestFocus()
+        }
+        quantityEdit.removeTextChangedListener(textWatcher)
+        textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                updateQuantityEditApplyVisibility(row.quantity)
             }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                updateQuantityEditApplyVisibility(row.quantity);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        };
-
-        updateQuantityEditApplyVisibility(row.quantity);
-
-        quantityEdit.addTextChangedListener(textWatcher);
-        quantityEdit.setOnEditorActionListener((v, actionId, event) -> {
+            override fun afterTextChanged(s: Editable) {}
+        }
+        updateQuantityEditApplyVisibility(row.quantity)
+        quantityEdit.addTextChangedListener(textWatcher)
+        quantityEdit.setOnEditorActionListener { v: TextView?, actionId: Int, event: KeyEvent ->
             if (actionId == EditorInfo.IME_ACTION_DONE
-                    || (event.getAction() == KeyEvent.ACTION_DOWN
-                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                quantityEditApply.callOnClick();
-                return true;
+                || (event.action == KeyEvent.ACTION_DOWN
+                        && event.keyCode == KeyEvent.KEYCODE_ENTER)
+            ) {
+                quantityEditApply.callOnClick()
+                return@setOnEditorActionListener true
             }
-
-            return false;
-        });
-
-        quantityEdit.setFilters(new InputFilter[]{new InputFilterMinMax(0, ShoppingCart.MAX_QUANTITY)});
-    }
-
-    void hideInput() {
-        InputMethodManager imm = (InputMethodManager) quantityEdit.getContext()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(quantityEdit.getWindowToken(),
-                    InputMethodManager.HIDE_NOT_ALWAYS);
+            false
         }
-
-        quantityEdit.clearFocus();
+        quantityEdit.filters = arrayOf<InputFilter>(InputFilterMinMax(0, ShoppingCart.MAX_QUANTITY))
     }
 
-    private void updateQuantityEditApplyVisibility(int quantity) {
-        int value = getQuantityEditValue();
+    fun hideInput() {
+        val imm = quantityEdit.context
+            .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(
+            quantityEdit.windowToken,
+            InputMethodManager.HIDE_NOT_ALWAYS
+        )
+        quantityEdit.clearFocus()
+    }
+
+    private fun updateQuantityEditApplyVisibility(quantity: Int) {
+        val value = quantityEditValue
         if (value > 0 && value != quantity) {
-            quantityEditApply.setVisibility(View.VISIBLE);
-            quantityEditApplyLayout.setVisibility(View.VISIBLE);
+            quantityEditApply.visibility = View.VISIBLE
+            quantityEditApplyLayout.visibility = View.VISIBLE
         } else {
-            quantityEditApply.setVisibility(View.GONE);
-            quantityEditApplyLayout.setVisibility(View.GONE);
+            quantityEditApply.visibility = View.GONE
+            quantityEditApplyLayout.visibility = View.GONE
         }
     }
 
-    public int getQuantityEditValue() {
-        try {
-            return Integer.parseInt(quantityEdit.getText().toString());
-        } catch (NumberFormatException e) {
-            return 0;
+    val quantityEditValue: Int
+        get() = try {
+            quantityEdit.text.toString().toInt()
+        } catch (e: NumberFormatException) {
+            0
         }
-    }
 }
