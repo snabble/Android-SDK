@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.61.3]
+
+### Fixed
+- Fixed out of bounds crash when using firebase decoder with updated play services
+
 ## [0.61.2]
 
 ### Added
