@@ -1,30 +1,31 @@
 package io.snabble.sdk.ui.cart
 
-import android.widget.TextView
-import android.widget.EditText
 import android.annotation.SuppressLint
 import android.content.Context
-import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
 import android.content.res.ColorStateList
 import android.graphics.Color
-import io.snabble.sdk.Product
-import io.snabble.sdk.ui.telemetry.Telemetry
-import android.text.InputFilter
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import io.snabble.sdk.ui.utils.InputFilterMinMax
+import io.snabble.sdk.Product
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.accessibility
+import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
+import io.snabble.sdk.ui.orderViewsForAccessibility
+import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.InputFilterMinMax
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.ui.utils.setTextOrHide
-import java.lang.NumberFormatException
 
 class ShoppingCartItemViewHolder internal constructor(
     itemView: View,
@@ -32,7 +33,7 @@ class ShoppingCartItemViewHolder internal constructor(
 ) : RecyclerView.ViewHolder(itemView) {
     var image: ImageView = itemView.findViewById(R.id.helper_image)
     var name: TextView = itemView.findViewById(R.id.name)
-    var subtitle: TextView = itemView.findViewById(R.id.subtitle)
+    var subtitle: TextView? = itemView.findViewById(R.id.subtitle)
     var quantityTextView: TextView = itemView.findViewById(R.id.quantity)
     var priceTextView: TextView = itemView.findViewById(R.id.price)
     var plus: View = itemView.findViewById(R.id.plus)
@@ -46,11 +47,29 @@ class ShoppingCartItemViewHolder internal constructor(
     var redLabel: TextView = itemView.findViewById(R.id.red_label)
     private val picasso = Picasso.get()
 
+    init {
+        orderViewsForAccessibility(quantityTextView, quantityEdit, subtitle, name, redLabel, priceTextView, plus, minus)
+    }
+
     @SuppressLint("SetTextI18n")
-    internal fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
+    fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
+        itemView.accessibility {
+            setLongClickAction("löschen") { // TODO i18n
+                SnabbleUI.project.shoppingCart.remove(bindingAdapterPosition)
+            }
+            onInitializeAccessibilityNodeInfo { info ->
+                info.text = "Im Warenkorb" // TODO i18n
+            }
+        }
         name.setTextOrHide(row.name)
         priceTextView.setTextOrHide(row.priceText)
         quantityTextView.setTextOrHide(row.quantityText)
+        row.quantityText?.let {
+            quantityTextView.contentDescription = "$it mal" // TODO i18n
+        }
+        row.priceText?.let {
+            priceTextView.contentDescription = "für $it" // TODO i18n
+        }
         if (row.imageUrl != null) {
             image.visibility = View.VISIBLE
             picasso.load(row.imageUrl).into(image)
@@ -65,6 +84,9 @@ class ShoppingCartItemViewHolder internal constructor(
         if (hasCoupon) {
             if (!row.manualDiscountApplied) {
                 redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#999999"))
+                redLabel.contentDescription = "Ohne Rabatt" // TODO i18n
+            } else {
+                redLabel.contentDescription = "Mit Rabatt" // TODO i18n
             }
             redLabel.text = "%"
         } else {

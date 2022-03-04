@@ -438,7 +438,7 @@ public class ShoppingCartView extends FrameLayout {
         }
     }
 
-    static class ProductRow extends Row {
+    public static class ProductRow extends Row {
         String name;
         String subtitle;
         String imageUrl;

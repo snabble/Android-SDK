@@ -124,7 +124,9 @@ public class ProductConfirmationDialog {
             // Talkback take the first view as dialog title so override it here
             @Override
             public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
-                event.getText().add("Barcode erkannt"); // TODO i18n
+                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+                    event.getText().add("Barcode erkannt"); // TODO i18n
+                } else super.onPopulateAccessibilityEvent(host, event);
             }
 
             @Override
