@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.setTextOrHide
 import java.util.ArrayList
 
@@ -41,6 +42,14 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
                         val id = v.findViewById<TextView>(R.id.id)
                         val check = v.findViewById<View>(R.id.check)
 
+                        v.accessibility {
+                            if (entry.isAdded) {
+                                setClickAction("Verwenden") // TODO i18n
+                            } else {
+                                setClickAction("Hinzufügen") // TODO i18n
+                            }
+                        }
+
                         val resId = entry.iconResId
                         if (resId != 0) {
                             imageView.setImageResource(entry.iconResId)
@@ -59,6 +68,12 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
 
                         id.setTextOrHide(entry.hint)
                         name.setTextOrHide(entry.text)
+                        val endsWithNumber = "^.*?(\\d+)\$".toRegex()
+                        if (entry.hint?.matches(endsWithNumber) == true) {
+                            endsWithNumber.find(entry.hint)?.groupValues?.last()?.let { number ->
+                                id.contentDescription = "Endet mit $number" // TODO i18n
+                            }
+                        }
                         name.isEnabled = entry.isAvailable
                         if (entry.isAvailable) {
                             v.setOnClickListener {
