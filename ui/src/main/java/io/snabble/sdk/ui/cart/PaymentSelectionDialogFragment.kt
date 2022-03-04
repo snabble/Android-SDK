@@ -1,127 +1,93 @@
-package io.snabble.sdk.ui.cart;
+package io.snabble.sdk.ui.cart
 
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import io.snabble.sdk.ui.payment.PaymentInputViewHelper.openPaymentInputView
+import io.snabble.sdk.ui.SnabbleUI.project
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.os.Bundle
+import io.snabble.sdk.ui.R
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.view.View
+import android.widget.ImageView
+import androidx.core.view.isVisible
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.snabble.sdk.ui.utils.setTextOrHide
+import java.util.ArrayList
 
-import androidx.annotation.NonNull;
-
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import java.util.ArrayList;
-
-import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.payment.PaymentInputViewHelper;
-
-public class PaymentSelectionDialogFragment extends BottomSheetDialogFragment {
-    public static final String ARG_ENTRIES = "entries";
-    public static final String ARG_SHOW_OFFLINE_HINT = "showOfflineHint";
-    public static final String ARG_SELECTED_ENTRY = "selectedEntry";
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = View.inflate(requireContext(), R.layout.snabble_dialog_payment_selection, null);
-        LinearLayout options = view.findViewById(R.id.options);
-
-        Bundle args = getArguments();
-        if (args != null) {
-            View headerView = View.inflate(requireContext(), R.layout.snabble_item_payment_select_header, null);
-            options.addView(headerView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = View.inflate(requireContext(), R.layout.snabble_dialog_payment_selection, null)
+        val options = view.findViewById<LinearLayout>(R.id.options)
+        arguments?.let { args ->
+            val headerView = View.inflate(requireContext(), R.layout.snabble_item_payment_select_header, null)
+            options.addView(headerView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
             if (args.getBoolean(ARG_SHOW_OFFLINE_HINT, false)) {
-                View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select_offline_hint, null);
-                options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                val v = View.inflate(requireContext(), R.layout.snabble_item_payment_select_offline_hint, null)
+                options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             }
 
             if (args.containsKey(ARG_ENTRIES)) {
-                PaymentSelectionHelper.Entry selectedEntry = (PaymentSelectionHelper.Entry) args.getSerializable(ARG_SELECTED_ENTRY);
-                ArrayList<PaymentSelectionHelper.Entry> entries = (ArrayList<PaymentSelectionHelper.Entry>) args.getSerializable(ARG_ENTRIES);
-                if (entries != null) {
-                    boolean hasAnyAddedMethods = false;
-                    for (final PaymentSelectionHelper.Entry entry : entries) {
-                        if (entry.isAdded) {
-                            hasAnyAddedMethods = true;
-                            break;
-                        }
-                    }
+                val selectedEntry = args.getSerializable(ARG_SELECTED_ENTRY) as PaymentSelectionHelper.Entry?
+                (args.getSerializable(ARG_ENTRIES) as? ArrayList<PaymentSelectionHelper.Entry>)?.let { entries ->
+                    val hasAnyAddedMethods = entries.any { it.isAdded }
+                    entries.forEach { entry ->
+                        val v = View.inflate(requireContext(), R.layout.snabble_item_payment_select, null)
+                        val imageView = v.findViewById<ImageView>(R.id.image)
+                        val name = v.findViewById<TextView>(R.id.name)
+                        val id = v.findViewById<TextView>(R.id.id)
+                        val check = v.findViewById<View>(R.id.check)
 
-                    for (final PaymentSelectionHelper.Entry entry : entries) {
-                        View v = View.inflate(requireContext(), R.layout.snabble_item_payment_select, null);
-
-                        ImageView imageView = v.findViewById(R.id.image);
-                        TextView name = v.findViewById(R.id.name);
-                        TextView id = v.findViewById(R.id.id);
-                        View check = v.findViewById(R.id.check);
-
-                        int resId = entry.iconResId;
+                        val resId = entry.iconResId
                         if (resId != 0) {
-                            imageView.setImageResource(entry.iconResId);
+                            imageView.setImageResource(entry.iconResId)
                         } else {
-                            imageView.setVisibility(View.INVISIBLE);
+                            imageView.visibility = View.INVISIBLE
                         }
 
                         if (entry.isAdded || !hasAnyAddedMethods) {
-                            imageView.setColorFilter(null);
+                            imageView.colorFilter = null
                         } else {
-                            ColorMatrix matrix = new ColorMatrix();
-                            matrix.setSaturation(0);
-                            ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-                            imageView.setColorFilter(cf);
+                            val matrix = ColorMatrix()
+                            matrix.setSaturation(0f)
+                            val cf = ColorMatrixColorFilter(matrix)
+                            imageView.colorFilter = cf
                         }
 
-                        if (entry.text != null) {
-                            name.setText(entry.text);
-                        } else {
-                            name.setVisibility(View.GONE);
-                        }
-
-                        if (entry.hint != null) {
-                            id.setText(entry.hint);
-                        } else {
-                            id.setVisibility(View.GONE);
-                        }
-
+                        id.setTextOrHide(entry.hint)
+                        name.setTextOrHide(entry.text)
+                        name.isEnabled = entry.isAvailable
                         if (entry.isAvailable) {
-                            v.setOnClickListener(v1 -> {
+                            v.setOnClickListener {
                                 if (entry.isAdded) {
-                                    PaymentSelectionHelper.getInstance().select(entry);
-                                    dismissAllowingStateLoss();
+                                    PaymentSelectionHelper.getInstance().select(entry)
+                                    dismissAllowingStateLoss()
                                 } else {
-                                    PaymentInputViewHelper.openPaymentInputView(requireContext(), entry.paymentMethod, SnabbleUI.getProject().getId());
-                                    dismissAllowingStateLoss();
+                                    openPaymentInputView(requireContext(), entry.paymentMethod, project.id)
+                                    dismissAllowingStateLoss()
                                 }
-                            });
-                            name.setEnabled(true);
-                        } else {
-                            name.setEnabled(false);
+                            }
                         }
-
-                        if (entry == selectedEntry) {
-                            check.setVisibility(View.VISIBLE);
-                        } else {
-                            check.setVisibility(View.GONE);
-                        }
-
-                        options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        check.isVisible = entry == selectedEntry
+                        options.addView(v, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                     }
                 }
             }
         }
-
-        return view;
+        return view
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismissAllowingStateLoss();
+    override fun onPause() {
+        super.onPause()
+        dismissAllowingStateLoss()
+    }
+
+    companion object {
+        const val ARG_ENTRIES = "entries"
+        const val ARG_SHOW_OFFLINE_HINT = "showOfflineHint"
+        const val ARG_SELECTED_ENTRY = "selectedEntry"
     }
 }
-
