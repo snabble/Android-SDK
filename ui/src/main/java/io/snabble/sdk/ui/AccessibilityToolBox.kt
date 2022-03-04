@@ -101,7 +101,7 @@ class AccessibilityToolBox2(private val target: View): AccessibilityDelegateComp
     }
 
     fun setClickAction(@StringRes action: Int, onLongClick: (() -> Any)? = null) =
-        setLongClickAction(target.context.getString(action), onLongClick)
+        setClickAction(target.context.getString(action), onLongClick)
 }
 
 @IntDef(
