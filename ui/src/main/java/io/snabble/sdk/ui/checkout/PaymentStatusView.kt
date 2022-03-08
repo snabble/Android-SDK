@@ -9,20 +9,22 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ScrollView
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.databinding.SnabbleViewPaymentStatusBinding
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
+import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.ui.utils.getFragmentActivity
@@ -35,12 +37,35 @@ class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ScrollView(context, attrs, defStyleAttr),
     LifecycleObserver, PaymentOriginCandidateAvailableListener {
+    init {
+        inflate(getContext(), R.layout.snabble_view_payment_status, this)
+    }
+
+    private val image = findViewById<ImageView>(R.id.image)
+    private val back = findViewById<MaterialButton>(R.id.back)
+    private val rating1 = findViewById<ImageView>(R.id.rating_1)
+    private val rating2 = findViewById<ImageView>(R.id.rating_2)
+    private val rating3 = findViewById<ImageView>(R.id.rating_3)
+    private val ratingLayout = findViewById<ImageView>(R.id.image)
+    private val inputBadRatingLayout = findViewById<TextInputLayout>(R.id.input_bad_rating_layout)
+    private var addIbanLayout = findViewById<LinearLayout>(R.id.add_iban_layout)
+    private var addIbanButton = findViewById<Button>(R.id.add_iban_button)
+    private var ratingTitle = findViewById<TextView>(R.id.rating_title)
+    private var ratingContainer = findViewById<LinearLayout>(R.id.rating_container)
+    private var payment = findViewById<PaymentStatusItemView>(R.id.payment)
+    private var receipt = findViewById<PaymentStatusItemView>(R.id.receipt)
+    private var title = findViewById<TextView>(R.id.title)
+    private var progress = findViewById<ProgressBar>(R.id.progress)
+    private var exitTokenContainer = findViewById<LinearLayout>(R.id.exit_token_container)
+    private var exitToken = findViewById<PaymentStatusItemView>(R.id.exit_token)
+    private var exitTokenBarcode = findViewById<BarcodeView>(R.id.exit_token_barcode)
+    private var statusContainer = findViewById<LinearLayout>(R.id.status_container)
+    private var fulfillmentContainer = findViewById<LinearLayout>(R.id.fulfillment_container)
 
     private var isStopped: Boolean = false
     private val project: Project
     private val checkout: Checkout
 
-    private val binding: SnabbleViewPaymentStatusBinding
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
 
@@ -56,17 +81,15 @@ class PaymentStatusView @JvmOverloads constructor(
     private var hasShownSEPAInput = false
 
     init {
-        inflate(getContext(), R.layout.snabble_view_payment_status, this)
         clipChildren = false
 
         project = SnabbleUI.project
         checkout = project.checkout
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
-        binding = SnabbleViewPaymentStatusBinding.bind(this)
 
-        binding.back.isEnabled = false
-        binding.back.setOnClickListener {
+        back.isEnabled = false
+        back.setOnClickListener {
             ignoreStateChanges = true
             val state = lastState
             checkout.reset()
@@ -85,10 +108,10 @@ class PaymentStatusView @JvmOverloads constructor(
             onFulfillmentStateChanged(it)
         }
 
-        binding.rating1.setOnClickListener {
+        rating1.setOnClickListener {
             ratingMessage = ""
-            binding.inputBadRatingLayout.isVisible = true
-            binding.inputBadRatingLayout.editText
+            inputBadRatingLayout.isVisible = true
+            inputBadRatingLayout.editText
                 ?.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
                     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -98,22 +121,22 @@ class PaymentStatusView @JvmOverloads constructor(
                 })
         }
 
-        binding.rating2.setOnClickListener {
+        rating2.setOnClickListener {
             sendRating("2")
         }
 
-        binding.rating3.setOnClickListener {
+        rating3.setOnClickListener {
             sendRating("3")
         }
 
-        binding.addIbanLayout.isVisible = false
-        binding.addIbanButton.setOnClickListener {
+        addIbanLayout.isVisible = false
+        addIbanButton.setOnClickListener {
             val paymentOriginCandidate = paymentOriginCandidate
             val intent = Intent(getContext(), SEPACardInputActivity::class.java)
             intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             getContext()?.startActivity(intent)
-            binding.addIbanLayout.isVisible = false
+            addIbanLayout.isVisible = false
             hasShownSEPAInput = true
         }
 
@@ -125,8 +148,8 @@ class PaymentStatusView @JvmOverloads constructor(
     private fun sendRating(rating: String) {
         project.events.analytics("rating", rating, ratingMessage ?: "")
         Telemetry.event(Telemetry.Event.Rating, rating)
-        binding.ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanks)
-        binding.ratingContainer.isInvisible = true
+        ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanks)
+        ratingContainer.isInvisible = true
         ratingMessage = null
     }
 
@@ -137,34 +160,34 @@ class PaymentStatusView @JvmOverloads constructor(
 
         lastState = state
 
-        binding.payment.isVisible = true
-        binding.payment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Payment_title))
+        payment.isVisible = true
+        payment.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Payment_title))
 
-        binding.receipt.isVisible = true
-        binding.receipt.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Receipt_title))
-        binding.receipt.state = PaymentStatusItemView.State.IN_PROGRESS
+        receipt.isVisible = true
+        receipt.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Receipt_title))
+        receipt.state = PaymentStatusItemView.State.IN_PROGRESS
 
         when (state) {
             Checkout.State.PAYMENT_PROCESSING,
             Checkout.State.VERIFYING_PAYMENT_METHOD -> {
-                binding.payment.state = PaymentStatusItemView.State.IN_PROGRESS
+                payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
             Checkout.State.PAYMENT_APPROVED -> {
-                binding.title.text =
+                title.text =
                     resources.getString(R.string.Snabble_PaymentStatus_Title_success)
-                binding.image.setImageResource(R.drawable.snabble_ic_payment_success_big)
-                binding.image.isVisible = true
-                binding.progress.isVisible = false
-                binding.payment.state = PaymentStatusItemView.State.SUCCESS
+                image.setImageResource(R.drawable.snabble_ic_payment_success_big)
+                image.isVisible = true
+                progress.isVisible = false
+                payment.state = PaymentStatusItemView.State.SUCCESS
                 val checkoutProcess = checkout.checkoutProcess
                 if (checkoutProcess?.orderId != null && checkoutProcess.links?.get("receipt") != null) {
                     startPollingForReceipts(checkout.checkoutProcess?.orderId)
                 } else {
-                    binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
+                    receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 }
-                binding.back.isEnabled = true
+                back.isEnabled = true
                 backPressedCallback.isEnabled = false
-                binding.ratingLayout.isVisible = true
+                ratingLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
             Checkout.State.PAYMENT_PROCESSING_ERROR -> {
@@ -215,34 +238,34 @@ class PaymentStatusView @JvmOverloads constructor(
                         }
                     )
 
-                    binding.exitTokenContainer.isVisible = true
-                    binding.exitToken.state = PaymentStatusItemView.State.SUCCESS
-                    binding.exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))
-                    binding.exitTokenBarcode.setFormat(format)
-                    binding.exitTokenBarcode.setText(it.value)
+                    exitTokenContainer.isVisible = true
+                    exitToken.state = PaymentStatusItemView.State.SUCCESS
+                    exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))
+                    exitTokenBarcode.setFormat(format)
+                    exitTokenBarcode.setText(it.value)
                 } else {
-                    binding.exitToken.isVisible = false
-                    binding.exitTokenBarcode.isVisible = false
+                    exitToken.isVisible = false
+                    exitTokenBarcode.isVisible = false
                 }
             }
         }
 
-        binding.statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+        statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     private fun handlePaymentAborted() {
-        binding.payment.state = PaymentStatusItemView.State.FAILED
-        binding.payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
-        binding.payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
+        payment.state = PaymentStatusItemView.State.FAILED
+        payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
+        payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
             project.shoppingCart.generateNewUUID()
             requireFragmentActivity().finish()
         }
-        binding.title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
-        binding.image.isVisible = true
-        binding.image.setImageResource(R.drawable.snabble_ic_payment_error_big)
-        binding.progress.isVisible = false
-        binding.receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
-        binding.back.isEnabled = true
+        title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
+        image.isVisible = true
+        image.setImageResource(R.drawable.snabble_ic_payment_error_big)
+        progress.isVisible = false
+        receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
+        back.isEnabled = true
         backPressedCallback.isEnabled = false
     }
 
@@ -313,10 +336,10 @@ class PaymentStatusView @JvmOverloads constructor(
         val receipts = Snabble.receipts
         receipts.getReceiptInfos(object : Receipts.ReceiptInfoCallback {
             override fun success(receiptInfos: Array<out ReceiptInfo>?) {
-                val receipt = receiptInfos?.firstOrNull { it.id == orderId }
-                if (receipt != null) {
+                val receiptInfo = receiptInfos?.firstOrNull { it.id == orderId }
+                if (receiptInfo != null) {
                     Dispatch.mainThread {
-                        binding.receipt.state = PaymentStatusItemView.State.SUCCESS
+                        receipt.state = PaymentStatusItemView.State.SUCCESS
                     }
                 } else {
                     Dispatch.mainThread({
@@ -335,11 +358,11 @@ class PaymentStatusView @JvmOverloads constructor(
 
     private fun onFulfillmentStateChanged(fulfillments: Array<CheckoutApi.Fulfillment>?) {
         fulfillments?.forEach {
-            var itemView = binding.fulfillmentContainer.findViewWithTag<PaymentStatusItemView>(it.type)
+            var itemView = fulfillmentContainer.findViewWithTag<PaymentStatusItemView>(it.type)
             if (itemView == null) {
                 itemView = PaymentStatusItemView(context)
                 itemView.tag = it.type
-                binding.fulfillmentContainer.addView(
+                fulfillmentContainer.addView(
                     itemView,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
@@ -381,7 +404,7 @@ class PaymentStatusView @JvmOverloads constructor(
 
     override fun onPaymentOriginCandidateAvailable(paymentOriginCandidate: PaymentOriginCandidate?) {
         if (paymentOriginCandidate != null) {
-            binding.addIbanLayout.isVisible = true
+            addIbanLayout.isVisible = true
             this.paymentOriginCandidate = paymentOriginCandidate
         }
     }
