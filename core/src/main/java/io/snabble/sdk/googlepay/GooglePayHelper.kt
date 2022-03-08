@@ -113,7 +113,7 @@ class GooglePayHelper(
 
     private fun getMerchantInfo(): JsonObject {
         return JsonObject().apply {
-            addProperty("merchantName", project.company.name)
+            addProperty("merchantName", project.company?.name)
         }
     }
 
@@ -152,7 +152,6 @@ class GooglePayHelper(
     }
 
     fun isGooglePayAvailable(): Boolean {
-        // TODO package manager check for google pay!
         return project.availablePaymentMethods.contains(PaymentMethod.GOOGLE_PAY)
     }
 
