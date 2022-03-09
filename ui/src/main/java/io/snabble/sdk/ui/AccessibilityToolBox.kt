@@ -1,7 +1,7 @@
-@file:JvmName("AccessibilityToolBox")
 package io.snabble.sdk.ui
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
@@ -16,7 +16,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import io.snabble.sdk.Snabble
 
-class AccessibilityToolBox2(private val target: View): AccessibilityDelegateCompat() {
+class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompat() {
     private val eventListeners = mutableMapOf<Int, Pair<Boolean, (event: AccessibilityEvent) -> Any>>()
     private var clickAction: String? = null
     private var longClickAction: String? = null
@@ -104,15 +104,31 @@ class AccessibilityToolBox2(private val target: View): AccessibilityDelegateComp
         setClickAction(target.context.getString(action), onLongClick)
 }
 
+@SuppressLint("InlinedApi")
 @IntDef(
     flag = true,
-    value = [AccessibilityEvent.TYPE_VIEW_CLICKED, AccessibilityEvent.TYPE_VIEW_LONG_CLICKED, AccessibilityEvent.TYPE_VIEW_SELECTED, AccessibilityEvent.TYPE_VIEW_FOCUSED, AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED, AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED, AccessibilityEvent.TYPE_VIEW_HOVER_ENTER, AccessibilityEvent.TYPE_VIEW_HOVER_EXIT, AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START, AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED, AccessibilityEvent.TYPE_VIEW_SCROLLED, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, AccessibilityEvent.TYPE_ANNOUNCEMENT, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED, AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY, AccessibilityEvent.TYPE_GESTURE_DETECTION_START, AccessibilityEvent.TYPE_GESTURE_DETECTION_END, AccessibilityEvent.TYPE_TOUCH_INTERACTION_START, AccessibilityEvent.TYPE_TOUCH_INTERACTION_END, AccessibilityEvent.TYPE_WINDOWS_CHANGED, AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED, AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT]
+    value = [
+        AccessibilityEvent.TYPE_VIEW_CLICKED, AccessibilityEvent.TYPE_VIEW_LONG_CLICKED,
+        AccessibilityEvent.TYPE_VIEW_SELECTED, AccessibilityEvent.TYPE_VIEW_FOCUSED,
+        AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+        AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED, AccessibilityEvent.TYPE_VIEW_HOVER_ENTER,
+        AccessibilityEvent.TYPE_VIEW_HOVER_EXIT, AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START,
+        AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+        AccessibilityEvent.TYPE_VIEW_SCROLLED, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
+        AccessibilityEvent.TYPE_ANNOUNCEMENT, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED,
+        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED,
+        AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY,
+        AccessibilityEvent.TYPE_GESTURE_DETECTION_START, AccessibilityEvent.TYPE_GESTURE_DETECTION_END,
+        AccessibilityEvent.TYPE_TOUCH_INTERACTION_START, AccessibilityEvent.TYPE_TOUCH_INTERACTION_END,
+        AccessibilityEvent.TYPE_WINDOWS_CHANGED, AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED,
+        AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT
+    ]
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class EventType
 
-fun View.accessibility(block: AccessibilityToolBox2.() -> Any) {
-    val toolbox = AccessibilityToolBox2(this)
+fun View.accessibility(block: AccessibilityToolBox.() -> Any) {
+    val toolbox = AccessibilityToolBox(this)
     if (toolbox.isTalkBackActive) {
         block(toolbox)
         ViewCompat.setAccessibilityDelegate(this, toolbox)
