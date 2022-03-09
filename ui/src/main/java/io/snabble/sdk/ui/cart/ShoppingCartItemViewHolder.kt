@@ -53,22 +53,23 @@ class ShoppingCartItemViewHolder internal constructor(
 
     @SuppressLint("SetTextI18n")
     fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
+        val res = itemView.resources
         itemView.accessibility {
-            setLongClickAction("löschen") { // TODO i18n
+            setLongClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionDelete) {
                 SnabbleUI.project.shoppingCart.remove(bindingAdapterPosition)
             }
             onInitializeAccessibilityNodeInfo { info ->
-                info.text = "Im Warenkorb" // TODO i18n
+                info.text = res.getString(R.string.Snabble_Shoppingcart_Accessibility_contextInCart)
             }
         }
         name.setTextOrHide(row.name)
         priceTextView.setTextOrHide(row.priceText)
         quantityTextView.setTextOrHide(row.quantityText)
         row.quantityText?.let {
-            quantityTextView.contentDescription = "$it mal" // TODO i18n
+            quantityTextView.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionQuantity, it)
         }
         row.priceText?.let {
-            priceTextView.contentDescription = "für $it" // TODO i18n
+            priceTextView.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice, it)
         }
         if (row.imageUrl != null) {
             image.visibility = View.VISIBLE
@@ -84,9 +85,9 @@ class ShoppingCartItemViewHolder internal constructor(
         if (hasCoupon) {
             if (!row.manualDiscountApplied) {
                 redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#999999"))
-                redLabel.contentDescription = "Ohne Rabatt" // TODO i18n
+                redLabel.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithoutDiscount)
             } else {
-                redLabel.contentDescription = "Mit Rabatt" // TODO i18n
+                redLabel.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithDiscount)
             }
             redLabel.text = "%"
         } else {

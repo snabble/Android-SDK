@@ -125,7 +125,7 @@ public class ProductConfirmationDialog {
             @Override
             public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
                 if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-                    event.getText().add("Barcode erkannt"); // TODO i18n
+                    event.getText().add(host.getResources().getString(R.string.Snabble_Scanner_Accessibility_eventBarcodeDetected));
                 } else super.onPopulateAccessibilityEvent(host, event);
             }
 
@@ -215,7 +215,7 @@ public class ProductConfirmationDialog {
             if (q < ShoppingCart.MAX_QUANTITY) {
                 setQuantity(++q);
             } else {
-                plus.announceForAccessibility("Du kannst nicht mehr Artikel in den Warenkorb legen"); // TODO i18n
+                plus.announceForAccessibility(plus.getResources().getString(R.string.Snabble_Scanner_Accessibility_eventMaxQuantityReached));
             }
         });
 
@@ -279,7 +279,7 @@ public class ProductConfirmationDialog {
         String fullPriceText = cartItem.getFullPriceText();
         if (fullPriceText != null) {
             price.setText(cartItem.getFullPriceText());
-            price.setContentDescription("für " + cartItem.getFullPriceText()); // TODO i18n
+            price.setContentDescription(price.getResources().getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice, cartItem.getFullPriceText()));
             price.setVisibility(View.VISIBLE);
 
             if (product.getListPrice() > product.getPrice(project.getCustomerCardId())) {
@@ -435,7 +435,7 @@ public class ProductConfirmationDialog {
         cartItem.setQuantity(number);
         updatePrice();
 
-        quantity.announceForAccessibility(number + " mal " + cartItem.getDisplayName() + " für " + cartItem.getTotalPriceText()); // TODO i18n
+        quantity.announceForAccessibility(quantity.getResources().getString(R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate, number, cartItem.getDisplayName(), cartItem.getTotalPriceText()));
     }
 
     public void dismiss(boolean addToCart) {

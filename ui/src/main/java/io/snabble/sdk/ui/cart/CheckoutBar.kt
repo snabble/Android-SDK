@@ -161,7 +161,7 @@ open class CheckoutBar @JvmOverloads constructor(
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             binding.paymentSelector.isVisible = !isHidden
             binding.paymentIcon.setImageResource(entry.iconResId)
-            binding.paymentSelectorButton.contentDescription = "Zahlungsmethode: " + entry.text // TODO i18n
+            binding.paymentSelectorButton.contentDescription = resources.getString(R.string.Snabble_Shoppingcart_Accessibility_paymentMethod, entry.text)
             binding.paymentSelectorButton.accessibility {
                 setClickAction(R.string.Snabble_Shoppingcart_buyProducts_selectPaymentMethod)
             }

@@ -56,10 +56,10 @@ open class SelfScanningFragment : BaseFragment() {
 
         if (isPermissionGranted) {
             createSelfScanningView()
-            view.announceForAccessibility("Du hast den Scanner geöffnet") // TODO i18n
+            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened))
             explainScanner()
         } else {
-            view.announceForAccessibility("Du hast den Scanner geöffnet, zum Scannen benötigen wir noch eine Berechtigung von dir.") // TODO i18n
+            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + ", " + getString(R.string.Snabble_Scanner_Accessibility_permissionHint))
         }
     }
 
@@ -116,7 +116,7 @@ open class SelfScanningFragment : BaseFragment() {
         if (grantResults.isNotEmpty()) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 createSelfScanningView()
-                requireView().announceForAccessibility("Du bist wieder im Scanner") // TODO i18n
+                requireView().announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventBackInScanner))
                 explainScanner()
             } else {
                 canAskAgain = ActivityCompat.shouldShowRequestPermissionRationale(
@@ -157,12 +157,12 @@ open class SelfScanningFragment : BaseFragment() {
             with(Snackbar.make(requireNotNull(selfScanningView), R.string.Snabble_Scanner_firstScan, Snackbar.LENGTH_INDEFINITE)) {
                 view.fitsSystemWindows = false
                 ViewCompat.setOnApplyWindowInsetsListener(view, null)
-                setAction("Verstanden") { // TODO i18n
+                setAction(R.string.Snabble_Scanner_Accessibility_actionUnderstood) {
                     AccessibilityPreferences.suppressScannerHint = true
                     dismiss()
                 }
                 view.findViewById<Button>(com.google.android.material.R.id.snackbar_action)
-                    .setClickDescription("Hinweis dauerhaft ausblenden")  // TODO i18n
+                    .setClickDescription(R.string.Snabble_Scanner_Accessibility_actionHideHint)
                 gravity = Gravity.TOP
                 show()
                 Dispatch.mainThread({

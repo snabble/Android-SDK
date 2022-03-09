@@ -44,9 +44,9 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
 
                         v.accessibility {
                             if (entry.isAdded) {
-                                setClickAction("Verwenden") // TODO i18n
+                                setClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionAdd)
                             } else {
-                                setClickAction("Hinzufügen") // TODO i18n
+                                setClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionAdd)
                             }
                         }
 
@@ -71,7 +71,7 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
                         val endsWithNumber = "^.*?(\\d+)\$".toRegex()
                         if (entry.hint?.matches(endsWithNumber) == true) {
                             endsWithNumber.find(entry.hint)?.groupValues?.last()?.let { number ->
-                                id.contentDescription = "Endet mit $number" // TODO i18n
+                                id.contentDescription = resources.getString(R.string.Snabble_Shoppingcart_Accessibility_cardEndsWith, number)
                             }
                         }
                         name.isEnabled = entry.isAvailable
