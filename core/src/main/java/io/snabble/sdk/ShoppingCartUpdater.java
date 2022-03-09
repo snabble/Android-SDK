@@ -32,7 +32,7 @@ class ShoppingCartUpdater {
     ShoppingCartUpdater(Project project, ShoppingCart shoppingCart) {
         this.project = project;
         this.cart = shoppingCart;
-        this.checkoutApi = new CheckoutApi(project);
+        this.checkoutApi = new CheckoutApi(project, shoppingCart);
         this.handler = new Handler(Looper.getMainLooper());
     }
 

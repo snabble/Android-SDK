@@ -361,11 +361,13 @@ public class CheckoutApi {
     }
 
     private final Project project;
+    private final ShoppingCart shoppingCart;
     private final OkHttpClient okHttpClient;
     private Call call;
 
-    CheckoutApi(Project project) {
+    CheckoutApi(Project project, ShoppingCart shoppingCart) {
         this.project = project;
+        this.shoppingCart = shoppingCart;
         this.okHttpClient = project.getOkHttpClient();
     }
 
@@ -448,7 +450,7 @@ public class CheckoutApi {
                             .get("price")
                             .getAsInt();
                 } else {
-                    price = project.getShoppingCart().getTotalPrice();
+                    price = shoppingCart.getTotalPrice();
                 }
 
                 PaymentMethodInfo[] availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
@@ -476,9 +478,8 @@ public class CheckoutApi {
                             }
 
                             List<Product> invalidProducts = new ArrayList<>();
-                            ShoppingCart cart = project.getShoppingCart();
-                            for (int i=0; i<cart.size(); i++) {
-                                Product product = cart.get(i).getProduct();
+                            for (int i=0; i<shoppingCart.size(); i++) {
+                                Product product = shoppingCart.get(i).getProduct();
                                 if (product != null) {
                                     if (invalidSkus.contains(product.getSku())) {
                                         invalidProducts.add(product);

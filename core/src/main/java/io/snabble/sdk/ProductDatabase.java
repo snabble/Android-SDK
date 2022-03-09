@@ -43,6 +43,7 @@ public class ProductDatabase {
 
     private static final String SEPARATOR = "·";
 
+    private ShoppingCart shoppingCart;
     private SQLiteDatabase db;
     private final Product.Type[] productTypes = Product.Type.values();
 
@@ -63,8 +64,9 @@ public class ProductDatabase {
     private final ProductApi productApi;
     private int defaultAvailability;
 
-    ProductDatabase(Project project, String name, boolean generateSearchIndex) {
+    ProductDatabase(Project project, ShoppingCart shoppingCart, String name, boolean generateSearchIndex) {
         this.project = project;
+        this.shoppingCart = shoppingCart;
         this.application = Snabble.getInstance().getApplication();
         this.dbName = name;
 
@@ -83,8 +85,8 @@ public class ProductDatabase {
         }
     }
 
-    private ProductDatabase(Project project, String name) {
-        this(project, name, false);
+    private ProductDatabase(Project project, ShoppingCart shoppingCart, String name) {
+        this(project, shoppingCart, name, false);
     }
 
     private boolean open() {
@@ -606,7 +608,7 @@ public class ProductDatabase {
                     callback.success();
                 }
 
-                Dispatch.mainThread(() -> project.getShoppingCart().updateProducts());
+                Dispatch.mainThread(() -> shoppingCart.updateProducts());
             }
         }, deltaUpdateOnly);
     }
@@ -664,7 +666,7 @@ public class ProductDatabase {
     private void swap(File otherDbFile) throws IOException {
         boolean ok = true;
 
-        ProductDatabase otherDb = new ProductDatabase(project, otherDbFile.getName());
+        ProductDatabase otherDb = new ProductDatabase(project, shoppingCart, otherDbFile.getName());
         try {
             if (!otherDb.verify()) {
                 ok = false;

@@ -1,102 +1,76 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import android.util.LruCache;
+import android.util.LruCache
+import kotlin.jvm.JvmOverloads
+import io.snabble.sdk.codes.ScannedCode
+import java.math.BigDecimal
+import java.text.NumberFormat
 
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.Currency;
+class PriceFormatter(private val project: Project) {
+    private val numberFormat: NumberFormat = NumberFormat.getCurrencyInstance(project.currencyLocale)
+    private val cache: LruCache<Int, String> = LruCache(100)
 
-import io.snabble.sdk.codes.ScannedCode;
-
-public class PriceFormatter {
-    private final Project project;
-    private final NumberFormat numberFormat;
-    private final LruCache<Integer, String> cache;
-
-    public PriceFormatter(Project project) {
-        this.project = project;
-
-        numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
-        Currency currency = project.getCurrency();
-        numberFormat.setCurrency(currency);
-
-        int fractionDigits = project.getCurrencyFractionDigits();
-        numberFormat.setMinimumFractionDigits(fractionDigits);
-        numberFormat.setMaximumFractionDigits(fractionDigits);
-
-        cache = new LruCache<>(100);
+    init {
+        numberFormat.currency = project.currency
+        val fractionDigits = project.getCurrencyFractionDigits()
+        numberFormat.minimumFractionDigits = fractionDigits
+        numberFormat.maximumFractionDigits = fractionDigits
     }
 
-    public String format(int price) {
-        return format(price, true);
-    }
-
-    public String format(int price, boolean allowZeroPrice) {
+    @JvmOverloads
+    fun format(price: Int, allowZeroPrice: Boolean = true): String {
         if (price == 0 && !allowZeroPrice) {
-            return "";
+            return ""
         }
 
-        String cachedValue = cache.get(price);
+        val cachedValue = cache[price]
         if (cachedValue != null) {
-            return cachedValue;
+            return cachedValue
         }
 
-        int fractionDigits = project.getCurrencyFractionDigits();
-        BigDecimal bigDecimal = new BigDecimal(price);
-        BigDecimal divider = new BigDecimal(10).pow(fractionDigits);
-        BigDecimal dividedPrice = bigDecimal.divide(divider, fractionDigits, project.getRoundingMode());
-
-        String formattedPrice = numberFormat.format(dividedPrice);
+        val fractionDigits = project.getCurrencyFractionDigits()
+        val bigDecimal = BigDecimal(price)
+        val divider = BigDecimal(10).pow(fractionDigits)
+        val dividedPrice = bigDecimal.divide(divider, fractionDigits, project.roundingMode)
+        val formattedPrice = numberFormat.format(dividedPrice)
 
         // Android 4.x and 6 (but not 5 and 7+) are shipping with ICU versions
         // that have the currency symbol set to HUF instead of Ft for Locale hu_HU
         //
         // including the whole ICU library as a dependency increased APK size by 10MB
         // so we are overriding the result here instead for consistency
-        if (project.getCurrency().getCurrencyCode().equals("HUF")) {
-            return formattedPrice.replace("HUF", "Ft");
+        if (project.currency.currencyCode == "HUF") {
+            return formattedPrice.replace("HUF", "Ft")
         }
 
-        cache.put(price, formattedPrice);
-
-        return formattedPrice;
+        cache.put(price, formattedPrice)
+        return formattedPrice
     }
 
-    public String format(Product product) {
-        return format(product, true);
-    }
-
-    public String format(Product product, boolean discountedPrice) {
-        return format(product, discountedPrice, null);
-    }
-
-    public String format(Product product, int price) {
-        String formattedString = format(price, false);
-        Product.Type type = product.getType();
-
-        Unit referenceUnit = product.getReferenceUnit();
+    fun format(product: Product, price: Int): String {
+        var formattedString = format(price, false)
+        val type = product.type
+        var referenceUnit = product.referenceUnit
         if (referenceUnit == null) {
-            referenceUnit = Unit.KILOGRAM;
+            referenceUnit = Unit.KILOGRAM
         }
-
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
-            formattedString += " / " + referenceUnit.getDisplayValue();
+            formattedString += " / " + referenceUnit.displayValue
         }
-
-        return formattedString;
+        return formattedString
     }
 
-    public String format(Product product, boolean discountedPrice, ScannedCode scannedCode) {
-        int price = product.getListPrice();
-
+    @JvmOverloads
+    fun format(product: Product, discountedPrice: Boolean = true, scannedCode: ScannedCode? = null): String {
+        var price = product.listPrice
         if (discountedPrice) {
-            price = product.getPrice(project.getCustomerCardId());
+            price = product.getPrice(project.customerCardId)
         }
-
         if (scannedCode != null && scannedCode.hasPrice()) {
-            price = scannedCode.getPrice();
+            price = scannedCode.price
         }
-
-        return format(product, price);
+        return format(product, price)
     }
+
+
 }

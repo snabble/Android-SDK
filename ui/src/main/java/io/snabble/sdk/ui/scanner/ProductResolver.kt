@@ -129,8 +129,8 @@ class ProductResolver private constructor(private val context: Context, private 
                     for (scannedCode in scannedCodes) {
                         newGs1Code = GS1Code(scannedCode.code)
                         val code = project.getCodeTemplate("default")
-                            .match(newGs1Code.gtin)
-                            .buildCode()
+                            ?.match(newGs1Code.gtin)
+                            ?.buildCode()
                         if (code != null) {
                             gs1GtinScannedCodes.add(
                                 code.newBuilder()

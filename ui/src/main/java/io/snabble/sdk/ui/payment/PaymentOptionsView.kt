@@ -94,17 +94,18 @@ open class PaymentOptionsView @JvmOverloads constructor(
         val projectCount = HashMap<Brand, Int>()
 
         projects
-            .filter { it.brand != null }
             .forEach { project ->
-                val count = store.getCountForProject(project)
+                project.brand?.let { brand ->
+                    val count = store.getCountForProject(project)
 
-                if (!brands.contains(project.brand)) {
-                    brands.add(project.brand)
+                    if (!brands.contains(project.brand)) {
+                        brands.add(brand)
+                    }
+
+                    val currentCount = counts.getOrPut(brand) { 0 }
+                    counts[brand] = currentCount + count
+                    projectCount[brand] = projectCount.getOrPut(brand) { 0 } + 1
                 }
-
-                val currentCount = counts.getOrPut(project.brand) { 0 }
-                counts[project.brand] = currentCount + count
-                projectCount[project.brand] = projectCount.getOrPut(project.brand) { 0 } + 1
             }
 
         brands.forEach { brand ->

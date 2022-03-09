@@ -94,7 +94,7 @@ class CheckoutRetryer {
                     removeSavedCart(savedCart);
                 }
 
-                final CheckoutApi checkoutApi = new CheckoutApi(project);
+                final CheckoutApi checkoutApi = new CheckoutApi(project, project.getShoppingCart());
                 checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutApi.CheckoutInfoResult() {
                     @Override
                     public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {

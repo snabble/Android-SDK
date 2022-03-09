@@ -19,6 +19,7 @@ import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
+import io.snabble.sdk.utils.JsonUtils.getBooleanOpt
 import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -303,7 +304,7 @@ object Snabble {
      */
     val isOutdatedSDK: Boolean
         get() = additionalMetadata?.let { json ->
-            JsonUtils.getBooleanOpt(json, "kill", false)
+            json.getBooleanOpt("kill", false)
         } ?: false
 
     /** Returns additional metadata that may be provided for apps unrelated to the SDK  */
