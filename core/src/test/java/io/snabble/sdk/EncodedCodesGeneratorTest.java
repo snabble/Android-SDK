@@ -403,6 +403,33 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
+    public void testCSVv2FormatWithCheckoutId() {
+        EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
+                .prefix("snabble;{qrCodeIndex};{qrCodeCount};{checkoutId}\n")
+                .separator("\n")
+                .suffix("")
+                .repeatCodes(false)
+                .countSeparator(";")
+                .maxCodes(2)
+                .build();
+
+        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
+
+        Product duplo = project.getProductDatabase().findBySku("49");
+        addToCart(duplo, 7, ScannedCode.parseDefault(project, "4008400301020"));
+
+        Product heinz = project.getProductDatabase().findBySku("42");
+        addToCart(heinz, 1000, ScannedCode.parseDefault(project, "8715700421698"));
+        generator.add("asdf123");
+        generator.add(project.getShoppingCart());
+
+        ArrayList<String> codes = generator.generate("TEST_CHECKOUT_ID_1234");
+        Assert.assertEquals(2, codes.size());
+        Assert.assertEquals("snabble;1;2;TEST_CHECKOUT_ID_1234\n1;asdf123\n1000;8715700421698", codes.get(0));
+        Assert.assertEquals("snabble;2;2;TEST_CHECKOUT_ID_1234\n7;4008400301020", codes.get(1));
+    }
+
+    @Test
     public void testFinalCodeWithManualDiscounts() {
         EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
                 .prefix("snabble;{qrCodeIndex};{qrCodeCount}\n")

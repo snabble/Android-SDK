@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.61.3]
+
+### Fixed
+- Fixed out of bounds crash when using firebase decoder with updated play services
+
+## [0.61.2]
+
+### Added
+- Added networkInterceptor to config
+
+### Changed
+- Added checkout id to QRCodeCSV
+
+### Fixed 
+- Crashes when showing payment status while being offline
+- Fixed payment status polling forever when checking out using an offline payment method  
+
 ## [0.61.1]
 
 ### Fixed 

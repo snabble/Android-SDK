@@ -1,6 +1,7 @@
 package io.snabble.sdk;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -713,7 +714,9 @@ public class Checkout {
                 shoppingCart.backup();
             }
 
-            redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(project.getCoupons().get());
+            if (signedCheckoutInfo != null) {
+                redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(project.getCoupons().get());
+            }
             shoppingCart.invalidate();
             clearCodes();
             notifyStateChanged(Checkout.State.PAYMENT_APPROVED);
@@ -878,6 +881,7 @@ public class Checkout {
         return null;
     }
 
+    @Nullable
     public CheckoutApi.CheckoutProcessResponse getCheckoutProcess() {
         return checkoutProcess;
     }

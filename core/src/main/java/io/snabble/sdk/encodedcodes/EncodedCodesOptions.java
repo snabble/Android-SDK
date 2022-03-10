@@ -155,7 +155,7 @@ public class EncodedCodesOptions {
         switch (format) {
             case "csv":
                 return new Builder(project)
-                        .prefix("snabble;{qrCodeIndex};{qrCodeCount}" + separator)
+                        .prefix("snabble;{qrCodeIndex};{qrCodeCount};{checkoutId}" + separator)
                         .separator(separator)
                         .suffix("")
                         .repeatCodes(false)
