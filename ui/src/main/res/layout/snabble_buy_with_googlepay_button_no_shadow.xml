@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/google_pay_button"
     android:clickable="true"
     android:focusable="true"
@@ -21,12 +22,14 @@
             android:layout_height="0dp"
             android:scaleType="fitCenter"
             android:duplicateParentState="true"
-            android:src="@drawable/snabble_buy_with_googlepay_button_content"/>
+            android:src="@drawable/snabble_buy_with_googlepay_button_content"
+            android:importantForAccessibility="no"/>
     </LinearLayout>
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitXY"
         android:duplicateParentState="true"
-        android:src="@drawable/snabble_googlepay_button_overlay"/>
+        android:src="@drawable/snabble_googlepay_button_overlay"
+        android:importantForAccessibility="no"/>
 </RelativeLayout>

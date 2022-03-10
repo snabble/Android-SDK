@@ -8,8 +8,7 @@
     android:layout_gravity="center"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    tools:ignore="SmallSp,HardcodedText">
+    android:orientation="vertical">
 
     <ImageButton
         android:id="@+id/close"
@@ -19,7 +18,7 @@
         android:layout_marginBottom="4dp"
         android:padding="12dp"
         android:background="?android:attr/selectableItemBackground"
-        android:contentDescription="Dialog schließen"
+        android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.closeDialog"
         app:tint="?attr/colorOnSurface"
         app:srcCompat="@drawable/snabble_ic_close" />
 
@@ -114,7 +113,7 @@
             style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:contentDescription="Menge reduzieren"
+            android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.decreaseQuantity"
             app:strokeColor="@drawable/snabble_stroke" />
     </FrameLayout>
 
@@ -141,10 +140,11 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center"
-            android:hint="Anzahl"
+            android:hint="@string/Snabble.Shoppingcart.Accessibility.quantity"
             android:inputType="number"
             android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:text="1" />
+            android:text="1"
+            tools:ignore="HardcodedText" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -171,7 +171,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             app:strokeColor="@drawable/snabble_stroke"
-            android:contentDescription="Anzahl erhöhen" />
+            android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.increaseQuantity" />
     </FrameLayout>
 
     <TextView

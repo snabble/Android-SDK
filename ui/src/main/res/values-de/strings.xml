@@ -229,12 +229,17 @@
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Löschen</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionUse">Verwenden</string>
     <string name="Snabble.Shoppingcart.Accessibility.cardEndsWith">Endet mit  %s</string>
+    <string name="Snabble.Shoppingcart.Accessibility.closeDialog">Dialog schließen</string>
     <string name="Snabble.Shoppingcart.Accessibility.contextInCart">Im Warenkorb</string>
+    <string name="Snabble.Shoppingcart.Accessibility.decreaseQuantity">Anzahl verringern</string>
     <string name="Snabble.Shoppingcart.Accessibility.descriptionForPrice">für %s</string>
     <string name="Snabble.Shoppingcart.Accessibility.descriptionQuantity">%s mal</string>
     <string name="Snabble.Shoppingcart.Accessibility.descriptionWithDiscount">mit Rabatt</string>
     <string name="Snabble.Shoppingcart.Accessibility.descriptionWithoutDiscount">ohne Rabatt</string>
+    <string name="Snabble.Shoppingcart.Accessibility.increaseQuantity">Anzahl erhöhen</string>
     <string name="Snabble.Shoppingcart.Accessibility.paymentMethod">Zahlungsmethode: %s</string>
+    <string name="Snabble.Shoppingcart.Accessibility.quantity">Anzahl</string>
+    <string name="Snabble.Shoppingcart.Accessibility.selected">Ausgewählt</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Artikel entfernt</string>
     <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Jetzt bezahlen</string>

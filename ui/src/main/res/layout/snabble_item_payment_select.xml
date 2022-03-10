@@ -64,5 +64,5 @@
         android:alpha="0.5"
         android:src="@drawable/snabble_ic_check_white"
         app:tint="?attr/colorOnSurface"
-        android:contentDescription="Ausgewählt"/>
+        android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.selected"/>
 </RelativeLayout>
