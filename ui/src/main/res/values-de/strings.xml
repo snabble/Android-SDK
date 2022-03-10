@@ -182,8 +182,10 @@
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Du kannst nicht mehr Artikel in den Warenkorb legen</string>
     <!-- Example: 3 times Banana for 3$ -->
     <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s mal %s für %s</string>
-    <string name="Snabble.Scanner.Accessibility.eventScannerOpened">Du hast den Scanner geöffnet</string>
-    <string name="Snabble.Scanner.Accessibility.permissionHint">zum Scannen benötigen wir noch eine Berechtigung von dir.</string>
+    <string name="Snabble.Scanner.Accessibility.eventScannerOpened">Du hast den Scanner geöffnet.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">Im Warenkorb sind %s Artikel für %s.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">Dein Warenkorb ist aktuell leer.</string>
+    <string name="Snabble.Scanner.Accessibility.hintPermission">Zum Scannen benötigen wir noch eine Berechtigung von dir.</string>
     <string name="Snabble.Scanner.addCodeAsIs">%s so hinzufügen</string>
     <string name="Snabble.Scanner.addToCart">In den Warenkorb</string>
     <string name="Snabble.Scanner.batterySaverHint">Scanner angehalten. Bitte tippe irgendwo auf den Bildschirm, um fortzufahren.</string>

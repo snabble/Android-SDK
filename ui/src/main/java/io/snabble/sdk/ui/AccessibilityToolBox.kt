@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
 import android.view.accessibility.AccessibilityNodeInfo
@@ -16,10 +17,14 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import io.snabble.sdk.Snabble
 
+typealias AccessibilityEventListener = (host: ViewGroup?,
+                                        child: View?,
+                                        event: AccessibilityEvent) -> Any
+
 class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompat() {
-    private val eventListeners = mutableMapOf<Int, Pair<Boolean, (event: AccessibilityEvent) -> Any>>()
-    private var clickAction: String? = null
-    private var longClickAction: String? = null
+    private val eventListeners = mutableMapOf<Int, AccessibilityEventListener>()
+    private var clickActionLabel: String? = null
+    private var longClickActionLabel: String? = null
     val isTalkBackActive
         get() = target.context.isTalkBackActive
     var phoneticDict: Map<String, String> = emptyMap()
@@ -40,10 +45,14 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
         onInitializeAccessibilityNodeInfo = block
     }
 
-    override fun onPopulateAccessibilityEvent(host: View?, event: AccessibilityEvent?) {
-        val (callSuper, listener) = event?.let { eventListeners[event.eventType] } ?: true to null
-        if (callSuper) super.onPopulateAccessibilityEvent(host, event)
-        listener?.invoke(event!!)
+    override fun onRequestSendAccessibilityEvent(
+        host: ViewGroup?,
+        child: View?,
+        event: AccessibilityEvent?
+    ): Boolean {
+        val listener = event?.let { eventListeners[event.eventType] }
+        listener?.invoke(host, child, event)
+        return super.onRequestSendAccessibilityEvent(host, child, event)
     }
 
     override fun onInitializeAccessibilityNodeInfo(
@@ -51,35 +60,31 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
         info: AccessibilityNodeInfoCompat
     ) {
         super.onInitializeAccessibilityNodeInfo(host, info)
-        clickAction?.let {
+        clickActionLabel?.let {
             info.addAction(
                 AccessibilityNodeInfoCompat.AccessibilityActionCompat(
                     AccessibilityNodeInfoCompat.ACTION_CLICK,
-                    clickAction
+                    clickActionLabel
                 )
             )
         }
-        longClickAction?.let {
+        longClickActionLabel?.let {
             info.addAction(
                 AccessibilityNodeInfoCompat.AccessibilityActionCompat(
                     AccessibilityNodeInfoCompat.ACTION_LONG_CLICK,
-                    longClickAction
+                    longClickActionLabel
                 )
             )
         }
         onInitializeAccessibilityNodeInfo?.invoke(info)
     }
 
-    fun onAccessibilityEvent(@EventType event: Int, block: (event: AccessibilityEvent) -> Any) {
-        eventListeners[event] = true to block
+    fun onAccessibilityEvent(@EventType event: Int, block: AccessibilityEventListener) {
+        eventListeners[event] = block
     }
 
-    fun replaceAccessibilityEvent(@EventType event: Int, block: (event: AccessibilityEvent) -> Any) {
-        eventListeners[event] = false to block
-    }
-
-    fun setLongClickAction(action: String, onLongClick: (() -> Any)? = null) {
-        longClickAction = action
+    fun setLongClickAction(label: String, onLongClick: (() -> Any)? = null) {
+        longClickActionLabel = label
         onLongClick?.let {
             target.setOnLongClickListener {
                 onLongClick()
@@ -91,8 +96,8 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
     fun setLongClickAction(@StringRes action: Int, onLongClick: (() -> Any)? = null) =
         setLongClickAction(target.context.getString(action), onLongClick)
 
-    fun setClickAction(action: String, onClick: (() -> Any)? = null) {
-        clickAction = action
+    fun setClickAction(label: String, onClick: (() -> Any)? = null) {
+        clickActionLabel = label
         onClick?.let {
             target.setOnClickListener {
                 onClick()
@@ -128,11 +133,13 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
 annotation class EventType
 
 fun View.accessibility(block: AccessibilityToolBox.() -> Any) {
-    val toolbox = AccessibilityToolBox(this)
-    if (toolbox.isTalkBackActive) {
-        block(toolbox)
+    var toolbox = getTag(R.id.snabble_accessibility_toolbox) as? AccessibilityToolBox
+    if (toolbox == null) {
+        toolbox = AccessibilityToolBox(this)
+        setTag(R.id.snabble_accessibility_toolbox, toolbox)
         ViewCompat.setAccessibilityDelegate(this, toolbox)
     }
+    block(toolbox)
 }
 
 fun View.setClickDescription(stringId: Int, vararg formatArgs: Any) {

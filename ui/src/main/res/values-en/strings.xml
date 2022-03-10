@@ -182,8 +182,10 @@
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">You reached the maximum count of items for the cart</string>
     <!-- Example: 3 times Banana for 3$ -->
     <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s times %s for %s</string>
-    <string name="Snabble.Scanner.Accessibility.eventScannerOpened">You opened the scanner</string>
-    <string name="Snabble.Scanner.Accessibility.permissionHint">in order to scan we need a permission from you.</string>
+    <string name="Snabble.Scanner.Accessibility.eventScannerOpened">You opened the scanner.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">There are %s items for %s in your cart.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">Your cart is empty.</string>
+    <string name="Snabble.Scanner.Accessibility.hintPermission">In order to scan we need a permission from you.</string>
     <string name="Snabble.Scanner.addCodeAsIs">Add %s as-is</string>
     <string name="Snabble.Scanner.addToCart">Add to cart</string>
     <string name="Snabble.Scanner.batterySaverHint">Scanner stopped. Tap anywhere on the screen to continue.</string>

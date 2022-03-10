@@ -56,10 +56,18 @@ open class SelfScanningFragment : BaseFragment() {
 
         if (isPermissionGranted) {
             createSelfScanningView()
-            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened))
+            var event = getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + " "
+            if (SnabbleUI.project.shoppingCart.isEmpty) {
+                event += getString(R.string.Snabble_Scanner_Accessibility_hintCartIsEmpty)
+            } else {
+                with(SnabbleUI.project) {
+                    event += getString(R.string.Snabble_Scanner_Accessibility_hintCartContent, shoppingCart.size(), priceFormatter.format(shoppingCart.totalPrice))
+                }
+            }
+            view.announceForAccessibility(event)
             explainScanner()
         } else {
-            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + ", " + getString(R.string.Snabble_Scanner_Accessibility_permissionHint))
+            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + " " + getString(R.string.Snabble_Scanner_Accessibility_hintPermission))
         }
     }
 
@@ -151,8 +159,7 @@ open class SelfScanningFragment : BaseFragment() {
         startActivity(intent)
     }
 
-    fun explainScanner() {
-        // TODO formatting
+    private fun explainScanner() {
         if (requireContext().isTalkBackActive && selfScanningView != null && !AccessibilityPreferences.suppressScannerHint) {
             with(Snackbar.make(requireNotNull(selfScanningView), R.string.Snabble_Scanner_firstScan, Snackbar.LENGTH_INDEFINITE)) {
                 view.fitsSystemWindows = false
