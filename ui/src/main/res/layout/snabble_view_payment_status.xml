@@ -73,8 +73,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
-
-
                 <LinearLayout
                     android:id="@+id/exit_token_container"
                     android:layout_width="match_parent"
