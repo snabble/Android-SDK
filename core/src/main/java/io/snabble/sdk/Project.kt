@@ -18,6 +18,7 @@ import io.snabble.sdk.utils.JsonUtils.getString
 import io.snabble.sdk.utils.JsonUtils.getStringListOpt
 import io.snabble.sdk.utils.JsonUtils.getStringOpt
 import io.snabble.sdk.utils.Logger
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.commons.lang3.LocaleUtils
 import java.io.File
@@ -28,9 +29,17 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class Project internal constructor(jsonObject: JsonObject) {
-    var id: String = ""
+    /**
+     * The unique identifier of the Project.
+     */
+    lateinit var id: String
         private set
 
+    /**
+     * The user facing name of the Project.
+     *
+     * For example used in the folding of payment methods
+     */
     var name: String = ""
         private set
 
@@ -40,32 +49,74 @@ class Project internal constructor(jsonObject: JsonObject) {
     var brand: Brand? = null
         private set
 
+    /**
+     * The roundingMode which should be used when doing offline calculations.
+     */
     var roundingMode: RoundingMode = RoundingMode.HALF_UP
         private set
 
+    /**
+     * The currency used to calculate and display prices
+     */
     var currency: Currency = Currency.getInstance("EUR")
         private set
 
+    /**
+     * The locale in which this currency is used.
+     */
     var currencyLocale: Locale = Locale.GERMANY
         private set
 
+    /**
+     * The number of used currency fractions digits.
+     */
+    var currencyFractionDigits = -1
+        get() =
+            if (field == -1) {
+                currency.defaultFractionDigits
+            } else {
+                field
+            }
+    /**
+     * Indicator if checkout should be available when using this Project
+     */
     var isCheckoutAvailable = false
         private set
 
+    /**
+     * Parameters in which codes used for offline processing
+     * (for example: Checkout using a QR-Code) should be encoded.
+     */
     var encodedCodesOptions: EncodedCodesOptions? = null
         private set
 
+    /**
+     * List of supported barcode formats used by this retailer. The scanner should restrict its
+     * scanning to include only those formats.
+     */
     var supportedBarcodeFormats: List<BarcodeFormat> = emptyList()
         private set
 
-    private var currencyFractionDigits = 2
-
+    /**
+     * Indicator if prices should be displayed using the net price instead of the gross price.
+     */
     var isDisplayingNetPrice = false
         private set
 
+    /**
+     * List of payment method descriptors indicating which
+     * payment methods and providers are available in the Project.
+     */
     var paymentMethodDescriptors: List<PaymentMethodDescriptor> = emptyList()
         private set
 
+    /**
+     * List of shops which are available.
+     *
+     * If using config.loadActiveShops = true also includes shops that are hidden.
+     *
+     * Shops that are hidden will get loaded asynchronously.
+     */
     var shops: List<Shop> = emptyList()
 
     /**
@@ -74,9 +125,18 @@ class Project internal constructor(jsonObject: JsonObject) {
     var customerCardInfos: List<CustomerCardInfo> = emptyList()
         private set
 
+    /**
+     * If a customer card is strictly required to use the checkout functionality at all.
+     *
+     * Note: Since customer cards are not included in the SDK, checks for required customer cards
+     * need to be placed before allowing checkout.
+     */
     var requiredCustomerCardInfo: CustomerCardInfo? = null
         private set
 
+    /**
+     * Sets the customer card number for user identification with the backend.
+     */
     var customerCardId: String? = null
         set(value) {
             field = value
@@ -95,22 +155,33 @@ class Project internal constructor(jsonObject: JsonObject) {
     var maxCheckoutLimit = 0
         private set
 
+    /**
+     * List of code templates used for parsing vendor specific barcodes.
+     *
+     * Can be used to extract data from barcodes (e.g. price in a printed barcode)
+     */
     var codeTemplates: List<CodeTemplate> = emptyList()
         private set
 
+    /**
+     * List of code templates that are used when supplying an existing Product with a different
+     * barcode which contains a reduced price.
+     */
     var priceOverrideTemplates: List<PriceOverrideTemplate> = emptyList()
         private set
 
+    /**
+     * List of code templates that are searchable using the barcode search functionality.
+     */
     var searchableTemplates: List<String> = emptyList()
         private set
 
+    /**
+     * A price formatter for formatting prices using the provided currency information.
+     *
+     * Also provides functions to display embedded prices of a scanned code.
+     */
     var priceFormatter: PriceFormatter = PriceFormatter(this)
-        private set
-
-    var tokensUrl: String? = null
-        private set
-
-    var appUserUrl: String? = null
         private set
 
     /**
@@ -120,54 +191,54 @@ class Project internal constructor(jsonObject: JsonObject) {
     var urls: Map<String, String> = emptyMap()
         private set
 
+    var tokensUrl: String? = null
+        private set
+
+    var appUserUrl: String? = null
+        private set
+
+    val eventsUrl: String?
+        get() = urls["appEvents"]
+
+    val appDbUrl: String?
+        get() = urls["appdb"]
+
+    val checkoutUrl: String?
+        get() = urls["checkoutInfo"]
+
+    val assetsUrl: String?
+        get() = urls["assetsManifest"]
+
+    val productBySkuUrl: String?
+        get() = urls["resolvedProductBySku"]
+
+    val productByCodeUrl: String?
+        get() = urls["resolvedProductLookUp"]
+
+    val telecashVaultItemsUrl: String?
+        get() = urls["telecashVaultItems"]
+
+    val activeShopsUrl: String?
+        get() = urls["activeShops"]
+
     /**
      * Sets the shop used for receiving store specific prices and identification in the
      * payment process.
      */
     var checkedInShop: Shop? = null
-        set(checkedInShop) {
-            val currentShopId = if (this.checkedInShop != null) this.checkedInShop!!.id else ""
-            val newShopId = if (checkedInShop != null) checkedInShop.id else ""
+        set(value) {
+            val currentShopId = this.checkedInShop?.id ?: ""
+            val newShopId = value?.id ?: ""
             if (currentShopId != newShopId) {
-                field = checkedInShop
+                field = value
                 if (newShopId == "") {
                     Snabble.userPreferences.lastCheckedInShopId = null
                 } else {
                     Snabble.userPreferences.lastCheckedInShopId = newShopId
                 }
-                events!!.updateShop(checkedInShop)
+                events.updateShop(value)
                 shoppingCart.updatePrices(false)
             }
-        }
-
-    val internalStorageDirectory = File(Snabble.internalStorageDirectory, "$id/")
-
-    val okHttpClient = Snabble.okHttpClient
-        .newBuilder()
-        .addInterceptor(SnabbleAuthorizationInterceptor(this))
-        .addInterceptor(AcceptedLanguageInterceptor())
-        .build()
-
-    private val shoppingCartStorage = ShoppingCartStorage(this)
-
-    val shoppingCart: ShoppingCart
-        get() = shoppingCartStorage.shoppingCart
-
-    val coupons = Coupons(this)
-
-    val checkout = Checkout(this, shoppingCart)
-
-    val productDatabase = ProductDatabase(this, shoppingCart, "$id.sqlite3", Snabble.config.generateSearchIndex)
-
-    val events = Events(this, shoppingCart)
-
-    val assets = Assets(this)
-
-    var googlePayHelper = paymentMethodDescriptors
-        .map { it.paymentMethod }
-        .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
-        ?.let {
-            GooglePayHelper(this, instance.application)
         }
 
     private var texts: MutableMap<String, String> = mutableMapOf()
@@ -176,30 +247,84 @@ class Project internal constructor(jsonObject: JsonObject) {
 
     private val updateListeners: MutableList<OnProjectUpdatedListener> = CopyOnWriteArrayList()
 
+    /**
+     * The internal storage directly used for various files stored by the snabble SDK that
+     * are related to this project.
+     */
+    lateinit var internalStorageDirectory: File
+
+    /**
+     * OkHttpClient which wraps http calls to the snabble backend with valid tokens.
+     *
+     * Only use this http client when communicating with the snabble backend on a project level.
+     */
+    lateinit var okHttpClient: OkHttpClient
+
+    private lateinit var shoppingCartStorage: ShoppingCartStorage
+
+    /**
+     * The users shopping cart
+     */
+    lateinit var shoppingCart: ShoppingCart
+
+    /**
+     * Provides a list of active coupons
+     */
+    lateinit var coupons: Coupons
+
+    /**
+     * The snabble checkout API.
+     *
+     * Uses a state machine to let ui display the current state of a checkout.
+     */
+    lateinit var checkout: Checkout
+
+    /**
+     * The primary product database of this project.
+     */
+    lateinit var productDatabase: ProductDatabase
+
+    /**
+     * Event logger which ships logging data to the snabble backend.
+     */
+    lateinit var events: Events
+
+    /**
+     * Provides access to images used by various ui components
+     */
+    lateinit var assets: Assets
+
     init {
         parse(jsonObject)
     }
 
+    /**
+     * Parse a json definition of a Project.
+     */
     fun parse(jsonObject: JsonObject) {
-        val urls: MutableMap<String, String> = HashMap()
         id = if (jsonObject.has("id")) {
             jsonObject["id"].asString
         } else {
             throw IllegalArgumentException("Project has no id")
         }
+
         name = jsonObject.getString("name", id)
+
         val brandId = jsonObject.getStringOpt("brandID", null)
         if (brandId != null) {
             brand = Snabble.brands[brandId]
         }
+
+        val urls: MutableMap<String, String> = mutableMapOf()
         val links = jsonObject["links"].asJsonObject
-        val linkKeys = links.keySet()
-        for (k in linkKeys) {
-            urls[k] = Snabble.absoluteUrl(links[k].asJsonObject["href"].asString)
+        links.entrySet().forEach {
+            urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
         }
-        this.urls = Collections.unmodifiableMap(urls)
-        tokensUrl = urls["tokens"].toString() + "?role=retailerApp"
-        appUserUrl = Snabble.createAppUserUrl + "?project=" + id
+        this.urls = urls
+
+        tokensUrl = "${urls["tokens"]}?role=retailerApp"
+        appUserUrl = "${Snabble.createAppUserUrl}?project=${id}"
+
         roundingMode = parseRoundingMode(jsonObject["roundingMode"])
         currency = Currency.getInstance(jsonObject.getStringOpt("currency", "EUR"))
         val locale = jsonObject.getStringOpt("locale", "de_DE")
@@ -208,12 +333,11 @@ class Project internal constructor(jsonObject: JsonObject) {
         } catch (e: IllegalArgumentException) {
             Locale.getDefault()
         }
-        if (currencyLocale == null) {
-            currencyLocale = Locale.getDefault()
-        }
         currencyFractionDigits = jsonObject.getIntOpt("decimalDigits", 2)
+
         priceFormatter = PriceFormatter(this)
         isCheckoutAvailable = jsonObject.getBooleanOpt("enableCheckout", true)
+
         if (jsonObject.has("qrCodeOffline")) {
             val encodedCodes = jsonObject["qrCodeOffline"]
             if (!encodedCodes.isJsonNull) {
@@ -224,20 +348,11 @@ class Project internal constructor(jsonObject: JsonObject) {
         }
 
         val scanFormats = jsonObject.getStringListOpt("scanFormats", null)
-        val formats: MutableList<BarcodeFormat> = ArrayList()
-        if (scanFormats != null) {
-            for (scanFormat in scanFormats) {
-                val format = BarcodeFormat.parse(scanFormat)
-                if (format != null) {
-                    formats.add(format)
-                }
-            }
-        } else {
-            formats.add(BarcodeFormat.EAN_8)
-            formats.add(BarcodeFormat.EAN_13)
-            formats.add(BarcodeFormat.CODE_128)
-        }
-        supportedBarcodeFormats = formats
+        supportedBarcodeFormats = scanFormats?.mapNotNull { BarcodeFormat.parse(it) } ?: listOf(
+            BarcodeFormat.EAN_8,
+            BarcodeFormat.EAN_13,
+            BarcodeFormat.CODE_128
+        )
 
         val customerCards = jsonObject.getAsJsonObject("customerCards")
         val acceptedCustomerCards = customerCards.getStringListOpt("accepted", emptyList())
@@ -251,79 +366,70 @@ class Project internal constructor(jsonObject: JsonObject) {
             val customerCardInfo = CustomerCardInfo(it, required)
             customerCardInfos.add(customerCardInfo)
         }
+
         this.customerCardInfos = customerCardInfos
         if (requiredCustomerCard != null) {
             requiredCustomerCardInfo = CustomerCardInfo(requiredCustomerCard, true)
         }
 
-        val descriptors = jsonObject["paymentMethodDescriptors"]
-        if (descriptors != null) {
-            val t = object : TypeToken<List<PaymentMethodDescriptor?>?>() {}.type
-            val paymentMethodDescriptors =
-                GsonHolder.get().fromJson<List<PaymentMethodDescriptor>>(descriptors, t)
-            val filteredDescriptors = ArrayList<PaymentMethodDescriptor>()
-            for (descriptor in paymentMethodDescriptors) {
-                if (PaymentMethod.fromString(descriptor.id) != null) {
-                    filteredDescriptors.add(descriptor)
-                }
+        paymentMethodDescriptors = jsonObject["paymentMethodDescriptors"]?.let {
+            val typeToken = object : TypeToken<List<PaymentMethodDescriptor?>?>() {}.type
+            val paymentMethodDescriptors = GsonHolder.get().fromJson<List<PaymentMethodDescriptor>>(it, typeToken)
+            paymentMethodDescriptors.filter { desc ->
+                PaymentMethod.fromString(desc.id) != null
             }
-            this.paymentMethodDescriptors = Collections.unmodifiableList(filteredDescriptors)
+        } ?: emptyList()
+
+        shops = if (jsonObject.has("shops")) {
+            Shop.fromJson(jsonObject["shops"])?.toList() ?: emptyList()
         } else {
-            paymentMethodDescriptors = Collections.unmodifiableList(emptyList())
+            emptyList()
         }
-        parseShops(jsonObject)
+
         if (jsonObject.has("company")) {
             company = GsonHolder.get().fromJson(jsonObject["company"], Company::class.java)
         }
-        val codeTemplates = ArrayList<CodeTemplate>()
-        if (jsonObject.has("codeTemplates")) {
-            for ((key, value) in jsonObject["codeTemplates"].asJsonObject.entrySet()) {
-                try {
-                    val codeTemplate = CodeTemplate(key, value.asString)
-                    codeTemplates.add(codeTemplate)
-                } catch (e: Exception) {
-                    Logger.e("Could not parse template %s: %s", key, e.message)
-                }
+
+        val codeTemplates = mutableListOf<CodeTemplate>()
+        jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.forEach {
+            try {
+                val codeTemplate = CodeTemplate(it.key, it.value.asString)
+                codeTemplates.add(codeTemplate)
+            } catch (e: Exception) {
+                Logger.e("Could not parse template %s: %s", it.key, e.message)
             }
         }
-        var hasDefaultTemplate = false
-        for (codeTemplate in codeTemplates) {
-            if ("default" == codeTemplate.name) {
-                hasDefaultTemplate = true
-                break
-            }
-        }
+
+        val hasDefaultTemplate = codeTemplates.find { it.name == "default" } != null
         if (!hasDefaultTemplate) {
             codeTemplates.add(CodeTemplate("default", "{code:*}"))
         }
         this.codeTemplates = codeTemplates
-        val priceOverrideTemplates: MutableList<PriceOverrideTemplate> = ArrayList()
-        if (jsonObject.has("priceOverrideCodes")) {
-            val priceOverrideCodes = jsonObject["priceOverrideCodes"].asJsonArray
-            for (element in priceOverrideCodes) {
-                val priceOverride = element.asJsonObject
-                try {
-                    val codeTemplate = CodeTemplate(
-                        priceOverride["id"].asString,
-                        priceOverride["template"].asString
-                    )
-                    var matchingTemplate: CodeTemplate? = null
-                    if (priceOverride.has("transmissionTemplate")) {
-                        matchingTemplate =
-                            getCodeTemplate(priceOverride["transmissionTemplate"].asString)
-                    }
-                    val priceOverrideTemplate = PriceOverrideTemplate(
-                        codeTemplate,
-                        matchingTemplate,
-                        priceOverride.getStringOpt("transmissionCode", null)
-                    )
-                    priceOverrideTemplates.add(priceOverrideTemplate)
-                } catch (e: Exception) {
-                    Logger.e("Could not parse priceOverrideTemplate %s", e.message)
+
+        val priceOverrideTemplates: MutableList<PriceOverrideTemplate> = mutableListOf()
+        jsonObject["priceOverrideCodes"]?.asJsonArray?.forEach {
+            val priceOverride = it.asJsonObject
+            try {
+                val codeTemplate = CodeTemplate(
+                    priceOverride["id"].asString,
+                    priceOverride["template"].asString
+                )
+                var matchingTemplate: CodeTemplate? = null
+                if (priceOverride.has("transmissionTemplate")) {
+                    matchingTemplate = getCodeTemplate(priceOverride["transmissionTemplate"].asString)
                 }
+                val priceOverrideTemplate = PriceOverrideTemplate(
+                    codeTemplate,
+                    matchingTemplate,
+                    priceOverride.getStringOpt("transmissionCode", null)
+                )
+                priceOverrideTemplates.add(priceOverrideTemplate)
+            } catch (e: Exception) {
+                Logger.e("Could not parse priceOverrideTemplate %s", e.message)
             }
         }
         this.priceOverrideTemplates = priceOverrideTemplates
+
         searchableTemplates = jsonObject.getStringListOpt("searchableTemplates", listOf("default"))
             ?.filterNotNull()
             ?: emptyList()
@@ -333,18 +439,22 @@ class Project internal constructor(jsonObject: JsonObject) {
             maxCheckoutLimit = checkoutLimits.getIntOpt("checkoutNotAvailable", 0)
             maxOnlinePaymentLimit = checkoutLimits.getIntOpt("notAllMethodsAvailable", 0)
         }
-        texts = HashMap()
+
+        texts = mutableMapOf()
+
         if (jsonObject.has("texts")) {
             val textsElement = jsonObject["texts"]
             if (!textsElement.isJsonNull) {
                 val textsJsonObject = jsonObject["texts"].asJsonObject
-                for ((key, value) in textsJsonObject.entrySet()) {
-                    texts[key] = value.asString
+                textsJsonObject.entrySet().forEach {
+                    texts[it.key] = it.value.asString
                 }
             }
         }
+
         isDisplayingNetPrice = jsonObject.getBooleanOpt("displayNetPrice", false)
-        var couponList: List<Coupon> = ArrayList()
+
+        var couponList = emptyList<Coupon>()
         try {
             if (jsonObject.has("coupons")) {
                 val couponsJsonObject = jsonObject["coupons"]
@@ -354,21 +464,55 @@ class Project internal constructor(jsonObject: JsonObject) {
         } catch (e: Exception) {
             Logger.e("Could not parse coupons")
         }
+
+        internalStorageDirectory = File(Snabble.internalStorageDirectory, "$id/")
+
+        okHttpClient = Snabble.okHttpClient
+            .newBuilder()
+            .addInterceptor(SnabbleAuthorizationInterceptor(this))
+            .addInterceptor(AcceptedLanguageInterceptor())
+            .build()
+
+        shoppingCartStorage = ShoppingCartStorage(this)
+
+        shoppingCart = shoppingCartStorage.shoppingCart
+
+        checkout = Checkout(this, shoppingCart)
+
+        productDatabase = ProductDatabase(this, shoppingCart, "$id.sqlite3", Snabble.config.generateSearchIndex)
+
+        events = Events(this, shoppingCart)
+
+        assets = Assets(this)
+
+        googlePayHelper = paymentMethodDescriptors
+            .map { it.paymentMethod }
+            .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
+            ?.let {
+                GooglePayHelper(this, instance.application)
+            }
+
+        coupons = Coupons(this)
         if (coupons.source.value !== CouponSource.Online) {
             coupons.setProjectCoupons(couponList)
         }
         coupons.update()
+
         notifyUpdate()
     }
 
-    private fun parseShops(jsonObject: JsonObject) {
-        shops = if (jsonObject.has("shops")) {
-            Shop.fromJson(jsonObject["shops"])?.toList() ?: emptyList()
-        } else {
-            emptyList()
+    var googlePayHelper = paymentMethodDescriptors
+        .map { it.paymentMethod }
+        .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
+        ?.let {
+            GooglePayHelper(this, instance.application)
         }
-    }
 
+    /**
+     * Causes hidden shops to be loaded asynchronously if config.loadActiveShops is set to true.
+     *
+     * Otherwise does nothing.
+     */
     fun loadActiveShops(done: Runnable?) {
         if (Snabble.config.loadActiveShops) {
             val url = activeShopsUrl
@@ -393,6 +537,8 @@ class Project internal constructor(jsonObject: JsonObject) {
                     }
                 })
             }
+        } else {
+            done?.run()
         }
     }
 
@@ -410,93 +556,49 @@ class Project internal constructor(jsonObject: JsonObject) {
         return RoundingMode.HALF_UP
     }
 
-    val eventsUrl: String?
-        get() = urls!!["appEvents"]
-    val appDbUrl: String?
-        get() = urls!!["appdb"]
-    val checkoutUrl: String?
-        get() = urls!!["checkoutInfo"]
-    val assetsUrl: String?
-        get() = urls!!["assetsManifest"]
-    val productBySkuUrl: String?
-        get() = urls!!["resolvedProductBySku"]
-    val productByCodeUrl: String?
-        get() = urls!!["resolvedProductLookUp"]
-    val telecashVaultItemsUrl: String?
-        get() = urls!!["telecashVaultItems"]
-    val datatransTokenizationUrl: String?
-        get() = urls!!["datatransTokenization"]
-    val activeShopsUrl: String?
-        get() = urls!!["activeShops"]
-
-    fun getText(key: String): String? {
-        return getText(key, null)
-    }
-
-    fun getText(key: String, defaultValue: String?): String? {
-        return texts!![key] ?: return defaultValue
-    }
-
-    fun getCurrencyFractionDigits(): Int {
-        return if (currencyFractionDigits == -1) {
-            currency!!.defaultFractionDigits
-        } else {
-            currencyFractionDigits
-        }
-    }
-
-    fun logErrorEvent(format: String?, vararg args: Any?) {
-        if (events != null) {
-            Logger.e(format, *args)
-            events.logError(format, *args)
-        }
-    }
-
-    fun logEvent(format: String?, vararg args: Any?) {
-        if (events != null) {
-            Logger.e(format, *args)
-            events.log(format, *args)
-        }
-    }
+    /**
+     * List of payment methods that should be available to the user.
+     */
+    val availablePaymentMethods: List<PaymentMethod>
+        get() = paymentMethodDescriptors.map { it.paymentMethod }
 
     /**
-     * Sets the customer card number for user identification with the backend.
+     * The code template that should be used, when no code template is specified by a scannable code
      */
-
-    val availablePaymentMethods: List<PaymentMethod>
-        get() {
-            val list: MutableList<PaymentMethod> = ArrayList()
-            for (descriptor in paymentMethodDescriptors!!) {
-                list.add(descriptor.paymentMethod)
-            }
-            return list
-        }
-
     val defaultCodeTemplate: CodeTemplate?
         get() = getCodeTemplate("default")
 
-    fun getCodeTemplate(name: String): CodeTemplate? {
-        for (codeTemplate in codeTemplates) {
-            if (codeTemplate.name == name) {
-                return codeTemplate
-            }
-        }
-        return null
+
+    fun getCodeTemplate(name: String): CodeTemplate? =
+        codeTemplates.find { it.name == name }
+
+    fun getTransformationTemplate(name: String): CodeTemplate? =
+        priceOverrideTemplates.find { it.transmissionCodeTemplate?.name == name }?.codeTemplate
+
+    @JvmOverloads
+    fun getText(key: String, defaultValue: String? = null): String? {
+        return texts[key] ?: return defaultValue
     }
 
-    fun getTransformationTemplate(name: String): CodeTemplate? {
-        for (priceOverrideTemplate in priceOverrideTemplates) {
-            val codeTemplate = priceOverrideTemplate.transmissionCodeTemplate
-            if (codeTemplate != null && codeTemplate.name == name) {
-                return codeTemplate
-            }
-        }
-        return null
+    /**
+     * Logs a event tagged with error to the snabble Backend.
+     */
+    fun logErrorEvent(format: String?, vararg args: Any?) {
+        Logger.e(format, *args)
+        events.logError(format, *args)
+    }
+
+    /**
+     * Logs a event to the snabble Backend.
+     */
+    fun logEvent(format: String?, vararg args: Any?) {
+        Logger.e(format, *args)
+        events.log(format, *args)
     }
 
     private fun notifyUpdate() {
-        for (l in updateListeners) {
-            l.onProjectUpdated(this)
+        updateListeners.forEach {
+            it.onProjectUpdated(this)
         }
     }
 
