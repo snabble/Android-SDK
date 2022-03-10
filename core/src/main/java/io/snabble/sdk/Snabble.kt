@@ -20,11 +20,6 @@ import io.snabble.sdk.checkin.CheckInManager
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
 import io.snabble.sdk.utils.JsonUtils.getBooleanOpt
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
 import java.io.File
