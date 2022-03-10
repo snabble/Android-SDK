@@ -572,8 +572,12 @@ class Project internal constructor(jsonObject: JsonObject) {
     fun getCodeTemplate(name: String): CodeTemplate? =
         codeTemplates.find { it.name == name }
 
-    fun getTransformationTemplate(name: String): CodeTemplate? =
-        priceOverrideTemplates.find { it.transmissionCodeTemplate?.name == name }?.codeTemplate
+    fun getTransformationTemplate(name: String?): CodeTemplate? =
+        if (name == null) {
+            null
+        } else {
+            priceOverrideTemplates.find { it.transmissionCodeTemplate?.name == name }?.codeTemplate
+        }
 
     @JvmOverloads
     fun getText(key: String, defaultValue: String? = null): String? {
