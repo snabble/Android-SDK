@@ -9,15 +9,8 @@ import io.snabble.sdk.googlepay.GooglePayHelper
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate
-import io.snabble.sdk.utils.GsonHolder
-import io.snabble.sdk.utils.SimpleJsonCallback
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
-import io.snabble.sdk.utils.JsonUtils.getBooleanOpt
-import io.snabble.sdk.utils.JsonUtils.getIntOpt
-import io.snabble.sdk.utils.JsonUtils.getString
-import io.snabble.sdk.utils.JsonUtils.getStringListOpt
-import io.snabble.sdk.utils.JsonUtils.getStringOpt
-import io.snabble.sdk.utils.Logger
+import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.commons.lang3.LocaleUtils
@@ -58,13 +51,13 @@ class Project internal constructor(jsonObject: JsonObject) {
     /**
      * The currency used to calculate and display prices
      */
-    var currency: Currency = Currency.getInstance("EUR")
+    lateinit var currency: Currency
         private set
 
     /**
      * The locale in which this currency is used.
      */
-    var currencyLocale: Locale = Locale.GERMANY
+    lateinit var currencyLocale: Locale
         private set
 
     /**
@@ -94,7 +87,7 @@ class Project internal constructor(jsonObject: JsonObject) {
      * List of supported barcode formats used by this retailer. The scanner should restrict its
      * scanning to include only those formats.
      */
-    var supportedBarcodeFormats: List<BarcodeFormat> = emptyList()
+    var supportedBarcodeFormats = emptyList<BarcodeFormat>()
         private set
 
     /**
@@ -118,11 +111,12 @@ class Project internal constructor(jsonObject: JsonObject) {
      * Shops that are hidden will get loaded asynchronously.
      */
     var shops: List<Shop> = emptyList()
+        private set
 
     /**
      * Returns the possible accepted cards and if a customer card is required.
      */
-    var customerCardInfos: List<CustomerCardInfo> = emptyList()
+    var customerCardInfo = emptyList<CustomerCardInfo>()
         private set
 
     /**
@@ -160,20 +154,20 @@ class Project internal constructor(jsonObject: JsonObject) {
      *
      * Can be used to extract data from barcodes (e.g. price in a printed barcode)
      */
-    var codeTemplates: List<CodeTemplate> = emptyList()
+    var codeTemplates = emptyList<CodeTemplate>()
         private set
 
     /**
      * List of code templates that are used when supplying an existing Product with a different
      * barcode which contains a reduced price.
      */
-    var priceOverrideTemplates: List<PriceOverrideTemplate> = emptyList()
+    var priceOverrideTemplates = emptyList<PriceOverrideTemplate>()
         private set
 
     /**
      * List of code templates that are searchable using the barcode search functionality.
      */
-    var searchableTemplates: List<String> = emptyList()
+    var searchableTemplates = emptyList<String>()
         private set
 
     /**
@@ -181,14 +175,14 @@ class Project internal constructor(jsonObject: JsonObject) {
      *
      * Also provides functions to display embedded prices of a scanned code.
      */
-    var priceFormatter: PriceFormatter = PriceFormatter(this)
+    lateinit var priceFormatter: PriceFormatter
         private set
 
     /**
      * A key-value map containing urls provided by the metadata.
      * All urls are absolute, even if the original metadata contained relative urls.
      */
-    var urls: Map<String, String> = emptyMap()
+    var urls = emptyMap<String, String>()
         private set
 
     var tokensUrl: String? = null
@@ -227,8 +221,8 @@ class Project internal constructor(jsonObject: JsonObject) {
      */
     var checkedInShop: Shop? = null
         set(value) {
-            val currentShopId = this.checkedInShop?.id ?: ""
-            val newShopId = value?.id ?: ""
+            val currentShopId = this.checkedInShop?.id.orEmpty()
+            val newShopId = value?.id.orEmpty()
             if (currentShopId != newShopId) {
                 field = value
                 if (newShopId == "") {
@@ -241,17 +235,18 @@ class Project internal constructor(jsonObject: JsonObject) {
             }
         }
 
-    private var texts: MutableMap<String, String> = mutableMapOf()
+    private var texts = mutableMapOf<String, String>()
 
     private var encodedCodesJsonObject: JsonObject? = null
 
-    private val updateListeners: MutableList<OnProjectUpdatedListener> = CopyOnWriteArrayList()
+    private val updateListeners = CopyOnWriteArrayList<OnProjectUpdatedListener>()
 
     /**
      * The internal storage directly used for various files stored by the snabble SDK that
      * are related to this project.
      */
     lateinit var internalStorageDirectory: File
+        private set
 
     /**
      * OkHttpClient which wraps http calls to the snabble backend with valid tokens.
@@ -259,18 +254,22 @@ class Project internal constructor(jsonObject: JsonObject) {
      * Only use this http client when communicating with the snabble backend on a project level.
      */
     lateinit var okHttpClient: OkHttpClient
+        private set
 
     private lateinit var shoppingCartStorage: ShoppingCartStorage
+        private set
 
     /**
      * The users shopping cart
      */
     lateinit var shoppingCart: ShoppingCart
+        private set
 
     /**
      * Provides a list of active coupons
      */
     lateinit var coupons: Coupons
+        private set
 
     /**
      * The snabble checkout API.
@@ -278,21 +277,25 @@ class Project internal constructor(jsonObject: JsonObject) {
      * Uses a state machine to let ui display the current state of a checkout.
      */
     lateinit var checkout: Checkout
+        private set
 
     /**
      * The primary product database of this project.
      */
     lateinit var productDatabase: ProductDatabase
+        private set
 
     /**
      * Event logger which ships logging data to the snabble backend.
      */
     lateinit var events: Events
+        private set
 
     /**
      * Provides access to images used by various ui components
      */
     lateinit var assets: Assets
+        private set
 
     init {
         parse(jsonObject)
@@ -302,12 +305,7 @@ class Project internal constructor(jsonObject: JsonObject) {
      * Parse a json definition of a Project.
      */
     fun parse(jsonObject: JsonObject) {
-        id = if (jsonObject.has("id")) {
-            jsonObject["id"].asString
-        } else {
-            throw IllegalArgumentException("Project has no id")
-        }
-
+        id = requireNotNull(jsonObject["id"]?.asString) { "Project has no id" }
         name = jsonObject.getString("name", id)
 
         val brandId = jsonObject.getStringOpt("brandID", null)
@@ -315,7 +313,7 @@ class Project internal constructor(jsonObject: JsonObject) {
             brand = Snabble.brands[brandId]
         }
 
-        val urls: MutableMap<String, String> = mutableMapOf()
+        val urls = mutableMapOf<String, String>()
         val links = jsonObject["links"].asJsonObject
         links.entrySet().forEach {
             urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
@@ -357,17 +355,17 @@ class Project internal constructor(jsonObject: JsonObject) {
         val customerCards = jsonObject.getAsJsonObject("customerCards")
         val acceptedCustomerCards = customerCards.getStringListOpt("accepted", emptyList())
         val requiredCustomerCard = customerCards.getStringOpt("required", null)
-        val customerCardInfos: MutableList<CustomerCardInfo> = ArrayList()
+        val customerCardInfo = mutableListOf<CustomerCardInfo>()
         acceptedCustomerCards?.filterNotNull()?.forEach {
             var required = false
             if (it == requiredCustomerCard) {
                 required = true
             }
-            val customerCardInfo = CustomerCardInfo(it, required)
-            customerCardInfos.add(customerCardInfo)
+            val info = CustomerCardInfo(it, required)
+            customerCardInfo.add(info)
         }
 
-        this.customerCardInfos = customerCardInfos
+        this.customerCardInfo = customerCardInfo
         if (requiredCustomerCard != null) {
             requiredCustomerCardInfo = CustomerCardInfo(requiredCustomerCard, true)
         }
@@ -390,23 +388,17 @@ class Project internal constructor(jsonObject: JsonObject) {
             company = GsonHolder.get().fromJson(jsonObject["company"], Company::class.java)
         }
 
-        val codeTemplates = mutableListOf<CodeTemplate>()
-        jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.forEach {
-            try {
-                val codeTemplate = CodeTemplate(it.key, it.value.asString)
-                codeTemplates.add(codeTemplate)
-            } catch (e: Exception) {
-                Logger.e("Could not parse template %s: %s", it.key, e.message)
-            }
-        }
+        val codeTemplates = jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.map { (name, pattern) ->
+            CodeTemplate(name, pattern.asString)
+        }?.toMutableList() ?: mutableListOf()
 
-        val hasDefaultTemplate = codeTemplates.find { it.name == "default" } != null
+        val hasDefaultTemplate = codeTemplates.any { it.name == "default" }
         if (!hasDefaultTemplate) {
             codeTemplates.add(CodeTemplate("default", "{code:*}"))
         }
         this.codeTemplates = codeTemplates
 
-        val priceOverrideTemplates: MutableList<PriceOverrideTemplate> = mutableListOf()
+        val priceOverrideTemplates = mutableListOf<PriceOverrideTemplate>()
         jsonObject["priceOverrideCodes"]?.asJsonArray?.forEach {
             val priceOverride = it.asJsonObject
             try {
@@ -446,8 +438,8 @@ class Project internal constructor(jsonObject: JsonObject) {
             val textsElement = jsonObject["texts"]
             if (!textsElement.isJsonNull) {
                 val textsJsonObject = jsonObject["texts"].asJsonObject
-                textsJsonObject.entrySet().forEach {
-                    texts[it.key] = it.value.asString
+                textsJsonObject.entrySet().forEach { (key, value) ->
+                    texts[key] = value.asString
                 }
             }
         }
@@ -542,47 +534,37 @@ class Project internal constructor(jsonObject: JsonObject) {
         }
     }
 
-    private fun parseRoundingMode(jsonElement: JsonElement?): RoundingMode {
-        if (jsonElement != null) {
-            val roundingMode = jsonElement.asString
-            if (roundingMode != null) {
-                when (roundingMode) {
-                    "up" -> return RoundingMode.UP
-                    "down" -> return RoundingMode.DOWN
-                    "commercial" -> return RoundingMode.HALF_UP
-                }
-            }
+    private fun parseRoundingMode(jsonElement: JsonElement?) =
+        when (jsonElement?.asString) {
+            "up"    -> RoundingMode.UP
+            "down"  -> RoundingMode.DOWN
+            else    -> RoundingMode.HALF_UP
         }
-        return RoundingMode.HALF_UP
-    }
 
     /**
      * List of payment methods that should be available to the user.
      */
-    val availablePaymentMethods: List<PaymentMethod>
+    val availablePaymentMethods
         get() = paymentMethodDescriptors.map { it.paymentMethod }
 
     /**
      * The code template that should be used, when no code template is specified by a scannable code
      */
-    val defaultCodeTemplate: CodeTemplate?
+    val defaultCodeTemplate
         get() = getCodeTemplate("default")
 
 
-    fun getCodeTemplate(name: String): CodeTemplate? =
+    fun getCodeTemplate(name: String) =
         codeTemplates.find { it.name == name }
 
-    fun getTransformationTemplate(name: String?): CodeTemplate? =
-        if (name == null) {
-            null
-        } else {
+    fun getTransformationTemplate(name: String?) =
+        name?.let {
             priceOverrideTemplates.find { it.transmissionCodeTemplate?.name == name }?.codeTemplate
         }
 
     @JvmOverloads
-    fun getText(key: String, defaultValue: String? = null): String? {
-        return texts[key] ?: return defaultValue
-    }
+    fun getText(key: String, defaultValue: String? = null) =
+        texts[key] ?: defaultValue
 
     /**
      * Logs a event tagged with error to the snabble Backend.
@@ -620,7 +602,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         updateListeners.remove(l)
     }
 
-    interface OnProjectUpdatedListener {
+    fun interface OnProjectUpdatedListener {
         fun onProjectUpdated(project: Project?)
     }
 }

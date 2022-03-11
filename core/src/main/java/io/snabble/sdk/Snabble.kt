@@ -19,7 +19,6 @@ import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
-import io.snabble.sdk.utils.JsonUtils.getBooleanOpt
 import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
 import java.io.File

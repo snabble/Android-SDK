@@ -71,6 +71,7 @@ class PriceFormatter(private val project: Project) {
         }
         return formattedString
     }
+
     /**
      * Format a price of a Product or a ScannedCode if the ScannedCode is containing price information.
      *
@@ -87,6 +88,4 @@ class PriceFormatter(private val project: Project) {
         }
         return format(product, price)
     }
-
-
 }
