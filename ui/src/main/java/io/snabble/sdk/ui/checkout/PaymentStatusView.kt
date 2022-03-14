@@ -180,7 +180,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 progress.isVisible = false
                 payment.state = PaymentStatusItemView.State.SUCCESS
                 val checkoutProcess = checkout.checkoutProcess
-                if (checkoutProcess?.orderId != null && checkoutProcess.links?.get("receipt") != null) {
+                if (checkoutProcess?.orderId != null) {
                     startPollingForReceipts(checkout.checkoutProcess?.orderId)
                 } else {
                     receipt.state = PaymentStatusItemView.State.NOT_EXECUTED

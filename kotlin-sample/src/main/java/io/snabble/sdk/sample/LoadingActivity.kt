@@ -31,6 +31,9 @@ class LoadingActivity : AppCompatActivity() {
                 // an application can have multiple projects
                 val project = Snabble.projects.first()
                 SnabbleUI.project = project
+
+                // check in to the first shop - you can use CheckInManager if you want
+                // to use geofencing
                 project.checkedInShop = project.shops.first()
 
                 // this is done on the background and can be done at any time
