@@ -31,7 +31,7 @@ class LoadingActivity : AppCompatActivity() {
                 // an application can have multiple projects
                 val project = Snabble.projects.first()
 
-                //
+                // register the project to our UI components
                 SnabbleUI.project = project
 
                 // check in to the first shop - you can use CheckInManager if you want
