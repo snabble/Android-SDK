@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // add a check in state listener to observe when a user enters of leaves a shop
+        // add a check in state listener to observe when a user enters or leaves a shop
         Snabble.checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
                 Snabble.checkInManager.project?.let {
