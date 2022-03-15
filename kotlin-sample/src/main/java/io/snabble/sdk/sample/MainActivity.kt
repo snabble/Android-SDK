@@ -128,10 +128,4 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         Snabble.checkInManager.stopUpdating()
     }
-
-    override fun onBackPressed() {
-        if (toolbar.isVisible) {
-            super.onBackPressed()
-        }
-    }
 }
