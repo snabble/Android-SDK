@@ -28,12 +28,23 @@ class LoadingActivity : AppCompatActivity() {
 
         Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
             override fun onReady() {
-                // an application can have multiple projects
+                // an application can have multiple projects, for example for
+                // multiple independent regions / countries
                 val project = Snabble.projects.first()
+
+                // register the project to our UI components
                 SnabbleUI.project = project
+
+                // check in to the first shop - you can use CheckInManager if you want
+                // to use geofencing
                 project.checkedInShop = project.shops.first()
 
                 // this is done on the background and can be done at any time
+                // a fully downloaded product database allows for scanning products while
+                // being offline
+                //
+                // if the product database is still downloading or you did not call update()
+                // online request will be used in the mean time
                 project.productDatabase.update()
 
                 runOnUiThread {

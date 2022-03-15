@@ -1,11 +1,13 @@
 package io.snabble.sdk.sample
 
+import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import io.snabble.sdk.sample.R
@@ -20,6 +22,10 @@ class HomeFragment : Fragment() {
 
         root.findViewById<Button>(R.id.show_payment_credentials).setOnClickListener {
             findNavController().navigate(R.id.navigation_payment_credentials)
+        }
+
+        root.findViewById<Button>(R.id.request_location_permission).setOnClickListener {
+            (requireActivity() as MainActivity).locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
 
         return root

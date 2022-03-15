@@ -28,5 +28,16 @@
         android:layout_marginEnd="8dp"
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:text="Show payment credentials"/>
+        android:text="Show payment credentials" />
+
+    <Button
+        android:id="@+id/request_location_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:text="Request location permission" />
 </LinearLayout>
