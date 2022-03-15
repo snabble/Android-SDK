@@ -28,7 +28,8 @@ class LoadingActivity : AppCompatActivity() {
 
         Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
             override fun onReady() {
-                // an application can have multiple projects
+                // an application can have multiple projects, for example for
+                // multiple independent regions / countries
                 val project = Snabble.projects.first()
 
                 // register the project to our UI components
