@@ -11,10 +11,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        // if you are using a light mode theme, disable night mode resources
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
         instance = this
     }
 }
