@@ -41,7 +41,8 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_home,
                 R.id.navigation_scanner,
-                R.id.navigation_cart
+                R.id.navigation_cart,
+//                R.id.navigation_dummy_cart
         ))
 
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -56,7 +57,8 @@ class MainActivity : AppCompatActivity() {
                 navigate(R.id.navigation_scanner, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
-                navigate(R.id.navigation_cart, args)
+                 navigate(R.id.navigation_cart, args)
+//                navigate(R.id.navigation_dummy_cart, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_sepa_card_input, args)

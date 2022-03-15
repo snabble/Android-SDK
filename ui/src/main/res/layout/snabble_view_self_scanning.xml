@@ -41,6 +41,7 @@
         android:id="@+id/bottom_bar">
 
         <com.google.android.material.button.MaterialButton
+            style="@style/Snabble.Widget.MaterialComponents.Button"
             android:id="@+id/goto_cart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
