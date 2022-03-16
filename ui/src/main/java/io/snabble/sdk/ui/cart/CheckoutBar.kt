@@ -64,6 +64,8 @@ open class CheckoutBar @JvmOverloads constructor(
     val priceHeight: Int
         get() = priceSum.height + sumContainer.marginTop * 2
 
+    var checkoutPreconditionHandler: CheckoutPreconditionHandler? = null
+
     init {
         orientation = VERTICAL
 
@@ -148,7 +150,9 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     protected open fun onPayClick() {
-        pay()
+        if (checkoutPreconditionHandler?.isCheckoutAllowed() != false) {
+            pay()
+        }
     }
 
     private fun update() {
@@ -415,4 +419,8 @@ open class CheckoutBar @JvmOverloads constructor(
             }
         }
     }
+}
+
+fun interface CheckoutPreconditionHandler {
+    fun isCheckoutAllowed(): Boolean
 }

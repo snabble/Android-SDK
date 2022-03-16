@@ -710,7 +710,7 @@ public class Checkout {
         if (state != Checkout.State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
 
-            if (paymentMethod.isOfflineMethod()) {
+            if (paymentMethod != null && paymentMethod.isOfflineMethod()) {
                 shoppingCart.backup();
             }
 
