@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.62.1]
+
+### Changes
+- width and height is now optional for coupon imafges
+
 ## [0.62.0]
 
 ### Breaking Changes
