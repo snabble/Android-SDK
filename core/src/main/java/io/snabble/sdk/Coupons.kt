@@ -52,8 +52,8 @@ data class CouponImage (
 @Parcelize
 data class CouponImageFormats (
     val contentType: String,
-    val width: Int,
-    val height: Int,
+    val width: Int?,
+    val height: Int?,
     val size: String,
     val url: String,
 ) : Parcelable
