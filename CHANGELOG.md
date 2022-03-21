@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [0.62.1]
 
 ### Changes
-- width and height is now optional for coupon imafges
+- 'width' and 'height' is now optional for coupon images
 
 ## [0.62.0]
 
