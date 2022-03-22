@@ -43,8 +43,8 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
                         val check = v.findViewById<View>(R.id.check)
 
                         v.accessibility {
-                            if (entry.isAdded) {
-                                setClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionAdd)
+                            if (entry.isAdded || entry.paymentMethod.isOfflineMethod) {
+                                setClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionUse)
                             } else {
                                 setClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionAdd)
                             }
