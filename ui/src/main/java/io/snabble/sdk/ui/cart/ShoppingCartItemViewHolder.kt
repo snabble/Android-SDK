@@ -48,7 +48,7 @@ class ShoppingCartItemViewHolder internal constructor(
     private val picasso = Picasso.get()
 
     init {
-        orderViewsForAccessibility(quantityTextView, quantityEdit, subtitle, name, redLabel, priceTextView, plus, minus)
+        orderViewsForAccessibility(quantityTextView, quantityEdit, subtitle, name, redLabel, priceTextView, minus, plus)
     }
 
     @SuppressLint("SetTextI18n")
