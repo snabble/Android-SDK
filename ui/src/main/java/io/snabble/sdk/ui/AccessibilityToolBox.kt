@@ -19,7 +19,7 @@ import io.snabble.sdk.Snabble
 
 typealias AccessibilityEventListener = (host: ViewGroup?,
                                         child: View?,
-                                        event: AccessibilityEvent) -> Any
+                                        event: AccessibilityEvent) -> Any?
 
 class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompat() {
     private val eventListeners = mutableMapOf<Int, AccessibilityEventListener>()
