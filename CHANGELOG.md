@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.62.3]
+
+### Changes
+- Accessibility improvements
+
 ## [0.62.2]
 
 ### Fixed
