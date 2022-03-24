@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.62.2]
+
+### Fixed
+- Fixed first data 3DS authentication flow 
+
+## [0.62.1]
+
+### Changes
+- 'width' and 'height' is now optional for coupon images
+
+## [0.62.0]
+
+### Breaking Changes
+- Renamed Project.customerCardInfos to Project.customerCardInfo
+
+### Added
+- Added CheckoutPreconditionHandler to CheckoutBar
+
+### Fixed
+- Fixed double backing out of point of sale checkout aborts
+- Fixed rare crash when approving offline payment methods 
+
 ## [0.61.3]
 
 ### Fixed

@@ -31,14 +31,14 @@ allprojects {
     }
 
     project.ext {
-        sdkVersion='0.61.3'
+        sdkVersion='0.62.2'
         versionCode=1
 
         compileSdkVersion=31
         minSdkVersion=21
         targetSdkVersion=31
 
-        okhttpVersion='4.9.1'
+        okhttpVersion='4.9.3'
         desugarVersion='1.1.5'
 
         sdkVersion += project.getProperties().get('versionSuffix', '')

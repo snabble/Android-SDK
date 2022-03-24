@@ -148,10 +148,10 @@ public class Checkout {
     private boolean authorizePaymentRequestFailed;
     private List<Coupon> redeemedCoupons;
 
-    Checkout(Project project) {
+    Checkout(Project project, ShoppingCart shoppingCart) {
         this.project = project;
-        this.shoppingCart = project.getShoppingCart();
-        this.checkoutApi = new CheckoutApi(project);
+        this.shoppingCart = shoppingCart;
+        this.checkoutApi = new CheckoutApi(project, shoppingCart);
         this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
     }
 
@@ -710,7 +710,7 @@ public class Checkout {
         if (state != Checkout.State.PAYMENT_APPROVED) {
             Logger.d("Payment approved");
 
-            if (paymentMethod.isOfflineMethod()) {
+            if (paymentMethod != null && paymentMethod.isOfflineMethod()) {
                 shoppingCart.backup();
             }
 

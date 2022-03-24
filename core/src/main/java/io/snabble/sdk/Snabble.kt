@@ -303,7 +303,7 @@ object Snabble {
      */
     val isOutdatedSDK: Boolean
         get() = additionalMetadata?.let { json ->
-            JsonUtils.getBooleanOpt(json, "kill", false)
+            json.getBooleanOpt("kill", false)
         } ?: false
 
     /** Returns additional metadata that may be provided for apps unrelated to the SDK  */

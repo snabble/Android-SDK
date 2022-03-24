@@ -33,6 +33,7 @@ import okhttp3.Response;
 
 public class Events {
     private final Project project;
+    private final ShoppingCart shoppingCart;
     private String cartId;
     private Shop shop;
 
@@ -40,8 +41,9 @@ public class Events {
     private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
-    Events(Project project) {
+    Events(Project project, ShoppingCart shoppingCart) {
         this.project = project;
+        this.shoppingCart = shoppingCart;
 
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
             @Override
@@ -70,8 +72,7 @@ public class Events {
 
     public void updateShop(Shop newShop) {
         if (newShop != null) {
-            ShoppingCart cart = project.getShoppingCart();
-            cartId = cart.getId();
+            cartId = shoppingCart.getId();
             shop = newShop;
         } else {
             shop = null;

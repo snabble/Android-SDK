@@ -58,7 +58,6 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             @Override
             public void click() {
                 SnabbleUI.getProject().getCheckout().abortSilently();
-                SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
             }
         });
 

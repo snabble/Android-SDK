@@ -23,6 +23,11 @@
         android:label="@string/cart_title"/>
 
     <fragment
+        android:id="@+id/navigation_dummy_cart"
+        android:name="io.snabble.sdk.sample.CustomShoppingCartDummy"
+        android:label="@string/cart_title"/>
+
+    <fragment
         android:id="@+id/navigation_barcode_search"
         android:name="io.snabble.sdk.ui.search.ProductSearchFragment"
         android:label="Barcode Search" />

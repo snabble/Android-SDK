@@ -31,7 +31,7 @@ data class Coupon (
 ) : Parcelable {
     val isValid: Boolean
     get() = when(type) {
-        CouponType.DIGITAL -> image != null && validFrom != null && validUntil != null
+        CouponType.DIGITAL -> image != null
         CouponType.MANUAL -> name != null
         CouponType.PRINTED -> true
     }
@@ -52,8 +52,8 @@ data class CouponImage (
 @Parcelize
 data class CouponImageFormats (
     val contentType: String,
-    val width: Int,
-    val height: Int,
+    val width: Int?,
+    val height: Int?,
     val size: String,
     val url: String,
 ) : Parcelable
