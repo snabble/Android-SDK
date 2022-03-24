@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="aldi.sued.ch.87cc7e.Snabble.Scanner.unknownBarcode">Produkt nicht erkannt. Du kannst oben rechts in der Suche die Artikelnummer manuell eingeben. Diese findest du auf dem Preisschild am Regal.</string>
     <string name="release.safety.catch">Bitte entferne (wenn vorhanden) die Flaschenhalssicherung an der dafür vorgesehenen Station am Ausgang.</string>
     <string name="Snabble.addDiscount">Rabatt eingeben</string>
     <string name="Snabble.ageVerification.explanation">Für den Kauf bestimmter Artikel, wie z.B. Alkohol, ist ein Altersnachweis notwendig. Gib dazu die 7-stellige Zahl von der Rückseite deines Personalausweises ein.</string>
@@ -174,6 +175,17 @@
     <string name="Snabble.saleStop.errorMsg.scan">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse.</string>
     <string name="Snabble.saleStop.errorMsg.title">Entschuldigung</string>
     <string name="Snabble.Save">Speichern</string>
+    <string name="Snabble.Scanner.Accessibility.actionHideHint">Hinweis dauerhaft ausblenden</string>
+    <string name="Snabble.Scanner.Accessibility.actionUnderstood">Verstanden</string>
+    <string name="Snabble.Scanner.Accessibility.eventBackInScanner">Du bist wieder im Scanner</string>
+    <string name="Snabble.Scanner.Accessibility.eventBarcodeDetected">Barcode erkannt</string>
+    <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Du kannst nicht mehr Artikel in den Warenkorb legen</string>
+    <!-- Example: 3 times Banana for 3$ -->
+    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s mal %s für %s</string>
+    <string name="Snabble.Scanner.Accessibility.eventScannerOpened">Du hast den Scanner geöffnet.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">Im Warenkorb sind %s Artikel für %s.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">Dein Warenkorb ist aktuell leer.</string>
+    <string name="Snabble.Scanner.Accessibility.hintPermission">Zum Scannen benötigen wir noch eine Berechtigung von dir.</string>
     <string name="Snabble.Scanner.addCodeAsIs">%s so hinzufügen</string>
     <string name="Snabble.Scanner.addToCart">In den Warenkorb</string>
     <string name="Snabble.Scanner.batterySaverHint">Scanner angehalten. Bitte tippe irgendwo auf den Bildschirm, um fortzufahren.</string>
@@ -213,6 +225,21 @@
     <string name="Snabble.SEPA.scoTransferHint">Bitte gib noch den Namen auf der Karte ein um sie für Zahlungen direkt mit der App speichern zu können.</string>
     <string name="Snabble.Settings">Einstellungen</string>
     <string name="Snabble.Shopping.title">Einkaufen</string>
+    <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Hinzufügen</string>
+    <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Löschen</string>
+    <string name="Snabble.Shoppingcart.Accessibility.actionUse">Verwenden</string>
+    <string name="Snabble.Shoppingcart.Accessibility.cardEndsWith">Endet mit  %s</string>
+    <string name="Snabble.Shoppingcart.Accessibility.closeDialog">Dialog schließen</string>
+    <string name="Snabble.Shoppingcart.Accessibility.contextInCart">Im Warenkorb</string>
+    <string name="Snabble.Shoppingcart.Accessibility.decreaseQuantity">Anzahl verringern</string>
+    <string name="Snabble.Shoppingcart.Accessibility.descriptionForPrice">für %s</string>
+    <string name="Snabble.Shoppingcart.Accessibility.descriptionQuantity">%s mal</string>
+    <string name="Snabble.Shoppingcart.Accessibility.descriptionWithDiscount">mit Rabatt</string>
+    <string name="Snabble.Shoppingcart.Accessibility.descriptionWithoutDiscount">ohne Rabatt</string>
+    <string name="Snabble.Shoppingcart.Accessibility.increaseQuantity">Anzahl erhöhen</string>
+    <string name="Snabble.Shoppingcart.Accessibility.paymentMethod">Zahlungsmethode: %s</string>
+    <string name="Snabble.Shoppingcart.Accessibility.quantity">Anzahl</string>
+    <string name="Snabble.Shoppingcart.Accessibility.selected">Ausgewählt</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Artikel entfernt</string>
     <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.buyProducts.now">Jetzt bezahlen</string>

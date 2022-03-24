@@ -68,14 +68,16 @@
                     android:layout_width="match_parent"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:layout_height="48dp">
+                    android:layout_height="48dp"
+                    android:importantForAccessibility="no">
                     <ImageView
                         android:id="@+id/payment_icon"
                         android:layout_width="48dp"
                         android:layout_height="32dp"
                         android:layout_gravity="center"
                         android:scaleType="centerInside"
-                        tools:src="@drawable/snabble_ic_payment_select_sepa" />
+                        tools:src="@drawable/snabble_ic_payment_select_sepa"
+                        android:importantForAccessibility="no" />
 
                     <ImageView
                         android:id="@+id/payment_chevron"
@@ -85,7 +87,8 @@
                         android:layout_marginStart="8dp"
                         android:layout_gravity="center"
                         android:src="@drawable/snabble_ic_small_chevron_down"
-                        app:tint="?attr/colorOnSurface" />
+                        app:tint="?attr/colorOnSurface"
+                        android:importantForAccessibility="no" />
                 </LinearLayout>
             </FrameLayout>
 
@@ -101,7 +104,8 @@
                 android:insetLeft="0dp"
                 android:insetBottom="0dp"
                 tools:visibility="gone"
-                android:text="@string/Snabble.Shoppingcart.buyProducts.now" />
+                android:text="@string/Snabble.Shoppingcart.buyProducts.now"
+                app:strokeColor="@drawable/snabble_stroke" />
 
             <include android:id="@+id/google_pay_button_layout"
                 android:layout_width="match_parent"

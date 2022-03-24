@@ -21,7 +21,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.utils.I18nUtils
 import io.snabble.sdk.ui.utils.UIUtils
-import io.snabble.sdk.ui.utils.setOrHide
+import io.snabble.sdk.ui.utils.setTextOrHide
 import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
@@ -48,7 +48,7 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
 
         val helperText = findViewById<TextView>(R.id.helper_text)
         val text = I18nUtils.getString(resources, "Snabble.Payment.Online.message")
-        helperText.setOrHide(text)
+        helperText.setTextOrHide(text)
 
         helperTextNoImage = findViewById(R.id.helper_text_no_image)
         helperImage = findViewById(R.id.helper_image)

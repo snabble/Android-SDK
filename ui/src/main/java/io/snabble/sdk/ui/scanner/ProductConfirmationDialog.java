@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
@@ -31,6 +32,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.squareup.picasso.Picasso;
@@ -116,6 +120,22 @@ public class ProductConfirmationDialog {
         minusLayout = view.findViewById(R.id.minus_layout);
         enterReducedPrice = view.findViewById(R.id.enterReducedPrice);
 
+        ViewCompat.setAccessibilityDelegate(close, new AccessibilityDelegateCompat() {
+            // Talkback take the first view as dialog title so override it here
+            @Override
+            public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
+                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+                    event.getText().add(host.getResources().getString(R.string.Snabble_Scanner_Accessibility_eventBarcodeDetected));
+                } else super.onPopulateAccessibilityEvent(host, event);
+            }
+
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setTraversalAfter(addToCart);
+            }
+        });
+
         name.setText(product.getName());
 
         if (product.getSubtitle() == null || product.getSubtitle().equals("")) {
@@ -194,6 +214,8 @@ public class ProductConfirmationDialog {
             int q = getQuantity();
             if (q < ShoppingCart.MAX_QUANTITY) {
                 setQuantity(++q);
+            } else {
+                plus.announceForAccessibility(plus.getResources().getString(R.string.Snabble_Scanner_Accessibility_eventMaxQuantityReached));
             }
         });
 
@@ -257,6 +279,7 @@ public class ProductConfirmationDialog {
         String fullPriceText = cartItem.getFullPriceText();
         if (fullPriceText != null) {
             price.setText(cartItem.getFullPriceText());
+            price.setContentDescription(price.getResources().getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice, cartItem.getFullPriceText()));
             price.setVisibility(View.VISIBLE);
 
             if (product.getListPrice() > product.getPrice(project.getCustomerCardId())) {
@@ -366,7 +389,7 @@ public class ProductConfirmationDialog {
     }
 
     public void setQuantity(int number) {
-        // its possible that the onClickListener gets called before a dismiss is dispatched
+        // It's possible that the onClickListener gets called before a dismiss is dispatched
         // and when that happens the product is already null
         if (cartItem == null) {
             dismiss(false);
@@ -411,6 +434,8 @@ public class ProductConfirmationDialog {
 
         cartItem.setQuantity(number);
         updatePrice();
+
+        quantity.announceForAccessibility(quantity.getResources().getString(R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate, number, cartItem.getDisplayName(), cartItem.getTotalPriceText()));
     }
 
     public void dismiss(boolean addToCart) {

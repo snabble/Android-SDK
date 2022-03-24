@@ -66,13 +66,13 @@ inline var View.marginBottom: Int
     }
 
 inline val View.idName: String
-    get() = context.resources.getResourceName(id)
+    get() = if (id == -1) "null" else context.resources.getResourceName(id)
 
 inline var View.behavior: CoordinatorLayout.Behavior<*>?
     get() = (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior
     set(value) { (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = value }
 
-fun TextView.setOrHide(text: CharSequence?) {
+fun TextView.setTextOrHide(text: CharSequence?) {
     this.isVisible = text.isNotNullOrBlank()
     this.text = text
 }

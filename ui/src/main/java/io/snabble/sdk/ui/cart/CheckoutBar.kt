@@ -26,6 +26,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
@@ -170,6 +171,10 @@ open class CheckoutBar @JvmOverloads constructor(
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             paymentSelector.isVisible = !isHidden
             paymentIcon.setImageResource(entry.iconResId)
+            paymentSelectorButton.contentDescription = resources.getString(R.string.Snabble_Shoppingcart_Accessibility_paymentMethod, entry.text)
+            paymentSelectorButton.accessibility {
+                setClickAction(R.string.Snabble_Shoppingcart_buyProducts_selectPaymentMethod)
+            }
         }
     }
 

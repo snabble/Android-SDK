@@ -25,7 +25,8 @@
             android:visibility="gone"
             app:shapeAppearanceOverlay="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners"
             tools:background="#ccc"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            android:importantForAccessibility="no"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/red_label"
@@ -97,13 +98,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/snabble_ic_minus"
-                    app:tint="?attr/colorOnSurface" />
+                    app:tint="?attr/colorOnSurface"
+                    android:importantForAccessibility="no"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/minus"
                     style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
+                    android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.decreaseQuantity"
                     app:strokeColor="@drawable/snabble_stroke" />
             </FrameLayout>
             <TextView
@@ -125,14 +128,16 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/snabble_ic_add"
-                    app:tint="?attr/colorOnSurface" />
+                    app:tint="?attr/colorOnSurface"
+                    android:importantForAccessibility="no"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/plus"
                     style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    app:strokeColor="@drawable/snabble_stroke" />
+                    app:strokeColor="@drawable/snabble_stroke"
+                    android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.increaseQuantity"/>
             </FrameLayout>
         </LinearLayout>
 
@@ -167,6 +172,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="number"
                     android:paddingHorizontal="12dp"
+                    android:hint="@string/Snabble.Shoppingcart.Accessibility.quantity"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     tools:text="1" />
 

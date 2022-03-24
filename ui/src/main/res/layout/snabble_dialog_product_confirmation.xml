@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,8 +8,7 @@
     android:layout_gravity="center"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    tools:ignore="SmallSp,HardcodedText">
+    android:orientation="vertical">
 
     <ImageButton
         android:id="@+id/close"
@@ -18,6 +18,7 @@
         android:layout_marginBottom="4dp"
         android:padding="12dp"
         android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.closeDialog"
         app:tint="?attr/colorOnSurface"
         app:srcCompat="@drawable/snabble_ic_close" />
 
@@ -37,11 +38,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/subtitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:textAppearance="?attr/textAppearanceBodyLarge"
         tools:text="Schraubendreher Top G 8,0x1,2" />
@@ -104,13 +105,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/snabble_ic_minus_content"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="?attr/colorOnSurface"
+            android:importantForAccessibility="no" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/minus"
             style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.decreaseQuantity"
             app:strokeColor="@drawable/snabble_stroke" />
     </FrameLayout>
 
@@ -137,9 +140,11 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center"
+            android:hint="@string/Snabble.Shoppingcart.Accessibility.quantity"
             android:inputType="number"
             android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:text="1" />
+            android:text="1"
+            tools:ignore="HardcodedText" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -157,14 +162,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/snabble_ic_plus_content"
-            app:tint="?attr/colorOnSurface" />
+            app:tint="?attr/colorOnSurface"
+            android:importantForAccessibility="no"/>
 
         <com.google.android.material.button.MaterialButton
             style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:id="@+id/plus"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            app:strokeColor="@drawable/snabble_stroke" />
+            app:strokeColor="@drawable/snabble_stroke"
+            android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.increaseQuantity" />
     </FrameLayout>
 
     <TextView
