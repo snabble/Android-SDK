@@ -125,6 +125,16 @@ snabble.setup(this, config, new Snabble.SetupCompletionListener() {
 });
 ```
 
+## Light mode themes
+
+If using a theme that is explicitly only light mode (and not a DayNight theme) you need to set
+
+```
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+```
+
+or else some resources may get grabbed from the "-night" folders when the device is set to night mode
+
 ## Author
 
 snabble GmbH, Bonn
