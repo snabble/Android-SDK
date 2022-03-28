@@ -1,133 +1,125 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import androidx.annotation.NonNull;
+import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.Snabble.application
+import io.snabble.sdk.Snabble.projects
+import io.snabble.sdk.ReceiptInfo
+import io.snabble.sdk.ReceiptsApi
+import io.snabble.sdk.ReceiptsApi.RawReceiptUpdateCallback
+import io.snabble.sdk.Receipts.ReceiptInfoCallback
+import io.snabble.sdk.ReceiptsApi.ReceiptUpdateCallback
+import io.snabble.sdk.Receipts.ReceiptDownloadCallback
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.Project
+import io.snabble.sdk.utils.Dispatch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Request
+import okhttp3.Response
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import kotlin.Throws
 
-import org.apache.commons.io.IOUtils;
+/**
+ * Class to download user receipts in pdf format to internal storage.
+ */
+class Receipts internal constructor() {
+    private val receiptsApi = ReceiptsApi()
+    private var call: Call? = null
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import io.snabble.sdk.utils.Dispatch;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
-
-public class Receipts {
-
-    public interface ReceiptInfoCallback {
-        void success(ReceiptInfo[] receiptInfos);
-        void failure();
+    /**
+     * Get the raw api response of the receipts
+     */
+    fun getRawReceipts(rawReceiptUpdateCallback: RawReceiptUpdateCallback?) {
+        receiptsApi.getRaw(rawReceiptUpdateCallback)
     }
 
-    public interface ReceiptDownloadCallback {
-        void success(File pdf);
-        void failure();
-    }
-
-    private final ReceiptsApi receiptsApi;
-    private Call call;
-
-    Receipts() {
-        receiptsApi = new ReceiptsApi();
-    }
-
-    public void getRawReceipts(final ReceiptsApi.RawReceiptUpdateCallback rawReceiptUpdateCallback) {
-        receiptsApi.getRaw(rawReceiptUpdateCallback);
-    }
-
-    public void getReceiptInfos(final ReceiptInfoCallback receiptInfoCallback) {
-        receiptsApi.get(new ReceiptsApi.ReceiptUpdateCallback() {
-            @Override
-            public void success(final ReceiptInfo[] receiptInfos) {
-                Dispatch.mainThread(() -> receiptInfoCallback.success(receiptInfos));
+    /**
+     * Get the receipt info
+     */
+    fun getReceiptInfo(receiptInfoCallback: ReceiptInfoCallback) {
+        receiptsApi.get(object : ReceiptUpdateCallback {
+            override fun success(receiptInfos: Array<ReceiptInfo>) {
+                Dispatch.mainThread { receiptInfoCallback.success(receiptInfos) }
             }
 
-            @Override
-            public void failure() {
-                Dispatch.mainThread(receiptInfoCallback::failure);
+            override fun failure() {
+                Dispatch.mainThread { receiptInfoCallback.failure() }
             }
-        });
+        })
     }
 
-    public void cancelDownload() {
-        if (call != null) {
-            call.cancel();
-            call = null;
-        }
+    @Deprecated(message = "Use getReceiptInfo instead")
+    fun getReceiptInfos(receiptInfoCallback: ReceiptInfoCallback) {
+        getReceiptInfo(receiptInfoCallback)
+    }
+
+    /**
+     * Cancel the currently outstanding download.
+     */
+    fun cancelDownload() {
+        call?.cancel()
+        call = null
     }
 
     /**
      * Downloads a receipts pdf and stores it in the projects internal storage directory.
      */
-    public void download(final ReceiptInfo receiptInfo,
-                         final ReceiptDownloadCallback callback) {
-        if (receiptInfo.getPdfUrl() == null) {
-            callback.failure();
-            return;
+    fun download(receiptInfo: ReceiptInfo, callback: ReceiptDownloadCallback?) {
+        if (receiptInfo.pdfUrl == null) {
+            callback?.failure()
+            return
         }
+        val request: Request = Request.Builder()
+            .url(receiptInfo.pdfUrl)
+            .get()
+            .build()
 
-        final Request request = new Request.Builder()
-                .url(receiptInfo.getPdfUrl())
-                .get()
-                .build();
-
-        cancelDownload();
+        cancelDownload()
 
         // .pdf extension is needed for adobe reader to work
-        final File file = new File(Snabble.getInstance().getApplication().getCacheDir(),
-                receiptInfo.getId() + ".pdf");
-
+        val file = File(instance.application.cacheDir, receiptInfo.id + ".pdf")
         if (file.exists()) {
-            if (callback != null) {
-                callback.success(file);
-            }
-
-            return;
+            callback?.success(file)
+            return
         }
 
-        Project project = null;
-
-        Snabble snabble = Snabble.getInstance();
-        for (Project p : snabble.getProjects()) {
-            if (p.getId().equals(receiptInfo.getProjectId())) {
-                project = p;
-                break;
-            }
-        }
+        val project = Snabble.projects.find { it.id == receiptInfo.projectId }
 
         if (project == null) {
-            callback.failure();
-            return;
+            callback?.failure()
+            return
         }
 
-        call = project.getOkHttpClient().newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    FileOutputStream fos = new FileOutputStream(file);
-                    IOUtils.copy(response.body().byteStream(), fos);
-
-                    if (callback != null) {
-                        callback.success(file);
-                    }
+        call = project.okHttpClient.newCall(request)
+        call?.enqueue(object : Callback {
+            @Throws(IOException::class)
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val fos = FileOutputStream(file)
+                    IOUtils.copy(response.body?.byteStream(), fos)
+                    callback?.success(file)
                 } else {
-                    if (callback != null) {
-                        callback.failure();
-                    }
+                    callback?.failure()
                 }
-
-                response.close();
+                response.close()
             }
 
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                if (callback != null) {
-                    callback.failure();
-                }
+            override fun onFailure(call: Call, e: IOException) {
+                callback?.failure()
             }
-        });
+        })
+    }
+
+    interface ReceiptInfoCallback {
+        fun success(receiptInfos: Array<ReceiptInfo>?)
+        fun failure()
+    }
+
+    interface ReceiptDownloadCallback {
+        fun success(pdf: File?)
+        fun failure()
     }
 }
