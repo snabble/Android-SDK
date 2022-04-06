@@ -142,6 +142,17 @@ fun View.accessibility(block: AccessibilityToolBox.() -> Any) {
     block(toolbox)
 }
 
+val View.accessibility: AccessibilityToolBox
+    get() {
+        var toolbox = getTag(R.id.snabble_accessibility_toolbox) as? AccessibilityToolBox
+        if (toolbox == null) {
+            toolbox = AccessibilityToolBox(this)
+            setTag(R.id.snabble_accessibility_toolbox, toolbox)
+            ViewCompat.setAccessibilityDelegate(this, toolbox)
+        }
+        return toolbox
+    }
+
 fun View.setClickDescription(stringId: Int, vararg formatArgs: Any) {
     setClickDescription(context.getString(stringId, formatArgs))
 }

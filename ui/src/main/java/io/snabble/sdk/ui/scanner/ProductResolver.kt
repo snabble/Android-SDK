@@ -10,13 +10,36 @@ import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.gs1.GS1Code
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.scanner.ProductResolver.*
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.utils.Age
 import io.snabble.sdk.utils.Dispatch
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
+import kotlin.Boolean
+import kotlin.Deprecated
+import kotlin.Int
+import kotlin.ReplaceWith
+import kotlin.apply
 
+/**
+ * The product resolver parses Barcodes e.g. GTINs and provides all meta data about the scanned
+ * product like age restrictions, sale stop and embedded units. You can also observe errors like
+ * network errors or product not found errors.
+ *
+ * You can create a new instance by using the Builder.
+ *
+ * Here is a basic example how to show just the ProductConfirmationDialog:
+ * <pre>
+ * Builder(context)
+ *     .setCodes(ScannedCode.parse(SnabbleUI.project, code))
+ *     .create()
+ *     .resolve()
+ * </pre>
+ *
+ * You can find an advanced sample in the SelfScanningView.lookupAndShowProduct(...)
+ */
 class ProductResolver private constructor(private val context: Context, private val project: Project) {
     private var resolveBundles = true
     private val productConfirmationDialog = ProductConfirmationDialog(context, project)
@@ -157,7 +180,6 @@ class ProductResolver private constructor(private val context: Context, private 
                                 handleProductError()
                             }
                         })
-
                     }
                 }
             }
@@ -297,83 +319,175 @@ class ProductResolver private constructor(private val context: Context, private 
         return false
     }
 
-    @Deprecated("Use resolve() instead")
+    // @hide
+    @Deprecated("Use resolve() instead", ReplaceWith("resolve()"))
     fun show() = resolve()
 
+    /**
+     * Resolve the product
+     */
     fun resolve() {
         lookupProductData(scannedCodes, null)
     }
 
+    /**
+     * Dismiss the product confirmation dialog.
+     */
     fun dismiss() {
         productConfirmationDialog.dismiss(false)
     }
 
+    /**
+     * Add the resolved product to the cart.
+     */
     fun addResolvedItemToCart() {
         productConfirmationDialog.addToCart()
     }
 
-    interface OnShowListener {
+    /**
+     * Listener for showing the product confirmation dialog.
+     * We use this internal to stop the camera preview.
+     */
+    fun interface OnShowListener {
+        /**
+         * Dialog is shown.
+         */
         fun onShow()
     }
 
-    interface OnDismissListener {
+    /**
+     * Listener for dismissing the product confirmation dialog.
+     * We use this internal to continue the camera preview.
+     */
+    fun interface OnDismissListener {
+        /**
+         * Dialog was dismissed.
+         */
         fun onDismiss()
     }
 
-    interface OnSaleStopListener {
+    /**
+     * Sale stop listener.
+     */
+    fun interface OnSaleStopListener {
+        /**
+         * Will be invoked when the product has the sale stop flag set.
+         */
         fun onSaleStop()
     }
 
-    interface OnNotForSaleListener {
+    /**
+     * Not for sale listener.
+     */
+    fun interface OnNotForSaleListener {
+        /**
+         * Will be invoked when the product has the not for sale flag set.
+         */
         fun onNotForSale(product: Product)
     }
 
-    interface OnShelfCodeScannedListener {
+    /**
+     * The shelf code scanned listener.
+     */
+    fun interface OnShelfCodeScannedListener {
+        /**
+         * TODO
+         */
         fun onShelfCodeScanned()
     }
 
-    interface OnProductNotFoundListener {
+    /**
+     * The product not found listener.
+     */
+    fun interface OnProductNotFoundListener {
+        /**
+         * Will be invoked when the product was not found.
+         */
         fun onProductNotFound()
     }
 
-    interface OnProductFoundListener {
+    /**
+     * The product found listener.
+     */
+    fun interface OnProductFoundListener {
+        /**
+         * Provides the found product with its resolved scanned code.
+         */
         fun onProductFound(product: Product, scannedCode: ScannedCode)
     }
 
-    interface OnNetworkErrorListener {
+    /**
+     * The network error listener.
+     */
+    fun interface OnNetworkErrorListener {
+        /**
+         * Will be invoked when a network error accrued.
+         */
         fun onNetworkError()
     }
 
-    interface OnAgeNotReachedListener {
+    /**
+     * The age not reached listener.
+     */
+    fun interface OnAgeNotReachedListener {
+        /**
+         * TODO
+         */
         fun onAgeNotReached()
     }
 
-    interface OnAlreadyScannedListener {
+    /**
+     * The already scanned listener.
+     */
+    fun interface OnAlreadyScannedListener {
+        /**
+         * Will be invoked when the product was already scanned.
+         */
         fun onAlreadyScanned()
     }
 
+    /**
+     * The builder class to create a new instance of the product resolver.
+     * @param context The context for the product resolver
+     * @param project The optional project of the product resolver, by default the current project will be used
+     */
     class Builder @JvmOverloads constructor(
         context: Context,
         private val project: Project = SnabbleUI.project
     ) {
-        private val productResolver: ProductResolver = ProductResolver(context, project)
+        private val productResolver = ProductResolver(context, project)
 
+        /**
+         * Set the scanned codes to analyse.
+         */
         fun setCodes(codes: List<ScannedCode>) = apply {
             productResolver.scannedCodes = codes
         }
 
+        /**
+         * Set the scanned code to analyse.
+         */
         fun setCode(code: ScannedCode) = apply {
             productResolver.scannedCodes = listOf(code)
         }
 
+        /**
+         * Set the barcode to analyse.
+         */
         fun setBarcode(barcode: Barcode) = apply {
             setCodes(ScannedCode.parse(project, barcode.text))
         }
 
+        /**
+         * Set the barcode format.
+         */
         fun setBarcodeFormat(barcodeFormat: BarcodeFormat?) = apply {
             productResolver.barcodeFormat = barcodeFormat
         }
 
+        /**
+         * Set a listener which is invoked when the product confirmation dialog is shown.
+         */
         fun setOnShowListener(listener: OnShowListener) = apply {
             productResolver.onShowListener = listener
         }
@@ -382,69 +496,91 @@ class ProductResolver private constructor(private val context: Context, private 
             productResolver.onKeyListener = listener
         }
 
+        /**
+         * Set a listener which is invoked when the product confirmation dialog is dismissed.
+         */
         fun setOnDismissListener(listener: OnDismissListener) = apply {
             productResolver.onDismissListener = listener
         }
 
+        /**
+         * Set a product not found listener.
+         */
         fun setOnProductNotFoundListener(listener: OnProductNotFoundListener) = apply {
             productResolver.onProductNotFoundListener = listener
         }
 
+        /**
+         * Set a product not found listener.
+         */
         fun setOnProductNotFoundListener(listener: () -> kotlin.Unit) =
-            setOnProductNotFoundListener(object : OnProductNotFoundListener {
-                override fun onProductNotFound() = listener.invoke()
-            })
+            setOnProductNotFoundListener(OnProductNotFoundListener { listener.invoke() })
 
+        /**
+         * Set a product found listener.
+         */
         fun setOnProductFoundListener(listener: OnProductFoundListener) = apply {
             productResolver.onProductFoundListener = listener
         }
 
-        fun setOnProductFoundListener(listener: (product: Product, scannedCode: ScannedCode) -> kotlin.Unit) =
-            setOnProductFoundListener(object : OnProductFoundListener {
-                override fun onProductFound(product: Product, scannedCode: ScannedCode) {
-                    listener.invoke(product, scannedCode)
-                }
-            })
-
+        /**
+         * Set a network error listener.
+         */
         fun setOnNetworkErrorListener(listener: OnNetworkErrorListener) = apply {
             productResolver.onNetworkErrorListener = listener
         }
 
-        fun setOnNetworkErrorListener(listener: () -> kotlin.Unit) =
-            setOnNetworkErrorListener(object : OnNetworkErrorListener {
-                override fun onNetworkError() = listener.invoke()
-            })
-
+        /**
+         * Set a SaleStop listener.
+         */
         fun setOnSaleStopListener(listener: OnSaleStopListener) = apply {
             productResolver.onSaleStopListener = listener
         }
 
+        /**
+         * Set a NotForSale listener.
+         */
         fun setOnNotForSaleListener(listener: OnNotForSaleListener) = apply {
             productResolver.onNotForSaleListener = listener
         }
 
+        /**
+         * Set an age not reached listener.
+         */
         fun setOnAgeNotReachedListener(listener: OnAgeNotReachedListener) = apply {
             productResolver.onAgeNotReachedListener = listener
         }
 
+        /**
+         * Set an already scanned listener.
+         */
         fun setOnAlreadyScannedListener(listener: OnAlreadyScannedListener) = apply {
             productResolver.onAlreadyScannedListener = listener
         }
 
+        /**
+         * Set a shelf code scanned listener.
+         */
         fun setOnShelfCodeScannedListener(listener: OnShelfCodeScannedListener) = apply {
             productResolver.onShelfCodeScannedListener = listener
         }
 
+        /**
+         * Disable bundle selection.
+         */
         fun disableBundleSelection() = apply {
             productResolver.resolveBundles = false
         }
 
+        /**
+         * Create the product resolver.
+         */
         fun create() = productResolver
     }
 
     init {
         productConfirmationDialog.setOnDismissListener {
-            if (lastProduct != null && productConfirmationDialog.wasAddedToCart()) {
+            if (lastProduct != null && productConfirmationDialog.wasAddedToCart) {
                 checkMinAge(lastProduct!!)
             }
             onDismissListener?.onDismiss()
