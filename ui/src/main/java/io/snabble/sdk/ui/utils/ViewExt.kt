@@ -112,4 +112,4 @@ val Number.sp: Float
     get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, toFloat(), Resources.getSystem().displayMetrics)
 
 fun RecyclerView.ViewHolder.getString(@StringRes string: Int, vararg args: Any?) =
-    itemView.resources.getString(string, args)
+    itemView.resources.getString(string, *args)
