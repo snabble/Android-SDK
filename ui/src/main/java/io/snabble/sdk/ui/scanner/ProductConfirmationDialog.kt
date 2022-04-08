@@ -383,7 +383,7 @@ class ProductConfirmationDialog(
                 info.setTraversalAfter(addToCart)
             }
 
-            onAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) { _, _, event ->
+            onPopulateAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) { _, _, event ->
                 event.text.add(close.resources.getString(R.string.Snabble_Scanner_Accessibility_eventBarcodeDetected))
             }
         }
@@ -392,14 +392,16 @@ class ProductConfirmationDialog(
             if (getQuantity() != count) {
                 quantity.setText(count?.toString())
             }
-            quantity.announceForAccessibility(
-                quantity.resources.getString(
-                    R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate,
-                    count,
-                    viewModel.cartItem.displayName,
-                    viewModel.cartItem.totalPriceText
+            count?.let {
+                quantity.announceForAccessibility(
+                    quantity.resources.getString(
+                        R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate,
+                        count,
+                        viewModel.cartItem.displayName,
+                        viewModel.cartItem.totalPriceText
+                    )
                 )
-            )
+            }
         }
 
         originalPrice.bindTextOrHide(viewModel.originalPrice)

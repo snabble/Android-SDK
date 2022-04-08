@@ -23,6 +23,7 @@ typealias AccessibilityEventListener = (host: ViewGroup?,
 
 class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompat() {
     private val eventListeners = mutableMapOf<Int, AccessibilityEventListener>()
+    private val populateListeners = mutableMapOf<Int, AccessibilityEventListener>()
     private var clickActionLabel: String? = null
     private var longClickActionLabel: String? = null
     val isTalkBackActive
@@ -55,6 +56,12 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
         return super.onRequestSendAccessibilityEvent(host, child, event)
     }
 
+    override fun onPopulateAccessibilityEvent(host: View, event: AccessibilityEvent?) {
+        val listener = event?.let { populateListeners[event.eventType] }
+        listener?.invoke(host.parent as? ViewGroup, host, event)
+        super.onPopulateAccessibilityEvent(host, event)
+    }
+
     override fun onInitializeAccessibilityNodeInfo(
         host: View,
         info: AccessibilityNodeInfoCompat
@@ -81,6 +88,10 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
 
     fun onAccessibilityEvent(@EventType event: Int, block: AccessibilityEventListener) {
         eventListeners[event] = block
+    }
+
+    fun onPopulateAccessibilityEvent(@EventType event: Int, block: AccessibilityEventListener) {
+        populateListeners[event] = block
     }
 
     fun setLongClickAction(label: String, onLongClick: (() -> Any)? = null) {
