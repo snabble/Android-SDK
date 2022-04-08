@@ -42,7 +42,8 @@ import kotlin.apply
  */
 class ProductResolver private constructor(private val context: Context, private val project: Project) {
     private var resolveBundles = true
-    private val productConfirmationDialog = ProductConfirmationDialog(context, project)
+    private val productConfirmationDialog = ProductConfirmationDialog(context)
+    private var productDialogViewModel: ProductConfirmationDialog.ViewModel? = null
     var scannedCodes: List<ScannedCode> = emptyList()
         private set
     private val progressDialog: DelayedProgressDialog
@@ -278,7 +279,9 @@ class ProductResolver private constructor(private val context: Context, private 
 
         if (product != null && scannedCode != null) {
             if (handleProductFlags(product, scannedCode)) {
-                productConfirmationDialog.show(product, scannedCode)
+                val model = ProductConfirmationDialog.ViewModel(context, SnabbleUI.project, product, scannedCode)
+                productDialogViewModel = model
+                productConfirmationDialog.show(model)
             }
         }
     }
@@ -341,7 +344,8 @@ class ProductResolver private constructor(private val context: Context, private 
      * Add the resolved product to the cart.
      */
     fun addResolvedItemToCart() {
-        productConfirmationDialog.addToCart()
+        // TODO check the bang operator
+        productDialogViewModel!!.addToCart()
     }
 
     /**
