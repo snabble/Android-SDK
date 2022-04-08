@@ -42,7 +42,7 @@ import kotlin.apply
  */
 class ProductResolver private constructor(private val context: Context, private val project: Project) {
     private var resolveBundles = true
-    private val productConfirmationDialog = ProductConfirmationDialog(context)
+    private lateinit var productConfirmationDialog: ProductConfirmationDialog
     private var productDialogViewModel: ProductConfirmationDialog.ViewModel? = null
     var scannedCodes: List<ScannedCode> = emptyList()
         private set
@@ -460,6 +460,9 @@ class ProductResolver private constructor(private val context: Context, private 
         private val project: Project = SnabbleUI.project
     ) {
         private val productResolver = ProductResolver(context, project)
+        private var factory = ProductConfirmationDialog.Factory {
+            DefaultProductConfirmationDialog(context)
+        }
 
         /**
          * Set the scanned codes to analyse.
@@ -496,6 +499,10 @@ class ProductResolver private constructor(private val context: Context, private 
             productResolver.onShowListener = listener
         }
 
+        /**
+         * Set a key listener.
+         * @see DialogInterface.OnKeyListener
+         */
         fun setOnKeyListener(listener: DialogInterface.OnKeyListener) = apply {
             productResolver.onKeyListener = listener
         }
@@ -577,14 +584,23 @@ class ProductResolver private constructor(private val context: Context, private 
         }
 
         /**
+         * Set a factory for a custom DialogConfirmationDialog implementation.
+         */
+        fun setDialogConfirmationDialogFactory(factory: ProductConfirmationDialog.Factory) = apply {
+            this.factory = factory
+        }
+
+        /**
          * Create the product resolver.
          */
-        fun create() = productResolver
+        fun create() = productResolver.apply {
+            productConfirmationDialog = factory.create()
+        }
     }
 
     init {
         productConfirmationDialog.setOnDismissListener {
-            if (lastProduct != null && productConfirmationDialog.wasAddedToCart) {
+            if (lastProduct != null && productDialogViewModel?.wasAddedToCart == true) {
                 checkMinAge(lastProduct!!)
             }
             onDismissListener?.onDismiss()

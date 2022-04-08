@@ -3,15 +3,11 @@ package io.snabble.sdk.ui.scanner
 import android.Manifest
 import android.content.Context
 import io.snabble.sdk.ui.SnabbleUI.executeAction
-import android.widget.EditText
 import android.widget.TextView
 import android.content.DialogInterface
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.R
-import android.view.accessibility.AccessibilityEvent
-import android.view.inputmethod.EditorInfo
 import io.snabble.sdk.ui.telemetry.Telemetry
-import android.view.Gravity
 import io.snabble.sdk.ui.SnabbleUI
 import android.text.style.StrikethroughSpan
 import com.squareup.picasso.Picasso
@@ -20,51 +16,28 @@ import io.snabble.sdk.utils.GsonHolder
 import android.content.pm.PackageManager
 import android.os.Vibrator
 import android.text.*
-import android.view.KeyEvent
 import android.view.View
-import android.view.animation.TranslateAnimation
-import android.view.animation.CycleInterpolator
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import io.snabble.sdk.*
-import io.snabble.sdk.Unit
-import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.*
-import io.snabble.sdk.utils.Dispatch
-import java.lang.NumberFormatException
 
 /**
  * The product confirmation dialog with the option to enter discounts and change the quantity.
  */
-class ProductConfirmationDialog(
-    private val context: Context,
-) {
-    private var alertDialog: AlertDialog? = null
-    private lateinit var quantity: EditText
-    private lateinit var quantityTextInput: View
-    private lateinit var price: TextView
-    private lateinit var originalPrice: TextView
-    private lateinit var depositPrice: TextView
-    private lateinit var quantityAnnotation: TextView
-    private lateinit var addToCart: AppCompatButton
-    private lateinit var plusLayout: View
-    private lateinit var minusLayout: View
-    private lateinit var enterReducedPrice: Button
-    private var onDismissListener: DialogInterface.OnDismissListener? = null
-    private var onShowListener: DialogInterface.OnShowListener? = null
-    private var onKeyListener: DialogInterface.OnKeyListener? = null
-    var wasAddedToCart = false
-        private set
+interface ProductConfirmationDialog {
+    /**
+     * Simple abstract factory to inject a custom ProductConfirmationDialog implementation
+     */
+    fun interface Factory {
+        /** Create a new ProductConfirmationDialog instance */
+        fun create(): ProductConfirmationDialog
+    }
 
     /**
      * The view model of the product confirmation dialog, should be helpful if you want to customize
@@ -84,7 +57,7 @@ class ProductConfirmationDialog(
         val quantity = MutableLiveData<Int?>(null)
         /** The content description of the quantity, can be null */
         val quantityContentDescription = MutableLiveData<String?>()
-        /** TODO check if the default value must be inverted */
+        /** True when the quantity can be changed */
         val quantityCanBeChanged: LiveData<Boolean> = MutableLiveData(!(scannedCode.hasEmbeddedData() && scannedCode.embeddedData > 0))
         /** The raw cart item */
         val cartItem = shoppingCart.newItem(product, scannedCode)
@@ -108,6 +81,9 @@ class ProductConfirmationDialog(
         val quantityVisible: LiveData<Boolean> = MutableLiveData(true)
         /** True when the plus and minus buttons should be shown */
         val quantityButtonsVisible: LiveData<Boolean> = MutableLiveData(true)
+        /** True when the item was added to the cart */
+        var wasAddedToCart: Boolean = false
+            private set
         // Might be not really useful, written with compatibility in mind
         private var isDismissed = false
         // syncs the quantity property with the cart item and updates the addToCartButtonText
@@ -207,7 +183,6 @@ class ProductConfirmationDialog(
             }
         }
 
-        // TODO this has to be verified with all the cases
         private fun updateButtons() {
             if (cartItem.isEditableInDialog) {
                 quantityCanBeChanged.postValue(true)
@@ -229,10 +204,10 @@ class ProductConfirmationDialog(
 
         fun addToCart() {
             if (isDismissed) return
+            wasAddedToCart = true
             Telemetry.event(Telemetry.Event.ConfirmedProduct, product)
             val q = Math.max(quantity.value ?: 0, cartItem.scannedCode.embeddedData)
             if (product.type == Product.Type.UserWeighed && q == 0) {
-                // FIXME: shake()
                 return
             }
             if (shoppingCart.indexOf(cartItem) == -1) {
@@ -346,189 +321,30 @@ class ProductConfirmationDialog(
     }
 
     /**
-     * Show the dialog for the given project and the scanned code.
+     * Show the product confimation dialog with the given view model.
      */
-    fun show(viewModel: ViewModel) {
-        dismiss(false)
-        val view = View.inflate(context, R.layout.snabble_dialog_product_confirmation, null)
-        alertDialog = LifecycleAwareAlertDialogBuilder(context)
-            .setView(view)
-            .create()
-            .apply {
-                setOnShowListener(onShowListener)
-                setOnDismissListener {
-                    viewModel.dismiss()
-                    onDismissListener?.onDismiss(it)
-                }
-                setOnKeyListener(onKeyListener)
-            }
-        quantity = view.findViewById(R.id.quantity)
-        quantityTextInput = view.findViewById(R.id.quantity_text_input)
-        val subtitle = view.findViewById<TextView>(R.id.subtitle)
-        val name = view.findViewById<TextView>(R.id.name)
-        price = view.findViewById(R.id.price)
-        originalPrice = view.findViewById(R.id.originalPrice)
-        depositPrice = view.findViewById(R.id.depositPrice)
-        quantityAnnotation = view.findViewById(R.id.quantity_annotation)
-        addToCart = view.findViewById(R.id.addToCart)
-        val close = view.findViewById<View>(R.id.close)
-        val plus = view.findViewById<View>(R.id.plus)
-        val minus = view.findViewById<View>(R.id.minus)
-        plusLayout = view.findViewById(R.id.plus_layout)
-        minusLayout = view.findViewById(R.id.minus_layout)
-        enterReducedPrice = view.findViewById(R.id.enterReducedPrice)
+    fun show(viewModel: ViewModel)
 
-        close.accessibility {
-            onInitializeAccessibilityNodeInfo { info ->
-                info.setTraversalAfter(addToCart)
-            }
+    /**
+     * Dismiss the product confimation dialog
+     */
+    fun dismiss(addToCart: Boolean)
 
-            onPopulateAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) { _, _, event ->
-                var contextHint = close.resources.getString(R.string.Snabble_Scanner_Accessibility_eventBarcodeDetected)
-                // Special case where the edit view is directly focused, we need to provide more context
-                if (viewModel.product.type == Product.Type.UserWeighed) {
-                    // Add full product name
-                    contextHint += ". " + viewModel.product.subtitle + ". " + viewModel.product.name + " "
-                    // Add price
-                    contextHint += viewModel.priceContentDescription.value + ". "
-                    // Add what to enter
-                    // FIXME (low prio) talkback will say "Please enter the quantity in 'g'" instead of saying "gramme", but this should be good enough for now
-                    contextHint += close.resources.getString(R.string.Snabble_Scanner_Accessibility_enterQuantity, viewModel.cartItem.unit?.displayValue)
-                }
-                event.text.add(contextHint)
-            }
-        }
+    /**
+     * Set a dismiss listener
+     * @see DialogInterface.OnDismissListener
+     */
+    fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener?)
 
-        viewModel.quantity.observe(requireNotNull(quantity.findViewTreeLifecycleOwner())) { count ->
-            if (getQuantity() != count) {
-                quantity.setText(count?.toString())
-            }
-            count?.let {
-                quantity.announceForAccessibility(
-                    quantity.resources.getString(
-                        R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate,
-                        count,
-                        viewModel.cartItem.displayName,
-                        viewModel.cartItem.totalPriceText
-                    )
-                )
-            }
-        }
+    /**
+     * Set a show listener
+     * @see DialogInterface.OnShowListener
+     */
+    fun setOnShowListener(onShowListener: DialogInterface.OnShowListener?)
 
-        originalPrice.bindTextOrHide(viewModel.originalPrice)
-        depositPrice.bindTextOrHide(viewModel.depositPrice)
-
-        enterReducedPrice.bindTextOrHide(viewModel.enterReducedPriceButtonText)
-        enterReducedPrice.setOnClickListener {
-            val fragmentManager = UIUtils.getHostFragmentActivity(context).supportFragmentManager
-            SelectReducedPriceDialogFragment(viewModel).show(fragmentManager, null)
-        }
-        plusLayout.bindVisibility(viewModel.quantityButtonsVisible)
-        plusLayout.bindEnabledState(viewModel.quantityCanBeIncreased)
-        plus.bindEnabledState(viewModel.quantityCanBeIncreased)
-        minusLayout.bindVisibility(viewModel.quantityButtonsVisible)
-        minusLayout.bindEnabledState(viewModel.quantityCanBeDecreased)
-        minus.bindEnabledState(viewModel.quantityCanBeDecreased)
-
-        name.text = viewModel.product.name
-        subtitle.setTextOrHide(viewModel.product.subtitle)
-        quantity.bindEnabledState(viewModel.quantityCanBeChanged)
-        quantityTextInput.bindVisibility(viewModel.quantityVisible)
-        quantityAnnotation.bindVisibility(viewModel.quantityVisible)
-        price.isVisible = true
-        quantity.clearFocus()
-        quantityAnnotation.setTextOrHide(viewModel.cartItem.unit?.displayValue)
-        quantity.filters = arrayOf(InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY))
-        quantity.setOnEditorActionListener { _, actionId: Int, event: KeyEvent ->
-            if (actionId == EditorInfo.IME_ACTION_DONE
-                || (event.action == KeyEvent.ACTION_DOWN
-                        && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
-                viewModel.addToCart()
-                return@setOnEditorActionListener true
-            }
-            false
-        }
-        quantity.addTextChangedListener { s ->
-            val number = s.toString().toIntOrNull()
-            viewModel.quantity.postWhenChanged(number)
-        }
-        price.bindText(viewModel.price)
-        plus.setOnClickListener {
-            var q = getQuantity()
-            if (q < ShoppingCart.MAX_QUANTITY) {
-                viewModel.quantity.postValue(++q)
-            } else {
-                plus.announceForAccessibility(plus.resources.getString(R.string.Snabble_Scanner_Accessibility_eventMaxQuantityReached))
-            }
-        }
-        minus.setOnClickListener {
-            var q = getQuantity()
-            viewModel.quantity.postValue(--q)
-        }
-        addToCart.setOnClickListener {
-            viewModel.addToCart()
-            alertDialog?.dismiss()
-        }
-        close.setOnClickListener {
-            Telemetry.event(Telemetry.Event.RejectedProduct, viewModel.product)
-            dismiss(false)
-        }
-        val window = alertDialog?.window
-        if (window == null) {
-            alertDialog?.dismiss()
-            return
-        }
-        val layoutParams = window.attributes
-        layoutParams.y = 48.dpInPx
-        window.setBackgroundDrawableResource(R.drawable.snabble_scanner_dialog_background)
-        window.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL)
-        window.attributes = layoutParams
-        alertDialog?.show()
-        if (viewModel.product.type == Product.Type.UserWeighed) {
-            quantity.requestFocus()
-            Dispatch.mainThread {
-                val inputMethodManager = context.applicationContext
-                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(quantity, 0)
-            }
-        }
-        executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_SHOWN)
-    }
-
-    private fun shake() {
-        val shake = TranslateAnimation(0f, 3.dp, 0f, 0f)
-        shake.duration = 500
-        shake.interpolator = CycleInterpolator(7f)
-        quantity.startAnimation(shake)
-    }
-
-    private fun getQuantity() = try {
-        quantity.text.toString().toInt()
-    } catch (e: NumberFormatException) {
-        0
-    }
-
-    fun dismiss(addToCart: Boolean) {
-        wasAddedToCart = addToCart
-        alertDialog?.let { alertDialog ->
-            alertDialog.dismiss()
-            alertDialog.setOnDismissListener(null)
-            this.alertDialog = null
-            if (!addToCart) {
-                executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_HIDDEN)
-            }
-        }
-    }
-
-    fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener?) {
-        this.onDismissListener = onDismissListener
-    }
-
-    fun setOnShowListener(onShowListener: DialogInterface.OnShowListener?) {
-        this.onShowListener = onShowListener
-    }
-
-    fun setOnKeyListener(onKeyListener: DialogInterface.OnKeyListener?) {
-        this.onKeyListener = onKeyListener
-    }
+    /**
+     * Set a key listener
+     * @see DialogInterface.OnKeyListener
+     */
+    fun setOnKeyListener(onKeyListener: DialogInterface.OnKeyListener?)
 }
