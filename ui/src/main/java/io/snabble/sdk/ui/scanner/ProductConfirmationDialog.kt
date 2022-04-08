@@ -80,8 +80,8 @@ class ProductConfirmationDialog(
         private val priceFormatter = project.priceFormatter
         /** The related shopping cart */
         val shoppingCart = project.shoppingCart
-        /** The quantity of the product, can be null */
-        val quantity = MutableLiveData(1)
+        /** The quantity of the product, can be null e.g. in case of user weighted products */
+        val quantity = MutableLiveData<Int?>(null)
         /** The content description of the quantity, can be null */
         val quantityContentDescription = MutableLiveData<String?>()
         /** TODO check if the default value must be inverted */
@@ -118,10 +118,13 @@ class ProductConfirmationDialog(
             val existingItem = shoppingCart.getExistingMergeableProduct(cartItem.product)
             val isMergeable = existingItem != null && existingItem.isMergeable && cartItem.isMergeable
             if (isMergeable) {
-                quantity.postValue(existingItem.effectiveQuantity + 1)
+                quantity.cycleFreeValue(existingItem.effectiveQuantity + 1)
                 addToCartButtonText.postString(R.string.Snabble_Scanner_updateCart)
             } else {
-                quantity.postValue(cartItem.effectiveQuantity)
+                val effectiveQuantity = cartItem.effectiveQuantity
+                if (quantity.value != null && effectiveQuantity != 0) {
+                    quantity.cycleFreeValue(cartItem.effectiveQuantity)
+                }
                 addToCartButtonText.postString(R.string.Snabble_Scanner_addToCart)
             }
             quantityContentDescription.postNullableString(
@@ -206,26 +209,6 @@ class ProductConfirmationDialog(
 
         // TODO this has to be verified with all the cases
         private fun updateButtons() {
-            //if (cartItem.isEditableInDialog) {
-            //    quantity.isEnabled = true
-            //    if (cartItem.product?.type == Product.Type.UserWeighed) {
-            //        plusLayout.visibility = View.GONE
-            //        minusLayout.visibility = View.GONE
-            //    } else {
-            //        plusLayout.visibility = View.VISIBLE
-            //        minusLayout.visibility = View.VISIBLE
-            //        quantity.visibility = View.VISIBLE
-            //        quantityTextInput.visibility = View.VISIBLE
-            //    }
-            //} else {
-            //    quantity.isEnabled = false
-            //    plusLayout.visibility = View.GONE
-            //    minusLayout.visibility = View.GONE
-            //    quantity.visibility = View.GONE
-            //    quantityTextInput.visibility = View.GONE
-            //    quantityAnnotation.visibility = View.GONE
-            //}
-
             if (cartItem.isEditableInDialog) {
                 quantityCanBeChanged.postValue(true)
                 quantityVisible.postValue(true)
@@ -237,17 +220,10 @@ class ProductConfirmationDialog(
             }
             quantityCanBeIncreased.postValue(true)
             quantityCanBeDecreased.postValue(quantity.value ?: 0 > 1)
-            if (cartItem.product?.type != Product.Type.UserWeighed) {
-                if (cartItem.product?.type == Product.Type.Article) {
-                    // This should be impossible IMHO, currently that can only happen when the quantity of the view cannot be parsed AFIK
-                    quantity.cycleFreeValue(quantity.value?.coerceAtLeast(0))
-                }
-            } else {
-                //quantity.cycleFreeValue(null)
-            }
-            if (cartItem.unit == Unit.PRICE) {
-                // FIXME the quantity is the price!?
-                //quantity.setText(cartItem.priceText)
+            if (cartItem.product?.type == Product.Type.Article) {
+                quantity.cycleFreeValue(quantity.value?.coerceAtLeast(0))
+            } else if (cartItem.product?.type == Product.Type.UserWeighed && quantity.value == 0) {
+                quantity.cycleFreeValue(null)
             }
         }
 
@@ -275,7 +251,6 @@ class ProductConfirmationDialog(
             val args = Bundle()
             args.putString("cartItem", GsonHolder.get().toJson(cartItem))
             executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_HIDDEN, args)
-            // TODO check if this is not required anymore: dismiss(true)
             if (Snabble.config.vibrateToConfirmCartFilled &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.VIBRATE)
                 == PackageManager.PERMISSION_GRANTED
@@ -363,6 +338,14 @@ class ProductConfirmationDialog(
     }
 
     /**
+     * Post value only when the value has changed to avoid loops, be aware that a pending update is
+     * ignored.
+     */
+    fun <T> MutableLiveData<T>.postWhenChanged(value: T) {
+        if (this.value != value) postValue(value)
+    }
+
+    /**
      * Show the dialog for the given project and the scanned code.
      */
     fun show(viewModel: ViewModel) {
@@ -373,7 +356,10 @@ class ProductConfirmationDialog(
             .create()
             .apply {
                 setOnShowListener(onShowListener)
-                setOnDismissListener(onDismissListener)
+                setOnDismissListener {
+                    viewModel.dismiss()
+                    onDismissListener?.onDismiss(it)
+                }
                 setOnKeyListener(onKeyListener)
             }
         quantity = view.findViewById(R.id.quantity)
@@ -404,7 +390,7 @@ class ProductConfirmationDialog(
 
         viewModel.quantity.observe(requireNotNull(quantity.findViewTreeLifecycleOwner())) { count ->
             if (getQuantity() != count) {
-                quantity.setText(count.toString())
+                quantity.setText(count?.toString())
             }
             quantity.announceForAccessibility(
                 quantity.resources.getString(
@@ -450,12 +436,8 @@ class ProductConfirmationDialog(
             false
         }
         quantity.addTextChangedListener { s ->
-            val number = try {
-                s.toString().toInt()
-            } catch (e: NumberFormatException) {
-                0 // FIXME bad default?
-            }
-            viewModel.quantity.postValue(number)
+            val number = s.toString().toIntOrNull()
+            viewModel.quantity.postWhenChanged(number)
         }
         price.bindText(viewModel.price)
         plus.setOnClickListener {
@@ -476,12 +458,11 @@ class ProductConfirmationDialog(
         }
         close.setOnClickListener {
             Telemetry.event(Telemetry.Event.RejectedProduct, viewModel.product)
-            viewModel.dismiss()
             dismiss(false)
         }
         val window = alertDialog?.window
         if (window == null) {
-            viewModel.dismiss()
+            alertDialog?.dismiss()
             return
         }
         val layoutParams = window.attributes
