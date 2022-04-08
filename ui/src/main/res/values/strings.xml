@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="aldi.sued.ch.87cc7e.Snabble.Scanner.unknownBarcode">Product not recognized. You can manually enter the article number in the search in the upper right corner. You can find it on the price tag on the shelf.</string>
     <string name="release.safety.catch">Please remove the bottle\'s security device (if present) at the designated station at the exit.</string>
     <string name="Snabble.addDiscount">Enter discount</string>
     <string name="Snabble.ageVerification.explanation">To purchase certain products like alcoholic beverages, verifying your age is required. Enter the 7-digit Number from the back side of your ID card.</string>
@@ -107,6 +106,7 @@
     <string name="Snabble.Payment.usableAt">Usable at: %s</string>
     <string name="Snabble.Payment.waiting">Waiting for confirmation</string>
     <string name="Snabble.PaymentCard.editingHint">Your card data is only stored in encrypted form and therefore cannot be edited.</string>
+    <string name="Snabble.PaymentContinuation.message">Continuing the payment</string>
     <string name="Snabble.PaymentError.title">An error has occurred</string>
     <string name="Snabble.PaymentError.tryAgain">Try again</string>
     <string name="Snabble.PaymentMethods.add">Add payment method</string>
@@ -177,6 +177,7 @@
     <string name="Snabble.Save">Save</string>
     <string name="Snabble.Scanner.Accessibility.actionHideHint">Hide hint permanently</string>
     <string name="Snabble.Scanner.Accessibility.actionUnderstood">Understood</string>
+    <string name="Snabble.Scanner.Accessibility.enterQuantity">Please enter the quantity in %s</string>
     <string name="Snabble.Scanner.Accessibility.eventBackInScanner">You are back in scanner</string>
     <string name="Snabble.Scanner.Accessibility.eventBarcodeDetected">Barcode detected</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">You reached the maximum count of items for the cart</string>
