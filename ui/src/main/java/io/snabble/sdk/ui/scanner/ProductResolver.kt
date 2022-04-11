@@ -42,7 +42,7 @@ import kotlin.apply
  */
 class ProductResolver private constructor(private val context: Context, private val project: Project) {
     private var resolveBundles = true
-    private lateinit var productConfirmationDialog: ProductConfirmationDialog
+    private var productConfirmationDialog: ProductConfirmationDialog? = null
     private var productDialogViewModel: ProductConfirmationDialog.ViewModel? = null
     var scannedCodes: List<ScannedCode> = emptyList()
         private set
@@ -89,7 +89,7 @@ class ProductResolver private constructor(private val context: Context, private 
     )
 
     private fun lookupProductData(scannedCodes: List<ScannedCode>, gs1Code: GS1Code?) {
-        productConfirmationDialog.dismiss(false)
+        productConfirmationDialog?.dismiss(false)
         progressDialog.showAfterDelay(300)
         onShowListener?.onShow()
 
@@ -281,7 +281,7 @@ class ProductResolver private constructor(private val context: Context, private 
             if (handleProductFlags(product, scannedCode)) {
                 val model = ProductConfirmationDialog.ViewModel(context, SnabbleUI.project, product, scannedCode)
                 productDialogViewModel = model
-                productConfirmationDialog.show(model)
+                productConfirmationDialog?.show(model)
             }
         }
     }
@@ -337,7 +337,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * Dismiss the product confirmation dialog.
      */
     fun dismiss() {
-        productConfirmationDialog.dismiss(false)
+        productConfirmationDialog?.dismiss(false)
     }
 
     /**
@@ -595,19 +595,19 @@ class ProductResolver private constructor(private val context: Context, private 
          */
         fun create() = productResolver.apply {
             productConfirmationDialog = factory.create()
+            productConfirmationDialog?.setOnDismissListener {
+                if (lastProduct != null && productDialogViewModel?.wasAddedToCart == true) {
+                    checkMinAge(lastProduct!!)
+                }
+                onDismissListener?.onDismiss()
+            }
+            productConfirmationDialog?.setOnKeyListener { dialog: DialogInterface?, keyCode: Int, event: KeyEvent? ->
+                onKeyListener?.onKey(dialog, keyCode, event) ?: false
+            }
         }
     }
 
     init {
-        productConfirmationDialog.setOnDismissListener {
-            if (lastProduct != null && productDialogViewModel?.wasAddedToCart == true) {
-                checkMinAge(lastProduct!!)
-            }
-            onDismissListener?.onDismiss()
-        }
-        productConfirmationDialog.setOnKeyListener { dialog: DialogInterface?, keyCode: Int, event: KeyEvent? ->
-            onKeyListener?.onKey(dialog, keyCode, event) ?: false
-        }
         progressDialog = DelayedProgressDialog(context)
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog.setMessage(context.getString(R.string.Snabble_loadingProductInformation))
