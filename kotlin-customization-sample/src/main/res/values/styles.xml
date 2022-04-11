@@ -1,0 +1,78 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/snabbleBlue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/snabbleBlue</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorPrimaryInverse">@color/snabbleBlue</item>
+
+        <item name="colorSecondary">@color/snabbleBlue</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/snabbleBlue</item>
+        <item name="colorOnSecondaryContainer">@color/white</item>
+
+        <item name="colorTertiary">@color/snabbleBlue</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/snabbleBlue</item>
+        <item name="colorOnTertiaryContainer">@color/white</item>
+
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.FancySample.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.FancySample.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.FancySample.LargeComponent</item>
+
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.FancySample.BodyLarge</item>
+        <!--item name="textAppearanceBodyMedium">@style/TextAppearance.FancySample.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.FancySample.BodySmall</item-->
+
+        <item name="fontFamily">monospace</item>
+    </style>
+
+    <style name="ShapeAppearance.FancySample.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamilyTopLeft">cut</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">4dp</item>
+        <item name="cornerSizeBottomRight">2dp</item>
+    </style>
+
+    <style name="ShapeAppearance.FancySample.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamilyTopLeft">cut</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+        <item name="cornerSizeTopLeft">6dp</item>
+        <item name="cornerSizeBottomRight">2dp</item>
+    </style>
+
+    <style name="ShapeAppearance.FancySample.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamilyTopLeft">cut</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+        <item name="cornerSizeTopLeft">10dp</item>
+        <item name="cornerSizeBottomRight">4dp</item>
+    </style>
+
+    <style name="TextAppearance.FancySample.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/aclonica</item>
+        <item name="android:fontFamily">@font/aclonica</item>
+    </style>
+
+    <style name="TextAppearance.FancySample.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/aclonica</item>
+        <item name="android:fontFamily">@font/aclonica</item>
+    </style>
+
+    <style name="TextAppearance.FancySample.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/aclonica</item>
+        <item name="android:fontFamily">@font/aclonica</item>
+    </style>
+
+    <style name="LoadingTheme" parent="@style/AppTheme">
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowBackground">@drawable/loading</item>
+    </style>
+
+    <style name="SimpleDialogAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
+        <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
+    </style>
+</resources>

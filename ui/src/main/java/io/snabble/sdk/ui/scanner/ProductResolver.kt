@@ -456,7 +456,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * @param project The optional project of the product resolver, by default the current project will be used
      */
     class Builder @JvmOverloads constructor(
-        context: Context,
+        private val context: Context,
         private val project: Project = SnabbleUI.project
     ) {
         private val productResolver = ProductResolver(context, project)
@@ -586,8 +586,10 @@ class ProductResolver private constructor(private val context: Context, private 
         /**
          * Set a factory for a custom DialogConfirmationDialog implementation.
          */
-        fun setDialogConfirmationDialogFactory(factory: ProductConfirmationDialog.Factory) = apply {
-            this.factory = factory
+        fun setDialogConfirmationDialogFactory(factory: ProductConfirmationDialog.Factory?) = apply {
+            this.factory = factory ?: ProductConfirmationDialog.Factory {
+                DefaultProductConfirmationDialog(context)
+            }
         }
 
         /**

@@ -92,6 +92,8 @@ open class SelfScanningFragment : BaseFragment() {
         isStart = false
     }
 
+    open protected fun onSelfScanningViewCreated(selfScanningView: SelfScanningView) {}
+
     private fun createSelfScanningView() {
         if (selfScanningView == null) {
             selfScanningView = SelfScanningView(context).apply {
@@ -99,6 +101,7 @@ open class SelfScanningFragment : BaseFragment() {
             }
             rootView.addView(selfScanningView, 0)
             setHasOptionsMenu(true)
+            onSelfScanningViewCreated(selfScanningView!!)
         }
         permissionContainer.visibility = View.GONE
         canAskAgain = true
