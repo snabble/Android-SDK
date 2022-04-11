@@ -11,16 +11,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import androidx.lifecycle.runtime.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * Extends the normal (androidx) `AlertDialog.Builder` by adding a lifecycle observer and attaches
+ * Extends the `MaterialAlertDialogBuilder` by adding a lifecycle observer and attaches
  * itself to the hosting activity to detect its lifecycle events. With this you can use
  * `findViewTreeLifecycleOwner()` as expected for any `LiveData` related streams.
  */
 class LifecycleAwareAlertDialogBuilder @JvmOverloads constructor(
     @NonNull context: Context,
     @StyleRes themeResId: Int = 0
-): AlertDialog.Builder(context, themeResId) {
+): MaterialAlertDialogBuilder(context, themeResId) {
     private class DialogLifecycleOwner : LifecycleOwner, DefaultLifecycleObserver {
         private val lifecycle = LifecycleRegistry(this)
 
