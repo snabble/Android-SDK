@@ -99,7 +99,8 @@ class DefaultProductConfirmationDialog(
                     // Add price
                     contextHint += viewModel.priceContentDescription.value + ". "
                     // Add what to enter
-                    // FIXME (low prio) talkback will say "Please enter the quantity in 'g'" instead of saying "gramme", but this should be good enough for now
+                    // FIXME (low prio) talkback will say "Please enter the quantity in 'g'" instead
+                    // of saying "gramme", but this should be good enough for now
                     contextHint += close.resources.getString(R.string.Snabble_Scanner_Accessibility_enterQuantity, viewModel.cartItem.unit?.displayValue)
                 }
                 event.text.add(contextHint)
