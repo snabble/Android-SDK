@@ -1,38 +1,21 @@
 package io.snabble.testapp;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.cart.ShoppingCartActivity;
-import io.snabble.sdk.ui.checkout.CheckoutActivity;
-import io.snabble.sdk.ui.payment.AgeVerificationInputActivity;
-import io.snabble.sdk.ui.payment.CreditCardInputActivity;
-import io.snabble.sdk.ui.payment.PaydirektInputActivity;
 import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity;
 import io.snabble.sdk.ui.payment.PaymentOptionsActivity;
-import io.snabble.sdk.ui.payment.PayoneInputActivity;
-import io.snabble.sdk.ui.payment.ProjectPaymentOptionsActivity;
-import io.snabble.sdk.ui.payment.SEPACardInputActivity;
 import io.snabble.sdk.ui.scanner.SelfScanningActivity;
-import io.snabble.sdk.ui.search.ProductSearchActivity;
 import io.snabble.sdk.ui.utils.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

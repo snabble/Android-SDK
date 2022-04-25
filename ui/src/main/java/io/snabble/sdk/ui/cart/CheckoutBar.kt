@@ -37,7 +37,7 @@ import io.snabble.sdk.utils.Logger
 
 open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
+) : LinearLayout(context, attrs, defStyleAttr) {
     init {
         inflate(getContext(), R.layout.snabble_view_checkout_bar, this)
     }
@@ -126,19 +126,9 @@ open class CheckoutBar @JvmOverloads constructor(
             false
         })
 
-        context.requireFragmentActivity().lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_START)
-            fun onStart() {
-                if (isAttachedToWindow) {
-                    registerListeners()
-                }
-            }
-
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun onStop() {
-                unregisterListeners()
-            }
-        })
+        project.checkout.checkoutState.observeView(this) {
+            onStateChanged(it)
+        }
     }
 
     private fun handleButtonClick() {
@@ -266,28 +256,7 @@ open class CheckoutBar @JvmOverloads constructor(
         }
     }
 
-    private fun registerListeners() {
-        project.checkout.addOnCheckoutStateChangedListener(this)
-    }
-
-    private fun unregisterListeners() {
-        project.checkout.removeOnCheckoutStateChangedListener(this)
-        progressDialog.dismiss()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (!isInEditMode) {
-            registerListeners()
-        }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        unregisterListeners()
-    }
-
-    override fun onStateChanged(state: Checkout.State) {
+    protected fun onStateChanged(state: Checkout.State) {
         when (state) {
             Checkout.State.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)
@@ -344,7 +313,6 @@ open class CheckoutBar @JvmOverloads constructor(
                     putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
                 })
                 progressDialog.dismiss()
-                unregisterListeners()
             }
             Checkout.State.INVALID_PRODUCTS -> {
                 val invalidProducts = project.checkout.invalidProducts
