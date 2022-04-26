@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.scanner
 import android.Manifest
 import android.content.Context
 import io.snabble.sdk.ui.SnabbleUI.executeAction
-import android.widget.TextView
 import android.content.DialogInterface
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.R
@@ -16,14 +15,11 @@ import io.snabble.sdk.utils.GsonHolder
 import android.content.pm.PackageManager
 import android.os.Vibrator
 import android.text.*
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.utils.*
 
@@ -238,12 +234,12 @@ interface ProductConfirmationDialog {
     }
 
     /**
-     * Show the product confimation dialog with the given view model.
+     * Show the product confirmation dialog with the given view model.
      */
     fun show(viewModel: ViewModel)
 
     /**
-     * Dismiss the product confimation dialog
+     * Dismiss the product confirmation dialog
      */
     fun dismiss(addToCart: Boolean)
 
