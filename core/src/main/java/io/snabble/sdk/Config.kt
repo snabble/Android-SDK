@@ -128,4 +128,11 @@ data class Config (
      */
     @JvmField
     var networkInterceptor: Interceptor? = null,
+
+    /**
+     * Set to true if you want to control when the product database gets updated, otherwise
+     * the product database gets updated when checking in and if checked in when the app resumes
+     */
+    @JvmField
+    var manualProductDatabaseUpdates: Boolean = false,
 )

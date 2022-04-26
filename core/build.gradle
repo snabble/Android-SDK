@@ -58,6 +58,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.biometric:biometric:1.2.0-alpha04'
+
+    implementation "androidx.lifecycle:lifecycle-process:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-common:2.4.1"
+
     api "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
     implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttpVersion}"
 
