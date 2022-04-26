@@ -73,6 +73,10 @@ public class HomeFragment extends BaseFragment {
                     final List<Project> projectList = Snabble.getInstance().getProjects();
                     Spinner projects = v.findViewById(R.id.projects);
 
+                    if (!projectList.isEmpty()) {
+                        currentProject = projectList.get(0);
+                    }
+
                     SnabbleUI.getProjectAsLiveData().observe(getViewLifecycleOwner(), project -> {
                         currentProject = project;
 
@@ -111,7 +115,7 @@ public class HomeFragment extends BaseFragment {
                             updateShops(v);
 
                             if (project.getShops().size() > 0) {
-                                //Snabble.getInstance().setCheckedInShop(project.getShops().get(0));
+                                Snabble.getInstance().setCheckedInShop(project.getShops().get(0));
                             }
                         }
 
