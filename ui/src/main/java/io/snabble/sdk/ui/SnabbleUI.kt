@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.OnLifecycleEvent
 import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI.Event.*
 import io.snabble.sdk.ui.cart.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
@@ -59,17 +60,14 @@ object SnabbleUI {
     private var actions = mutableMapOf<Event, ActivityCallback?>()
 
     @JvmStatic
-    var project: Project
+    val project: Project
         get() {
-            return requireNotNull(ProjectPersistence.project)
-        }
-        set(value) {
-            ProjectPersistence.post(value)
+            return requireNotNull(Snabble.checkedInProject)
         }
 
     @JvmStatic
     val projectAsLiveData: LiveData<Project?>
-        get() = ProjectPersistence.projectAsLiveData
+        get() = Snabble.checkedInProjectAsLiveData
 
     /**
      * Sets an action handler for custom implementations of events.

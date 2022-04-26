@@ -240,6 +240,42 @@ object Snabble {
     var currentActivity: WeakReference<Activity>? = null
 
     /**
+     * Sets the shop used for receiving store specific prices and identification in the
+     * payment process.
+     */
+    var checkedInShop: Shop? = null
+        set(value) {
+            val currentShopId = this.checkedInShop?.id.orEmpty()
+            val newShopId = value?.id.orEmpty()
+            if (currentShopId != newShopId) {
+                field = value
+                if (newShopId == "") {
+                    Snabble.userPreferences.lastCheckedInShopId = null
+                    checkedInProject = null
+                } else {
+                    Snabble.userPreferences.lastCheckedInShopId = newShopId
+
+                    for (project in Snabble.projects) {
+                        if (project.shops.find { it.id == newShopId } != null) {
+                            project.events.updateShop(value)
+                            project.shoppingCart.updatePrices(false)
+                            checkedInProject = project
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+    var checkedInProject: Project? = null
+        private set(value) {
+            field = value
+            (checkedInProjectAsLiveData as MutableLiveData).postValue(value)
+        }
+
+    val checkedInProjectAsLiveData: LiveData<Project?> = MutableLiveData<Project?>()
+
+    /**
      * Unique identifier, different over device installations
      */
     val clientId: String?
@@ -479,7 +515,7 @@ object Snabble {
                 }
                 if (shop != null) {
                     Logger.d("Restoring last checked in shop " + shop.id + ", " + shop.name)
-                    project.checkedInShop = shop
+                    checkedInShop = shop
                     break;
                 }
             }

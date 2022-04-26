@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.63.0]
+
+### Breaking Changes
+- Changed the way the project used by the ui is determined. You now only set the Shop you are 
+  currently in via Snabble.setCheckedInShop which automatically determines in which project you 
+  are currently
+- Removed deprecated set/getShop functions in Checkout
+- Moved setCheckedInShop from Project to Snabble
+- SnabbleUI.project is now read only, use Snabble.setCheckedInShop and Snabble.checkedInProject
+
 ## [0.62.3]
 
 ### Changes

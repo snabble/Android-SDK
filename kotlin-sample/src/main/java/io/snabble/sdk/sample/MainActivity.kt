@@ -94,10 +94,6 @@ class MainActivity : AppCompatActivity() {
         // add a check in state listener to observe when a user enters or leaves a shop
         Snabble.checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
-                Snabble.checkInManager.project?.let {
-                    SnabbleUI.project = it
-                }
-
                 Toast.makeText(this@MainActivity, "Check in: " + shop.name, Toast.LENGTH_LONG).show()
             }
 

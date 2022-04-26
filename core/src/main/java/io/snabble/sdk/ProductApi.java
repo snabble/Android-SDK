@@ -106,7 +106,7 @@ class ProductApi {
 
         HttpUrl.Builder builder = baseUrl.newBuilder();
 
-        Shop shop = project.getCheckedInShop();
+        Shop shop = Snabble.getInstance().getCheckedInShop();
         if(shop != null) {
             builder.addQueryParameter("shopID", shop.getId());
         }
@@ -142,7 +142,7 @@ class ProductApi {
                 .addQueryParameter("code", code.getLookupCode())
                 .addQueryParameter("template", code.getTemplateName());
 
-        Shop shop = project.getCheckedInShop();
+        Shop shop = Snabble.getInstance().getCheckedInShop();
         if(shop != null) {
             builder.addQueryParameter("shopID", shop.getId());
         }

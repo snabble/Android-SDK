@@ -1069,7 +1069,7 @@ public class ShoppingCart {
             backendCart.requiredInformation.add(requiredInformation);
         }
 
-        Shop shop = project.getCheckedInShop();
+        Shop shop = Snabble.getInstance().getCheckedInShop();
         if (shop != null) {
             String id = shop.getId();
             if (id != null) {

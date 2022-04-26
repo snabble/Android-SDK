@@ -46,12 +46,19 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
         sdkNotInitialized.isVisible = false
 
         if (waitForProject) {
-            SnabbleUI.projectAsLiveData.observe(viewLifecycleOwner) {
-                if (it != null) {
-                    commitView(savedInstanceState)
-                } else {
-                    isReady = false
-                    fragmentContainer.removeAllViews()
+            if (Snabble.checkedInProject == null) {
+                isReady = false
+                fragmentContainer.removeAllViews()
+                sdkNotInitialized.isVisible = true
+            } else {
+                Snabble.checkedInProjectAsLiveData.observe(viewLifecycleOwner) {
+                    if (it != null) {
+                        commitView(savedInstanceState)
+                    } else {
+                        isReady = false
+                        fragmentContainer.removeAllViews()
+                        sdkNotInitialized.isVisible = true
+                    }
                 }
             }
         } else {

@@ -108,12 +108,10 @@ public class HomeFragment extends BaseFragment {
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             Project project = projectList.get(position);
 
-                            SnabbleUI.setProject(project);
-
                             updateShops(v);
 
                             if (project.getShops().size() > 0) {
-                                project.setCheckedInShop(project.getShops().get(0));
+                                //Snabble.getInstance().setCheckedInShop(project.getShops().get(0));
                             }
                         }
 
@@ -153,7 +151,7 @@ public class HomeFragment extends BaseFragment {
             });
 
             for (int i = 0; i < shopList.size(); i++) {
-                if (currentProject.getCheckedInShop() == shopList.get(i)) {
+                if (Snabble.getInstance().getCheckedInShop() == shopList.get(i)) {
                     Log.d("Restoring", "shop id = " + shopList.get(i).getId());
                     shops.setSelection(i);
                     break;
@@ -164,7 +162,7 @@ public class HomeFragment extends BaseFragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     Shop shop = shopList.get(position);
-                    currentProject.setCheckedInShop(shop);
+                    Snabble.getInstance().setCheckedInShop(shop);
                 }
 
                 @Override

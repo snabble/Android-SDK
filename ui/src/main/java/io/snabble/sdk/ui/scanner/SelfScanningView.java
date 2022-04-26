@@ -39,6 +39,7 @@ import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -328,8 +329,7 @@ public class SelfScanningView extends FrameLayout {
 
     private void showHints() {
         if (allowShowingHints) {
-            Project project = SnabbleUI.getProject();
-            Shop currentShop = project.getCheckedInShop();
+            Shop currentShop = Snabble.getInstance().getCheckedInShop();
 
             if (currentShop != null) {
                 pauseBarcodeScanner();

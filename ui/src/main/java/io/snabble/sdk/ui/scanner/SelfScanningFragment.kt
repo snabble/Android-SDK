@@ -78,18 +78,21 @@ open class SelfScanningFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (isPermissionGranted) {
-            createSelfScanningView()
-        } else {
-            rootView.removeView(selfScanningView)
-            selfScanningView = null
-            if (isAdded && isStart) {
-                requestPermissions(arrayOf(Manifest.permission.CAMERA), 0)
+
+        if (isReady) {
+            if (isPermissionGranted) {
+                createSelfScanningView()
             } else {
-                showPermissionRationale()
+                rootView.removeView(selfScanningView)
+                selfScanningView = null
+                if (isAdded && isStart) {
+                    requestPermissions(arrayOf(Manifest.permission.CAMERA), 0)
+                } else {
+                    showPermissionRationale()
+                }
             }
+            isStart = false
         }
-        isStart = false
     }
 
     private fun createSelfScanningView() {
