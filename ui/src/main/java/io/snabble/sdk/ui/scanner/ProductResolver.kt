@@ -59,7 +59,7 @@ class ProductResolver private constructor(private val context: Context, private 
     private var onAlreadyScannedListener: OnAlreadyScannedListener? = null
     var barcodeFormat: BarcodeFormat? = null
         private set
-    private var onKeyListener: DialogInterface.OnKeyListener? = null
+    private var onKeyListener: ProductConfirmationDialog.OnKeyListener? = null
     private var lastProduct: Product? = null
 
     private fun checkMinAge(product: Product) {
@@ -503,7 +503,7 @@ class ProductResolver private constructor(private val context: Context, private 
          * Set a key listener.
          * @see DialogInterface.OnKeyListener
          */
-        fun setOnKeyListener(listener: DialogInterface.OnKeyListener) = apply {
+        fun setOnKeyListener(listener: ProductConfirmationDialog.OnKeyListener) = apply {
             productResolver.onKeyListener = listener
         }
 
@@ -603,8 +603,8 @@ class ProductResolver private constructor(private val context: Context, private 
                 }
                 onDismissListener?.onDismiss()
             }
-            productConfirmationDialog?.setOnKeyListener { dialog: DialogInterface?, keyCode: Int, event: KeyEvent? ->
-                onKeyListener?.onKey(dialog, keyCode, event) ?: false
+            productConfirmationDialog?.setOnKeyListener { keyCode, event ->
+                onKeyListener?.onKey(keyCode, event) ?: false
             }
         }
     }

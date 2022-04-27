@@ -46,9 +46,9 @@ class DefaultProductConfirmationDialog(
     private lateinit var plusLayout: View
     private lateinit var minusLayout: View
     private lateinit var enterReducedPrice: Button
-    private var onDismissListener: DialogInterface.OnDismissListener? = null
-    private var onShowListener: DialogInterface.OnShowListener? = null
-    private var onKeyListener: DialogInterface.OnKeyListener? = null
+    private var onDismissListener: ProductConfirmationDialog.OnDismissListener? = null
+    private var onShowListener: ProductConfirmationDialog.OnShowListener? = null
+    private var onKeyListener: ProductConfirmationDialog.OnKeyListener? = null
     var wasAddedToCart = false
         private set
 
@@ -65,7 +65,7 @@ class DefaultProductConfirmationDialog(
                 setOnShowListener(onShowListener)
                 setOnDismissListener {
                     viewModel.dismiss()
-                    onDismissListener?.onDismiss(it)
+                    onDismissListener?.onDismiss()
                 }
                 setOnKeyListener(onKeyListener)
             }
@@ -101,7 +101,9 @@ class DefaultProductConfirmationDialog(
                     // Add what to enter
                     // FIXME (low prio) talkback will say "Please enter the quantity in 'g'" instead
                     // of saying "gramme", but this should be good enough for now
-                    contextHint += close.resources.getString(R.string.Snabble_Scanner_Accessibility_enterQuantity, viewModel.cartItem.unit?.displayValue)
+                    contextHint += close.resources.getString(
+                        R.string.Snabble_Scanner_Accessibility_enterQuantity,
+                        viewModel.cartItem.unit?.displayValue)
                 }
                 event.text.add(contextHint)
             }
@@ -109,7 +111,12 @@ class DefaultProductConfirmationDialog(
 
         viewModel.quantity.observe(requireNotNull(quantity.findViewTreeLifecycleOwner())) { count ->
             if (getQuantity() != count) {
-                quantity.setText(count?.toString())
+                val newCount = count?.toString().orEmpty()
+                // keep the selection if possible
+                val selectionStart = quantity.selectionStart.coerceAtMost(newCount.length)
+                val selectionEnd = quantity.selectionEnd.coerceAtMost(newCount.length)
+                quantity.setText(newCount)
+                quantity.setSelection(selectionStart, selectionEnd)
             }
             count?.let {
                 quantity.announceForAccessibility(
@@ -157,8 +164,11 @@ class DefaultProductConfirmationDialog(
             false
         }
         quantity.addTextChangedListener { s ->
-            val number = s.toString().toIntOrNull()
-            viewModel.quantity.postWhenChanged(number)
+            // edge case where the user cleared the field
+            if (s?.isNotEmpty() == true) {
+                val number = s.toString().toIntOrNull()
+                viewModel.quantity.postWhenChanged(number)
+            }
         }
         price.bindText(viewModel.price)
         plus.setOnClickListener {
@@ -228,15 +238,15 @@ class DefaultProductConfirmationDialog(
         }
     }
 
-    override fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener?) {
+    override fun setOnDismissListener(onDismissListener: ProductConfirmationDialog.OnDismissListener?) {
         this.onDismissListener = onDismissListener
     }
 
-    override fun setOnShowListener(onShowListener: DialogInterface.OnShowListener?) {
+    override fun setOnShowListener(onShowListener: ProductConfirmationDialog.OnShowListener?) {
         this.onShowListener = onShowListener
     }
 
-    override fun setOnKeyListener(onKeyListener: DialogInterface.OnKeyListener?) {
+    override fun setOnKeyListener(onKeyListener: ProductConfirmationDialog.OnKeyListener?) {
         this.onKeyListener = onKeyListener
     }
 }

@@ -2,26 +2,32 @@ package io.snabble.sdk.ui.scanner
 
 import android.Manifest
 import android.content.Context
-import io.snabble.sdk.ui.SnabbleUI.executeAction
 import android.content.DialogInterface
-import io.snabble.sdk.codes.ScannedCode
-import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.SnabbleUI
-import android.text.style.StrikethroughSpan
-import com.squareup.picasso.Picasso
-import android.os.Bundle
-import io.snabble.sdk.utils.GsonHolder
 import android.content.pm.PackageManager
+import android.os.Bundle
 import android.os.Vibrator
-import android.text.*
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StrikethroughSpan
+import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import io.snabble.sdk.*
-import io.snabble.sdk.ui.utils.*
+import com.squareup.picasso.Picasso
+import io.snabble.sdk.CouponType
+import io.snabble.sdk.Product
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.codes.ScannedCode
+import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.SnabbleUI.executeAction
+import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.isNotNullOrBlank
+import io.snabble.sdk.utils.GsonHolder
+import kotlin.math.max
 
 /**
  * The product confirmation dialog with the option to enter discounts and change the quantity.
@@ -87,18 +93,14 @@ interface ProductConfirmationDialog {
             it?.let {
                 cartItem.quantity = it
             }
-            val existingItem = shoppingCart.getExistingMergeableProduct(cartItem.product)
-            val isMergeable = existingItem != null && existingItem.isMergeable && cartItem.isMergeable
-            if (isMergeable) {
-                quantity.cycleFreeValue(existingItem.effectiveQuantity + 1)
-                addToCartButtonText.postString(R.string.Snabble_Scanner_updateCart)
-            } else {
-                val effectiveQuantity = cartItem.effectiveQuantity
-                if (quantity.value != null && effectiveQuantity != 0) {
-                    quantity.cycleFreeValue(cartItem.effectiveQuantity)
-                }
-                addToCartButtonText.postString(R.string.Snabble_Scanner_addToCart)
+            val existingQuantity = shoppingCart.getExistingMergeableProduct(cartItem.product)?.effectiveQuantity ?: 0
+            val newQuantity = cartItem.effectiveQuantity
+            if (quantity.value == null && cartItem.product?.type == Product.Type.Article) {
+                quantity.cycleFreeValue(existingQuantity + newQuantity)
+            } else if (cartItem.product?.type == Product.Type.UserWeighed && quantity.value == 0) {
+                quantity.cycleFreeValue(null)
             }
+            addToCartButtonText.postString(R.string.Snabble_Scanner_addToCart)
             quantityContentDescription.postNullableString(
                 R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate,
                 quantity.value.toString(),
@@ -191,18 +193,13 @@ interface ProductConfirmationDialog {
             }
             quantityCanBeIncreased.postValue(true)
             quantityCanBeDecreased.postValue(quantity.value ?: 0 > 1)
-            if (cartItem.product?.type == Product.Type.Article) {
-                quantity.cycleFreeValue(quantity.value?.coerceAtLeast(0))
-            } else if (cartItem.product?.type == Product.Type.UserWeighed && quantity.value == 0) {
-                quantity.cycleFreeValue(null)
-            }
         }
 
         fun addToCart() {
             if (isDismissed) return
             wasAddedToCart = true
             Telemetry.event(Telemetry.Event.ConfirmedProduct, product)
-            val q = Math.max(quantity.value ?: 0, cartItem.scannedCode.embeddedData)
+            val q = max(quantity.value ?: 0, cartItem.scannedCode.embeddedData)
             if (product.type == Product.Type.UserWeighed && q == 0) {
                 return
             }
@@ -247,17 +244,63 @@ interface ProductConfirmationDialog {
      * Set a dismiss listener
      * @see DialogInterface.OnDismissListener
      */
-    fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener?)
+    fun setOnDismissListener(onDismissListener: OnDismissListener?)
 
     /**
      * Set a show listener
      * @see DialogInterface.OnShowListener
      */
-    fun setOnShowListener(onShowListener: DialogInterface.OnShowListener?)
+    fun setOnShowListener(onShowListener: OnShowListener?)
 
     /**
      * Set a key listener
-     * @see DialogInterface.OnKeyListener
+     * @see OnKeyListener
      */
-    fun setOnKeyListener(onKeyListener: DialogInterface.OnKeyListener?)
+    fun setOnKeyListener(onKeyListener: OnKeyListener?)
+
+    /**
+     * Interface used to allow the creator of a dialog to run some code when the
+     * dialog is dismissed.
+     */
+    fun interface OnDismissListener {
+        /**
+         * This method will be invoked when the dialog is dismissed.
+         */
+        fun onDismiss()
+    }
+
+    /**
+     * Interface used to allow the creator of a dialog to run some code when the
+     * dialog is shown.
+     */
+    fun interface OnShowListener {
+        /**
+         * This method will be invoked when the dialog is shown.
+         */
+        fun onShow()
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when a hardware key event is
+     * dispatched to this dialog. The callback will be invoked before the key event is
+     * given to the view. This is only useful for hardware keyboards; a software input
+     * method has no obligation to trigger this listener.
+     */
+    fun interface OnKeyListener {
+        /**
+         * Called when a hardware key is dispatched to a view. This allows listeners to
+         * get a chance to respond before the target view.
+         *
+         * Key presses in software keyboards will generally NOT trigger this method,
+         * although some may elect to do so in some situations. Do not assume a
+         * software input method has to be key-based; even if it is, it may use key presses
+         * in a different way than you expect, so there is no way to reliably catch soft
+         * input key presses.
+         *
+         * @param keyCode The code for the physical key that was pressed.
+         * @param event The KeyEvent object containing full information about the event.
+         * @return True if the listener has consumed the event, false otherwise.
+         */
+        fun onKey(keyCode: Int, event: KeyEvent): Boolean
+    }
 }

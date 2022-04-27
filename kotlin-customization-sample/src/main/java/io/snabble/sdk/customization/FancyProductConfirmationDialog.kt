@@ -1,21 +1,21 @@
 package io.snabble.sdk.customization
 
 import android.content.Context
-import android.content.DialogInterface
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import io.snabble.sdk.ui.scanner.ProductConfirmationDialog
+import io.snabble.sdk.ui.scanner.bindTextOrHide
 import io.snabble.sdk.ui.utils.LifecycleAwareAlertDialogBuilder
 
 class FancyProductConfirmationDialog(
     private val context: Context
 ): ProductConfirmationDialog {
     private var alertDialog: AlertDialog? = null
-    private var onDismissListener: DialogInterface.OnDismissListener? = null
-    private var onShowListener: DialogInterface.OnShowListener? = null
-    private var onKeyListener: DialogInterface.OnKeyListener? = null
+    private var onDismissListener: ProductConfirmationDialog.OnDismissListener? = null
+    private var onShowListener: ProductConfirmationDialog.OnShowListener? = null
+    private var onKeyListener: ProductConfirmationDialog.OnKeyListener? = null
 
     override fun show(viewModel: ProductConfirmationDialog.ViewModel) {
         dismiss(false)
@@ -27,7 +27,7 @@ class FancyProductConfirmationDialog(
                 setOnShowListener(onShowListener)
                 setOnDismissListener {
                     viewModel.dismiss()
-                    onDismissListener?.onDismiss(it)
+                    onDismissListener?.onDismiss()
                 }
                 setOnKeyListener(onKeyListener)
             }
@@ -47,15 +47,15 @@ class FancyProductConfirmationDialog(
         alertDialog?.dismiss()
     }
 
-    override fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener?) {
+    override fun setOnDismissListener(onDismissListener: ProductConfirmationDialog.OnDismissListener?) {
         this.onDismissListener = onDismissListener
     }
 
-    override fun setOnShowListener(onShowListener: DialogInterface.OnShowListener?) {
+    override fun setOnShowListener(onShowListener: ProductConfirmationDialog.OnShowListener?) {
         this.onShowListener = onShowListener
     }
 
-    override fun setOnKeyListener(onKeyListener: DialogInterface.OnKeyListener?) {
+    override fun setOnKeyListener(onKeyListener: ProductConfirmationDialog.OnKeyListener?) {
         this.onKeyListener = onKeyListener
     }
 }
