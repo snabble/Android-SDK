@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.62.4]
+
+### Fixed
+- Visibility of rating layout
+
 ## [0.62.3]
 
 ### Changes
