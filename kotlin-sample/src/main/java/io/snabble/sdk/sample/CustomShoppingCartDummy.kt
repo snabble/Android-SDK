@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.ShoppingCart
-import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.Snabble
 
 class CustomShoppingCartDummy : Fragment() {
     private var cart: ShoppingCart? = null
@@ -36,7 +36,7 @@ class CustomShoppingCartDummy : Fragment() {
         )
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
 
-        SnabbleUI.projectAsLiveData.observe(viewLifecycleOwner) {
+        Snabble.checkedInProject.observe(viewLifecycleOwner) {
             cart = it?.shoppingCart
             adapter.notifyDataSetChanged()
         }

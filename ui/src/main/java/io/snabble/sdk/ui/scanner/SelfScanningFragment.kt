@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import com.google.android.material.snackbar.Snackbar
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.*
 import io.snabble.sdk.ui.search.SearchHelper
@@ -57,10 +58,11 @@ open class SelfScanningFragment : BaseFragment() {
         if (isPermissionGranted) {
             createSelfScanningView()
             var event = getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + " "
-            if (SnabbleUI.project.shoppingCart.isEmpty) {
+            val project = requireNotNull(Snabble.checkedInProject.value)
+            if (project.shoppingCart.isEmpty) {
                 event += getString(R.string.Snabble_Scanner_Accessibility_hintCartIsEmpty)
             } else {
-                with(SnabbleUI.project) {
+                with(project) {
                     event += getString(R.string.Snabble_Scanner_Accessibility_hintCartContent, shoppingCart.size(), priceFormatter.format(shoppingCart.totalPrice))
                 }
             }
@@ -108,7 +110,7 @@ open class SelfScanningFragment : BaseFragment() {
 
         if (SearchHelper.lastSearch != null) {
             selfScanningView?.lookupAndShowProduct(
-                ScannedCode.parse(SnabbleUI.project, SearchHelper.lastSearch)
+                ScannedCode.parse(requireNotNull(Snabble.checkedInProject.value), SearchHelper.lastSearch)
             )
             SearchHelper.lastSearch = null
         }

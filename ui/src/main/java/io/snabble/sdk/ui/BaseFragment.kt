@@ -46,12 +46,12 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
         sdkNotInitialized.isVisible = false
 
         if (waitForProject) {
-            if (Snabble.checkedInProject == null) {
+            if (Snabble.checkedInProject.value == null) {
                 isReady = false
                 fragmentContainer.removeAllViews()
                 sdkNotInitialized.isVisible = true
             } else {
-                Snabble.checkedInProjectAsLiveData.observe(viewLifecycleOwner) {
+                Snabble.checkedInProject.observe(viewLifecycleOwner) {
                     if (it != null) {
                         commitView(savedInstanceState)
                     } else {

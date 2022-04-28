@@ -4,10 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI.Event.*
@@ -60,14 +57,16 @@ object SnabbleUI {
     private var actions = mutableMapOf<Event, ActivityCallback?>()
 
     @JvmStatic
+    @Deprecated("Use Snabble.checkedInProject instead",
+        ReplaceWith( "requireNotNull(Snabble.checkedInProject.value)", "io.snabble.sdk.Snabble"))
     val project: Project
-        get() {
-            return requireNotNull(Snabble.checkedInProject)
-        }
+        get() = requireNotNull(Snabble.checkedInProject.value)
 
     @JvmStatic
+    @Deprecated("Use Snabble.checkedInProject instead",
+        ReplaceWith( "Snabble.checkedInProject", "io.snabble.sdk.Snabble"))
     val projectAsLiveData: LiveData<Project?>
-        get() = Snabble.checkedInProjectAsLiveData
+        get() = Snabble.checkedInProject
 
     /**
      * Sets an action handler for custom implementations of events.
@@ -81,9 +80,8 @@ object SnabbleUI {
         if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
             actions[event] = ActivityCallback(WeakReference<AppCompatActivity>(activity), action)
 
-            activity.lifecycle.addObserver(object : LifecycleObserver {
-                @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-                fun onDestroy() {
+            activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onDestroy(owner: LifecycleOwner) {
                     actions.remove(event)
                 }
             })
@@ -106,9 +104,8 @@ object SnabbleUI {
                 if (hostingActivity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                     cb.action.execute(context, args)
                 } else {
-                    hostingActivity.lifecycle.addObserver(object : LifecycleObserver {
-                        @OnLifecycleEvent(Lifecycle.Event.ON_START)
-                        fun onStart() {
+                    hostingActivity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                        override fun onStart(owner: LifecycleOwner) {
                             hostingActivity.lifecycle.removeObserver(this)
                             cb.action.execute(context, args)
                         }

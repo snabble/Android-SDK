@@ -16,8 +16,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import io.snabble.sdk.Checkout
 import io.snabble.sdk.Checkout.OnCheckoutStateChangedListener
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.utils.I18nUtils
 import io.snabble.sdk.ui.utils.UIUtils
@@ -39,7 +39,7 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
 
     init {
         inflate(context, R.layout.snabble_view_routing_supervisor, this)
-        val project = SnabbleUI.project
+        val project = requireNotNull(Snabble.checkedInProject.value)
         checkout = project.checkout
 
         checkoutIdCode = findViewById(R.id.checkout_id_code)

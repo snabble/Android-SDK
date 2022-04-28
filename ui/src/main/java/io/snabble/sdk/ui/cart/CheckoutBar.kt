@@ -56,7 +56,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private lateinit var progressDialog: DelayedProgressDialog
 
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
-    private val project by lazy { SnabbleUI.project }
+    private val project by lazy { requireNotNull(Snabble.checkedInProject.value) }
     private val cart: ShoppingCart by lazy { project.shoppingCart }
     private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
@@ -118,7 +118,7 @@ open class CheckoutBar @JvmOverloads constructor(
         progressDialog.setMessage(context.getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
         progressDialog.setCancelable(false)
-        progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { dialogInterface: DialogInterface, _, keyEvent: KeyEvent ->
+        progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { _, _, keyEvent: KeyEvent ->
             if (keyEvent.keyCode == KeyEvent.KEYCODE_BACK) {
                 project.checkout.abort()
                 return@OnKeyListener true
@@ -126,9 +126,7 @@ open class CheckoutBar @JvmOverloads constructor(
             false
         })
 
-        project.checkout.checkoutState.observeView(this) {
-            onStateChanged(it)
-        }
+        project.checkout.checkoutState.observeView(this, ::onStateChanged)
     }
 
     private fun handleButtonClick() {
@@ -237,15 +235,15 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
             } else {
                 val hasPaymentMethodThatRequiresCredentials =
-                    project.paymentMethodDescriptors?.any { descriptor ->
+                    project.paymentMethodDescriptors.any { descriptor ->
                         descriptor.paymentMethod.isRequiringCredentials
-                    } ?: false
+                    }
                 if (hasPaymentMethodThatRequiresCredentials) {
                     val activity = UIUtils.getHostActivity(context)
                     if (activity is FragmentActivity) {
                         val dialogFragment = SelectPaymentMethodFragment()
                         val bundle = Bundle()
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.project.id)
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, requireNotNull(Snabble.checkedInProject.value).id)
                         dialogFragment.arguments = bundle
                         dialogFragment.show(activity.supportFragmentManager, null)
                     }
