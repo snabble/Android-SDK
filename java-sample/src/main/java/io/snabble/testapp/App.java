@@ -3,18 +3,14 @@ package io.snabble.testapp;
 import android.app.Application;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatDelegate;
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.Config;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 
 public class App extends Application {
@@ -60,7 +56,7 @@ public class App extends Application {
     }
 
     public Project getProject() {
-        return SnabbleUI.getProject();
+        return Snabble.getInstance().getCheckedInProject().getValue();
     }
 
     private int getBundledRevisionId(String projectId) {

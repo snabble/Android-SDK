@@ -69,6 +69,7 @@ public class SelfScanningView extends FrameLayout {
     private boolean manualCameraControl;
     private int topDownInfoBoxOffset;
     private MessageBoxStackView messages;
+    private Project project;
 
     public SelfScanningView(Context context) {
         super(context);
@@ -88,7 +89,7 @@ public class SelfScanningView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_self_scanning, this);
 
-        Project project = SnabbleUI.getProject();
+        project = Snabble.getInstance().getCheckedInProject().getValue();
 
         shoppingCart = project.getShoppingCart();
 
@@ -145,7 +146,7 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void updateCartButton() {
-        PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
+        PriceFormatter priceFormatter = project.getPriceFormatter();
 
         if (shoppingCart.size() > 0) {
             goToCart.setVisibility(View.VISIBLE);
@@ -217,7 +218,6 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private Pair<Coupon, ScannedCode> lookupCoupon(List<ScannedCode> scannedCodes) {
-        Project project = SnabbleUI.getProject();
         for (Coupon coupon : project.getCoupons().filter(CouponType.PRINTED)) {
             for (CouponCode code : coupon.getCodes()) {
                 for (ScannedCode scannedCode : scannedCodes) {
@@ -249,7 +249,7 @@ public class SelfScanningView extends FrameLayout {
                 vibrator.vibrate(500L);
             }
 
-            lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), barcode.getText()), barcode.getFormat());
+            lookupAndShowProduct(ScannedCode.parse(project, barcode.getText()), barcode.getFormat());
         }
     }
 
@@ -308,7 +308,7 @@ public class SelfScanningView extends FrameLayout {
             new AlertDialog.Builder(getContext())
                     .setView(input)
                     .setTitle(R.string.Snabble_Scanner_enterBarcode)
-                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> lookupAndShowProduct(ScannedCode.parse(SnabbleUI.getProject(), input.getText().toString())))
+                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> lookupAndShowProduct(ScannedCode.parse(project, input.getText().toString())))
                     .setNegativeButton(R.string.Snabble_Cancel, null)
                     .setOnDismissListener(dialog -> resumeBarcodeScanner())
                     .create()
@@ -355,7 +355,6 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void showScanMessage(Product product, boolean allowFallback) {
-        Project project = SnabbleUI.getProject();
         Resources res = getResources();
 
         String identifier = product.getScanMessage();
@@ -534,14 +533,12 @@ public class SelfScanningView extends FrameLayout {
 
         @Override
         public void onCheckoutLimitReached(ShoppingCart list) {
-            Project project = SnabbleUI.getProject();
             showInfo(getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.getPriceFormatter().format(project.getMaxCheckoutLimit())));
         }
 
         @Override
         public void onOnlinePaymentLimitReached(ShoppingCart list) {
-            Project project = SnabbleUI.getProject();
             showInfo(getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
                     project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit())));
 

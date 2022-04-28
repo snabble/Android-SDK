@@ -9,7 +9,6 @@ import io.snabble.sdk.Unit
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.gs1.GS1Code
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.utils.Age
@@ -354,7 +353,7 @@ class ProductResolver private constructor(private val context: Context, private 
 
     class Builder @JvmOverloads constructor(
         context: Context,
-        private val project: Project = SnabbleUI.project
+        private val project: Project = requireNotNull(Snabble.checkedInProject.value)
     ) {
         private val productResolver: ProductResolver = ProductResolver(context, project)
 

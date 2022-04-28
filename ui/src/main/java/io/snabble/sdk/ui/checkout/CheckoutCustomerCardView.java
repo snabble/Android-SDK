@@ -15,9 +15,9 @@ import android.widget.LinearLayout;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -47,7 +47,7 @@ public class CheckoutCustomerCardView extends FrameLayout {
     }
 
     private void init() {
-        project = SnabbleUI.getProject();
+        project = Snabble.getInstance().getCheckedInProject().getValue();
 
         inflate(getContext(), R.layout.snabble_view_checkout_customercard, this);
 
@@ -60,7 +60,7 @@ public class CheckoutCustomerCardView extends FrameLayout {
             }
         });
         paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
-                SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
+                project, R.string.Snabble_QRCode_didPay));
 
         helperText = findViewById(R.id.helper_text);
         helperImage = findViewById(R.id.helper_image);

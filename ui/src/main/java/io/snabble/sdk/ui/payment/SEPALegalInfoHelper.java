@@ -16,8 +16,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
 
@@ -28,7 +28,7 @@ public class SEPALegalInfoHelper {
             return;
         }
 
-        Project project = SnabbleUI.getProject();
+        Project project = Snabble.getInstance().getCheckedInProject().getValue();
 
         String shortText = project.getText("sepaMandateShort");
         final String longText = project.getText("sepaMandate");

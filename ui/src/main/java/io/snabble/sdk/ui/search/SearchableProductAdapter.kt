@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.Product
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.highlight
 import io.snabble.sdk.ui.utils.setTextOrHide
 import io.snabble.sdk.utils.Dispatch
@@ -28,7 +28,7 @@ class SearchableProductAdapter : RecyclerView.Adapter<SearchableProductAdapter.P
     private var itemCount = 0
     var showBarcode = true
     private var searchQuery = ""
-    private val project = SnabbleUI.project
+    private val project = requireNotNull(Snabble.checkedInProject.value)
     private val productDatabase by lazy { project.productDatabase }
     var showSku = false
 

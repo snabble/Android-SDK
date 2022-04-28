@@ -11,8 +11,8 @@ import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.utils.Dispatch;
@@ -40,7 +40,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_checkout_pos, this);
 
-        Project project = SnabbleUI.getProject();
+        Project project = Snabble.getInstance().getCheckedInProject().getValue();
 
         barcodeView = findViewById(R.id.qr_code);
 
@@ -57,7 +57,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
         abort.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {
-                SnabbleUI.getProject().getCheckout().abortSilently();
+                Snabble.getInstance().getCheckedInProject().getValue().getCheckout().abortSilently();
             }
         });
 
@@ -84,7 +84,7 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
             checkoutId.setVisibility(View.GONE);
         }
 
-        checkout = SnabbleUI.getProject().getCheckout();
+        checkout = Snabble.getInstance().getCheckedInProject().getValue().getCheckout();
         onStateChanged(checkout.getState());
     }
 
