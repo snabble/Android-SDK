@@ -46,7 +46,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private val rating1 = findViewById<ImageView>(R.id.rating_1)
     private val rating2 = findViewById<ImageView>(R.id.rating_2)
     private val rating3 = findViewById<ImageView>(R.id.rating_3)
-    private val ratingLayout = findViewById<ImageView>(R.id.image)
+    private val ratingLayout = findViewById<View>(R.id.rating_layout)
     private val inputBadRatingLayout = findViewById<TextInputLayout>(R.id.input_bad_rating_layout)
     private var addIbanLayout = findViewById<LinearLayout>(R.id.add_iban_layout)
     private var addIbanButton = findViewById<Button>(R.id.add_iban_button)
@@ -83,7 +83,7 @@ class PaymentStatusView @JvmOverloads constructor(
     init {
         clipChildren = false
 
-        project = SnabbleUI.project
+        project = requireNotNull(Snabble.checkedInProject.value)
         checkout = project.checkout
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)

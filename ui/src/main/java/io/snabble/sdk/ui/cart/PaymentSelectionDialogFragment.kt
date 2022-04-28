@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.cart
 
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper.openPaymentInputView
-import io.snabble.sdk.ui.SnabbleUI.project
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.os.Bundle
@@ -14,6 +13,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.setTextOrHide
 import java.util.ArrayList
@@ -81,7 +81,7 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
                                     PaymentSelectionHelper.getInstance().select(entry)
                                     dismissAllowingStateLoss()
                                 } else {
-                                    openPaymentInputView(requireContext(), entry.paymentMethod, project.id)
+                                    openPaymentInputView(requireContext(), entry.paymentMethod, requireNotNull(Snabble.checkedInProject.value).id)
                                     dismissAllowingStateLoss()
                                 }
                             }

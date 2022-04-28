@@ -83,7 +83,7 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
         eventListeners[event] = block
     }
 
-    fun setLongClickAction(label: String, onLongClick: (() -> Any)? = null) {
+    fun setLongClickAction(label: String, onLongClick: (() -> Any?)? = null) {
         longClickActionLabel = label
         onLongClick?.let {
             target.setOnLongClickListener {
@@ -93,10 +93,10 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
         }
     }
 
-    fun setLongClickAction(@StringRes action: Int, onLongClick: (() -> Any)? = null) =
+    fun setLongClickAction(@StringRes action: Int, onLongClick: (() -> Any?)? = null) =
         setLongClickAction(target.context.getString(action), onLongClick)
 
-    fun setClickAction(label: String, onClick: (() -> Any)? = null) {
+    fun setClickAction(label: String, onClick: (() -> Any?)? = null) {
         clickActionLabel = label
         onClick?.let {
             target.setOnClickListener {
@@ -105,7 +105,7 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
         }
     }
 
-    fun setClickAction(@StringRes action: Int, onLongClick: (() -> Any)? = null) =
+    fun setClickAction(@StringRes action: Int, onLongClick: (() -> Any?)? = null) =
         setClickAction(target.context.getString(action), onLongClick)
 }
 
@@ -132,7 +132,7 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
 @Retention(AnnotationRetention.SOURCE)
 annotation class EventType
 
-fun View.accessibility(block: AccessibilityToolBox.() -> Any) {
+fun View.accessibility(block: AccessibilityToolBox.() -> Any?) {
     var toolbox = getTag(R.id.snabble_accessibility_toolbox) as? AccessibilityToolBox
     if (toolbox == null) {
         toolbox = AccessibilityToolBox(this)

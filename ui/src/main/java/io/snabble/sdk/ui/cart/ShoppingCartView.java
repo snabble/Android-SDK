@@ -33,6 +33,7 @@ import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
@@ -57,6 +58,7 @@ public class ShoppingCartView extends FrameLayout {
     private AlertDialog alertDialog;
     private View paymentContainer;
     private boolean hasAlreadyShownInvalidDeposit;
+    private Project project;
 
     private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
 
@@ -73,7 +75,6 @@ public class ShoppingCartView extends FrameLayout {
                 alertDialog.dismiss();
             }
 
-            Project project = SnabbleUI.getProject();
             String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
                     project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
 
@@ -91,7 +92,6 @@ public class ShoppingCartView extends FrameLayout {
                 alertDialog.dismiss();
             }
 
-            Project project = SnabbleUI.getProject();
             String message = getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
                     project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit()));
 
@@ -122,7 +122,7 @@ public class ShoppingCartView extends FrameLayout {
     private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
         if (isInEditMode()) return;
-        final Project project = SnabbleUI.getProject();
+        project = Snabble.getInstance().getCheckedInProject().getValue();
 
         if (cart != null) {
             cart.removeListener(shoppingCartListener);
@@ -401,7 +401,7 @@ public class ShoppingCartView extends FrameLayout {
         int cartTotal = cart.getTotalDepositPrice();
         if (cartTotal > 0) {
             SimpleRow row = new SimpleRow();
-            PriceFormatter priceFormatter = SnabbleUI.getProject().getPriceFormatter();
+            PriceFormatter priceFormatter = Snabble.getInstance().getCheckedInProject().getValue().getPriceFormatter();
             row.title = resources.getString(R.string.Snabble_Shoppingcart_deposit);
             row.imageResId = R.drawable.snabble_ic_deposit;
             row.text = priceFormatter.format(cartTotal);
