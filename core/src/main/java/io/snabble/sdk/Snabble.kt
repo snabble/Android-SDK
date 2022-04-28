@@ -250,16 +250,16 @@ object Snabble {
             if (currentShopId != newShopId) {
                 field = value
                 if (newShopId == "") {
-                    Snabble.userPreferences.lastCheckedInShopId = null
-                    checkedInProject = null
+                    userPreferences.lastCheckedInShopId = null
+                    checkedInProject.value = null
                 } else {
-                    Snabble.userPreferences.lastCheckedInShopId = newShopId
+                    userPreferences.lastCheckedInShopId = newShopId
 
-                    for (project in Snabble.projects) {
+                    for (project in projects) {
                         if (project.shops.find { it.id == newShopId } != null) {
                             project.events.updateShop(value)
                             project.shoppingCart.updatePrices(false)
-                            checkedInProject = project
+                            checkedInProject.value = project
                             break
                         }
                     }
@@ -267,13 +267,7 @@ object Snabble {
             }
         }
 
-    var checkedInProject: Project? = null
-        private set(value) {
-            field = value
-            (checkedInProjectAsLiveData as MutableLiveData).postValue(value)
-        }
-
-    val checkedInProjectAsLiveData: LiveData<Project?> = MutableLiveData<Project?>()
+    var checkedInProject = MutableAccessibleLiveData<Project?>(null)
 
     /**
      * Unique identifier, different over device installations
@@ -510,8 +504,8 @@ object Snabble {
         val lastCheckedInShopId = userPreferences.lastCheckedInShopId
         if (lastCheckedInShopId != null) {
             for (project in projects) {
-                val shop = project.shops.find {
-                        shop -> shop.id == lastCheckedInShopId
+                val shop = project.shops.find { shop ->
+                    shop.id == lastCheckedInShopId
                 }
                 if (shop != null) {
                     Logger.d("Restoring last checked in shop " + shop.id + ", " + shop.name)

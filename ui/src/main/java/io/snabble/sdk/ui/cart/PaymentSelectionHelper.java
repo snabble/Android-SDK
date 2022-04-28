@@ -134,8 +134,8 @@ public class PaymentSelectionHelper {
         sharedPreferences = Snabble.getInstance().getApplication()
                 .getSharedPreferences("snabble_cart", Context.MODE_PRIVATE);
 
-        setProject(SnabbleUI.getProjectAsLiveData().getValue());
-        SnabbleUI.getProjectAsLiveData().observeForever(this::setProject);
+        setProject(Snabble.getInstance().getCheckedInProject().getValue());
+        Snabble.getInstance().getCheckedInProject().observeForever(this::setProject);
         update();
     }
 

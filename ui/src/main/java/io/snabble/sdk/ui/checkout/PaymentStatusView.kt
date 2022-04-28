@@ -83,7 +83,7 @@ class PaymentStatusView @JvmOverloads constructor(
     init {
         clipChildren = false
 
-        project = SnabbleUI.project
+        project = requireNotNull(Snabble.checkedInProject.value)
         checkout = project.checkout
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)

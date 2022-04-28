@@ -77,7 +77,7 @@ public class HomeFragment extends BaseFragment {
                         currentProject = projectList.get(0);
                     }
 
-                    SnabbleUI.getProjectAsLiveData().observe(getViewLifecycleOwner(), project -> {
+                    Snabble.getInstance().getCheckedInProject().observe(getViewLifecycleOwner(), project -> {
                         currentProject = project;
 
                         for (int i = 0; i < projectList.size(); i++) {
