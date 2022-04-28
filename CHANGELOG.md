@@ -27,6 +27,10 @@ in Kotlin.
 ### Fixed
 - Visibility of rating layout
 
+### Changes
+- Load product database updates by default. For opt-out `manualProductDatabaseUpdate` is added
+as a config parameter
+
 ## [0.62.3]
 
 ### Changes

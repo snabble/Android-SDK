@@ -11,8 +11,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Base64
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.google.gson.JsonObject
 import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
@@ -259,6 +258,9 @@ object Snabble {
                         if (project.shops.any { it.id == newShopId }) {
                             project.events.updateShop(value)
                             project.shoppingCart.updatePrices(false)
+                            if (!Snabble.config.manualProductDatabaseUpdates) {
+                                project.productDatabase.update()
+                            }
                             checkedInProject.value = project
                             break
                         }
@@ -302,10 +304,10 @@ object Snabble {
 
         isInitializing.set(true)
         mutableInitializationState.postValue(InitializationState.INITIALIZING)
-        
+
         application = app
         this.config = config
-        
+
         Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
         Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
 
@@ -325,7 +327,7 @@ object Snabble {
             }
         }
         versionName = version
-        
+
         internalStorageDirectory = File(application.filesDir, "snabble/${config.appId}/")
         internalStorageDirectory.mkdirs()
 
@@ -349,7 +351,7 @@ object Snabble {
         )
 
         metadataDownloader = MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath)
-        
+
         if (config.bundledMetadataAssetPath != null) {
             dispatchOnReady(setupCompletionListener)
         } else {
@@ -367,8 +369,17 @@ object Snabble {
                 }
             })
         }
-        
+
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                if (!Snabble.config.manualProductDatabaseUpdates) {
+                    checkedInProject.value?.productDatabase?.update()
+                }
+            }
+        })
+
         registerNetworkCallback(app)
     }
 
@@ -586,7 +597,7 @@ object Snabble {
                 }
             }
         }
-        
+
         paymentCertificates = Collections.unmodifiableList(certificates)
     }
 
@@ -680,6 +691,7 @@ object Snabble {
                 }
             }
         }
+
     private val networkCallback: NetworkCallback = object : NetworkCallback() {
         override fun onAvailable(network: Network) {
             onConnectionStateChanged(true)
