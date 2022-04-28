@@ -22,6 +22,11 @@ latest data no matter on which thread set. The changes will be propagated
 as expected normal on the UI-Thread. You can also use a new `value` property
 in Kotlin.
 
+## [0.62.4]
+
+### Fixed
+- Visibility of rating layout
+
 ## [0.62.3]
 
 ### Changes
