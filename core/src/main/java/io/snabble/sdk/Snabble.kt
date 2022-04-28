@@ -375,7 +375,7 @@ object Snabble {
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
                 if (!Snabble.config.manualProductDatabaseUpdates) {
-                    checkedInProject?.productDatabase?.update()
+                    checkedInProject.value?.productDatabase?.update()
                 }
             }
         })
