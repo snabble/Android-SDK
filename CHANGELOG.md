@@ -2253,7 +2253,7 @@ To use this release UI components you need to also migrate to androidx. See [htt
 ### Fixed
 - Improved camera error handling
 
-## [0.9.0]
+## [0.9.0]  
   
 This are the most notable changes from 0.8.21, for all changes see previous release notes or commit history:  
 
