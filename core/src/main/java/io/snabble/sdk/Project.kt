@@ -255,26 +255,6 @@ class Project internal constructor(jsonObject: JsonObject) {
     val activeShopsUrl: String?
         get() = urls["activeShops"]
 
-    /**
-     * Sets the shop used for receiving store specific prices and identification in the
-     * payment process.
-     */
-    var checkedInShop: Shop? = null
-        set(value) {
-            val currentShopId = this.checkedInShop?.id.orEmpty()
-            val newShopId = value?.id.orEmpty()
-            if (currentShopId != newShopId) {
-                field = value
-                if (newShopId == "") {
-                    Snabble.userPreferences.lastCheckedInShopId = null
-                } else {
-                    Snabble.userPreferences.lastCheckedInShopId = newShopId
-                }
-                events.updateShop(value)
-                shoppingCart.updatePrices(false)
-            }
-        }
-
     private var texts = mutableMapOf<String, String>()
 
     private var encodedCodesJsonObject: JsonObject? = null

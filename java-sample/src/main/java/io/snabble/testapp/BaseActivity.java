@@ -8,8 +8,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.ScannedCode;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.cart.ShoppingCartActivity;
 import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity;
 import io.snabble.sdk.ui.payment.PaymentOptionsActivity;
@@ -46,7 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         String code = ZebraSupport.dispatchKeyEvent(this, event);
         if (code != null) {
             new ProductResolver.Builder(this)
-                    .setCodes(ScannedCode.parse(SnabbleUI.getProject(), code))
+                    .setCodes(ScannedCode.parse(Snabble.getInstance().getCheckedInProject().getValue(), code))
                     .create()
                     .resolve();
 

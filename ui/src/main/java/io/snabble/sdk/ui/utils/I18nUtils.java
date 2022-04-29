@@ -4,7 +4,6 @@ import android.content.res.Resources;
 
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.ui.SnabbleUI;
 
 public class I18nUtils {
     public static int getIdentifierForProject(Resources res, Project project, int id) {
@@ -28,7 +27,7 @@ public class I18nUtils {
     }
 
     public static int getIdentifier(Resources res, int id) {
-        return getIdentifierForProject(res, SnabbleUI.getProject(), id);
+        return getIdentifierForProject(res, Snabble.getInstance().getCheckedInProject().getValue(), id);
     }
 
     public static String getStringForProject(Resources res, Project project, String id) {
@@ -51,6 +50,6 @@ public class I18nUtils {
     }
 
     public static String getString(Resources res, String id) {
-        return getStringForProject(res, SnabbleUI.getProject(), id);
+        return getStringForProject(res, Snabble.getInstance().getCheckedInProject().getValue(), id);
     }
 }

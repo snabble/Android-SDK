@@ -11,8 +11,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Base64
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.google.gson.JsonObject
 import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
@@ -240,6 +239,39 @@ object Snabble {
     var currentActivity: WeakReference<Activity>? = null
 
     /**
+     * Sets the shop used for receiving store specific prices and identification in the
+     * payment process.
+     */
+    var checkedInShop: Shop? = null
+        set(value) {
+            val currentShopId = this.checkedInShop?.id.orEmpty()
+            val newShopId = value?.id.orEmpty()
+            if (currentShopId != newShopId) {
+                field = value
+                if (newShopId == "") {
+                    userPreferences.lastCheckedInShopId = null
+                    checkedInProject.value = null
+                } else {
+                    userPreferences.lastCheckedInShopId = newShopId
+
+                    for (project in Snabble.projects) {
+                        if (project.shops.any { it.id == newShopId }) {
+                            project.events.updateShop(value)
+                            project.shoppingCart.updatePrices(false)
+                            if (!Snabble.config.manualProductDatabaseUpdates) {
+                                project.productDatabase.update()
+                            }
+                            checkedInProject.value = project
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+    var checkedInProject = MutableAccessibleLiveData<Project?>(null)
+
+    /**
      * Unique identifier, different over device installations
      */
     val clientId: String?
@@ -272,10 +304,10 @@ object Snabble {
 
         isInitializing.set(true)
         mutableInitializationState.postValue(InitializationState.INITIALIZING)
-        
+
         application = app
         this.config = config
-        
+
         Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
         Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
 
@@ -295,7 +327,7 @@ object Snabble {
             }
         }
         versionName = version
-        
+
         internalStorageDirectory = File(application.filesDir, "snabble/${config.appId}/")
         internalStorageDirectory.mkdirs()
 
@@ -319,7 +351,7 @@ object Snabble {
         )
 
         metadataDownloader = MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath)
-        
+
         if (config.bundledMetadataAssetPath != null) {
             dispatchOnReady(setupCompletionListener)
         } else {
@@ -337,8 +369,17 @@ object Snabble {
                 }
             })
         }
-        
+
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                if (!Snabble.config.manualProductDatabaseUpdates) {
+                    checkedInProject.value?.productDatabase?.update()
+                }
+            }
+        })
+
         registerNetworkCallback(app)
     }
 
@@ -474,12 +515,12 @@ object Snabble {
         val lastCheckedInShopId = userPreferences.lastCheckedInShopId
         if (lastCheckedInShopId != null) {
             for (project in projects) {
-                val shop = project.shops.find {
-                        shop -> shop.id == lastCheckedInShopId
+                val shop = project.shops.find { shop ->
+                    shop.id == lastCheckedInShopId
                 }
                 if (shop != null) {
                     Logger.d("Restoring last checked in shop " + shop.id + ", " + shop.name)
-                    project.checkedInShop = shop
+                    checkedInShop = shop
                     break;
                 }
             }
@@ -556,7 +597,7 @@ object Snabble {
                 }
             }
         }
-        
+
         paymentCertificates = Collections.unmodifiableList(certificates)
     }
 
@@ -650,6 +691,7 @@ object Snabble {
                 }
             }
         }
+
     private val networkCallback: NetworkCallback = object : NetworkCallback() {
         override fun onAvailable(network: Network) {
             onConnectionStateChanged(true)
