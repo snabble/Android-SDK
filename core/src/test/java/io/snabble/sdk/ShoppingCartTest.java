@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.List;
 
 import io.snabble.sdk.checkout.DefaultCheckoutApi;
+import io.snabble.sdk.checkout.LineItem;
 import io.snabble.sdk.codes.ScannedCode;
 
 public class ShoppingCartTest extends SnabbleSdkTest {
@@ -180,75 +181,75 @@ public class ShoppingCartTest extends SnabbleSdkTest {
     @Test
     public void testLineItems() {
         ShoppingCart.Item item = simpleProduct1.cartItem();
-        DefaultCheckoutApi.LineItem lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.price = 100;
-        lineItem.totalPrice = 100;
+        LineItem lineItem = new LineItem();
+        lineItem.setPrice(100);
+        lineItem.setTotalPrice(100);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "1,00 €");
 
         item = simpleProduct1.cartItem();
         item.setQuantity(2);
-        lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.amount = 2;
-        lineItem.price = 100;
-        lineItem.totalPrice = 200;
+        lineItem = new LineItem();
+        lineItem.setAmount(2);
+        lineItem.setPrice(100);
+        lineItem.setTotalPrice(200);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "2");
         assertStrEquals(item.getFullPriceText(), "2 \u00D7 1,00 € = 2,00 €");
 
         item = preWeighedProduct.cartItem();
-        lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.amount = 1;
-        lineItem.price = 1000;
-        lineItem.totalPrice = 154;
+        lineItem = new LineItem();
+        lineItem.setAmount(1);
+        lineItem.setPrice(1000);
+        lineItem.setTotalPrice(154);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "154g");
         assertStrEquals(item.getFullPriceText(), "154g \u00D7 10,00 € / kg = 1,54 €");
 
         item = preWeighedProduct.cartItem();
-        lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.amount = 1;
-        lineItem.price = 1000;
-        lineItem.totalPrice = 1000;
+        lineItem = new LineItem();
+        lineItem.setAmount(1);
+        lineItem.setPrice(1000);
+        lineItem.setTotalPrice(1000);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "154g");
         assertStrEquals(item.getFullPriceText(), "154g \u00D7 10,00 € / kg = 10,00 €");
 
         item = userWeighedProduct.cartItem();
         item.setQuantity(500);
-        lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.amount = 500;
-        lineItem.price = 1000;
-        lineItem.totalPrice = 500;
+        lineItem = new LineItem();
+        lineItem.setAmount(500);
+        lineItem.setPrice(1000);
+        lineItem.setTotalPrice(500);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "500g");
         assertStrEquals(item.getFullPriceText(), "500g \u00D7 10,00 € / kg = 5,00 €");
 
         item = pieceProduct.cartItem();
-        lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.amount = 1;
-        lineItem.price = 10;
-        lineItem.totalPrice = 60;
+        lineItem = new LineItem();
+        lineItem.setAmount(1);
+        lineItem.setPrice(10);
+        lineItem.setTotalPrice(60);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "0,60 €");
 
         item = priceProduct.cartItem();
-        lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.amount = 1;
-        lineItem.price = 100;
-        lineItem.totalPrice = 100;
+        lineItem = new LineItem();
+        lineItem.setAmount(1);
+        lineItem.setPrice(100);
+        lineItem.setTotalPrice(100);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "1,00 €");
 
         item = zeroAmountProduct.cartItem();
         item.setQuantity(4);
-        lineItem = new DefaultCheckoutApi.LineItem();
-        lineItem.amount = 4;
-        lineItem.price = 100;
-        lineItem.totalPrice = 400;
+        lineItem = new LineItem();
+        lineItem.setAmount(4);
+        lineItem.setPrice(100);
+        lineItem.setTotalPrice(400);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "4");
         assertStrEquals(item.getFullPriceText(), "4 \u00D7 1,00 € = 4,00 €");
@@ -314,29 +315,29 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         cart.add(item);
 
         item = preWeighedProduct.cartItem();
-        item.setLineItem(new DefaultCheckoutApi.LineItem());
+        item.setLineItem(new LineItem());
         cart.add(item);
 
         item = userWeighedProduct.cartItem();
         item.setQuantity(500);
-        item.setLineItem(new DefaultCheckoutApi.LineItem());
+        item.setLineItem(new LineItem());
         cart.add(item);
 
         item = pieceProduct.cartItem();
-        item.setLineItem(new DefaultCheckoutApi.LineItem());
+        item.setLineItem(new LineItem());
         cart.add(item);
 
         item = priceProduct.cartItem();
-        item.setLineItem(new DefaultCheckoutApi.LineItem());
+        item.setLineItem(new LineItem());
         cart.add(item);
 
         item = zeroAmountProduct.cartItem();
-        item.setLineItem(new DefaultCheckoutApi.LineItem());
+        item.setLineItem(new LineItem());
         item.setQuantity(4);
         cart.add(item);
 
         item = zeroAmountProduct.cartItem();
-        item.setLineItem(new DefaultCheckoutApi.LineItem());
+        item.setLineItem(new LineItem());
         item.setQuantity(4);
         cart.add(item);
 

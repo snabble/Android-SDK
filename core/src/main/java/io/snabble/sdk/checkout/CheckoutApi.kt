@@ -22,10 +22,10 @@ interface CheckoutApi {
     )
 
     fun createCheckoutInfo(
-        backendCart: BackendCart?,
+        backendCart: BackendCart,
         clientAcceptedPaymentMethods: java.util.List<PaymentMethod>?, // TODO migrate to kotlin List
-        checkoutInfoResult: CheckoutInfoResult?,
-        timeout: Long
+        checkoutInfoResult: CheckoutInfoResult? = null,
+        timeout: Long = -1
     )
 
     fun updatePaymentProcess(

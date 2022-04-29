@@ -129,7 +129,7 @@ public class Checkout {
     public static final int INVALID_PRICE = -1;
     
     private final Project project;
-    private final DefaultCheckoutApi checkoutApi;
+    private final CheckoutApi checkoutApi;
     private final ShoppingCart shoppingCart;
 
     private SignedCheckoutInfo signedCheckoutInfo;
@@ -141,7 +141,7 @@ public class Checkout {
     private final List<OnCheckoutStateChangedListener> checkoutStateListeners = new CopyOnWriteArrayList<>();
     private final List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
 
-    private final MutableLiveData<Checkout.State> checkoutState = new MutableLiveData<>();
+    private final MutableLiveData<Checkout.State> checkoutState = new MutableLiveData<>(State.NONE);
     private final MutableLiveData<List<Fulfillment>> fulfillmentState = new MutableLiveData<>();
 
     private State lastState = Checkout.State.NONE;
@@ -158,9 +158,13 @@ public class Checkout {
     private List<Coupon> redeemedCoupons;
 
     public Checkout(Project project, ShoppingCart shoppingCart) {
+        this(project, shoppingCart, new DefaultCheckoutApi(project, shoppingCart));
+    }
+
+    public Checkout(Project project, ShoppingCart shoppingCart, CheckoutApi checkoutApi) {
         this.project = project;
         this.shoppingCart = shoppingCart;
-        this.checkoutApi = new DefaultCheckoutApi(project, shoppingCart);
+        this.checkoutApi = checkoutApi;
         this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
     }
 
@@ -171,6 +175,7 @@ public class Checkout {
     public void abort() {
         abort(false);
     }
+
     /**
      * Aborts outstanding http calls and notifies the backend that the checkout process
      * was cancelled
