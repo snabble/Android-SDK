@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +15,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.checkout.CheckoutInfo;
+import io.snabble.sdk.checkout.CheckoutInfoResult;
+import io.snabble.sdk.checkout.DefaultCheckoutApi;
+import io.snabble.sdk.checkout.LineItem;
+import io.snabble.sdk.checkout.LineItemType;
+import io.snabble.sdk.checkout.PaymentMethodInfo;
+import io.snabble.sdk.checkout.SignedCheckoutInfo;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
@@ -23,22 +32,22 @@ class ShoppingCartUpdater {
 
     private final Project project;
     private final ShoppingCart cart;
-    private final CheckoutApi checkoutApi;
+    private final DefaultCheckoutApi checkoutApi;
     private final Handler handler;
-    private CheckoutApi.PaymentMethodInfo[] lastAvailablePaymentMethods;
+    private List<PaymentMethodInfo> lastAvailablePaymentMethods;
     private boolean isUpdated;
     private int successfulModCount = -1;
 
     ShoppingCartUpdater(Project project, ShoppingCart shoppingCart) {
         this.project = project;
         this.cart = shoppingCart;
-        this.checkoutApi = new CheckoutApi(project, shoppingCart);
+        this.checkoutApi = new DefaultCheckoutApi(project, shoppingCart);
         this.handler = new Handler(Looper.getMainLooper());
     }
 
     private final Runnable updatePriceRunnable = () -> update(false);
 
-    public CheckoutApi.PaymentMethodInfo[] getLastAvailablePaymentMethods() {
+    public List<PaymentMethodInfo> getLastAvailablePaymentMethods() {
         return lastAvailablePaymentMethods;
     }
 
@@ -56,9 +65,9 @@ class ShoppingCartUpdater {
             return;
         }
 
-        Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutApi.CheckoutInfoResult() {
+        Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutInfoResult() {
             @Override
-            public void success(final CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
+            public void success(final SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
                 Dispatch.mainThread(() -> {
                     // ignore when cart was modified mid request
                     if (cart.getModCount() != modCount) {
@@ -88,7 +97,7 @@ class ShoppingCartUpdater {
             }
 
             @Override
-            public void invalidProducts(List<Product> products) {
+            public void invalidProducts(@NotNull List<Product> products) {
                 cart.setInvalidProducts(products);
                 error(true);
             }
@@ -122,7 +131,7 @@ class ShoppingCartUpdater {
         cart.notifyPriceUpdate(cart);
     }
 
-    private void commitCartUpdate(int modCount, CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, Map<String, Product> products) {
+    private void commitCartUpdate(int modCount, SignedCheckoutInfo signedCheckoutInfo, Map<String, Product> products) {
         try {
             if (cart.getModCount() != modCount) {
                 error(false);
@@ -131,7 +140,7 @@ class ShoppingCartUpdater {
 
             cart.invalidateOnlinePrices();
 
-            CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
+            CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.getCheckoutInfo(), CheckoutInfo.class);
 
             Set<String> referrerIds = new HashSet<>();
             Set<String> requiredIds = new HashSet<>();
@@ -144,8 +153,8 @@ class ShoppingCartUpdater {
                 }
             }
 
-            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                requiredIds.remove(lineItem.id);
+            for (LineItem lineItem : checkoutInfo.getLineItems()) {
+                requiredIds.remove(lineItem.getId());
             }
 
             // error out when items are missing
@@ -157,22 +166,22 @@ class ShoppingCartUpdater {
 
             int discounts = 0;
 
-            for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-                ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+            for (LineItem lineItem : checkoutInfo.getLineItems()) {
+                ShoppingCart.Item item = cart.getByItemId(lineItem.getId());
 
                 if (item != null) {
-                    if (!item.getProduct().getSku().equals(lineItem.sku)) {
+                    if (!item.getProduct().getSku().equals(lineItem.getSku())) {
                         if (products == null) {
                             error(false);
                             return;
                         }
 
-                        Product product = products.get(lineItem.sku);
+                        Product product = products.get(lineItem.getSku());
 
                         if (product != null) {
-                            ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.scannedCode);
+                            ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.getScannedCode());
                             if (scannedCode != null) {
-                                item.replace(product, scannedCode, lineItem.amount);
+                                item.replace(product, scannedCode, lineItem.getAmount());
                                 item.setLineItem(lineItem);
                             }
                         }
@@ -180,12 +189,12 @@ class ShoppingCartUpdater {
                         item.setLineItem(lineItem);
                     }
                 } else {
-                    if (lineItem.type == CheckoutApi.LineItemType.DISCOUNT) {
-                        discounts += lineItem.totalPrice;
+                    if (lineItem.getType() == LineItemType.DISCOUNT) {
+                        discounts += lineItem.getTotalPrice();
                     } else {
                         boolean add = true;
                         for (Coupon coupon : project.getCoupons()) {
-                            if (coupon.getId().equals(lineItem.couponId)) {
+                            if (coupon.getId().equals(lineItem.getCouponId())) {
                                 add = false;
                                 break;
                             }
@@ -195,10 +204,10 @@ class ShoppingCartUpdater {
                             cart.insert(cart.newItem(lineItem), cart.size(), false);
                         }
 
-                        if (lineItem.type == CheckoutApi.LineItemType.COUPON) {
-                            ShoppingCart.Item refersTo = cart.getByItemId(lineItem.refersTo);
+                        if (lineItem.getType() == LineItemType.COUPON) {
+                            ShoppingCart.Item refersTo = cart.getByItemId(lineItem.getRefersTo());
                             if (refersTo != null) {
-                                refersTo.setManualCouponApplied(lineItem.redeemed);
+                                refersTo.setManualCouponApplied(lineItem.getRedeemed());
                                 discounts += refersTo.getModifiedPrice();
                             }
                         }
@@ -207,19 +216,19 @@ class ShoppingCartUpdater {
             }
 
             if (discounts != 0) {
-                CheckoutApi.LineItem lineItem = new CheckoutApi.LineItem();
-                lineItem.type = CheckoutApi.LineItemType.DISCOUNT;
-                lineItem.amount = 1;
-                lineItem.price = discounts;
-                lineItem.totalPrice = lineItem.price;
-                lineItem.id = UUID.randomUUID().toString();
+                LineItem lineItem = new LineItem();
+                lineItem.setType(LineItemType.DISCOUNT);
+                lineItem.setAmount(1);
+                lineItem.setPrice(discounts);
+                lineItem.setTotalPrice(lineItem.getPrice());
+                lineItem.setId(UUID.randomUUID().toString());
                 cart.insert(cart.newItem(lineItem), cart.size(), false);
             }
 
             if (project.isDisplayingNetPrice()) {
-                cart.setOnlineTotalPrice(checkoutInfo.price.netPrice);
+                cart.setOnlineTotalPrice(checkoutInfo.getPrice().getNetPrice());
             } else {
-                cart.setOnlineTotalPrice(checkoutInfo.price.price);
+                cart.setOnlineTotalPrice(checkoutInfo.getPrice().getPrice());
             }
 
             successfulModCount = modCount;
@@ -240,9 +249,9 @@ class ShoppingCartUpdater {
         cart.notifyPriceUpdate(cart);
     }
 
-    private CheckoutApi.LineItem getLineItem(CheckoutApi.CheckoutInfo checkoutInfo, String id) {
-        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-            if (lineItem.id.equals(id)) {
+    private LineItem getLineItem(CheckoutInfo checkoutInfo, String id) {
+        for (LineItem lineItem : checkoutInfo.getLineItems()) {
+            if (lineItem.getId().equals(id)) {
                 return lineItem;
             }
         }
@@ -250,16 +259,16 @@ class ShoppingCartUpdater {
         return null;
     }
 
-    private List<String> getToBeReplacedSkus(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo) {
-        CheckoutApi.CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutApi.CheckoutInfo.class);
+    private List<String> getToBeReplacedSkus(SignedCheckoutInfo signedCheckoutInfo) {
+        CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.getCheckoutInfo(), CheckoutInfo.class);
 
         List<String> skus = new ArrayList<>();
-        for (CheckoutApi.LineItem lineItem : checkoutInfo.lineItems) {
-            ShoppingCart.Item item = cart.getByItemId(lineItem.id);
+        for (LineItem lineItem : checkoutInfo.getLineItems()) {
+            ShoppingCart.Item item = cart.getByItemId(lineItem.getId());
 
             if (item != null) {
-                if (!item.getProduct().getSku().equals(lineItem.sku)) {
-                    skus.add(lineItem.sku);
+                if (!item.getProduct().getSku().equals(lineItem.getSku())) {
+                    skus.add(lineItem.getSku());
                 }
             }
         }

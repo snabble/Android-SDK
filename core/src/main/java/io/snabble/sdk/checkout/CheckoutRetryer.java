@@ -1,4 +1,4 @@
-package io.snabble.sdk;
+package io.snabble.sdk.checkout;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +13,11 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.Product;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -94,14 +99,14 @@ class CheckoutRetryer {
                     removeSavedCart(savedCart);
                 }
 
-                final CheckoutApi checkoutApi = new CheckoutApi(project, project.getShoppingCart());
-                checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutApi.CheckoutInfoResult() {
+                final DefaultCheckoutApi checkoutApi = new DefaultCheckoutApi(project, project.getShoppingCart());
+                checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutInfoResult() {
                     @Override
-                    public void success(CheckoutApi.SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
+                    public void success(SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
                         checkoutApi.createPaymentProcess(UUID.randomUUID().toString(), signedCheckoutInfo, fallbackPaymentMethod, null,
-                                true, savedCart.finalizedAt, new CheckoutApi.PaymentProcessResult() {
+                                true, savedCart.finalizedAt, new PaymentProcessResult() {
                             @Override
-                            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
+                            public void success(CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                                 Logger.d("Successfully resend checkout " + savedCart.backendCart.session);
                                 removeSavedCart(savedCart);
                                 countDownLatch.countDown();

@@ -1,4 +1,4 @@
-package io.snabble.sdk;
+package io.snabble.sdk.checkout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +13,15 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
+import io.snabble.sdk.Coupon;
+import io.snabble.sdk.FulfillmentState;
+import io.snabble.sdk.PaymentMethod;
+import io.snabble.sdk.PaymentMethodDescriptor;
+import io.snabble.sdk.Product;
+import io.snabble.sdk.Project;
+import io.snabble.sdk.Shop;
+import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.Age;
 import io.snabble.sdk.utils.Dispatch;
@@ -120,11 +129,11 @@ public class Checkout {
     public static final int INVALID_PRICE = -1;
     
     private final Project project;
-    private final CheckoutApi checkoutApi;
+    private final DefaultCheckoutApi checkoutApi;
     private final ShoppingCart shoppingCart;
 
-    private CheckoutApi.SignedCheckoutInfo signedCheckoutInfo;
-    private CheckoutApi.CheckoutProcessResponse checkoutProcess;
+    private SignedCheckoutInfo signedCheckoutInfo;
+    private CheckoutProcessResponse checkoutProcess;
     private String rawCheckoutProcess;
     private PaymentMethod paymentMethod;
     private int priceToPay;
@@ -133,25 +142,25 @@ public class Checkout {
     private final List<OnFulfillmentUpdateListener> fulfillmentUpdateListeners = new CopyOnWriteArrayList<>();
 
     private final MutableLiveData<Checkout.State> checkoutState = new MutableLiveData<>();
-    private final MutableLiveData<CheckoutApi.Fulfillment[]> fulfillmentState = new MutableLiveData<>();
+    private final MutableLiveData<List<Fulfillment>> fulfillmentState = new MutableLiveData<>();
 
     private State lastState = Checkout.State.NONE;
     private State state = Checkout.State.NONE;
 
     private final List<String> codes = new ArrayList<>();
-    private PaymentMethod[] clientAcceptedPaymentMethods;
+    private List<PaymentMethod> clientAcceptedPaymentMethods;
     private Shop shop;
     private List<Product> invalidProducts;
     private final CheckoutRetryer checkoutRetryer;
     private Future<?> currentPollFuture;
-    private CheckoutApi.AuthorizePaymentRequest storedAuthorizePaymentRequest;
+    private AuthorizePaymentRequest storedAuthorizePaymentRequest;
     private boolean authorizePaymentRequestFailed;
     private List<Coupon> redeemedCoupons;
 
-    Checkout(Project project, ShoppingCart shoppingCart) {
+    public Checkout(Project project, ShoppingCart shoppingCart) {
         this.project = project;
         this.shoppingCart = shoppingCart;
-        this.checkoutApi = new CheckoutApi(project, shoppingCart);
+        this.checkoutApi = new DefaultCheckoutApi(project, shoppingCart);
         this.checkoutRetryer = new CheckoutRetryer(project, getFallbackPaymentMethod());
     }
 
@@ -171,7 +180,7 @@ public class Checkout {
                 && state != Checkout.State.DENIED_BY_PAYMENT_PROVIDER
                 && state != Checkout.State.DENIED_BY_SUPERVISOR
                 && checkoutProcess != null) {
-            checkoutApi.abort(checkoutProcess, new CheckoutApi.PaymentAbortResult() {
+            checkoutApi.abort(checkoutProcess, new PaymentAbortResult() {
                 @Override
                 public void success() {
                     cancelOutstandingCalls();
@@ -268,7 +277,7 @@ public class Checkout {
     /**
      * Starts the checkout process.
      * <p>
-     * Requires a shop to be set with {@link Project#setCheckedInShop(Shop)}.
+     * Requires a shop to be set with {@link Snabble#setCheckedInShop(Shop)}.
      * <p>
      * If successful and there is more then 1 payment method
      * the checkout state will be {@link State#REQUEST_PAYMENT_METHOD}.
@@ -298,11 +307,11 @@ public class Checkout {
 
         checkoutApi.createCheckoutInfo(backendCart,
                 clientAcceptedPaymentMethods,
-                new CheckoutApi.CheckoutInfoResult() {
+                new CheckoutInfoResult() {
             @Override
-            public void success(CheckoutApi.SignedCheckoutInfo checkoutInfo,
+            public void success(SignedCheckoutInfo checkoutInfo,
                                 int onlinePrice,
-                                CheckoutApi.PaymentMethodInfo[] availablePaymentMethods) {
+                                List<PaymentMethodInfo> availablePaymentMethods) {
                 signedCheckoutInfo = checkoutInfo;
 
                 if (signedCheckoutInfo.isRequiringTaxation()) {
@@ -313,8 +322,8 @@ public class Checkout {
 
                 priceToPay = shoppingCart.getTotalPrice();
 
-                if (availablePaymentMethods.length == 1) {
-                    PaymentMethod paymentMethod = PaymentMethod.fromString(availablePaymentMethods[0].id);
+                if (availablePaymentMethods.size() == 1) {
+                    PaymentMethod paymentMethod = PaymentMethod.fromString(availablePaymentMethods.get(0).getId());
                     if (paymentMethod != null && !paymentMethod.isRequiringCredentials()) {
                         pay(paymentMethod, null);
                     } else {
@@ -391,9 +400,9 @@ public class Checkout {
             notifyStateChanged(Checkout.State.VERIFYING_PAYMENT_METHOD);
 
             checkoutApi.createPaymentProcess(shoppingCart.getUUID(), signedCheckoutInfo,
-                    paymentMethod, paymentCredentials, false, null, new CheckoutApi.PaymentProcessResult() {
+                    paymentMethod, paymentCredentials, false, null, new PaymentProcessResult() {
                 @Override
-                public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
+                public void success(CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                     synchronized (Checkout.this) {
                         checkoutProcess = checkoutProcessResponse;
                         rawCheckoutProcess = rawResponse;
@@ -419,13 +428,13 @@ public class Checkout {
     }
 
     public void authorizePayment(String encryptedOrigin) {
-        CheckoutApi.AuthorizePaymentRequest authorizePaymentRequest = new CheckoutApi.AuthorizePaymentRequest();
-        authorizePaymentRequest.encryptedOrigin = encryptedOrigin;
+        AuthorizePaymentRequest authorizePaymentRequest = new AuthorizePaymentRequest();
+        authorizePaymentRequest.setEncryptedOrigin(encryptedOrigin);
         storedAuthorizePaymentRequest = authorizePaymentRequest;
 
         checkoutApi.authorizePayment(checkoutProcess,
                 authorizePaymentRequest,
-                new CheckoutApi.AuthorizePaymentResult() {
+                new AuthorizePaymentResult() {
                     @Override
             public void success() {
                 // ignore
@@ -438,39 +447,37 @@ public class Checkout {
         });
     }
 
-    private boolean areAllChecksSucceeded(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+    private boolean areAllChecksSucceeded(CheckoutProcessResponse checkoutProcessResponse) {
         boolean allChecksOk = true;
 
-        if (checkoutProcessResponse.checks != null) {
-            for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
-                if (check.state != CheckoutApi.State.SUCCESSFUL) {
-                    return false;
-                }
+        for (Check check : checkoutProcessResponse.getChecks()) {
+            if (check.getState() != CheckState.SUCCESSFUL) {
+                return false;
+            }
 
-                if (check.type == null) {
-                    continue;
-                }
+            if (check.getType() == null) {
+                continue;
+            }
 
-                if (check.performedBy == CheckoutApi.Performer.APP) {
-                    if (check.type == CheckoutApi.CheckType.MIN_AGE) {
-                        Logger.d("Verifying age...");
-                        switch (check.state) {
-                            case PENDING:
-                                Logger.d("Age check pending...");
-                                notifyStateChanged(State.REQUEST_VERIFY_AGE);
-                                abortSilently();
-                                allChecksOk = false;
-                                break;
-                            case FAILED:
-                                Logger.d("Age check failed...");
-                                notifyStateChanged(State.DENIED_TOO_YOUNG);
-                                abortSilently();
-                                allChecksOk = false;
-                                break;
-                            case SUCCESSFUL:
-                                Logger.d("Age check successful");
-                                break;
-                        }
+            if (check.getPerformedBy() == Performer.APP) {
+                if (check.getType() == CheckType.MIN_AGE) {
+                    Logger.d("Verifying age...");
+                    switch (check.getState()) {
+                        case PENDING:
+                            Logger.d("Age check pending...");
+                            notifyStateChanged(State.REQUEST_VERIFY_AGE);
+                            abortSilently();
+                            allChecksOk = false;
+                            break;
+                        case FAILED:
+                            Logger.d("Age check failed...");
+                            notifyStateChanged(State.DENIED_TOO_YOUNG);
+                            abortSilently();
+                            allChecksOk = false;
+                            break;
+                        case SUCCESSFUL:
+                            Logger.d("Age check successful");
+                            break;
                     }
                 }
             }
@@ -479,12 +486,10 @@ public class Checkout {
         return allChecksOk;
     }
 
-    private boolean hasAnyCheckFailed(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse.checks != null) {
-            for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
-                if (check.state == CheckoutApi.State.FAILED) {
-                    return true;
-                }
+    private boolean hasAnyCheckFailed(CheckoutProcessResponse checkoutProcessResponse) {
+        for (Check check : checkoutProcessResponse.getChecks()) {
+            if (check.getState() == CheckState.FAILED) {
+                return true;
             }
         }
 
@@ -492,23 +497,20 @@ public class Checkout {
     }
 
     private boolean hasAnyFulfillmentAllocationFailed() {
-        if (checkoutProcess.fulfillments != null) {
-            for (CheckoutApi.Fulfillment fulfillment : checkoutProcess.fulfillments) {
-                if (fulfillment.state == FulfillmentState.ALLOCATION_FAILED || fulfillment.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
-                    return true;
-                }
+        for (Fulfillment fulfillment : checkoutProcess.getFulfillments()) {
+            if (fulfillment.getState() == FulfillmentState.ALLOCATION_FAILED ||
+                fulfillment.getState() == FulfillmentState.ALLOCATION_TIMED_OUT) {
+                return true;
             }
         }
 
         return false;
     }
 
-    private boolean hasStillPendingChecks(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse.checks != null) {
-            for (CheckoutApi.Check check : checkoutProcessResponse.checks) {
-                if (check.state == CheckoutApi.State.PENDING) {
-                    return true;
-                }
+    private boolean hasStillPendingChecks(CheckoutProcessResponse checkoutProcessResponse) {
+        for (Check check : checkoutProcessResponse.getChecks()) {
+            if (check.getState() == CheckState.PENDING) {
+                return true;
             }
         }
 
@@ -516,14 +518,16 @@ public class Checkout {
     }
 
     private boolean areAllFulfillmentsClosed() {
-        if (checkoutProcess == null || checkoutProcess.fulfillments == null) {
+        if (checkoutProcess == null) {
             return true;
+        } else {
+            checkoutProcess.getFulfillments();
         }
 
         boolean ok = true;
 
-        for (CheckoutApi.Fulfillment fulfillment : checkoutProcess.fulfillments)  {
-            if (fulfillment.state.isOpen()) {
+        for (Fulfillment fulfillment : checkoutProcess.getFulfillments())  {
+            if (fulfillment.getState() != null && fulfillment.getState().isOpen()) {
                 ok = false;
                 break;
             }
@@ -533,14 +537,14 @@ public class Checkout {
     }
 
     private boolean hasAnyFulfillmentFailed() {
-        if (checkoutProcess == null || checkoutProcess.fulfillments == null) {
+        if (checkoutProcess == null) {
             return false;
         }
 
         boolean fail = false;
 
-        for (CheckoutApi.Fulfillment fulfillment : checkoutProcess.fulfillments)  {
-            if (fulfillment.state.isFailure()) {
+        for (Fulfillment fulfillment : checkoutProcess.getFulfillments())  {
+            if (fulfillment.getState() != null && fulfillment.getState().isFailure()) {
                 fail = true;
                 break;
             }
@@ -581,9 +585,9 @@ public class Checkout {
 
         Logger.d("RoutingTarget = " + getRoutingTarget());
 
-        checkoutApi.updatePaymentProcess(checkoutProcess, new CheckoutApi.PaymentProcessResult() {
+        checkoutApi.updatePaymentProcess(checkoutProcess, new PaymentProcessResult() {
             @Override
-            public void success(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
+            public void success(CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
                 synchronized (Checkout.this) {
                     checkoutProcess = checkoutProcessResponse;
                     rawCheckoutProcess = rawResponse;
@@ -612,7 +616,7 @@ public class Checkout {
     }
 
     private boolean handleProcessResponse() {
-        if (checkoutProcess.aborted) {
+        if (checkoutProcess.getAborted()) {
             Logger.d("Payment aborted");
             if (hasAnyFulfillmentFailed()) {
                 notifyStateChanged(State.PAYMENT_PROCESSING_ERROR);
@@ -623,9 +627,9 @@ public class Checkout {
         }
 
         if (state == State.VERIFYING_PAYMENT_METHOD) {
-            if (checkoutProcess.routingTarget == CheckoutApi.RoutingTarget.SUPERVISOR) {
+            if (checkoutProcess.getRoutingTarget() == RoutingTarget.SUPERVISOR) {
                 notifyStateChanged(State.WAIT_FOR_SUPERVISOR);
-            } else if (checkoutProcess.routingTarget == CheckoutApi.RoutingTarget.GATEKEEPER) {
+            } else if (checkoutProcess.getRoutingTarget() == RoutingTarget.GATEKEEPER) {
                 notifyStateChanged(State.WAIT_FOR_GATEKEEPER);
             } else {
                 notifyStateChanged(State.WAIT_FOR_APPROVAL);
@@ -638,10 +642,10 @@ public class Checkout {
         if (authorizePaymentUrl != null) {
             if (authorizePaymentRequestFailed) {
                 authorizePaymentRequestFailed = false;
-                authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin);
+                authorizePayment(storedAuthorizePaymentRequest.getEncryptedOrigin());
             } else {
                 if (storedAuthorizePaymentRequest != null) {
-                    authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin);
+                    authorizePayment(storedAuthorizePaymentRequest.getEncryptedOrigin());
                 } else {
                     notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN);
                 }
@@ -650,26 +654,24 @@ public class Checkout {
             return false;
         }
 
-        if (checkoutProcess.paymentState == CheckoutApi.State.SUCCESSFUL) {
-            if (checkoutProcess.exitToken != null
-                    && (checkoutProcess.exitToken.format == null || checkoutProcess.exitToken.format.equals("")
-                    || checkoutProcess.exitToken.value == null || checkoutProcess.exitToken.value.equals(""))) {
+        if (checkoutProcess.getPaymentState() == CheckState.SUCCESSFUL) {
+            if (checkoutProcess.getExitToken() != null
+                    && (checkoutProcess.getExitToken().getFormat() == null || checkoutProcess.getExitToken().getFormat().equals("")
+                    || checkoutProcess.getExitToken().getValue() == null || checkoutProcess.getExitToken().getValue().equals(""))) {
                 return false;
             } else {
                 approve();
 
                 if (areAllFulfillmentsClosed()) {
-                    if (checkoutProcess.fulfillments != null) {
-                        notifyFulfillmentDone();
-                    }
+                    notifyFulfillmentDone();
                     return true;
                 } else {
                     notifyFulfillmentUpdate();
                     return false;
                 }
             }
-        } else if (checkoutProcess.paymentState == CheckoutApi.State.PENDING
-                || checkoutProcess.paymentState == CheckoutApi.State.UNAUTHORIZED) {
+        } else if (checkoutProcess.getPaymentState() == CheckState.PENDING
+                || checkoutProcess.getPaymentState() == CheckState.UNAUTHORIZED) {
             if (hasAnyFulfillmentFailed()) {
                 checkoutApi.abort(checkoutProcess, null);
                 notifyStateChanged(State.PAYMENT_PROCESSING);
@@ -687,12 +689,12 @@ public class Checkout {
                 shoppingCart.generateNewUUID();
                 notifyStateChanged(Checkout.State.DENIED_BY_SUPERVISOR);
             }
-        } else if (checkoutProcess.paymentState == CheckoutApi.State.PROCESSING) {
+        } else if (checkoutProcess.getPaymentState() == CheckState.PROCESSING) {
             notifyStateChanged(State.PAYMENT_PROCESSING);
-        } else if (checkoutProcess.paymentState == CheckoutApi.State.FAILED) {
-            if (checkoutProcess.paymentResult != null
-                    && checkoutProcess.paymentResult.failureCause != null
-                    && checkoutProcess.paymentResult.failureCause.equals("terminalAbort")) {
+        } else if (checkoutProcess.getPaymentState() == CheckState.FAILED) {
+            if (checkoutProcess.getPaymentResult() != null
+                    && checkoutProcess.getPaymentResult().getFailureCause() != null
+                    && checkoutProcess.getPaymentResult().getFailureCause().equals("terminalAbort")) {
                 Logger.d("Payment aborted by terminal");
                 notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
             } else {
@@ -715,7 +717,12 @@ public class Checkout {
             }
 
             if (signedCheckoutInfo != null) {
-                redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(project.getCoupons().get());
+                List<Coupon> coupons = project.getCoupons().get();
+                if (coupons != null) {
+                    redeemedCoupons = signedCheckoutInfo.getRedeemedCoupons(coupons);
+                } else {
+                    redeemedCoupons = null;
+                }
             }
             shoppingCart.invalidate();
             clearCodes();
@@ -743,14 +750,14 @@ public class Checkout {
     }
 
     public String getOrderId() {
-        return checkoutProcess != null ? checkoutProcess.orderId : null;
+        return checkoutProcess != null ? checkoutProcess.getOrderId() : null;
     }
 
-    public void setClientAcceptedPaymentMethods(PaymentMethod[] acceptedPaymentMethods) {
+    public void setClientAcceptedPaymentMethods(List<PaymentMethod> acceptedPaymentMethods) {
         clientAcceptedPaymentMethods = acceptedPaymentMethods;
     }
 
-    public PaymentMethod[] getClientAcceptedPaymentMethods() {
+    public List<PaymentMethod> getClientAcceptedPaymentMethods() {
         return clientAcceptedPaymentMethods;
     }
 
@@ -779,7 +786,7 @@ public class Checkout {
 
     public PaymentMethod getPaymentMethodForPayment() {
         if (checkoutProcess != null) {
-            return checkoutProcess.paymentMethod;
+            return checkoutProcess.getPaymentMethod();
         }
 
         return null;
@@ -792,7 +799,7 @@ public class Checkout {
     public int getVerifiedOnlinePrice() {
         try {
             if (checkoutProcess != null) {
-                return checkoutProcess.pricing.price.price;
+                return checkoutProcess.getPricing().getPrice().getPrice();
             }
         } catch (Exception e) {
             return -1;
@@ -801,12 +808,12 @@ public class Checkout {
         return -1;
     }
 
-    public CheckoutApi.RoutingTarget getRoutingTarget() {
-        if (checkoutProcess != null && checkoutProcess.routingTarget != null) {
-            return checkoutProcess.routingTarget;
+    public RoutingTarget getRoutingTarget() {
+        if (checkoutProcess != null && checkoutProcess.getRoutingTarget() != null) {
+            return checkoutProcess.getRoutingTarget();
         }
 
-        return CheckoutApi.RoutingTarget.NONE;
+        return RoutingTarget.NONE;
     }
 
     public List<Product> getInvalidProducts() {
@@ -818,10 +825,10 @@ public class Checkout {
      */
     public PaymentMethod[] getAvailablePaymentMethods() {
         if (signedCheckoutInfo != null) {
-            CheckoutApi.PaymentMethodInfo[] paymentMethodInfos =  signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
+            List<PaymentMethodInfo> paymentMethodInfos =  signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
             List<PaymentMethod> paymentMethods = new ArrayList<>();
-            for (CheckoutApi.PaymentMethodInfo info : paymentMethodInfos) {
-                PaymentMethod pm = PaymentMethod.fromString(info.id);
+            for (PaymentMethodInfo info : paymentMethodInfos) {
+                PaymentMethod pm = PaymentMethod.fromString(info.getId());
                 if (pm != null) {
                     paymentMethods.add(pm);
                 }
@@ -857,8 +864,8 @@ public class Checkout {
      */
     public String getQRCodePOSContent() {
         if (checkoutProcess != null) {
-            if (checkoutProcess.paymentInformation != null) {
-                return checkoutProcess.paymentInformation.qrCodeContent;
+            if (checkoutProcess.getPaymentInformation() != null) {
+                return checkoutProcess.getPaymentInformation().getQrCodeContent();
             }
         }
 
@@ -866,7 +873,7 @@ public class Checkout {
     }
 
     @Nullable
-    public CheckoutApi.CheckoutProcessResponse getCheckoutProcess() {
+    public CheckoutProcessResponse getCheckoutProcess() {
         return checkoutProcess;
     }
 
@@ -897,7 +904,7 @@ public class Checkout {
         return checkoutState;
     }
 
-    public LiveData<CheckoutApi.Fulfillment[]> getFulfillmentState() {
+    public LiveData<List<Fulfillment>> getFulfillmentState() {
         return fulfillmentState;
     }
 
@@ -954,7 +961,7 @@ public class Checkout {
             }
 
             if (checkoutProcess != null) {
-                fulfillmentState.setValue(checkoutProcess.fulfillments);
+                fulfillmentState.setValue(checkoutProcess.getFulfillments());
             } else {
                 fulfillmentState.setValue(null);
             }
@@ -968,7 +975,7 @@ public class Checkout {
             }
 
             if (checkoutProcess != null) {
-                fulfillmentState.setValue(checkoutProcess.fulfillments);
+                fulfillmentState.setValue(checkoutProcess.getFulfillments());
             } else {
                 fulfillmentState.setValue(null);
             }

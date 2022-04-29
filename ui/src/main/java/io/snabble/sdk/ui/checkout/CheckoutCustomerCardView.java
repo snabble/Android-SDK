@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.Checkout;
+import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.EAN13;

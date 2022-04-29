@@ -21,6 +21,9 @@ import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.checkout.Checkout
+import io.snabble.sdk.checkout.DefaultCheckoutApi
+import io.snabble.sdk.checkout.Fulfillment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
@@ -356,7 +359,7 @@ class PaymentStatusView @JvmOverloads constructor(
         })
     }
 
-    private fun onFulfillmentStateChanged(fulfillments: Array<CheckoutApi.Fulfillment>?) {
+    private fun onFulfillmentStateChanged(fulfillments: List<Fulfillment>?) {
         fulfillments?.forEach {
             var itemView = fulfillmentContainer.findViewWithTag<PaymentStatusItemView>(it.type)
             if (itemView == null) {
@@ -369,12 +372,9 @@ class PaymentStatusView @JvmOverloads constructor(
                 )
             }
 
+            val state = it.state
             if (it.type == "tobaccolandEWA") {
-                if (it.state.isOpen) {
-                    itemView.setText(null)
-                    itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
-                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
-                } else if (it.state.isFailure) {
+                if (state == null || state.isFailure) {
                     if (it.state == FulfillmentState.ALLOCATION_FAILED
                         || it.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
                         handlePaymentAborted()
@@ -383,7 +383,11 @@ class PaymentStatusView @JvmOverloads constructor(
                     itemView.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_error))
                     itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                     itemView.state = PaymentStatusItemView.State.FAILED
-                } else if (it.state.isClosed) {
+                } else if (state.isOpen) {
+                    itemView.setText(null)
+                    itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
+                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
+                } else if (state.isClosed) {
                     itemView.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_message))
                     itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                     itemView.state = PaymentStatusItemView.State.SUCCESS
@@ -391,11 +395,11 @@ class PaymentStatusView @JvmOverloads constructor(
             } else {
                 itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Fulfillment_title))
 
-                if (it.state.isOpen) {
-                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
-                } else if (it.state.isFailure) {
+                if (state == null || state.isFailure) {
                     itemView.state = PaymentStatusItemView.State.FAILED
-                } else if (it.state.isClosed) {
+                } else if (state.isOpen) {
+                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
+                } else if (state.isClosed) {
                     itemView.state = PaymentStatusItemView.State.SUCCESS
                 }
             }

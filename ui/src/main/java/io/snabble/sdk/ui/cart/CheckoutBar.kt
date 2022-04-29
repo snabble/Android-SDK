@@ -16,10 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import io.snabble.sdk.Checkout
+import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble

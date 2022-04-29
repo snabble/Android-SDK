@@ -4,6 +4,7 @@ import static io.snabble.sdk.Unit.PIECE;
 import static io.snabble.sdk.Unit.PRICE;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -17,6 +18,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.auth.AppUser;
+import io.snabble.sdk.checkout.DefaultCheckoutApi;
+import io.snabble.sdk.checkout.LineItem;
+import io.snabble.sdk.checkout.LineItemType;
+import io.snabble.sdk.checkout.PaymentMethodInfo;
+import io.snabble.sdk.checkout.PriceModifier;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.Dispatch;
@@ -121,7 +127,7 @@ public class ShoppingCart {
         return new Item(this, coupon, scannedCode);
     }
 
-    Item newItem(CheckoutApi.LineItem lineItem) {
+    Item newItem(LineItem lineItem) {
         return new Item(this, lineItem);
     }
 
@@ -470,8 +476,8 @@ public class ShoppingCart {
 
         for (Item e : items) {
             if (e.getType() == ItemType.LINE_ITEM) {
-                if (e.lineItem.type == CheckoutApi.LineItemType.DEFAULT) {
-                    sum += e.lineItem.amount;
+                if (e.lineItem.getType() == LineItemType.DEFAULT) {
+                    sum += e.lineItem.getAmount();
                 }
                 continue;
             } else if (e.getType() == ItemType.PRODUCT) {
@@ -578,7 +584,7 @@ public class ShoppingCart {
         private Product product;
         private ScannedCode scannedCode;
         private int quantity;
-        private CheckoutApi.LineItem lineItem;
+        private LineItem lineItem;
         private String id;
         private boolean isUsingSpecifiedQuantity;
         private transient ShoppingCart cart;
@@ -635,7 +641,7 @@ public class ShoppingCart {
             }
         }
 
-        private Item(ShoppingCart cart, CheckoutApi.LineItem lineItem) {
+        private Item(ShoppingCart cart, LineItem lineItem) {
             this.id = UUID.randomUUID().toString();
             this.cart = cart;
             this.lineItem = lineItem;
@@ -645,7 +651,7 @@ public class ShoppingCart {
             return id;
         }
 
-        void setLineItem(CheckoutApi.LineItem lineItem) {
+        void setLineItem(LineItem lineItem) {
             this.lineItem = lineItem;
         }
 
@@ -674,12 +680,12 @@ public class ShoppingCart {
 
         public int getQuantity(boolean ignoreLineItem) {
             if (lineItem != null && !ignoreLineItem) {
-                if (lineItem.weight != null) {
-                    return lineItem.weight;
-                } else if (lineItem.units != null){
-                    return lineItem.units;
+                if (lineItem.getWeight() != null) {
+                    return lineItem.getWeight();
+                } else if (lineItem.getUnits() != null){
+                    return lineItem.getUnits();
                 } else {
-                    return lineItem.amount;
+                    return lineItem.getAmount();
                 }
             }
 
@@ -738,7 +744,7 @@ public class ShoppingCart {
         }
 
         public boolean isEditableInDialog() {
-            if (lineItem != null) return lineItem.type == CheckoutApi.LineItemType.DEFAULT
+            if (lineItem != null) return lineItem.getType() == LineItemType.DEFAULT
                     && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0);
 
             return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
@@ -762,8 +768,8 @@ public class ShoppingCart {
                 return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
                         : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
             } else if (getType() == ItemType.LINE_ITEM) {
-                if (lineItem.weightUnit != null) {
-                    return Unit.fromString(lineItem.weightUnit);
+                if (lineItem.getWeightUnit() != null) {
+                    return Unit.fromString(lineItem.getWeightUnit());
                 }
             }
 
@@ -772,7 +778,7 @@ public class ShoppingCart {
 
         public int getTotalPrice() {
             if (lineItem != null) {
-                return lineItem.totalPrice;
+                return lineItem.getTotalPrice();
             }
 
             return getLocalTotalPrice();
@@ -796,8 +802,8 @@ public class ShoppingCart {
         }
 
         public int getTotalDepositPrice() {
-            if (lineItem != null && lineItem.type == CheckoutApi.LineItemType.DEPOSIT) {
-                return lineItem.totalPrice;
+            if (lineItem != null && lineItem.getType() == LineItemType.DEPOSIT) {
+                return lineItem.getTotalPrice();
             }
 
             if (product != null && product.getDepositProduct() != null) {
@@ -808,19 +814,19 @@ public class ShoppingCart {
         }
 
         public boolean isDiscount() {
-            return lineItem != null && lineItem.type == CheckoutApi.LineItemType.DISCOUNT;
+            return lineItem != null && lineItem.getType() == LineItemType.DISCOUNT;
         }
 
         public boolean isGiveaway() {
-            return lineItem != null && lineItem.type == CheckoutApi.LineItemType.GIVEAWAY;
+            return lineItem != null && lineItem.getType() == LineItemType.GIVEAWAY;
         }
 
         public int getModifiedPrice() {
             int sum = 0;
 
-            if (lineItem != null && lineItem.priceModifiers != null) {
-                for (CheckoutApi.PriceModifier priceModifier : lineItem.priceModifiers) {
-                    sum += lineItem.amount * priceModifier.price;
+            if (lineItem != null && lineItem.getPriceModifiers() != null) {
+                for (PriceModifier priceModifier : lineItem.getPriceModifiers()) {
+                    sum += lineItem.getAmount() * priceModifier.getPrice();
                 }
             }
 
@@ -829,7 +835,7 @@ public class ShoppingCart {
 
         public String getDisplayName() {
             if (lineItem != null) {
-                return lineItem.name;
+                return lineItem.getName();
             } else {
                 if (getType() == ItemType.COUPON) {
                     return coupon.getName();
@@ -841,13 +847,13 @@ public class ShoppingCart {
 
         public String getQuantityText() {
             if (getType() == ItemType.LINE_ITEM) {
-                return String.valueOf(lineItem.amount);
+                return String.valueOf(lineItem.getAmount());
             }
 
             Unit unit = getUnit();
             if (unit == PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
-                if (lineItem != null && lineItem.units != null) {
-                    return String.valueOf(lineItem.units);
+                if (lineItem != null && lineItem.getUnits() != null) {
+                    return String.valueOf(lineItem.getUnits());
                 } else {
                     return "1";
                 }
@@ -877,16 +883,16 @@ public class ShoppingCart {
 
         private int getTotalPriceModifiers() {
             int sum = 0;
-            if (lineItem.priceModifiers != null) {
-                for (CheckoutApi.PriceModifier priceModifiers : lineItem.priceModifiers) {
-                    sum += priceModifiers.price;
+            if (lineItem.getPriceModifiers() != null) {
+                for (PriceModifier priceModifiers : lineItem.getPriceModifiers()) {
+                    sum += priceModifiers.getPrice();
                 }
             }
             return sum;
         }
 
         private String getReducedPriceText() {
-            if (lineItem.priceModifiers != null && lineItem.priceModifiers.size() > 0) {
+            if (lineItem.getPriceModifiers() != null && lineItem.getPriceModifiers().size() > 0) {
                 return cart.priceFormatter.format(getTotalPrice(), true);
             }
 
@@ -899,7 +905,7 @@ public class ShoppingCart {
                 return getReducedPriceText();
             } else {
                 return String.format("\u00D7 %s = %s",
-                        cart.priceFormatter.format(product, lineItem.price),
+                        cart.priceFormatter.format(product, lineItem.getPrice()),
                         cart.priceFormatter.format(getTotalPrice()));
             }
         }
@@ -910,14 +916,14 @@ public class ShoppingCart {
 
         public String getPriceText() {
             if (lineItem != null) {
-                if (lineItem.price != 0) {
-                    if (product != null && lineItem.units != null && lineItem.units > 1
+                if (lineItem.getPrice() != 0) {
+                    if (product != null && lineItem.getUnits() != null && lineItem.getUnits() > 1
                             || (getUnit() != Unit.PRICE
                             && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
                             && getEffectiveQuantity() > 1)) {
                         return getExtendedPriceText();
                     } else {
-                        if (lineItem.units != null) {
+                        if (lineItem.getUnits() != null) {
                             return getExtendedPriceText();
                         } else {
                             String reducedPriceText = getReducedPriceText();
@@ -987,7 +993,7 @@ public class ShoppingCart {
         }
     }
 
-    public CheckoutApi.PaymentMethodInfo[] getAvailablePaymentMethods() {
+    public List<PaymentMethodInfo> getAvailablePaymentMethods() {
         return updater.getLastAvailablePaymentMethods();
     }
 
@@ -999,17 +1005,18 @@ public class ShoppingCart {
         return GsonHolder.get().toJson(this);
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public static class BackendCart implements Events.Payload {
-        String session;
+        public String session;
         @SerializedName("shopID")
-        String shopId;
+        public String shopId;
         @SerializedName("clientID")
-        String clientId;
+        public String clientId;
         @SerializedName("appUserID")
-        String appUserId;
-        BackendCartCustomer customer;
-        BackendCartItem[] items;
-        List<BackendCartRequiredInformation> requiredInformation;
+        public String appUserId;
+        public BackendCartCustomer customer;
+        public BackendCartItem[] items;
+        public List<BackendCartRequiredInformation> requiredInformation;
 
         @Override
         public Events.EventType getEventType() {
@@ -1017,15 +1024,18 @@ public class ShoppingCart {
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public static class BackendCartCustomer {
         String loyaltyCard;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public static class BackendCartRequiredInformation {
         String id;
         String value;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public static class BackendCartItem {
         String id;
         String sku;
@@ -1039,7 +1049,8 @@ public class ShoppingCart {
         String couponID;
     }
 
-    BackendCart toBackendCart() {
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    public BackendCart toBackendCart() {
         BackendCart backendCart = new BackendCart();
         backendCart.session = getId();
         backendCart.shopId = "unknown";

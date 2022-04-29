@@ -8,7 +8,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.Checkout;
+import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;

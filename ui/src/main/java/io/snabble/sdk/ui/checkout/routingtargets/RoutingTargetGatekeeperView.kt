@@ -14,8 +14,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import io.snabble.sdk.Checkout
-import io.snabble.sdk.Checkout.OnCheckoutStateChangedListener
+import io.snabble.sdk.checkout.Checkout
+import io.snabble.sdk.checkout.Checkout.OnCheckoutStateChangedListener
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.scanner.BarcodeView

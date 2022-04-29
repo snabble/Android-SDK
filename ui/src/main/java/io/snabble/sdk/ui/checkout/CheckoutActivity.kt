@@ -9,6 +9,7 @@ import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import io.snabble.sdk.*
+import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Logger
 

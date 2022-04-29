@@ -1,6 +1,6 @@
 package io.snabble.sdk.ui.checkout
 
-import io.snabble.sdk.Checkout
+import io.snabble.sdk.checkout.Checkout
 
 val Checkout.State.isCheckoutState: Boolean
     get() = when (this) {

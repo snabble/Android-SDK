@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.snabble.sdk.checkout.CheckoutProcessResponse;
+import io.snabble.sdk.checkout.DefaultCheckoutApi;
+import io.snabble.sdk.checkout.Href;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
@@ -31,7 +34,7 @@ public class PaymentOriginCandidateHelper {
         this.project = project;
     }
 
-    public void startPollingIfLinkIsAvailable(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+    public void startPollingIfLinkIsAvailable(CheckoutProcessResponse checkoutProcessResponse) {
         if (checkoutProcessResponse == null || checkoutProcessResponse.getOriginCandidateLink() == null) {
             return;
         }
@@ -44,7 +47,7 @@ public class PaymentOriginCandidateHelper {
         poll(checkoutProcessResponse);
     }
 
-    private void poll(CheckoutApi.CheckoutProcessResponse checkoutProcessResponse) {
+    private void poll(CheckoutProcessResponse checkoutProcessResponse) {
         if (!isPolling) {
             return;
         }
@@ -111,7 +114,7 @@ public class PaymentOriginCandidateHelper {
     public static class PaymentOriginCandidate implements Serializable {
         public String projectId;
         public String origin;
-        public Map<String, CheckoutApi.Href> links;
+        public Map<String, Href> links;
 
         public void promote(PaymentCredentials paymentCredentials, PromoteResult result) {
             if (getPromoteLink() == null) {
@@ -147,9 +150,9 @@ public class PaymentOriginCandidateHelper {
         }
 
         private String getPromoteLink() {
-            CheckoutApi.Href link = links.get("promote");
-            if (link != null && link.href != null) {
-                return link.href;
+            Href link = links.get("promote");
+            if (link != null && link.getHref() != null) {
+                return link.getHref();
             }
             return null;
         }

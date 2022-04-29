@@ -21,16 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.snabble.sdk.CheckoutApi;
+import io.snabble.sdk.checkout.DefaultCheckoutApi;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.utils.GsonHolder;
 
 public class PaymentSelectionHelper {
@@ -233,13 +233,13 @@ public class PaymentSelectionHelper {
 
     private void updateGooglePayIsReadyToPay() {
         if (cart != null) {
-            CheckoutApi.PaymentMethodInfo[] availablePaymentMethods = cart.getAvailablePaymentMethods();
+            List<PaymentMethodInfo> availablePaymentMethods = cart.getAvailablePaymentMethods();
             if (availablePaymentMethods != null) {
                 GooglePayHelper googlePayHelper = project.getGooglePayHelper();
                 if (googlePayHelper != null) {
-                    for (CheckoutApi.PaymentMethodInfo info : availablePaymentMethods) {
-                        if (info.id.equals(PaymentMethod.GOOGLE_PAY.getId())) {
-                            googlePayHelper.setUseTestEnvironment(info.isTesting);
+                    for (PaymentMethodInfo info : availablePaymentMethods) {
+                        if (info.getId().equals(PaymentMethod.GOOGLE_PAY.getId())) {
+                            googlePayHelper.setUseTestEnvironment(info.isTesting());
                             break;
                         }
                     }
@@ -279,7 +279,7 @@ public class PaymentSelectionHelper {
         }
 
         List<PaymentMethod> projectPaymentMethods = project.getAvailablePaymentMethods();
-        CheckoutApi.PaymentMethodInfo[] availablePaymentMethods = cart.getAvailablePaymentMethods();
+        List<PaymentMethodInfo> availablePaymentMethods = cart.getAvailablePaymentMethods();
         if (availablePaymentMethods == null) {
             for (PaymentMethod paymentMethod : projectPaymentMethods) {
                 if (paymentMethod.isOfflineMethod()) {
@@ -302,10 +302,9 @@ public class PaymentSelectionHelper {
         }
 
         List<PaymentMethod> availablePaymentMethodsList = new ArrayList<>();
-        for (final CheckoutApi.PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
-            String[] origins = paymentMethodInfo.acceptedOriginTypes;
-            if (origins == null) origins = new String[0];
-            PaymentMethod paymentMethod = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.id, Arrays.asList(origins));
+        for (final PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
+            List<String> origins = paymentMethodInfo.getAcceptedOriginTypes();
+            PaymentMethod paymentMethod = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.getId(), origins);
             if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
                 availablePaymentMethodsList.add(paymentMethod);
             } else if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
@@ -427,7 +426,7 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowPayButton() {
-        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && cart.getAvailablePaymentMethods().length > 0;
+        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && !cart.getAvailablePaymentMethods().isEmpty();
         return cart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
     }
 
