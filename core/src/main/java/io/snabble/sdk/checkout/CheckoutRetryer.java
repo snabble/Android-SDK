@@ -125,7 +125,7 @@ class CheckoutRetryer {
                     }
 
                     @Override
-                    public void invalidProducts(List<Product> products) {
+                    public void invalidProducts(List<? extends Product> products) {
                         fail();
                     }
 

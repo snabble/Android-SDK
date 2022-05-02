@@ -8,11 +8,6 @@ import io.snabble.sdk.merge
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.utils.GsonHolder
 import java.util.*
-import java.util.List
-import java.util.concurrent.CountDownLatch
-import kotlin.math.roundToInt
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
 
 class MockCheckoutApi(
     val project: Project

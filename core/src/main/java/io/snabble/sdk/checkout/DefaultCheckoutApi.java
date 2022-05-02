@@ -89,7 +89,7 @@ public class DefaultCheckoutApi implements CheckoutApi {
 
     @Override
     public void createCheckoutInfo(final ShoppingCart.BackendCart backendCart,
-                                   final List<PaymentMethod> clientAcceptedPaymentMethods,
+                                   final List<? extends PaymentMethod> clientAcceptedPaymentMethods,
                                    final CheckoutInfoResult checkoutInfoResult,
                                    final long timeout) {
         String checkoutUrl = project.getCheckoutUrl();

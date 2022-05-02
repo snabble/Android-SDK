@@ -23,7 +23,7 @@ interface CheckoutApi {
 
     fun createCheckoutInfo(
         backendCart: BackendCart,
-        clientAcceptedPaymentMethods: java.util.List<PaymentMethod>?, // TODO migrate to kotlin List
+        clientAcceptedPaymentMethods: List<PaymentMethod>?, // TODO migrate to kotlin List
         checkoutInfoResult: CheckoutInfoResult? = null,
         timeout: Long = -1
     )
@@ -68,7 +68,7 @@ interface CheckoutInfoResult {
     )
 
     fun noShop()
-    fun invalidProducts(products: java.util.List<Product>) // TODO java usage errors out if we use kotlin List type
+    fun invalidProducts(products: List<Product>)
     fun noAvailablePaymentMethod()
     fun invalidDepositReturnVoucher()
     fun unknownError()

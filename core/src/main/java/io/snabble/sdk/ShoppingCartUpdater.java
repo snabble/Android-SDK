@@ -97,8 +97,8 @@ class ShoppingCartUpdater {
             }
 
             @Override
-            public void invalidProducts(@NotNull List<Product> products) {
-                cart.setInvalidProducts(products);
+            public void invalidProducts(@NotNull List<? extends Product> products) {
+                cart.setInvalidProducts((List<Product>) products);
                 error(true);
             }
 
