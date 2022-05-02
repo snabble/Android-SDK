@@ -102,7 +102,8 @@ enum class CheckState {
 }
 
 enum class CheckType {
-    @SerializedName("min_age") MIN_AGE
+    @SerializedName("min_age") MIN_AGE,
+    @SerializedName("supervisor_approval") SUPERVISOR
 }
 
 enum class Performer {
@@ -310,7 +311,6 @@ data class CheckoutProcessResponse(
     var orderId: String? = null,
     var aborted: Boolean = false,
     var paymentMethod: PaymentMethod? = null,
-    var modified: Boolean = false,
     var paymentInformation: PaymentInformation? = null,
     var paymentPreauthInformation: JsonObject? = null,
     var exitToken: ExitToken? = null,
@@ -318,7 +318,7 @@ data class CheckoutProcessResponse(
     var pricing: Pricing? = null,
     var routingTarget: RoutingTarget? = null,
     var paymentResult: PaymentResult? = null,
-    var fulfillments: List<Fulfillment>? = null,
+    var fulfillments: List<Fulfillment> = emptyList(),
 ) {
     val selfLink: String?
         get() = links?.get("self")?.href

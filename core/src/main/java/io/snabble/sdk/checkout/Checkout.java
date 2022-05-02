@@ -2,6 +2,7 @@ package io.snabble.sdk.checkout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -525,8 +526,6 @@ public class Checkout {
     private boolean areAllFulfillmentsClosed() {
         if (checkoutProcess == null) {
             return true;
-        } else {
-            checkoutProcess.getFulfillments();
         }
 
         boolean ok = true;
@@ -580,7 +579,8 @@ public class Checkout {
         }
     }
 
-    private void pollForResult() {
+    @VisibleForTesting
+    public void pollForResult() {
         if (checkoutProcess == null) {
             notifyStateChanged(Checkout.State.PAYMENT_ABORTED);
             return;

@@ -4,15 +4,23 @@ import com.google.gson.JsonObject
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.merge
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.utils.GsonHolder
 import java.util.*
 import java.util.List
+import java.util.concurrent.CountDownLatch
 import kotlin.math.roundToInt
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.primaryConstructor
 
 class MockCheckoutApi(
     val project: Project
 ) : CheckoutApi {
+    var mockResponse: CheckoutProcessResponse? = CheckoutProcessResponse(
+        paymentState = CheckState.SUCCESSFUL,
+        routingTarget = RoutingTarget.NONE
+    )
 
     override fun cancel() {
         TODO("Not yet implemented")
@@ -32,46 +40,7 @@ class MockCheckoutApi(
         timeout: Long
     ) {
         val signedCheckoutInfo = SignedCheckoutInfo(
-            checkoutInfo = GsonHolder.get().fromJson(
-                """
-                    {
-                      "checkoutInfo": {
-                        "project": "test-ieme8a",
-                        "availableMethods": [
-                          "deDirectDebit",
-                        ],
-                        "price": {
-                          "subTotal": ${project.shoppingCart.totalPrice},
-                          "price": ${project.shoppingCart.totalPrice},
-                          "netPrice": ${(project.shoppingCart.totalPrice - (project.shoppingCart.totalPrice * 0.19)).roundToInt()},
-                          "tax": {
-                            "19": ${(project.shoppingCart.totalPrice * 0.19).roundToInt()}
-                          },
-                          "taxPre": {
-                            "19": ${project.shoppingCart.totalPrice}
-                          },
-                          "taxNet": {
-                            "19": ${(project.shoppingCart.totalPrice - (project.shoppingCart.totalPrice * 0.19)).roundToInt()}
-                          }
-                        },
-                        "paymentMethods": [
-                          {
-                            "id": "deDirectDebit",
-                            "acceptedOriginTypes": [
-                              "iban"
-                            ],
-                            "providerName": "test"
-                          },
-                        ]
-                      },
-                      "links": {
-                        "checkoutProcess": {
-                          "href": "/test-ieme8a/checkout/process"
-                        }
-                      }
-                    }
-                """.trimIndent(),
-                JsonObject::class.java)
+            checkoutInfo = GsonHolder.get().fromJson("", JsonObject::class.java)
         )
 
         checkoutInfoResult?.success(
@@ -85,14 +54,14 @@ class MockCheckoutApi(
     }
 
     override fun updatePaymentProcess(url: String?, paymentProcessResult: PaymentProcessResult?) {
-        TODO("Not yet implemented")
+        paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
     override fun updatePaymentProcess(
         checkoutProcessResponse: CheckoutProcessResponse?,
         paymentProcessResult: PaymentProcessResult?
     ) {
-        TODO("Not yet implemented")
+        paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
     override fun createPaymentProcess(
@@ -104,7 +73,7 @@ class MockCheckoutApi(
         finalizedAt: Date?,
         paymentProcessResult: PaymentProcessResult?
     ) {
-        TODO("Not yet implemented")
+        paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
     override fun authorizePayment(
@@ -115,4 +84,7 @@ class MockCheckoutApi(
         TODO("Not yet implemented")
     }
 
+    fun modifyMockResponse(merger: CheckoutProcessResponse) {
+        mockResponse = mockResponse?.merge(merger)
+    }
 }

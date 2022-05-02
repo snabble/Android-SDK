@@ -1,21 +1,13 @@
 package io.snabble.sdk.checkout
 
-import androidx.annotation.Nullable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import io.snabble.sdk.Product
-import io.snabble.sdk.ShoppingCart
-import io.snabble.sdk.Snabble
-import io.snabble.sdk.SnabbleSdkTest
+import io.snabble.sdk.*
 import io.snabble.sdk.codes.ScannedCode
+import io.snabble.sdk.payment.PaymentCredentials
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-
 
 @RunWith(RobolectricTestRunner::class)
 class CheckoutTest : SnabbleSdkTest() {
@@ -27,6 +19,7 @@ class CheckoutTest : SnabbleSdkTest() {
     private lateinit var pieceProduct: TestProduct
     private lateinit var priceProduct: TestProduct
     private lateinit var zeroAmountProduct: TestProduct
+    private lateinit var credentials: PaymentCredentials
 
     private inner class TestProduct(var product: Product, var scannedCode: ScannedCode) {
         fun cartItem(): ShoppingCart.Item {
@@ -79,42 +72,128 @@ class CheckoutTest : SnabbleSdkTest() {
 
     private lateinit var checkout: Checkout
     private lateinit var cart: ShoppingCart
+    private lateinit var mockApi: MockCheckoutApi
 
     @Before
     fun setUp() {
         Snabble.checkedInShop = project.shops[0]
         cart = project.shoppingCart
-        checkout = Checkout(project, project.shoppingCart, MockCheckoutApi(project))
+        mockApi = MockCheckoutApi(project)
+        checkout = Checkout(project, project.shoppingCart, mockApi)
+        credentials = PaymentCredentials.fromSEPA("test", "DE11520513735120710131")
     }
 
     @Test
     fun testCheckoutIsInNoneStateOnCreation() {
-        Assert.assertEquals(Checkout.State.NONE, getOrAwaitValue(checkout.checkoutState))
+        Assert.assertEquals(Checkout.State.NONE, checkout.checkoutState.getOrAwaitValue())
     }
 
     @Test
-    fun testCheckoutInfoIsFetched() {
+    fun testSuccessfulCheckout() {
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(Checkout.State.REQUEST_PAYMENT_METHOD, getOrAwaitValue(checkout.checkoutState))
+        Assert.assertEquals(Checkout.State.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(Checkout.State.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING
+        ))
+        checkout.pollForResult()
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PROCESSING
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(Checkout.State.PAYMENT_PROCESSING, checkout.checkoutState.getOrAwaitValue())
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.SUCCESSFUL
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(Checkout.State.PAYMENT_APPROVED, checkout.checkoutState.getOrAwaitValue())
     }
 
-    @Throws(InterruptedException::class)
-    fun <T> getOrAwaitValue(liveData: LiveData<T>): T? {
-        val data = arrayOfNulls<Any>(1)
-        val latch = CountDownLatch(1)
-        val observer: Observer<T> = object : Observer<T> {
-            override fun onChanged(@Nullable o: T) {
-                data[0] = o
-                latch.countDown()
-                liveData.removeObserver(this)
-            }
-        }
-        liveData.observeForever(observer)
-        // Don't wait indefinitely if the LiveData is not set.
-        if (!latch.await(2, TimeUnit.SECONDS)) {
-            throw RuntimeException("LiveData value was never set.")
-        }
-        return data[0] as T?
+    @Test
+    fun testKeepsStateUnchanged() {
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(Checkout.State.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(Checkout.State.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING
+        ))
+        checkout.pollForResult()
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(Checkout.State.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+    }
+
+    @Test
+    fun testRejectedByPaymentProviderCheckout() {
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(Checkout.State.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(Checkout.State.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING
+        ))
+        checkout.pollForResult()
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.FAILED
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(Checkout.State.DENIED_BY_PAYMENT_PROVIDER, checkout.checkoutState.getOrAwaitValue())
+    }
+
+    @Test
+    fun testRejectedBySupervisorCheckout() {
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(Checkout.State.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(Checkout.State.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING
+        ))
+        checkout.pollForResult()
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            checks = listOf(
+                Check(
+                    type = CheckType.SUPERVISOR,
+                    state = CheckState.FAILED
+                )
+            )
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(Checkout.State.DENIED_BY_SUPERVISOR, checkout.checkoutState.getOrAwaitValue())
+    }
+
+    @Test
+    fun testPaymentAborted() {
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(Checkout.State.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(Checkout.State.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING
+        ))
+        checkout.pollForResult()
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            aborted = true
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(Checkout.State.PAYMENT_ABORTED, checkout.checkoutState.getOrAwaitValue())
+    }
+
+    @Test
+    fun testRejectWithoutShop() {
+        Snabble.checkedInShop = null
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(Checkout.State.NO_SHOP, checkout.checkoutState.getOrAwaitValue())
     }
 }

@@ -28,6 +28,6 @@ public enum Environment {
             }
         }
 
-        return null;
+        return TESTING;
     }
 }
