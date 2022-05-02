@@ -10,6 +10,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import io.snabble.sdk.*
 import io.snabble.sdk.checkout.Checkout
+import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Logger
 
@@ -101,13 +102,13 @@ class CheckoutActivity : FragmentActivity() {
         val checkout = checkout ?: return null
 
         return when (checkout.state) {
-            Checkout.State.WAIT_FOR_GATEKEEPER -> {
+            CheckoutState.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
             }
-            Checkout.State.WAIT_FOR_SUPERVISOR -> {
+            CheckoutState.WAIT_FOR_SUPERVISOR -> {
                 R.id.snabble_nav_routing_supervisor
             }
-            Checkout.State.WAIT_FOR_APPROVAL -> {
+            CheckoutState.WAIT_FOR_APPROVAL -> {
                 val selectedPaymentMethod = checkout.selectedPaymentMethod
                 selectedPaymentMethod?.let {
                     when (it) {
@@ -126,14 +127,14 @@ class CheckoutActivity : FragmentActivity() {
                     }
                 }
             }
-            Checkout.State.PAYMENT_ABORTED -> {
+            CheckoutState.PAYMENT_ABORTED -> {
                 finish()
                 null
             }
-            Checkout.State.PAYMENT_APPROVED -> {
+            CheckoutState.PAYMENT_APPROVED -> {
                 R.id.snabble_nav_payment_status
             }
-            Checkout.State.NONE -> {
+            CheckoutState.NONE -> {
                 finish()
                 null
             }

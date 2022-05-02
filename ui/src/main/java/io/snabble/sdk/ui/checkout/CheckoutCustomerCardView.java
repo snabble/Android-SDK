@@ -16,6 +16,7 @@ import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.checkout.CheckoutState;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.scanner.BarcodeView;
@@ -26,7 +27,7 @@ import io.snabble.sdk.ui.utils.OneShotClickListener;
 public class CheckoutCustomerCardView extends FrameLayout {
     private Project project;
     private Checkout checkout;
-    private Checkout.State currentState;
+    private CheckoutState currentState;
     private View helperText;
     private ImageView helperImage;
     private View upArrow;

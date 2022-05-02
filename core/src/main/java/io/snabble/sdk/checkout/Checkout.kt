@@ -21,125 +21,6 @@ class Checkout @JvmOverloads constructor(
         project, shoppingCart
     )
 ) {
-    enum class State {
-        /**
-         * The initial default state.
-         */
-        NONE,
-
-        /**
-         * A checkout request was started, and we are waiting for the backend to confirm.
-         */
-        HANDSHAKING,
-
-        /**
-         * The checkout request is started and confirmed by the backend. We are waiting for
-         * selection of the payment method. Usually done by the user.
-         *
-         *
-         * Gets skipped for projects that have only 1 available payment method,
-         * that can be selected without user intervention.
-         */
-        REQUEST_PAYMENT_METHOD,
-
-        /**
-         * Payment method was selected and we are waiting for confirmation of the backend.
-         */
-        VERIFYING_PAYMENT_METHOD,
-
-        /**
-         * Age needs to be verified.
-         */
-        REQUEST_VERIFY_AGE,
-
-        /**
-         * Ask the user for the taxation method.
-         */
-        REQUEST_TAXATION,
-
-        /**
-         * Request a payment authorization token.
-         *
-         * For example a Google Pay payment token that needs to get sent back to
-         * the snabble Backend.
-         */
-        REQUEST_PAYMENT_AUTHORIZATION_TOKEN,
-
-        /**
-         * Checkout was received and we wait for confirmation by the supervisor
-         */
-        WAIT_FOR_SUPERVISOR,
-
-        /**
-         * Checkout was received and we wait for confirmation by the gatekeeper
-         */
-        WAIT_FOR_GATEKEEPER,
-
-        /**
-         * Payment was received by the backend and we are waiting for confirmation by the payment provider
-         */
-        WAIT_FOR_APPROVAL,
-
-        /**
-         * Payment was approved and is currently processing.
-         */
-        PAYMENT_PROCESSING,
-
-        /**
-         * The payment was approved. We are done.
-         */
-        PAYMENT_APPROVED,
-
-        /**
-         * Age is too young.
-         */
-        DENIED_TOO_YOUNG,
-
-        /**
-         * The payment was denied by the payment provider.
-         */
-        DENIED_BY_PAYMENT_PROVIDER,
-
-        /**
-         * The payment was denied by the supervisor.
-         */
-        DENIED_BY_SUPERVISOR,
-
-        /**
-         * The payment was aborted.
-         */
-        PAYMENT_ABORTED,
-
-        /**
-         * The payment could not be aborted.
-         */
-        PAYMENT_ABORT_FAILED,
-
-        /**
-         * There was a unrecoverable payment processing error.
-         */
-        PAYMENT_PROCESSING_ERROR,
-
-        /**
-         * There was a unrecoverable connection error.
-         */
-        CONNECTION_ERROR,
-
-        /**
-         * Invalid products detected. For example if a sale stop was issued.
-         */
-        INVALID_PRODUCTS,
-
-        /**
-         * No payment method available.
-         */
-        NO_PAYMENT_METHOD_AVAILABLE,
-
-        /**
-         * No shop was selected.
-         */
-        NO_SHOP
-    }
 
     private var signedCheckoutInfo: SignedCheckoutInfo? = null
     var checkoutProcess: CheckoutProcessResponse? = null
@@ -159,10 +40,10 @@ class Checkout @JvmOverloads constructor(
     private val fulfillmentUpdateListeners: MutableList<OnFulfillmentUpdateListener> =
         CopyOnWriteArrayList()
 
-    val checkoutState = MutableLiveData(State.NONE)
+    val checkoutState = MutableLiveData(CheckoutState.NONE)
     val fulfillmentState = MutableLiveData<List<Fulfillment>?>()
 
-    private var lastState = State.NONE
+    private var lastState = CheckoutState.NONE
 
     /**
      * Gets the current state of the Checkout.
@@ -172,7 +53,7 @@ class Checkout @JvmOverloads constructor(
      *
      * @return the state
      */
-    var state = State.NONE
+    var state = CheckoutState.NONE
         private set
     private val codes: MutableList<String> = ArrayList()
     var clientAcceptedPaymentMethods: List<PaymentMethod>? = null
@@ -194,15 +75,15 @@ class Checkout @JvmOverloads constructor(
      */
     @JvmOverloads
     fun abort(error: Boolean = false) {
-        if (state != State.PAYMENT_APPROVED && state != State.DENIED_BY_PAYMENT_PROVIDER && state != State.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
+        if (state != CheckoutState.PAYMENT_APPROVED && state != CheckoutState.DENIED_BY_PAYMENT_PROVIDER && state != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
             checkoutApi.abort(checkoutProcess, object : PaymentAbortResult {
                 override fun success() {
                     cancelOutstandingCalls()
                     synchronized(this@Checkout) {
                         if (error) {
-                            notifyStateChanged(State.PAYMENT_PROCESSING_ERROR)
+                            notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                         } else {
-                            notifyStateChanged(State.PAYMENT_ABORTED)
+                            notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
                         }
                         stopPolling()
                         invalidProducts = null
@@ -214,17 +95,17 @@ class Checkout @JvmOverloads constructor(
 
                 override fun error() {
                     if (error) {
-                        notifyStateChanged(State.PAYMENT_PROCESSING_ERROR)
+                        notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                     } else {
-                        if (state != State.PAYMENT_PROCESSING && state != State.PAYMENT_APPROVED) {
-                            notifyStateChanged(State.PAYMENT_ABORT_FAILED)
+                        if (state != CheckoutState.PAYMENT_PROCESSING && state != CheckoutState.PAYMENT_APPROVED) {
+                            notifyStateChanged(CheckoutState.PAYMENT_ABORT_FAILED)
                         }
                     }
                 }
             })
             project.shoppingCart.updatePrices(false)
         } else {
-            notifyStateChanged(State.NONE)
+            notifyStateChanged(CheckoutState.NONE)
         }
     }
 
@@ -233,7 +114,7 @@ class Checkout @JvmOverloads constructor(
      * was cancelled, but does not notify listeners
      */
     fun abortSilently() {
-        if (state != State.PAYMENT_APPROVED && state != State.DENIED_BY_PAYMENT_PROVIDER && state != State.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
+        if (state != CheckoutState.PAYMENT_APPROVED && state != CheckoutState.DENIED_BY_PAYMENT_PROVIDER && state != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
             checkoutApi.abort(checkoutProcess, null)
         }
         reset()
@@ -252,7 +133,7 @@ class Checkout @JvmOverloads constructor(
     fun reset() {
         cancelOutstandingCalls()
         stopPolling()
-        notifyStateChanged(State.NONE)
+        notifyStateChanged(CheckoutState.NONE)
         invalidProducts = null
         selectedPaymentMethod = null
         shoppingCart.generateNewUUID()
@@ -297,9 +178,9 @@ class Checkout @JvmOverloads constructor(
         shop = instance.checkedInShop
         redeemedCoupons = null
         fulfillmentState.value = null
-        notifyStateChanged(State.HANDSHAKING)
+        notifyStateChanged(CheckoutState.HANDSHAKING)
         if (shop == null) {
-            notifyStateChanged(State.NO_SHOP)
+            notifyStateChanged(CheckoutState.NO_SHOP)
             return
         }
         val backendCart = shoppingCart.toBackendCart()
@@ -314,7 +195,7 @@ class Checkout @JvmOverloads constructor(
                     signedCheckoutInfo = checkoutInfo
                     if (signedCheckoutInfo!!.isRequiringTaxation) {
                         Logger.d("Taxation requested")
-                        notifyStateChanged(State.REQUEST_TAXATION)
+                        notifyStateChanged(CheckoutState.REQUEST_TAXATION)
                         return
                     }
                     priceToPay = shoppingCart.totalPrice
@@ -325,34 +206,34 @@ class Checkout @JvmOverloads constructor(
                         if (paymentMethod != null && !paymentMethod.isRequiringCredentials) {
                             pay(paymentMethod, null)
                         } else {
-                            notifyStateChanged(State.REQUEST_PAYMENT_METHOD)
+                            notifyStateChanged(CheckoutState.REQUEST_PAYMENT_METHOD)
                             Logger.d("Payment method requested")
                         }
                     } else {
-                        notifyStateChanged(State.REQUEST_PAYMENT_METHOD)
+                        notifyStateChanged(CheckoutState.REQUEST_PAYMENT_METHOD)
                         Logger.d("Payment method requested")
                     }
                 }
 
                 override fun noShop() {
-                    notifyStateChanged(State.NO_SHOP)
+                    notifyStateChanged(CheckoutState.NO_SHOP)
                 }
 
                 override fun invalidProducts(products: List<Product>) {
                     invalidProducts = products
-                    notifyStateChanged(State.INVALID_PRODUCTS)
+                    notifyStateChanged(CheckoutState.INVALID_PRODUCTS)
                 }
 
                 override fun noAvailablePaymentMethod() {
-                    notifyStateChanged(State.NO_PAYMENT_METHOD_AVAILABLE)
+                    notifyStateChanged(CheckoutState.NO_PAYMENT_METHOD_AVAILABLE)
                 }
 
                 override fun invalidDepositReturnVoucher() {
-                    notifyStateChanged(State.CONNECTION_ERROR)
+                    notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                 }
 
                 override fun unknownError() {
-                    notifyStateChanged(State.CONNECTION_ERROR)
+                    notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                 }
 
                 override fun connectionError() {
@@ -361,9 +242,9 @@ class Checkout @JvmOverloads constructor(
                         selectedPaymentMethod = fallback
                         priceToPay = shoppingCart.totalPrice
                         checkoutRetryer.add(backendCart)
-                        notifyStateChanged(State.WAIT_FOR_APPROVAL)
+                        notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
                     } else {
-                        notifyStateChanged(State.CONNECTION_ERROR)
+                        notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                     }
                 }
             }, timeout
@@ -392,7 +273,7 @@ class Checkout @JvmOverloads constructor(
     fun pay(paymentMethod: PaymentMethod, paymentCredentials: PaymentCredentials?) {
         if (signedCheckoutInfo != null) {
             selectedPaymentMethod = paymentMethod
-            notifyStateChanged(State.VERIFYING_PAYMENT_METHOD)
+            notifyStateChanged(CheckoutState.VERIFYING_PAYMENT_METHOD)
             checkoutApi.createPaymentProcess(
                 shoppingCart.uuid, signedCheckoutInfo,
                 paymentMethod, paymentCredentials, false, null, object : PaymentProcessResult {
@@ -413,12 +294,12 @@ class Checkout @JvmOverloads constructor(
 
                     override fun error() {
                         Logger.e("Connection error while creating checkout process")
-                        notifyStateChanged(State.CONNECTION_ERROR)
+                        notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                     }
                 })
         } else {
             Logger.e("Invalid checkout state")
-            notifyStateChanged(State.CONNECTION_ERROR)
+            notifyStateChanged(CheckoutState.CONNECTION_ERROR)
         }
     }
 
@@ -454,13 +335,13 @@ class Checkout @JvmOverloads constructor(
                     when (state1) {
                         CheckState.PENDING -> {
                             Logger.d("Age check pending...")
-                            notifyStateChanged(State.REQUEST_VERIFY_AGE)
+                            notifyStateChanged(CheckoutState.REQUEST_VERIFY_AGE)
                             abortSilently()
                             allChecksOk = false
                         }
                         CheckState.FAILED -> {
                             Logger.d("Age check failed...")
-                            notifyStateChanged(State.DENIED_TOO_YOUNG)
+                            notifyStateChanged(CheckoutState.DENIED_TOO_YOUNG)
                             abortSilently()
                             allChecksOk = false
                         }
@@ -550,7 +431,7 @@ class Checkout @JvmOverloads constructor(
     @VisibleForTesting
     fun pollForResult() {
         if (checkoutProcess == null) {
-            notifyStateChanged(State.PAYMENT_ABORTED)
+            notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
             return
         }
         Logger.d("Polling for approval state...")
@@ -571,7 +452,7 @@ class Checkout @JvmOverloads constructor(
 
             override fun error() {}
         })
-        if (state == State.WAIT_FOR_APPROVAL || state == State.WAIT_FOR_GATEKEEPER || state == State.WAIT_FOR_SUPERVISOR || state == State.VERIFYING_PAYMENT_METHOD || state == State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN || state == State.PAYMENT_PROCESSING || state == State.PAYMENT_APPROVED && !areAllFulfillmentsClosed()) {
+        if (state == CheckoutState.WAIT_FOR_APPROVAL || state == CheckoutState.WAIT_FOR_GATEKEEPER || state == CheckoutState.WAIT_FOR_SUPERVISOR || state == CheckoutState.VERIFYING_PAYMENT_METHOD || state == CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN || state == CheckoutState.PAYMENT_PROCESSING || state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed()) {
             scheduleNextPoll()
         }
     }
@@ -580,19 +461,19 @@ class Checkout @JvmOverloads constructor(
         if (checkoutProcess!!.aborted) {
             Logger.d("Payment aborted")
             if (hasAnyFulfillmentFailed()) {
-                notifyStateChanged(State.PAYMENT_PROCESSING_ERROR)
+                notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
             } else {
-                notifyStateChanged(State.PAYMENT_ABORTED)
+                notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
             }
             return true
         }
-        if (state == State.VERIFYING_PAYMENT_METHOD) {
+        if (state == CheckoutState.VERIFYING_PAYMENT_METHOD) {
             if (checkoutProcess!!.routingTarget === RoutingTarget.SUPERVISOR) {
-                notifyStateChanged(State.WAIT_FOR_SUPERVISOR)
+                notifyStateChanged(CheckoutState.WAIT_FOR_SUPERVISOR)
             } else if (checkoutProcess!!.routingTarget === RoutingTarget.GATEKEEPER) {
-                notifyStateChanged(State.WAIT_FOR_GATEKEEPER)
+                notifyStateChanged(CheckoutState.WAIT_FOR_GATEKEEPER)
             } else {
-                notifyStateChanged(State.WAIT_FOR_APPROVAL)
+                notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
             }
             return false
         }
@@ -605,7 +486,7 @@ class Checkout @JvmOverloads constructor(
                 if (storedAuthorizePaymentRequest != null) {
                     authorizePayment(storedAuthorizePaymentRequest!!.encryptedOrigin)
                 } else {
-                    notifyStateChanged(State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN)
+                    notifyStateChanged(CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN)
                 }
             }
             return false
@@ -630,28 +511,28 @@ class Checkout @JvmOverloads constructor(
         ) {
             if (hasAnyFulfillmentFailed()) {
                 checkoutApi.abort(checkoutProcess, null)
-                notifyStateChanged(State.PAYMENT_PROCESSING)
+                notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
                 notifyFulfillmentDone()
                 return false
             }
             if (hasAnyFulfillmentAllocationFailed()) {
-                notifyStateChanged(State.PAYMENT_ABORTED)
+                notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
                 return true
             }
             if (hasAnyCheckFailed(checkoutProcess)) {
                 Logger.d("Payment denied by supervisor")
                 shoppingCart.generateNewUUID()
-                notifyStateChanged(State.DENIED_BY_SUPERVISOR)
+                notifyStateChanged(CheckoutState.DENIED_BY_SUPERVISOR)
             }
         } else if (checkoutProcess!!.paymentState === CheckState.PROCESSING) {
-            notifyStateChanged(State.PAYMENT_PROCESSING)
+            notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
         } else if (checkoutProcess!!.paymentState === CheckState.FAILED) {
             if (checkoutProcess!!.paymentResult != null && checkoutProcess!!.paymentResult!!.failureCause != null && checkoutProcess!!.paymentResult!!.failureCause == "terminalAbort") {
                 Logger.d("Payment aborted by terminal")
-                notifyStateChanged(State.PAYMENT_ABORTED)
+                notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
             } else {
                 Logger.d("Payment denied by payment provider")
-                notifyStateChanged(State.DENIED_BY_PAYMENT_PROVIDER)
+                notifyStateChanged(CheckoutState.DENIED_BY_PAYMENT_PROVIDER)
             }
             shoppingCart.generateNewUUID()
             return true
@@ -660,7 +541,7 @@ class Checkout @JvmOverloads constructor(
     }
 
     private fun approve() {
-        if (state != State.PAYMENT_APPROVED) {
+        if (state != CheckoutState.PAYMENT_APPROVED) {
             Logger.d("Payment approved")
             if (selectedPaymentMethod != null && selectedPaymentMethod!!.isOfflineMethod) {
                 shoppingCart.backup()
@@ -675,7 +556,7 @@ class Checkout @JvmOverloads constructor(
             }
             shoppingCart.invalidate()
             clearCodes()
-            notifyStateChanged(State.PAYMENT_APPROVED)
+            notifyStateChanged(CheckoutState.PAYMENT_APPROVED)
             instance.users.update()
         }
     }
@@ -788,10 +669,10 @@ class Checkout @JvmOverloads constructor(
     }
 
     interface OnCheckoutStateChangedListener {
-        fun onStateChanged(state: State?)
+        fun onStateChanged(state: CheckoutState)
     }
 
-    fun getCheckoutState(): LiveData<State> {
+    fun getCheckoutState(): LiveData<CheckoutState> {
         return checkoutState
     }
 
@@ -809,7 +690,7 @@ class Checkout @JvmOverloads constructor(
         checkoutStateListeners.remove(listener)
     }
 
-    private fun notifyStateChanged(state: State, repeat: Boolean = false) {
+    private fun notifyStateChanged(state: CheckoutState, repeat: Boolean = false) {
         synchronized(this@Checkout) {
             if (this.state != state || repeat) {
                 lastState = this.state

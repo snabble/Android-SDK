@@ -17,6 +17,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.Checkout.OnCheckoutStateChangedListener
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.utils.I18nUtils
@@ -35,7 +36,7 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
     private var helperTextNoImage: TextView
     private var helperImage: ImageView
 
-    private var currentState: Checkout.State? = null
+    private var currentState: CheckoutState? = null
 
     init {
         inflate(context, R.layout.snabble_view_routing_supervisor, this)
@@ -136,7 +137,7 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
         cancel.isEnabled = false
     }
 
-    override fun onStateChanged(state: Checkout.State) {
+    override fun onStateChanged(state: CheckoutState) {
         if (state == currentState) {
             return
         }
@@ -146,7 +147,7 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
             return
         }
 
-        if (state == Checkout.State.PAYMENT_ABORT_FAILED) {
+        if (state == CheckoutState.PAYMENT_ABORT_FAILED) {
             cancelProgress.visibility = INVISIBLE
             cancel.isEnabled = true
             AlertDialog.Builder(context)

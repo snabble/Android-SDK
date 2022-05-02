@@ -12,6 +12,7 @@ import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.checkout.CheckoutState;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -20,7 +21,7 @@ import io.snabble.sdk.utils.Dispatch;
 public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
     private BarcodeView barcodeView;
     private Checkout checkout;
-    private Checkout.State currentState;
+    private CheckoutState currentState;
 
     public CheckoutPointOfSaleView(Context context) {
         super(context);
@@ -107,12 +108,12 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
     }
 
     @Override
-    public void onStateChanged(Checkout.State state) {
+    public void onStateChanged(CheckoutState state) {
         if (state == currentState) {
             return;
         }
 
-        if (state == Checkout.State.WAIT_FOR_APPROVAL) {
+        if (state == CheckoutState.WAIT_FOR_APPROVAL) {
             setQRCodeText(checkout.getQRCodePOSContent());
         }
 

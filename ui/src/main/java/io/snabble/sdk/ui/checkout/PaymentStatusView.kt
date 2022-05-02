@@ -22,7 +22,7 @@ import io.snabble.sdk.*
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.checkout.Checkout
-import io.snabble.sdk.checkout.DefaultCheckoutApi
+import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.checkout.Fulfillment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -76,7 +76,7 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private var ratingMessage: String? = null
-    private var lastState: Checkout.State? = null
+    private var lastState: CheckoutState? = null
 
     private var paymentOriginCandidate: PaymentOriginCandidate? = null
     private var paymentOriginCandidateHelper: PaymentOriginCandidateHelper
@@ -98,7 +98,7 @@ class PaymentStatusView @JvmOverloads constructor(
             checkout.reset()
             requireFragmentActivity().finish()
 
-            if (state == Checkout.State.PAYMENT_APPROVED) {
+            if (state == CheckoutState.PAYMENT_APPROVED) {
                 executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
             }
         }
@@ -156,7 +156,7 @@ class PaymentStatusView @JvmOverloads constructor(
         ratingMessage = null
     }
 
-    private fun onStateChanged(state: Checkout.State?) {
+    private fun onStateChanged(state: CheckoutState?) {
         if (lastState == state || ignoreStateChanges) {
             return
         }
@@ -171,11 +171,11 @@ class PaymentStatusView @JvmOverloads constructor(
         receipt.state = PaymentStatusItemView.State.IN_PROGRESS
 
         when (state) {
-            Checkout.State.PAYMENT_PROCESSING,
-            Checkout.State.VERIFYING_PAYMENT_METHOD -> {
+            CheckoutState.PAYMENT_PROCESSING,
+            CheckoutState.VERIFYING_PAYMENT_METHOD -> {
                 payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
-            Checkout.State.PAYMENT_APPROVED -> {
+            CheckoutState.PAYMENT_APPROVED -> {
                 title.text =
                     resources.getString(R.string.Snabble_PaymentStatus_Title_success)
                 image.setImageResource(R.drawable.snabble_ic_payment_success_big)
@@ -193,27 +193,27 @@ class PaymentStatusView @JvmOverloads constructor(
                 ratingLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
-            Checkout.State.PAYMENT_PROCESSING_ERROR -> {
+            CheckoutState.PAYMENT_PROCESSING_ERROR -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
-            Checkout.State.DENIED_TOO_YOUNG -> {
+            CheckoutState.DENIED_TOO_YOUNG -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung)
                 handlePaymentAborted()
             }
-            Checkout.State.DENIED_BY_PAYMENT_PROVIDER -> {
+            CheckoutState.DENIED_BY_PAYMENT_PROVIDER -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
-            Checkout.State.DENIED_BY_SUPERVISOR -> {
+            CheckoutState.DENIED_BY_SUPERVISOR -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
                 handlePaymentAborted()
             }
-            Checkout.State.PAYMENT_ABORTED -> {
+            CheckoutState.PAYMENT_ABORTED -> {
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser)
                 handlePaymentAborted()
             }
-            Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
+            CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
                 val price = checkout.verifiedOnlinePrice
                 if (price != -1) {
                     val googlePayHelper = project.googlePayHelper
@@ -278,7 +278,7 @@ class PaymentStatusView @JvmOverloads constructor(
         }
 
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
-        if (checkout.state == Checkout.State.PAYMENT_APPROVED) {
+        if (checkout.state == CheckoutState.PAYMENT_APPROVED) {
             paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
         }
     }

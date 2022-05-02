@@ -20,6 +20,7 @@ import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -251,12 +252,12 @@ open class CheckoutBar @JvmOverloads constructor(
         }
     }
 
-    protected fun onStateChanged(state: Checkout.State) {
+    protected fun onStateChanged(state: CheckoutState) {
         when (state) {
-            Checkout.State.HANDSHAKING -> {
+            CheckoutState.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)
             }
-            Checkout.State.REQUEST_PAYMENT_METHOD -> {
+            CheckoutState.REQUEST_PAYMENT_METHOD -> {
                 val entry = paymentSelectionHelper.selectedEntry.value
                 if (entry == null) {
                     progressDialog.dismiss()
@@ -284,7 +285,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     project.checkout.pay(entry.paymentMethod, null)
                 }
             }
-            Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
+            CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
                 val price = project.checkout.verifiedOnlinePrice
                 if (price != Checkout.INVALID_PRICE) {
                     val googlePayHelper = project.googlePayHelper
@@ -297,19 +298,19 @@ open class CheckoutBar @JvmOverloads constructor(
                     project.checkout.abort()
                 }
             }
-            Checkout.State.WAIT_FOR_GATEKEEPER,
-            Checkout.State.WAIT_FOR_SUPERVISOR,
-            Checkout.State.WAIT_FOR_APPROVAL,
-            Checkout.State.PAYMENT_APPROVED,
-            Checkout.State.DENIED_BY_PAYMENT_PROVIDER,
-            Checkout.State.DENIED_BY_SUPERVISOR,
-            Checkout.State.PAYMENT_PROCESSING -> {
+            CheckoutState.WAIT_FOR_GATEKEEPER,
+            CheckoutState.WAIT_FOR_SUPERVISOR,
+            CheckoutState.WAIT_FOR_APPROVAL,
+            CheckoutState.PAYMENT_APPROVED,
+            CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
+            CheckoutState.DENIED_BY_SUPERVISOR,
+            CheckoutState.PAYMENT_PROCESSING -> {
                 executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT, Bundle().apply {
                     putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
                 })
                 progressDialog.dismiss()
             }
-            Checkout.State.INVALID_PRODUCTS -> {
+            CheckoutState.INVALID_PRODUCTS -> {
                 val invalidProducts = project.checkout.invalidProducts
                 if (invalidProducts != null && invalidProducts.size > 0) {
                     val res = resources
@@ -339,20 +340,20 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
                 progressDialog.dismiss()
             }
-            Checkout.State.CONNECTION_ERROR,
-            Checkout.State.NO_SHOP,
-            Checkout.State.PAYMENT_PROCESSING_ERROR -> {
+            CheckoutState.CONNECTION_ERROR,
+            CheckoutState.NO_SHOP,
+            CheckoutState.PAYMENT_PROCESSING_ERROR -> {
                 SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
                 progressDialog.dismiss()
             }
-            Checkout.State.PAYMENT_ABORTED -> {
+            CheckoutState.PAYMENT_ABORTED -> {
                 progressDialog.dismiss()
             }
-            Checkout.State.REQUEST_VERIFY_AGE -> {
+            CheckoutState.REQUEST_VERIFY_AGE -> {
                 SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.SHOW_AGE_VERIFICATION)
                 progressDialog.dismiss()
             }
-            Checkout.State.REQUEST_TAXATION -> {
+            CheckoutState.REQUEST_TAXATION -> {
                 progressDialog.dismiss()
                 AlertDialog.Builder(context)
                     .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
@@ -373,7 +374,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     .create()
                     .show()
             }
-            Checkout.State.NO_PAYMENT_METHOD_AVAILABLE -> {
+            CheckoutState.NO_PAYMENT_METHOD_AVAILABLE -> {
                 AlertDialog.Builder(context)
                     .setCancelable(false)
                     .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_saleStop_errorMsg_title))
