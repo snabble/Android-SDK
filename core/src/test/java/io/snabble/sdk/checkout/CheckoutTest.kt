@@ -12,13 +12,6 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class CheckoutTest : SnabbleSdkTest() {
     private lateinit var simpleProduct1: TestProduct
-    private lateinit var simpleProduct2: TestProduct
-    private lateinit var simpleProduct3: TestProduct
-    private lateinit var userWeighedProduct: TestProduct
-    private lateinit var preWeighedProduct: TestProduct
-    private lateinit var pieceProduct: TestProduct
-    private lateinit var priceProduct: TestProduct
-    private lateinit var zeroAmountProduct: TestProduct
     private lateinit var credentials: PaymentCredentials
 
     private inner class TestProduct(var product: Product, var scannedCode: ScannedCode) {
@@ -44,30 +37,7 @@ class CheckoutTest : SnabbleSdkTest() {
     @Before
     fun setup() {
         cart = project.shoppingCart
-
         simpleProduct1 = TestProduct(project.productDatabase.findBySku("1"), code("4008258510001", "default"))
-        simpleProduct2 =
-            TestProduct(project.productDatabase.findBySku("2"), code("0885580294533", "default"))
-        simpleProduct3 =
-            TestProduct(project.productDatabase.findBySku("3"), code("0885580466701", "default"))
-        userWeighedProduct =
-            TestProduct(project.productDatabase.findBySku("34"), code("23232327", "default"))
-        preWeighedProduct = TestProduct(
-            project.productDatabase.findBySku("34-b"),
-            code("2423230001544", "ean13_instore")
-        )
-        pieceProduct = TestProduct(
-            project.productDatabase.findBySku("34-c"),
-            code("2523232000061", "ean13_instore")
-        )
-        priceProduct = TestProduct(
-            project.productDatabase.findBySku("34-d"),
-            code("2623237002494", "ean13_instore")
-        )
-        zeroAmountProduct = TestProduct(
-            project.productDatabase.findBySku("34-c"),
-            code("2523230000001", "ean13_instore")
-        )
     }
 
     private lateinit var checkout: Checkout
@@ -86,6 +56,13 @@ class CheckoutTest : SnabbleSdkTest() {
     @Test
     fun testCheckoutIsInNoneStateOnCreation() {
         Assert.assertEquals(Checkout.State.NONE, checkout.checkoutState.getOrAwaitValue())
+    }
+
+    @Test
+    fun testHandleConnectionError() {
+        mockApi.forceError = true
+        checkout.checkout()
+        Assert.assertEquals(Checkout.State.CONNECTION_ERROR, checkout.checkoutState.getOrAwaitValue())
     }
 
     @Test
@@ -187,6 +164,39 @@ class CheckoutTest : SnabbleSdkTest() {
         ))
         checkout.pollForResult()
         Assert.assertEquals(Checkout.State.PAYMENT_ABORTED, checkout.checkoutState.getOrAwaitValue())
+    }
+
+    @Test
+    fun testFulfillments() {
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(Checkout.State.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(Checkout.State.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        val fulfillmentsProcessing = listOf(
+            Fulfillment(
+                type = "test",
+                state = FulfillmentState.PROCESSING
+            )
+        )
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.SUCCESSFUL,
+            fulfillments = fulfillmentsProcessing
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(fulfillmentsProcessing, checkout.fulfillmentState.getOrAwaitValue())
+        val fulfillmentsProcessed = listOf(
+            Fulfillment(
+                type = "test",
+                state = FulfillmentState.PROCESSED
+            )
+        )
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.SUCCESSFUL,
+            fulfillments = fulfillmentsProcessed
+        ))
+        checkout.pollForResult()
+        Assert.assertEquals(fulfillmentsProcessed, checkout.fulfillmentState.getOrAwaitValue())
     }
 
     @Test

@@ -21,6 +21,7 @@ class MockCheckoutApi(
         paymentState = CheckState.SUCCESSFUL,
         routingTarget = RoutingTarget.NONE
     )
+    var forceError = false
 
     override fun cancel() {
         TODO("Not yet implemented")
@@ -39,6 +40,11 @@ class MockCheckoutApi(
         checkoutInfoResult: CheckoutInfoResult?,
         timeout: Long
     ) {
+        if (forceError) {
+            checkoutInfoResult?.connectionError()
+            return
+        }
+
         val signedCheckoutInfo = SignedCheckoutInfo(
             checkoutInfo = GsonHolder.get().fromJson("", JsonObject::class.java)
         )
@@ -54,6 +60,11 @@ class MockCheckoutApi(
     }
 
     override fun updatePaymentProcess(url: String?, paymentProcessResult: PaymentProcessResult?) {
+        if (forceError) {
+            paymentProcessResult?.error()
+            return
+        }
+
         paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
@@ -61,6 +72,11 @@ class MockCheckoutApi(
         checkoutProcessResponse: CheckoutProcessResponse?,
         paymentProcessResult: PaymentProcessResult?
     ) {
+        if (forceError) {
+            paymentProcessResult?.error()
+            return
+        }
+
         paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
@@ -73,6 +89,11 @@ class MockCheckoutApi(
         finalizedAt: Date?,
         paymentProcessResult: PaymentProcessResult?
     ) {
+        if (forceError) {
+            paymentProcessResult?.error()
+            return
+        }
+
         paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
