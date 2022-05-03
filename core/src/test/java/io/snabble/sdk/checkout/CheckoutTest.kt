@@ -55,87 +55,87 @@ class CheckoutTest : SnabbleSdkTest() {
 
     @Test
     fun testCheckoutIsInNoneStateOnCreation() {
-        Assert.assertEquals(CheckoutState.NONE, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.NONE, checkout.state.getOrAwaitValue())
     }
 
     @Test
     fun testHandleConnectionError() {
         mockApi.forceError = true
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.CONNECTION_ERROR, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.CONNECTION_ERROR, checkout.state.getOrAwaitValue())
     }
 
     @Test
     fun testSuccessfulCheckout() {
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
-        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.PENDING
         ))
-        checkout.pollForResult()
+        checkout.poll()
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.PROCESSING
         ))
-        checkout.pollForResult()
-        Assert.assertEquals(CheckoutState.PAYMENT_PROCESSING, checkout.checkoutState.getOrAwaitValue())
+        checkout.poll()
+        Assert.assertEquals(CheckoutState.PAYMENT_PROCESSING, checkout.state.getOrAwaitValue())
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.SUCCESSFUL
         ))
-        checkout.pollForResult()
-        Assert.assertEquals(CheckoutState.PAYMENT_APPROVED, checkout.checkoutState.getOrAwaitValue())
+        checkout.poll()
+        Assert.assertEquals(CheckoutState.PAYMENT_APPROVED, checkout.state.getOrAwaitValue())
     }
 
     @Test
     fun testKeepsStateUnchanged() {
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
 
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
-        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.PENDING
         ))
-        checkout.pollForResult()
+        checkout.poll()
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.PENDING
         ))
-        checkout.pollForResult()
-        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        checkout.poll()
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
     }
 
     @Test
     fun testRejectedByPaymentProviderCheckout() {
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
-        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.PENDING
         ))
-        checkout.pollForResult()
+        checkout.poll()
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.FAILED
         ))
-        checkout.pollForResult()
-        Assert.assertEquals(CheckoutState.DENIED_BY_PAYMENT_PROVIDER, checkout.checkoutState.getOrAwaitValue())
+        checkout.poll()
+        Assert.assertEquals(CheckoutState.DENIED_BY_PAYMENT_PROVIDER, checkout.state.getOrAwaitValue())
     }
 
     @Test
     fun testRejectedBySupervisorCheckout() {
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
-        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.PENDING
         ))
-        checkout.pollForResult()
+        checkout.poll()
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             checks = listOf(
                 Check(
@@ -144,35 +144,35 @@ class CheckoutTest : SnabbleSdkTest() {
                 )
             )
         ))
-        checkout.pollForResult()
-        Assert.assertEquals(CheckoutState.DENIED_BY_SUPERVISOR, checkout.checkoutState.getOrAwaitValue())
+        checkout.poll()
+        Assert.assertEquals(CheckoutState.DENIED_BY_SUPERVISOR, checkout.state.getOrAwaitValue())
     }
 
     @Test
     fun testPaymentAborted() {
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
-        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             paymentState = CheckState.PENDING
         ))
-        checkout.pollForResult()
+        checkout.poll()
         mockApi.modifyMockResponse(CheckoutProcessResponse(
             aborted = true
         ))
-        checkout.pollForResult()
-        Assert.assertEquals(CheckoutState.PAYMENT_ABORTED, checkout.checkoutState.getOrAwaitValue())
+        checkout.poll()
+        Assert.assertEquals(CheckoutState.PAYMENT_ABORTED, checkout.state.getOrAwaitValue())
     }
 
     @Test
     fun testFulfillments() {
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
-        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
         val fulfillmentsProcessing = listOf(
             Fulfillment(
                 type = "test",
@@ -183,7 +183,7 @@ class CheckoutTest : SnabbleSdkTest() {
             paymentState = CheckState.SUCCESSFUL,
             fulfillments = fulfillmentsProcessing
         ))
-        checkout.pollForResult()
+        checkout.poll()
         Assert.assertEquals(fulfillmentsProcessing, checkout.fulfillmentState.getOrAwaitValue())
         val fulfillmentsProcessed = listOf(
             Fulfillment(
@@ -195,7 +195,7 @@ class CheckoutTest : SnabbleSdkTest() {
             paymentState = CheckState.SUCCESSFUL,
             fulfillments = fulfillmentsProcessed
         ))
-        checkout.pollForResult()
+        checkout.poll()
         Assert.assertEquals(fulfillmentsProcessed, checkout.fulfillmentState.getOrAwaitValue())
     }
 
@@ -204,6 +204,6 @@ class CheckoutTest : SnabbleSdkTest() {
         Snabble.checkedInShop = null
         add(simpleProduct1)
         checkout.checkout()
-        Assert.assertEquals(CheckoutState.NO_SHOP, checkout.checkoutState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.NO_SHOP, checkout.state.getOrAwaitValue())
     }
 }

@@ -124,7 +124,7 @@ open class CheckoutBar @JvmOverloads constructor(
             false
         })
 
-        project.checkout.checkoutState.observeView(this, ::onStateChanged)
+        project.checkout.state.observeView(this, ::onStateChanged)
     }
 
     private fun handleButtonClick() {

@@ -67,8 +67,9 @@ class CheckoutActivity : FragmentActivity() {
                     }
 
                     val checkout = project.checkout
-                    if (!checkout.state.isCheckoutState) {
-                        finishWithError("Unexpected checkout state ${checkout.state.name}")
+                    val state = checkout.state.value
+                    if (state?.isCheckoutState == false) {
+                        finishWithError("Unexpected checkout state ${state.name}")
                         return@observe
                     }
                     this.checkout = checkout
@@ -83,7 +84,7 @@ class CheckoutActivity : FragmentActivity() {
 
                     navController.graph = navGraph
 
-                    checkout.checkoutState.observe(this) {
+                    checkout.state.observe(this) {
                         onStateChanged()
                     }
                 }
@@ -101,7 +102,7 @@ class CheckoutActivity : FragmentActivity() {
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
 
-        return when (checkout.state) {
+        return when (checkout.state.value) {
             CheckoutState.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
             }

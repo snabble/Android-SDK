@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.lifecycle.Observer;
+
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.PriceFormatter;
@@ -16,9 +18,10 @@ import io.snabble.sdk.checkout.CheckoutState;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.ui.utils.ViewExtKt;
 import io.snabble.sdk.utils.Dispatch;
 
-public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnCheckoutStateChangedListener {
+public class CheckoutPointOfSaleView extends FrameLayout {
     private BarcodeView barcodeView;
     private Checkout checkout;
     private CheckoutState currentState;
@@ -86,35 +89,21 @@ public class CheckoutPointOfSaleView extends FrameLayout implements Checkout.OnC
         }
 
         checkout = Snabble.getInstance().getCheckedInProject().getValue().getCheckout();
-        onStateChanged(checkout.getState());
+        ViewExtKt.observeView(checkout.getState(), this, new Observer<CheckoutState>() {
+            @Override
+            public void onChanged(CheckoutState checkoutState) {
+                onStateChanged(checkoutState);
+            }
+        });
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        if (checkout != null) {
-            checkout.addOnCheckoutStateChangedListener(this);
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (checkout != null) {
-            checkout.removeOnCheckoutStateChangedListener(this);
-        }
-    }
-
-    @Override
     public void onStateChanged(CheckoutState state) {
         if (state == currentState) {
             return;
         }
 
         if (state == CheckoutState.WAIT_FOR_APPROVAL) {
-            setQRCodeText(checkout.getQRCodePOSContent());
+            setQRCodeText(checkout.getQrCodePOSContent());
         }
 
         currentState = state;

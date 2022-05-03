@@ -100,7 +100,7 @@ class CheckoutRetryer {
                 }
 
                 final DefaultCheckoutApi checkoutApi = new DefaultCheckoutApi(project, project.getShoppingCart());
-                checkoutApi.createCheckoutInfo(savedCart.backendCart, null, new CheckoutInfoResult() {
+                checkoutApi.createCheckoutInfo(savedCart.backendCart, new CheckoutInfoResult() {
                     @Override
                     public void success(SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
                         checkoutApi.createPaymentProcess(UUID.randomUUID().toString(), signedCheckoutInfo, fallbackPaymentMethod, null,

@@ -65,7 +65,7 @@ class ShoppingCartUpdater {
             return;
         }
 
-        Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), null, new CheckoutInfoResult() {
+        Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), new CheckoutInfoResult() {
             @Override
             public void success(final SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
                 Dispatch.mainThread(() -> {
@@ -240,8 +240,7 @@ class ShoppingCartUpdater {
             return;
         }
 
-        lastAvailablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(
-                project.getCheckout().getClientAcceptedPaymentMethods());
+        lastAvailablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods();
 
         isUpdated = true;
         cart.setInvalidProducts(null);

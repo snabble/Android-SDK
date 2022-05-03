@@ -31,7 +31,6 @@ class MockCheckoutApi(
 
     override fun createCheckoutInfo(
         backendCart: ShoppingCart.BackendCart,
-        clientAcceptedPaymentMethods: List<PaymentMethod>?,
         checkoutInfoResult: CheckoutInfoResult?,
         timeout: Long
     ) {

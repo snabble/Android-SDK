@@ -1,17 +1,15 @@
 package io.snabble.sdk.checkout
 
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import io.snabble.sdk.Snabble.instance
-import androidx.lifecycle.MutableLiveData
 import io.snabble.sdk.payment.PaymentCredentials
-import io.snabble.sdk.utils.Age
 import io.snabble.sdk.utils.Dispatch
 import androidx.lifecycle.LiveData
 import io.snabble.sdk.*
 import io.snabble.sdk.utils.Logger
 import java.lang.Exception
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Future
 
 class Checkout @JvmOverloads constructor(
@@ -21,8 +19,12 @@ class Checkout @JvmOverloads constructor(
         project, shoppingCart
     )
 ) {
+    companion object {
+        const val INVALID_PRICE = -1
+    }
 
     private var signedCheckoutInfo: SignedCheckoutInfo? = null
+
     var checkoutProcess: CheckoutProcessResponse? = null
         private set
     var rawCheckoutProcessJson: String? = null
@@ -35,36 +37,26 @@ class Checkout @JvmOverloads constructor(
         private set
     var priceToPay = 0
         private set
-    private val checkoutStateListeners: MutableList<OnCheckoutStateChangedListener> =
-        CopyOnWriteArrayList()
-    private val fulfillmentUpdateListeners: MutableList<OnFulfillmentUpdateListener> =
-        CopyOnWriteArrayList()
 
-    val checkoutState = MutableLiveData(CheckoutState.NONE)
-    val fulfillmentState = MutableLiveData<List<Fulfillment>?>()
+    val state: LiveData<CheckoutState> = MutableAccessibleLiveData(CheckoutState.NONE)
+    val fulfillmentState: LiveData<List<Fulfillment>?> = MutableAccessibleLiveData()
 
-    private var lastState = CheckoutState.NONE
+    /** List of codes that can be added to offline qr codes **/
+    val codes: List<String> = mutableListOf()
 
-    /**
-     * Gets the current state of the Checkout.
-     *
-     *
-     * See [State].
-     *
-     * @return the state
-     */
-    var state = CheckoutState.NONE
-        private set
-    private val codes: MutableList<String> = ArrayList()
-    var clientAcceptedPaymentMethods: List<PaymentMethod>? = null
-    private var shop: Shop? = null
     var invalidProducts: List<Product>? = null
         private set
+
     private val checkoutRetryer: CheckoutRetryer
     private var currentPollFuture: Future<*>? = null
     private var storedAuthorizePaymentRequest: AuthorizePaymentRequest? = null
     private var authorizePaymentRequestFailed = false
-    private var redeemedCoupons: List<Coupon>? = null
+    private var redeemedCoupons: List<Coupon> = emptyList()
+
+    init {
+        checkoutRetryer = CheckoutRetryer(project, fallbackPaymentMethod)
+    }
+
     fun abortError() {
         abort(true)
     }
@@ -75,7 +67,9 @@ class Checkout @JvmOverloads constructor(
      */
     @JvmOverloads
     fun abort(error: Boolean = false) {
-        if (state != CheckoutState.PAYMENT_APPROVED && state != CheckoutState.DENIED_BY_PAYMENT_PROVIDER && state != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
+        if (state.value != CheckoutState.PAYMENT_APPROVED
+            && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
             checkoutApi.abort(checkoutProcess, object : PaymentAbortResult {
                 override fun success() {
                     cancelOutstandingCalls()
@@ -89,7 +83,6 @@ class Checkout @JvmOverloads constructor(
                         invalidProducts = null
                         selectedPaymentMethod = null
                         shoppingCart.generateNewUUID()
-                        shop = null
                     }
                 }
 
@@ -97,7 +90,7 @@ class Checkout @JvmOverloads constructor(
                     if (error) {
                         notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                     } else {
-                        if (state != CheckoutState.PAYMENT_PROCESSING && state != CheckoutState.PAYMENT_APPROVED) {
+                        if (state.value != CheckoutState.PAYMENT_PROCESSING && state.value != CheckoutState.PAYMENT_APPROVED) {
                             notifyStateChanged(CheckoutState.PAYMENT_ABORT_FAILED)
                         }
                     }
@@ -111,10 +104,12 @@ class Checkout @JvmOverloads constructor(
 
     /**
      * Aborts outstanding http calls and notifies the backend that the checkout process
-     * was cancelled, but does not notify listeners
+     * was cancelled, but does not notify listeners and ignores the backend response
      */
     fun abortSilently() {
-        if (state != CheckoutState.PAYMENT_APPROVED && state != CheckoutState.DENIED_BY_PAYMENT_PROVIDER && state != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
+        if (state.value != CheckoutState.PAYMENT_APPROVED
+            && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
             checkoutApi.abort(checkoutProcess, null)
         }
         reset()
@@ -137,11 +132,11 @@ class Checkout @JvmOverloads constructor(
         invalidProducts = null
         selectedPaymentMethod = null
         shoppingCart.generateNewUUID()
-        shop = null
     }
 
     val isAvailable: Boolean
         get() = project.checkoutUrl != null && project.isCheckoutAvailable
+
     private val fallbackPaymentMethod: PaymentMethod?
         private get() {
             val paymentMethods = project.paymentMethodDescriptors
@@ -157,12 +152,10 @@ class Checkout @JvmOverloads constructor(
     /**
      * Starts the checkout process.
      *
-     *
      * Requires a shop to be set with [Snabble.setCheckedInShop].
      *
-     *
      * If successful and there is more then 1 payment method
-     * the checkout state will be [State.REQUEST_PAYMENT_METHOD].
+     * the checkout state will be [CheckoutState.REQUEST_PAYMENT_METHOD].
      * You then need to sometime after call @link Checkout#pay(PaymentMethod)}
      * to pay with that payment method.
      */
@@ -175,29 +168,33 @@ class Checkout @JvmOverloads constructor(
         priceToPay = 0
         invalidProducts = null
         storedAuthorizePaymentRequest = null
-        shop = instance.checkedInShop
-        redeemedCoupons = null
-        fulfillmentState.value = null
+
+        redeemedCoupons = emptyList()
+        (fulfillmentState as MutableAccessibleLiveData).value = null
+
         notifyStateChanged(CheckoutState.HANDSHAKING)
+
+        val shop = instance.checkedInShop
         if (shop == null) {
             notifyStateChanged(CheckoutState.NO_SHOP)
             return
         }
+
         val backendCart = shoppingCart.toBackendCart()
         checkoutApi.createCheckoutInfo(backendCart,
-            clientAcceptedPaymentMethods,
             object : CheckoutInfoResult {
                 override fun success(
-                    checkoutInfo: SignedCheckoutInfo,
+                    signedCheckoutInfo: SignedCheckoutInfo,
                     onlinePrice: Int,
                     availablePaymentMethods: List<PaymentMethodInfo>
                 ) {
-                    signedCheckoutInfo = checkoutInfo
-                    if (signedCheckoutInfo!!.isRequiringTaxation) {
+                    this@Checkout.signedCheckoutInfo = signedCheckoutInfo
+                    if (this@Checkout.signedCheckoutInfo!!.isRequiringTaxation) {
                         Logger.d("Taxation requested")
                         notifyStateChanged(CheckoutState.REQUEST_TAXATION)
                         return
                     }
+
                     priceToPay = shoppingCart.totalPrice
                     if (availablePaymentMethods.size == 1) {
                         val paymentMethod = PaymentMethod.fromString(
@@ -237,14 +234,15 @@ class Checkout @JvmOverloads constructor(
                 }
 
                 override fun connectionError() {
-                    val fallback = fallbackPaymentMethod
-                    if (fallback != null && allowFallbackAfterTimeout) {
-                        selectedPaymentMethod = fallback
-                        priceToPay = shoppingCart.totalPrice
-                        checkoutRetryer.add(backendCart)
-                        notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
-                    } else {
-                        notifyStateChanged(CheckoutState.CONNECTION_ERROR)
+                    fallbackPaymentMethod?.let { fallbackPaymentMethod->
+                        if (allowFallbackAfterTimeout) {
+                            selectedPaymentMethod = fallbackPaymentMethod
+                            priceToPay = shoppingCart.totalPrice
+                            checkoutRetryer.add(backendCart)
+                            notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
+                        } else {
+                            notifyStateChanged(CheckoutState.CONNECTION_ERROR)
+                        }
                     }
                 }
             }, timeout
@@ -252,20 +250,19 @@ class Checkout @JvmOverloads constructor(
     }
 
     /**
-     * Needs to be called when the checkout is state [State.REQUEST_PAYMENT_METHOD].
+     * Needs to be called when the checkout is state [CheckoutState.REQUEST_PAYMENT_METHOD].
      *
      *
-     * When successful the state will switch to [State.WAIT_FOR_APPROVAL] which
+     * When successful the state will switch to [CheckoutState.WAIT_FOR_APPROVAL] which
      * waits for a event of the backend that the payment has been confirmed or denied.
      *
      *
      * Possible states after receiving the event:
      *
-     *
-     * [State.PAYMENT_APPROVED]
-     * [State.PAYMENT_ABORTED]
-     * [State.DENIED_BY_PAYMENT_PROVIDER]
-     * [State.DENIED_BY_SUPERVISOR]
+     * [CheckoutState.PAYMENT_APPROVED]
+     * [CheckoutState.PAYMENT_ABORTED]
+     * [CheckoutState.DENIED_BY_PAYMENT_PROVIDER]
+     * [CheckoutState.DENIED_BY_SUPERVISOR]
      *
      * @param paymentMethod the payment method to pay with
      * @param paymentCredentials may be null if the payment method requires no payment credentials
@@ -321,104 +318,38 @@ class Checkout @JvmOverloads constructor(
     }
 
     private fun areAllChecksSucceeded(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
-        var allChecksOk = true
-        for ((_, _, type, _, performedBy, state1) in checkoutProcessResponse.checks) {
-            if (state1 !== CheckState.SUCCESSFUL) {
-                return false
-            }
-            if (type == null) {
-                continue
-            }
-            if (performedBy === Performer.APP) {
-                if (type === CheckType.MIN_AGE) {
-                    Logger.d("Verifying age...")
-                    when (state1) {
-                        CheckState.PENDING -> {
-                            Logger.d("Age check pending...")
-                            notifyStateChanged(CheckoutState.REQUEST_VERIFY_AGE)
-                            abortSilently()
-                            allChecksOk = false
-                        }
-                        CheckState.FAILED -> {
-                            Logger.d("Age check failed...")
-                            notifyStateChanged(CheckoutState.DENIED_TOO_YOUNG)
-                            abortSilently()
-                            allChecksOk = false
-                        }
-                        CheckState.SUCCESSFUL -> Logger.d("Age check successful")
-                    }
-                }
-            }
-        }
-        return allChecksOk
+        return checkoutProcessResponse.checks.all { it.state != CheckState.SUCCESSFUL }
     }
 
-    private fun hasAnyCheckFailed(checkoutProcessResponse: CheckoutProcessResponse?): Boolean {
-        for ((_, _, _, _, _, state1) in checkoutProcessResponse!!.checks) {
-            if (state1 === CheckState.FAILED) {
-                return true
-            }
-        }
-        return false
-    }
-
-    private fun hasAnyFulfillmentAllocationFailed(): Boolean {
-        for ((_, _, state1) in checkoutProcess!!.fulfillments) {
-            if (state1 == FulfillmentState.ALLOCATION_FAILED ||
-                state1 == FulfillmentState.ALLOCATION_TIMED_OUT
-            ) {
-                return true
-            }
-        }
-        return false
+    private fun hasAnyCheckFailed(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
+        return checkoutProcessResponse.checks.any { it.state != CheckState.FAILED }
     }
 
     private fun hasStillPendingChecks(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
-        for ((_, _, _, _, _, state1) in checkoutProcessResponse.checks) {
-            if (state1 === CheckState.PENDING) {
-                return true
-            }
-        }
-        return false
+        return checkoutProcessResponse.checks.any { it.state != CheckState.PENDING }
+    }
+
+    private fun hasAnyFulfillmentAllocationFailed(): Boolean {
+        return checkoutProcess?.fulfillments?.any {
+            it.state == FulfillmentState.ALLOCATION_FAILED
+                    || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
+        } ?: false
     }
 
     private fun areAllFulfillmentsClosed(): Boolean {
-        if (checkoutProcess == null) {
-            return true
-        }
-        var ok = true
-        for ((_, _, state1) in checkoutProcess!!.fulfillments) {
-            if (state1 != null && state1.isOpen) {
-                ok = false
-                break
-            }
-        }
-        return ok
+        return checkoutProcess?.fulfillments?.any {
+            it.state?.isOpen ?: false
+        } ?: true
     }
 
     private fun hasAnyFulfillmentFailed(): Boolean {
-        if (checkoutProcess == null) {
-            return false
-        }
-        var fail = false
-        for ((_, _, state1) in checkoutProcess!!.fulfillments) {
-            if (state1 != null && state1.isFailure) {
-                fail = true
-                break
-            }
-        }
-        return fail
+        return checkoutProcess?.fulfillments?.any {
+            it.state?.isFailure ?: false
+        } ?: false
     }
 
-    private val userAge: Int
-        private get() {
-            val date = instance.userPreferences.birthday ?: return -1
-            val age = Age.calculateAge(date)
-            return age.years
-        }
-
     private fun scheduleNextPoll() {
-        currentPollFuture = Dispatch.background({ pollForResult() }, 2000)
+        currentPollFuture = Dispatch.background({ poll() }, 2000)
     }
 
     private fun stopPolling() {
@@ -429,11 +360,12 @@ class Checkout @JvmOverloads constructor(
     }
 
     @VisibleForTesting
-    fun pollForResult() {
+    fun poll() {
         if (checkoutProcess == null) {
             notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
             return
         }
+
         Logger.d("Polling for approval state...")
         Logger.d("RoutingTarget = $routingTarget")
         checkoutApi.updatePaymentProcess(checkoutProcess, object : PaymentProcessResult {
@@ -452,108 +384,136 @@ class Checkout @JvmOverloads constructor(
 
             override fun error() {}
         })
-        if (state == CheckoutState.WAIT_FOR_APPROVAL || state == CheckoutState.WAIT_FOR_GATEKEEPER || state == CheckoutState.WAIT_FOR_SUPERVISOR || state == CheckoutState.VERIFYING_PAYMENT_METHOD || state == CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN || state == CheckoutState.PAYMENT_PROCESSING || state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed()) {
+
+        val state = state.value
+        if (state == CheckoutState.WAIT_FOR_APPROVAL
+            || state == CheckoutState.WAIT_FOR_GATEKEEPER
+            || state == CheckoutState.WAIT_FOR_SUPERVISOR
+            || state == CheckoutState.VERIFYING_PAYMENT_METHOD
+            || state == CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
+            || state == CheckoutState.PAYMENT_PROCESSING
+            || state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed()) {
             scheduleNextPoll()
         }
     }
 
     private fun handleProcessResponse(): Boolean {
-        if (checkoutProcess!!.aborted) {
-            Logger.d("Payment aborted")
-            if (hasAnyFulfillmentFailed()) {
-                notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
-            } else {
-                notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
-            }
-            return true
-        }
-        if (state == CheckoutState.VERIFYING_PAYMENT_METHOD) {
-            if (checkoutProcess!!.routingTarget === RoutingTarget.SUPERVISOR) {
-                notifyStateChanged(CheckoutState.WAIT_FOR_SUPERVISOR)
-            } else if (checkoutProcess!!.routingTarget === RoutingTarget.GATEKEEPER) {
-                notifyStateChanged(CheckoutState.WAIT_FOR_GATEKEEPER)
-            } else {
-                notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
-            }
-            return false
-        }
-        val authorizePaymentUrl = checkoutProcess!!.authorizePaymentLink
-        if (authorizePaymentUrl != null) {
-            if (authorizePaymentRequestFailed) {
-                authorizePaymentRequestFailed = false
-                authorizePayment(storedAuthorizePaymentRequest!!.encryptedOrigin)
-            } else {
-                if (storedAuthorizePaymentRequest != null) {
-                    authorizePayment(storedAuthorizePaymentRequest!!.encryptedOrigin)
+        checkoutProcess?.let { checkoutProcess ->
+            if (checkoutProcess.aborted) {
+                Logger.d("Payment aborted")
+                if (hasAnyFulfillmentFailed()) {
+                    notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                 } else {
-                    notifyStateChanged(CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN)
+                    notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
                 }
-            }
-            return false
-        }
-        if (checkoutProcess!!.paymentState === CheckState.SUCCESSFUL) {
-            return if (checkoutProcess!!.exitToken != null
-                && (checkoutProcess!!.exitToken!!.format == null || checkoutProcess!!.exitToken!!.format == "" || checkoutProcess!!.exitToken!!.value == null || checkoutProcess!!.exitToken!!.value == "")
-            ) {
-                false
-            } else {
-                approve()
-                if (areAllFulfillmentsClosed()) {
-                    notifyFulfillmentDone()
-                    true
-                } else {
-                    notifyFulfillmentUpdate()
-                    false
-                }
-            }
-        } else if (checkoutProcess!!.paymentState === CheckState.PENDING
-            || checkoutProcess!!.paymentState === CheckState.UNAUTHORIZED
-        ) {
-            if (hasAnyFulfillmentFailed()) {
-                checkoutApi.abort(checkoutProcess, null)
-                notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
-                notifyFulfillmentDone()
-                return false
-            }
-            if (hasAnyFulfillmentAllocationFailed()) {
-                notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
                 return true
             }
-            if (hasAnyCheckFailed(checkoutProcess)) {
-                Logger.d("Payment denied by supervisor")
-                shoppingCart.generateNewUUID()
-                notifyStateChanged(CheckoutState.DENIED_BY_SUPERVISOR)
+
+            if (state.value == CheckoutState.VERIFYING_PAYMENT_METHOD) {
+                when {
+                    checkoutProcess.routingTarget === RoutingTarget.SUPERVISOR -> {
+                        notifyStateChanged(CheckoutState.WAIT_FOR_SUPERVISOR)
+                    }
+                    checkoutProcess.routingTarget === RoutingTarget.GATEKEEPER -> {
+                        notifyStateChanged(CheckoutState.WAIT_FOR_GATEKEEPER)
+                    }
+                    else -> {
+                        notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
+                    }
+                }
+                return false
             }
-        } else if (checkoutProcess!!.paymentState === CheckState.PROCESSING) {
-            notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
-        } else if (checkoutProcess!!.paymentState === CheckState.FAILED) {
-            if (checkoutProcess!!.paymentResult != null && checkoutProcess!!.paymentResult!!.failureCause != null && checkoutProcess!!.paymentResult!!.failureCause == "terminalAbort") {
-                Logger.d("Payment aborted by terminal")
-                notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
-            } else {
-                Logger.d("Payment denied by payment provider")
-                notifyStateChanged(CheckoutState.DENIED_BY_PAYMENT_PROVIDER)
+
+            val authorizePaymentUrl = checkoutProcess.authorizePaymentLink
+            if (authorizePaymentUrl != null) {
+                if (authorizePaymentRequestFailed) {
+                    authorizePaymentRequestFailed = false
+                    authorizePayment(storedAuthorizePaymentRequest!!.encryptedOrigin)
+                } else {
+                    if (storedAuthorizePaymentRequest != null) {
+                        authorizePayment(storedAuthorizePaymentRequest!!.encryptedOrigin)
+                    } else {
+                        notifyStateChanged(CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN)
+                    }
+                }
+                return false
             }
-            shoppingCart.generateNewUUID()
-            return true
+
+            when (checkoutProcess.paymentState) {
+                CheckState.UNAUTHORIZED,
+                CheckState.PENDING -> {
+                    if (hasAnyFulfillmentFailed()) {
+                        checkoutApi.abort(checkoutProcess, null)
+                        notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
+                        notifyFulfillmentUpdate()
+                        return false
+                    }
+
+                    if (hasAnyFulfillmentAllocationFailed()) {
+                        notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
+                        return true
+                    }
+                    if (hasAnyCheckFailed(checkoutProcess)) {
+                        Logger.d("Payment denied by supervisor")
+                        shoppingCart.generateNewUUID()
+                        notifyStateChanged(CheckoutState.DENIED_BY_SUPERVISOR)
+                    }
+                }
+                CheckState.PROCESSING -> {
+                    notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
+                }
+                CheckState.SUCCESSFUL -> {
+                    return if (checkoutProcess.exitToken != null
+                        && (checkoutProcess.exitToken!!.format == null
+                                || checkoutProcess.exitToken!!.format == ""
+                                || checkoutProcess.exitToken!!.value == null
+                                || checkoutProcess.exitToken!!.value == "")
+                    ) {
+                        false
+                    } else {
+                        approve()
+                        notifyFulfillmentUpdate()
+                        areAllFulfillmentsClosed()
+                    }
+                }
+                CheckState.FAILED -> {
+                    if (checkoutProcess.paymentResult != null
+                        && checkoutProcess.paymentResult!!.failureCause != null
+                        && checkoutProcess.paymentResult!!.failureCause == "terminalAbort") {
+                        Logger.d("Payment aborted by terminal")
+                        notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
+                    } else {
+                        Logger.d("Payment denied by payment provider")
+                        notifyStateChanged(CheckoutState.DENIED_BY_PAYMENT_PROVIDER)
+                    }
+                    shoppingCart.generateNewUUID()
+                    return true
+                }
+                else -> {
+                    return false
+                }
+            }
         }
         return false
     }
 
     private fun approve() {
-        if (state != CheckoutState.PAYMENT_APPROVED) {
+        if (state.value != CheckoutState.PAYMENT_APPROVED) {
             Logger.d("Payment approved")
-            if (selectedPaymentMethod != null && selectedPaymentMethod!!.isOfflineMethod) {
+
+            if (selectedPaymentMethod?.isOfflineMethod == true) {
                 shoppingCart.backup()
             }
-            if (signedCheckoutInfo != null) {
+
+            signedCheckoutInfo?.let { signedCheckoutInfo ->
                 val coupons = project.coupons.get()
                 redeemedCoupons = if (coupons != null) {
-                    signedCheckoutInfo!!.getRedeemedCoupons(coupons)
+                    signedCheckoutInfo.getRedeemedCoupons(coupons)
                 } else {
-                    null
+                    emptyList()
                 }
             }
+
             shoppingCart.invalidate()
             clearCodes()
             notifyStateChanged(CheckoutState.PAYMENT_APPROVED)
@@ -561,10 +521,12 @@ class Checkout @JvmOverloads constructor(
         }
     }
 
-    fun getRedeemedCoupons(): List<Coupon> {
-        return redeemedCoupons ?: ArrayList()
-    }
-
+    /**
+     * Approve offline processed payment methods. E.g. on clicking the "finish" button or leaving
+     * the qr code view.
+     *
+     * This is for resetting the cart state and notifying the backend
+     */
     fun approveOfflineMethod() {
         if (selectedPaymentMethod != null && selectedPaymentMethod!!.isOfflineMethod
             || selectedPaymentMethod == PaymentMethod.CUSTOMERCARD_POS
@@ -574,29 +536,27 @@ class Checkout @JvmOverloads constructor(
         }
     }
 
-    val orderId: String?
-        get() = if (checkoutProcess != null) checkoutProcess!!.orderId else null
-
+    /**
+     * Add code to append to offline qr codes
+     */
     fun addCode(code: String) {
-        codes.add(code)
+        (codes as MutableList).add(code)
     }
 
+    /**
+     * Remove code to append to offline qr codes
+     */
     fun removeCode(code: String) {
-        codes.remove(code)
+        (codes as MutableList).remove(code)
     }
 
-    fun getCodes(): Collection<String> {
-        return Collections.unmodifiableCollection(codes)
-    }
-
+    /**
+     * Clear all codes that are appended to offline qr codes
+     */
     fun clearCodes() {
-        codes.clear()
+        (codes as MutableList).clear()
     }
 
-    val paymentMethodForPayment: PaymentMethod?
-        get() = if (checkoutProcess != null) {
-            checkoutProcess!!.paymentMethod
-        } else null
     val verifiedOnlinePrice: Int
         get() {
             try {
@@ -608,7 +568,8 @@ class Checkout @JvmOverloads constructor(
             }
             return -1
         }
-    val routingTarget: RoutingTarget?
+
+    private val routingTarget: RoutingTarget?
         get() = if (checkoutProcess != null && checkoutProcess!!.routingTarget != null) {
             checkoutProcess!!.routingTarget
         } else RoutingTarget.NONE
@@ -620,7 +581,7 @@ class Checkout @JvmOverloads constructor(
         get() {
             if (signedCheckoutInfo != null) {
                 val paymentMethodInfos =
-                    signedCheckoutInfo!!.getAvailablePaymentMethods(clientAcceptedPaymentMethods)
+                    signedCheckoutInfo!!.getAvailablePaymentMethods()
                 val paymentMethods: MutableList<PaymentMethod> = ArrayList()
                 for (info in paymentMethodInfos) {
                     val pm = PaymentMethod.fromString(
@@ -638,7 +599,6 @@ class Checkout @JvmOverloads constructor(
     /**
      * Gets the unique identifier of the checkout.
      *
-     *
      * This id can be used for identification in the supervisor app.
      */
     val id: String?
@@ -654,7 +614,7 @@ class Checkout @JvmOverloads constructor(
      * Gets the content of the qrcode that needs to be displayed,
      * or null if no qrcode needs to be displayed.
      */
-    val qRCodePOSContent: String?
+    val qrCodePOSContent: String?
         get() {
             if (checkoutProcess != null) {
                 if (checkoutProcess!!.paymentInformation != null) {
@@ -664,93 +624,26 @@ class Checkout @JvmOverloads constructor(
             return null
         }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun processPendingCheckouts() {
         checkoutRetryer.processPendingCheckouts()
     }
 
-    interface OnCheckoutStateChangedListener {
-        fun onStateChanged(state: CheckoutState)
-    }
-
-    fun getCheckoutState(): LiveData<CheckoutState> {
-        return checkoutState
-    }
-
-    fun getFulfillmentState(): LiveData<List<Fulfillment>?> {
-        return fulfillmentState
-    }
-
-    fun addOnCheckoutStateChangedListener(listener: OnCheckoutStateChangedListener) {
-        if (!checkoutStateListeners.contains(listener)) {
-            checkoutStateListeners.add(listener)
+    private fun notifyStateChanged(state: CheckoutState) {
+        with(this.state as MutableAccessibleLiveData) {
+            value = state
         }
-    }
-
-    fun removeOnCheckoutStateChangedListener(listener: OnCheckoutStateChangedListener) {
-        checkoutStateListeners.remove(listener)
-    }
-
-    private fun notifyStateChanged(state: CheckoutState, repeat: Boolean = false) {
-        synchronized(this@Checkout) {
-            if (this.state != state || repeat) {
-                lastState = this.state
-                this.state = state
-                Dispatch.mainThread {
-                    checkoutState.value = state
-                    for (checkoutStateListener in checkoutStateListeners) {
-                        checkoutStateListener.onStateChanged(state)
-                    }
-                }
-            }
-        }
-    }
-
-    interface OnFulfillmentUpdateListener {
-        fun onFulfillmentUpdated()
-        fun onFulfillmentDone()
-    }
-
-    fun addOnFulfillmentListener(listener: OnFulfillmentUpdateListener) {
-        if (!fulfillmentUpdateListeners.contains(listener)) {
-            fulfillmentUpdateListeners.add(listener)
-        }
-    }
-
-    fun removeOnFulfillmentListener(listener: OnFulfillmentUpdateListener) {
-        fulfillmentUpdateListeners.remove(listener)
     }
 
     private fun notifyFulfillmentUpdate() {
-        Dispatch.mainThread {
-            for (checkoutStateListener in fulfillmentUpdateListeners) {
-                checkoutStateListener.onFulfillmentUpdated()
-            }
-            if (checkoutProcess != null) {
-                fulfillmentState.setValue(checkoutProcess!!.fulfillments)
-            } else {
-                fulfillmentState.setValue(null)
-            }
-        }
+        (fulfillmentState as MutableAccessibleLiveData).value = checkoutProcess?.fulfillments
     }
 
-    private fun notifyFulfillmentDone() {
-        Dispatch.mainThread {
-            for (checkoutStateListener in fulfillmentUpdateListeners) {
-                checkoutStateListener.onFulfillmentDone()
-            }
-            if (checkoutProcess != null) {
-                fulfillmentState.setValue(checkoutProcess!!.fulfillments)
-            } else {
-                fulfillmentState.setValue(null)
-            }
-        }
-    }
+    //    val orderId: String?
+    //        get() = if (checkoutProcess != null) checkoutProcess!!.orderId else null
 
-    companion object {
-        const val INVALID_PRICE = -1
-    }
-
-    init {
-        checkoutRetryer = CheckoutRetryer(project, fallbackPaymentMethod)
-    }
+    //    val paymentMethodForPayment: PaymentMethod?
+    //        get() = if (checkoutProcess != null) {
+    //            checkoutProcess!!.paymentMethod
+    //        } else null
 }

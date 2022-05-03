@@ -103,7 +103,7 @@ class PaymentStatusView @JvmOverloads constructor(
             }
         }
 
-        checkout.checkoutState.observeView(this) {
+        checkout.state.observeView(this) {
             onStateChanged(it)
         }
 
@@ -278,7 +278,7 @@ class PaymentStatusView @JvmOverloads constructor(
         }
 
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
-        if (checkout.state == CheckoutState.PAYMENT_APPROVED) {
+        if (checkout.state.value == CheckoutState.PAYMENT_APPROVED) {
             paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
         }
     }
@@ -292,7 +292,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private fun onStart() {
         startPollingForPaymentOriginCandidate()
 
-        onStateChanged(checkout.state)
+        onStateChanged(checkout.state.value)
         isStopped = false
     }
 

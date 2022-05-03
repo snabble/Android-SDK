@@ -89,7 +89,6 @@ public class DefaultCheckoutApi implements CheckoutApi {
 
     @Override
     public void createCheckoutInfo(final ShoppingCart.BackendCart backendCart,
-                                   final List<? extends PaymentMethod> clientAcceptedPaymentMethods,
                                    final CheckoutInfoResult checkoutInfoResult,
                                    final long timeout) {
         String checkoutUrl = project.getCheckoutUrl();
@@ -131,7 +130,7 @@ public class DefaultCheckoutApi implements CheckoutApi {
                     price = shoppingCart.getTotalPrice();
                 }
 
-                List<PaymentMethodInfo> availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods(clientAcceptedPaymentMethods);
+                List<PaymentMethodInfo> availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods();
                 if (!availablePaymentMethods.isEmpty()) {
                     checkoutInfoResult.success(signedCheckoutInfo, price, availablePaymentMethods);
                 } else {

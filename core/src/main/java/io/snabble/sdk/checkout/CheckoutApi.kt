@@ -22,8 +22,7 @@ interface CheckoutApi {
     )
 
     fun createCheckoutInfo(
-        backendCart: BackendCart,
-        clientAcceptedPaymentMethods: List<PaymentMethod>?, // TODO migrate to kotlin List
+        backendCart: BackendCart, // TODO migrate to kotlin List
         checkoutInfoResult: CheckoutInfoResult? = null,
         timeout: Long = -1
     )
@@ -139,9 +138,9 @@ data class SignedCheckoutInfo(
     val isRequiringTaxation: Boolean
         get() {
             try {
-                if (checkoutInfo != null && checkoutInfo!!.has("requiredInformation")) {
-                    val jsonArray = checkoutInfo!!["requiredInformation"].asJsonArray
-                    for (element in jsonArray) {
+                if (checkoutInfo?.has("requiredInformation") == true) {
+                    val jsonArray = checkoutInfo?.getAsJsonArray("requiredInformation")
+                    jsonArray?.forEach { element ->
                         val id = element.asJsonObject["id"].asString
                         val hasValue = element.asJsonObject.has("value")
                         if (id == "taxation" && !hasValue) {
@@ -155,30 +154,12 @@ data class SignedCheckoutInfo(
             return false
         }
 
-    fun getAvailablePaymentMethods(clientAcceptedPaymentMethods: List<PaymentMethod>?): List<PaymentMethodInfo?> {
-        var acceptedPaymentMethods = clientAcceptedPaymentMethods
-        if (checkoutInfo != null && checkoutInfo!!.has("paymentMethods")) {
-            val jsonArray = checkoutInfo!!.getAsJsonArray("paymentMethods")
+    fun getAvailablePaymentMethods(): List<PaymentMethodInfo?> {
+        if (checkoutInfo?.has("paymentMethods") == true) {
+            val jsonArray = checkoutInfo?.getAsJsonArray("paymentMethods")
             if (jsonArray != null) {
-                val paymentMethods = Gson().fromJson<List<PaymentMethodInfo>>(
-                    jsonArray,
-                    object : TypeToken<List<PaymentMethodInfo?>?>() {}.type
-                )
-                if (acceptedPaymentMethods == null) {
-                    acceptedPaymentMethods = PaymentMethod.values().toList()
-                }
-                val result: MutableList<PaymentMethodInfo> = ArrayList()
-                for (clientPaymentMethod in acceptedPaymentMethods) {
-                    for (paymentMethodInfo in paymentMethods) {
-                        val pm = PaymentMethod.fromString(paymentMethodInfo.id)
-                        if (pm != null) {
-                            if (pm == clientPaymentMethod) {
-                                result.add(paymentMethodInfo)
-                            }
-                        }
-                    }
-                }
-                return result
+                val type = object : TypeToken<List<PaymentMethodInfo?>?>() {}.type
+                return Gson().fromJson<List<PaymentMethodInfo>>(jsonArray, type)
             }
         }
         return emptyList()
