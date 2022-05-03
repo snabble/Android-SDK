@@ -12,6 +12,7 @@ import android.text.style.StrikethroughSpan
 import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -233,7 +234,7 @@ interface ProductConfirmationDialog {
     /**
      * Show the product confirmation dialog with the given view model.
      */
-    fun show(viewModel: ViewModel)
+    fun show(activity: FragmentActivity, viewModel: ViewModel)
 
     /**
      * Dismiss the product confirmation dialog

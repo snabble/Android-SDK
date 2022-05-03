@@ -13,6 +13,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.scanner.ProductResolver.*
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
+import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Age
 import io.snabble.sdk.utils.Dispatch
 import java.math.BigDecimal
@@ -281,7 +282,7 @@ class ProductResolver private constructor(private val context: Context, private 
             if (handleProductFlags(product, scannedCode)) {
                 val model = ProductConfirmationDialog.ViewModel(context, SnabbleUI.project, product, scannedCode)
                 productDialogViewModel = model
-                productConfirmationDialog?.show(model)
+                productConfirmationDialog?.show(UIUtils.getHostFragmentActivity(context), model)
             }
         }
     }
@@ -461,7 +462,7 @@ class ProductResolver private constructor(private val context: Context, private 
     ) {
         private val productResolver = ProductResolver(context, project)
         private var factory = ProductConfirmationDialog.Factory {
-            DefaultProductConfirmationDialog(context)
+            DefaultProductConfirmationDialog()
         }
 
         /**
@@ -588,7 +589,7 @@ class ProductResolver private constructor(private val context: Context, private 
          */
         fun setDialogConfirmationDialogFactory(factory: ProductConfirmationDialog.Factory?) = apply {
             this.factory = factory ?: ProductConfirmationDialog.Factory {
-                DefaultProductConfirmationDialog(context)
+                DefaultProductConfirmationDialog()
             }
         }
 
@@ -596,7 +597,7 @@ class ProductResolver private constructor(private val context: Context, private 
          * Create the product resolver.
          */
         fun create() = productResolver.apply {
-            productConfirmationDialog = factory.create()
+            productConfirmationDialog = requireNotNull(factory.create())
             productConfirmationDialog?.setOnDismissListener {
                 if (lastProduct != null && productDialogViewModel?.wasAddedToCart == true) {
                     checkMinAge(lastProduct!!)

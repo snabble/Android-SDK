@@ -1,18 +1,18 @@
 package io.snabble.sdk.ui.scanner
 
+import android.app.Dialog
 import android.content.Context
 import io.snabble.sdk.ui.SnabbleUI.executeAction
 import android.widget.EditText
 import android.widget.TextView
 import android.content.DialogInterface
+import android.os.Bundle
+import android.view.*
 import io.snabble.sdk.ui.R
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.EditorInfo
 import io.snabble.sdk.ui.telemetry.Telemetry
-import android.view.Gravity
 import io.snabble.sdk.ui.SnabbleUI
-import android.view.KeyEvent
-import android.view.View
 import android.view.animation.TranslateAnimation
 import android.view.animation.CycleInterpolator
 import android.view.inputmethod.InputMethodManager
@@ -21,7 +21,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.*
@@ -32,10 +33,7 @@ import java.lang.NumberFormatException
  * The default implementation of the product confirmation dialog with the option to enter discounts
  * and change the quantity.
  */
-class DefaultProductConfirmationDialog(
-    private val context: Context,
-) : ProductConfirmationDialog {
-    private var alertDialog: AlertDialog? = null
+class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDialog {
     private lateinit var quantity: EditText
     private lateinit var quantityTextInput: View
     private lateinit var price: TextView
@@ -51,24 +49,33 @@ class DefaultProductConfirmationDialog(
     private var onKeyListener: ProductConfirmationDialog.OnKeyListener? = null
     var wasAddedToCart = false
         private set
+    private lateinit var viewModel: ProductConfirmationDialog.ViewModel
 
     /**
      * Show the dialog for the given project and the scanned code.
      */
-    override fun show(viewModel: ProductConfirmationDialog.ViewModel) {
+    override fun show(activity: FragmentActivity, viewModel: ProductConfirmationDialog.ViewModel) {
         dismiss(false)
-        val view = View.inflate(context, R.layout.snabble_dialog_product_confirmation, null)
-        alertDialog = LifecycleAwareAlertDialogBuilder(context)
-            .setView(view)
-            .create()
-            .apply {
-                setOnShowListener(onShowListener)
-                setOnDismissListener {
-                    viewModel.dismiss()
-                    onDismissListener?.onDismiss()
-                }
-                setOnKeyListener(onKeyListener)
-            }
+        this.viewModel = viewModel
+        show(activity.supportFragmentManager, null)
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+        super.onCreateDialog(savedInstanceState).apply {
+            setOnShowListener(onShowListener)
+            setOnKeyListener(onKeyListener)
+        }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        viewModel.dismiss()
+        onDismissListener?.onDismiss()
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View =
+        inflater.inflate(R.layout.snabble_dialog_product_confirmation, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         quantity = view.findViewById(R.id.quantity)
         quantityTextInput = view.findViewById(R.id.quantity_text_input)
         val subtitle = view.findViewById<TextView>(R.id.subtitle)
@@ -109,7 +116,7 @@ class DefaultProductConfirmationDialog(
             }
         }
 
-        viewModel.quantity.observe(requireNotNull(quantity.findViewTreeLifecycleOwner())) { count ->
+        viewModel.quantity.observe(viewLifecycleOwner) { count ->
             if (getQuantity() != count) {
                 val newCount = count?.toString().orEmpty()
                 // keep the selection if possible
@@ -185,15 +192,15 @@ class DefaultProductConfirmationDialog(
         }
         addToCart.setOnClickListener {
             viewModel.addToCart()
-            alertDialog?.dismiss()
+            dismiss()
         }
         close.setOnClickListener {
             Telemetry.event(Telemetry.Event.RejectedProduct, viewModel.product)
             dismiss(false)
         }
-        val window = alertDialog?.window
+        val window = dialog?.window
         if (window == null) {
-            alertDialog?.dismiss()
+            dismiss()
             return
         }
         val layoutParams = window.attributes
@@ -201,16 +208,15 @@ class DefaultProductConfirmationDialog(
         window.setBackgroundDrawableResource(R.drawable.snabble_scanner_dialog_background)
         window.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL)
         window.attributes = layoutParams
-        alertDialog?.show()
         if (viewModel.product.type == Product.Type.UserWeighed) {
             quantity.requestFocus()
             Dispatch.mainThread {
-                val inputMethodManager = context.applicationContext
+                val inputMethodManager = requireContext().applicationContext
                     .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.showSoftInput(quantity, 0)
             }
         }
-        executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_SHOWN)
+        executeAction(requireContext(), SnabbleUI.Event.PRODUCT_CONFIRMATION_SHOWN) // FIXME move to model
     }
 
     private fun shake() {
@@ -228,12 +234,10 @@ class DefaultProductConfirmationDialog(
 
     override fun dismiss(addToCart: Boolean) {
         wasAddedToCart = addToCart
-        alertDialog?.let { alertDialog ->
-            alertDialog.dismiss()
-            alertDialog.setOnDismissListener(null)
-            this.alertDialog = null
+        if (isAdded) {
+            dismiss()
             if (!addToCart) {
-                executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_HIDDEN)
+                executeAction(requireContext(), SnabbleUI.Event.PRODUCT_CONFIRMATION_HIDDEN) // FIXME move to model
             }
         }
     }

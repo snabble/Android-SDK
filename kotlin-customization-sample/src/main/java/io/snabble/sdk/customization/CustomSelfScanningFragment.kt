@@ -7,7 +7,7 @@ class CustomSelfScanningFragment: SelfScanningFragment() {
     // Inject custom ProductConfirmationDialog with a simple factory
     override fun onSelfScanningViewCreated(selfScanningView: SelfScanningView) {
         selfScanningView.setProductConfirmationDialogFactory {
-            FancyProductConfirmationDialog(requireContext())
+            FancyProductConfirmationDialog()
         }
     }
 }
