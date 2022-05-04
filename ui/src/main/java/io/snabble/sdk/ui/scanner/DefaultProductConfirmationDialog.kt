@@ -22,6 +22,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.accessibility
@@ -84,7 +85,7 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
         depositPrice = view.findViewById(R.id.depositPrice)
         addToCart = view.findViewById(R.id.addToCart)
         val close = view.findViewById<View>(R.id.close)
-        val plus = view.findViewById<View>(R.id.plus)
+        val plus = view.findViewById<MaterialButton>(R.id.plus)
         val minus = view.findViewById<View>(R.id.minus)
         plusLayout = view.findViewById(R.id.plus_layout)
         minusLayout = view.findViewById(R.id.minus_layout)
@@ -158,12 +159,11 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
         quantity.clearFocus()
         quantityTextInput.suffixText = viewModel.cartItem.unit?.displayValue
         quantity.filters = arrayOf(InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY))
-        quantity.setOnEditorActionListener { _, actionId: Int, event: KeyEvent ->
+        quantity.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE
                 || (event.action == KeyEvent.ACTION_DOWN
                         && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
-                viewModel.addToCart()
-                return@setOnEditorActionListener true
+                return@setOnEditorActionListener checkAddToCart()
             }
             false
         }
@@ -173,6 +173,7 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
                 val number = s.toString().toIntOrNull()
                 viewModel.quantity.postWhenChanged(number)
             }
+            quantityTextInput.setBoxStrokeColorStateList(plus.strokeColor)
         }
         price.bindText(viewModel.price)
         plus.setOnClickListener {
@@ -188,8 +189,9 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
             viewModel.quantity.postValue(--q)
         }
         addToCart.setOnClickListener {
-            viewModel.addToCart()
-            dismiss()
+            if (checkAddToCart()) {
+                dismiss()
+            }
         }
         close.setOnClickListener {
             Telemetry.event(Telemetry.Event.RejectedProduct, viewModel.product)
@@ -214,6 +216,16 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
             }
         }
         executeAction(requireContext(), SnabbleUI.Event.PRODUCT_CONFIRMATION_SHOWN) // FIXME move to model
+    }
+
+    private fun checkAddToCart(): Boolean {
+        if (getQuantity() > 0) {
+            viewModel.addToCart()
+        } else {
+            quantityTextInput.boxStrokeColor = UIUtils.getColorByAttribute(context, R.attr.colorError)
+            shake()
+        }
+        return getQuantity() > 0
     }
 
     private fun shake() {
