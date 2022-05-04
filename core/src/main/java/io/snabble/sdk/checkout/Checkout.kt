@@ -234,15 +234,14 @@ class Checkout @JvmOverloads constructor(
                 }
 
                 override fun connectionError() {
-                    fallbackPaymentMethod?.let { fallbackPaymentMethod->
-                        if (allowFallbackAfterTimeout) {
-                            selectedPaymentMethod = fallbackPaymentMethod
-                            priceToPay = shoppingCart.totalPrice
-                            checkoutRetryer.add(backendCart)
-                            notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
-                        } else {
-                            notifyStateChanged(CheckoutState.CONNECTION_ERROR)
-                        }
+                    val fallback = fallbackPaymentMethod
+                    if (fallback != null && allowFallbackAfterTimeout) {
+                        selectedPaymentMethod = fallbackPaymentMethod
+                        priceToPay = shoppingCart.totalPrice
+                        checkoutRetryer.add(backendCart)
+                        notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
+                    } else {
+                        notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                     }
                 }
             }, timeout
@@ -318,21 +317,21 @@ class Checkout @JvmOverloads constructor(
     }
 
     private fun areAllChecksSucceeded(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
-        return checkoutProcessResponse.checks.all { it.state != CheckState.SUCCESSFUL }
+        return checkoutProcessResponse.checks.all { it.state == CheckState.SUCCESSFUL }
     }
 
     private fun hasAnyCheckFailed(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
-        return checkoutProcessResponse.checks.any { it.state != CheckState.FAILED }
+        return checkoutProcessResponse.checks.any { it.state == CheckState.FAILED }
     }
 
     private fun hasStillPendingChecks(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
-        return checkoutProcessResponse.checks.any { it.state != CheckState.PENDING }
+        return checkoutProcessResponse.checks.any { it.state == CheckState.PENDING }
     }
 
     private fun hasAnyFulfillmentAllocationFailed(): Boolean {
         return checkoutProcess?.fulfillments?.any {
             it.state == FulfillmentState.ALLOCATION_FAILED
-                    || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
+         || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
         } ?: false
     }
 
@@ -410,11 +409,11 @@ class Checkout @JvmOverloads constructor(
             }
 
             if (state.value == CheckoutState.VERIFYING_PAYMENT_METHOD) {
-                when {
-                    checkoutProcess.routingTarget === RoutingTarget.SUPERVISOR -> {
+                when (checkoutProcess.routingTarget) {
+                    RoutingTarget.SUPERVISOR -> {
                         notifyStateChanged(CheckoutState.WAIT_FOR_SUPERVISOR)
                     }
-                    checkoutProcess.routingTarget === RoutingTarget.GATEKEEPER -> {
+                    RoutingTarget.GATEKEEPER -> {
                         notifyStateChanged(CheckoutState.WAIT_FOR_GATEKEEPER)
                     }
                     else -> {
