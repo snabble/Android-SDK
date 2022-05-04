@@ -189,7 +189,7 @@ class Checkout @JvmOverloads constructor(
                     availablePaymentMethods: List<PaymentMethodInfo>
                 ) {
                     this@Checkout.signedCheckoutInfo = signedCheckoutInfo
-                    if (this@Checkout.signedCheckoutInfo!!.isRequiringTaxation) {
+                    if (signedCheckoutInfo.isRequiringTaxation) {
                         Logger.d("Taxation requested")
                         notifyStateChanged(CheckoutState.REQUEST_TAXATION)
                         return
@@ -353,9 +353,7 @@ class Checkout @JvmOverloads constructor(
 
     private fun stopPolling() {
         Logger.d("Stop polling")
-        if (currentPollFuture != null) {
-            currentPollFuture!!.cancel(true)
-        }
+        currentPollFuture?.cancel(true)
     }
 
     @VisibleForTesting
@@ -427,10 +425,11 @@ class Checkout @JvmOverloads constructor(
             if (authorizePaymentUrl != null) {
                 if (authorizePaymentRequestFailed) {
                     authorizePaymentRequestFailed = false
-                    authorizePayment(storedAuthorizePaymentRequest!!.encryptedOrigin)
+                    authorizePayment(storedAuthorizePaymentRequest?.encryptedOrigin)
                 } else {
+                    val storedAuthorizePaymentRequest = storedAuthorizePaymentRequest
                     if (storedAuthorizePaymentRequest != null) {
-                        authorizePayment(storedAuthorizePaymentRequest!!.encryptedOrigin)
+                        authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin)
                     } else {
                         notifyStateChanged(CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN)
                     }
@@ -462,12 +461,8 @@ class Checkout @JvmOverloads constructor(
                     notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
                 }
                 CheckState.SUCCESSFUL -> {
-                    return if (checkoutProcess.exitToken != null
-                        && (checkoutProcess.exitToken!!.format == null
-                                || checkoutProcess.exitToken!!.format == ""
-                                || checkoutProcess.exitToken!!.value == null
-                                || checkoutProcess.exitToken!!.value == "")
-                    ) {
+                    val exitToken = checkoutProcess.exitToken
+                    return if (exitToken != null && (exitToken.format.isNullOrEmpty() || exitToken.value.isNullOrEmpty())) {
                         false
                     } else {
                         approve()
@@ -476,9 +471,8 @@ class Checkout @JvmOverloads constructor(
                     }
                 }
                 CheckState.FAILED -> {
-                    if (checkoutProcess.paymentResult != null
-                        && checkoutProcess.paymentResult!!.failureCause != null
-                        && checkoutProcess.paymentResult!!.failureCause == "terminalAbort") {
+                    if (checkoutProcess.paymentResult?.failureCause != null
+                        && checkoutProcess.paymentResult.failureCause == "terminalAbort") {
                         Logger.d("Payment aborted by terminal")
                         notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
                     } else {
@@ -527,9 +521,7 @@ class Checkout @JvmOverloads constructor(
      * This is for resetting the cart state and notifying the backend
      */
     fun approveOfflineMethod() {
-        if (selectedPaymentMethod != null && selectedPaymentMethod!!.isOfflineMethod
-            || selectedPaymentMethod == PaymentMethod.CUSTOMERCARD_POS
-        ) {
+        if (selectedPaymentMethod?.isOfflineMethod == true || selectedPaymentMethod == PaymentMethod.CUSTOMERCARD_POS) {
             shoppingCart.generateNewUUID()
             approve()
         }
@@ -556,44 +548,26 @@ class Checkout @JvmOverloads constructor(
         (codes as MutableList).clear()
     }
 
-    val verifiedOnlinePrice: Int
-        get() {
-            try {
-                if (checkoutProcess != null) {
-                    return checkoutProcess!!.pricing!!.price!!.price
-                }
-            } catch (e: Exception) {
-                return -1
-            }
-            return -1
-        }
-
-    private val routingTarget: RoutingTarget?
-        get() = if (checkoutProcess != null && checkoutProcess!!.routingTarget != null) {
-            checkoutProcess!!.routingTarget
-        } else RoutingTarget.NONE
+    private val routingTarget: RoutingTarget
+        get() =  checkoutProcess?.routingTarget ?: RoutingTarget.NONE
 
     /**
-     * Gets all available payment methods, callable after [State.REQUEST_PAYMENT_METHOD].
+     * The final price of the checkout, calculated by the backend.
+     *
+     * Returns a price after [CheckoutState.WAIT_FOR_APPROVAL], otherwise -1
      */
-    val availablePaymentMethods: Array<PaymentMethod?>
+    val verifiedOnlinePrice: Int
         get() {
-            if (signedCheckoutInfo != null) {
-                val paymentMethodInfos =
-                    signedCheckoutInfo!!.getAvailablePaymentMethods()
-                val paymentMethods: MutableList<PaymentMethod> = ArrayList()
-                for (info in paymentMethodInfos) {
-                    val pm = PaymentMethod.fromString(
-                        info!!.id
-                    )
-                    if (pm != null) {
-                        paymentMethods.add(pm)
-                    }
-                }
-                return paymentMethods.toTypedArray()
-            }
-            return arrayOfNulls(0)
+            return checkoutProcess?.pricing?.price?.price ?: -1
         }
+
+    /**
+     * Gets all available payment methods, callable after [CheckoutState.REQUEST_PAYMENT_METHOD].
+     */
+    val availablePaymentMethods: List<PaymentMethod>
+        get() = signedCheckoutInfo?.getAvailablePaymentMethods()
+            ?.map { PaymentMethod.fromString(it.id) }
+            ?: emptyList()
 
     /**
      * Gets the unique identifier of the checkout.
@@ -601,12 +575,8 @@ class Checkout @JvmOverloads constructor(
      * This id can be used for identification in the supervisor app.
      */
     val id: String?
-        get() {
-            if (checkoutProcess != null) {
-                val selfLink = checkoutProcess!!.selfLink ?: return null
-                return selfLink.substring(selfLink.lastIndexOf('/') + 1)
-            }
-            return null
+        get() = checkoutProcess?.selfLink?.let {
+            it.substring(it.lastIndexOf('/') + 1)
         }
 
     /**
@@ -614,14 +584,7 @@ class Checkout @JvmOverloads constructor(
      * or null if no qrcode needs to be displayed.
      */
     val qrCodePOSContent: String?
-        get() {
-            if (checkoutProcess != null) {
-                if (checkoutProcess!!.paymentInformation != null) {
-                    return checkoutProcess!!.paymentInformation!!.qrCodeContent
-                }
-            }
-            return null
-        }
+        get() = checkoutProcess?.paymentInformation?.qrCodeContent
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun processPendingCheckouts() {

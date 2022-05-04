@@ -154,12 +154,12 @@ data class SignedCheckoutInfo(
             return false
         }
 
-    fun getAvailablePaymentMethods(): List<PaymentMethodInfo?> {
+    fun getAvailablePaymentMethods(): List<PaymentMethodInfo> {
         if (checkoutInfo?.has("paymentMethods") == true) {
             val jsonArray = checkoutInfo?.getAsJsonArray("paymentMethods")
             if (jsonArray != null) {
-                val type = object : TypeToken<List<PaymentMethodInfo?>?>() {}.type
-                return Gson().fromJson<List<PaymentMethodInfo>>(jsonArray, type)
+                val type = object : TypeToken<List<PaymentMethodInfo>?>() {}.type
+                return Gson().fromJson(jsonArray, type)
             }
         }
         return emptyList()
@@ -287,19 +287,19 @@ data class Fulfillment(
 }
 
 data class CheckoutProcessResponse(
-    var links: Map<String, Href>? = null,
-    var checks: List<Check> = emptyList(),
-    var orderId: String? = null,
-    var aborted: Boolean = false,
-    var paymentMethod: PaymentMethod? = null,
-    var paymentInformation: PaymentInformation? = null,
-    var paymentPreauthInformation: JsonObject? = null,
-    var exitToken: ExitToken? = null,
-    var paymentState: CheckState? = null,
-    var pricing: Pricing? = null,
-    var routingTarget: RoutingTarget? = null,
-    var paymentResult: PaymentResult? = null,
-    var fulfillments: List<Fulfillment> = emptyList(),
+    val links: Map<String, Href>? = null,
+    val checks: List<Check> = emptyList(),
+    val orderId: String? = null,
+    val aborted: Boolean = false,
+    val paymentMethod: PaymentMethod? = null,
+    val paymentInformation: PaymentInformation? = null,
+    val paymentPreauthInformation: JsonObject? = null,
+    val exitToken: ExitToken? = null,
+    val paymentState: CheckState? = null,
+    val pricing: Pricing? = null,
+    val routingTarget: RoutingTarget? = null,
+    val paymentResult: PaymentResult? = null,
+    val fulfillments: List<Fulfillment> = emptyList(),
 ) {
     val selfLink: String?
         get() = links?.get("self")?.href
