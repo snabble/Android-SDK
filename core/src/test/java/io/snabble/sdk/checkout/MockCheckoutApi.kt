@@ -23,7 +23,7 @@ class MockCheckoutApi(
     }
 
     override fun abort(
-        checkoutProcessResponse: CheckoutProcessResponse?,
+        checkoutProcessResponse: CheckoutProcessResponse,
         paymentAbortResult: PaymentAbortResult?
     ) {
         TODO("Not yet implemented")
@@ -53,7 +53,7 @@ class MockCheckoutApi(
         ))
     }
 
-    override fun updatePaymentProcess(url: String?, paymentProcessResult: PaymentProcessResult?) {
+    override fun updatePaymentProcess(url: String, paymentProcessResult: PaymentProcessResult?) {
         if (forceError) {
             paymentProcessResult?.error()
             return
@@ -63,7 +63,7 @@ class MockCheckoutApi(
     }
 
     override fun updatePaymentProcess(
-        checkoutProcessResponse: CheckoutProcessResponse?,
+        checkoutProcessResponse: CheckoutProcessResponse,
         paymentProcessResult: PaymentProcessResult?
     ) {
         if (forceError) {
@@ -92,8 +92,8 @@ class MockCheckoutApi(
     }
 
     override fun authorizePayment(
-        checkoutProcessResponse: CheckoutProcessResponse?,
-        authorizePaymentRequest: AuthorizePaymentRequest?,
+        checkoutProcessResponse: CheckoutProcessResponse,
+        authorizePaymentRequest: AuthorizePaymentRequest,
         authorizePaymentResult: AuthorizePaymentResult?
     ) {
         TODO("Not yet implemented")

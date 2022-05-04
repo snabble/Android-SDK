@@ -67,9 +67,11 @@ class Checkout @JvmOverloads constructor(
      */
     @JvmOverloads
     fun abort(error: Boolean = false) {
-        if (state.value != CheckoutState.PAYMENT_APPROVED
+        val checkoutProcess = checkoutProcess
+        if (checkoutProcess != null
+            && state.value != CheckoutState.PAYMENT_APPROVED
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
-            && state.value != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
             checkoutApi.abort(checkoutProcess, object : PaymentAbortResult {
                 override fun success() {
                     cancelOutstandingCalls()
@@ -107,9 +109,11 @@ class Checkout @JvmOverloads constructor(
      * was cancelled, but does not notify listeners and ignores the backend response
      */
     fun abortSilently() {
-        if (state.value != CheckoutState.PAYMENT_APPROVED
+        val checkoutProcess = checkoutProcess
+        if (checkoutProcess != null
+            && state.value != CheckoutState.PAYMENT_APPROVED
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
-            && state.value != CheckoutState.DENIED_BY_SUPERVISOR && checkoutProcess != null) {
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
             checkoutApi.abort(checkoutProcess, null)
         }
         reset()
@@ -303,17 +307,19 @@ class Checkout @JvmOverloads constructor(
         val authorizePaymentRequest = AuthorizePaymentRequest()
         authorizePaymentRequest.encryptedOrigin = encryptedOrigin
         storedAuthorizePaymentRequest = authorizePaymentRequest
-        checkoutApi.authorizePayment(checkoutProcess,
-            authorizePaymentRequest,
-            object : AuthorizePaymentResult {
-                override fun success() {
-                    // ignore
-                }
+        checkoutProcess?.let { checkoutProcess ->
+            checkoutApi.authorizePayment(checkoutProcess,
+                authorizePaymentRequest,
+                object : AuthorizePaymentResult {
+                    override fun success() {
+                        // ignore
+                    }
 
-                override fun error() {
-                    authorizePaymentRequestFailed = true
-                }
-            })
+                    override fun error() {
+                        authorizePaymentRequestFailed = true
+                    }
+                })
+        }
     }
 
     private fun areAllChecksSucceeded(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
@@ -365,22 +371,25 @@ class Checkout @JvmOverloads constructor(
 
         Logger.d("Polling for approval state...")
         Logger.d("RoutingTarget = $routingTarget")
-        checkoutApi.updatePaymentProcess(checkoutProcess, object : PaymentProcessResult {
-            override fun success(
-                checkoutProcessResponse: CheckoutProcessResponse?,
-                rawResponse: String?
-            ) {
-                synchronized(this@Checkout) {
-                    checkoutProcess = checkoutProcessResponse
-                    rawCheckoutProcessJson = rawResponse
-                    if (handleProcessResponse()) {
-                        stopPolling()
+
+        checkoutProcess?.let { process ->
+            checkoutApi.updatePaymentProcess(process, object : PaymentProcessResult {
+                override fun success(
+                    checkoutProcessResponse: CheckoutProcessResponse?,
+                    rawResponse: String?
+                ) {
+                    synchronized(this@Checkout) {
+                        checkoutProcess = checkoutProcessResponse
+                        rawCheckoutProcessJson = rawResponse
+                        if (handleProcessResponse()) {
+                            stopPolling()
+                        }
                     }
                 }
-            }
 
-            override fun error() {}
-        })
+                override fun error() {}
+            })
+        }
 
         val state = state.value
         if (state == CheckoutState.WAIT_FOR_APPROVAL

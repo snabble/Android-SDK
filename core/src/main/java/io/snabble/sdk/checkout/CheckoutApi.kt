@@ -17,7 +17,7 @@ interface CheckoutApi {
     fun cancel()
 
     fun abort(
-        checkoutProcessResponse: CheckoutProcessResponse?,
+        checkoutProcessResponse: CheckoutProcessResponse,
         paymentAbortResult: PaymentAbortResult?
     )
 
@@ -28,12 +28,12 @@ interface CheckoutApi {
     )
 
     fun updatePaymentProcess(
-        url: String?,
+        url: String,
         paymentProcessResult: PaymentProcessResult?
     )
 
     fun updatePaymentProcess(
-        checkoutProcessResponse: CheckoutProcessResponse?,
+        checkoutProcessResponse: CheckoutProcessResponse,
         paymentProcessResult: PaymentProcessResult?
     )
 
@@ -48,8 +48,8 @@ interface CheckoutApi {
     )
 
     fun authorizePayment(
-        checkoutProcessResponse: CheckoutProcessResponse?,
-        authorizePaymentRequest: AuthorizePaymentRequest?,
+        checkoutProcessResponse: CheckoutProcessResponse,
+        authorizePaymentRequest: AuthorizePaymentRequest,
         authorizePaymentResult: AuthorizePaymentResult?
     )
 }
@@ -228,24 +228,24 @@ data class Price(
 )
 
 data class PaymentInformation(
-    var qrCodeContent: String? = null,
-    var encryptedOrigin: String? = null,
-    var originType: String? = null,
-    var validUntil: String? = null,
-    var cardNumber: String? = null,
-    var deviceID: String? = null,
-    var deviceName: String? = null,
-    var deviceFingerprint: String? = null,
-    var deviceIPAddress: String? = null,
-    var handoverInformation: String? = null,
+    val qrCodeContent: String? = null,
+    val encryptedOrigin: String? = null,
+    val originType: String? = null,
+    val validUntil: String? = null,
+    val cardNumber: String? = null,
+    val deviceID: String? = null,
+    val deviceName: String? = null,
+    val deviceFingerprint: String? = null,
+    val deviceIPAddress: String? = null,
+    val handoverInformation: String? = null,
 )
 
 data class CheckoutProcessRequest(
-    var signedCheckoutInfo: SignedCheckoutInfo? = null,
-    var paymentMethod: PaymentMethod? = null,
-    var paymentInformation: PaymentInformation? = null,
-    var finalizedAt: String? = null,
-    var processedOffline: Boolean? = null,
+    val signedCheckoutInfo: SignedCheckoutInfo? = null,
+    val paymentMethod: PaymentMethod? = null,
+    val paymentInformation: PaymentInformation? = null,
+    val finalizedAt: String? = null,
+    val processedOffline: Boolean? = null,
 )
 
 data class PaymentMethodInfo(

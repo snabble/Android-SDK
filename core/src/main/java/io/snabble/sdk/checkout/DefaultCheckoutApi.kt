@@ -1,350 +1,297 @@
-package io.snabble.sdk.checkout;
+package io.snabble.sdk.checkout
 
-import androidx.annotation.NonNull;
+import android.annotation.SuppressLint
+import com.google.gson.JsonObject
+import io.snabble.sdk.*
+import io.snabble.sdk.ShoppingCart.BackendCart
+import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.utils.*
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
+import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+class DefaultCheckoutApi(private val project: Project,
+                         private val shoppingCart: ShoppingCart) : CheckoutApi {
+    private val okHttpClient: OkHttpClient = project.okHttpClient
+    private var call: Call? = null
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.Product;
-import io.snabble.sdk.Project;
-import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.payment.PaymentCredentials;
-import io.snabble.sdk.utils.DateUtils;
-import io.snabble.sdk.utils.GsonHolder;
-import io.snabble.sdk.utils.JsonCallback;
-import io.snabble.sdk.utils.Logger;
-import io.snabble.sdk.utils.SimpleJsonCallback;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-public class DefaultCheckoutApi implements CheckoutApi {
-    private static final MediaType JSON = MediaType.parse("application/json");
-
-    private final Project project;
-    private final ShoppingCart shoppingCart;
-    private final OkHttpClient okHttpClient;
-    private Call call;
-
-    public DefaultCheckoutApi(Project project, ShoppingCart shoppingCart) {
-        this.project = project;
-        this.shoppingCart = shoppingCart;
-        this.okHttpClient = project.getOkHttpClient();
+    override fun cancel() {
+        call?.cancel()
+        call = null
     }
 
-    @Override
-    public void cancel() {
-        if (call != null) {
-            call.cancel();
-            call = null;
+    override fun abort(
+        checkoutProcessResponse: CheckoutProcessResponse,
+        paymentAbortResult: PaymentAbortResult?
+    ) {
+        if (checkoutProcessResponse.selfLink == null) {
+            paymentAbortResult?.error()
+            return
         }
-    }
 
-    @Override
-    public void abort(final CheckoutProcessResponse checkoutProcessResponse, final PaymentAbortResult paymentAbortResult) {
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getSelfLink()))
-                .patch(RequestBody.create(JSON, "{\"aborted\":true}"))
-                .build();
+        val request = Request.Builder()
+            .url(Snabble.absoluteUrl(checkoutProcessResponse.selfLink!!))
+            .patch("{\"aborted\":true}".toRequestBody(JSON))
+            .build()
 
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    Logger.d("Payment aborted");
-                    if (paymentAbortResult != null) {
-                        paymentAbortResult.success();
-                    }
+        okHttpClient.newCall(request).enqueue(object : Callback {
+            @Throws(IOException::class)
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    Logger.d("Payment aborted")
+                    paymentAbortResult?.success()
                 } else {
-                    Logger.e("Error while aborting payment");
-                    if (paymentAbortResult != null) {
-                        paymentAbortResult.error();
-                    }
+                    Logger.e("Error while aborting payment")
+                    paymentAbortResult?.error()
                 }
             }
 
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Logger.e("Error while aborting payment");
-                if (paymentAbortResult != null) {
-                    paymentAbortResult.error();
-                }
+            override fun onFailure(call: Call, e: IOException) {
+                Logger.e("Error while aborting payment")
+                paymentAbortResult?.error()
             }
-        });
+        })
     }
 
-    @Override
-    public void createCheckoutInfo(final ShoppingCart.BackendCart backendCart,
-                                   final CheckoutInfoResult checkoutInfoResult,
-                                   final long timeout) {
-        String checkoutUrl = project.getCheckoutUrl();
+    override fun createCheckoutInfo(
+        backendCart: BackendCart,
+        checkoutInfoResult: CheckoutInfoResult?,
+        timeout: Long
+    ) {
+        val checkoutUrl = project.checkoutUrl
         if (checkoutUrl == null) {
-            Logger.e("Could not checkout, no checkout url provided in metadata");
-            checkoutInfoResult.connectionError();
-            return;
+            Logger.e("Could not checkout, no checkout url provided in metadata")
+            checkoutInfoResult?.connectionError()
+            return
         }
 
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(checkoutUrl))
-                .post(RequestBody.create(JSON, GsonHolder.get().toJson(backendCart)))
-                .build();
+        val request = Request.Builder()
+            .url(Snabble.absoluteUrl(checkoutUrl))
+            .post(GsonHolder.get().toJson(backendCart).toRequestBody(JSON))
+            .build()
 
-        cancel();
+        cancel()
 
-        OkHttpClient okClient = okHttpClient;
-
+        var okClient = okHttpClient
         if (timeout > 0) {
             okClient = okClient.newBuilder()
-                    .callTimeout(timeout, TimeUnit.MILLISECONDS)
-                    .build();
+                .callTimeout(timeout, TimeUnit.MILLISECONDS)
+                .build()
         }
 
-        call = okClient.newCall(request);
-        call.enqueue(new JsonCallback<SignedCheckoutInfo, JsonObject>(SignedCheckoutInfo.class, JsonObject.class) {
-            @Override
-            public void success(SignedCheckoutInfo signedCheckoutInfo) {
-                int price;
+        call = okClient.newCall(request)
+        call?.enqueue(object : JsonCallback<SignedCheckoutInfo, JsonObject>(
+            SignedCheckoutInfo::class.java, JsonObject::class.java) {
+            override fun success(signedCheckoutInfo: SignedCheckoutInfo) {
+                val price = signedCheckoutInfo.checkoutInfo
+                    ?.get("price")
+                    ?.asJsonObject
+                    ?.get("price")
+                    ?.asInt
+                    ?: shoppingCart.totalPrice
 
-                if (signedCheckoutInfo.getCheckoutInfo().has("price")
-                        && signedCheckoutInfo.getCheckoutInfo().get("price").getAsJsonObject().has("price")) {
-                    price = signedCheckoutInfo.getCheckoutInfo()
-                            .get("price")
-                            .getAsJsonObject()
-                            .get("price")
-                            .getAsInt();
+                val availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods()
+                if (availablePaymentMethods.isNotEmpty()) {
+                    checkoutInfoResult?.success(signedCheckoutInfo, price, availablePaymentMethods)
                 } else {
-                    price = shoppingCart.getTotalPrice();
-                }
-
-                List<PaymentMethodInfo> availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods();
-                if (!availablePaymentMethods.isEmpty()) {
-                    checkoutInfoResult.success(signedCheckoutInfo, price, availablePaymentMethods);
-                } else {
-                    checkoutInfoResult.connectionError();
+                    checkoutInfoResult?.connectionError()
                 }
             }
 
-            @Override
-            public void failure(JsonObject obj) {
+            override fun failure(obj: JsonObject) {
                 try {
-                    JsonObject error = obj.get("error").getAsJsonObject();
-                    String type = error.get("type").getAsString();
+                    val error = obj["error"].asJsonObject
+                    val type = error["type"].asString
+                    when (type) {
+                        "invalid_cart_item" -> {
+                            val invalidSkus: MutableList<String> = ArrayList()
+                            val arr = error["details"].asJsonArray
 
-                    switch (type) {
-                        case "invalid_cart_item":
-                            List<String> invalidSkus = new ArrayList<>();
-                            JsonArray arr = error.get("details").getAsJsonArray();
-
-                            for (int i=0; i<arr.size(); i++) {
-                                String sku = arr.get(0).getAsJsonObject().get("sku").getAsString();
-                                invalidSkus.add(sku);
+                            arr.forEach {
+                                val sku = it.asJsonObject["sku"].asString
+                                invalidSkus.add(sku)
                             }
 
-                            List<Product> invalidProducts = new ArrayList<>();
-                            for (int i=0; i<shoppingCart.size(); i++) {
-                                Product product = shoppingCart.get(i).getProduct();
+                            val invalidProducts = mutableListOf<Product>()
+                            for (i in 0..shoppingCart.size()) {
+                                val product = shoppingCart[i].product
                                 if (product != null) {
-                                    if (invalidSkus.contains(product.getSku())) {
-                                        invalidProducts.add(product);
+                                    if (invalidSkus.contains(product.sku)) {
+                                        invalidProducts.add(product)
                                     }
                                 }
                             }
-
-                            Logger.e("Invalid products");
-                            checkoutInfoResult.invalidProducts(invalidProducts);
-                            break;
-                        case "no_available_method":
-                            checkoutInfoResult.noAvailablePaymentMethod();
-                            break;
-                        case "bad_shop_id":
-                        case "shop_not_found":
-                            checkoutInfoResult.noShop();
-                            break;
-                        case "invalid_deposit_return_voucher":
-                            checkoutInfoResult.invalidDepositReturnVoucher();
-                            break;
-                        default:
-                            checkoutInfoResult.unknownError();
-                            break;
+                            Logger.e("Invalid products")
+                            checkoutInfoResult?.invalidProducts(invalidProducts)
+                        }
+                        "no_available_method" -> checkoutInfoResult?.noAvailablePaymentMethod()
+                        "bad_shop_id", "shop_not_found" -> checkoutInfoResult?.noShop()
+                        "invalid_deposit_return_voucher" -> checkoutInfoResult?.invalidDepositReturnVoucher()
+                        else -> checkoutInfoResult?.unknownError()
                     }
-                } catch (Exception e) {
-                    error(e);
+                } catch (e: Exception) {
+                    error(e)
                 }
             }
 
-            @Override
-            public void error(Throwable t) {
-                Logger.e("Error creating checkout info: " + t.getMessage());
-                checkoutInfoResult.connectionError();
+            override fun error(t: Throwable) {
+                Logger.e("Error creating checkout info: " + t.message)
+                checkoutInfoResult?.connectionError()
             }
-        });
+        })
     }
 
-    @Override
-    public void updatePaymentProcess(final String url,
-                                     final PaymentProcessResult paymentProcessResult) {
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
-                .get()
-                .build();
+    override fun updatePaymentProcess(
+        url: String,
+        paymentProcessResult: PaymentProcessResult?
+    ) {
+        val request = Request.Builder()
+            .url(Snabble.absoluteUrl(url))
+            .get()
+            .build()
 
-        cancel();
+        cancel()
 
-        call = okHttpClient.newCall(request);
-        call.enqueue(new SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse.class) {
-            @Override
-            public void success(CheckoutProcessResponse checkoutProcessResponse) {
-                paymentProcessResult.success(checkoutProcessResponse, rawResponse());
-                DefaultCheckoutApi.this.call = null;
+        call = okHttpClient.newCall(request)
+        call?.enqueue(object : SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse::class.java) {
+            override fun success(checkoutProcessResponse: CheckoutProcessResponse) {
+                paymentProcessResult?.success(checkoutProcessResponse, rawResponse())
+                call = null
             }
 
-            @Override
-            public void error(Throwable t) {
-                paymentProcessResult.error();
+            override fun error(t: Throwable) {
+                paymentProcessResult?.error()
             }
-        });
+        })
     }
 
-    @Override
-    public void updatePaymentProcess(final CheckoutProcessResponse checkoutProcessResponse,
-                                     final PaymentProcessResult paymentProcessResult) {
-        String url = checkoutProcessResponse.getSelfLink();
+    override fun updatePaymentProcess(
+        checkoutProcessResponse: CheckoutProcessResponse,
+        paymentProcessResult: PaymentProcessResult?
+    ) {
+        val url = checkoutProcessResponse.selfLink
         if (url == null) {
-            paymentProcessResult.error();
-            return;
+            paymentProcessResult?.error()
+            return
         }
-
-        updatePaymentProcess(url, paymentProcessResult);
+        updatePaymentProcess(url, paymentProcessResult)
     }
 
-    @Override
-    public void createPaymentProcess(final String id,
-                                     final SignedCheckoutInfo signedCheckoutInfo,
-                                     final PaymentMethod paymentMethod,
-                                     final PaymentCredentials paymentCredentials,
-                                     final boolean processedOffline,
-                                     final Date finalizedAt,
-                                     final PaymentProcessResult paymentProcessResult) {
-        CheckoutProcessRequest checkoutProcessRequest = new CheckoutProcessRequest();
-        checkoutProcessRequest.setPaymentMethod(paymentMethod);
-        checkoutProcessRequest.setSignedCheckoutInfo(signedCheckoutInfo);
-
-        if (processedOffline) {
-            checkoutProcessRequest.setProcessedOffline(true);
-
-            if (finalizedAt != null) {
-                checkoutProcessRequest.setFinalizedAt(DateUtils.toRFC3339(finalizedAt));
-            }
-        }
-
+    @SuppressLint("SimpleDateFormat")
+    override fun createPaymentProcess(
+        id: String?,
+        signedCheckoutInfo: SignedCheckoutInfo?,
+        paymentMethod: PaymentMethod?,
+        paymentCredentials: PaymentCredentials?,
+        processedOffline: Boolean,
+        finalizedAt: Date?,
+        paymentProcessResult: PaymentProcessResult?
+    ) {
         if (paymentCredentials != null) {
-            checkoutProcessRequest.setPaymentInformation(new PaymentInformation());
-
-            String data = paymentCredentials.getEncryptedData();
+            val data = paymentCredentials.encryptedData
             if (data == null) {
-                paymentProcessResult.error();
-                return;
-            }
-
-            checkoutProcessRequest.getPaymentInformation().setOriginType(paymentCredentials.getType().getOriginType());
-            checkoutProcessRequest.getPaymentInformation().setEncryptedOrigin(data);
-
-            if (paymentCredentials.getType() == PaymentCredentials.Type.CREDIT_CARD_PSD2) {
-                Date date = new Date(paymentCredentials.getValidTo());
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                checkoutProcessRequest.getPaymentInformation().setValidUntil(simpleDateFormat.format(date));
-                checkoutProcessRequest.getPaymentInformation().setCardNumber(paymentCredentials.getObfuscatedId());
-            } else if (paymentCredentials.getType() == PaymentCredentials.Type.PAYDIREKT) {
-                Map<String, String> additionalData = paymentCredentials.getAdditionalData();
-                if (additionalData != null) {
-                    checkoutProcessRequest.getPaymentInformation().setDeviceID(additionalData.get("deviceID"));
-                    checkoutProcessRequest.getPaymentInformation().setDeviceName(additionalData.get("deviceName"));
-                    checkoutProcessRequest.getPaymentInformation().setDeviceFingerprint(additionalData.get("deviceFingerprint"));
-                    checkoutProcessRequest.getPaymentInformation().setDeviceIPAddress(additionalData.get("deviceIPAddress"));
-                }
+                paymentProcessResult?.error()
+                return
             }
         }
 
-        String url = signedCheckoutInfo.getCheckoutProcessLink();
+        val checkoutProcessRequest = CheckoutProcessRequest(
+            paymentMethod = paymentMethod,
+            signedCheckoutInfo = signedCheckoutInfo,
+            processedOffline = processedOffline,
+            finalizedAt = finalizedAt?.let { DateUtils.toRFC3339(it) },
+            paymentInformation = when (paymentCredentials?.type) {
+                PaymentCredentials.Type.CREDIT_CARD_PSD2 -> {
+                    PaymentInformation(
+                        originType = paymentCredentials.type.originType,
+                        encryptedOrigin = paymentCredentials.encryptedData,
+                        validUntil = SimpleDateFormat("yyyy/MM/dd").format(Date(paymentCredentials.validTo)),
+                        cardNumber = paymentCredentials.obfuscatedId,
+                    )
+                }
+                PaymentCredentials.Type.PAYDIREKT -> {
+                    PaymentInformation(
+                        deviceID = paymentCredentials.additionalData["deviceID"],
+                        deviceName = paymentCredentials.additionalData["deviceName"],
+                        deviceFingerprint = paymentCredentials.additionalData["deviceFingerprint"],
+                        deviceIPAddress = paymentCredentials.additionalData["deviceIPAddress"],
+
+                    )
+                } else -> null
+            }
+        )
+
+        var url = signedCheckoutInfo?.checkoutProcessLink
         if (url == null) {
-            paymentProcessResult.error();
-            return;
+            paymentProcessResult?.error()
+            return
         }
+        url = "$url/$id"
 
-        url = url + "/" + id;
-        String json = GsonHolder.get().toJson(checkoutProcessRequest);
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
-                .put(RequestBody.create(JSON, json))
-                .build();
+        val json = GsonHolder.get().toJson(checkoutProcessRequest)
+        val request = Request.Builder()
+            .url(Snabble.absoluteUrl(url))
+            .put(json.toRequestBody(JSON))
+            .build()
 
-        cancel();
+        cancel()
 
-        call = okHttpClient.newCall(request);
-
-        String finalUrl = url;
-        call.enqueue(new SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse.class) {
-            @Override
-            public void success(CheckoutProcessResponse checkoutProcess) {
-                paymentProcessResult.success(checkoutProcess, rawResponse());
+        call = okHttpClient.newCall(request)
+        call?.enqueue(object :
+            SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse::class.java) {
+            override fun success(checkoutProcess: CheckoutProcessResponse) {
+                paymentProcessResult?.success(checkoutProcess, rawResponse())
             }
 
-            @Override
-            public void error(Throwable t) {
+            override fun error(t: Throwable) {
                 if (responseCode() == 403) {
-                    updatePaymentProcess(finalUrl, paymentProcessResult);
+                    updatePaymentProcess(url, paymentProcessResult)
                 } else {
-                    paymentProcessResult.error();
+                    paymentProcessResult?.error()
                 }
             }
-        });
+        })
     }
 
-    @Override
-    public void authorizePayment(final CheckoutProcessResponse checkoutProcessResponse,
-                                 final AuthorizePaymentRequest authorizePaymentRequest,
-                                 final AuthorizePaymentResult authorizePaymentResult) {
-        String url = checkoutProcessResponse.getAuthorizePaymentLink();
+    override fun authorizePayment(
+        checkoutProcessResponse: CheckoutProcessResponse,
+        authorizePaymentRequest: AuthorizePaymentRequest,
+        authorizePaymentResult: AuthorizePaymentResult?
+    ) {
+        val url = checkoutProcessResponse.authorizePaymentLink
         if (url == null) {
-            authorizePaymentResult.error();
-            return;
+            authorizePaymentResult?.error()
+            return
         }
 
-        String json = GsonHolder.get().toJson(authorizePaymentRequest);
-        final Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
-                .post(RequestBody.create(JSON, json))
-                .build();
+        val json = GsonHolder.get().toJson(authorizePaymentRequest)
+        val request = Request.Builder()
+            .url(Snabble.absoluteUrl(url))
+            .post(json.toRequestBody(JSON))
+            .build()
 
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                authorizePaymentResult.error();
+        val call = okHttpClient.newCall(request)
+        call.enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                authorizePaymentResult?.error()
             }
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) {
-                    authorizePaymentResult.success();
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    authorizePaymentResult?.success()
                 } else {
-                    authorizePaymentResult.error();
+                    authorizePaymentResult?.error()
                 }
             }
-        });
+        })
+    }
+
+    companion object {
+        private val JSON: MediaType = "application/json".toMediaType()
     }
 }
