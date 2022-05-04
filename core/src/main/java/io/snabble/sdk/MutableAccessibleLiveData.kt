@@ -1,7 +1,5 @@
 package io.snabble.sdk
 
-import io.snabble.sdk.ui.utils.AccessibleLiveData
-
 /**
  * Mutable LiveData with the current (possible not yet published) value. You
  * can observe changes like with regular MutableLiveData, just not inherited.
