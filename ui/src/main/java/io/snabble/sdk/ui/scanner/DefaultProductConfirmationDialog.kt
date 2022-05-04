@@ -17,12 +17,12 @@ import android.view.animation.TranslateAnimation
 import android.view.animation.CycleInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
 import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.*
@@ -35,11 +35,10 @@ import java.lang.NumberFormatException
  */
 class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDialog {
     private lateinit var quantity: EditText
-    private lateinit var quantityTextInput: View
+    private lateinit var quantityTextInput: TextInputLayout
     private lateinit var price: TextView
     private lateinit var originalPrice: TextView
     private lateinit var depositPrice: TextView
-    private lateinit var quantityAnnotation: TextView
     private lateinit var addToCart: AppCompatButton
     private lateinit var plusLayout: View
     private lateinit var minusLayout: View
@@ -83,7 +82,6 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
         price = view.findViewById(R.id.price)
         originalPrice = view.findViewById(R.id.originalPrice)
         depositPrice = view.findViewById(R.id.depositPrice)
-        quantityAnnotation = view.findViewById(R.id.quantity_annotation)
         addToCart = view.findViewById(R.id.addToCart)
         val close = view.findViewById<View>(R.id.close)
         val plus = view.findViewById<View>(R.id.plus)
@@ -156,10 +154,9 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
         subtitle.setTextOrHide(viewModel.product.subtitle)
         quantity.bindEnabledState(viewModel.quantityCanBeChanged)
         quantityTextInput.bindVisibility(viewModel.quantityVisible)
-        quantityAnnotation.bindVisibility(viewModel.quantityVisible)
         price.isVisible = true
         quantity.clearFocus()
-        quantityAnnotation.setTextOrHide(viewModel.cartItem.unit?.displayValue)
+        quantityTextInput.suffixText = viewModel.cartItem.unit?.displayValue
         quantity.filters = arrayOf(InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY))
         quantity.setOnEditorActionListener { _, actionId: Int, event: KeyEvent ->
             if (actionId == EditorInfo.IME_ACTION_DONE
