@@ -254,11 +254,11 @@ object Snabble {
                 } else {
                     userPreferences.lastCheckedInShopId = newShopId
 
-                    for (project in Snabble.projects) {
+                    for (project in projects) {
                         if (project.shops.any { it.id == newShopId }) {
                             project.events.updateShop(value)
                             project.shoppingCart.updatePrices(false)
-                            if (!Snabble.config.manualProductDatabaseUpdates) {
+                            if (!config.manualProductDatabaseUpdates) {
                                 project.productDatabase.update()
                             }
                             checkedInProject.value = project

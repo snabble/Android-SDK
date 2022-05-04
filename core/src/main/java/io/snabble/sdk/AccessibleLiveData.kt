@@ -1,7 +1,7 @@
-package io.snabble.sdk.ui.utils
+package io.snabble.sdk
 
 import androidx.lifecycle.LiveData
-import eu.rekisoft.android.util.ThreadingHelper
+import io.snabble.sdk.utils.Dispatch
 
 /**
  * LiveData with the current (possible not yet published) value. You can
@@ -31,10 +31,8 @@ open class AccessibleLiveData<T>: LiveData<T> {
         protected set(value) {
             if (latestValue != value) {
                 latestValue = value
-                if (ThreadingHelper.isOnMainThread) {
+                Dispatch.mainThread {
                     super.setValue(value)
-                } else {
-                    super.postValue(value)
                 }
             }
         }
