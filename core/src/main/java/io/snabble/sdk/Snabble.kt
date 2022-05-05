@@ -11,8 +11,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Base64
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.google.gson.JsonObject
 import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
@@ -32,69 +31,156 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * The heart of the snabble SDK. Initialization and object access is provided via this facade.
+ */
 object Snabble {
+    /**
+     * Retrieve the global instance of snabble.
+     *
+     * For Kotlin use the Snabble object directly.
+     */
     @JvmStatic
     val instance: Snabble
         get() = this
 
+    /**
+     * The version of the SDK.
+     */
     @JvmStatic
     val version: String
         get() = BuildConfig.VERSION_NAME
 
+    /**
+     * OkHttpClient for general use.
+     *
+     * Does not provide automatic authentication, use the OkHttpClient
+     * provided in the individual projects for this.
+     */
     lateinit var okHttpClient: OkHttpClient
         private set
 
+    /**
+     * Registry to retrieve and generate access tokens for backend api access.
+     */
     lateinit var tokenRegistry: TokenRegistry
         private set
 
+    /**
+     * The list of available projects.
+     *
+     * For single retailer's this is usually size of 1. If you have multiple regions there could be
+     * multiple Projects even for a single retailer.
+     */
     lateinit var projects: List<Project>
         private set
 
+    /**
+     * Map of available brands.
+     */
     lateinit var brands: Map<String, Brand>
         private set
 
+    /**
+     * API-Wrapper to retrieve receipts.
+     */
     lateinit var receipts: Receipts
         private set
 
+    /**
+     * Access to user specific information, e.g. User-Consent / Unique-ID
+     */
     lateinit var users: Users
         private set
 
+    /**
+     * The main Android application
+     */
     lateinit var application: Application
         private set
 
+    /**
+     * Local persisted user preferences
+     */
     lateinit var userPreferences: UserPreferences
         private set
 
+    /**
+     * Add and retrieve local encrypted payment credentials
+     */
     lateinit var paymentCredentialsStore: PaymentCredentialsStore
         private set
 
+    /**
+     * Location manager for use with the check in manager
+     */
     lateinit var checkInLocationManager: CheckInLocationManager
         private set
 
+    /**
+     * Geo-fencing based check in manager. Use for automatically detecting if you are in a shop.
+     *
+     * Calling functions may require location permission
+     */
     lateinit var checkInManager: CheckInManager
         private set
 
+    /**
+     * The internal storage directory in which snabble stores files.
+     */
     lateinit var internalStorageDirectory: File
         private set
 
+    /**
+     * Retrieve the link for our terms of service.
+     */
     var termsOfService: TermsOfService? = null
         private set
 
+    /**
+     * The config provided after calling Snabble.setup
+     */
     lateinit var config: Config
         private set
 
+    /**
+     * snabble SDK version name.
+     */
     var versionName: String? = null
         private set
 
+    /**
+     * The environment the SDK is using.
+     *
+     * Available environments are.
+     *
+     * Testing (https://api.snabble-testing.io)
+     * Staging (https://api.snabble-staging.io)
+     * Production (https://api.snabble.io)
+     */
     var environment: Environment? = null
         private set
-    
+
+    /**
+     * List of certificates to match against user encrypted payment certificates. If those are
+     * not valid anymore, our backend is not able to decode the encrypted payment credentials
+     * anymore.
+     *
+     * This would usually only happen in a severe security incident and is not something
+     * you actively need to consider.
+     */
     var paymentCertificates: List<X509Certificate>? = null
         private set
 
+    /**
+     * The url where all the properties come from.
+     */
     var metadataUrl: String? = null
         private set
-    
+
+    /**
+     * Url to retrieve receipts of the app user.
+     */
     var receiptsUrl: String? = null
         get() = field?.let { url ->
             userPreferences.appUser?.let { appUser ->
@@ -103,29 +189,87 @@ object Snabble {
         }
         private set
 
+    /**
+     * Url to retrieve user related information.
+     */
     var usersUrl: String? = null
         private set
 
+    /**
+     * Url to retrieve consent status of the user.
+     */
     var consentUrl: String? = null
         private set
 
+    /**
+     * Url for generating telecash web form authentication challenges
+     */
     var telecashSecretUrl: String? = null
         private set
 
+    /**
+     * Url for generating telecash web form authentication challenges
+     */
     var telecashPreAuthUrl: String? = null
         private set
 
+    /**
+     * Url for generating payone web form authentication challenges
+     */
     var paydirektAuthUrl: String? = null
         private set
 
+    /**
+     * Url to create a new app user
+     */
     var createAppUserUrl: String? = null
         private set
 
     private val mutableInitializationState = MutableLiveData<InitializationState>()
 
+    /**
+     * The current initialization state of the SDK. Fragments observe this state and only
+     * if the SDK is initialized will get displayed to the user.
+     */
     val initializationState: LiveData<InitializationState> = mutableInitializationState
 
+    /**
+     * Weak reference to the current activity.
+     */
     var currentActivity: WeakReference<Activity>? = null
+
+    /**
+     * Sets the shop used for receiving store specific prices and identification in the
+     * payment process.
+     */
+    var checkedInShop: Shop? = null
+        set(value) {
+            val currentShopId = this.checkedInShop?.id.orEmpty()
+            val newShopId = value?.id.orEmpty()
+            if (currentShopId != newShopId) {
+                field = value
+                if (newShopId == "") {
+                    userPreferences.lastCheckedInShopId = null
+                    checkedInProject.value = null
+                } else {
+                    userPreferences.lastCheckedInShopId = newShopId
+
+                    for (project in Snabble.projects) {
+                        if (project.shops.any { it.id == newShopId }) {
+                            project.events.updateShop(value)
+                            project.shoppingCart.updatePrices(false)
+                            if (!Snabble.config.manualProductDatabaseUpdates) {
+                                project.productDatabase.update()
+                            }
+                            checkedInProject.value = project
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+    var checkedInProject = MutableAccessibleLiveData<Project?>(null)
 
     /**
      * Unique identifier, different over device installations
@@ -139,6 +283,19 @@ object Snabble {
 
     private val isInitializing = AtomicBoolean(false)
 
+    /**
+     * Setup the snabble SDK.
+     *
+     * First-time initialization is asynchronously. If the snabble SDK was already initialized before
+     * the callback will be invoked after decoding the persisted metadata and requires no network connection.
+     *
+     * If you also want your first time usage to allow for no network scenarios, you must include the
+     * raw metadata from our backend to bundledMetadataAssetPath in the assets folder.
+     *
+     * @param app Your main android application
+     * @param config Config provided. Minimal required fields are appId and secret.
+     * @param setupCompletionListener Completion listener that gets called when the SDK is ready.
+     */
     @JvmOverloads
     fun setup(app: Application, config: Config, setupCompletionListener: SetupCompletionListener? = null) {
         if (isInitializing.get()) {
@@ -147,10 +304,10 @@ object Snabble {
 
         isInitializing.set(true)
         mutableInitializationState.postValue(InitializationState.INITIALIZING)
-        
+
         application = app
         this.config = config
-        
+
         Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
         Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
 
@@ -170,7 +327,7 @@ object Snabble {
             }
         }
         versionName = version
-        
+
         internalStorageDirectory = File(application.filesDir, "snabble/${config.appId}/")
         internalStorageDirectory.mkdirs()
 
@@ -194,7 +351,7 @@ object Snabble {
         )
 
         metadataDownloader = MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath)
-        
+
         if (config.bundledMetadataAssetPath != null) {
             dispatchOnReady(setupCompletionListener)
         } else {
@@ -212,8 +369,17 @@ object Snabble {
                 }
             })
         }
-        
+
         app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                if (!Snabble.config.manualProductDatabaseUpdates) {
+                    checkedInProject.value?.productDatabase?.update()
+                }
+            }
+        })
+
         registerNetworkCallback(app)
     }
 
@@ -349,12 +515,12 @@ object Snabble {
         val lastCheckedInShopId = userPreferences.lastCheckedInShopId
         if (lastCheckedInShopId != null) {
             for (project in projects) {
-                val shop = project.shops.find {
-                        shop -> shop.id == lastCheckedInShopId
+                val shop = project.shops.find { shop ->
+                    shop.id == lastCheckedInShopId
                 }
                 if (shop != null) {
                     Logger.d("Restoring last checked in shop " + shop.id + ", " + shop.name)
-                    project.checkedInShop = shop
+                    checkedInShop = shop
                     break;
                 }
             }
@@ -431,7 +597,7 @@ object Snabble {
                 }
             }
         }
-        
+
         paymentCertificates = Collections.unmodifiableList(certificates)
     }
 
@@ -525,6 +691,7 @@ object Snabble {
                 }
             }
         }
+
     private val networkCallback: NetworkCallback = object : NetworkCallback() {
         override fun onAvailable(network: Network) {
             onConnectionStateChanged(true)

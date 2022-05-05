@@ -6,9 +6,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 
 open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppingcart) {
     var shoppingCartView: ShoppingCartView? = null
@@ -26,9 +26,9 @@ open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppin
         if (item.itemId == R.id.action_delete) {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.Snabble_Shoppingcart_removeItems)
-                .setPositiveButton(R.string.Snabble_Yes) { dialog, which ->
-                    SnabbleUI.project.shoppingCart.clearBackup()
-                    SnabbleUI.project.shoppingCart.clear()
+                .setPositiveButton(R.string.Snabble_Yes) { _, _ ->
+                    requireNotNull(Snabble.checkedInProject.value).shoppingCart.clearBackup()
+                    requireNotNull(Snabble.checkedInProject.value).shoppingCart.clear()
                     onCartCleared()
                 }
                 .setNegativeButton(R.string.Snabble_No, null)

@@ -181,7 +181,7 @@ public class SnabbleSdkTest {
         snabble.setupBlocking((Application) context.getApplicationContext(), config);
         project = snabble.getProjects().get(0);
         project.getShoppingCart().clear();
-        project.setCheckedInShop(null);
+        Snabble.getInstance().setCheckedInShop(null);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {

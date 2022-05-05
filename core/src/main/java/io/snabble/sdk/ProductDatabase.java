@@ -956,7 +956,7 @@ public class ProductDatabase {
             builder.setAvailability(availabilities[availability]);
         }
 
-        Shop shop = project.getCheckedInShop();
+        Shop shop = Snabble.getInstance().getCheckedInShop();
 
         if(!queryPrice(builder, sku, shop)) {
             queryPrice(builder, sku, null);
@@ -1026,7 +1026,7 @@ public class ProductDatabase {
     }
 
     private String productSqlString(String appendFields, String appendSql, boolean distinct) {
-        Shop shop = project.getCheckedInShop();
+        Shop shop = Snabble.getInstance().getCheckedInShop();
         String shopId = "0";
         if (shop != null) {
             shopId = shop.getId();
@@ -1122,7 +1122,7 @@ public class ProductDatabase {
      */
     @Deprecated
     public Product[] getDiscountedProducts() {
-        Shop shop = project.getCheckedInShop();
+        Shop shop = Snabble.getInstance().getCheckedInShop();
 
         String id = shop != null ? shop.getId() : "";
         String query = "WHERE p.sku IN (SELECT DISTINCT sku FROM prices " +

@@ -37,7 +37,7 @@ import io.snabble.sdk.utils.Logger
 
 open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr), Checkout.OnCheckoutStateChangedListener {
+) : LinearLayout(context, attrs, defStyleAttr) {
     init {
         inflate(getContext(), R.layout.snabble_view_checkout_bar, this)
     }
@@ -56,7 +56,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private lateinit var progressDialog: DelayedProgressDialog
 
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
-    private val project by lazy { SnabbleUI.project }
+    private val project by lazy { requireNotNull(Snabble.checkedInProject.value) }
     private val cart: ShoppingCart by lazy { project.shoppingCart }
     private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
@@ -118,7 +118,7 @@ open class CheckoutBar @JvmOverloads constructor(
         progressDialog.setMessage(context.getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
         progressDialog.setCancelable(false)
-        progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { dialogInterface: DialogInterface, _, keyEvent: KeyEvent ->
+        progressDialog.setOnKeyListener(DialogInterface.OnKeyListener { _, _, keyEvent: KeyEvent ->
             if (keyEvent.keyCode == KeyEvent.KEYCODE_BACK) {
                 project.checkout.abort()
                 return@OnKeyListener true
@@ -126,19 +126,7 @@ open class CheckoutBar @JvmOverloads constructor(
             false
         })
 
-        context.requireFragmentActivity().lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_START)
-            fun onStart() {
-                if (isAttachedToWindow) {
-                    registerListeners()
-                }
-            }
-
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun onStop() {
-                unregisterListeners()
-            }
-        })
+        project.checkout.checkoutState.observeView(this, ::onStateChanged)
     }
 
     private fun handleButtonClick() {
@@ -247,15 +235,15 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
             } else {
                 val hasPaymentMethodThatRequiresCredentials =
-                    project.paymentMethodDescriptors?.any { descriptor ->
+                    project.paymentMethodDescriptors.any { descriptor ->
                         descriptor.paymentMethod.isRequiringCredentials
-                    } ?: false
+                    }
                 if (hasPaymentMethodThatRequiresCredentials) {
                     val activity = UIUtils.getHostActivity(context)
                     if (activity is FragmentActivity) {
                         val dialogFragment = SelectPaymentMethodFragment()
                         val bundle = Bundle()
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, SnabbleUI.project.id)
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, requireNotNull(Snabble.checkedInProject.value).id)
                         dialogFragment.arguments = bundle
                         dialogFragment.show(activity.supportFragmentManager, null)
                     }
@@ -266,28 +254,7 @@ open class CheckoutBar @JvmOverloads constructor(
         }
     }
 
-    private fun registerListeners() {
-        project.checkout.addOnCheckoutStateChangedListener(this)
-    }
-
-    private fun unregisterListeners() {
-        project.checkout.removeOnCheckoutStateChangedListener(this)
-        progressDialog.dismiss()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (!isInEditMode) {
-            registerListeners()
-        }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        unregisterListeners()
-    }
-
-    override fun onStateChanged(state: Checkout.State) {
+    protected fun onStateChanged(state: Checkout.State) {
         when (state) {
             Checkout.State.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)
@@ -344,7 +311,6 @@ open class CheckoutBar @JvmOverloads constructor(
                     putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
                 })
                 progressDialog.dismiss()
-                unregisterListeners()
             }
             Checkout.State.INVALID_PRODUCTS -> {
                 val invalidProducts = project.checkout.invalidProducts

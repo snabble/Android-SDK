@@ -457,8 +457,8 @@ class ProductResolver private constructor(private val context: Context, private 
      * @param project The optional project of the product resolver, by default the current project will be used
      */
     class Builder @JvmOverloads constructor(
-        private val context: Context,
-        private val project: Project = SnabbleUI.project
+        context: Context,
+        private val project: Project = requireNotNull(Snabble.checkedInProject.value)
     ) {
         private val productResolver = ProductResolver(context, project)
         private var factory = ProductConfirmationDialog.Factory {

@@ -283,7 +283,7 @@ public class Checkout {
         priceToPay = 0;
         invalidProducts = null;
         storedAuthorizePaymentRequest = null;
-        shop = project.getCheckedInShop();
+        shop = Snabble.getInstance().getCheckedInShop();
         redeemedCoupons = null;
         fulfillmentState.setValue(null);
 
@@ -768,22 +768,6 @@ public class Checkout {
 
     public void clearCodes() {
         codes.clear();
-    }
-
-    /**
-     * Deprecated. Use {@link Project#getCheckedInShop()} instead.
-     */
-    @Deprecated
-    public Shop getShop() {
-        return project.getCheckedInShop();
-    }
-
-    /**
-     * Deprecated. Use {@link Project#setCheckedInShop(Shop shop)} instead.
-     */
-    @Deprecated
-    public void setShop(Shop shop) {
-        project.setCheckedInShop(shop);
     }
 
     /**

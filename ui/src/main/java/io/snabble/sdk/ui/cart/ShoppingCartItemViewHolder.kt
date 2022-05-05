@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import io.snabble.sdk.Product
 import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
 import io.snabble.sdk.ui.orderViewsForAccessibility
@@ -55,8 +55,10 @@ class ShoppingCartItemViewHolder internal constructor(
     fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
         val res = itemView.resources
         itemView.accessibility {
-            setLongClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionDelete) {
-                SnabbleUI.project.shoppingCart.remove(bindingAdapterPosition)
+            if (isTalkBackActive) {
+                setLongClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionDelete) {
+                    Snabble.checkedInProject.value?.shoppingCart?.remove(bindingAdapterPosition)
+                }
             }
             onInitializeAccessibilityNodeInfo { info ->
                 info.text = res.getString(R.string.Snabble_Shoppingcart_Accessibility_contextInCart)

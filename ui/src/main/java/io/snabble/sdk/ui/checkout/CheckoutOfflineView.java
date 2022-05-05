@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.Checkout;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Snabble;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -63,7 +63,7 @@ public class CheckoutOfflineView extends FrameLayout {
     }
 
     private void init() {
-        project = SnabbleUI.getProject();
+        project = Snabble.getInstance().getCheckedInProject().getValue();
         EncodedCodesOptions options = project.getEncodedCodesOptions();
 
         inflate(getContext(), R.layout.snabble_view_checkout_offline, this);
@@ -77,7 +77,6 @@ public class CheckoutOfflineView extends FrameLayout {
             @Override
             public void click() {
                 if (viewPager.getCurrentItem() == viewPagerAdapter.getItemCount() - 1) {
-                    Project project = SnabbleUI.getProject();
                     project.getCheckout().approveOfflineMethod();
                     Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
                 } else {
@@ -86,7 +85,7 @@ public class CheckoutOfflineView extends FrameLayout {
             }
         });
         paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
-                SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
+                project, R.string.Snabble_QRCode_didPay));
 
         paidButton.setVisibility(View.INVISIBLE);
         paidButton.setAlpha(0);
@@ -113,7 +112,7 @@ public class CheckoutOfflineView extends FrameLayout {
             public void onPageSelected(int position) {
                 if (position == viewPagerAdapter.getItemCount() - 1) {
                     paidButton.setText(I18nUtils.getIdentifierForProject(getResources(),
-                            SnabbleUI.getProject(), R.string.Snabble_QRCode_didPay));
+                            project, R.string.Snabble_QRCode_didPay));
                 } else {
                     paidButton.setText(getResources().getString(R.string.Snabble_QRCode_nextCode,
                             position + 2,
@@ -136,7 +135,7 @@ public class CheckoutOfflineView extends FrameLayout {
         }
 
         TextView checkoutId = findViewById(R.id.checkout_id);
-        String id = SnabbleUI.getProject().getCheckout().getId();
+        String id = project.getCheckout().getId();
         if (id != null && id.length() >= 4) {
             checkoutId.setText(id.substring(id.length() - 4));
         } else {

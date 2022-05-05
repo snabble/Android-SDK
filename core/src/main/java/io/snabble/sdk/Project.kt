@@ -21,6 +21,10 @@ import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * A project contains configuration information and backend api urls needed for a
+ * retailer.
+ */
 class Project internal constructor(jsonObject: JsonObject) {
     /**
      * The unique identifier of the Project.
@@ -36,9 +40,16 @@ class Project internal constructor(jsonObject: JsonObject) {
     var name: String = ""
         private set
 
+    /**
+     * Object describing the company associated for this project.
+     */
     var company: Company? = null
         private set
 
+    /**
+     * If multiple projects are linked to the same retailer, they can have a optional Brand
+     * associated with them, so they can be grouped together. E.g. in the Payment Options Screen
+     */
     var brand: Brand? = null
         private set
 
@@ -185,55 +196,64 @@ class Project internal constructor(jsonObject: JsonObject) {
     var urls = emptyMap<String, String>()
         private set
 
+    /**
+     * Url to retrieve authentication tokens.
+     */
     var tokensUrl: String? = null
         private set
 
+    /**
+     * Url to retrieve app user information
+     */
     var appUserUrl: String? = null
         private set
 
+    /**
+     * Url to post events to the snabble Backend (e.g. cart updates)
+     */
     val eventsUrl: String?
         get() = urls["appEvents"]
 
+    /**
+     * Url to download the product database
+     */
     val appDbUrl: String?
         get() = urls["appdb"]
 
+    /**
+     * Url to start a checkout flow
+     */
     val checkoutUrl: String?
         get() = urls["checkoutInfo"]
 
+    /**
+     * Url to retrieve image assets that change dynamically between retailers
+     */
     val assetsUrl: String?
         get() = urls["assetsManifest"]
 
+    /**
+     * Url to retrieve products by sku
+     */
     val productBySkuUrl: String?
         get() = urls["resolvedProductBySku"]
 
+    /**
+     * Url to retrieve products by barcode
+     */
     val productByCodeUrl: String?
         get() = urls["resolvedProductLookUp"]
 
+    @Deprecated(message = "Use url provieded in paymentMethodDescriptor")
     val telecashVaultItemsUrl: String?
         get() = urls["telecashVaultItems"]
 
+    /**
+     * Url to load shops that are not currently 'live'. Shops that are already live are already
+     * included in the normal metadata json and do'nt need to be loaded afterwards
+     */
     val activeShopsUrl: String?
         get() = urls["activeShops"]
-
-    /**
-     * Sets the shop used for receiving store specific prices and identification in the
-     * payment process.
-     */
-    var checkedInShop: Shop? = null
-        set(value) {
-            val currentShopId = this.checkedInShop?.id.orEmpty()
-            val newShopId = value?.id.orEmpty()
-            if (currentShopId != newShopId) {
-                field = value
-                if (newShopId == "") {
-                    Snabble.userPreferences.lastCheckedInShopId = null
-                } else {
-                    Snabble.userPreferences.lastCheckedInShopId = newShopId
-                }
-                events.updateShop(value)
-                shoppingCart.updatePrices(false)
-            }
-        }
 
     private var texts = mutableMapOf<String, String>()
 
@@ -553,15 +573,23 @@ class Project internal constructor(jsonObject: JsonObject) {
     val defaultCodeTemplate
         get() = getCodeTemplate("default")
 
-
+    /**
+     * Get a code template by its name
+     */
     fun getCodeTemplate(name: String) =
         codeTemplates.find { it.name == name }
 
+    /**
+     * Get a code transformation template by its name
+     */
     fun getTransformationTemplate(name: String?) =
         name?.let {
             priceOverrideTemplates.find { it.transmissionCodeTemplate?.name == name }?.codeTemplate
         }
 
+    /**
+     * Get text included in the metadata.
+     */
     @JvmOverloads
     fun getText(key: String, defaultValue: String? = null) =
         texts[key] ?: defaultValue

@@ -32,12 +32,9 @@ class LoadingActivity : AppCompatActivity() {
                 // multiple independent regions / countries
                 val project = Snabble.projects.first()
 
-                // register the project to our UI components
-                SnabbleUI.project = project
-
                 // check in to the first shop - you can use CheckInManager if you want
                 // to use geofencing
-                project.checkedInShop = project.shops.first()
+                Snabble.checkedInShop = project.shops.first()
 
                 // this is done on the background and can be done at any time
                 // a fully downloaded product database allows for scanning products while

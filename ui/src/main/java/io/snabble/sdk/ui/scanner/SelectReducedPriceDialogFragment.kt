@@ -7,8 +7,9 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import io.snabble.sdk.CouponType
+import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 
 class SelectReducedPriceDialogFragment(
     private val viewModel: ProductConfirmationDialog.ViewModel
@@ -18,7 +19,7 @@ class SelectReducedPriceDialogFragment(
             dismissAllowingStateLoss()
         }
 
-        val project = SnabbleUI.project
+        val project = requireNotNull(Snabble.checkedInProject.value)
         val discounts = project.coupons.filter(CouponType.MANUAL)
 
         val adapter = ArrayAdapter(

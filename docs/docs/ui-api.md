@@ -7,8 +7,8 @@
 
 ## Usage
 
-After initialisation of the core SDK, you can use `SnabbleUI.setProject` to register a
-project with all UI components.
+After initialisation of the core SDK, you can use `Snabble.setCheckedInShop` to register a
+shop with all UI components.
 
 After that you should be able to either start an Activity like `SelfScanningActivity`
 or use the various Fragments or View's.
@@ -22,8 +22,7 @@ If you use a navigation framework that does not support Fragments, you can use t
 But you need to make sure the Arguments in the provided Bundle are getting passed correctly. See the
 Fragments source code for more details
 
-Most screens require that a project is set, or they will crash. So make sure when you are recovering from 
-state loss, that the SDK is initialized and the project is set again, before you display the view again.
+Most screens require that a project is set, or they will show an error.
 
 Exceptions are View's for entering payment credentials.
 
