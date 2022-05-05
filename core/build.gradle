@@ -72,4 +72,5 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation "com.squareup.okhttp3:mockwebserver:${project.okhttpVersion}"
     testImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.21'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }

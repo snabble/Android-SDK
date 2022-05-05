@@ -19,14 +19,14 @@ class MockCheckoutApi(
     var forceError = false
 
     override fun cancel() {
-        TODO("Not yet implemented")
+
     }
 
     override fun abort(
         checkoutProcessResponse: CheckoutProcessResponse,
         paymentAbortResult: PaymentAbortResult?
     ) {
-        TODO("Not yet implemented")
+
     }
 
     override fun createCheckoutInfo(
@@ -96,7 +96,7 @@ class MockCheckoutApi(
         authorizePaymentRequest: AuthorizePaymentRequest,
         authorizePaymentResult: AuthorizePaymentResult?
     ) {
-        TODO("Not yet implemented")
+
     }
 
     fun modifyMockResponse(merger: CheckoutProcessResponse) {

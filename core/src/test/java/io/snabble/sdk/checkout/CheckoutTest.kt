@@ -1,16 +1,21 @@
 package io.snabble.sdk.checkout
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.snabble.sdk.*
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.payment.PaymentCredentials
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class CheckoutTest : SnabbleSdkTest() {
+    @get: Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var simpleProduct1: TestProduct
     private lateinit var credentials: PaymentCredentials
 
@@ -50,6 +55,7 @@ class CheckoutTest : SnabbleSdkTest() {
         cart = project.shoppingCart
         mockApi = MockCheckoutApi(project)
         checkout = Checkout(project, project.shoppingCart, mockApi)
+        checkout.reset()
         credentials = PaymentCredentials.fromSEPA("test", "DE11520513735120710131")
     }
 
