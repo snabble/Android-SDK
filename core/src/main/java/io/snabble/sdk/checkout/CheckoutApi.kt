@@ -124,13 +124,13 @@ enum class RoutingTarget {
  * https://github.com/snabble/docs/blob/master/api_checkout.md
  */
 data class Href(
-    var href: String? = null,
+    val  href: String? = null,
 )
 
 data class SignedCheckoutInfo(
-    var checkoutInfo: JsonObject? = null,
-    var signature: String? = null,
-    var links: Map<String, Href>? = null,
+    val  checkoutInfo: JsonObject? = null,
+    val  signature: String? = null,
+    val  links: Map<String, Href>? = null,
 ) {
     val checkoutProcessLink: String?
         get() = links?.get("checkoutProcess")?.href
@@ -189,42 +189,42 @@ data class SignedCheckoutInfo(
 }
 
 data class CheckoutInfo(
-    var price: Price? = null,
-    var lineItems: List<LineItem> = emptyList(),
+    val  price: Price? = null,
+    val  lineItems: List<LineItem> = emptyList(),
 )
 
 data class LineItem(
-    var id: String? = null,
-    var refersTo: String? = null,
+    var  id: String? = null,
+    var  refersTo: String? = null,
     @SerializedName("couponID")
-    var couponId: String? = null,
-    var sku: String? = null,
-    var name: String? = null,
-    var scannedCode: String? = null,
-    var amount: Int = 0,
-    var price: Int = 0,
-    var units: Int? = null,
-    var weight: Int? = null,
-    var weightUnit: String? = null,
-    var totalPrice: Int = 0,
-    var type: LineItemType? = null,
-    var priceModifiers: List<PriceModifier>? = null,
-    var redeemed: Boolean = false,
+    var  couponId: String? = null,
+    var  sku: String? = null,
+    var  name: String? = null,
+    var  scannedCode: String? = null,
+    var  amount: Int = 0,
+    var  price: Int = 0,
+    var  units: Int? = null,
+    var  weight: Int? = null,
+    var  weightUnit: String? = null,
+    var  totalPrice: Int = 0,
+    var  type: LineItemType? = null,
+    var  priceModifiers: List<PriceModifier>? = null,
+    var  redeemed: Boolean = false,
 )
 
 data class PriceModifier(
-    var name: String? = null,
-    var price: Int = 0,
+    val  name: String? = null,
+    val  price: Int = 0,
 )
 
 data class ExitToken(
-    var value: String? = null,
-    var format: String? = null,
+    val  value: String? = null,
+    val  format: String? = null,
 )
 
 data class Price(
-    var price: Int = 0,
-    var netPrice: Int = 0,
+    val  price: Int = 0,
+    val  netPrice: Int = 0,
 )
 
 data class PaymentInformation(
@@ -249,38 +249,38 @@ data class CheckoutProcessRequest(
 )
 
 data class PaymentMethodInfo(
-    var id: String? = null,
-    var isTesting: Boolean = false,
-    var acceptedOriginTypes: List<String> = emptyList()
+    val  id: String? = null,
+    val  isTesting: Boolean = false,
+    val  acceptedOriginTypes: List<String> = emptyList()
 )
 
 data class PaymentResult(
-    var originCandidateLink: String? = null,
-    var failureCause: String? = null,
+    val  originCandidateLink: String? = null,
+    val  failureCause: String? = null,
 )
 
 data class AuthorizePaymentRequest(
-    var encryptedOrigin: String? = null,
+    val  encryptedOrigin: String? = null,
 )
 
 data class Check(
-    var id: String? = null,
-    var links: Map<String, Href>? = null,
-    var type: CheckType? = null,
-    var requiredAge: Int? = null,
-    var performedBy: Performer? = null,
-    var state: CheckState? = null,
+    val id: String? = null,
+    val links: Map<String, Href>? = null,
+    val type: CheckType? = null,
+    val requiredAge: Int? = null,
+    val performedBy: Performer? = null,
+    val state: CheckState? = null,
 ) {
     val selfLink: String?
         get() = links?.get("self")?.href
 }
 
 data class Fulfillment(
-    var id: String? = null,
-    var type: String? = null,
-    var state: FulfillmentState? = null,
-    var refersTo: List<String> = emptyList(),
-    var links: Map<String, Href>? = null,
+    val id: String? = null,
+    val type: String? = null,
+    val state: FulfillmentState? = null,
+    val refersTo: List<String> = emptyList(),
+    val links: Map<String, Href>? = null,
 ) {
     val selfLink: String?
         get() = links?.get("self")?.href
@@ -312,5 +312,5 @@ data class CheckoutProcessResponse(
 }
 
 data class Pricing(
-    var price: Price? = null,
+    val price: Price? = null,
 )

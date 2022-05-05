@@ -23,10 +23,11 @@ class Checkout @JvmOverloads constructor(
         const val INVALID_PRICE = -1
     }
 
-    private var signedCheckoutInfo: SignedCheckoutInfo? = null
-
+    /** The current checkout process response from the backend **/
     var checkoutProcess: CheckoutProcessResponse? = null
         private set
+
+    /** The current checkout process response from the backend as a raw json string **/
     var rawCheckoutProcessJson: String? = null
         private set
 
@@ -35,15 +36,31 @@ class Checkout @JvmOverloads constructor(
      */
     var selectedPaymentMethod: PaymentMethod? = null
         private set
+
+    /**
+     * The price to pay in cents (or equivalent integer based currency type),
+     * or 0 if no price is available.
+     */
     var priceToPay = 0
         private set
 
+    /**
+     * The current state of the checkout as a live data
+     */
     val state: LiveData<CheckoutState> = MutableAccessibleLiveData(CheckoutState.NONE)
+
+    /**
+     * The current fulfillment state as a live data
+     */
     val fulfillmentState: LiveData<List<Fulfillment>?> = MutableAccessibleLiveData()
 
     /** List of codes that can be added to offline qr codes **/
     val codes: List<String> = mutableListOf()
 
+    /**
+     * List of invalid products that were contained in a checkout request, available after
+     * entering state CheckoutState.INVALID_PRODUCTS
+     */
     var invalidProducts: List<Product>? = null
         private set
 
@@ -52,21 +69,17 @@ class Checkout @JvmOverloads constructor(
     private var storedAuthorizePaymentRequest: AuthorizePaymentRequest? = null
     private var authorizePaymentRequestFailed = false
     private var redeemedCoupons: List<Coupon> = emptyList()
+    private var signedCheckoutInfo: SignedCheckoutInfo? = null
 
     init {
         checkoutRetryer = CheckoutRetryer(project, fallbackPaymentMethod)
     }
 
-    fun abortError() {
-        abort(true)
+    internal fun abortError() {
+        abortInternal(true)
     }
 
-    /**
-     * Aborts outstanding http calls and notifies the backend that the checkout process
-     * was cancelled
-     */
-    @JvmOverloads
-    fun abort(error: Boolean = false) {
+    private fun abortInternal(error: Boolean = false) {
         val checkoutProcess = checkoutProcess
         if (checkoutProcess != null
             && state.value != CheckoutState.PAYMENT_APPROVED
@@ -92,7 +105,8 @@ class Checkout @JvmOverloads constructor(
                     if (error) {
                         notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                     } else {
-                        if (state.value != CheckoutState.PAYMENT_PROCESSING && state.value != CheckoutState.PAYMENT_APPROVED) {
+                        if (state.value != CheckoutState.PAYMENT_PROCESSING
+                         && state.value != CheckoutState.PAYMENT_APPROVED) {
                             notifyStateChanged(CheckoutState.PAYMENT_ABORT_FAILED)
                         }
                     }
@@ -102,6 +116,14 @@ class Checkout @JvmOverloads constructor(
         } else {
             notifyStateChanged(CheckoutState.NONE)
         }
+    }
+
+    /**
+     * Aborts outstanding http calls and notifies the backend that the checkout process
+     * was cancelled
+     */
+    fun abort() {
+        abortInternal(false)
     }
 
     /**
@@ -138,20 +160,17 @@ class Checkout @JvmOverloads constructor(
         shoppingCart.generateNewUUID()
     }
 
+    /**
+     * Returns true of the checkout is currently available, or false if checkout is disabled
+     * for this project
+     */
     val isAvailable: Boolean
         get() = project.checkoutUrl != null && project.isCheckoutAvailable
 
     private val fallbackPaymentMethod: PaymentMethod?
-        private get() {
-            val paymentMethods = project.paymentMethodDescriptors
-            for (descriptor in paymentMethods) {
-                val pm = descriptor.paymentMethod
-                if (pm.isOfflineMethod) {
-                    return pm
-                }
-            }
-            return null
-        }
+        get() = project.paymentMethodDescriptors
+            .map { it.paymentMethod }
+            .firstOrNull { it.isOfflineMethod }
 
     /**
      * Starts the checkout process.
@@ -304,8 +323,9 @@ class Checkout @JvmOverloads constructor(
     }
 
     fun authorizePayment(encryptedOrigin: String?) {
-        val authorizePaymentRequest = AuthorizePaymentRequest()
-        authorizePaymentRequest.encryptedOrigin = encryptedOrigin
+        val authorizePaymentRequest = AuthorizePaymentRequest(
+            encryptedOrigin = encryptedOrigin
+        )
         storedAuthorizePaymentRequest = authorizePaymentRequest
         checkoutProcess?.let { checkoutProcess ->
             checkoutApi.authorizePayment(checkoutProcess,
@@ -322,16 +342,8 @@ class Checkout @JvmOverloads constructor(
         }
     }
 
-    private fun areAllChecksSucceeded(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
-        return checkoutProcessResponse.checks.all { it.state == CheckState.SUCCESSFUL }
-    }
-
     private fun hasAnyCheckFailed(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
         return checkoutProcessResponse.checks.any { it.state == CheckState.FAILED }
-    }
-
-    private fun hasStillPendingChecks(checkoutProcessResponse: CheckoutProcessResponse): Boolean {
-        return checkoutProcessResponse.checks.any { it.state == CheckState.PENDING }
     }
 
     private fun hasAnyFulfillmentAllocationFailed(): Boolean {
@@ -342,15 +354,11 @@ class Checkout @JvmOverloads constructor(
     }
 
     private fun areAllFulfillmentsClosed(): Boolean {
-        return checkoutProcess?.fulfillments?.any {
-            it.state?.isOpen ?: false
-        } ?: true
+        return checkoutProcess?.fulfillments?.all { it.state?.isClosed ?: false } ?: true
     }
 
     private fun hasAnyFulfillmentFailed(): Boolean {
-        return checkoutProcess?.fulfillments?.any {
-            it.state?.isFailure ?: false
-        } ?: false
+        return checkoutProcess?.fulfillments?.any { it.state?.isFailure ?: false } ?: false
     }
 
     private fun scheduleNextPoll() {
