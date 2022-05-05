@@ -206,4 +206,16 @@ class CheckoutTest : SnabbleSdkTest() {
         checkout.checkout()
         Assert.assertEquals(CheckoutState.NO_SHOP, checkout.state.getOrAwaitValue())
     }
+
+    @Test
+    fun testCheckoutKeepsStateOnPersistence() {
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
+
+        val newCheckout = Checkout(project, project.shoppingCart, mockApi)
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, newCheckout.state.getOrAwaitValue())
+    }
 }

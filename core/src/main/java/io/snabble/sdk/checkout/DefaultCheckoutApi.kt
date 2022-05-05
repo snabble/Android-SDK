@@ -216,13 +216,21 @@ class DefaultCheckoutApi(private val project: Project,
                 }
                 PaymentCredentials.Type.PAYDIREKT -> {
                     PaymentInformation(
+                        originType = paymentCredentials.type.originType,
+                        encryptedOrigin = paymentCredentials.encryptedData,
                         deviceID = paymentCredentials.additionalData["deviceID"],
                         deviceName = paymentCredentials.additionalData["deviceName"],
                         deviceFingerprint = paymentCredentials.additionalData["deviceFingerprint"],
                         deviceIPAddress = paymentCredentials.additionalData["deviceIPAddress"],
-
                     )
-                } else -> null
+                }
+                null -> null
+                else -> {
+                    PaymentInformation(
+                        originType = paymentCredentials.type.originType,
+                        encryptedOrigin = paymentCredentials.encryptedData
+                    )
+                }
             }
         )
 

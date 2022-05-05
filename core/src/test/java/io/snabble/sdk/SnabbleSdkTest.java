@@ -21,6 +21,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 
 @RunWith(RobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
+@LooperMode(LooperMode.Mode.PAUSED)
 public class SnabbleSdkTest {
     protected Project project;
     protected Context context;
@@ -201,6 +202,10 @@ public class SnabbleSdkTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        ShadowSystemClock.advanceBy(2, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.idleMainLooper();
     }
 
     public void onApplyConfig(@NonNull Config config) {

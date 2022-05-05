@@ -8,6 +8,7 @@ import io.snabble.sdk.utils.Dispatch
 import androidx.lifecycle.LiveData
 import io.snabble.sdk.*
 import io.snabble.sdk.utils.Logger
+import java.io.File
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.Future
@@ -23,26 +24,62 @@ class Checkout @JvmOverloads constructor(
         const val INVALID_PRICE = -1
     }
 
-    /** The current checkout process response from the backend **/
-    var checkoutProcess: CheckoutProcessResponse? = null
-        private set
+    private var persistentState: PersistentState =
+        PersistentState.restore(File(project.internalStorageDirectory, "checkout.json"))
 
-    /** The current checkout process response from the backend as a raw json string **/
-    var rawCheckoutProcessJson: String? = null
-        private set
+    /** The current checkout process response from the backend **/
+    var checkoutProcess
+        get() = persistentState.checkoutProcess
+        private set(value) {
+            persistentState.checkoutProcess = value
+            persistentState.save()
+        }
 
     /**
      * Gets the currently selected payment method, or null if currently none is selected.
      */
-    var selectedPaymentMethod: PaymentMethod? = null
-        private set
+    var selectedPaymentMethod
+        get() = persistentState.selectedPaymentMethod
+        private set(value) {
+            persistentState.selectedPaymentMethod = value
+            persistentState.save()
+        }
 
     /**
      * The price to pay in cents (or equivalent integer based currency type),
      * or 0 if no price is available.
      */
-    var priceToPay = 0
-        private set
+    var priceToPay
+        get() = persistentState.priceToPay
+        private set(value) {
+            persistentState.priceToPay = value
+            persistentState.save()
+        }
+
+    /** List of codes that can be added to offline qr codes **/
+    val codes
+        get() = persistentState.codes
+
+    /**
+     * List of invalid products that were contained in a checkout request, available after
+     * entering state CheckoutState.INVALID_PRODUCTS
+     */
+    var invalidProducts
+        get() = persistentState.invalidProducts
+        private set(value) {
+            persistentState.invalidProducts = value
+            persistentState.save()
+        }
+
+    /**
+     * List of coupons that were redeemed during this checkout.
+     */
+    var redeemedCoupons
+        get() = persistentState.redeemedCoupons
+        private set(value) {
+            persistentState.redeemedCoupons = value
+            persistentState.save()
+        }
 
     /**
      * The current state of the checkout as a live data
@@ -54,25 +91,20 @@ class Checkout @JvmOverloads constructor(
      */
     val fulfillmentState: LiveData<List<Fulfillment>?> = MutableAccessibleLiveData()
 
-    /** List of codes that can be added to offline qr codes **/
-    val codes: List<String> = mutableListOf()
-
-    /**
-     * List of invalid products that were contained in a checkout request, available after
-     * entering state CheckoutState.INVALID_PRODUCTS
-     */
-    var invalidProducts: List<Product>? = null
-        private set
+    private var signedCheckoutInfo
+        get() = persistentState.signedCheckoutInfo
+        set(value) { persistentState.signedCheckoutInfo = value }
 
     private val checkoutRetryer: CheckoutRetryer
     private var currentPollFuture: Future<*>? = null
     private var storedAuthorizePaymentRequest: AuthorizePaymentRequest? = null
     private var authorizePaymentRequestFailed = false
-    private var redeemedCoupons: List<Coupon> = emptyList()
-    private var signedCheckoutInfo: SignedCheckoutInfo? = null
 
     init {
+        (state as MutableAccessibleLiveData).value = persistentState.state
+        (fulfillmentState as MutableAccessibleLiveData).value = persistentState.fulfillmentState
         checkoutRetryer = CheckoutRetryer(project, fallbackPaymentMethod)
+        pollIfNeeded()
     }
 
     internal fun abortError() {
@@ -148,7 +180,6 @@ class Checkout @JvmOverloads constructor(
     /**
      * Cancels outstanding http calls and sets the checkout to its initial state.
      *
-     *
      * Does NOT notify the backend that the checkout was cancelled.
      */
     fun reset() {
@@ -185,7 +216,6 @@ class Checkout @JvmOverloads constructor(
     @JvmOverloads
     fun checkout(timeout: Long = -1, allowFallbackAfterTimeout: Boolean = false) {
         checkoutProcess = null
-        rawCheckoutProcessJson = null
         signedCheckoutInfo = null
         selectedPaymentMethod = null
         priceToPay = 0
@@ -274,10 +304,8 @@ class Checkout @JvmOverloads constructor(
     /**
      * Needs to be called when the checkout is state [CheckoutState.REQUEST_PAYMENT_METHOD].
      *
-     *
      * When successful the state will switch to [CheckoutState.WAIT_FOR_APPROVAL] which
      * waits for a event of the backend that the payment has been confirmed or denied.
-     *
      *
      * Possible states after receiving the event:
      *
@@ -302,7 +330,6 @@ class Checkout @JvmOverloads constructor(
                     ) {
                         synchronized(this@Checkout) {
                             checkoutProcess = checkoutProcessResponse
-                            rawCheckoutProcessJson = rawResponse
                             if (!handleProcessResponse()) {
                                 if (!paymentMethod.isOfflineMethod) {
                                     scheduleNextPoll()
@@ -322,6 +349,9 @@ class Checkout @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Authorize a for one-time use payment requests, e.g. sending tokenized payment data of google pay.
+     */
     fun authorizePayment(encryptedOrigin: String?) {
         val authorizePaymentRequest = AuthorizePaymentRequest(
             encryptedOrigin = encryptedOrigin
@@ -388,7 +418,6 @@ class Checkout @JvmOverloads constructor(
                 ) {
                     synchronized(this@Checkout) {
                         checkoutProcess = checkoutProcessResponse
-                        rawCheckoutProcessJson = rawResponse
                         if (handleProcessResponse()) {
                             stopPolling()
                         }
@@ -399,6 +428,10 @@ class Checkout @JvmOverloads constructor(
             })
         }
 
+        pollIfNeeded()
+    }
+
+    private fun pollIfNeeded() {
         val state = state.value
         if (state == CheckoutState.WAIT_FOR_APPROVAL
             || state == CheckoutState.WAIT_FOR_GATEKEEPER
@@ -549,6 +582,7 @@ class Checkout @JvmOverloads constructor(
      */
     fun addCode(code: String) {
         (codes as MutableList).add(code)
+        persistentState.save()
     }
 
     /**
@@ -556,6 +590,7 @@ class Checkout @JvmOverloads constructor(
      */
     fun removeCode(code: String) {
         (codes as MutableList).remove(code)
+        persistentState.save()
     }
 
     /**
@@ -563,6 +598,7 @@ class Checkout @JvmOverloads constructor(
      */
     fun clearCodes() {
         (codes as MutableList).clear()
+        persistentState.save()
     }
 
     private val routingTarget: RoutingTarget
@@ -612,10 +648,14 @@ class Checkout @JvmOverloads constructor(
         with(this.state as MutableAccessibleLiveData) {
             value = state
         }
+        persistentState.state = state
+        persistentState.save()
     }
 
     private fun notifyFulfillmentUpdate() {
         (fulfillmentState as MutableAccessibleLiveData).value = checkoutProcess?.fulfillments
+        persistentState.fulfillmentState = checkoutProcess?.fulfillments
+        persistentState.save()
     }
 
     //    val orderId: String?
