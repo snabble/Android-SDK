@@ -168,17 +168,14 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindBySkuOnlineWithShopSpecificPrice() throws Throwable {
-        runAsyncHandlerCode(() -> {
-            ProductDatabase productDatabase = project.getProductDatabase();
-            final Product product = findBySkuBlocking(productDatabase, "1");
-            assertEquals(product.getSku(), "1");
-            assertEquals(product.getListPrice(), 399);
-
-            Snabble.getInstance().setCheckedInShop(project.getShops().get(1));
-            final Product product2 = findBySkuBlocking(productDatabase, "1");
-            assertEquals(product2.getSku(), "1");
-            assertEquals(product2.getListPrice(), 299);
-        });
+        ProductDatabase productDatabase = project.getProductDatabase();
+        final Product product = findBySkuBlocking(productDatabase, "1");
+        assertEquals(product.getSku(), "1");
+        assertEquals(product.getListPrice(), 399);
+        Snabble.getInstance().setCheckedInShop(project.getShops().get(1));
+        final Product product2 = findBySkuBlocking(productDatabase, "1");
+        assertEquals(product2.getSku(), "1");
+        assertEquals(product2.getListPrice(), 299);
     }
 
     @Test
