@@ -4,8 +4,6 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +11,7 @@ import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -64,7 +63,9 @@ class PaymentStatusView @JvmOverloads constructor(
 
     private var isStopped: Boolean = false
     private val project: Project
+        get() = requireNotNull(Snabble.checkedInProject.value)
     private val checkout: Checkout
+        get() = project.checkout
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -76,16 +77,19 @@ class PaymentStatusView @JvmOverloads constructor(
     private var lastState: Checkout.State? = null
 
     private var paymentOriginCandidate: PaymentOriginCandidate? = null
-    private var paymentOriginCandidateHelper: PaymentOriginCandidateHelper
+    private val paymentOriginCandidateHelper by lazy { PaymentOriginCandidateHelper(project) }
     private var ignoreStateChanges = false
     private var hasShownSEPAInput = false
 
     init {
         clipChildren = false
 
-        project = requireNotNull(Snabble.checkedInProject.value)
-        checkout = project.checkout
-        paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
+        if (!isInEditMode) {
+            initViews()
+        }
+    }
+
+    private fun initViews() {
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
         back.isEnabled = false
@@ -98,6 +102,8 @@ class PaymentStatusView @JvmOverloads constructor(
             if (state == Checkout.State.PAYMENT_APPROVED) {
                 executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
             }
+
+            project.coupons.update()
         }
 
         checkout.checkoutState.observeView(this) {
@@ -111,14 +117,9 @@ class PaymentStatusView @JvmOverloads constructor(
         rating1.setOnClickListener {
             ratingMessage = ""
             inputBadRatingLayout.isVisible = true
-            inputBadRatingLayout.editText
-                ?.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-                    override fun afterTextChanged(s: Editable) {
-                        ratingMessage = s.toString()
-                    }
-                })
+            inputBadRatingLayout.editText?.addTextChangedListener { s ->
+                ratingMessage = s.toString()
+            }
         }
 
         rating2.setOnClickListener {
@@ -132,10 +133,10 @@ class PaymentStatusView @JvmOverloads constructor(
         addIbanLayout.isVisible = false
         addIbanButton.setOnClickListener {
             val paymentOriginCandidate = paymentOriginCandidate
-            val intent = Intent(getContext(), SEPACardInputActivity::class.java)
+            val intent = Intent(context, SEPACardInputActivity::class.java)
             intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-            getContext()?.startActivity(intent)
+            context?.startActivity(intent)
             addIbanLayout.isVisible = false
             hasShownSEPAInput = true
         }
@@ -315,7 +316,9 @@ class PaymentStatusView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        startPollingForPaymentOriginCandidate()
+        if (!isInEditMode) {
+            startPollingForPaymentOriginCandidate()
+        }
     }
 
     override fun onDetachedFromWindow() {
