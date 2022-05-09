@@ -146,7 +146,6 @@ public class SnabbleSdkTest {
     @Before
     public void setupSdk() throws Snabble.SnabbleException, IOException {
         Dispatch.setMainThreadHandler(Runnable::run);
-        Dispatch.setBackgroundThreadHandler(Runnable::run);
 
         // Disable close guard warnings
         StrictMode.enableDefaults();

@@ -218,6 +218,9 @@ class CheckoutTest : SnabbleSdkTest() {
         add(simpleProduct1)
         checkout.checkout()
         Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING
+        ))
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
         Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
 

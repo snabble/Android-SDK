@@ -16,7 +16,6 @@ public class Dispatch {
     private static final ScheduledExecutorService ioScheduler = Executors.newSingleThreadScheduledExecutor();
 
     private static MainThreadHandler mainThreadHandler;
-    private static MainThreadHandler backgroundThreadHandler;
 
     public interface MainThreadHandler {
         void handle(Runnable runnable);
@@ -26,79 +25,15 @@ public class Dispatch {
         Dispatch.mainThreadHandler = handler;
     }
 
-    public static void setBackgroundThreadHandler(MainThreadHandler handler) {
-        Dispatch.backgroundThreadHandler = handler;
-    }
-
     public static Future<?> background(Runnable runnable) {
         return executorService.submit(runnable);
     }
 
     public static Future<?> io(Runnable runnable) {
-        if (backgroundThreadHandler != null) {
-            backgroundThreadHandler.handle(runnable);
-            return new Future<Void>() {
-                @Override
-                public boolean cancel(boolean mayInterruptIfRunning) {
-                    return false;
-                }
-
-                @Override
-                public boolean isCancelled() {
-                    return false;
-                }
-
-                @Override
-                public boolean isDone() {
-                    return true;
-                }
-
-                @Override
-                public Void get() throws ExecutionException, InterruptedException {
-                    return null;
-                }
-
-                @Override
-                public Void get(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
-                    return null;
-                }
-            };
-        }
-
         return ioScheduler.submit(runnable);
     }
 
     public static Future<?> background(Runnable runnable, long delayMs) {
-        if (backgroundThreadHandler != null) {
-            backgroundThreadHandler.handle(runnable);
-            return new Future<Void>() {
-                @Override
-                public boolean cancel(boolean mayInterruptIfRunning) {
-                    return false;
-                }
-
-                @Override
-                public boolean isCancelled() {
-                    return false;
-                }
-
-                @Override
-                public boolean isDone() {
-                    return false;
-                }
-
-                @Override
-                public Void get() throws ExecutionException, InterruptedException {
-                    return null;
-                }
-
-                @Override
-                public Void get(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
-                    return null;
-                }
-            };
-        }
-
         return executorService.schedule(runnable, delayMs, TimeUnit.MILLISECONDS);
     }
 
