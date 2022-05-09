@@ -13,9 +13,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class CheckoutTest : SnabbleSdkTest() {
-    @get: Rule
-    val instantExecutorRule = InstantTaskExecutorRule()
-
     private lateinit var simpleProduct1: TestProduct
     private lateinit var credentials: PaymentCredentials
 

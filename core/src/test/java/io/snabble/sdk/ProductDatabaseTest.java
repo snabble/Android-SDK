@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
 import java.io.ByteArrayInputStream;
@@ -30,9 +30,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
 @RunWith(RobolectricTestRunner.class)
 public class ProductDatabaseTest extends SnabbleSdkTest {
-
     @Test
     public void testAllPromotionsQuery() {
         ProductDatabase productDatabase = project.getProductDatabase();
@@ -141,7 +142,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testFindBySkuOnlineWithShopSpecificPrice() throws Throwable {
+    public void testFindBySkuOnlineWithShopSpecificPrice() {
         ProductDatabase productDatabase = project.getProductDatabase();
         final Product product = findBySkuBlocking(productDatabase, "1");
         assertEquals(product.getSku(), "1");
