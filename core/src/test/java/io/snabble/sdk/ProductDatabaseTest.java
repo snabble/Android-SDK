@@ -3,6 +3,7 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Looper;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -17,6 +18,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +32,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import androidx.arch.core.executor.ArchTaskExecutor;
+import androidx.arch.core.executor.DefaultTaskExecutor;
+import androidx.arch.core.executor.TaskExecutor;
 
 @RunWith(RobolectricTestRunner.class)
 public class ProductDatabaseTest extends SnabbleSdkTest {
@@ -168,16 +175,29 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindBySkuOnlineWithShopSpecificPrice() throws Throwable {
-        runAsyncHandlerCode(() -> {
-            ProductDatabase productDatabase = project.getProductDatabase();
-            final Product product = findBySkuBlocking(productDatabase, "1");
-            assertEquals(product.getSku(), "1");
-            assertEquals(product.getListPrice(), 399);
+        // Fix looper check
+        ArchTaskExecutor.getInstance().setDelegate(new DefaultTaskExecutor() {
+            @Override
+            public boolean isMainThread() {
+                return true;
+            }
+        });
 
-            Snabble.getInstance().setCheckedInShop(project.getShops().get(1));
-            final Product product2 = findBySkuBlocking(productDatabase, "1");
-            assertEquals(product2.getSku(), "1");
-            assertEquals(product2.getListPrice(), 299);
+        runAsyncHandlerCode(() -> {
+            try {
+                ProductDatabase productDatabase = project.getProductDatabase();
+                final Product product = findBySkuBlocking(productDatabase, "1");
+                assertEquals(product.getSku(), "1");
+                assertEquals(product.getListPrice(), 399);
+
+                Snabble.getInstance().setCheckedInShop(project.getShops().get(1));
+                final Product product2 = findBySkuBlocking(productDatabase, "1");
+                assertEquals(product2.getSku(), "1");
+                assertEquals(product2.getListPrice(), 299);
+            } finally {
+                // Reset looper check
+                ArchTaskExecutor.getInstance().setDelegate(null);
+            }
         });
     }
 
