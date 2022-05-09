@@ -95,7 +95,7 @@ class Checkout @JvmOverloads constructor(
         get() = persistentState.signedCheckoutInfo
         set(value) { persistentState.signedCheckoutInfo = value }
 
-    private val checkoutRetryer: CheckoutRetryer
+    private var checkoutRetryer: CheckoutRetryer? = null
     private var currentPollFuture: Future<*>? = null
     private var storedAuthorizePaymentRequest: AuthorizePaymentRequest? = null
     private var authorizePaymentRequestFailed = false
@@ -103,7 +103,9 @@ class Checkout @JvmOverloads constructor(
     init {
         (state as MutableAccessibleLiveData).value = persistentState.state
         (fulfillmentState as MutableAccessibleLiveData).value = persistentState.fulfillmentState
-        checkoutRetryer = CheckoutRetryer(project, fallbackPaymentMethod)
+        fallbackPaymentMethod?.let {
+            checkoutRetryer = CheckoutRetryer(project, it)
+        }
         pollIfNeeded()
     }
 
@@ -290,7 +292,7 @@ class Checkout @JvmOverloads constructor(
                     if (fallback != null && allowFallbackAfterTimeout) {
                         selectedPaymentMethod = fallbackPaymentMethod
                         priceToPay = shoppingCart.totalPrice
-                        checkoutRetryer.add(backendCart)
+                        checkoutRetryer?.add(backendCart)
                         notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
                     } else {
                         notifyStateChanged(CheckoutState.CONNECTION_ERROR)
@@ -640,7 +642,7 @@ class Checkout @JvmOverloads constructor(
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun processPendingCheckouts() {
-        checkoutRetryer.processPendingCheckouts()
+        checkoutRetryer?.processPendingCheckouts()
     }
 
     private fun notifyStateChanged(state: CheckoutState) {

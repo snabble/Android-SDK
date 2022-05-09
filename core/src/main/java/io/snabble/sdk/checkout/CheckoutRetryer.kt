@@ -1,168 +1,159 @@
-package io.snabble.sdk.checkout;
+package io.snabble.sdk.checkout
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.Context
+import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.Project
+import io.snabble.sdk.ShoppingCart.BackendCart
+import android.content.SharedPreferences
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
+import android.net.ConnectivityManager
+import com.google.gson.reflect.TypeToken
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Product
+import io.snabble.sdk.utils.Logger
+import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
 
-import com.google.gson.reflect.TypeToken;
-
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-
-import io.snabble.sdk.PaymentMethod;
-import io.snabble.sdk.Product;
-import io.snabble.sdk.Project;
-import io.snabble.sdk.ShoppingCart;
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.utils.Dispatch;
-import io.snabble.sdk.utils.GsonHolder;
-import io.snabble.sdk.utils.Logger;
-
-class CheckoutRetryer {
-    private class SavedCart {
-        ShoppingCart.BackendCart backendCart;
-        Date finalizedAt;
-        int failureCount;
-
-        SavedCart(ShoppingCart.BackendCart backendCart, Date finalizedAt) {
-            this.backendCart = backendCart;
-            this.finalizedAt = finalizedAt;
-        }
+internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentMethod) {
+    private inner class SavedCart(
+        var backendCart: BackendCart,
+        var finalizedAt: Date
+    ) {
+        var failureCount = 0
     }
 
-    private final PaymentMethod fallbackPaymentMethod;
-    private final SharedPreferences sharedPreferences;
-    private final Project project;
-    private final CopyOnWriteArrayList<SavedCart> savedCarts;
-    private CountDownLatch countDownLatch;
+    private val fallbackPaymentMethod: PaymentMethod
+    private val sharedPreferences: SharedPreferences
+    private val project: Project
+    private var savedCarts = CopyOnWriteArrayList<SavedCart>()
+    private var countDownLatch: CountDownLatch? = null
 
-    CheckoutRetryer(Project project, PaymentMethod fallbackPaymentMethod) {
-        Context context = Snabble.getInstance().getApplication();
-        this.sharedPreferences = context.getSharedPreferences("snabble_saved_checkouts_" + project.getId(), Context.MODE_PRIVATE);
-        this.project = project;
-        this.fallbackPaymentMethod = fallbackPaymentMethod;
+    init {
+        val context: Context = instance.application
+        sharedPreferences = context.getSharedPreferences(
+            "snabble_saved_checkouts_" + project.id,
+            Context.MODE_PRIVATE
+        )
 
-        String json = sharedPreferences.getString("saved_carts", null);
-        if (json != null) {
-            TypeToken typeToken = new TypeToken<CopyOnWriteArrayList<SavedCart>>() {};
-            savedCarts = GsonHolder.get().fromJson(json, typeToken.getType());
+        this.project = project
+        this.fallbackPaymentMethod = fallbackPaymentMethod
+        val json = sharedPreferences.getString("saved_carts", null)
+
+        savedCarts = if (json != null) {
+            val typeToken: TypeToken<*> = object : TypeToken<CopyOnWriteArrayList<SavedCart?>?>() {}
+            GsonHolder.get().fromJson(json, typeToken.type)
         } else {
-            savedCarts = new CopyOnWriteArrayList<>();
+            CopyOnWriteArrayList()
         }
 
-        processPendingCheckouts();
+        processPendingCheckouts()
     }
 
-    public void add(final ShoppingCart.BackendCart backendCart) {
-        Dispatch.mainThread(() -> {
-            savedCarts.add(new SavedCart(backendCart, new Date()));
-            save();
-        });
+    fun add(backendCart: BackendCart) {
+        Dispatch.mainThread {
+            savedCarts.add(SavedCart(backendCart, Date()))
+            save()
+        }
     }
 
-    private void save() {
-        Dispatch.mainThread(() -> {
-            String json = GsonHolder.get().toJson(savedCarts);
-
+    private fun save() {
+        Dispatch.mainThread {
+            val json = GsonHolder.get().toJson(savedCarts)
             sharedPreferences.edit()
-                    .putString("saved_carts", json)
-                    .apply();
-        });
+                .putString("saved_carts", json)
+                .apply()
+        }
     }
 
-    public void processPendingCheckouts() {
-        Context context = Snabble.getInstance().getApplication();
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (cm == null) {
-            return;
+    fun processPendingCheckouts() {
+        val context: Context = instance.application
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = cm.activeNetworkInfo
+        if (networkInfo?.isConnected == false) {
+            return
         }
 
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        if (networkInfo == null || !networkInfo.isConnected()) {
-            return;
-        }
-
-        Dispatch.mainThread(() -> {
-            if (countDownLatch != null && countDownLatch.getCount() > 0) {
-                return;
+        Dispatch.mainThread {
+            if (countDownLatch?.count ?: 0 > 0) {
+                return@mainThread
             }
 
-            countDownLatch = new CountDownLatch(savedCarts.size());
-
-            for (final SavedCart savedCart : savedCarts) {
+            countDownLatch = CountDownLatch(savedCarts.size)
+            savedCarts.forEach { savedCart ->
                 if (savedCart.failureCount >= 3) {
-                    removeSavedCart(savedCart);
+                    removeSavedCart(savedCart)
                 }
 
-                final DefaultCheckoutApi checkoutApi = new DefaultCheckoutApi(project, project.getShoppingCart());
-                checkoutApi.createCheckoutInfo(savedCart.backendCart, new CheckoutInfoResult() {
-                    @Override
-                    public void success(SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
-                        checkoutApi.createPaymentProcess(UUID.randomUUID().toString(), signedCheckoutInfo, fallbackPaymentMethod, null,
-                                true, savedCart.finalizedAt, new PaymentProcessResult() {
-                            @Override
-                            public void success(CheckoutProcessResponse checkoutProcessResponse, String rawResponse) {
-                                Logger.d("Successfully resend checkout " + savedCart.backendCart.session);
-                                removeSavedCart(savedCart);
-                                countDownLatch.countDown();
-                            }
+                val checkoutApi = DefaultCheckoutApi(project, project.shoppingCart)
+                checkoutApi.createCheckoutInfo(savedCart.backendCart, object : CheckoutInfoResult {
+                    override fun success(
+                        signedCheckoutInfo: SignedCheckoutInfo,
+                        onlinePrice: Int,
+                        availablePaymentMethods: List<PaymentMethodInfo>
+                    ) {
+                        checkoutApi.createPaymentProcess(
+                            UUID.randomUUID().toString(),
+                            signedCheckoutInfo,
+                            fallbackPaymentMethod,
+                            null,
+                            true,
+                            savedCart.finalizedAt,
+                            object : PaymentProcessResult {
+                                override fun success(
+                                    checkoutProcessResponse: CheckoutProcessResponse?,
+                                    rawResponse: String?
+                                ) {
+                                    Logger.d("Successfully resend checkout " + savedCart.backendCart.session)
+                                    removeSavedCart(savedCart)
+                                    countDownLatch?.countDown()
+                                }
 
-                            @Override
-                            public void error() {
-                                fail();
-                            }
-                        });
+                                override fun error() {
+                                    fail()
+                                }
+                            })
                     }
 
-                    @Override
-                    public void noShop() {
-                        fail();
+                    override fun noShop() {
+                        fail()
                     }
 
-                    @Override
-                    public void invalidProducts(List<? extends Product> products) {
-                        fail();
+                    override fun invalidProducts(products: List<Product>) {
+                        fail()
                     }
 
-                    @Override
-                    public void noAvailablePaymentMethod() {
-                        fail();
+                    override fun noAvailablePaymentMethod() {
+                        fail()
                     }
 
-                    @Override
-                    public void invalidDepositReturnVoucher() {
-                        fail();
+                    override fun invalidDepositReturnVoucher() {
+                        fail()
                     }
 
-                    @Override
-                    public void unknownError() {
-                        fail();
+                    override fun unknownError() {
+                        fail()
                     }
 
-                    @Override
-                    public void connectionError() {
-                        fail();
+                    override fun connectionError() {
+                        fail()
                     }
 
-                    private void fail() {
-                        savedCart.failureCount++;
-                        save();
-                        countDownLatch.countDown();
+                    private fun fail() {
+                        savedCart.failureCount++
+                        save()
+                        countDownLatch?.countDown()
                     }
-                }, -1);
+                }, -1)
             }
-        });
+        }
     }
 
-    private void removeSavedCart(final SavedCart savedCart) {
-        Dispatch.mainThread(() -> {
-            savedCarts.remove(savedCart);
-            save();
-        });
+    private fun removeSavedCart(savedCart: SavedCart) {
+        Dispatch.mainThread {
+            savedCarts.remove(savedCart)
+            save()
+        }
     }
 }
