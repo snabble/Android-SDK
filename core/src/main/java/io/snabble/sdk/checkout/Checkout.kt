@@ -173,10 +173,6 @@ class Checkout @JvmOverloads constructor(
         reset()
     }
 
-    fun cancelOutstandingCalls() {
-        checkoutApi.cancel()
-    }
-
     /**
      * Cancels outstanding http calls and sets the checkout to its initial state.
      *
@@ -191,6 +187,9 @@ class Checkout @JvmOverloads constructor(
         shoppingCart.generateNewUUID()
     }
 
+    private fun cancelOutstandingCalls() {
+        checkoutApi.cancel()
+    }
     /**
      * Returns true of the checkout is currently available, or false if checkout is disabled
      * for this project
@@ -401,7 +400,7 @@ class Checkout @JvmOverloads constructor(
     }
 
     @VisibleForTesting
-    fun poll() {
+    internal fun poll() {
         if (checkoutProcess == null) {
             notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
             return
@@ -657,12 +656,4 @@ class Checkout @JvmOverloads constructor(
         persistentState.fulfillmentState = checkoutProcess?.fulfillments
         persistentState.save()
     }
-
-    //    val orderId: String?
-    //        get() = if (checkoutProcess != null) checkoutProcess!!.orderId else null
-
-    //    val paymentMethodForPayment: PaymentMethod?
-    //        get() = if (checkoutProcess != null) {
-    //            checkoutProcess!!.paymentMethod
-    //        } else null
 }
