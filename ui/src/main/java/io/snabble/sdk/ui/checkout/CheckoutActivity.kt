@@ -20,19 +20,24 @@ class CheckoutActivity : FragmentActivity() {
         const val ARG_PROJECT_ID = "projectId"
 
         @JvmStatic
-        fun startCheckoutFlow(context: Context, args: Bundle?) {
+        fun startCheckoutFlow(context: Context, args: Bundle?, newTask: Boolean = false) {
             val intent = Intent(context, CheckoutActivity::class.java)
+            if (newTask) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
             args?.let {
                 intent.putExtras(args)
             }
+
             context.startActivity(intent)
         }
 
         @JvmStatic
-        fun startCheckoutFlow(context: Context, project: Project) {
+        fun startCheckoutFlow(context: Context, project: Project, newTask: Boolean = false) {
             startCheckoutFlow(context, Bundle().apply {
                 putString(ARG_PROJECT_ID, project.id)
-            })
+            }, newTask)
         }
 
         @JvmStatic
@@ -43,7 +48,7 @@ class CheckoutActivity : FragmentActivity() {
                         Snabble.initializationState.removeObserver(this)
                         Snabble.projects.forEach {
                             if (it.checkout.state.value?.isCheckoutState == true) {
-                                startCheckoutFlow(context, it)
+                                startCheckoutFlow(context, it, true)
                             }
                         }
                     }
