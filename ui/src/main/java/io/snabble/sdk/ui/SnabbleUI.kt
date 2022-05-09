@@ -57,12 +57,6 @@ object SnabbleUI {
     private var actions = mutableMapOf<Event, ActivityCallback?>()
 
     @JvmStatic
-    fun init(context: Context) {
-        // TOOD replace with androidx.startup?
-        CheckoutActivity.restoreCheckoutIfNeeded(context)
-    }
-
-    @JvmStatic
     @Deprecated("Use Snabble.checkedInProject instead",
         ReplaceWith( "requireNotNull(Snabble.checkedInProject.value)", "io.snabble.sdk.Snabble"))
     val project: Project

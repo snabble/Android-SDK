@@ -13,6 +13,7 @@ val CheckoutState.isCheckoutState: Boolean
         CheckoutState.CONNECTION_ERROR,
         CheckoutState.INVALID_PRODUCTS,
         CheckoutState.NO_PAYMENT_METHOD_AVAILABLE,
+        CheckoutState.PAYMENT_ABORTED,
         CheckoutState.NO_SHOP -> false
 
         CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN,
@@ -24,7 +25,6 @@ val CheckoutState.isCheckoutState: Boolean
         CheckoutState.DENIED_TOO_YOUNG,
         CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
         CheckoutState.DENIED_BY_SUPERVISOR,
-        CheckoutState.PAYMENT_ABORTED,
         CheckoutState.PAYMENT_ABORT_FAILED,
         CheckoutState.PAYMENT_PROCESSING_ERROR -> true
     }

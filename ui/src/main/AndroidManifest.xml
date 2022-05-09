@@ -38,7 +38,7 @@
             android:exported="false"
             tools:node="merge">
 
-            <meta-data  android:name="io.snabble.sdk.ui.SnabbleUIInitializer"
+            <meta-data  android:name="io.snabble.sdk.ui.CheckoutContinuationInitializer"
                 android:value="androidx.startup" />
         </provider>
 
