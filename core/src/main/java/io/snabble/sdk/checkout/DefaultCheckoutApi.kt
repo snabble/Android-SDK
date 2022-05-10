@@ -30,7 +30,7 @@ class DefaultCheckoutApi(private val project: Project,
         paymentAbortResult: PaymentAbortResult?
     ) {
         if (checkoutProcessResponse.selfLink == null) {
-            paymentAbortResult?.error()
+            paymentAbortResult?.onError()
             return
         }
 
@@ -44,16 +44,16 @@ class DefaultCheckoutApi(private val project: Project,
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     Logger.d("Payment aborted")
-                    paymentAbortResult?.success()
+                    paymentAbortResult?.onSuccess()
                 } else {
                     Logger.e("Error while aborting payment")
-                    paymentAbortResult?.error()
+                    paymentAbortResult?.onError()
                 }
             }
 
             override fun onFailure(call: Call, e: IOException) {
                 Logger.e("Error while aborting payment")
-                paymentAbortResult?.error()
+                paymentAbortResult?.onError()
             }
         })
     }
@@ -66,7 +66,7 @@ class DefaultCheckoutApi(private val project: Project,
         val checkoutUrl = project.checkoutUrl
         if (checkoutUrl == null) {
             Logger.e("Could not checkout, no checkout url provided in metadata")
-            checkoutInfoResult?.connectionError()
+            checkoutInfoResult?.onConnectionError()
             return
         }
 
@@ -97,9 +97,9 @@ class DefaultCheckoutApi(private val project: Project,
 
                 val availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods()
                 if (availablePaymentMethods.isNotEmpty()) {
-                    checkoutInfoResult?.success(signedCheckoutInfo, price, availablePaymentMethods)
+                    checkoutInfoResult?.onSuccess(signedCheckoutInfo, price, availablePaymentMethods)
                 } else {
-                    checkoutInfoResult?.connectionError()
+                    checkoutInfoResult?.onConnectionError()
                 }
             }
 
@@ -127,12 +127,12 @@ class DefaultCheckoutApi(private val project: Project,
                                 }
                             }
                             Logger.e("Invalid products")
-                            checkoutInfoResult?.invalidProducts(invalidProducts)
+                            checkoutInfoResult?.onInvalidProducts(invalidProducts)
                         }
-                        "no_available_method" -> checkoutInfoResult?.noAvailablePaymentMethod()
-                        "bad_shop_id", "shop_not_found" -> checkoutInfoResult?.noShop()
-                        "invalid_deposit_return_voucher" -> checkoutInfoResult?.invalidDepositReturnVoucher()
-                        else -> checkoutInfoResult?.unknownError()
+                        "no_available_method" -> checkoutInfoResult?.onNoAvailablePaymentMethodFound()
+                        "bad_shop_id", "shop_not_found" -> checkoutInfoResult?.onNoShopFound()
+                        "invalid_deposit_return_voucher" -> checkoutInfoResult?.onInvalidDepositReturnVoucher()
+                        else -> checkoutInfoResult?.onUnknownError()
                     }
                 } catch (e: Exception) {
                     error(e)
@@ -141,12 +141,12 @@ class DefaultCheckoutApi(private val project: Project,
 
             override fun error(t: Throwable) {
                 Logger.e("Error creating checkout info: " + t.message)
-                checkoutInfoResult?.connectionError()
+                checkoutInfoResult?.onConnectionError()
             }
         })
     }
 
-    override fun updatePaymentProcess(
+    private fun updatePaymentProcess(
         url: String,
         paymentProcessResult: PaymentProcessResult?
     ) {
@@ -160,12 +160,12 @@ class DefaultCheckoutApi(private val project: Project,
         call = okHttpClient.newCall(request)
         call?.enqueue(object : SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse::class.java) {
             override fun success(checkoutProcessResponse: CheckoutProcessResponse) {
-                paymentProcessResult?.success(checkoutProcessResponse, rawResponse())
+                paymentProcessResult?.onSuccess(checkoutProcessResponse, rawResponse())
                 call = null
             }
 
             override fun error(t: Throwable) {
-                paymentProcessResult?.error()
+                paymentProcessResult?.onError()
             }
         })
     }
@@ -176,7 +176,7 @@ class DefaultCheckoutApi(private val project: Project,
     ) {
         val url = checkoutProcessResponse.selfLink
         if (url == null) {
-            paymentProcessResult?.error()
+            paymentProcessResult?.onError()
             return
         }
         updatePaymentProcess(url, paymentProcessResult)
@@ -184,18 +184,18 @@ class DefaultCheckoutApi(private val project: Project,
 
     @SuppressLint("SimpleDateFormat")
     override fun createPaymentProcess(
-        id: String?,
-        signedCheckoutInfo: SignedCheckoutInfo?,
-        paymentMethod: PaymentMethod?,
-        paymentCredentials: PaymentCredentials?,
+        id: String,
+        signedCheckoutInfo: SignedCheckoutInfo,
+        paymentMethod: PaymentMethod,
         processedOffline: Boolean,
+        paymentCredentials: PaymentCredentials?,
         finalizedAt: Date?,
         paymentProcessResult: PaymentProcessResult?
     ) {
         if (paymentCredentials != null) {
             val data = paymentCredentials.encryptedData
             if (data == null) {
-                paymentProcessResult?.error()
+                paymentProcessResult?.onError()
                 return
             }
         }
@@ -236,7 +236,7 @@ class DefaultCheckoutApi(private val project: Project,
 
         var url = signedCheckoutInfo?.checkoutProcessLink
         if (url == null) {
-            paymentProcessResult?.error()
+            paymentProcessResult?.onError()
             return
         }
         url = "$url/$id"
@@ -253,14 +253,14 @@ class DefaultCheckoutApi(private val project: Project,
         call?.enqueue(object :
             SimpleJsonCallback<CheckoutProcessResponse>(CheckoutProcessResponse::class.java) {
             override fun success(checkoutProcess: CheckoutProcessResponse) {
-                paymentProcessResult?.success(checkoutProcess, rawResponse())
+                paymentProcessResult?.onSuccess(checkoutProcess, rawResponse())
             }
 
             override fun error(t: Throwable) {
                 if (responseCode() == 403) {
                     updatePaymentProcess(url, paymentProcessResult)
                 } else {
-                    paymentProcessResult?.error()
+                    paymentProcessResult?.onError()
                 }
             }
         })
@@ -273,7 +273,7 @@ class DefaultCheckoutApi(private val project: Project,
     ) {
         val url = checkoutProcessResponse.authorizePaymentLink
         if (url == null) {
-            authorizePaymentResult?.error()
+            authorizePaymentResult?.onError()
             return
         }
 
@@ -286,14 +286,14 @@ class DefaultCheckoutApi(private val project: Project,
         val call = okHttpClient.newCall(request)
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                authorizePaymentResult?.error()
+                authorizePaymentResult?.onError()
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
-                    authorizePaymentResult?.success()
+                    authorizePaymentResult?.onSuccess()
                 } else {
-                    authorizePaymentResult?.error()
+                    authorizePaymentResult?.onError()
                 }
             }
         })

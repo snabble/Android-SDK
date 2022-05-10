@@ -35,7 +35,7 @@ class MockCheckoutApi(
         timeout: Long
     ) {
         if (forceError) {
-            checkoutInfoResult?.connectionError()
+            checkoutInfoResult?.onConnectionError()
             return
         }
 
@@ -43,7 +43,7 @@ class MockCheckoutApi(
             checkoutInfo = GsonHolder.get().fromJson("", JsonObject::class.java)
         )
 
-        checkoutInfoResult?.success(
+        checkoutInfoResult?.onSuccess(
             signedCheckoutInfo = signedCheckoutInfo,
             onlinePrice = project.shoppingCart.totalPrice,
             availablePaymentMethods = listOf(PaymentMethodInfo(
@@ -53,42 +53,33 @@ class MockCheckoutApi(
         ))
     }
 
-    override fun updatePaymentProcess(url: String, paymentProcessResult: PaymentProcessResult?) {
-        if (forceError) {
-            paymentProcessResult?.error()
-            return
-        }
-
-        paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
-    }
-
     override fun updatePaymentProcess(
         checkoutProcessResponse: CheckoutProcessResponse,
         paymentProcessResult: PaymentProcessResult?
     ) {
         if (forceError) {
-            paymentProcessResult?.error()
+            paymentProcessResult?.onError()
             return
         }
 
-        paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
+        paymentProcessResult?.onSuccess(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
     override fun createPaymentProcess(
-        id: String?,
-        signedCheckoutInfo: SignedCheckoutInfo?,
-        paymentMethod: PaymentMethod?,
-        paymentCredentials: PaymentCredentials?,
+        id: String,
+        signedCheckoutInfo: SignedCheckoutInfo,
+        paymentMethod: PaymentMethod,
         processedOffline: Boolean,
+        paymentCredentials: PaymentCredentials?,
         finalizedAt: Date?,
         paymentProcessResult: PaymentProcessResult?
     ) {
         if (forceError) {
-            paymentProcessResult?.error()
+            paymentProcessResult?.onError()
             return
         }
 
-        paymentProcessResult?.success(mockResponse, GsonHolder.get().toJson(mockResponse))
+        paymentProcessResult?.onSuccess(mockResponse, GsonHolder.get().toJson(mockResponse))
     }
 
     override fun authorizePayment(

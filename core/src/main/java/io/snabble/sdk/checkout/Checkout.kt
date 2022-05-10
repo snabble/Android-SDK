@@ -93,7 +93,10 @@ class Checkout @JvmOverloads constructor(
 
     private var signedCheckoutInfo
         get() = persistentState.signedCheckoutInfo
-        set(value) { persistentState.signedCheckoutInfo = value }
+        set(value) {
+            persistentState.signedCheckoutInfo = value
+            persistentState.save()
+        }
 
     private var checkoutRetryer: CheckoutRetryer? = null
     private var currentPollFuture: Future<*>? = null
@@ -120,7 +123,7 @@ class Checkout @JvmOverloads constructor(
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
             && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
             checkoutApi.abort(checkoutProcess, object : PaymentAbortResult {
-                override fun success() {
+                override fun onSuccess() {
                     cancelOutstandingCalls()
                     synchronized(this@Checkout) {
                         if (error) {
@@ -135,7 +138,7 @@ class Checkout @JvmOverloads constructor(
                     }
                 }
 
-                override fun error() {
+                override fun onError() {
                     if (error) {
                         notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                     } else {
@@ -237,7 +240,7 @@ class Checkout @JvmOverloads constructor(
         val backendCart = shoppingCart.toBackendCart()
         checkoutApi.createCheckoutInfo(backendCart,
             object : CheckoutInfoResult {
-                override fun success(
+                override fun onSuccess(
                     signedCheckoutInfo: SignedCheckoutInfo,
                     onlinePrice: Int,
                     availablePaymentMethods: List<PaymentMethodInfo>
@@ -266,28 +269,28 @@ class Checkout @JvmOverloads constructor(
                     }
                 }
 
-                override fun noShop() {
+                override fun onNoShopFound() {
                     notifyStateChanged(CheckoutState.NO_SHOP)
                 }
 
-                override fun invalidProducts(products: List<Product>) {
+                override fun onInvalidProducts(products: List<Product>) {
                     invalidProducts = products
                     notifyStateChanged(CheckoutState.INVALID_PRODUCTS)
                 }
 
-                override fun noAvailablePaymentMethod() {
+                override fun onNoAvailablePaymentMethodFound() {
                     notifyStateChanged(CheckoutState.NO_PAYMENT_METHOD_AVAILABLE)
                 }
 
-                override fun invalidDepositReturnVoucher() {
+                override fun onInvalidDepositReturnVoucher() {
                     notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                 }
 
-                override fun unknownError() {
+                override fun onUnknownError() {
                     notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                 }
 
-                override fun connectionError() {
+                override fun onConnectionError() {
                     val fallback = fallbackPaymentMethod
                     if (fallback != null && allowFallbackAfterTimeout) {
                         selectedPaymentMethod = fallbackPaymentMethod
@@ -319,13 +322,19 @@ class Checkout @JvmOverloads constructor(
      * @param paymentCredentials may be null if the payment method requires no payment credentials
      */
     fun pay(paymentMethod: PaymentMethod, paymentCredentials: PaymentCredentials?) {
+        val signedCheckoutInfo = signedCheckoutInfo
         if (signedCheckoutInfo != null) {
             selectedPaymentMethod = paymentMethod
             notifyStateChanged(CheckoutState.VERIFYING_PAYMENT_METHOD)
             checkoutApi.createPaymentProcess(
-                shoppingCart.uuid, signedCheckoutInfo,
-                paymentMethod, paymentCredentials, false, null, object : PaymentProcessResult {
-                    override fun success(
+                id = shoppingCart.uuid,
+                signedCheckoutInfo = signedCheckoutInfo,
+                paymentMethod = paymentMethod,
+                processedOffline = false,
+                paymentCredentials = paymentCredentials,
+                finalizedAt = null,
+                paymentProcessResult = object : PaymentProcessResult {
+                    override fun onSuccess(
                         checkoutProcessResponse: CheckoutProcessResponse?,
                         rawResponse: String?
                     ) {
@@ -339,7 +348,7 @@ class Checkout @JvmOverloads constructor(
                         }
                     }
 
-                    override fun error() {
+                    override fun onError() {
                         Logger.e("Connection error while creating checkout process")
                         notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                     }
@@ -362,11 +371,11 @@ class Checkout @JvmOverloads constructor(
             checkoutApi.authorizePayment(checkoutProcess,
                 authorizePaymentRequest,
                 object : AuthorizePaymentResult {
-                    override fun success() {
+                    override fun onSuccess() {
                         // ignore
                     }
 
-                    override fun error() {
+                    override fun onError() {
                         authorizePaymentRequestFailed = true
                     }
                 })
@@ -413,7 +422,7 @@ class Checkout @JvmOverloads constructor(
 
         checkoutProcess?.let { process ->
             checkoutApi.updatePaymentProcess(process, object : PaymentProcessResult {
-                override fun success(
+                override fun onSuccess(
                     checkoutProcessResponse: CheckoutProcessResponse?,
                     rawResponse: String?
                 ) {
@@ -425,7 +434,7 @@ class Checkout @JvmOverloads constructor(
                     }
                 }
 
-                override fun error() {}
+                override fun onError() {}
             })
         }
 
@@ -440,7 +449,7 @@ class Checkout @JvmOverloads constructor(
             || state == CheckoutState.VERIFYING_PAYMENT_METHOD
             || state == CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
             || state == CheckoutState.PAYMENT_PROCESSING
-            || state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed()) {
+            || (state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
             scheduleNextPoll()
         }
     }
@@ -603,7 +612,7 @@ class Checkout @JvmOverloads constructor(
     }
 
     private val routingTarget: RoutingTarget
-        get() =  checkoutProcess?.routingTarget ?: RoutingTarget.NONE
+        get() = checkoutProcess?.routingTarget ?: RoutingTarget.NONE
 
     /**
      * The final price of the checkout, calculated by the backend.
@@ -611,9 +620,7 @@ class Checkout @JvmOverloads constructor(
      * Returns a price after [CheckoutState.WAIT_FOR_APPROVAL], otherwise -1
      */
     val verifiedOnlinePrice: Int
-        get() {
-            return checkoutProcess?.pricing?.price?.price ?: -1
-        }
+        get() = checkoutProcess?.pricing?.price?.price ?: -1
 
     /**
      * Gets all available payment methods, callable after [CheckoutState.REQUEST_PAYMENT_METHOD].

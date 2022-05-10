@@ -88,20 +88,20 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
 
                 val checkoutApi = DefaultCheckoutApi(project, project.shoppingCart)
                 checkoutApi.createCheckoutInfo(savedCart.backendCart, object : CheckoutInfoResult {
-                    override fun success(
+                    override fun onSuccess(
                         signedCheckoutInfo: SignedCheckoutInfo,
                         onlinePrice: Int,
                         availablePaymentMethods: List<PaymentMethodInfo>
                     ) {
                         checkoutApi.createPaymentProcess(
-                            UUID.randomUUID().toString(),
-                            signedCheckoutInfo,
-                            fallbackPaymentMethod,
-                            null,
-                            true,
-                            savedCart.finalizedAt,
-                            object : PaymentProcessResult {
-                                override fun success(
+                            id = UUID.randomUUID().toString(),
+                            signedCheckoutInfo = signedCheckoutInfo,
+                            paymentMethod = fallbackPaymentMethod,
+                            processedOffline = true,
+                            paymentCredentials = null,
+                            finalizedAt = savedCart.finalizedAt,
+                            paymentProcessResult = object : PaymentProcessResult {
+                                override fun onSuccess(
                                     checkoutProcessResponse: CheckoutProcessResponse?,
                                     rawResponse: String?
                                 ) {
@@ -110,33 +110,33 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
                                     countDownLatch?.countDown()
                                 }
 
-                                override fun error() {
+                                override fun onError() {
                                     fail()
                                 }
                             })
                     }
 
-                    override fun noShop() {
+                    override fun onNoShopFound() {
                         fail()
                     }
 
-                    override fun invalidProducts(products: List<Product>) {
+                    override fun onInvalidProducts(products: List<Product>) {
                         fail()
                     }
 
-                    override fun noAvailablePaymentMethod() {
+                    override fun onNoAvailablePaymentMethodFound() {
                         fail()
                     }
 
-                    override fun invalidDepositReturnVoucher() {
+                    override fun onInvalidDepositReturnVoucher() {
                         fail()
                     }
 
-                    override fun unknownError() {
+                    override fun onUnknownError() {
                         fail()
                     }
 
-                    override fun connectionError() {
+                    override fun onConnectionError() {
                         fail()
                     }
 

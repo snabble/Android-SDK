@@ -13,7 +13,16 @@ import io.snabble.sdk.PaymentMethod
 import java.lang.Exception
 import java.util.*
 
+/**
+ * Interface for the snabble Checkout API
+ *
+ * Backend API Documentation:
+ * https://docs.snabble.io/docs/api/api_checkout
+ */
 interface CheckoutApi {
+    /**
+     * Cancel all operations
+     */
     fun cancel()
 
     fun abort(
@@ -21,32 +30,44 @@ interface CheckoutApi {
         paymentAbortResult: PaymentAbortResult?
     )
 
+    /**
+     * Creates a checkout info with mandatory price calculation and available payment methods.
+     * This document can be used to show the real price to the user and it can be used
+     * to start a checkout process as input of {@link #createPaymentProcess}
+     */
     fun createCheckoutInfo(
-        backendCart: BackendCart, // TODO migrate to kotlin List
+        backendCart: BackendCart,
         checkoutInfoResult: CheckoutInfoResult? = null,
         timeout: Long = -1
     )
 
-    fun updatePaymentProcess(
-        url: String,
-        paymentProcessResult: PaymentProcessResult?
-    )
-
+    /**
+     *  Updates an existing payment process
+     */
     fun updatePaymentProcess(
         checkoutProcessResponse: CheckoutProcessResponse,
         paymentProcessResult: PaymentProcessResult?
     )
 
+    /**
+     * Creates a payment process using stored payment credentials and a signed checkout info from
+     * create checkout info.
+     */
     fun createPaymentProcess(
-        id: String?,
-        signedCheckoutInfo: SignedCheckoutInfo?,
-        paymentMethod: PaymentMethod?,
-        paymentCredentials: PaymentCredentials?,
+        id: String,
+        signedCheckoutInfo: SignedCheckoutInfo,
+        paymentMethod: PaymentMethod,
         processedOffline: Boolean,
+        paymentCredentials: PaymentCredentials?,
         finalizedAt: Date?,
         paymentProcessResult: PaymentProcessResult?
     )
 
+    /**
+     * Authorize a payment of a existing checkout process providing payment credentials.
+     *
+     * Only used for one-time token payments like google pay.
+     */
     fun authorizePayment(
         checkoutProcessResponse: CheckoutProcessResponse,
         authorizePaymentRequest: AuthorizePaymentRequest,
@@ -55,33 +76,33 @@ interface CheckoutApi {
 }
 
 interface AuthorizePaymentResult {
-    fun success()
-    fun error()
+    fun onSuccess()
+    fun onError()
 }
 
 interface CheckoutInfoResult {
-    fun success(
+    fun onSuccess(
         signedCheckoutInfo: SignedCheckoutInfo,
         onlinePrice: Int,
         availablePaymentMethods: List<PaymentMethodInfo>
     )
 
-    fun noShop()
-    fun invalidProducts(products: List<Product>)
-    fun noAvailablePaymentMethod()
-    fun invalidDepositReturnVoucher()
-    fun unknownError()
-    fun connectionError()
+    fun onNoShopFound()
+    fun onInvalidProducts(products: List<Product>)
+    fun onNoAvailablePaymentMethodFound()
+    fun onInvalidDepositReturnVoucher()
+    fun onUnknownError()
+    fun onConnectionError()
 }
 
 interface PaymentProcessResult {
-    fun success(checkoutProcessResponse: CheckoutProcessResponse?, rawResponse: String?)
-    fun error()
+    fun onSuccess(checkoutProcessResponse: CheckoutProcessResponse?, rawResponse: String?)
+    fun onError()
 }
 
 interface PaymentAbortResult {
-    fun success()
-    fun error()
+    fun onSuccess()
+    fun onError()
 }
 
 enum class LineItemType {
@@ -118,19 +139,14 @@ enum class RoutingTarget {
     @SerializedName("none") NONE
 }
 
-/*
- * Data structures as defined here:
- *
- * https://github.com/snabble/docs/blob/master/api_checkout.md
- */
 data class Href(
-    val  href: String? = null,
+    val href: String? = null,
 )
 
 data class SignedCheckoutInfo(
-    val  checkoutInfo: JsonObject? = null,
-    val  signature: String? = null,
-    val  links: Map<String, Href>? = null,
+    val checkoutInfo: JsonObject? = null,
+    val signature: String? = null,
+    val links: Map<String, Href>? = null,
 ) {
     val checkoutProcessLink: String?
         get() = links?.get("checkoutProcess")?.href
@@ -189,42 +205,42 @@ data class SignedCheckoutInfo(
 }
 
 data class CheckoutInfo(
-    val  price: Price? = null,
-    val  lineItems: List<LineItem> = emptyList(),
+    val price: Price? = null,
+    val lineItems: List<LineItem> = emptyList(),
 )
 
 data class LineItem(
-    var  id: String? = null,
-    var  refersTo: String? = null,
+    var id: String? = null,
+    var refersTo: String? = null,
     @SerializedName("couponID")
-    var  couponId: String? = null,
-    var  sku: String? = null,
-    var  name: String? = null,
-    var  scannedCode: String? = null,
-    var  amount: Int = 0,
-    var  price: Int = 0,
-    var  units: Int? = null,
-    var  weight: Int? = null,
-    var  weightUnit: String? = null,
-    var  totalPrice: Int = 0,
-    var  type: LineItemType? = null,
-    var  priceModifiers: List<PriceModifier>? = null,
-    var  redeemed: Boolean = false,
+    var couponId: String? = null,
+    var sku: String? = null,
+    var name: String? = null,
+    var scannedCode: String? = null,
+    var amount: Int = 0,
+    var price: Int = 0,
+    var units: Int? = null,
+    var weight: Int? = null,
+    var weightUnit: String? = null,
+    var totalPrice: Int = 0,
+    var type: LineItemType? = null,
+    var priceModifiers: List<PriceModifier>? = null,
+    var redeemed: Boolean = false,
 )
 
 data class PriceModifier(
-    val  name: String? = null,
-    val  price: Int = 0,
+    val name: String? = null,
+    val price: Int = 0,
 )
 
 data class ExitToken(
-    val  value: String? = null,
-    val  format: String? = null,
+    val value: String? = null,
+    val format: String? = null,
 )
 
 data class Price(
-    val  price: Int = 0,
-    val  netPrice: Int = 0,
+    val price: Int = 0,
+    val netPrice: Int = 0,
 )
 
 data class PaymentInformation(
@@ -249,18 +265,18 @@ data class CheckoutProcessRequest(
 )
 
 data class PaymentMethodInfo(
-    val  id: String? = null,
-    val  isTesting: Boolean = false,
-    val  acceptedOriginTypes: List<String> = emptyList()
+    val id: String? = null,
+    val isTesting: Boolean = false,
+    val acceptedOriginTypes: List<String> = emptyList()
 )
 
 data class PaymentResult(
-    val  originCandidateLink: String? = null,
-    val  failureCause: String? = null,
+    val originCandidateLink: String? = null,
+    val failureCause: String? = null,
 )
 
 data class AuthorizePaymentRequest(
-    val  encryptedOrigin: String? = null,
+    val encryptedOrigin: String? = null,
 )
 
 data class Check(

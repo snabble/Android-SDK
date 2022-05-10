@@ -67,7 +67,7 @@ class ShoppingCartUpdater {
 
         Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), new CheckoutInfoResult() {
             @Override
-            public void success(final SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
+            public void onSuccess(final SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
                 Dispatch.mainThread(() -> {
                     // ignore when cart was modified mid request
                     if (cart.getModCount() != modCount) {
@@ -80,7 +80,7 @@ class ShoppingCartUpdater {
                         Dispatch.background(() -> {
                             Map<String, Product> products = getReplacedProducts(skus);
                             if (products == null) {
-                                Dispatch.mainThread(this::unknownError);
+                                Dispatch.mainThread(this::onUnknownError);
                             } else {
                                 Dispatch.mainThread(() -> commitCartUpdate(modCount, signedCheckoutInfo, products));
                             }
@@ -92,34 +92,34 @@ class ShoppingCartUpdater {
             }
 
             @Override
-            public void noShop() {
+            public void onNoShopFound() {
                 error(true);
             }
 
             @Override
-            public void invalidProducts(@NotNull List<? extends Product> products) {
+            public void onInvalidProducts(@NotNull List<? extends Product> products) {
                 cart.setInvalidProducts((List<Product>) products);
                 error(true);
             }
 
             @Override
-            public void noAvailablePaymentMethod() {
+            public void onNoAvailablePaymentMethodFound() {
                error(true);
             }
 
             @Override
-            public void invalidDepositReturnVoucher() {
+            public void onInvalidDepositReturnVoucher() {
                 cart.setInvalidDepositReturnVoucher(true);
                 error(true);
             }
 
             @Override
-            public void unknownError() {
+            public void onUnknownError() {
                 error(false);
             }
 
             @Override
-            public void connectionError() {
+            public void onConnectionError() {
                 error(false);
             }
         }, -1));
