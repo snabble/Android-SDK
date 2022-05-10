@@ -12,22 +12,21 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import io.snabble.sdk.Checkout
-import io.snabble.sdk.Checkout.OnCheckoutStateChangedListener
+import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.utils.I18nUtils
 import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.setTextOrHide
 import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
 class RoutingTargetGatekeeperView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), OnCheckoutStateChangedListener, LifecycleObserver {
+) : FrameLayout(context, attrs, defStyleAttr) {
     private var checkout: Checkout
     private var checkoutIdCode: BarcodeView
     private var cancel: View
@@ -36,7 +35,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
     private var helperImage: ImageView
     private var upArrow: View
 
-    private var currentState: Checkout.State? = null
+    private var currentState: CheckoutState? = null
 
     init {
         inflate(context, R.layout.snabble_view_routing_gatekeeper, this)
@@ -88,12 +87,10 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         project.assets.get("checkout-online") { bitmap: Bitmap? ->
             setHelperImage(bitmap)
         }
-        onStateChanged(checkout.state)
-    }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
-        onStateChanged(checkout.state)
+        checkout.state.observeView(this) {
+            onStateChanged(it)
+        }
     }
 
     @SuppressLint("DrawAllocation")
@@ -120,27 +117,13 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         }
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        checkout.addOnCheckoutStateChangedListener(this)
-        val fragmentActivity = UIUtils.getHostFragmentActivity(context)
-        fragmentActivity?.lifecycle?.addObserver(this)
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        checkout.removeOnCheckoutStateChangedListener(this)
-        val fragmentActivity = UIUtils.getHostFragmentActivity(context)
-        fragmentActivity?.lifecycle?.removeObserver(this)
-    }
-
     private fun abort() {
         checkout.abort()
         cancelProgress.visibility = VISIBLE
         cancel.isEnabled = false
     }
 
-    override fun onStateChanged(state: Checkout.State) {
+    private fun onStateChanged(state: CheckoutState) {
         if (state == currentState) {
             return
         }
@@ -150,7 +133,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             return
         }
 
-        if (state == Checkout.State.PAYMENT_ABORT_FAILED) {
+        if (state == CheckoutState.PAYMENT_ABORT_FAILED) {
             cancelProgress.visibility = INVISIBLE
             cancel.isEnabled = true
             AlertDialog.Builder(context)

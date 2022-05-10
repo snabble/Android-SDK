@@ -2,11 +2,10 @@ package io.snabble.sdk;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.apache.commons.io.FileUtils;
@@ -15,18 +14,18 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +42,11 @@ import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 
 @RunWith(RobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
+@LooperMode(LooperMode.Mode.PAUSED)
 public class SnabbleSdkTest {
+    @Rule
+    public InstantTaskExecutorRule instantExecutorRule = new InstantTaskExecutorRule();
+
     protected Project project;
     protected Context context;
     protected static MockWebServer mockWebServer;
@@ -201,6 +203,10 @@ public class SnabbleSdkTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        ShadowSystemClock.advanceBy(2, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.idleMainLooper();
     }
 
     public void onApplyConfig(@NonNull Config config) {

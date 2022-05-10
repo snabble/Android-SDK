@@ -48,6 +48,19 @@ Activities can also use a MaterialToolbar, to enable using a Toolbar set the The
 
 The SDK supports Material 3 DayNight themes.
 
+## Checkout State Persistence
+
+The CheckoutActivity may automatically started and be restored, if a Checkout is still in progress.
+If you dont want this behaviour add the following to your AndroidManifest.xml
+
+`    
+<meta-data android:name="io.snabble.sdk.ui.CheckoutContinuationInitializer"
+tools:node="remove" />
+`
+
+You may then call `CheckoutActivity.restoreCheckoutIfNeeded(context)` when you find it
+acceptable to potentially restore pending checkouts after losing app state.
+
 ## List of UI Actions
 
 - SHOW_CHECKOUT

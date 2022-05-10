@@ -22,7 +22,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import java.util.ArrayList;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.Checkout;
+import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;

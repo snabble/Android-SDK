@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.64.0]
+
+### Breaking Changes
+- Removed add/remove state listener for Checkout. Instead only the LiveData equivalents remain.
+- Moved Checkout to io.snabble.sdk.checkout.*
+- Removed getOrderId() from checkout
+
+### Added
+- Added state persistence for checkout
+- CheckoutActivity restores itself when the checkout is in a state that requires the users attention
+
+### Changes
+- Migrated Checkout to Kotlin
+
 ## [0.63.0]
 
 ### Breaking Changes

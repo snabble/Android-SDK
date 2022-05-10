@@ -32,6 +32,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
+import io.snabble.sdk.Environment;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
@@ -611,18 +612,23 @@ public class PaymentCredentials {
             Snabble snabble = Snabble.getInstance();
             int caResId;
 
-            switch (snabble.getEnvironment()) {
-                case PRODUCTION:
-                    caResId = R.raw.ca_prod;
-                    break;
-                case STAGING:
-                    caResId = R.raw.ca_staging;
-                    break;
-                case TESTING:
-                    caResId = R.raw.ca_testing;
-                    break;
-                default:
-                    return false;
+            Environment environment = snabble.getEnvironment();
+            if (environment != null) {
+                switch (environment) {
+                    case PRODUCTION:
+                        caResId = R.raw.ca_prod;
+                        break;
+                    case STAGING:
+                        caResId = R.raw.ca_staging;
+                        break;
+                    case TESTING:
+                        caResId = R.raw.ca_testing;
+                        break;
+                    default:
+                        return false;
+                }
+            } else {
+                return false;
             }
 
             InputStream is = Snabble.getInstance().getApplication().getResources().openRawResource(caResId);

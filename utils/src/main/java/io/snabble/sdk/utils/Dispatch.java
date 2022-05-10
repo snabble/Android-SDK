@@ -4,10 +4,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class Dispatch {
     private static final Handler handler = new Handler(Looper.getMainLooper());
@@ -20,8 +22,8 @@ public class Dispatch {
         void handle(Runnable runnable);
     }
 
-    public static void setMainThreadHandler(MainThreadHandler runnable) {
-        Dispatch.mainThreadHandler = runnable;
+    public static void setMainThreadHandler(MainThreadHandler handler) {
+        Dispatch.mainThreadHandler = handler;
     }
 
     public static Future<?> background(Runnable runnable) {

@@ -10,6 +10,7 @@ import io.snabble.sdk.encodedcodes.EncodedCodesOptions
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
+import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
 import okhttp3.Request

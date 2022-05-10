@@ -20,6 +20,9 @@ import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.checkout.Checkout
+import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.checkout.Fulfillment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
@@ -74,7 +77,7 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private var ratingMessage: String? = null
-    private var lastState: Checkout.State? = null
+    private var lastState: CheckoutState? = null
 
     private var paymentOriginCandidate: PaymentOriginCandidate? = null
     private val paymentOriginCandidateHelper by lazy { PaymentOriginCandidateHelper(project) }
@@ -99,14 +102,14 @@ class PaymentStatusView @JvmOverloads constructor(
             checkout.reset()
             requireFragmentActivity().finish()
 
-            if (state == Checkout.State.PAYMENT_APPROVED) {
+            if (state == CheckoutState.PAYMENT_APPROVED) {
                 executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
             }
 
             project.coupons.update()
         }
 
-        checkout.checkoutState.observeView(this) {
+        checkout.state.observeView(this) {
             onStateChanged(it)
         }
 
@@ -154,7 +157,7 @@ class PaymentStatusView @JvmOverloads constructor(
         ratingMessage = null
     }
 
-    private fun onStateChanged(state: Checkout.State?) {
+    private fun onStateChanged(state: CheckoutState?) {
         if (lastState == state || ignoreStateChanges) {
             return
         }
@@ -169,11 +172,11 @@ class PaymentStatusView @JvmOverloads constructor(
         receipt.state = PaymentStatusItemView.State.IN_PROGRESS
 
         when (state) {
-            Checkout.State.PAYMENT_PROCESSING,
-            Checkout.State.VERIFYING_PAYMENT_METHOD -> {
+            CheckoutState.PAYMENT_PROCESSING,
+            CheckoutState.VERIFYING_PAYMENT_METHOD -> {
                 payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
-            Checkout.State.PAYMENT_APPROVED -> {
+            CheckoutState.PAYMENT_APPROVED -> {
                 title.text =
                     resources.getString(R.string.Snabble_PaymentStatus_Title_success)
                 image.setImageResource(R.drawable.snabble_ic_payment_success_big)
@@ -191,27 +194,27 @@ class PaymentStatusView @JvmOverloads constructor(
                 ratingLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
-            Checkout.State.PAYMENT_PROCESSING_ERROR -> {
+            CheckoutState.PAYMENT_PROCESSING_ERROR -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
-            Checkout.State.DENIED_TOO_YOUNG -> {
+            CheckoutState.DENIED_TOO_YOUNG -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung)
                 handlePaymentAborted()
             }
-            Checkout.State.DENIED_BY_PAYMENT_PROVIDER -> {
+            CheckoutState.DENIED_BY_PAYMENT_PROVIDER -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
-            Checkout.State.DENIED_BY_SUPERVISOR -> {
+            CheckoutState.DENIED_BY_SUPERVISOR -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
                 handlePaymentAborted()
             }
-            Checkout.State.PAYMENT_ABORTED -> {
+            CheckoutState.PAYMENT_ABORTED -> {
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser)
                 handlePaymentAborted()
             }
-            Checkout.State.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
+            CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
                 val price = checkout.verifiedOnlinePrice
                 if (price != -1) {
                     val googlePayHelper = project.googlePayHelper
@@ -276,7 +279,7 @@ class PaymentStatusView @JvmOverloads constructor(
         }
 
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
-        if (checkout.state == Checkout.State.PAYMENT_APPROVED) {
+        if (checkout.state.value == CheckoutState.PAYMENT_APPROVED) {
             paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
         }
     }
@@ -290,7 +293,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private fun onStart() {
         startPollingForPaymentOriginCandidate()
 
-        onStateChanged(checkout.state)
+        onStateChanged(checkout.state.value)
         isStopped = false
     }
 
@@ -359,7 +362,7 @@ class PaymentStatusView @JvmOverloads constructor(
         })
     }
 
-    private fun onFulfillmentStateChanged(fulfillments: Array<CheckoutApi.Fulfillment>?) {
+    private fun onFulfillmentStateChanged(fulfillments: List<Fulfillment>?) {
         fulfillments?.forEach {
             var itemView = fulfillmentContainer.findViewWithTag<PaymentStatusItemView>(it.type)
             if (itemView == null) {
@@ -372,12 +375,9 @@ class PaymentStatusView @JvmOverloads constructor(
                 )
             }
 
+            val state = it.state
             if (it.type == "tobaccolandEWA") {
-                if (it.state.isOpen) {
-                    itemView.setText(null)
-                    itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
-                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
-                } else if (it.state.isFailure) {
+                if (state == null || state.isFailure) {
                     if (it.state == FulfillmentState.ALLOCATION_FAILED
                         || it.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
                         handlePaymentAborted()
@@ -386,7 +386,11 @@ class PaymentStatusView @JvmOverloads constructor(
                     itemView.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_error))
                     itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                     itemView.state = PaymentStatusItemView.State.FAILED
-                } else if (it.state.isClosed) {
+                } else if (state.isOpen) {
+                    itemView.setText(null)
+                    itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
+                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
+                } else if (state.isClosed) {
                     itemView.setText(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_message))
                     itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Tobacco_title))
                     itemView.state = PaymentStatusItemView.State.SUCCESS
@@ -394,11 +398,11 @@ class PaymentStatusView @JvmOverloads constructor(
             } else {
                 itemView.setTitle(resources.getString(R.string.Snabble_PaymentStatus_Fulfillment_title))
 
-                if (it.state.isOpen) {
-                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
-                } else if (it.state.isFailure) {
+                if (state == null || state.isFailure) {
                     itemView.state = PaymentStatusItemView.State.FAILED
-                } else if (it.state.isClosed) {
+                } else if (state.isOpen) {
+                    itemView.state = PaymentStatusItemView.State.IN_PROGRESS
+                } else if (state.isClosed) {
                     itemView.state = PaymentStatusItemView.State.SUCCESS
                 }
             }

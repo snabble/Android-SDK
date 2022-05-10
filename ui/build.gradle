@@ -60,6 +60,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
     implementation 'eu.rekisoft.android.util:LazyWorker:2.1.0'
     implementation 'androidx.biometric:biometric:1.2.0-alpha04'
+    implementation 'androidx.startup:startup-runtime:1.1.1'
 
     def camerax_version = '1.0.2'
     implementation "androidx.camera:camera-core:${camerax_version}"

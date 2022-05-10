@@ -3,13 +3,12 @@ package io.snabble.sdk;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Looper;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
 import java.io.ByteArrayInputStream;
@@ -18,8 +17,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,13 +30,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import androidx.arch.core.executor.ArchTaskExecutor;
-import androidx.arch.core.executor.DefaultTaskExecutor;
-import androidx.arch.core.executor.TaskExecutor;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 @RunWith(RobolectricTestRunner.class)
 public class ProductDatabaseTest extends SnabbleSdkTest {
-
     @Test
     public void testAllPromotionsQuery() {
         ProductDatabase productDatabase = project.getProductDatabase();
@@ -133,72 +127,30 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
     @Test
     public void testFindBySkuOnline() throws Throwable {
-        runAsyncHandlerCode(() -> {
-            ProductDatabase productDatabase = project.getProductDatabase();
-            final Product product = findBySkuBlocking(productDatabase, "1");
-            assertEquals(product.getSku(), "1");
-            containsCode(product, "4008258510001");
-            assertNull(product.getTransmissionCode(project, "default", "0", 0));
+        ProductDatabase productDatabase = project.getProductDatabase();
+        final Product product = findBySkuBlocking(productDatabase, "1");
+        assertEquals(product.getSku(), "1");
+        containsCode(product, "4008258510001");
+        assertNull(product.getTransmissionCode(project, "default", "0", 0));
 
-            final Product product2 = findBySkuBlocking(productDatabase, "2");
-            assertEquals(product2.getSku(), "2");
-            containsCode(product2, "asdf123");
-            assertEquals(product2.getTransmissionCode(project, "default", "asdf123", 0), "trans123");
+        final Product product2 = findBySkuBlocking(productDatabase, "2");
+        assertEquals(product2.getSku(), "2");
+        containsCode(product2, "asdf123");
+        assertEquals(product2.getTransmissionCode(project, "default", "asdf123", 0), "trans123");
 
-            assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
-        });
-    }
-
-    private boolean working = false;
-    private Throwable error = null;
-    private void runAsyncHandlerCode(Runnable runnable) throws Throwable {
-        assertFalse("There must be no other running test", working);
-        working = true;
-        error = null;
-        new Thread(() -> {
-            try {
-                runnable.run();
-            } catch (Throwable throwable) {
-                error = throwable;
-            } finally {
-                working = false;
-            }
-        }).start();
-        while (working) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {}
-            Robolectric.flushForegroundThreadScheduler();
-        }
-        if(error != null) throw error;
+        assertNull(findBySkuBlocking(productDatabase, "unknownCode"));
     }
 
     @Test
-    public void testFindBySkuOnlineWithShopSpecificPrice() throws Throwable {
-        // Fix looper check
-        ArchTaskExecutor.getInstance().setDelegate(new DefaultTaskExecutor() {
-            @Override
-            public boolean isMainThread() {
-                return true;
-            }
-        });
-
-        runAsyncHandlerCode(() -> {
-            try {
-                ProductDatabase productDatabase = project.getProductDatabase();
-                final Product product = findBySkuBlocking(productDatabase, "1");
-                assertEquals(product.getSku(), "1");
-                assertEquals(product.getListPrice(), 399);
-
-                Snabble.getInstance().setCheckedInShop(project.getShops().get(1));
-                final Product product2 = findBySkuBlocking(productDatabase, "1");
-                assertEquals(product2.getSku(), "1");
-                assertEquals(product2.getListPrice(), 299);
-            } finally {
-                // Reset looper check
-                ArchTaskExecutor.getInstance().setDelegate(null);
-            }
-        });
+    public void testFindBySkuOnlineWithShopSpecificPrice() {
+        ProductDatabase productDatabase = project.getProductDatabase();
+        final Product product = findBySkuBlocking(productDatabase, "1");
+        assertEquals(product.getSku(), "1");
+        assertEquals(product.getListPrice(), 399);
+        Snabble.getInstance().setCheckedInShop(project.getShops().get(1));
+        final Product product2 = findBySkuBlocking(productDatabase, "1");
+        assertEquals(product2.getSku(), "1");
+        assertEquals(product2.getListPrice(), 299);
     }
 
     @Test

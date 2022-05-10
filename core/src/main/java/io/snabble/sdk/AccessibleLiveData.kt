@@ -29,11 +29,15 @@ open class AccessibleLiveData<T>: LiveData<T> {
     @get:JvmName("getLatestValue")
     open var value: T
         protected set(value) {
-            if (latestValue != value) {
-                latestValue = value
-                Dispatch.mainThread {
-                    super.setValue(value)
+            try {
+                if (latestValue != value) {
+                    latestValue = value
+                    Dispatch.mainThread {
+                        super.setValue(value)
+                    }
                 }
+            } catch (e: Exception) {
+                println(e)
             }
         }
         get() = if (latestValue !== NOT_SET) {

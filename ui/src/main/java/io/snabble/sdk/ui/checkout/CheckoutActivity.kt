@@ -4,11 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import io.snabble.sdk.*
+import io.snabble.sdk.checkout.Checkout
+import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Logger
 
@@ -17,18 +20,41 @@ class CheckoutActivity : FragmentActivity() {
         const val ARG_PROJECT_ID = "projectId"
 
         @JvmStatic
-        fun startCheckoutFlow(context: Context, args: Bundle?) {
+        fun startCheckoutFlow(context: Context, args: Bundle?, newTask: Boolean = false) {
             val intent = Intent(context, CheckoutActivity::class.java)
+            if (newTask) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+
             args?.let {
                 intent.putExtras(args)
             }
+
             context.startActivity(intent)
         }
 
         @JvmStatic
-        fun startCheckoutFlow(context: Context, project: Project) {
+        fun startCheckoutFlow(context: Context, project: Project, newTask: Boolean = false) {
             startCheckoutFlow(context, Bundle().apply {
                 putString(ARG_PROJECT_ID, project.id)
+            }, newTask)
+        }
+
+        @JvmStatic
+        fun restoreCheckoutIfNeeded(context: Context) {
+            Snabble.initializationState.observeForever(object : Observer<InitializationState> {
+                override fun onChanged(t: InitializationState) {
+                    if (t == InitializationState.INITIALIZED) {
+                        Snabble.initializationState.removeObserver(this)
+                        Snabble.projects.forEach {
+                            if (it.checkout.state.value?.isCheckoutState == true) {
+                                startCheckoutFlow(context, it, true)
+                            }
+                        }
+                    }
+                }
             })
         }
     }
@@ -65,8 +91,9 @@ class CheckoutActivity : FragmentActivity() {
                     }
 
                     val checkout = project.checkout
-                    if (!checkout.state.isCheckoutState) {
-                        finishWithError("Unexpected checkout state ${checkout.state.name}")
+                    val state = checkout.state.value
+                    if (state?.isCheckoutState == false) {
+                        finishWithError("Unexpected checkout state ${state.name}")
                         return@observe
                     }
                     this.checkout = checkout
@@ -81,7 +108,7 @@ class CheckoutActivity : FragmentActivity() {
 
                     navController.graph = navGraph
 
-                    checkout.checkoutState.observe(this) {
+                    checkout.state.observe(this) {
                         onStateChanged()
                     }
                 }
@@ -99,14 +126,14 @@ class CheckoutActivity : FragmentActivity() {
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
 
-        return when (checkout.state) {
-            Checkout.State.WAIT_FOR_GATEKEEPER -> {
+        return when (checkout.state.value) {
+            CheckoutState.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
             }
-            Checkout.State.WAIT_FOR_SUPERVISOR -> {
+            CheckoutState.WAIT_FOR_SUPERVISOR -> {
                 R.id.snabble_nav_routing_supervisor
             }
-            Checkout.State.WAIT_FOR_APPROVAL -> {
+            CheckoutState.WAIT_FOR_APPROVAL -> {
                 val selectedPaymentMethod = checkout.selectedPaymentMethod
                 selectedPaymentMethod?.let {
                     when (it) {
@@ -125,14 +152,14 @@ class CheckoutActivity : FragmentActivity() {
                     }
                 }
             }
-            Checkout.State.PAYMENT_ABORTED -> {
+            CheckoutState.PAYMENT_ABORTED -> {
                 finish()
                 null
             }
-            Checkout.State.PAYMENT_APPROVED -> {
+            CheckoutState.PAYMENT_APPROVED -> {
                 R.id.snabble_nav_payment_status
             }
-            Checkout.State.NONE -> {
+            CheckoutState.NONE -> {
                 finish()
                 null
             }
@@ -141,7 +168,11 @@ class CheckoutActivity : FragmentActivity() {
     }
 
     override fun onBackPressed() {
-        // prevent user from backing out
+        // prevent user from backing out while checkout is in progress
+        if (checkout?.state?.value == CheckoutState.PAYMENT_APPROVED) {
+            checkout?.reset()
+            finish()
+        }
     }
 
     private fun onStateChanged() {
