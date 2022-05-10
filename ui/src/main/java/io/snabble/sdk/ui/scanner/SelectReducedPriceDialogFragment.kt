@@ -41,6 +41,9 @@ class SelectReducedPriceDialogFragment(
                 val existingItem = viewModel.shoppingCart.getExistingMergeableProduct(viewModel.product)
                 if (existingItem?.isMergeable == true) {
                     viewModel.quantity.postValue(1)
+                } else {
+                    // TODO move this logic to view model
+                    viewModel.updatePrice()
                 }
             }
             .create()

@@ -52,6 +52,7 @@
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:textAppearance="?attr/textAppearanceTitleLarge"
         tools:text="2 × 1,00 € = 2,00 €" />
 
@@ -77,6 +78,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp">
 
@@ -112,6 +115,8 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:boxStrokeColor="@drawable/snabble_stroke"
             app:hintEnabled="false"
             app:shapeAppearance="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"

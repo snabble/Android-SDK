@@ -1,5 +1,5 @@
 @file:JvmName("LiveDataExtensions")
-package io.snabble.sdk.ui.scanner
+package io.snabble.sdk.ui.utils
 
 import android.view.View
 import android.widget.TextView
@@ -7,7 +7,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.findViewTreeLifecycleOwner
-import io.snabble.sdk.ui.utils.setTextOrHide
 
 /**
  * Extension function to bind a LiveData String to the text of a TextView (or its derived

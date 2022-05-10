@@ -46,31 +46,31 @@ class MainActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         with(navController) {
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
                 navigate(R.id.navigation_barcode_search, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SCANNER) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_SCANNER) { _, args ->
                 navigate(R.id.navigation_scanner, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
                  navigate(R.id.navigation_cart, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_sepa_card_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_credit_card_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT) { _, args ->
                 navigate(R.id.navigation_paydirekt_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYONE_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_PAYONE_INPUT) { _, args ->
                 navigate(R.id.navigation_payone_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
                 navigate(R.id.navigation_age_verification, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
+            SnabbleUI.setUiAction(this, SnabbleUI.Event.GO_BACK) { _, _ ->
                 popBackStack()
             }
         }
