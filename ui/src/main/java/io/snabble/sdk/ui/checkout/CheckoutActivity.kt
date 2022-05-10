@@ -168,7 +168,11 @@ class CheckoutActivity : FragmentActivity() {
     }
 
     override fun onBackPressed() {
-        // prevent user from backing out
+        // prevent user from backing out while checkout is in progress
+        if (checkout?.state?.value == CheckoutState.PAYMENT_APPROVED) {
+            checkout?.reset()
+            finish()
+        }
     }
 
     private fun onStateChanged() {
