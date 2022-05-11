@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.ui.scanner.ProductConfirmationDialog
-import io.snabble.sdk.ui.scanner.bindTextOrHide
+import io.snabble.sdk.ui.utils.bindTextOrHide
 
 class FancyProductConfirmationDialog: DialogFragment(), ProductConfirmationDialog {
     private var alertDialog: AlertDialog? = null
