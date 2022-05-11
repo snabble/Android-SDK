@@ -65,10 +65,8 @@ class PaymentStatusView @JvmOverloads constructor(
     private var fulfillmentContainer = findViewById<LinearLayout>(R.id.fulfillment_container)
 
     private var isStopped: Boolean = false
-    private val project: Project
-        get() = requireNotNull(Snabble.checkedInProject.value)
-    private val checkout: Checkout
-        get() = project.checkout
+    private lateinit var project: Project
+    private lateinit var checkout: Checkout
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -80,7 +78,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private var lastState: CheckoutState? = null
 
     private var paymentOriginCandidate: PaymentOriginCandidate? = null
-    private val paymentOriginCandidateHelper by lazy { PaymentOriginCandidateHelper(project) }
+    private lateinit var paymentOriginCandidateHelper: PaymentOriginCandidateHelper
     private var ignoreStateChanges = false
     private var hasShownSEPAInput = false
 
@@ -88,11 +86,20 @@ class PaymentStatusView @JvmOverloads constructor(
         clipChildren = false
 
         if (!isInEditMode) {
-            initViews()
+            project = requireNotNull(Snabble.checkedInProject.value)
+            checkout = project.checkout
+
+            Snabble.checkedInProject.observeView(this) {
+                project = requireNotNull(it)
+                checkout = project.checkout
+            }
+
+            update()
         }
     }
 
-    private fun initViews() {
+    private fun update() {
+        paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
         back.isEnabled = false

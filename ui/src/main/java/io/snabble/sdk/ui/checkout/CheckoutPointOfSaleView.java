@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.lifecycle.Observer;
 
+import java.util.Objects;
+
 import io.snabble.sdk.BarcodeFormat;
 import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.PriceFormatter;
@@ -44,6 +46,16 @@ public class CheckoutPointOfSaleView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_checkout_pos, this);
 
+        checkout = Objects.requireNonNull(Snabble.getInstance().getCheckedInProject().getValue()).getCheckout();
+        ViewExtKt.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+            checkout = p.getCheckout();
+            update();
+        });
+
+        update();
+    }
+
+    private void update() {
         Project project = Snabble.getInstance().getCheckedInProject().getValue();
 
         barcodeView = findViewById(R.id.qr_code);

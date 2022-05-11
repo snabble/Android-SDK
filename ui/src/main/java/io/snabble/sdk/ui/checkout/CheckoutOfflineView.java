@@ -32,6 +32,7 @@ import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.ui.utils.ViewExtKt;
 import io.snabble.sdk.utils.Dispatch;
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -63,11 +64,20 @@ public class CheckoutOfflineView extends FrameLayout {
     }
 
     private void init() {
-        project = Snabble.getInstance().getCheckedInProject().getValue();
-        EncodedCodesOptions options = project.getEncodedCodesOptions();
-
         inflate(getContext(), R.layout.snabble_view_checkout_offline, this);
 
+        project = Snabble.getInstance().getCheckedInProject().getValue();
+
+        ViewExtKt.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+            project = p;
+            update();
+        });
+
+        update();
+    }
+
+    private void update() {
+        EncodedCodesOptions options = project.getEncodedCodesOptions();
         maxSizeMm = options.maxSizeMm;
 
         encodedCodesGenerator = new EncodedCodesGenerator(options);

@@ -23,11 +23,10 @@ import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
+import io.snabble.sdk.ui.utils.ViewExtKt;
 
 public class CheckoutCustomerCardView extends FrameLayout {
     private Project project;
-    private Checkout checkout;
-    private CheckoutState currentState;
     private View helperText;
     private ImageView helperImage;
     private View upArrow;
@@ -48,10 +47,17 @@ public class CheckoutCustomerCardView extends FrameLayout {
     }
 
     private void init() {
-        project = Snabble.getInstance().getCheckedInProject().getValue();
-
         inflate(getContext(), R.layout.snabble_view_checkout_customercard, this);
 
+        project = Snabble.getInstance().getCheckedInProject().getValue();
+
+        ViewExtKt.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+            project = p;
+            update();
+        });
+    }
+
+    private void update() {
         Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OneShotClickListener() {
             @Override

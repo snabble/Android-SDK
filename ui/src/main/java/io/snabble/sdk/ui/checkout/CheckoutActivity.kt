@@ -20,7 +20,7 @@ class CheckoutActivity : FragmentActivity() {
         const val ARG_PROJECT_ID = "projectId"
 
         @JvmStatic
-        fun startCheckoutFlow(context: Context, args: Bundle?, newTask: Boolean = false) {
+        fun startCheckoutFlow(context: Context, newTask: Boolean = false) {
             val intent = Intent(context, CheckoutActivity::class.java)
             if (newTask) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -28,18 +28,7 @@ class CheckoutActivity : FragmentActivity() {
 
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
 
-            args?.let {
-                intent.putExtras(args)
-            }
-
             context.startActivity(intent)
-        }
-
-        @JvmStatic
-        fun startCheckoutFlow(context: Context, project: Project, newTask: Boolean = false) {
-            startCheckoutFlow(context, Bundle().apply {
-                putString(ARG_PROJECT_ID, project.id)
-            }, newTask)
         }
 
         @JvmStatic
@@ -48,10 +37,9 @@ class CheckoutActivity : FragmentActivity() {
                 override fun onChanged(t: InitializationState) {
                     if (t == InitializationState.INITIALIZED) {
                         Snabble.initializationState.removeObserver(this)
-                        Snabble.projects.forEach {
-                            if (it.checkout.state.value?.isCheckoutState == true) {
-                                startCheckoutFlow(context, it, true)
-                            }
+                        val project = Snabble.checkedInProject.value
+                        if (project?.checkout?.state?.value?.isCheckoutState == true) {
+                            startCheckoutFlow(context, true)
                         }
                     }
                 }
@@ -66,54 +54,59 @@ class CheckoutActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.snabble_activity_checkout)
-
-        val navHostFragment = supportFragmentManager.findFragmentById(
-            R.id.nav_host_container
-        ) as NavHostFragment
-        val graphInflater = navHostFragment.navController.navInflater
-        navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
-        navController = navHostFragment.navController
+        Logger.d("dddd onCreate")
 
         Snabble.initializationState.observe(this) {
             when (it) {
                 InitializationState.INITIALIZED -> {
-                    val projectId = intent.getStringExtra(ARG_PROJECT_ID)
-                    if (projectId == null) {
-                        finishWithError("No project id set")
-                        return@observe
-                    }
+                    Snabble.checkedInProject.observe(this) { project ->
+                        Logger.d("dddd setContentView")
+                        setContentView(R.layout.snabble_activity_checkout)
 
-                    val project = Snabble.getProjectById(projectId)
-                    if (project == null) {
-                        finishWithError("Project with id $projectId not found")
-                        return@observe
-                    }
+                        val navHostFragment = supportFragmentManager.findFragmentById(
+                            R.id.nav_host_container
+                        ) as NavHostFragment
+                        val graphInflater = navHostFragment.navController.navInflater
+                        navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
+                        navController = navHostFragment.navController
 
-                    val checkout = project.checkout
-                    val state = checkout.state.value
-                    if (state?.isCheckoutState == false) {
-                        finishWithError("Unexpected checkout state ${state.name}")
-                        return@observe
-                    }
-                    this.checkout = checkout
+                        if (project == null) {
+                            finishWithError("Project not set")
+                            return@observe
+                        }
 
-                    val startDestinationId = getNavigationId()
-                    if (startDestinationId == null) {
-                        finish()
-                        return@observe
-                    } else {
-                        navGraph.setStartDestination(startDestinationId)
-                    }
+                        Logger.d("dddd project " + System.identityHashCode(project))
 
-                    navController.graph = navGraph
+                        val checkout = project.checkout
+                        val state = checkout.state.value
+                        if (state?.isCheckoutState == false) {
+                            finishWithError("Unexpected checkout state ${state.name}")
+                            return@observe
+                        }
+                        this.checkout = checkout
 
-                    checkout.state.observe(this) {
-                        onStateChanged()
+                        checkout.state.observe(this) {
+                            Logger.d("dddd state change of checkout " + System.identityHashCode(checkout))
+                            onStateChanged()
+                        }
+
+                        val startDestinationId = getNavigationId()
+                        if (startDestinationId == null) {
+                            finish()
+                            return@observe
+                        } else {
+                            navGraph.setStartDestination(startDestinationId)
+                        }
+
+                        navController.graph = navGraph
                     }
                 }
-                InitializationState.INITIALIZING,
-                InitializationState.ERROR -> {} // ignored
+                InitializationState.INITIALIZING -> {
+                    // ignore
+                }
+                InitializationState.ERROR -> {
+                    finishWithError("The snabble SDK is not initialized")
+                }
             }
         }
     }

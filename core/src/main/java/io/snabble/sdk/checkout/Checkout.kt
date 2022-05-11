@@ -2,14 +2,13 @@ package io.snabble.sdk.checkout
 
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.LiveData
+import io.snabble.sdk.*
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.utils.Dispatch
-import androidx.lifecycle.LiveData
-import io.snabble.sdk.*
 import io.snabble.sdk.utils.Logger
 import java.io.File
-import java.lang.Exception
 import java.util.*
 import java.util.concurrent.Future
 
@@ -551,6 +550,8 @@ class Checkout @JvmOverloads constructor(
     }
 
     private fun approve() {
+        Logger.d("dddd approve checkout " + System.identityHashCode(this))
+
         if (state.value != CheckoutState.PAYMENT_APPROVED) {
             Logger.d("Payment approved")
 

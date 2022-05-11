@@ -116,7 +116,7 @@ object SnabbleUI {
             }
         } else {
             when (event) {
-                SHOW_CHECKOUT -> CheckoutActivity.startCheckoutFlow(context, args)
+                SHOW_CHECKOUT -> CheckoutActivity.startCheckoutFlow(context)
                 SHOW_SCANNER -> startActivity(context, SelfScanningActivity::class.java, args,
                     canGoBack = true,
                     unique = true

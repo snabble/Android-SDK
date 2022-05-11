@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 ### Changes
 - Migrated Checkout to Kotlin
 
+### Fixed
+- CheckoutOfflineView, CheckoutPOSView, CheckoutCustomerCardView and PaymentStatusView not
+updating it's Project correctly, when the CheckoutActivity gets recreated due to state restoration
+
 ## [0.63.0]
 
 ### Breaking Changes
