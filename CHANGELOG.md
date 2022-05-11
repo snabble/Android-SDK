@@ -1,12 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.64.0]
+## [0.63.0]
 
 ### Breaking Changes
+- Changed the way the project used by the UI is determined. You now only set
+  the Shop you are currently in via `Snabble.setCheckedInShop(...)` which
+  automatically determines in which project you are currently
+- Removed deprecated `setShop(...)`/`getShop()` functions in `Checkout`
+- Moved `setCheckedInShop(...)` from `Project` to `Snabble`
+- `SnabbleUI.project` is now read only, use instead `Snabble.checkedInProject`
 - Removed add/remove state listener for Checkout. Instead only the LiveData equivalents remain.
 - Moved Checkout to io.snabble.sdk.checkout.*
 - Removed getOrderId() from checkout
+
+### Deprecation
+- `SnabbleUI.project` and `SnabbleUI.projectAsLiveData` are replaced by
+  `Snabble.checkedInProject`
+
+### Important note
+`Snabble.checkedInProject` uses `LiveData` with a slightly modification: All
+changes will be directly applied so that `getValue()` will return always the
+latest data no matter on which thread set. The changes will be propagated
+as expected normal on the UI-Thread. You can also use a new `value` property
+in Kotlin.
 
 ### Added
 - Added state persistence for checkout
@@ -18,28 +35,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - CheckoutOfflineView, CheckoutPOSView, CheckoutCustomerCardView and PaymentStatusView not
-updating it's Project correctly, when the CheckoutActivity gets recreated due to state restoration
-
-## [0.63.0]
-
-### Breaking Changes
-- Changed the way the project used by the UI is determined. You now only set
-  the Shop you are currently in via `Snabble.setCheckedInShop(...)` which
-  automatically determines in which project you are currently
-- Removed deprecated `setShop(...)`/`getShop()` functions in `Checkout`
-- Moved `setCheckedInShop(...)` from `Project` to `Snabble`
-- `SnabbleUI.project` is now read only, use instead `Snabble.checkedInProject`
-
-### Deprecation
-- `SnabbleUI.project` and `SnabbleUI.projectAsLiveData` are replaced by
-  `Snabble.checkedInProject`
-  
-### Important note
-`Snabble.checkedInProject` uses `LiveData` with a slightly modification: All
-changes will be directly applied so that `getValue()` will return always the
-latest data no matter on which thread set. The changes will be propagated
-as expected normal on the UI-Thread. You can also use a new `value` property
-in Kotlin.
+  updating it's Project correctly, when the CheckoutActivity gets recreated due to state restoration
 
 ## [0.62.4]
 
