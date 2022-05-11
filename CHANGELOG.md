@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changes
 - Migrated Checkout to Kotlin
+- Added ViewModel to ProductConfirmationDialog
 
 ### Fixed
 - CheckoutOfflineView, CheckoutPOSView, CheckoutCustomerCardView and PaymentStatusView not
