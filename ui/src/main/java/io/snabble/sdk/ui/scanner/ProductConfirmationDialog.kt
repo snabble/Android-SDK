@@ -23,13 +23,10 @@ import com.squareup.picasso.Picasso
 import io.snabble.sdk.*
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.GsonHolder
 import kotlinx.parcelize.Parcelize
-import io.snabble.sdk.utils.Logger
 import kotlin.math.max
 
 /**
@@ -327,7 +324,6 @@ interface ProductConfirmationDialog {
             }
             val args = Bundle()
             args.putString("cartItem", GsonHolder.get().toJson(cartItem))
-            executeAction(context, SnabbleUI.Event.PRODUCT_CONFIRMATION_HIDDEN, args)
             if (Snabble.config.vibrateToConfirmCartFilled &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.VIBRATE)
                 == PackageManager.PERMISSION_GRANTED

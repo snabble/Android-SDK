@@ -224,7 +224,6 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
                 inputMethodManager.showSoftInput(quantity, 0)
             }
         }
-        executeAction(requireContext(), SnabbleUI.Event.PRODUCT_CONFIRMATION_SHOWN) // FIXME move to model
     }
 
     private fun checkAddToCart(): Boolean {
@@ -254,9 +253,6 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
         wasAddedToCart = addToCart
         if (isAdded) {
             dismiss()
-            if (!addToCart) {
-                executeAction(requireContext(), SnabbleUI.Event.PRODUCT_CONFIRMATION_HIDDEN) // FIXME move to model
-            }
         }
     }
 

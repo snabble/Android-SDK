@@ -44,8 +44,6 @@ object SnabbleUI {
         SHOW_PROJECT_PAYMENT_OPTIONS,
         SHOW_AGE_VERIFICATION,
         GO_BACK,
-        PRODUCT_CONFIRMATION_SHOWN,
-        PRODUCT_CONFIRMATION_HIDDEN,
         EXIT_TOKEN_AVAILABLE
     }
 
@@ -138,8 +136,6 @@ object SnabbleUI {
                 // unhandled actions
                 GO_BACK,
                 SHOW_CHECKOUT_DONE,
-                PRODUCT_CONFIRMATION_HIDDEN,
-                PRODUCT_CONFIRMATION_SHOWN,
                 EXIT_TOKEN_AVAILABLE,
                 null -> {}
             }
