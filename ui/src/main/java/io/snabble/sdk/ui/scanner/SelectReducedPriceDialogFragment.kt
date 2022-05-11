@@ -7,7 +7,6 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import io.snabble.sdk.CouponType
-import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 
@@ -33,17 +32,14 @@ class SelectReducedPriceDialogFragment(
             .setTitle(R.string.Snabble_addDiscount)
             .setAdapter(adapter) { _, which ->
                 if (which == 0) {
-                    viewModel.cartItem.coupon = null
+                    viewModel.appliedCoupon.postValue(null)
                 } else {
-                    viewModel.cartItem.coupon = discounts[which - 1]
+                    viewModel.appliedCoupon.postValue(discounts[which - 1])
                 }
 
                 val existingItem = viewModel.shoppingCart.getExistingMergeableProduct(viewModel.product)
                 if (existingItem?.isMergeable == true) {
                     viewModel.quantity.postValue(1)
-                } else {
-                    // TODO move this logic to view model
-                    viewModel.updatePrice()
                 }
             }
             .create()

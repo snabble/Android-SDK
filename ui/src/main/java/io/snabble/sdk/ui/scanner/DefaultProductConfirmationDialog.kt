@@ -66,6 +66,11 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
             setOnKeyListener(onKeyListener)
         }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.onSaveInstanceState(outState)
+    }
+
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         viewModel.dismiss()
@@ -76,6 +81,10 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
         inflater.inflate(R.layout.snabble_dialog_product_confirmation, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // restore the view model
+        savedInstanceState?.let { state ->
+            viewModel = ProductConfirmationDialog.ViewModel(view.context, state)
+        }
         quantity = view.findViewById(R.id.quantity)
         quantityTextInput = view.findViewById(R.id.quantity_text_input)
         val subtitle = view.findViewById<TextView>(R.id.subtitle)

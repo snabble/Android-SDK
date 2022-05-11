@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Parcelable
 import android.os.Vibrator
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.StrikethroughSpan
 import android.util.Log
 import android.view.KeyEvent
+import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
@@ -18,10 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
-import io.snabble.sdk.CouponType
-import io.snabble.sdk.Product
-import io.snabble.sdk.Project
-import io.snabble.sdk.Snabble
+import io.snabble.sdk.*
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -29,6 +28,7 @@ import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.GsonHolder
+import kotlinx.parcelize.Parcelize
 import io.snabble.sdk.utils.Logger
 import kotlin.math.max
 
@@ -53,7 +53,7 @@ interface ProductConfirmationDialog {
         private val project: Project,
         /** The product raw data */
         val product: Product,
-        scannedCode: ScannedCode,
+        private val scannedCode: ScannedCode,
     ) {
         private val priceFormatter = project.priceFormatter
         /** The related shopping cart */
@@ -78,6 +78,8 @@ interface ProductConfirmationDialog {
         val depositPrice: LiveData<String?> = MutableLiveData()
         /** The button text do enter manual discounts, can be null when no coupons are available */
         val enterReducedPriceButtonText: LiveData<String?> = MutableLiveData()
+        /** A applied coupon like a manual discount, can be null */
+        val appliedCoupon = MutableLiveData<Coupon?>(null)
         /** True when the quantity can be increased. Can be false when there is no quantity or the limit is reached */
         val quantityCanBeIncreased: LiveData<Boolean> = MutableLiveData(true)
         /** True when the quantity can be decreased. Can be false when there is no quantity or the quantity is 1 */
@@ -124,6 +126,104 @@ interface ProductConfirmationDialog {
             quantity.observeForever(quantityObserver)
             updatePrice()
             updateButtons()
+            appliedCoupon.observeForever {
+                cartItem.coupon = it
+                updatePrice()
+            }
+        }
+
+        /**
+         * Restore the ViewModel from a context and the savedInstanceState.
+         * Can throw IllegalArgumentException when the project cannot be found or onSaveInstanceState was not called.
+         */
+        constructor(context: Context, savedInstanceState: Bundle): this(
+            context,
+            requireNotNull(savedInstanceState.getParcelable<Restorer>("model")) { "Cannot restore state" }
+        )
+
+        // Helper constructor to take the data from a restorer.
+        private constructor(context: Context, restorer: Restorer):
+                this(context, restorer.project, restorer.product, restorer.scannedCode) {
+            quantity.postValue(restorer.quantity)
+            quantityContentDescription.postValue(restorer.quantityContentDescription)
+            quantityCanBeChanged.postValue(restorer.quantityCanBeChanged)
+            restorer.addToCartButtonText?.let { addToCartButtonText.postValue(it) }
+            restorer.price?.let { price.postValue(it) }
+            restorer.priceContentDescription?.let { priceContentDescription.postValue(it) }
+            originalPrice.postValue(restorer.originalPrice)
+            depositPrice.postValue(restorer.depositPrice)
+            enterReducedPriceButtonText.postValue(restorer.enterReducedPriceButtonText)
+            appliedCoupon.postValue(restorer.appliedCoupon)
+            quantityCanBeIncreased.postValue(restorer.quantityCanBeIncreased)
+            quantityCanBeDecreased.postValue(restorer.quantityCanBeDecreased)
+            quantityVisible.postValue(restorer.quantityVisible)
+            quantityButtonsVisible.postValue(restorer.quantityButtonsVisible)
+            wasAddedToCart = restorer.wasAddedToCart
+            isDismissed = restorer.isDismissed
+        }
+
+        @Parcelize
+        private data class Restorer(
+            val projectId: String,
+            val product: Product,
+            val scannedCode: ScannedCode,
+            val quantity: Int?,
+            val quantityContentDescription: String?,
+            val quantityCanBeChanged: Boolean,
+            val addToCartButtonText: String?,
+            val price: String?,
+            val priceContentDescription: String?,
+            val originalPrice: CharSequence?,
+            val depositPrice: String?,
+            val enterReducedPriceButtonText: String?,
+            val appliedCoupon: Coupon?,
+            val quantityCanBeIncreased: Boolean,
+            val quantityCanBeDecreased: Boolean,
+            val quantityVisible: Boolean,
+            val quantityButtonsVisible: Boolean,
+            val wasAddedToCart: Boolean,
+            val isDismissed: Boolean
+        ) : Parcelable {
+            val project: Project
+                get() = Snabble.getProjectById(projectId) ?: throw IllegalStateException("Project not found")
+       }
+
+        /**
+         * Called to ask the view model to save its current dynamic state, so it
+         * can later be reconstructed in a new instance if its process is
+         * restarted.
+         *
+         * <p>This corresponds to {@link Activity#onSaveInstanceState(Bundle)
+         * Activity.onSaveInstanceState(Bundle)} and most of the discussion there
+         * applies here as well.  Note however: you must call this method, there is
+         * no automatic to save the state.</p>
+         *
+         * @param outState Bundle in which to place your saved state.
+         */
+        @MainThread
+        fun onSaveInstanceState(outState: Bundle) {
+            // Note: Those fields with a bang operator are initialized with a value and never can be null
+            outState.putParcelable("model", Restorer(
+                projectId = project.id,
+                product = product,
+                scannedCode = scannedCode,
+                quantity = quantity.value,
+                quantityContentDescription = quantityContentDescription.value,
+                quantityCanBeChanged = quantityCanBeChanged.value!!,
+                addToCartButtonText = addToCartButtonText.value,
+                price = price.value,
+                priceContentDescription = priceContentDescription.value,
+                originalPrice = originalPrice.value,
+                depositPrice = depositPrice.value,
+                enterReducedPriceButtonText = enterReducedPriceButtonText.value,
+                appliedCoupon = appliedCoupon.value,
+                quantityCanBeIncreased = quantityCanBeIncreased.value!!,
+                quantityCanBeDecreased = quantityCanBeDecreased.value!!,
+                quantityVisible = quantityVisible.value!!,
+                quantityButtonsVisible = quantityButtonsVisible.value!!,
+                wasAddedToCart = wasAddedToCart,
+                isDismissed = isDismissed
+            ))
         }
 
         private fun LiveData<String>.postString(@StringRes string: Int, vararg args: Any?) {
@@ -150,7 +250,7 @@ interface ProductConfirmationDialog {
             isDismissed = true
         }
 
-        fun updatePrice() {
+        private fun updatePrice() {
             val fullPriceText = cartItem.fullPriceText
             if (fullPriceText != null) {
                 price.postValue(cartItem.fullPriceText)
