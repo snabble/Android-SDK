@@ -4,7 +4,6 @@ import android.os.Looper
 import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -72,8 +71,8 @@ enum class CouponSource {
 class Coupons (
     private val project: Project
 ) : Iterable<Coupon>, LiveData<List<Coupon>>() {
-    val source: LiveData<CouponSource> = MutableLiveData(CouponSource.Bundled)
-    val isLoading: LiveData<Boolean> = MutableLiveData(false)
+    val source: LiveData<CouponSource> = MutableAccessibleLiveData(CouponSource.Bundled)
+    val isLoading: LiveData<Boolean> = MutableAccessibleLiveData(false)
 
     fun filter(type: CouponType): List<Coupon> =
         value?.filter { it.type == type } ?: emptyList()
@@ -89,16 +88,14 @@ class Coupons (
 
     fun update() {
         if (isLoading.value == true) return
-        fun <T> LiveData<T>.setAsap(value: T) {
-            if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
-                (this as MutableLiveData<T>).value = value
-            } else {
-                (this as MutableLiveData<T>).postValue(value)
-            }
+
+        fun <T> LiveData<T>.set(value: T) {
+            (this as MutableAccessibleLiveData<T>).value = value
         }
+
         project.urls["coupons"]?.let { path ->
             val couponsUrl = Snabble.absoluteUrl(path)
-            isLoading.setAsap(true)
+            isLoading.set(true)
 
             val request = Request.Builder()
                 .url(couponsUrl)
@@ -106,7 +103,7 @@ class Coupons (
             val couponCall = project.okHttpClient.newCall(request)
             couponCall.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    isLoading.setAsap(false)
+                    isLoading.set(false)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -116,9 +113,9 @@ class Coupons (
                         postValue(localizedResponse.coupons.filter { coupon ->
                             coupon.isValid
                         })
-                        source.setAsap(CouponSource.Online)
+                        source.set(CouponSource.Online)
                     }
-                    isLoading.setAsap(false)
+                    isLoading.set(false)
                 }
             })
         }

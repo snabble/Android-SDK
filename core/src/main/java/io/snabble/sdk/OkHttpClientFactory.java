@@ -7,7 +7,6 @@ import io.snabble.sdk.utils.Logger;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 class OkHttpClientFactory {
     private static final String[] PINS = new String[] {
@@ -37,10 +36,7 @@ class OkHttpClientFactory {
         builder.retryOnConnectionFailure(true);
         builder.pingInterval(5, TimeUnit.SECONDS); // workaround for https://github.com/square/okhttp/issues/3146
 
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(Logger::i);
-
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        builder.addInterceptor(logging);
+        builder.addInterceptor(new OkHttpLogger(Logger::i));
 
         Config config = Snabble.getInstance().getConfig();
         builder.addInterceptor(new UserAgentInterceptor(application));

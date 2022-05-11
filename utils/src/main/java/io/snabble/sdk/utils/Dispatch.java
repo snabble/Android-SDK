@@ -2,6 +2,7 @@ package io.snabble.sdk.utils;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -26,27 +27,60 @@ public class Dispatch {
     }
 
     public static Future<?> background(Runnable runnable) {
-        return executorService.submit(runnable);
+        return executorService.submit(() -> {
+            try {
+                runnable.run();
+            } catch (Throwable t){
+                Log.e("Dispatch", "Crash on background thread", t);
+                throw t;
+            }
+        });
     }
 
     public static Future<?> io(Runnable runnable) {
-        return ioScheduler.submit(runnable);
+        return ioScheduler.submit(() -> {
+            try {
+                runnable.run();
+            } catch (Throwable t){
+                Log.e("Dispatch", "Crash on I/O thread", t);
+                throw t;
+            }
+        });
     }
 
     public static Future<?> background(Runnable runnable, long delayMs) {
-        return executorService.schedule(runnable, delayMs, TimeUnit.MILLISECONDS);
+        return executorService.schedule(() -> {
+            try {
+                runnable.run();
+            } catch (Throwable t){
+                Log.e("Dispatch", "Crash on background thread", t);
+                throw t;
+            }
+        }, delayMs, TimeUnit.MILLISECONDS);
     }
 
     public static void mainThread(Runnable runnable) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            runnable.run();
-        } else {
-            if (mainThreadHandler != null) {
-                mainThreadHandler.handle(runnable);
-                return;
-            }
+        try {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                runnable.run();
+            } else {
+                if (mainThreadHandler != null) {
+                    mainThreadHandler.handle(() -> {
+                        try {
+                            runnable.run();
+                        } catch (Throwable t){
+                            Log.e("Dispatch", "Crash on main thread", t);
+                            throw t;
+                        }
+                    });
+                    return;
+                }
 
-            handler.post(runnable);
+                handler.post(runnable);
+            }
+        } catch (Throwable t){
+            Log.e("Dispatch", "Crash on main thread", t);
+            throw t;
         }
     }
 
