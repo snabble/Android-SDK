@@ -10,7 +10,6 @@ import android.os.Vibrator
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.StrikethroughSpan
-import android.util.Log
 import android.view.KeyEvent
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
@@ -92,31 +91,27 @@ interface ProductConfirmationDialog {
         private var isDismissed = false
         // syncs the quantity property with the cart item and updates the addToCartButtonText
         private val quantityObserver = Observer<Int?> {
-            try {
-                it?.let {
-                    cartItem.quantity = it
-                }
-                val existingQuantity =
-                    shoppingCart.getExistingMergeableProduct(cartItem.product)?.effectiveQuantity
-                        ?: 0
-                val newQuantity = cartItem.effectiveQuantity
-                if (quantity.value == null && cartItem.product?.type == Product.Type.Article) {
-                    quantity.cycleFreeValue(existingQuantity + newQuantity)
-                } else if (cartItem.product?.type == Product.Type.UserWeighed && quantity.value == 0) {
-                    quantity.cycleFreeValue(null)
-                }
-                addToCartButtonText.postString(R.string.Snabble_Scanner_addToCart)
-                quantityContentDescription.postNullableString(
-                    R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate,
-                    quantity.value.toString(),
-                    cartItem.displayName,
-                    cartItem.totalPriceText
-                )
-                updatePrice()
-                updateButtons()
-            } catch (e: Exception) {
-                Log.e("dddd", e.message!!)
+            it?.let {
+                cartItem.quantity = it
             }
+            val existingQuantity =
+                shoppingCart.getExistingMergeableProduct(cartItem.product)?.effectiveQuantity
+                    ?: 0
+            val newQuantity = cartItem.effectiveQuantity
+            if (quantity.value == null && cartItem.product?.type == Product.Type.Article) {
+                quantity.cycleFreeValue(existingQuantity + newQuantity)
+            } else if (cartItem.product?.type == Product.Type.UserWeighed && quantity.value == 0) {
+                quantity.cycleFreeValue(null)
+            }
+            addToCartButtonText.postString(R.string.Snabble_Scanner_addToCart)
+            quantityContentDescription.postNullableString(
+                R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate,
+                quantity.value.toString(),
+                cartItem.displayName,
+                cartItem.totalPriceText
+            )
+            updatePrice()
+            updateButtons()
         }
 
         init {
