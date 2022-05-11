@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical">
+    android:gravity="center"
+    android:orientation="vertical"
+    android:minWidth="350dp">
 
     <ImageButton
         android:id="@+id/close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="4dp"
-        android:padding="12dp"
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.closeDialog"
-        app:tint="?attr/colorOnSurface"
-        app:srcCompat="@drawable/snabble_ic_close" />
+        android:padding="12dp"
+        app:srcCompat="@drawable/snabble_ic_close"
+        app:tint="?attr/colorOnSurface" />
 
     <TextView
         android:id="@+id/subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/close"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="4dp"
         android:textAppearance="?attr/textAppearanceBodyMedium"
         tools:text="Wiha" />
@@ -36,14 +34,8 @@
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/subtitle"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginHorizontal="8dp"
         android:layout_marginBottom="8dp"
-        android:gravity="center"
         android:textAppearance="?attr/textAppearanceBodyLarge"
         tools:text="Schraubendreher Top G 8,0x1,2" />
 
@@ -51,20 +43,15 @@
         android:id="@+id/originalPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/name"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:alpha="0.6"
         android:layout_marginBottom="4dp"
+        android:alpha="0.6"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         tools:text="1,29 €" />
 
     <TextView
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/originalPrice"
-        android:layout_centerHorizontal="true"
         android:gravity="center"
         android:textAppearance="?attr/textAppearanceTitleLarge"
         tools:text="2 × 1,00 € = 2,00 €" />
@@ -73,8 +60,6 @@
         android:id="@+id/depositPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/price"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
         android:textAppearance="?attr/textAppearanceBodySmall"
         tools:text="+ 0,45 € deposit" />
@@ -84,121 +69,107 @@
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/depositPrice"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="-16dp"
         android:textAppearance="?attr/textAppearanceBodyMedium"
         tools:text="Reduzierten Preis eingeben"
         tools:textColor="#c40000" />
 
-    <FrameLayout
-        android:id="@+id/minus_layout"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/enterReducedPrice"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_toStartOf="@+id/quantity_text_input">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/snabble_ic_minus_content"
-            app:tint="?attr/colorOnSurface"
-            android:importantForAccessibility="no" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/minus"
-            style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.decreaseQuantity"
-            app:strokeColor="@drawable/snabble_stroke" />
-    </FrameLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-        android:id="@+id/quantity_text_input"
-        android:layout_width="95dp"
-        android:layout_height="48dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        app:hintEnabled="false"
-        app:boxStrokeColor="@drawable/snabble_stroke"
-        app:shapeAppearance="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
-        android:layout_below="@+id/enterReducedPrice"
-        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/quantity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:gravity="center"
-            android:hint="@string/Snabble.Shoppingcart.Accessibility.quantity"
-            android:inputType="number"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:text="1"
-            tools:ignore="HardcodedText" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <FrameLayout
-        android:id="@+id/plus_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/enterReducedPrice"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_toEndOf="@+id/quantity_text_input">
-        <ImageView
+        <FrameLayout
+            android:id="@+id/minus_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/snabble_ic_plus_content"
-            app:tint="?attr/colorOnSurface"
-            android:importantForAccessibility="no"/>
+            android:layout_marginEnd="8dp">
 
-        <com.google.android.material.button.MaterialButton
-            style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
-            android:id="@+id/plus"
-            android:layout_width="48dp"
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/snabble_ic_minus_content"
+                app:tint="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/minus"
+                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.decreaseQuantity"
+                app:strokeColor="@drawable/snabble_stroke" />
+        </FrameLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/quantity_text_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="95dp"
             android:layout_height="48dp"
-            app:strokeColor="@drawable/snabble_stroke"
-            android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.increaseQuantity" />
-    </FrameLayout>
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:boxStrokeColor="@drawable/snabble_stroke"
+            app:hintEnabled="false"
+            app:shapeAppearance="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
+            tools:suffixText="g">
 
-    <TextView
-        android:id="@+id/quantity_annotation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/quantity_text_input"
-        android:layout_below="@+id/price"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_toEndOf="@+id/quantity_text_input"
-        android:layout_toRightOf="@+id/quantity_text_input"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:visibility="gone"
-        tools:text="g" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/quantity"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:hint="@string/Snabble.Shoppingcart.Accessibility.quantity"
+                android:inputType="number"
+                android:text="1"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <FrameLayout
+            android:id="@+id/plus_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/snabble_ic_plus_content"
+                app:tint="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/plus"
+                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.increaseQuantity"
+                app:strokeColor="@drawable/snabble_stroke" />
+        </FrameLayout>
+
+    </LinearLayout>
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/addToCart"
         style="@style/Snabble.Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/quantity_text_input"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="16dp"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
         android:text="@string/Snabble.Scanner.addToCart" />
 
 
@@ -206,6 +177,5 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="12dp"
-        android:layout_below="@id/addToCart"
         android:visibility="invisible" />
-</RelativeLayout>
+</LinearLayout>

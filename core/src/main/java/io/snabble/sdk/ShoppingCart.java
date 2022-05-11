@@ -763,6 +763,7 @@ public class ShoppingCart {
             return b;
         }
 
+        @Nullable
         public Unit getUnit() {
             if (getType() == ItemType.PRODUCT) {
                 return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()

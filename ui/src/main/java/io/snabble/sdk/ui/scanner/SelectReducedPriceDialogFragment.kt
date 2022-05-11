@@ -7,25 +7,19 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import io.snabble.sdk.CouponType
-import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 
 class SelectReducedPriceDialogFragment(
-    private val productConfirmationDialog: ProductConfirmationDialog?,
-    private val cartItem: ShoppingCart.Item?,
-    private val shoppingCart: ShoppingCart?
+    private val viewModel: ProductConfirmationDialog.ViewModel
 ) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        if (productConfirmationDialog == null || cartItem == null) {
+        if (viewModel.cartItem == null) {
             dismissAllowingStateLoss()
         }
 
         val project = requireNotNull(Snabble.checkedInProject.value)
         val discounts = project.coupons.filter(CouponType.MANUAL)
-        val dialog = productConfirmationDialog
-        val item = cartItem
-        val cart = shoppingCart
 
         val adapter = ArrayAdapter(
             requireContext(),
@@ -38,18 +32,15 @@ class SelectReducedPriceDialogFragment(
             .setTitle(R.string.Snabble_addDiscount)
             .setAdapter(adapter) { _, which ->
                 if (which == 0) {
-                    item?.coupon = null
+                    viewModel.appliedCoupon.postValue(null)
                 } else {
-                    item?.coupon = discounts[which - 1]
+                    viewModel.appliedCoupon.postValue(discounts[which - 1])
                 }
 
-                val existingItem = cart?.getExistingMergeableProduct(item?.product)
+                val existingItem = viewModel.shoppingCart.getExistingMergeableProduct(viewModel.product)
                 if (existingItem?.isMergeable == true) {
-                    dialog?.setQuantity(1)
+                    viewModel.quantity.postValue(1)
                 }
-
-                dialog?.updatePrice()
-                dialog?.updateQuantityText()
             }
             .create()
     }

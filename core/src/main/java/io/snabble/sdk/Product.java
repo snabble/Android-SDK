@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -223,7 +224,6 @@ public class Product implements Serializable, Parcelable {
         return customerCardPrice == 0 ? getDiscountedPrice() : customerCardPrice;
     }
 
-
     @Deprecated // will be removed in a future version
     public boolean isDiscounted() {
         return discountedPrice > 0;
@@ -236,6 +236,7 @@ public class Product implements Serializable, Parcelable {
     /**
      * Returns the deposit product, or null if the product has no deposit product
      */
+    @Nullable
     public Product getDepositProduct() {
         return depositProduct;
     }

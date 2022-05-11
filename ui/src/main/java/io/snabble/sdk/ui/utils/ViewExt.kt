@@ -1,17 +1,21 @@
 package io.snabble.sdk.ui.utils
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -94,3 +98,18 @@ fun <T> LiveData<T>.observeView(view: View, observer: Observer<T>) {
         }
     })
 }
+
+val Number.dpInPx: Int
+    get() = dp.toInt()
+
+val Number.dp: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, toFloat(), Resources.getSystem().displayMetrics)
+
+val Number.spInPx: Int
+    get() = sp.toInt()
+
+val Number.sp: Float
+    get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, toFloat(), Resources.getSystem().displayMetrics)
+
+fun RecyclerView.ViewHolder.getString(@StringRes string: Int, vararg args: Any?) =
+    itemView.resources.getString(string, *args)
