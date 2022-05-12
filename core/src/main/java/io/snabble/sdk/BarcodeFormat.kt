@@ -1,6 +1,9 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-public enum BarcodeFormat {
+/**
+ * Enum describing a barcode format
+ */
+enum class BarcodeFormat {
     CODE_39,
     CODE_128,
     EAN_8,
@@ -10,27 +13,22 @@ public enum BarcodeFormat {
     DATA_MATRIX,
     PDF_417;
 
-    public static BarcodeFormat parse(String str) {
-        switch (str) {
-            case "code39":
-                return CODE_39;
-            case "code128":
-                return CODE_128;
-            case "ean8":
-                return EAN_8;
-            case "ean13":
-                return EAN_13;
-            case "itf14":
-                return ITF_14;
-            case "datamatrix":
-                return DATA_MATRIX;
-            case "pdf417":
-                return PDF_417;
-            case "qr":
-            case "qrCode":
-                return QR_CODE;
+    companion object {
+        /**
+         * Parse the BarcodeFormat from a string
+         */
+        fun parse(str: String?): BarcodeFormat? {
+            return when (str) {
+                "code39" -> CODE_39
+                "code128" -> CODE_128
+                "ean8" -> EAN_8
+                "ean13" -> EAN_13
+                "itf14" -> ITF_14
+                "datamatrix" -> DATA_MATRIX
+                "pdf417" -> PDF_417
+                "qr", "qrCode" -> QR_CODE
+                else -> null
+            }
         }
-
-        return null;
     }
 }
