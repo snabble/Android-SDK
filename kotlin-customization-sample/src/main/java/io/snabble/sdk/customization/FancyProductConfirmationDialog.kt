@@ -15,7 +15,6 @@ import io.snabble.sdk.ui.scanner.ProductConfirmationDialog
 import io.snabble.sdk.ui.utils.bindTextOrHide
 
 class FancyProductConfirmationDialog: DialogFragment(), ProductConfirmationDialog {
-    private var alertDialog: AlertDialog? = null
     private var onDismissListener: ProductConfirmationDialog.OnDismissListener? = null
     private var onShowListener: ProductConfirmationDialog.OnShowListener? = null
     private var onKeyListener: ProductConfirmationDialog.OnKeyListener? = null
@@ -31,6 +30,7 @@ class FancyProductConfirmationDialog: DialogFragment(), ProductConfirmationDialo
         super.onCreateDialog(savedInstanceState).apply {
             setOnShowListener(onShowListener)
             setOnKeyListener(onKeyListener)
+            window?.attributes?.windowAnimations = R.style.SimpleDialogAnimation
         }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -40,7 +40,7 @@ class FancyProductConfirmationDialog: DialogFragment(), ProductConfirmationDialo
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View =
-        inflater.inflate(io.snabble.sdk.ui.R.layout.snabble_dialog_product_confirmation, container, false)
+        inflater.inflate(R.layout.product_dialog, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val addToCart = view.findViewById<Button>(R.id.addToCart)
@@ -51,12 +51,10 @@ class FancyProductConfirmationDialog: DialogFragment(), ProductConfirmationDialo
         addToCart.bindTextOrHide(viewModel.addToCartButtonText)
         val title = view.findViewById<TextView>(R.id.title)
         title.text = viewModel.product.name
-        alertDialog?.window?.attributes?.windowAnimations = R.style.SimpleDialogAnimation
-        alertDialog?.show()
     }
 
     override fun dismiss(addToCart: Boolean) {
-        alertDialog?.dismiss()
+        if (isAdded) dismiss()
     }
 
     override fun setOnDismissListener(onDismissListener: ProductConfirmationDialog.OnDismissListener?) {
