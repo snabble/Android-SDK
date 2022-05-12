@@ -1,50 +1,31 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import java.util.Date;
-
-public class ReceiptInfo {
-    private final String id;
-    private final String projectId;
-    private final long timestamp;
-    private final String pdfUrl;
-    private final String shopName;
-    private final String price;
-
-    public ReceiptInfo(String id, String projectId, long timestamp, String pdfUrl, String shopName, String price) {
-        this.id = id;
-        this.projectId = projectId;
-        this.timestamp = timestamp;
-        this.pdfUrl = pdfUrl;
-        this.shopName = shopName;
-        this.price = price;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    @Deprecated
-    public Date getDate() {
-        return new Date(timestamp);
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public String getPdfUrl() {
-        return pdfUrl;
-    }
-
-    public String getShopName() {
-        return shopName;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-}
+/**
+ * Class containing information about a order
+ */
+data class ReceiptInfo(
+    /**
+     * Unique id of the receipt / order
+     */
+    val id: String,
+    /**
+     * Get the project id of the order
+     */
+    val projectId: String,
+    /**
+     * Unix timestamp of the purchase
+     */
+    val timestamp: Long,
+    /**
+     * Url to the pdf document, containing the receipt
+     */
+    val pdfUrl: String,
+    /**
+     * Name of the shop in which the order was fulfilled
+     */
+    val shopName: String,
+    /**
+     * Final price of the order
+     */
+    val price: String
+)

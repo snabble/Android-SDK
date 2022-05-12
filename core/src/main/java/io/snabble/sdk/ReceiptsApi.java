@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -139,7 +140,11 @@ public class ReceiptsApi {
                         }
                     }
 
-                    Collections.sort(result, (o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+                    Collections.sort(result, (o1, o2) -> {
+                        Date date1 = new Date(o1.getTimestamp());
+                        Date date2 = new Date(o2.getTimestamp());
+                        return -date1.compareTo(date2);
+                    });
 
                     receiptUpdateCallback.success(result.toArray(new ReceiptInfo[0]));
                 }
