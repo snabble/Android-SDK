@@ -68,33 +68,33 @@ dependencies {
 
 ## Usage
 ```kotlin
-        val config = Config(
-            appId = YOUR_APP_ID,
-            secret = YOUR_SECRET,
-        )
+val config = Config(
+    appId = YOUR_APP_ID,
+    secret = YOUR_SECRET,
+)
 
-        // you may enable debug logging
-        Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
+// you may enable debug logging
+Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
 
-        Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
-            override fun onReady() {
-                // an application can have multiple projects, for example for
-                // multiple independent regions / countries
-                val project = Snabble.projects.first()
+Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
+    override fun onReady() {
+        // an application can have multiple projects, for example for
+        // multiple independent regions / countries
+        val project = Snabble.projects.first()
 
-                // check in to the first shop - you can use CheckInManager if you want
-                // to use geofencing
-                Snabble.checkedInShop = project.shops.first()
+        // check in to the first shop - you can use CheckInManager if you want
+        // to use geofencing
+        Snabble.checkedInShop = project.shops.first()
 
-                // this is done on the background and can be done at any time
-                // a fully downloaded product database allows for scanning products while
-                // being offline
-                //
-                // if the product database is still downloading or you did not call update()
-                // online request will be used in the mean time
-                project.productDatabase.update()
-            }
-        })
+        // this is done on the background and can be done at any time
+        // a fully downloaded product database allows for scanning products while
+        // being offline
+        //
+        // if the product database is still downloading or you did not call update()
+        // online request will be used in the mean time
+        project.productDatabase.update()
+    }
+})
 ```
 
 ## Light mode themes
