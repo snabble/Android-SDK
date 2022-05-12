@@ -67,62 +67,34 @@ dependencies {
 ```
 
 ## Usage
-```java
-//you may enable debug logging to see requests made by the sdk, and other various logs
-Snabble.setDebugLoggingEnabled(true);
+```kotlin
+        val config = Config(
+            appId = YOUR_APP_ID,
+            secret = YOUR_SECRET,
+        )
 
-Snabble.Config config = new Snabble.Config();
-config.appId = <your app id>
-config.secret = <your secret>
+        // you may enable debug logging
+        Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
 
-// optional: provide a metadata file, store in the assets. That allows the sdk 
-// init without requiring a network connection.
-config.bundledMetadataAssetPath = "metadata.json";
+        Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
+            override fun onReady() {
+                // an application can have multiple projects, for example for
+                // multiple independent regions / countries
+                val project = Snabble.projects.first()
 
-final Snabble snabble = Snabble.getInstance();
-snabble.setup(this, config, new Snabble.SetupCompletionListener() {
-    @Override
-    public void onReady() {
-        // get the first project, there can be multiple projects per app
-        project = snabble.getProjects().get(0);
+                // check in to the first shop - you can use CheckInManager if you want
+                // to use geofencing
+                Snabble.checkedInShop = project.shops.first()
 
-        // registers this project globally for use with ui components
-        SnabbleUI.useProject(project);
-
-        // select the first shop for demo purposes, ideally this should be done with
-        // geofencing or a manual user selection
-        if (project.getShops().length > 0) {
-            project.getCheckout().setShop(project.getShops()[0]);
-        }
-
-        // optional: set a loyalty card id for identification, for demo purposes
-        // we invent one here
-        project.setLoyaltyCardId("testAppUserLoyaltyCardId");
-        
-        // optional: load a bundled database file from the assets folder
-        // this lowers the download size of database updates and the database is immediatly
-        // available offline
-        project.getProductDatabase().loadDatabaseBundle("db.sqlite3", revision, major, minor);
-        
-        // recommended: download the latest product database for offline availability
-        // it is highly recommended to call this in shorter time frames than config.maxProductDatabaseAge is set at
-        // since the local database is only used if the time since the last update is smaller than 
-        // config.maxProductDatabaseAge, which defaults to 1 hour
-        //
-        // a good place for this is the onStart() method of your activity
-        // database updates are usually very small since we are using delta updates for updating the database
-        //
-        // also a good place for database updates are background schedulers like 
-        // https://developer.android.com/topic/libraries/architecture/workmanager
-        project.getProductDatabase().update();
-    }
-
-    @Override
-    public void onError(Snabble.Error error) {
-        // connecton error if no metadata file is bundled or config error
-        // if no appId or secret is provided
-    }
-});
+                // this is done on the background and can be done at any time
+                // a fully downloaded product database allows for scanning products while
+                // being offline
+                //
+                // if the product database is still downloading or you did not call update()
+                // online request will be used in the mean time
+                project.productDatabase.update()
+            }
+        })
 ```
 
 ## Light mode themes
