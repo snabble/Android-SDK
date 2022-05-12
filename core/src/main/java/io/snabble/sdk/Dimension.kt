@@ -1,6 +1,6 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-public enum Dimension {
+enum class Dimension {
     VOLUME,
     CAPACITY,
     AREA,
