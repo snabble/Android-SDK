@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
@@ -82,13 +83,13 @@ fun TextView.setTextOrHide(text: CharSequence?) {
 }
 
 fun <T> LiveData<T>.observeView(view: View, observer: Observer<T>) {
-    view.getFragmentActivity()?.let {
+    view.findViewTreeLifecycleOwner()?.let {
         observe(it, observer)
     }
 
     view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
-            view.getFragmentActivity()?.let {
+            view.findViewTreeLifecycleOwner()?.let {
                 observe(it, observer)
             }
         }
