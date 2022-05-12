@@ -1,19 +1,15 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-public class CustomerCardInfo {
-    private final String cardId;
-    private final boolean isRequired;
-
-    CustomerCardInfo(String cardId, boolean isRequired) {
-        this.cardId = cardId;
-        this.isRequired = isRequired;
-    }
-
-    public String getCardId() {
-        return cardId;
-    }
-
-    public boolean isRequired() {
-        return isRequired;
-    }
-}
+/**
+ * Class describing customer cards
+ */
+data class CustomerCardInfo(
+    /**
+     * Unique id of the customer card type
+     **/
+    val cardId: String,
+    /**
+     * True if the customer card is required for checkout, false otherwise
+     */
+    val isRequired: Boolean
+)
