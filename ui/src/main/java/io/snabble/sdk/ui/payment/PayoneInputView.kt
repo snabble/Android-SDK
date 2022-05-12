@@ -221,7 +221,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 "utf-8",
                 "https://snabble.io"
             )
-            val companyName = project.company?.getName() ?: project.name
+            val companyName = project.company?.name ?: project.name
             val numberFormat = NumberFormat.getCurrencyInstance(
                 project.currencyLocale
             )
