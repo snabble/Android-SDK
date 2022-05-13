@@ -1,6 +1,12 @@
 package io.snabble.sdk
 
+import android.content.Context
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
+import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
+import java.io.File
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 data class Config (
@@ -135,4 +141,33 @@ data class Config (
      */
     @JvmField
     var manualProductDatabaseUpdates: Boolean = false,
-)
+) {
+    fun save(context: Context) {
+        val file = File(context.filesDir, "snabble/${fileName}/")
+        val json = GsonHolder.get().toJson(this)
+
+        Dispatch.io {
+            try {
+                file.writeText(json)
+            } catch (e: Exception) {
+                Logger.e("write exception [${file.path}]: $e")
+            }
+        }
+    }
+
+    companion object {
+        val fileName = "config.json"
+
+        fun restore(context: Context): Config? {
+            val file = File(context.filesDir, "snabble/${fileName}/")
+            return try {
+                val text = file.readText()
+                val config = GsonHolder.get().fromJson(text, Config::class.java)
+                config
+            } catch (e: Exception) {
+                Logger.e("read exception [${file.path}]: $e")
+                null
+            }
+        }
+    }
+}

@@ -297,8 +297,8 @@ object Snabble {
      * @param setupCompletionListener Completion listener that gets called when the SDK is ready.
      */
     @JvmOverloads
-    fun setup(app: Application, config: Config, setupCompletionListener: SetupCompletionListener? = null) {
-        if (isInitializing.get()) {
+    fun setup(app: Application, config: Config?, setupCompletionListener: SetupCompletionListener? = null) {
+        if (isInitializing.get() || initializationState.value == InitializationState.INITIALIZED) {
             return
         }
 
@@ -306,18 +306,29 @@ object Snabble {
         mutableInitializationState.postValue(InitializationState.INITIALIZING)
 
         application = app
-        this.config = config
+        if (config == null) {
+            val restoredConfig = Config.restore(app)
+            if (restoredConfig == null) {
+                setupCompletionListener?.onError(Error.CONFIG_ERROR)
+                return
+            } else {
+                this.config = restoredConfig
+            }
+        } else {
+            this.config = config
+            config.save(app)
+        }
 
         Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
         Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
 
-        if (!config.endpointBaseUrl.startsWith("http://")
-         && !config.endpointBaseUrl.startsWith("https://")) {
+        if (!this.config.endpointBaseUrl.startsWith("http://")
+         && !this.config.endpointBaseUrl.startsWith("https://")) {
             setupCompletionListener?.onError(Error.CONFIG_ERROR)
             return
         }
 
-        var version = config.versionName
+        var version = this.config.versionName
         if (version == null) {
             version = try {
                 val pInfo = app.packageManager.getPackageInfo(app.packageName, 0)
@@ -328,31 +339,31 @@ object Snabble {
         }
         versionName = version
 
-        internalStorageDirectory = File(application.filesDir, "snabble/${config.appId}/")
+        internalStorageDirectory = File(application.filesDir, "snabble/${this.config.appId}/")
         internalStorageDirectory.mkdirs()
 
         okHttpClient = OkHttpClientFactory.createOkHttpClient(app)
         userPreferences = UserPreferences(app)
-        tokenRegistry = TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret)
+        tokenRegistry = TokenRegistry(okHttpClient, userPreferences, this.config.appId, this.config.secret)
         receipts = Receipts()
         users = Users(userPreferences)
         brands = Collections.unmodifiableMap(emptyMap())
         projects = Collections.unmodifiableList(emptyList())
-        environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl)
-        metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version)
+        environment = Environment.getEnvironmentByUrl(this.config.endpointBaseUrl)
+        metadataUrl = absoluteUrl("/metadata/app/" + this.config.appId + "/android/" + version)
         paymentCredentialsStore = PaymentCredentialsStore()
 
         checkInLocationManager = CheckInLocationManager(application)
         checkInManager = CheckInManager(this,
             checkInLocationManager,
-            config.checkInRadius,
-            config.checkOutRadius,
-            config.lastSeenThreshold
+            this.config.checkInRadius,
+            this.config.checkOutRadius,
+            this.config.lastSeenThreshold
         )
 
-        metadataDownloader = MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath)
+        metadataDownloader = MetadataDownloader(okHttpClient, this.config.bundledMetadataAssetPath)
 
-        if (config.bundledMetadataAssetPath != null) {
+        if (this.config.bundledMetadataAssetPath != null) {
             dispatchOnReady(setupCompletionListener)
         } else {
             metadataDownloader.loadAsync(object : Downloader.Callback() {
