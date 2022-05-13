@@ -54,13 +54,10 @@ class CheckoutActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Logger.d("dddd onCreate")
-
         Snabble.initializationState.observe(this) {
             when (it) {
                 InitializationState.INITIALIZED -> {
                     Snabble.checkedInProject.observe(this) { project ->
-                        Logger.d("dddd setContentView")
                         setContentView(R.layout.snabble_activity_checkout)
 
                         val navHostFragment = supportFragmentManager.findFragmentById(
@@ -75,8 +72,6 @@ class CheckoutActivity : FragmentActivity() {
                             return@observe
                         }
 
-                        Logger.d("dddd project " + System.identityHashCode(project))
-
                         val checkout = project.checkout
                         val state = checkout.state.value
                         if (state?.isCheckoutState == false) {
@@ -86,7 +81,6 @@ class CheckoutActivity : FragmentActivity() {
                         this.checkout = checkout
 
                         checkout.state.observe(this) {
-                            Logger.d("dddd state change of checkout " + System.identityHashCode(checkout))
                             onStateChanged()
                         }
 
