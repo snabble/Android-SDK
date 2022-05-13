@@ -207,6 +207,13 @@ data class SignedCheckoutInfo(
 data class CheckoutInfo(
     val price: Price? = null,
     val lineItems: List<LineItem> = emptyList(),
+    val violations: List<Violation> = emptyList(),
+)
+
+data class Violation(
+    val type: String? = null,
+    val refersTo: String? = null,
+    val message: String? = null,
 )
 
 data class LineItem(

@@ -64,6 +64,7 @@
     <string name="Snabble.paydirekt.gotoWebsite">Zu paydirekt.de</string>
     <string name="Snabble.paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
     <string name="Snabble.paydirekt.savedAuthorization">Du hast die Snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
+    <string name="Snabble.paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Der Bezahlvorgang wurde abgebrochen</string>
     <string name="Snabble.Payment.add">Bezahlverfahren hinzufügen</string>
@@ -312,5 +313,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
     <string name="Snabble.TWINT.payNow">Jetzt mit TWINT bezahlen</string>
     <string name="Snabble.undo">Rückgängig</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">Der Coupon „%s“ wurde bereits benutzt und wird aus dem Warenkorb entfernt</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">Der Coupon „%s“ ist akuell ungültig und wird aus dem Warenkorb entfernt</string>
+    <string name="Snabble.Violations.couponInvalid">Der Coupon „%s“ ist ungültig und wird aus dem Warenkorb entfernt</string>
+    <string name="Snabble.Violations.title">Coupon ungültig</string>
     <string name="Snabble.Yes">Ja</string>
 </resources>

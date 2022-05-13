@@ -64,6 +64,7 @@
     <string name="Snabble.paydirekt.gotoWebsite">A paydirekt.de oldalra</string>
     <string name="Snabble.paydirekt.payNow">Fizetés paydirekttel</string>
     <string name="Snabble.paydirekt.savedAuthorization">A Snabble alkalmazást sikeresen bejelentetted a paydirektre. Visszavonásához a paydirekt fiókadataiddal be kell jelentkezned a honlapon. Ha nem szeretnéd, hogy a paydirekt a fizetési lehetőségeid között legyen, akkor itt egyszerűen eltávolíthatod.</string>
+    <string name="Snabble.paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Megszakadt a fizetési folyamat</string>
     <string name="Snabble.Payment.add">Fizetési mód hozzáadása</string>
@@ -106,6 +107,7 @@
     <string name="Snabble.Payment.usableAt">Itt használható: %s</string>
     <string name="Snabble.Payment.waiting">Várj a nyugtázásra</string>
     <string name="Snabble.PaymentCard.editingHint">A kártyaadataidat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
+    <string name="Snabble.PaymentContinuation.message">A fizetés folytatódik</string>
     <string name="Snabble.PaymentError.title">Hiba történt</string>
     <string name="Snabble.PaymentError.tryAgain">Próbálkozz újra</string>
     <string name="Snabble.PaymentMethods.add">Fizetési mód hozzáadása</string>
@@ -176,6 +178,7 @@
     <string name="Snabble.Save">Mentés</string>
     <string name="Snabble.Scanner.Accessibility.actionHideHint">Megjegyzés tartós elrejtése</string>
     <string name="Snabble.Scanner.Accessibility.actionUnderstood">Megértettem</string>
+    <string name="Snabble.Scanner.Accessibility.enterQuantity">Add meg a mennyiséget %s-ben</string>
     <string name="Snabble.Scanner.Accessibility.eventBackInScanner">Visszatértél a szkennerbe</string>
     <string name="Snabble.Scanner.Accessibility.eventBarcodeDetected">Vonalkód ismert</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Nem tudsz több terméket tenni a kosárba</string>

@@ -64,6 +64,7 @@
     <string name="Snabble.paydirekt.gotoWebsite">Vers paydirekt.de</string>
     <string name="Snabble.paydirekt.payNow">Payer maintenant avec paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">Tu as autorisé avec succès l’application Snabble pour paydirekt. Pour l’annuler, tu devras te connecter à ton compte paydirekt sur le site Web. Si tu ne souhaites plus que paydirekt s’affiche comme mode de paiement, tu peux simplement le supprimer ici.</string>
+    <string name="Snabble.paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Le processus de paiement a été annulé</string>
     <string name="Snabble.Payment.add">Ajouter une procédure de paiement</string>
