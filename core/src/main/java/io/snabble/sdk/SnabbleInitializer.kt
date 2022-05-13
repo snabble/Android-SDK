@@ -36,7 +36,7 @@ class SnabbleInitializer : Initializer<Snabble> {
                 manualProductDatabaseUpdates = getBoolean("snabble_manual_product_database_updates", manualProductDatabaseUpdates)
             }
 
-            Snabble.setup(app, config, null)
+            Snabble.setup(app, config)
             return Snabble
         }
     }

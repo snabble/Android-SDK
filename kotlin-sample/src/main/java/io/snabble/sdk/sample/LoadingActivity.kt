@@ -43,9 +43,9 @@ class LoadingActivity : AppCompatActivity() {
                 InitializationState.ERROR -> {
                     runOnUiThread {
                         AlertDialog.Builder(this@LoadingActivity)
-                            .setMessage("SDK initialization error")
+                            .setMessage(Snabble.error?.name)
                             .setPositiveButton("Retry") { _, _ ->
-                                Snabble.setup(application, null, null)
+                                Snabble.setup(application)
                             }
                             .setNegativeButton("Exit") { _, _ ->
                                 finish()

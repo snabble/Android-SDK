@@ -12,6 +12,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Base64
 import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import com.google.gson.JsonObject
 import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
@@ -284,6 +285,12 @@ object Snabble {
     private val isInitializing = AtomicBoolean(false)
 
     /**
+     * Get the error during initialization of the SDK occurred
+     */
+    var error: Error? = null
+        private set
+    
+    /**
      * Setup the snabble SDK.
      *
      * First-time initialization is asynchronously. If the snabble SDK was already initialized before
@@ -294,10 +301,9 @@ object Snabble {
      *
      * @param app Your main android application
      * @param config Config provided. Minimal required fields are appId and secret.
-     * @param setupCompletionListener Completion listener that gets called when the SDK is ready.
      */
     @JvmOverloads
-    fun setup(app: Application, config: Config?, setupCompletionListener: SetupCompletionListener? = null) {
+    fun setup(app: Application, config: Config? = null) {
         if (isInitializing.get() || initializationState.value == InitializationState.INITIALIZED) {
             return
         }
@@ -309,7 +315,7 @@ object Snabble {
         if (config == null) {
             val restoredConfig = Config.restore(app)
             if (restoredConfig == null) {
-                setupCompletionListener?.onError(Error.CONFIG_ERROR)
+                dispatchError(Error.CONFIG_ERROR)
                 return
             } else {
                 this.config = restoredConfig
@@ -324,7 +330,7 @@ object Snabble {
 
         if (!this.config.endpointBaseUrl.startsWith("http://")
          && !this.config.endpointBaseUrl.startsWith("https://")) {
-            dispatchError(setupCompletionListener)
+            dispatchError(Error.CONFIG_ERROR)
             return
         }
 
@@ -364,18 +370,18 @@ object Snabble {
         metadataDownloader = MetadataDownloader(okHttpClient, this.config.bundledMetadataAssetPath)
 
         if (this.config.bundledMetadataAssetPath != null) {
-            dispatchOnReady(setupCompletionListener)
+            dispatchOnReady()
         } else {
             metadataDownloader.loadAsync(object : Downloader.Callback() {
                 override fun onDataLoaded(wasStillValid: Boolean) {
-                    dispatchOnReady(setupCompletionListener)
+                    dispatchOnReady()
                 }
 
                 override fun onError() {
                     if (metadataDownloader.hasData()) {
-                        dispatchOnReady(setupCompletionListener)
+                        dispatchOnReady()
                     } else {
-                        dispatchError(setupCompletionListener)
+                        dispatchError(Error.CONNECTION_TIMEOUT)
                     }
                 }
             })
@@ -394,7 +400,7 @@ object Snabble {
         registerNetworkCallback(app)
     }
 
-    private fun dispatchOnReady(setupCompletionListener: SetupCompletionListener?) {
+    private fun dispatchOnReady() {
         Dispatch.background {
             readMetadata()
             val appUser = userPreferences.appUser
@@ -403,32 +409,23 @@ object Snabble {
                 if (token == null) {
                     isInitializing.set(false)
                     mutableInitializationState.postValue(InitializationState.ERROR)
-
-                    Dispatch.mainThread {
-                        setupCompletionListener?.onError(Error.CONNECTION_TIMEOUT)
-                    }
                     return@background
                 }
             }
 
             isInitializing.set(false)
             mutableInitializationState.postValue(InitializationState.INITIALIZED)
-            Dispatch.mainThread {
-                setupCompletionListener?.onReady()
-            }
+
             if (config.loadActiveShops) {
                 loadActiveShops()
             }
         }
     }
 
-    private fun dispatchError(setupCompletionListener: SetupCompletionListener?) {
+    private fun dispatchError(error: Error) {
         isInitializing.set(false)
         mutableInitializationState.postValue(InitializationState.ERROR)
-
-        Dispatch.mainThread {
-            setupCompletionListener?.onError(Error.CONNECTION_TIMEOUT)
-        }
+        this.error = error
     }
 
     /**
@@ -443,19 +440,18 @@ object Snabble {
      * @throws SnabbleException If an error occurs while initializing the sdk.
      */
     @Throws(SnabbleException::class)
-    fun setupBlocking(app: Application, config: Config) {
+    @JvmOverloads
+    fun setupBlocking(app: Application, config: Config? = null) {
         val countDownLatch = CountDownLatch(1)
         val snabbleError = arrayOfNulls<Error>(1)
-        setup(app, config, object : SetupCompletionListener {
-            override fun onReady() {
+        setup(app, config)
+        val observer = object : Observer<InitializationState> {
+            override fun onChanged(t: InitializationState?) {
                 countDownLatch.countDown()
+                initializationState.removeObserver(this)
             }
-
-            override fun onError(error: Error?) {
-                snabbleError[0] = error
-                countDownLatch.countDown()
-            }
-        })
+        }
+        initializationState.observeForever(observer)
         try {
             countDownLatch.await()
         } catch (e: InterruptedException) {
@@ -724,11 +720,6 @@ object Snabble {
         for (project in projects) {
             project.shoppingCart.updatePrices(false)
         }
-    }
-
-    interface SetupCompletionListener {
-        fun onReady()
-        fun onError(error: Error?)
     }
 
     class SnabbleException internal constructor(val error: Error?) : Exception() {
