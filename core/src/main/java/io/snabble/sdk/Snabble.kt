@@ -324,7 +324,7 @@ object Snabble {
 
         if (!this.config.endpointBaseUrl.startsWith("http://")
          && !this.config.endpointBaseUrl.startsWith("https://")) {
-            setupCompletionListener?.onError(Error.CONFIG_ERROR)
+            dispatchError(setupCompletionListener)
             return
         }
 
