@@ -17,6 +17,7 @@ enum class BarcodeFormat {
         /**
          * Parse the BarcodeFormat from a string
          */
+        @JvmStatic
         fun parse(str: String?): BarcodeFormat? {
             return when (str) {
                 "code39" -> CODE_39

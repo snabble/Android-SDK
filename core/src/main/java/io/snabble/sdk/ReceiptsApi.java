@@ -141,8 +141,8 @@ public class ReceiptsApi {
                     }
 
                     Collections.sort(result, (o1, o2) -> {
-                        Date date1 = new Date(o1.getTimestamp());
-                        Date date2 = new Date(o2.getTimestamp());
+                        Date date1 = new Date(o1.timestamp);
+                        Date date2 = new Date(o2.timestamp);
                         return -date1.compareTo(date2);
                     });
 

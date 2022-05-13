@@ -254,8 +254,8 @@ public class CreditCardInputView extends RelativeLayout {
 
             Project project = getProject();
             String companyName = project.getName();
-            if (project.getCompany() != null && project.getCompany().getName() != null) {
-                companyName = project.getCompany().getName();
+            if (project.getCompany() != null && project.getCompany().name != null) {
+                companyName = project.getCompany().name;
             }
             NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
             BigDecimal chargeTotal = new BigDecimal(hashResponse.chargeTotal);

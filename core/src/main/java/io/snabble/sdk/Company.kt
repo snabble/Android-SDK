@@ -7,21 +7,26 @@ data class Company(
     /**
      * Get the name of the city
      */
-    val city: String,
+    @JvmField
+    val city: String?,
     /**
      * Get the name of the country
      */
-    val country: String,
+    @JvmField
+    val country: String?,
     /**
      * Get the companies name
      */
-    val name: String,
+    @JvmField
+    val name: String?,
     /**
      * Get the name of the street, including the house number
      */
-    val street: String,
+    @JvmField
+    val street: String?,
     /**
      * Get the zip code
      */
-    val zip: String
+    @JvmField
+    val zip: String?
 )
