@@ -300,7 +300,11 @@ object Snabble {
      * raw metadata from our backend to bundledMetadataAssetPath in the assets folder.
      *
      * @param app Your main android application
-     * @param config Config provided. Minimal required fields are appId and secret.
+     * @param config Config provided. Minimal required fields are appId and secret. If no config
+     * is provided and the sdk was initialized before, a serialized version will be used.
+     *
+     * If this is the first time you initialize the snabble SDK, a config must be set
+     * or the initialization will fail with Error.CONFIG_ERROR.
      */
     @JvmOverloads
     fun setup(app: Application, config: Config? = null) {
