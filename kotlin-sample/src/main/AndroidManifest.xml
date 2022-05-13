@@ -31,5 +31,13 @@
             android:windowSoftInputMode="adjustPan"
             android:label="@string/app_name"
             android:exported="true"/>
+
+        <meta-data
+            android:name="snabble_app_id"
+            android:value="snabble-sdk-demo-app-oguh3x" />
+
+        <meta-data
+            android:name="snabble_secret"
+            android:value="2TKKEG5KXWY6DFOGTZKDUIBTNIRVCYKFZBY32FFRUUWIUAFEIBHQ====" />
     </application>
 </manifest>
