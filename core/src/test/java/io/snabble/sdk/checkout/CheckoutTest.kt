@@ -220,7 +220,7 @@ class CheckoutTest : SnabbleSdkTest() {
         ))
         checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
         Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
-
+        Thread.sleep(500)
         val newCheckout = Checkout(project, project.shoppingCart, mockApi)
         Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, newCheckout.state.getOrAwaitValue())
     }
