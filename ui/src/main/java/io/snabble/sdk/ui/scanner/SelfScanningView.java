@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -40,9 +41,11 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -548,6 +551,11 @@ public class SelfScanningView extends FrameLayout {
             showInfo(getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
                     project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit())));
 
+        }
+
+        @Override
+        public void onViolationDetected(@NonNull List<ViolationNotification> violations) {
+            ViolationNotificationUtils.showNotificationOnce(violations, getContext(), shoppingCart);
         }
     };
 

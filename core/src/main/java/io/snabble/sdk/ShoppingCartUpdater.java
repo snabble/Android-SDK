@@ -143,7 +143,7 @@ class ShoppingCartUpdater {
             CheckoutInfo checkoutInfo = GsonHolder.get().fromJson(signedCheckoutInfo.getCheckoutInfo(), CheckoutInfo.class);
 
             if (checkoutInfo.getViolations().size() > 0) {
-                cart.notifyViolations(checkoutInfo.getViolations());
+                cart.resolveViolations(checkoutInfo.getViolations());
             }
 
             Set<String> referrerIds = new HashSet<>();

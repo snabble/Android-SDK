@@ -35,9 +35,11 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
+import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.SnackbarUtils;
@@ -101,6 +103,11 @@ public class ShoppingCartView extends FrameLayout {
                     .setPositiveButton(R.string.Snabble_OK, null)
                     .create();
             alertDialog.show();
+        }
+
+        @Override
+        public void onViolationDetected(@NonNull List<ViolationNotification> violations) {
+            ViolationNotificationUtils.showNotificationOnce(violations, getContext(), cart);
         }
     };
 

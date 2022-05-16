@@ -60,6 +60,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     private long lastModificationTime;
     private List<Item> oldItems;
     private List<Item> items = new ArrayList<>();
+    private final List<ViolationNotification> violationNotifications = new ArrayList<>();
     private int modCount = 0;
     private int addCount = 0;
     private Integer onlineTotalPrice;
@@ -599,7 +600,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         private transient ShoppingCart cart;
         private boolean isManualCouponApplied;
         private Coupon coupon;
-        private String couponId;
+        // The local generated UUID of a coupon which which will be used by the backend
+        private String backendCouponId;
 
         protected Item() {
             // for gson
@@ -610,7 +612,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             this.cart = cart;
             this.scannedCode = scannedCode;
             this.coupon = coupon;
-            this.couponId = UUID.randomUUID().toString();
+            this.backendCouponId = UUID.randomUUID().toString();
         }
 
         private Item(ShoppingCart cart, Product product, ScannedCode scannedCode) {
@@ -1174,7 +1176,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
                 }
             } else if (cartItem.getType() == ItemType.COUPON) {
                 BackendCartItem item = new BackendCartItem();
-                item.id = cartItem.couponId;
+                item.id = cartItem.backendCouponId;
                 item.amount = 1;
 
                 ScannedCode scannedCode = cartItem.getScannedCode();
@@ -1192,6 +1194,47 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return backendCart;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    void resolveViolations(List<Violation> violations) {
+        for (Violation violation : violations) {
+            for (int i = items.size() - 1; i >= 0; i--) {
+                if (items.get(i).coupon != null && items.get(i).backendCouponId.equals(violation.getRefersTo())) {
+                    Item item = items.get(i);
+                    items.remove(item);
+                    boolean found = false;
+                    for(ViolationNotification notification:  violationNotifications) {
+                        if(notification.getRefersTo().equals(violation.getRefersTo())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found) {
+                        violationNotifications.add(new ViolationNotification(
+                                item.coupon.getName(),
+                                violation.getRefersTo(),
+                                violation.getType(),
+                                violation.getMessage()
+                        ));
+                    }
+                }
+            }
+        }
+        notifyViolations();
+    }
+
+    /**
+     * Remove the handled ViolationNotifications.
+     * @param violations the handled ViolationNotifications.
+     */
+    public void removeViolationNotification(List<ViolationNotification> violations) {
+        violationNotifications.removeAll(violations);
+    }
+
+    @NonNull
+    public List<ViolationNotification> getViolationNotifications() {
+        return violationNotifications;
+    }
+
     /**
      * Adds a {@link ShoppingCartListener} to the list of listeners if it does not already exist.
      *
@@ -1200,6 +1243,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     public void addListener(ShoppingCartListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
+        }
+        if (!violationNotifications.isEmpty()) {
+            listener.onViolationDetected(violationNotifications);
         }
     }
 
@@ -1234,7 +1280,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         void onTaxationChanged(ShoppingCart list, Taxation taxation);
 
-        void onViolationDetected(@NonNull List<Violation> violations);
+        void onViolationDetected(@NonNull List<ViolationNotification> violations);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -1282,7 +1328,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         public void onOnlinePaymentLimitReached(ShoppingCart list) {}
 
         @Override
-        public void onViolationDetected(List<Violation> violations) {}
+        public void onViolationDetected(List<ViolationNotification> violations) {}
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Item item) {
@@ -1361,29 +1407,12 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
     }
 
-    public void notifyViolations(@NonNull List<Violation> violations) {
+    public void notifyViolations() {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
-                listener.onViolationDetected(violations);
-            }
-            for (Violation violation : violations) {
-                for (int i = items.size() - 1; i >= 0; i--) {
-                    if (items.get(i).coupon != null && items.get(i).couponId.equals(violation.getRefersTo())) {
-                        items.remove(items.get(i));
-                    }
-                }
+                listener.onViolationDetected(violationNotifications);
             }
         });
-    }
-
-    @Nullable
-    public Coupon getCouponByCartId(String id) {
-        for (int i = items.size() - 1; i >= 0; i--) {
-            if (items.get(i).coupon != null && items.get(i).couponId.equals(id)) {
-                return items.get(i).coupon;
-            }
-        }
-        return null;
     }
 
     /**
