@@ -307,7 +307,7 @@ object Snabble {
      * or the initialization will fail with Error.CONFIG_ERROR.
      */
     @JvmOverloads
-    fun setup(app: Application, config: Config? = null) {
+    fun setup(app: Application? = null, config: Config? = null) {
         if (isInitializing.get() || initializationState.value == InitializationState.INITIALIZED) {
             return
         }
@@ -315,9 +315,17 @@ object Snabble {
         isInitializing.set(true)
         mutableInitializationState.postValue(InitializationState.INITIALIZING)
 
-        application = app
+        if (app != null) {
+            application = app
+        }
+
+        if (!this::application.isInitialized) {
+            dispatchError(Error.NO_APPLICATION_SET)
+            return
+        }
+
         if (config == null) {
-            val restoredConfig = Config.restore(app)
+            val restoredConfig = Config.restore(application)
             if (restoredConfig == null) {
                 dispatchError(Error.CONFIG_ERROR)
                 return
@@ -326,7 +334,7 @@ object Snabble {
             }
         } else {
             this.config = config
-            config.save(app)
+            config.save(application)
         }
 
         Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
@@ -341,7 +349,7 @@ object Snabble {
         var version = this.config.versionName
         if (version == null) {
             version = try {
-                val pInfo = app.packageManager.getPackageInfo(app.packageName, 0)
+                val pInfo = application.packageManager.getPackageInfo(application.packageName, 0)
                 pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
             } catch (e: PackageManager.NameNotFoundException) {
                 "1.0"
@@ -352,8 +360,8 @@ object Snabble {
         internalStorageDirectory = File(application.filesDir, "snabble/${this.config.appId}/")
         internalStorageDirectory.mkdirs()
 
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(app)
-        userPreferences = UserPreferences(app)
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(application)
+        userPreferences = UserPreferences(application)
         tokenRegistry = TokenRegistry(okHttpClient, userPreferences, this.config.appId, this.config.secret)
         receipts = Receipts()
         users = Users(userPreferences)
@@ -391,7 +399,7 @@ object Snabble {
             })
         }
 
-        app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
@@ -401,7 +409,7 @@ object Snabble {
             }
         })
 
-        registerNetworkCallback(app)
+        registerNetworkCallback(application)
     }
 
     private fun dispatchOnReady() {
@@ -736,6 +744,7 @@ object Snabble {
 
     enum class Error {
         UNSPECIFIED_ERROR,
+        NO_APPLICATION_SET,
         CONFIG_ERROR,
         CONNECTION_TIMEOUT
     }

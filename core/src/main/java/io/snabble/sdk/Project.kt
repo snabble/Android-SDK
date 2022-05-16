@@ -502,7 +502,7 @@ class Project internal constructor(jsonObject: JsonObject) {
             .map { it.paymentMethod }
             .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
             ?.let {
-                GooglePayHelper(this, instance.application)
+                GooglePayHelper(this, Snabble.application)
             }
 
         coupons = Coupons(this)
@@ -518,7 +518,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         .map { it.paymentMethod }
         .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
         ?.let {
-            GooglePayHelper(this, instance.application)
+            GooglePayHelper(this, Snabble.application)
         }
 
     /**

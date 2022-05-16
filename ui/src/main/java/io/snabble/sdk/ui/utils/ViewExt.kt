@@ -1,3 +1,4 @@
+@file:JvmName("ViewUtils")
 package io.snabble.sdk.ui.utils
 
 import android.content.Context

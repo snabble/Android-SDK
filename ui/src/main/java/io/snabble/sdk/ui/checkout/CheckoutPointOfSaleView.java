@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.lifecycle.Observer;
-
 import java.util.Objects;
 
 import io.snabble.sdk.BarcodeFormat;
@@ -20,7 +18,7 @@ import io.snabble.sdk.checkout.CheckoutState;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.ViewExtKt;
+import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.utils.Dispatch;
 
 public class CheckoutPointOfSaleView extends FrameLayout {
@@ -47,7 +45,7 @@ public class CheckoutPointOfSaleView extends FrameLayout {
         inflate(getContext(), R.layout.snabble_view_checkout_pos, this);
 
         checkout = Objects.requireNonNull(Snabble.getInstance().getCheckedInProject().getValue()).getCheckout();
-        ViewExtKt.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+        ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
             checkout = p.getCheckout();
             update();
         });
@@ -101,12 +99,7 @@ public class CheckoutPointOfSaleView extends FrameLayout {
         }
 
         checkout = Snabble.getInstance().getCheckedInProject().getValue().getCheckout();
-        ViewExtKt.observeView(checkout.getState(), this, new Observer<CheckoutState>() {
-            @Override
-            public void onChanged(CheckoutState checkoutState) {
-                onStateChanged(checkoutState);
-            }
-        });
+        ViewUtils.observeView(checkout.getState(), this, this::onStateChanged);
     }
 
     public void onStateChanged(CheckoutState state) {

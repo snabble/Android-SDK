@@ -1,12 +1,14 @@
 package io.snabble.sdk
 
 import android.content.Context
+import com.google.gson.*
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
 import java.io.File
 import java.lang.Exception
+import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
 data class Config (
@@ -144,8 +146,7 @@ data class Config (
 ) {
     fun save(context: Context) {
         val file = File(context.filesDir, "snabble/${fileName}/")
-        val json = GsonHolder.get().toJson(this)
-
+        val json = gson.toJson(this)
         Dispatch.io {
             try {
                 file.writeText(json)
@@ -156,18 +157,50 @@ data class Config (
     }
 
     companion object {
-        val fileName = "config.json"
+        const val fileName = "config.json"
+
+        private val gson = GsonHolder.get()
+            .newBuilder()
+            .registerTypeAdapter(Interceptor::class.java, InterceptorSerializer)
+            .create()
 
         fun restore(context: Context): Config? {
             val file = File(context.filesDir, "snabble/${fileName}/")
             return try {
                 val text = file.readText()
-                val config = GsonHolder.get().fromJson(text, Config::class.java)
+                val config = gson.fromJson(text, Config::class.java)
                 config
             } catch (e: Exception) {
                 Logger.e("read exception [${file.path}]: $e")
                 null
             }
+        }
+    }
+}
+
+object InterceptorSerializer : JsonSerializer<Interceptor?>, JsonDeserializer<Interceptor?> {
+    override fun serialize(src: Interceptor?,
+                           typeOfSrc: Type?,
+                           context: JsonSerializationContext?
+    ): JsonElement {
+        val cls = src?.javaClass?.name
+        return if (cls != null) {
+            JsonPrimitive(cls)
+        } else {
+            JsonNull.INSTANCE
+        }
+    }
+
+    override fun deserialize(json: JsonElement?,
+                             typeOfT: Type?,
+                             context: JsonDeserializationContext?
+    ): Interceptor? {
+        val cls = json?.asString
+        return if (cls != null) {
+            val clazz = Class.forName(cls)
+            clazz.newInstance() as Interceptor
+        } else {
+            null
         }
     }
 }

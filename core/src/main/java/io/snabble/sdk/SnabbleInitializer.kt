@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.startup.Initializer
+import io.snabble.sdk.utils.Logger
+import okhttp3.Interceptor
 
 /**
  * Initializer for the snabble SDK using androidx.startup.
@@ -33,7 +35,18 @@ class SnabbleInitializer : Initializer<Snabble> {
                 checkInRadius = getFloat("snabble_check_in_radius", checkInRadius)
                 checkOutRadius = getFloat("snabble_check_out_radius", checkOutRadius)
                 lastSeenThreshold = getLong("snabble_last_seen_threshold", lastSeenThreshold)
+                networkInterceptor =
+                    try {
+                        Class.forName(getString("snabble_network_interceptor", null)).newInstance() as Interceptor?
+                    } catch (e: Exception) {
+                        Logger.d("Could not instantiate network interceptor", e.message)
+                        null
+                    }
                 manualProductDatabaseUpdates = getBoolean("snabble_manual_product_database_updates", manualProductDatabaseUpdates)
+            }
+
+            if (config.appId == null || config.secret == null) {
+                throw IllegalArgumentException("You need to set 'snabble_app_id' and 'snabble_secret' in your AndroidManifest.xml")
             }
 
             Snabble.setup(app, config)

@@ -45,7 +45,7 @@ class LoadingActivity : AppCompatActivity() {
                         AlertDialog.Builder(this@LoadingActivity)
                             .setMessage(Snabble.error?.name)
                             .setPositiveButton("Retry") { _, _ ->
-                                Snabble.setup(application)
+                                Snabble.setup()
                             }
                             .setNegativeButton("Exit") { _, _ ->
                                 finish()
