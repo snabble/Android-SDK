@@ -8,10 +8,12 @@ All notable changes to this project will be documented in this file.
 - SDK now automatically initialized itself using androidx.startup
   - You can opt-out of this by specifying: 
   
+  ```xml
     <meta-data
     android:name="snabble_auto_initialization_disabled"
     android:value="true" />
-  
+  ```
+    
     in the application section of the AndroidManifest.xml.
 
   - Supported config parameters are identical with the Config class:
