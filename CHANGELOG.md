@@ -1,6 +1,46 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.64.0]
+
+### Breaking Changes
+- Removed SetupCompletionListener in favor of getInitializationState()
+- SDK now automatically initialized itself using androidx.startup
+  - You can opt-out of this by specifying: 
+  
+    <meta-data
+    android:name="snabble_auto_initialization_disabled"
+    android:value="true" />
+  
+    in the application section of the AndroidManifest.xml.
+
+  - Supported config parameters are identical with the Config class:
+    - Required
+      - snabble_app_id
+      - snabble_secret
+    - Optional
+      - snabble_endpoint_baseurl
+      - snabble_bundled_metadata_asset_path
+      - snabble_version_name
+      - snabble_generate_search_index
+      - snabble_max_product_database_age
+      - snabble_max_shopping_cart_age
+      - snabble_disable_certificate_pinning
+      - snabble_initial_sql
+      - snabble_vibrate_to_confirm_cart_filled
+      - snabble_load_active_shops
+      - snabble_check_in_radius
+      - snabble_check_out_radius
+      - snabble_last_seen_threshold"
+      - snabble_network_interceptor
+      - snabble_manual_product_database_updates
+      
+### Added
+- SDK initialization can now be done by specifying attributes in AndroidManifest.xml
+
+### Changes
+- Config is now persisted
+
 ## [0.63.0]
 
 ### Breaking Changes
