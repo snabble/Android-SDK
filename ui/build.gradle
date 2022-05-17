@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
-apply plugin: 'org.jetbrains.dokka'
 apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
 
 android {

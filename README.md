@@ -4,6 +4,10 @@
 
 Android SDK for Snabble
 
+## Documentation
+
+You can find the full documentation of the snabble Platform at [docs.snabble.io](https://docs.snabble.io).
+
 ## Requirements
 
 ```
