@@ -62,39 +62,67 @@ Then add the library to your dependencies. (Note: The + means it always uses the
 dependencies {
     implementation 'io.snabble.sdk:core:+'
     implementation 'io.snabble.sdk:ui:+'
-    implementation 'io.snabble.sdk:ui-integration:+'
 }
 ```
 
 ## Usage
+
+You can initialize the SDK by specifying metadata in the AndroidManifest.xml
+
+```
+<meta-data
+android:name="snabble_app_id"
+android:value="YOUR_APP_ID" />
+
+<meta-data
+android:name="snabble_secret"
+android:value="YOUR_SECRET" />
+```
+
+You also can initialize the SDK programmatically by specifying in the AndroidManifest.xml: 
+
+```
+<meta-data
+android:name="snabble_auto_initialization_disabled"
+android:value="true" />
+```
+
+And then initialize the SDK via code.
+
 ```kotlin
 val config = Config(
     appId = YOUR_APP_ID,
     secret = YOUR_SECRET,
 )
+Snabble.setup(application, config)
+```
 
-// you may enable debug logging
-Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
+To observe the current initialization state of the SDK use: 
 
-Snabble.setup(application, config, object : Snabble.SetupCompletionListener {
-    override fun onReady() {
-        // an application can have multiple projects, for example for
-        // multiple independent regions / countries
-        val project = Snabble.projects.first()
-
-        // check in to the first shop - you can use CheckInManager if you want
-        // to use geofencing
-        Snabble.checkedInShop = project.shops.first()
+```kotlin
+Snabble.initializationState.observe(this) {
+    when(it) {
+        InitializationState.INITIALIZING -> {}
+        InitializationState.INITIALIZED -> {
+            val projects = Snabble.projects // access to projects
+        }
+        InitializationState.ERROR -> {
+            // error detailing why the initialization failed
+            val error = Snabble.error 
+            // you can call setup again without arguments to retry the initialization 
+            // e.g. on network failure
+            Snabble.setup() 
+        }
     }
-})
+}
 ```
 
 ## Light mode themes
 
 If using a theme that is explicitly only light mode (and not a DayNight theme) you need to set
 
-```
-    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+```kotlin
+AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 ```
 
 or else some resources may get grabbed from the "-night" folders when the device is set to night mode

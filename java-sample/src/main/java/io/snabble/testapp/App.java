@@ -32,16 +32,6 @@ public class App extends Application {
         //you may enable debug logging to see requests made by the sdk, and other various logs
         Snabble.setDebugLoggingEnabled(true);
 
-        // config {
-        Config config = new Config();
-        config.endpointBaseUrl = getString(R.string.endpoint);
-        config.secret = getString(R.string.secret);
-        config.appId = getString(R.string.app_id);
-        // }
-
-        final Snabble snabble = Snabble.getInstance();
-        snabble.setup(this, config);
-
         // sets a ui event listener for telemetry events, which can you redirect to any
         // telemetry provider
         Telemetry.setOnEventListener((event, data) -> {

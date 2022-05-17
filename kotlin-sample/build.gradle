@@ -11,24 +11,6 @@ android {
         versionCode 1
         versionName '1.0'
 
-        // Setup here or in your local.properties file you Snabble secrets
-        def appId = null
-        def endpoint = null
-        def secret = null
-
-        def configFile = project.rootProject.file('local.properties')
-        if ((appId == null || endpoint == null || secret == null) && configFile.exists()) {
-            Properties properties = new Properties()
-            properties.load(configFile.newDataInputStream())
-
-            appId = properties.getProperty('snabble.appId')
-            endpoint = properties.getProperty('snabble.endpoint')
-            secret = properties.getProperty('snabble.secret')
-        }
-        resValue 'string', 'app_id', appId ?: '<missing app id>'
-        resValue 'string', 'endpoint', endpoint ?: ''
-        resValue 'string', 'secret', secret ?: '<missing secret>'
-
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 

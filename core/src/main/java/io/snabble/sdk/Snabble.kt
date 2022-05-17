@@ -12,6 +12,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Base64
 import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import com.google.gson.JsonObject
 import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
@@ -225,7 +226,7 @@ object Snabble {
     var createAppUserUrl: String? = null
         private set
 
-    private val mutableInitializationState = MutableLiveData<InitializationState>()
+    private val mutableInitializationState = MutableAccessibleLiveData(InitializationState.UNINITIALIZED)
 
     /**
      * The current initialization state of the SDK. Fragments observe this state and only
@@ -284,6 +285,12 @@ object Snabble {
     private val isInitializing = AtomicBoolean(false)
 
     /**
+     * Get the error during initialization of the SDK occurred
+     */
+    var error: Error? = null
+        private set
+    
+    /**
      * Setup the snabble SDK.
      *
      * First-time initialization is asynchronously. If the snabble SDK was already initialized before
@@ -293,34 +300,56 @@ object Snabble {
      * raw metadata from our backend to bundledMetadataAssetPath in the assets folder.
      *
      * @param app Your main android application
-     * @param config Config provided. Minimal required fields are appId and secret.
-     * @param setupCompletionListener Completion listener that gets called when the SDK is ready.
+     * @param config Config provided. Minimal required fields are appId and secret. If no config
+     * is provided and the sdk was initialized before, a serialized version will be used.
+     *
+     * If this is the first time you initialize the snabble SDK, a config must be set
+     * or the initialization will fail with Error.CONFIG_ERROR.
      */
     @JvmOverloads
-    fun setup(app: Application, config: Config, setupCompletionListener: SetupCompletionListener? = null) {
+    fun setup(app: Application? = null, config: Config? = null) {
         if (isInitializing.get()) {
             return
         }
 
         isInitializing.set(true)
-        mutableInitializationState.postValue(InitializationState.INITIALIZING)
+        mutableInitializationState.value = InitializationState.INITIALIZING
 
-        application = app
-        this.config = config
+        if (app != null) {
+            application = app
+        }
+
+        if (!this::application.isInitialized) {
+            dispatchError(Error.NO_APPLICATION_SET)
+            return
+        }
+
+        if (config == null) {
+            val restoredConfig = Config.restore(application)
+            if (restoredConfig == null) {
+                dispatchError(Error.CONFIG_ERROR)
+                return
+            } else {
+                this.config = restoredConfig
+            }
+        } else {
+            this.config = config
+            config.save(application)
+        }
 
         Logger.setErrorEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
         Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
 
-        if (!config.endpointBaseUrl.startsWith("http://")
-         && !config.endpointBaseUrl.startsWith("https://")) {
-            setupCompletionListener?.onError(Error.CONFIG_ERROR)
+        if (!this.config.endpointBaseUrl.startsWith("http://")
+         && !this.config.endpointBaseUrl.startsWith("https://")) {
+            dispatchError(Error.CONFIG_ERROR)
             return
         }
 
-        var version = config.versionName
+        var version = this.config.versionName
         if (version == null) {
             version = try {
-                val pInfo = app.packageManager.getPackageInfo(app.packageName, 0)
+                val pInfo = application.packageManager.getPackageInfo(application.packageName, 0)
                 pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
             } catch (e: PackageManager.NameNotFoundException) {
                 "1.0"
@@ -328,49 +357,49 @@ object Snabble {
         }
         versionName = version
 
-        internalStorageDirectory = File(application.filesDir, "snabble/${config.appId}/")
+        internalStorageDirectory = File(application.filesDir, "snabble/${this.config.appId}/")
         internalStorageDirectory.mkdirs()
 
-        okHttpClient = OkHttpClientFactory.createOkHttpClient(app)
-        userPreferences = UserPreferences(app)
-        tokenRegistry = TokenRegistry(okHttpClient, userPreferences, config.appId, config.secret)
+        okHttpClient = OkHttpClientFactory.createOkHttpClient(application)
+        userPreferences = UserPreferences(application)
+        tokenRegistry = TokenRegistry(okHttpClient, userPreferences, this.config.appId, this.config.secret)
         receipts = Receipts()
         users = Users(userPreferences)
         brands = Collections.unmodifiableMap(emptyMap())
         projects = Collections.unmodifiableList(emptyList())
-        environment = Environment.getEnvironmentByUrl(config.endpointBaseUrl)
-        metadataUrl = absoluteUrl("/metadata/app/" + config.appId + "/android/" + version)
+        environment = Environment.getEnvironmentByUrl(this.config.endpointBaseUrl)
+        metadataUrl = absoluteUrl("/metadata/app/" + this.config.appId + "/android/" + version)
         paymentCredentialsStore = PaymentCredentialsStore()
 
         checkInLocationManager = CheckInLocationManager(application)
         checkInManager = CheckInManager(this,
             checkInLocationManager,
-            config.checkInRadius,
-            config.checkOutRadius,
-            config.lastSeenThreshold
+            this.config.checkInRadius,
+            this.config.checkOutRadius,
+            this.config.lastSeenThreshold
         )
 
-        metadataDownloader = MetadataDownloader(okHttpClient, config.bundledMetadataAssetPath)
+        metadataDownloader = MetadataDownloader(okHttpClient, this.config.bundledMetadataAssetPath)
 
-        if (config.bundledMetadataAssetPath != null) {
-            dispatchOnReady(setupCompletionListener)
+        if (this.config.bundledMetadataAssetPath != null) {
+            dispatchOnReady()
         } else {
             metadataDownloader.loadAsync(object : Downloader.Callback() {
                 override fun onDataLoaded(wasStillValid: Boolean) {
-                    dispatchOnReady(setupCompletionListener)
+                    dispatchOnReady()
                 }
 
                 override fun onError() {
                     if (metadataDownloader.hasData()) {
-                        dispatchOnReady(setupCompletionListener)
+                        dispatchOnReady()
                     } else {
-                        dispatchError(setupCompletionListener)
+                        dispatchError(Error.CONNECTION_TIMEOUT)
                     }
                 }
             })
         }
 
-        app.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
@@ -380,10 +409,10 @@ object Snabble {
             }
         })
 
-        registerNetworkCallback(app)
+        registerNetworkCallback(application)
     }
 
-    private fun dispatchOnReady(setupCompletionListener: SetupCompletionListener?) {
+    private fun dispatchOnReady() {
         Dispatch.background {
             readMetadata()
             val appUser = userPreferences.appUser
@@ -391,33 +420,24 @@ object Snabble {
                 val token = tokenRegistry.getToken(projects[0])
                 if (token == null) {
                     isInitializing.set(false)
-                    mutableInitializationState.postValue(InitializationState.ERROR)
-
-                    Dispatch.mainThread {
-                        setupCompletionListener?.onError(Error.CONNECTION_TIMEOUT)
-                    }
+                    mutableInitializationState.value = InitializationState.ERROR
                     return@background
                 }
             }
 
             isInitializing.set(false)
-            mutableInitializationState.postValue(InitializationState.INITIALIZED)
-            Dispatch.mainThread {
-                setupCompletionListener?.onReady()
-            }
+            mutableInitializationState.value = InitializationState.INITIALIZED
+
             if (config.loadActiveShops) {
                 loadActiveShops()
             }
         }
     }
 
-    private fun dispatchError(setupCompletionListener: SetupCompletionListener?) {
+    private fun dispatchError(error: Error) {
         isInitializing.set(false)
-        mutableInitializationState.postValue(InitializationState.ERROR)
-
-        Dispatch.mainThread {
-            setupCompletionListener?.onError(Error.CONNECTION_TIMEOUT)
-        }
+        mutableInitializationState.value = InitializationState.ERROR
+        this.error = error
     }
 
     /**
@@ -432,19 +452,20 @@ object Snabble {
      * @throws SnabbleException If an error occurs while initializing the sdk.
      */
     @Throws(SnabbleException::class)
-    fun setupBlocking(app: Application, config: Config) {
+    @JvmOverloads
+    fun setupBlocking(app: Application, config: Config? = null) {
         val countDownLatch = CountDownLatch(1)
         val snabbleError = arrayOfNulls<Error>(1)
-        setup(app, config, object : SetupCompletionListener {
-            override fun onReady() {
-                countDownLatch.countDown()
+        setup(app, config)
+        val observer = object : Observer<InitializationState> {
+            override fun onChanged(t: InitializationState?) {
+                if (t == InitializationState.INITIALIZED || t == InitializationState.ERROR) {
+                    countDownLatch.countDown()
+                    initializationState.removeObserver(this)
+                }
             }
-
-            override fun onError(error: Error?) {
-                snabbleError[0] = error
-                countDownLatch.countDown()
-            }
-        })
+        }
+        initializationState.observeForever(observer)
         try {
             countDownLatch.await()
         } catch (e: InterruptedException) {
@@ -715,11 +736,6 @@ object Snabble {
         }
     }
 
-    interface SetupCompletionListener {
-        fun onReady()
-        fun onError(error: Error?)
-    }
-
     class SnabbleException internal constructor(val error: Error?) : Exception() {
         override fun toString(): String {
             return "SnabbleException{" +
@@ -728,8 +744,12 @@ object Snabble {
         }
     }
 
+    /**
+     * Enum describing the error types, which can occur during initialization of the SDK.
+     */
     enum class Error {
         UNSPECIFIED_ERROR,
+        NO_APPLICATION_SET,
         CONFIG_ERROR,
         CONNECTION_TIMEOUT
     }

@@ -54,6 +54,10 @@ class CheckoutActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (Snabble.initializationState.value != InitializationState.INITIALIZED) {
+            Snabble.setup(application)
+        }
+
         Snabble.initializationState.observe(this) {
             when (it) {
                 InitializationState.INITIALIZED -> {
@@ -95,9 +99,8 @@ class CheckoutActivity : FragmentActivity() {
                         navController.graph = navGraph
                     }
                 }
-                InitializationState.INITIALIZING -> {
-                    // ignore
-                }
+                InitializationState.UNINITIALIZED,
+                InitializationState.INITIALIZING -> {} // ignore
                 InitializationState.ERROR -> {
                     finishWithError("The snabble SDK is not initialized")
                 }

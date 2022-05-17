@@ -32,7 +32,7 @@ import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.ViewExtKt;
+import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.utils.Dispatch;
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -68,7 +68,7 @@ public class CheckoutOfflineView extends FrameLayout {
 
         project = Snabble.getInstance().getCheckedInProject().getValue();
 
-        ViewExtKt.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+        ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
             project = p;
             update();
         });

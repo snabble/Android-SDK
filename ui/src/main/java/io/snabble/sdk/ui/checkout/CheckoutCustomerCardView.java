@@ -13,17 +13,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.checkout.Checkout;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.checkout.CheckoutState;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.ViewExtKt;
+import io.snabble.sdk.ui.utils.ViewUtils;
 
 public class CheckoutCustomerCardView extends FrameLayout {
     private Project project;
@@ -51,7 +49,7 @@ public class CheckoutCustomerCardView extends FrameLayout {
 
         project = Snabble.getInstance().getCheckedInProject().getValue();
 
-        ViewExtKt.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+        ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
             project = p;
             update();
         });

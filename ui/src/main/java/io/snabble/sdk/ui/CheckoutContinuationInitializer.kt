@@ -5,13 +5,15 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import androidx.startup.Initializer
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.SnabbleInitializer
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.utils.Logger
 
 class SnabbleUIInitializerDummy
 
 /**
- * Initializer for Snabble UI components using androidx.startup.
+ * Initializer for the snabble checkout using androidx.startup.
  */
 class CheckoutContinuationInitializer : Initializer<SnabbleUIInitializerDummy> {
     override fun create(context: Context): SnabbleUIInitializerDummy {
@@ -36,6 +38,6 @@ class CheckoutContinuationInitializer : Initializer<SnabbleUIInitializerDummy> {
     }
 
     override fun dependencies(): List<Class<out Initializer<*>>> {
-        return emptyList()
+        return listOf(SnabbleInitializer::class.java)
     }
 }
