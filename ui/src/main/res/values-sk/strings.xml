@@ -64,6 +64,7 @@
     <string name="Snabble.paydirekt.gotoWebsite">Prejsť na paydirekt.de</string>
     <string name="Snabble.paydirekt.payNow">Teraz zaplatiť prostredníctvom paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">Autorizácia aplikácie Snabble pre paydirekt bola úspešná. Ak chceš autorizáciu zrušiť, musíš sa prihlásiť do svojho konta paydirekt na webovej stránke. Pokiaľ nechceš, aby paydirekt bol v budúcnosti zobrazovaný ako spôsob platby, tu ho môžeš jednoducho odstrániť.</string>
+    <string name="Snabble.paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Platobný proces bol prerušený</string>
     <string name="Snabble.Payment.add">Pridať spôsob platby</string>
@@ -106,6 +107,7 @@
     <string name="Snabble.Payment.usableAt">Použiteľné tu: %s</string>
     <string name="Snabble.Payment.waiting">Čakanie na potvrdenie</string>
     <string name="Snabble.PaymentCard.editingHint">Údaje o tvojej karte budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
+    <string name="Snabble.PaymentContinuation.message">Pokračovanie platby</string>
     <string name="Snabble.PaymentError.title">Vyskytla sa chyba</string>
     <string name="Snabble.PaymentError.tryAgain">Skúsiť znovu</string>
     <string name="Snabble.PaymentMethods.add">Pridať spôsob platby</string>
@@ -176,6 +178,7 @@
     <string name="Snabble.Save">Uložiť</string>
     <string name="Snabble.Scanner.Accessibility.actionHideHint">Skryť upozornenie natrvalo</string>
     <string name="Snabble.Scanner.Accessibility.actionUnderstood">Rozumiem</string>
+    <string name="Snabble.Scanner.Accessibility.enterQuantity">Zadaj množstvo v %s</string>
     <string name="Snabble.Scanner.Accessibility.eventBackInScanner">Si opäť v skeneri</string>
     <string name="Snabble.Scanner.Accessibility.eventBarcodeDetected">Čiarový kód bol rozpoznaný</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Nemôžeš vložiť do košíka ďalšie položky</string>

@@ -3,6 +3,7 @@ package io.snabble.sdk;
 import static io.snabble.sdk.Unit.PIECE;
 import static io.snabble.sdk.Unit.PRICE;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
@@ -11,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,17 +20,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.snabble.sdk.auth.AppUser;
-import io.snabble.sdk.checkout.DefaultCheckoutApi;
 import io.snabble.sdk.checkout.LineItem;
 import io.snabble.sdk.checkout.LineItemType;
 import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.checkout.PriceModifier;
+import io.snabble.sdk.checkout.Violation;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
-public class ShoppingCart {
+public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     public enum ItemType {
         PRODUCT,
         LINE_ITEM,
@@ -58,6 +60,7 @@ public class ShoppingCart {
     private long lastModificationTime;
     private List<Item> oldItems;
     private List<Item> items = new ArrayList<>();
+    private final List<ViolationNotification> violationNotifications = new ArrayList<>();
     private int modCount = 0;
     private int addCount = 0;
     private Integer onlineTotalPrice;
@@ -208,6 +211,13 @@ public class ShoppingCart {
     public Item get(int index) {
         return items.get(index);
     }
+
+    @NonNull
+    @Override
+    public Iterator<Item> iterator() {
+        return items.iterator();
+    }
+
 
     public Item getExistingMergeableProduct(Product product) {
         if (product == null) {
@@ -590,6 +600,8 @@ public class ShoppingCart {
         private transient ShoppingCart cart;
         private boolean isManualCouponApplied;
         private Coupon coupon;
+        // The local generated UUID of a coupon which which will be used by the backend
+        private String backendCouponId;
 
         protected Item() {
             // for gson
@@ -600,6 +612,7 @@ public class ShoppingCart {
             this.cart = cart;
             this.scannedCode = scannedCode;
             this.coupon = coupon;
+            this.backendCouponId = UUID.randomUUID().toString();
         }
 
         private Item(ShoppingCart cart, Product product, ScannedCode scannedCode) {
@@ -1155,7 +1168,7 @@ public class ShoppingCart {
 
                 if (cartItem.coupon != null) {
                     BackendCartItem couponItem = new BackendCartItem();
-                    couponItem.id = UUID.randomUUID().toString();
+                    couponItem.id = cartItem.coupon.getId();
                     couponItem.refersTo = item.id;
                     couponItem.amount = 1;
                     couponItem.couponID = cartItem.coupon.getId();
@@ -1163,7 +1176,7 @@ public class ShoppingCart {
                 }
             } else if (cartItem.getType() == ItemType.COUPON) {
                 BackendCartItem item = new BackendCartItem();
-                item.id = UUID.randomUUID().toString();
+                item.id = cartItem.backendCouponId;
                 item.amount = 1;
 
                 ScannedCode scannedCode = cartItem.getScannedCode();
@@ -1181,6 +1194,47 @@ public class ShoppingCart {
         return backendCart;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    void resolveViolations(List<Violation> violations) {
+        for (Violation violation : violations) {
+            for (int i = items.size() - 1; i >= 0; i--) {
+                if (items.get(i).coupon != null && items.get(i).backendCouponId.equals(violation.getRefersTo())) {
+                    Item item = items.get(i);
+                    items.remove(item);
+                    boolean found = false;
+                    for(ViolationNotification notification:  violationNotifications) {
+                        if(notification.getRefersTo().equals(violation.getRefersTo())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found) {
+                        violationNotifications.add(new ViolationNotification(
+                                item.coupon.getName(),
+                                violation.getRefersTo(),
+                                violation.getType(),
+                                violation.getMessage()
+                        ));
+                    }
+                }
+            }
+        }
+        notifyViolations();
+    }
+
+    /**
+     * Remove the handled ViolationNotifications.
+     * @param violations the handled ViolationNotifications.
+     */
+    public void removeViolationNotification(List<ViolationNotification> violations) {
+        violationNotifications.removeAll(violations);
+    }
+
+    @NonNull
+    public List<ViolationNotification> getViolationNotifications() {
+        return violationNotifications;
+    }
+
     /**
      * Adds a {@link ShoppingCartListener} to the list of listeners if it does not already exist.
      *
@@ -1189,6 +1243,9 @@ public class ShoppingCart {
     public void addListener(ShoppingCartListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
+        }
+        if (!violationNotifications.isEmpty()) {
+            listener.onViolationDetected(violationNotifications);
         }
     }
 
@@ -1222,6 +1279,8 @@ public class ShoppingCart {
         void onOnlinePaymentLimitReached(ShoppingCart list);
 
         void onTaxationChanged(ShoppingCart list, Taxation taxation);
+
+        void onViolationDetected(@NonNull List<ViolationNotification> violations);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -1263,14 +1322,13 @@ public class ShoppingCart {
         }
 
         @Override
-        public void onCheckoutLimitReached(ShoppingCart list) {
-
-        }
+        public void onCheckoutLimitReached(ShoppingCart list) {}
 
         @Override
-        public void onOnlinePaymentLimitReached(ShoppingCart list) {
+        public void onOnlinePaymentLimitReached(ShoppingCart list) {}
 
-        }
+        @Override
+        public void onViolationDetected(List<ViolationNotification> violations) {}
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Item item) {
@@ -1348,6 +1406,15 @@ public class ShoppingCart {
             }
         });
     }
+
+    public void notifyViolations() {
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onViolationDetected(violationNotifications);
+            }
+        });
+    }
+
     /**
      * Notifies all {@link #listeners} that the shopping list was cleared of all entries.
      *

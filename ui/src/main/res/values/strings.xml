@@ -64,6 +64,7 @@
     <string name="Snabble.paydirekt.gotoWebsite">Go to paydirekt.de</string>
     <string name="Snabble.paydirekt.payNow">Pay now using paydirekt</string>
     <string name="Snabble.paydirekt.savedAuthorization">You\'ve successfully authorized Snabble for paydirekt. To remove this authorization, you need to log in to your paydirekt account. If you do not want to use this payment method anymore, you can remove it here.</string>
+    <string name="Snabble.paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Payment process was cancelled</string>
     <string name="Snabble.Payment.add">Add payment method</string>
@@ -312,5 +313,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Please choose</string>
     <string name="Snabble.TWINT.payNow">Pay now using TWINT</string>
     <string name="Snabble.undo">Undo</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">The coupon „%s“ is already redeemed and will be removed from cart</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">The coupon „%s“ is currently not valid and will be removed from cart</string>
+    <string name="Snabble.Violations.couponInvalid">The coupon „%s“ is invalid and will be removed from cart</string>
+    <string name="Snabble.Violations.title">Coupon invalid</string>
     <string name="Snabble.Yes">Yes</string>
 </resources>
