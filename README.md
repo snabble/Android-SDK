@@ -67,7 +67,7 @@ dependencies {
 
 ## Usage
 
-You can initialize the SDK by specifying meta-data in the AndroidManifest.xml
+You can initialize the SDK by specifying metadata in the AndroidManifest.xml
 
 ```
 <meta-data
@@ -121,8 +121,8 @@ Snabble.initializationState.observe(this) {
 
 If using a theme that is explicitly only light mode (and not a DayNight theme) you need to set
 
-```
-AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+```kotlin
+AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 ```
 
 or else some resources may get grabbed from the "-night" folders when the device is set to night mode

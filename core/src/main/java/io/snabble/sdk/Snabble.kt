@@ -308,7 +308,7 @@ object Snabble {
      */
     @JvmOverloads
     fun setup(app: Application? = null, config: Config? = null) {
-        if (isInitializing.get() || initializationState.value == InitializationState.INITIALIZED) {
+        if (isInitializing.get()) {
             return
         }
 
@@ -459,8 +459,10 @@ object Snabble {
         setup(app, config)
         val observer = object : Observer<InitializationState> {
             override fun onChanged(t: InitializationState?) {
-                countDownLatch.countDown()
-                initializationState.removeObserver(this)
+                if (t == InitializationState.INITIALIZED || t == InitializationState.ERROR) {
+                    countDownLatch.countDown()
+                    initializationState.removeObserver(this)
+                }
             }
         }
         initializationState.observeForever(observer)
@@ -742,6 +744,9 @@ object Snabble {
         }
     }
 
+    /**
+     * Enum describing the error types, which can occur during initialization of the SDK.
+     */
     enum class Error {
         UNSPECIFIED_ERROR,
         NO_APPLICATION_SET,

@@ -54,7 +54,10 @@ class CheckoutActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Snabble.setup(application)
+        if (Snabble.initializationState.value != InitializationState.INITIALIZED) {
+            Snabble.setup(application)
+        }
+
         Snabble.initializationState.observe(this) {
             when (it) {
                 InitializationState.INITIALIZED -> {

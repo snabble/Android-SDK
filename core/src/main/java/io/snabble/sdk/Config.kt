@@ -150,8 +150,8 @@ data class Config (
         Dispatch.io {
             try {
                 file.writeText(json)
-            } catch (e: Exception) {
-                Logger.e("write exception [${file.path}]: $e")
+            } catch (e: Throwable) {
+                Logger.e("Failed to save config to ${file.path}: ${e.message}")
             }
         }
     }
@@ -170,8 +170,8 @@ data class Config (
                 val text = file.readText()
                 val config = gson.fromJson(text, Config::class.java)
                 config
-            } catch (e: Exception) {
-                Logger.e("read exception [${file.path}]: $e")
+            } catch (e: Throwable) {
+                Logger.e("Failed to load config to ${file.path}: ${e.message}")
                 null
             }
         }

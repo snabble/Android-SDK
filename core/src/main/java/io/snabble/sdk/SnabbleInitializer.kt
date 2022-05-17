@@ -38,7 +38,7 @@ class SnabbleInitializer : Initializer<Snabble> {
                 networkInterceptor =
                     try {
                         Class.forName(getString("snabble_network_interceptor", null)).newInstance() as Interceptor?
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
                         Logger.d("Could not instantiate network interceptor", e.message)
                         null
                     }
