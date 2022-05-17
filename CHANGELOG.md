@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file.
 ## [0.64.0]
 
 ### Breaking Changes
-- Removed SetupCompletionListener in favor of getInitializationState()
-- SDK now automatically initialized itself using androidx.startup
+- Removed `SetupCompletionListener` in favor of `getInitializationState()`
+- SDK now automatically initialized itself using `androidx.startup`
   - You can opt-out of this by specifying: 
   
   ```xml
@@ -14,9 +14,9 @@ All notable changes to this project will be documented in this file.
     android:value="true" />
   ```
     
-    in the application section of the AndroidManifest.xml.
+    in the application section of the `AndroidManifest.xml`.
 
-  - Supported config parameters are identical with the Config class:
+  - Supported config parameters are identical with the `Config` class:
     - Required
       - snabble_app_id
       - snabble_secret
@@ -36,12 +36,19 @@ All notable changes to this project will be documented in this file.
       - snabble_last_seen_threshold"
       - snabble_network_interceptor
       - snabble_manual_product_database_updates
+- The `View` extensions in `ViewExt.kt` are now exposed for Java-Code as `ViewUtils`
       
 ### Added
-- SDK initialization can now be done by specifying attributes in AndroidManifest.xml
+- SDK initialization can now be done by specifying attributes in `AndroidManifest.xml`
+- New extension methods to read project specific overwritten translations including plurals support
+- Added `Violation` support: It is currently only used for invalid/expired or used coupons. You will be notified via
+ `ShoppingCartListener.onViolationDetected(...)`. A list of `ViolationNotification` which will be passed holding
+  all data to show a dialog to inform the user why some coupons were removed. For simplicity there is a new extension
+  function `ViolationNotificationUtils.showNotificationOnce(...)` which will build the localized error message and show
+  a dialog with the error.
 
 ### Changes
-- Config is now persisted
+- The `Config` is now persisted
 
 ## [0.63.0]
 
@@ -52,9 +59,9 @@ All notable changes to this project will be documented in this file.
 - Removed deprecated `setShop(...)`/`getShop()` functions in `Checkout`
 - Moved `setCheckedInShop(...)` from `Project` to `Snabble`
 - `SnabbleUI.project` is now read only, use instead `Snabble.checkedInProject`
-- Removed add/remove state listener for Checkout. Instead only the LiveData equivalents remain.
-- Moved Checkout to io.snabble.sdk.checkout.*
-- Removed getOrderId() from checkout
+- Removed add/remove state listener for Checkout. Instead only the `LiveData` equivalents remain
+- Moved Checkout to package `io.snabble.sdk.checkout`
+- Removed `getOrderId()` from `Checkout`
 
 ### Deprecation
 - `SnabbleUI.project` and `SnabbleUI.projectAsLiveData` are replaced by
