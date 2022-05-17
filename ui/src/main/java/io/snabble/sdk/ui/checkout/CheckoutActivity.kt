@@ -99,9 +99,8 @@ class CheckoutActivity : FragmentActivity() {
                         navController.graph = navGraph
                     }
                 }
-                InitializationState.INITIALIZING -> {
-                    // ignore
-                }
+                InitializationState.UNINITIALIZED,
+                InitializationState.INITIALIZING -> {} // ignore
                 InitializationState.ERROR -> {
                     finishWithError("The snabble SDK is not initialized")
                 }

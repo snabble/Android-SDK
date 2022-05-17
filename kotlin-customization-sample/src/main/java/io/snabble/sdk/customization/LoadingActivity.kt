@@ -18,6 +18,7 @@ class LoadingActivity : AppCompatActivity() {
         Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
         Snabble.initializationState.observe(this) {
             when (it) {
+                InitializationState.UNINITIALIZED,
                 InitializationState.INITIALIZING -> {}
                 InitializationState.INITIALIZED -> {
                     // an application can have multiple projects, for example for

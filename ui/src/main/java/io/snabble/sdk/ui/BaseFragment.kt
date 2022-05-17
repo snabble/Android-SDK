@@ -37,6 +37,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
                 InitializationState.ERROR -> {
                     sdkNotInitialized.isVisible = true
                 }
+                InitializationState.UNINITIALIZED,
                 InitializationState.INITIALIZING -> {} // ignore
             }
         }

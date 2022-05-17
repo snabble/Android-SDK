@@ -226,7 +226,7 @@ object Snabble {
     var createAppUserUrl: String? = null
         private set
 
-    private val mutableInitializationState = MutableLiveData<InitializationState>()
+    private val mutableInitializationState = MutableAccessibleLiveData(InitializationState.UNINITIALIZED)
 
     /**
      * The current initialization state of the SDK. Fragments observe this state and only
@@ -313,7 +313,7 @@ object Snabble {
         }
 
         isInitializing.set(true)
-        mutableInitializationState.postValue(InitializationState.INITIALIZING)
+        mutableInitializationState.value = InitializationState.INITIALIZING
 
         if (app != null) {
             application = app
@@ -420,13 +420,13 @@ object Snabble {
                 val token = tokenRegistry.getToken(projects[0])
                 if (token == null) {
                     isInitializing.set(false)
-                    mutableInitializationState.postValue(InitializationState.ERROR)
+                    mutableInitializationState.value = InitializationState.ERROR
                     return@background
                 }
             }
 
             isInitializing.set(false)
-            mutableInitializationState.postValue(InitializationState.INITIALIZED)
+            mutableInitializationState.value = InitializationState.INITIALIZED
 
             if (config.loadActiveShops) {
                 loadActiveShops()
@@ -436,7 +436,7 @@ object Snabble {
 
     private fun dispatchError(error: Error) {
         isInitializing.set(false)
-        mutableInitializationState.postValue(InitializationState.ERROR)
+        mutableInitializationState.value = InitializationState.ERROR
         this.error = error
     }
 
