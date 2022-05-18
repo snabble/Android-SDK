@@ -30,10 +30,15 @@
 
         <meta-data
             android:name="snabble_app_id"
-            android:value="snabble-sdk-demo-app-oguh3x" />
+            android:value="${appId}" />
 
         <meta-data
             android:name="snabble_secret"
-            android:value="2TKKEG5KXWY6DFOGTZKDUIBTNIRVCYKFZBY32FFRUUWIUAFEIBHQ====" />
+            android:value="${secret}" />
+
+        <meta-data
+            android:name="snabble_endpoint_baseurl"
+            android:value="${endpoint}" />
+
     </application>
 </manifest>
