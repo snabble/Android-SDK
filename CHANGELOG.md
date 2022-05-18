@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.64.1]
+
+### Fixed
+- API documentation build
+- ViolationNotification dialog
+
 ## [0.64.0]
 
 ### Breaking Changes
@@ -76,15 +82,15 @@ in Kotlin.
 
 ### Added
 - Added state persistence for checkout
-- CheckoutActivity restores itself when the checkout is in a state that requires the users attention
+- `CheckoutActivity` restores itself when the checkout is in a state that requires the users attention
 
 ### Changes
 - Migrated Checkout to Kotlin
-- Added ViewModel to ProductConfirmationDialog
+- Added ViewModel to `ProductConfirmationDialog`
 
 ### Fixed
-- CheckoutOfflineView, CheckoutPOSView, CheckoutCustomerCardView and PaymentStatusView not
-  updating it's Project correctly, when the CheckoutActivity gets recreated due to state restoration
+- `CheckoutOfflineView`, `CheckoutPOSView`, `CheckoutCustomerCardView` and `PaymentStatusView` not
+  updating it's `Project` correctly, when the `CheckoutActivity` gets recreated due to state restoration
 
 ## [0.62.4]
 
