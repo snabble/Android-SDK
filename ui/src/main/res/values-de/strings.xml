@@ -36,6 +36,35 @@
     <string name="Snabble.Checkout.payAtCashRegister">An der Kasse zahlen</string>
     <string name="Snabble.Checkout.title">Bezahlen</string>
     <string name="Snabble.Checkout.verifying">Verifiziere</string>
+    <string name="Snabble.Coupon.activate">Aktivieren</string>
+    <string name="Snabble.Coupon.activated">Aktiviert</string>
+    <string name="Snabble.Coupon.countdown">Coupon läuft in %s Minuten ab</string>
+    <string name="Snabble.Coupon.expired">Dieser Coupon ist bereits abgelaufen.</string>
+    <string name="Snabble.Coupon.explanation">Dein Coupon ist jetzt für dich aktiviert. Bitte scanne das Produkt im Shop und lege es in deinen Warenkorb, um von den Vorteilen des Coupons zu profitieren.</string>
+    <string name="Snabble.Coupons.expired">Bereits abgelaufen</string>
+    <string name="Snabble.Coupons.expiresAtDate">gültig bis %s</string>
+    <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="one">noch %d Tag</item>
+        <item quantity="other">noch %d Tage</item>
+        <item quantity="zero">Bereits abgelaufen</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="one">noch %d Stunde</item>
+        <item quantity="other">noch %d Stunden</item>
+        <item quantity="zero">Bereits abgelaufen</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="one">noch %d Minute</item>
+        <item quantity="other">noch %d Minuten</item>
+        <item quantity="zero">Bereits abgelaufen</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="one">noch %d Woche</item>
+        <item quantity="other">noch %d Wochen</item>
+        <item quantity="zero">Bereits abgelaufen</item>
+    </plurals>
+    <string name="Snabble.Coupons.none">Keine Coupons verfügbar</string>
+    <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Jetzt mit Kreditkarte bezahlen</string>
     <string name="Snabble.Delete">Löschen</string>
     <string name="Snabble.Done">Fertig</string>
@@ -313,9 +342,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
     <string name="Snabble.TWINT.payNow">Jetzt mit TWINT bezahlen</string>
     <string name="Snabble.undo">Rückgängig</string>
-    <string name="Snabble.Violations.couponAlreadyVoided">Der Coupon „%s“ wurde bereits benutzt und wird aus dem Warenkorb entfernt</string>
-    <string name="Snabble.Violations.couponCurrentlyNotValid">Der Coupon „%s“ ist akuell ungültig und wird aus dem Warenkorb entfernt</string>
-    <string name="Snabble.Violations.couponInvalid">Der Coupon „%s“ ist ungültig und wird aus dem Warenkorb entfernt</string>
-    <string name="Snabble.Violations.title">Coupon ungültig</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">Ein Coupon wurde bereits benutzt und wird aus dem Warenkorb entfernt</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">Ein Coupon ist aktuell ungültig und wird aus dem Warenkorb entfernt</string>
+    <string name="Snabble.Violations.couponInvalid">Ein Coupon ist ungültig und wird aus dem Warenkorb entfernt</string>
+    <string name="Snabble.Violations.title">Ungültiger Warenkorb</string>
     <string name="Snabble.Yes">Ja</string>
 </resources>

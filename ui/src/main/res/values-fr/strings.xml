@@ -36,6 +36,35 @@
     <string name="Snabble.Checkout.payAtCashRegister">Payer à la caisse</string>
     <string name="Snabble.Checkout.title">Payer</string>
     <string name="Snabble.Checkout.verifying">Vérifie</string>
+    <string name="Snabble.Coupon.activate">Activer</string>
+    <string name="Snabble.Coupon.activated">Activé</string>
+    <string name="Snabble.Coupon.countdown">Le coupon expire dans %s minutes</string>
+    <string name="Snabble.Coupon.expired">Ce coupon est expiré</string>
+    <string name="Snabble.Coupon.explanation">Ton coupon est maintenant activé pour toi. Merci de scanner le produit dans le shop et de le placer dans ton panier pour profiter des avantages du coupon.</string>
+    <string name="Snabble.Coupons.expired">Déjà expiré</string>
+    <string name="Snabble.Coupons.expiresAtDate">valable jusqu\'au %s</string>
+    <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="one">encore %d jour</item>
+        <item quantity="other">encore %d jours</item>
+        <item quantity="zero">Déjà expiré</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="one">encore %d heure</item>
+        <item quantity="other">encore %d heures</item>
+        <item quantity="zero">Déjà expiré</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="one">encore %d minute</item>
+        <item quantity="other">encore %d minutes</item>
+        <item quantity="zero">Déjà expiré</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="one">encore %d semaine</item>
+        <item quantity="other">encore %d semaines</item>
+        <item quantity="zero">Déjà expiré</item>
+    </plurals>
+    <string name="Snabble.Coupons.none">Aucun coupon disponible</string>
+    <string name="Snabble.Coupons.title">coupons</string>
     <string name="Snabble.CreditCard.payNow">Payer maintenant avec la carte de crédit</string>
     <string name="Snabble.Delete">Effacer</string>
     <string name="Snabble.Done">Terminé</string>
