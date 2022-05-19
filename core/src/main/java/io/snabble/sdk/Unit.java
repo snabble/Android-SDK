@@ -7,6 +7,9 @@ import java.util.List;
 
 import io.snabble.sdk.utils.Logger;
 
+/**
+ * Enum describing different units and thier conversions to each other
+ */
 public enum Unit {
     MILLILITER("ml", "ml", Dimension.VOLUME),
     CENTILITER("cl", "cl", Dimension.VOLUME),
@@ -46,6 +49,11 @@ public enum Unit {
         this.dimension = dimension;
     }
 
+    /**
+     * Returns a unit from it's string representation.
+     *
+     * E.g. "mm" -> Unit.MILLIMETER
+     */
     public static Unit fromString(String value) {
         if (value != null) {
             for (Unit unit : values()) {
@@ -58,18 +66,36 @@ public enum Unit {
         return null;
     }
 
+    /**
+     * Returns the units unique identifier.
+     *
+     * E.g. "mm" -> Unit.MILLIMETER
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Gets the display value of the unit
+     */
     public String getDisplayValue() {
         return displayValue;
     }
 
+    /**
+     * Gets the dimension (group of units).
+     *
+     * E.g. Dimension.DISTANCE for MILLIMETER, CENTIMETER and so on.
+     */
     public Dimension getDimension() {
         return dimension;
     }
 
+    /**
+     * Gets the fractional unit of a given decimal place.
+     *
+     * E.g. 0.002m -> 2mm
+     */
     public Unit getFractionalUnit(int decimal) {
         if (decimal == 0) {
             return this;
@@ -84,6 +110,9 @@ public enum Unit {
         return null;
     }
 
+    /**
+     * Gets the smallest possible unit of a dimension group.
+     */
     public Unit getSmallestUnit() {
         switch (this) {
             case MILLILITER:
@@ -113,14 +142,6 @@ public enum Unit {
             default:
                 return null;
         }
-    }
-
-    public static boolean hasDimension(Unit unit) {
-        if (unit != null) {
-            return unit.dimension != null;
-        }
-
-        return false;
     }
 
     private static class Conversion {
@@ -169,6 +190,11 @@ public enum Unit {
         addConversion(KILOGRAM, HECTOGRAM, 10, 1);
     }
 
+    /**
+     * Converts a given value from one unit to another.
+     *
+     * Returns the same value if a conversion is not possible. (e.g. KILOGRAM -> MILLIMETER)
+     */
     public static BigDecimal convert(BigDecimal value, Unit from, Unit to) {
         if (from == to) return value;
 

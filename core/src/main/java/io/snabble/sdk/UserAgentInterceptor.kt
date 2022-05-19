@@ -1,36 +1,29 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import android.content.Context;
-import android.os.Build;
+import android.content.Context
+import android.os.Build
+import okhttp3.Interceptor
+import okhttp3.OkHttp
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
-import androidx.annotation.NonNull;
+internal class UserAgentInterceptor(context: Context) : Interceptor {
+    private val userAgent: String
 
-import java.io.IOException;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttp;
-import okhttp3.Request;
-import okhttp3.Response;
-
-class UserAgentInterceptor implements Interceptor {
-    private final String userAgent;
-
-    public UserAgentInterceptor(Context context) {
-        userAgent = context.getPackageManager().getApplicationLabel(context.getApplicationInfo())
-                + "/" + Snabble.getInstance().getVersionName()
-                + " snabble/" + Snabble.getVersion() +
-                " (Android " + Build.VERSION.RELEASE
-                + "; " + Build.BRAND + "; " + Build.MODEL + ")" +
-                " okhttp/" + OkHttp.VERSION;
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val originalRequest: Request = chain.request()
+        val requestWithUserAgent = originalRequest.newBuilder()
+            .header("User-Agent", userAgent)
+            .build()
+        return chain.proceed(requestWithUserAgent)
     }
 
-    @NonNull
-    @Override
-    public Response intercept(Chain chain) throws IOException {
-        Request originalRequest = chain.request();
-        Request requestWithUserAgent = originalRequest.newBuilder()
-                .header("User-Agent", userAgent)
-                .build();
-        return chain.proceed(requestWithUserAgent);
+    init {
+        val appName = (context.packageManager.getApplicationLabel(context.applicationInfo)).toString()
+        userAgent = "$appName/${Snabble.versionName} snabble/${Snabble.version} " +
+                    "(Android ${Build.VERSION.RELEASE}; ${Build.BRAND}; " +
+                    "${Build.MODEL}) okhttp/${OkHttp.VERSION}"
     }
 }
