@@ -26,12 +26,12 @@ fun List<ViolationNotification>.getMessage(context: Context) = joinToString("\n"
  */
 fun List<ViolationNotification>.showNotificationOnce(context: Context, cart: ShoppingCart) {
     val message: String = getMessage(context)
-    cart.removeViolationNotification(this)
-    if (cart.violationNotifications.isNotEmpty()){
+    if (cart.violationNotifications.isNotEmpty()) {
         AlertDialog.Builder(context)
             .setTitle(R.string.Snabble_Violations_title)
             .setMessage(message)
             .setPositiveButton(R.string.Snabble_OK, null)
             .show()
     }
+    cart.removeViolationNotification(this)
 }
