@@ -106,12 +106,18 @@ public class Product implements Serializable, Parcelable {
         }
     }
 
+    /**
+     * Enum representing the product availability
+     */
     public enum Availability {
         IN_STOCK,
         LISTED,
         NOT_AVAILABLE
     }
 
+    /**
+     * POJO representing information required for scanning
+     */
     public static class Code implements Serializable {
         public final String lookupCode;
         public final String transmissionCode;
@@ -177,21 +183,30 @@ public class Product implements Serializable, Parcelable {
     public Product() {}
 
     /**
-     * @return The unique identifier of the product. Usually the same identifier
-     * the retailer uses internally.
+     * Gets the unique identifier of the product. Usually the same identifier
+     * the retailer uses internally
      */
     public String getSku() {
         return sku;
     }
 
+    /**
+     * Gets the name of the product
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the description of the product
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Gets the scannable codes of the product
+     */
     public Code[] getScannableCodes() {
         return scannableCodes;
     }
@@ -201,10 +216,16 @@ public class Product implements Serializable, Parcelable {
         return getListPrice();
     }
 
+    /**
+     * Gets the listed price of the product
+     */
     public int getListPrice() {
         return price;
     }
 
+    /**
+     * Gets the subtitle of the product. Most of the time it is the Brand name of the product.
+     */
     public String getSubtitle() {
         return subtitle;
     }
@@ -216,10 +237,16 @@ public class Product implements Serializable, Parcelable {
         return discountedPrice == 0 ? getListPrice() : discountedPrice;
     }
 
+    /**
+     * Gets the price, including modifications of the price when a customer card is set
+     */
     public int getPrice(String customerCard) {
         return customerCard != null ? getCustomerCardPrice() : getDiscountedPrice();
     }
 
+    /**
+     * Gets the modified price if a customer card is set
+     */
     public int getCustomerCardPrice() {
         return customerCardPrice == 0 ? getDiscountedPrice() : customerCardPrice;
     }
@@ -229,6 +256,10 @@ public class Product implements Serializable, Parcelable {
         return discountedPrice > 0;
     }
 
+    /**
+     * Gets the url to the image of the product
+     */
+    @Nullable
     public String getImageUrl() {
         return imageUrl;
     }
@@ -241,6 +272,10 @@ public class Product implements Serializable, Parcelable {
         return depositProduct;
     }
 
+    /**
+     * Returns all products which bundle this product
+     */
+    @Nullable
     public Product[] getBundleProducts() {
         return bundleProducts;
     }
@@ -279,14 +314,23 @@ public class Product implements Serializable, Parcelable {
         return saleRestriction;
     }
 
+    /**
+     * The {@link Unit} that this product scanned code information gets converted into
+     */
     public Unit getReferenceUnit() {
         return referenceUnit;
     }
 
+    /**
+     * The {@link Unit} that this product scanned code contains, using the default template.
+     */
     public Unit getEncodingUnit(String lookupCode) {
         return getEncodingUnit(null, lookupCode);
     }
 
+    /**
+     * The {@link Unit} that this product scanned code contains
+     */
     public Unit getEncodingUnit(String templateName, String lookupCode) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
@@ -301,6 +345,11 @@ public class Product implements Serializable, Parcelable {
         return encodingUnit;
     }
 
+    /**
+     * Returns the code that gets used to encode the scanned code into encoded codes.
+     *
+     * Can be used when the cash register uses a different format for processing qr codes.
+     */
     public String getTransmissionCode(Project project, String templateName, String lookupCode, int embeddedData) {
         for (Code code : scannableCodes) {
             if (code.lookupCode.equals(lookupCode)) {
@@ -323,6 +372,9 @@ public class Product implements Serializable, Parcelable {
         return null;
     }
 
+    /**
+     * Gets the preferred scanned code that should be used for encoding into encoded codes
+     */
     public Product.Code getPrimaryCode() {
         for (Code code : scannableCodes) {
             if (code.isPrimary) {
@@ -332,18 +384,24 @@ public class Product implements Serializable, Parcelable {
 
         return null;
     }
+
     /**
-     *
-     * @return returns true if this product should not be available for sale anymore.
+     * Returns true if this product should not be available for sale anymore.
      */
     public boolean getSaleStop() {
         return saleStop;
     }
 
+    /**
+     * Returns true if this product is not for sale.
+     */
     public boolean getNotForSale() {
         return notForSale;
     }
 
+    /**
+     * Returns the {@link Availability} of the product
+     */
     public Availability getAvailability() {
         return availability;
     }
@@ -353,10 +411,18 @@ public class Product implements Serializable, Parcelable {
         return scanMessage;
     }
 
+    /**
+     * Returns the price for a given quantity. Get encoded into its encoding unit, if required.
+     */
     public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode) {
         return getPriceForQuantity(quantity, scannedCode, roundingMode, null);
     }
 
+    /**
+     * Returns the price for a given quantity. Get encoded into its encoding unit, if required.
+     *
+     * Uses the customer card price as a base instead of the normal price
+     */
     public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode, String customerCardId) {
         if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
             String lookupCode = scannedCode != null ? scannedCode.getLookupCode() : null;
