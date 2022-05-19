@@ -270,6 +270,11 @@ object Snabble {
             }
         }
 
+    /**
+     * The current checked in project.
+     *
+     * Gets automatically set, when setting a shop via [checkedInShop].
+     */
     var checkedInProject = MutableAccessibleLiveData<Project?>(null)
 
     /**
@@ -622,6 +627,11 @@ object Snabble {
         paymentCertificates = Collections.unmodifiableList(certificates)
     }
 
+    /**
+     * Converts a relative url to a absolute url, depending on the environment.
+     *
+     * E.g. /foo/bar -> https://api.snabble.io/foo/bar
+     */
     fun absoluteUrl(url: String): String {
         return if (url.startsWith("http")) {
             url
@@ -630,9 +640,17 @@ object Snabble {
         }
     }
 
+    /**
+     * The current endpoint base url used by the SDK.
+     *
+     */
     val endpointBaseUrl: String
         get() = config.endpointBaseUrl
 
+
+    /**
+     * Finds a project by it's id.
+     */
     fun getProjectById(projectId: String?): Project? {
         return projects.firstOrNull { it.id == projectId }
     }
@@ -690,7 +708,13 @@ object Snabble {
         onMetaDataUpdateListeners.remove(onMetaDataUpdateListener)
     }
 
+    /**
+     * Interface for notifying when our metadata is getting updated
+     */
     fun interface OnMetadataUpdateListener {
+        /**
+         * Gets called when our metadata has updated
+         */
         fun onMetaDataUpdated()
     }
 
@@ -736,6 +760,9 @@ object Snabble {
         }
     }
 
+    /**
+     * Exception used for SDK initialization errors.
+     */
     class SnabbleException internal constructor(val error: Error?) : Exception() {
         override fun toString(): String {
             return "SnabbleException{" +
