@@ -1,0 +1,410 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ViewModel</title>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+const savedDarkMode = storage ? JSON.parse(storage) : false
+if(savedDarkMode === true){
+    document.getElementsByTagName("html")[0].classList.add("theme-dark")
+}</script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../../index.html">
+<span>Android-SDK</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="ui::io.snabble.sdk.ui.scanner/ProductConfirmationDialog.ViewModel///PointingToDeclaration//-587146753">
+  <div class="breadcrumbs"><a href="../../../index.html">ui</a><span class="delimiter">/</span><a href="../../index.html">io.snabble.sdk.ui.scanner</a><span class="delimiter">/</span><a href="../index.html">ProductConfirmationDialog</a><span class="delimiter">/</span><a href="index.html">ViewModel</a></div>
+  <div class="cover ">
+    <h1 class="cover"><span>View</span><wbr><span><span>Model</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">ViewModel</a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;project<span class="token operator">: </span><a href="../../../../core/io.snabble.sdk/-project/index.html">Project</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>product<span class="token operator">: </span><a href="../../../../core/io.snabble.sdk/-product/index.html">Product</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;scannedCode<span class="token operator">: </span><a href="../../../../core/io.snabble.sdk.codes/-scanned-code/index.html">ScannedCode</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">The view model of the product confirmation dialog, should be helpful if you want to customize that dialog.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
+    <div class="tabs-section-body">
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="-472306409%2FConstructors%2F-587146753" anchor-label="ViewModel" id="-472306409%2FConstructors%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-view-model.html"><span>View</span><wbr><span><span>Model</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-472306409%2FConstructors%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-view-model.html"><span class="token function">ViewModel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">savedInstanceState<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Restore the ViewModel from a context and the savedInstanceState. Can throw IllegalArgumentException when the project cannot be found or onSaveInstanceState was not called.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1454240842%2FConstructors%2F-587146753" anchor-label="ViewModel" id="1454240842%2FConstructors%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-view-model.html"><span>View</span><wbr><span><span>Model</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1454240842%2FConstructors%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-view-model.html"><span class="token function">ViewModel</span></a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;project<span class="token operator">: </span><a href="../../../../core/io.snabble.sdk/-project/index.html">Project</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;product<span class="token operator">: </span><a href="../../../../core/io.snabble.sdk/-product/index.html">Product</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;scannedCode<span class="token operator">: </span><a href="../../../../core/io.snabble.sdk.codes/-scanned-code/index.html">ScannedCode</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="629901038%2FFunctions%2F-587146753" anchor-label="addToCart" id="629901038%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="add-to-cart.html"><span>add</span><wbr><span>To</span><wbr><span><span>Cart</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="629901038%2FFunctions%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="add-to-cart.html"><span class="token function">addToCart</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1807585376%2FFunctions%2F-587146753" anchor-label="dismiss" id="-1807585376%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="dismiss.html"><span><span>dismiss</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1807585376%2FFunctions%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="dismiss.html"><span class="token function">dismiss</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Call this when the dialog is dismissed to cleanup internal resources</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1704822379%2FFunctions%2F-587146753" anchor-label="onSaveInstanceState" id="1704822379%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="on-save-instance-state.html"><span>on</span><wbr><span>Save</span><wbr><span>Instance</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1704822379%2FFunctions%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/MainThread.html"><span class="token annotation">MainThread</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="on-save-instance-state.html"><span class="token function">onSaveInstanceState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outState<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Called to ask the view model to save its current dynamic state, so it can later be reconstructed in a new instance if its process is restarted.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Properties</h2>
+      <div class="table" data-togglable="Properties"><a data-name="2069834479%2FProperties%2F-587146753" anchor-label="addToCartButtonText" id="2069834479%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="add-to-cart-button-text.html">addToCartButtonText</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2069834479%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="2069834479%2FProperties%2F-587146753" anchor-label="addToCartButtonText" id="2069834479%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="add-to-cart-button-text.html">addToCartButtonText</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="2069834479%2FProperties%2F-587146753" anchor-label="addToCartButtonText" id="2069834479%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The add to cart button text (varies if the user updates the quantity)</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-2120830073%2FProperties%2F-587146753" anchor-label="appliedCoupon" id="-2120830073%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="applied-coupon.html">appliedCoupon</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2120830073%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-2120830073%2FProperties%2F-587146753" anchor-label="appliedCoupon" id="-2120830073%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="applied-coupon.html">appliedCoupon</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/MutableLiveData.html">MutableLiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../../core/io.snabble.sdk/-coupon/index.html">Coupon</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-2120830073%2FProperties%2F-587146753" anchor-label="appliedCoupon" id="-2120830073%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">A applied coupon like a manual discount, can be null</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="455766845%2FProperties%2F-587146753" anchor-label="cartItem" id="455766845%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="cart-item.html">cartItem</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="455766845%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="455766845%2FProperties%2F-587146753" anchor-label="cartItem" id="455766845%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="cart-item.html">cartItem</a><span class="token operator">: </span><a href="../../../../core/io.snabble.sdk/-shopping-cart/-item/index.html">ShoppingCart.Item</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="455766845%2FProperties%2F-587146753" anchor-label="cartItem" id="455766845%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The raw cart item</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1968735685%2FProperties%2F-587146753" anchor-label="depositPrice" id="1968735685%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="deposit-price.html">depositPrice</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1968735685%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1968735685%2FProperties%2F-587146753" anchor-label="depositPrice" id="1968735685%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="deposit-price.html">depositPrice</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1968735685%2FProperties%2F-587146753" anchor-label="depositPrice" id="1968735685%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The deposit price of the product, can be null</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-792054360%2FProperties%2F-587146753" anchor-label="enterReducedPriceButtonText" id="-792054360%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="enter-reduced-price-button-text.html">enterReducedPriceButtonText</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-792054360%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-792054360%2FProperties%2F-587146753" anchor-label="enterReducedPriceButtonText" id="-792054360%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="enter-reduced-price-button-text.html">enterReducedPriceButtonText</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-792054360%2FProperties%2F-587146753" anchor-label="enterReducedPriceButtonText" id="-792054360%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The button text do enter manual discounts, can be null when no coupons are available</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="297873970%2FProperties%2F-587146753" anchor-label="originalPrice" id="297873970%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="original-price.html">originalPrice</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="297873970%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="297873970%2FProperties%2F-587146753" anchor-label="originalPrice" id="297873970%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="original-price.html">originalPrice</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="297873970%2FProperties%2F-587146753" anchor-label="originalPrice" id="297873970%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The original price of the product, can be null</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1677648639%2FProperties%2F-587146753" anchor-label="price" id="-1677648639%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="price.html">price</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1677648639%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-1677648639%2FProperties%2F-587146753" anchor-label="price" id="-1677648639%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="price.html">price</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-1677648639%2FProperties%2F-587146753" anchor-label="price" id="-1677648639%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The price to display</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1266928510%2FProperties%2F-587146753" anchor-label="priceContentDescription" id="1266928510%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="price-content-description.html">priceContentDescription</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1266928510%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1266928510%2FProperties%2F-587146753" anchor-label="priceContentDescription" id="1266928510%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="price-content-description.html">priceContentDescription</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1266928510%2FProperties%2F-587146753" anchor-label="priceContentDescription" id="1266928510%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The content description of the price</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-221814565%2FProperties%2F-587146753" anchor-label="product" id="-221814565%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="product.html">product</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-221814565%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-221814565%2FProperties%2F-587146753" anchor-label="product" id="-221814565%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="product.html">product</a><span class="token operator">: </span><a href="../../../../core/io.snabble.sdk/-product/index.html">Product</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-221814565%2FProperties%2F-587146753" anchor-label="product" id="-221814565%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The product raw data</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1117411333%2FProperties%2F-587146753" anchor-label="quantity" id="1117411333%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="quantity.html">quantity</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1117411333%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1117411333%2FProperties%2F-587146753" anchor-label="quantity" id="1117411333%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="quantity.html">quantity</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/MutableLiveData.html">MutableLiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1117411333%2FProperties%2F-587146753" anchor-label="quantity" id="1117411333%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The quantity of the product, can be null e.g. in case of user weighted products</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1153295700%2FProperties%2F-587146753" anchor-label="quantityButtonsVisible" id="1153295700%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="quantity-buttons-visible.html">quantityButtonsVisible</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1153295700%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1153295700%2FProperties%2F-587146753" anchor-label="quantityButtonsVisible" id="1153295700%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="quantity-buttons-visible.html">quantityButtonsVisible</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1153295700%2FProperties%2F-587146753" anchor-label="quantityButtonsVisible" id="1153295700%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">True when the plus and minus buttons should be shown</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1908123644%2FProperties%2F-587146753" anchor-label="quantityCanBeChanged" id="-1908123644%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="quantity-can-be-changed.html">quantityCanBeChanged</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1908123644%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-1908123644%2FProperties%2F-587146753" anchor-label="quantityCanBeChanged" id="-1908123644%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="quantity-can-be-changed.html">quantityCanBeChanged</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-1908123644%2FProperties%2F-587146753" anchor-label="quantityCanBeChanged" id="-1908123644%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">True when the quantity can be changed</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="420162738%2FProperties%2F-587146753" anchor-label="quantityCanBeDecreased" id="420162738%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="quantity-can-be-decreased.html">quantityCanBeDecreased</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="420162738%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="420162738%2FProperties%2F-587146753" anchor-label="quantityCanBeDecreased" id="420162738%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="quantity-can-be-decreased.html">quantityCanBeDecreased</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="420162738%2FProperties%2F-587146753" anchor-label="quantityCanBeDecreased" id="420162738%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">True when the quantity can be decreased. Can be false when there is no quantity or the quantity is 1</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1220567722%2FProperties%2F-587146753" anchor-label="quantityCanBeIncreased" id="-1220567722%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="quantity-can-be-increased.html">quantityCanBeIncreased</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1220567722%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-1220567722%2FProperties%2F-587146753" anchor-label="quantityCanBeIncreased" id="-1220567722%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="quantity-can-be-increased.html">quantityCanBeIncreased</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-1220567722%2FProperties%2F-587146753" anchor-label="quantityCanBeIncreased" id="-1220567722%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">True when the quantity can be increased. Can be false when there is no quantity or the limit is reached</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1494076802%2FProperties%2F-587146753" anchor-label="quantityContentDescription" id="1494076802%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="quantity-content-description.html">quantityContentDescription</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1494076802%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1494076802%2FProperties%2F-587146753" anchor-label="quantityContentDescription" id="1494076802%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="quantity-content-description.html">quantityContentDescription</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/MutableLiveData.html">MutableLiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1494076802%2FProperties%2F-587146753" anchor-label="quantityContentDescription" id="1494076802%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The content description of the quantity, can be null</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1179507101%2FProperties%2F-587146753" anchor-label="quantityVisible" id="-1179507101%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="quantity-visible.html">quantityVisible</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1179507101%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-1179507101%2FProperties%2F-587146753" anchor-label="quantityVisible" id="-1179507101%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="quantity-visible.html">quantityVisible</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-1179507101%2FProperties%2F-587146753" anchor-label="quantityVisible" id="-1179507101%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">True when the quantity can be changed</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1124256008%2FProperties%2F-587146753" anchor-label="shoppingCart" id="1124256008%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="shopping-cart.html">shoppingCart</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1124256008%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1124256008%2FProperties%2F-587146753" anchor-label="shoppingCart" id="1124256008%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="shopping-cart.html">shoppingCart</a><span class="token operator">: </span><a href="../../../../core/io.snabble.sdk/-shopping-cart/index.html">ShoppingCart</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1124256008%2FProperties%2F-587146753" anchor-label="shoppingCart" id="1124256008%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">The related shopping cart</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1643203966%2FProperties%2F-587146753" anchor-label="wasAddedToCart" id="1643203966%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="was-added-to-cart.html">wasAddedToCart</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1643203966%2FProperties%2F-587146753"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="1643203966%2FProperties%2F-587146753" anchor-label="wasAddedToCart" id="1643203966%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="was-added-to-cart.html">wasAddedToCart</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1643203966%2FProperties%2F-587146753" anchor-label="wasAddedToCart" id="1643203966%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><p class="paragraph">True when the item was added to the cart</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        <div class="footer"><span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        </div>
+    </div>
+</div>
+
+</body></html>
+
