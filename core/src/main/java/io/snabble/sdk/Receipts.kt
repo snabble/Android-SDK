@@ -51,7 +51,8 @@ class Receipts internal constructor() {
         })
     }
 
-    @Deprecated(message = "Use getReceiptInfo instead")
+    @Deprecated(message = "Use getReceiptInfo instead",
+                replaceWith = ReplaceWith("getReceiptInfo(receiptInfoCallback)"))
     fun getReceiptInfos(receiptInfoCallback: ReceiptInfoCallback) {
         getReceiptInfo(receiptInfoCallback)
     }
