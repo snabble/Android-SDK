@@ -6,7 +6,6 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="16dp"
     app:shapeAppearanceOverlay="?shapeAppearanceLargeComponent"
     tools:cardBackgroundColor="#EFCB77"
     tools:layout_height="wrap_content">

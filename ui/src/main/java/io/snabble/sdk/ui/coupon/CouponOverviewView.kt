@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,31 +20,86 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.loadImage
 import io.snabble.sdk.ui.utils.margin
+import io.snabble.sdk.ui.utils.padding
 
+/**
+ * Show the coupons for the given [LiveData], set via [setCouponSource]. The padding left and right is overwritten so
+ * that you can apply your own key lines so that the view can use the full width to display the coupon cards.
+ * You can control with [hideWhenLoading] and [hideWhenEmpty] if the view should be shown in that states.
+ */
 class CouponOverviewView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+    private var adapter: CouponsAdapter? = null
+    private val recyclerView: RecyclerView
+    private var keyLineLeft: Int
+    private var keyLineRight: Int
+    var hideWhenLoading = false
+    var hideWhenEmpty = false
+
     init {
+        keyLineLeft = padding.left
+        keyLineRight = padding.right
+        if (!isInEditMode) {
+            super.setPadding(0, paddingTop, 0, paddingBottom)
+        }
         inflate(context, R.layout.snabble_view_coupon_overview, this)
-        findViewById<RecyclerView>(R.id.recycler_view).apply {
-            adapter = CouponsAdapter(requireNotNull(findViewTreeLifecycleOwner()))
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+        if (attrs != null) {
+            val arr = context.theme.obtainStyledAttributes(attrs, R.styleable.CouponOverviewView, defStyleAttr, 0)
+            try {
+                hideWhenLoading = arr.getBoolean(R.styleable.CouponOverviewView_hideWhenLoading, false)
+                hideWhenEmpty = arr.getBoolean(R.styleable.CouponOverviewView_hideWhenLoading, false)
+            } finally {
+                arr.recycle()
+            }
         }
     }
 
+    fun setCouponSource(coupons: LiveData<List<Coupon>>) {
+        recyclerView.adapter = ensureAdapterExists().apply {
+            setCouponSource(coupons)
+        }
+    }
+
+    private fun ensureAdapterExists(): CouponsAdapter {
+        if (adapter == null) {
+            adapter = CouponsAdapter(requireNotNull(findViewTreeLifecycleOwner()), keyLineLeft, keyLineRight)
+        }
+        return adapter!!
+    }
+
+    override fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
+        super.setPadding(0, top, 0, bottom)
+        keyLineLeft = left
+        keyLineRight = right
+    }
+
     private class CouponsAdapter(
-        lifecycleOwner: LifecycleOwner
-    ) : ListAdapter<Coupon, CouponsHolder>(CouponDiffer()) {
+        private val lifecycleOwner: LifecycleOwner,
+        private val paddingLeft: Int,
+        private val paddingRight: Int
+    ) : ListAdapter<Coupon, CouponsHolder>(CouponDiffer()), Observer<List<Coupon>> {
+        private var coupons: LiveData<List<Coupon>>? = null
         init {
+            println("### CouponsAdapter with loading placeholder...")
             submitList(listOf(Coupon.createLoadingPlaceholder()))
-            CouponManager.coupons.observe(lifecycleOwner) {
-                updateList(it)
-            }
             stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
+
+        fun setCouponSource(coupons: LiveData<List<Coupon>>) {
+            this.coupons?.removeObserver(this)
+            this.coupons = coupons
+            coupons.observe(lifecycleOwner, this)
+        }
+
+        override fun onChanged(coupons: List<Coupon>?) {
+            updateList(coupons)
         }
 
         fun updateList(model: List<Coupon>?) {
@@ -53,7 +110,7 @@ class CouponOverviewView @JvmOverloads constructor(
             }
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = CouponsHolder(parent)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = CouponsHolder(parent, paddingLeft, paddingRight)
 
         override fun onBindViewHolder(holder: CouponsHolder, position: Int) {
             val pos = when (position) {
@@ -76,7 +133,7 @@ class CouponOverviewView @JvmOverloads constructor(
         Last
     }
 
-    private class CouponsHolder(parent: ViewGroup) : RecyclerView.ViewHolder(inflate(parent)) {
+    private class CouponsHolder(parent: ViewGroup, private val paddingLeft: Int, private val paddingRight: Int) : RecyclerView.ViewHolder(inflate(parent)) {
         private val cardView: MaterialCardView = itemView.findViewById(R.id.card)
         private val background: ImageView = itemView.findViewById(R.id.background)
         private val title: TextView = itemView.findViewById(R.id.title)
@@ -96,8 +153,8 @@ class CouponOverviewView @JvmOverloads constructor(
             hasNoCoupons = coupon.mode == Coupon.Mode.Empty
             if (isLoading || hasNoCoupons) {
                 cardView.setOnClickListener(null)
-                itemView.margin.left = 32.dpInPx
-                itemView.margin.right = 32.dpInPx
+                itemView.margin.left = paddingLeft
+                itemView.margin.right = paddingRight
                 itemView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
                 return
             }
@@ -111,10 +168,9 @@ class CouponOverviewView @JvmOverloads constructor(
             discount.setTextColor(coupon.textColor)
             expire.text = coupon.buildExpireString(discount.resources)
             expire.setTextColor(coupon.textColor)
-            itemView.margin.left = if (position == ItemPosition.First) 32.dpInPx else 12.dpInPx
-            itemView.margin.right = if (position == ItemPosition.Last) 32.dpInPx else 12.dpInPx
-            itemView.layoutParams.width =
-                (itemView.context.resources.displayMetrics.widthPixels * 0.7).toInt()
+            itemView.margin.left = if (position == ItemPosition.First) paddingLeft else 12.dpInPx
+            itemView.margin.right = if (position == ItemPosition.Last) paddingRight else 12.dpInPx
+            itemView.layoutParams.width = (itemView.context.resources.displayMetrics.widthPixels * 0.7).toInt()
 
             cardView.setOnClickListener {
                 TODO("Add the logic here")
