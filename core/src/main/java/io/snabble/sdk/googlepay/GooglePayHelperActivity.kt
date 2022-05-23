@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.wallet.AutoResolveHelper
 import io.snabble.sdk.Snabble
 
+/**
+ * Activity for displaying a google pay overlay
+ */
 class GooglePayHelperActivity : AppCompatActivity() {
     companion object {
         private const val LOAD_PAYMENT_DATA_REQUEST_CODE = 712
