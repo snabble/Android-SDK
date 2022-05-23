@@ -218,7 +218,7 @@ class ProductResolver private constructor(private val context: Context, private 
         }
 
         when {
-            resolveBundles && product.bundleProducts.isNotEmpty() && !scannedCode.hasEmbeddedData() -> {
+            resolveBundles && !product.bundleProducts.isNullOrEmpty() && !scannedCode.hasEmbeddedData() -> {
                 showBundleDialog(product, scannedCode)
             }
             else -> {

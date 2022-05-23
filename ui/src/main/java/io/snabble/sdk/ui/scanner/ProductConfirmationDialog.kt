@@ -300,7 +300,7 @@ interface ProductConfirmationDialog {
             if (isDismissed) return
             wasAddedToCart = true
             Telemetry.event(Telemetry.Event.ConfirmedProduct, product)
-            val q = max(quantity.value ?: 0, cartItem.scannedCode.embeddedData)
+            val q = max(quantity.value ?: 0, cartItem.scannedCode?.embeddedData ?: 0)
             if (product.type == Product.Type.UserWeighed && q == 0) {
                 return
             }
