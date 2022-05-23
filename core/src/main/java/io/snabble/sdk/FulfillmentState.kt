@@ -1,8 +1,12 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
+import io.snabble.sdk.FulfillmentState
 
-public enum FulfillmentState {
+/**
+ * Enum class describing the state of a fulfillment.
+ */
+enum class FulfillmentState {
     @SerializedName("open")
     OPEN,
     @SerializedName("allocating")
@@ -22,24 +26,39 @@ public enum FulfillmentState {
     @SerializedName("failed")
     FAILED;
 
-    public boolean isOpen() {
-        return this == OPEN
-                || this == ALLOCATING
-                || this == ALLOCATED;
-    }
+    /**
+     * Returns true of the current fulfillment is still open and being processed
+     */
+    val isOpen: Boolean
+        get() = when(this) {
+            OPEN,
+            ALLOCATING,
+            ALLOCATED -> true
+            else -> false
+        }
 
-    public boolean isFailure() {
-        return this == ABORTED
-                || this == ALLOCATION_FAILED
-                || this == ALLOCATION_TIMED_OUT
-                || this == FAILED;
-    }
+    /**
+     * Returns true if the current fulfillment has failed. This state is final.
+     */
+    val isFailure: Boolean
+        get() = when(this) {
+            ABORTED,
+            ALLOCATION_FAILED,
+            ALLOCATION_TIMED_OUT,
+            FAILED -> true
+            else -> false
+        }
 
-    public boolean isClosed() {
-        return this == PROCESSED
-                || this == ABORTED
-                || this == ALLOCATION_FAILED
-                || this == ALLOCATION_TIMED_OUT
-                || this == FAILED;
-    }
+    /**
+     * Returns true if the current fulfillment is closed, successful or not. This state is final.
+     */
+    val isClosed: Boolean
+        get() = when(this) {
+            PROCESSED,
+            ABORTED,
+            ALLOCATION_FAILED,
+            ALLOCATION_TIMED_OUT -> true
+            FAILED -> true
+            else -> false
+        }
 }
