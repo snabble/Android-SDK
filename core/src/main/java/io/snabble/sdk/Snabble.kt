@@ -395,7 +395,7 @@ object Snabble {
                 }
 
                 override fun onError() {
-                    if (metadataDownloader.hasData()) {
+                    if (metadataDownloader.hasData) {
                         dispatchOnReady()
                     } else {
                         dispatchError(Error.CONNECTION_TIMEOUT)
@@ -502,7 +502,7 @@ object Snabble {
     val additionalMetadata: JsonObject?
         get() {
             val jsonObject = metadataDownloader.jsonObject
-            val jsonElement = jsonObject["metadata"]
+            val jsonElement = jsonObject?.get("metadata")
             return jsonElement?.asJsonObject
         }
 

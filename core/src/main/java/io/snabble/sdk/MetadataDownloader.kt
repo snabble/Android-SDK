@@ -1,48 +1,43 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import com.google.gson.JsonObject;
+import androidx.annotation.RestrictTo
+import com.google.gson.JsonObject
+import okhttp3.OkHttpClient
+import io.snabble.sdk.utils.StringDownloader
+import io.snabble.sdk.utils.GsonHolder
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.utils.Logger
+import java.io.File
+import java.lang.Exception
 
-import java.io.File;
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+internal class MetadataDownloader(
+    okHttpClient: OkHttpClient?,
+    bundledFileAssetPath: String?)
+    : StringDownloader(okHttpClient) {
+    var hasData = false
+        private set
+    var jsonObject: JsonObject? = null
+        private set
 
-import io.snabble.sdk.utils.GsonHolder;
-import io.snabble.sdk.utils.Logger;
-import io.snabble.sdk.utils.StringDownloader;
-import okhttp3.OkHttpClient;
-
-class MetadataDownloader extends StringDownloader {
-    private boolean hasData = false;
-    private JsonObject jsonObject;
-
-    public MetadataDownloader(OkHttpClient okHttpClient, String bundledFileAssetPath) {
-        super(okHttpClient);
-
-        File storageFile = new File(Snabble.getInstance().getInternalStorageDirectory(), "metadata_v2.json");
-
+    init {
+        val storageFile = File(Snabble.internalStorageDirectory, "metadata_v2.json")
         if (bundledFileAssetPath != null) {
-            setBundledData(Snabble.getInstance().getApplication(), bundledFileAssetPath, storageFile);
+            setBundledData(Snabble.application, bundledFileAssetPath, storageFile)
         } else {
-            setStorageFile(storageFile);
+            setStorageFile(storageFile)
         }
-
-        setUrl(Snabble.getInstance().getMetadataUrl());
+        url = Snabble.metadataUrl
     }
 
-    @Override
-    protected synchronized void onDownloadFinished(String content) {
+    @Synchronized
+    override fun onDownloadFinished(content: String) {
         try {
-            updateStorage(content);
-            jsonObject = GsonHolder.get().fromJson(content, JsonObject.class);
-            hasData = true;
-        } catch (Exception e) {
-            Logger.e(e.getMessage());
+            updateStorage(content)
+            jsonObject = GsonHolder.get().fromJson(content, JsonObject::class.java)
+            hasData = true
+        } catch (e: Exception) {
+            Logger.e(e.message)
         }
-    }
-
-    public JsonObject getJsonObject() {
-        return jsonObject;
-    }
-
-    public boolean hasData() {
-        return hasData;
     }
 }
