@@ -30,7 +30,9 @@ class CouponManager private constructor(private var currentProject: Project?): L
     }
 
     init {
-        currentProject = Snabble.checkedInProject.value
+        if (observeProjectChanges) {
+            currentProject = Snabble.checkedInProject.value
+        }
         currentProject?.coupons?.observeForever(couponObserver)
         updateCoupons()
     }
