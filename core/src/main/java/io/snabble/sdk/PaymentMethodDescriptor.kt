@@ -26,7 +26,7 @@ data class PaymentMethodDescriptor(
      * Convert this descriptor to the SDK [PaymentMethod]
      */
     val paymentMethod: PaymentMethod
-        get() = PaymentMethod.fromIdAndOrigin(id, acceptedOriginTypes)!!
+        get() = PaymentMethod.fromIdAndOrigin(id, acceptedOriginTypes ?: emptyList())!!
 }
 
 /**

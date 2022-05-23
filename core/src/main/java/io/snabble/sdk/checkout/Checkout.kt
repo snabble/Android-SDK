@@ -254,9 +254,7 @@ class Checkout @JvmOverloads constructor(
 
                     priceToPay = shoppingCart.totalPrice
                     if (availablePaymentMethods.size == 1) {
-                        val paymentMethod = PaymentMethod.fromString(
-                            availablePaymentMethods[0].id
-                        )
+                        val paymentMethod = availablePaymentMethods[0].id?.let { PaymentMethod.fromString(it) }
                         if (paymentMethod != null && !paymentMethod.isRequiringCredentials) {
                             pay(paymentMethod, null)
                         } else {
@@ -629,7 +627,8 @@ class Checkout @JvmOverloads constructor(
      */
     val availablePaymentMethods: List<PaymentMethod>
         get() = signedCheckoutInfo?.getAvailablePaymentMethods()
-            ?.map { PaymentMethod.fromString(it.id) }
+            ?.map { it.id?.let { PaymentMethod.fromString(it) } }
+            ?.filterNotNull()
             ?: emptyList()
 
     /**
