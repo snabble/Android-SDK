@@ -75,8 +75,10 @@ tasks.named("dokkaHtml").configure {
         }
     }
 }
+
 tasks.withType(org.jetbrains.dokka.gradle.AbstractDokkaTask).configureEach {
-    outputDirectory.set(rootDir.toPath().resolve("docs/docs/api").toFile())
+    outputDirectory.set(rootDir.toPath().resolve("docs").toFile())
+    suppressObviousFunctions.set(true)
 }
 
 task printVersion() {

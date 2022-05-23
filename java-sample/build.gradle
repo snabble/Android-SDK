@@ -11,6 +11,26 @@ android {
         versionCode 2
         versionName '1.0'
 
+        def appId = "snabble-sdk-demo-app-oguh3x"
+        def endpoint = "https://api.snabble.io"
+        def secret = "2TKKEG5KXWY6DFOGTZKDUIBTNIRVCYKFZBY32FFRUUWIUAFEIBHQ===="
+
+        def configFile = project.rootProject.file('local.properties')
+        if (configFile.exists()) {
+            Properties properties = new Properties()
+            properties.load(configFile.newDataInputStream())
+
+            appId = properties.getProperty('snabble.appId', appId)
+            endpoint = properties.getProperty('snabble.endpoint', endpoint)
+            secret = properties.getProperty('snabble.secret', secret)
+        }
+
+        manifestPlaceholders = [
+                appId: appId,
+                endpoint: endpoint,
+                secret: secret,
+        ]
+
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
