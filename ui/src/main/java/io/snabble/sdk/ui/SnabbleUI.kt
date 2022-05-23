@@ -3,6 +3,7 @@ package io.snabble.sdk.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import io.snabble.sdk.Project
@@ -142,6 +143,7 @@ object SnabbleUI {
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     internal fun <T> startActivity(
         context: Context,
         clazz: Class<T>, args: Bundle?,

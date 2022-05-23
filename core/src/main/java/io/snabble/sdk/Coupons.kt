@@ -3,6 +3,7 @@ package io.snabble.sdk
 import android.os.Looper
 import android.os.Parcelable
 import androidx.annotation.Keep
+import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
@@ -123,6 +124,7 @@ class Coupons (
 
     // Visibility for Project class. Used for setting the data asap if on main thread
     @JvmName("setInternalProjectCoupons")
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     internal fun setProjectCoupons(coupons: List<Coupon>) {
         if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
             value = coupons

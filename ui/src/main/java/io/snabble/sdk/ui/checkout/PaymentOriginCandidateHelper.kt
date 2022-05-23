@@ -1,173 +1,155 @@
-package io.snabble.sdk;
+package io.snabble.sdk.ui.checkout
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo
+import com.google.gson.JsonObject
+import io.snabble.sdk.Project
+import io.snabble.sdk.checkout.CheckoutProcessResponse
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.utils.SimpleJsonCallback
+import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.checkout.Href
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
+import java.io.Serializable
+import java.util.concurrent.CopyOnWriteArrayList
 
-import com.google.gson.JsonObject;
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+class PaymentOriginCandidateHelper(val project: Project) {
+    private val listeners: MutableList<PaymentOriginCandidateAvailableListener> = CopyOnWriteArrayList()
+    private var isPolling = false
+    private var call: Call? = null
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import io.snabble.sdk.checkout.CheckoutProcessResponse;
-import io.snabble.sdk.checkout.DefaultCheckoutApi;
-import io.snabble.sdk.checkout.Href;
-import io.snabble.sdk.payment.PaymentCredentials;
-import io.snabble.sdk.utils.Dispatch;
-import io.snabble.sdk.utils.GsonHolder;
-import io.snabble.sdk.utils.SimpleJsonCallback;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-public class PaymentOriginCandidateHelper {
-    private final Project project;
-    private final List<PaymentOriginCandidateAvailableListener> listeners = new CopyOnWriteArrayList<>();
-    private boolean isPolling;
-    private Call call;
-
-    public PaymentOriginCandidateHelper(Project project) {
-        this.project = project;
-    }
-
-    public void startPollingIfLinkIsAvailable(CheckoutProcessResponse checkoutProcessResponse) {
-        if (checkoutProcessResponse == null || checkoutProcessResponse.getOriginCandidateLink() == null) {
-            return;
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    internal fun startPollingIfLinkIsAvailable(checkoutProcessResponse: CheckoutProcessResponse?) {
+        if (checkoutProcessResponse?.originCandidateLink == null) {
+            return
         }
-
         if (isPolling) {
-            return;
+            return
         }
-
-        isPolling = true;
-        poll(checkoutProcessResponse);
+        isPolling = true
+        poll(checkoutProcessResponse)
     }
 
-    private void poll(CheckoutProcessResponse checkoutProcessResponse) {
+    private fun poll(checkoutProcessResponse: CheckoutProcessResponse) {
         if (!isPolling) {
-            return;
+            return
         }
 
-        Dispatch.background(() -> {
-            Request request = new Request.Builder()
-                    .get()
-                    .url(Snabble.getInstance().absoluteUrl(checkoutProcessResponse.getOriginCandidateLink()))
-                    .build();
+        Dispatch.background({
+            val request: Request = Request.Builder()
+                .get()
+                .url(Snabble.absoluteUrl(checkoutProcessResponse.originCandidateLink!!))
+                .build()
 
-            call = project.getOkHttpClient().newCall(request);
-            call.enqueue(new SimpleJsonCallback<PaymentOriginCandidate>(PaymentOriginCandidate.class) {
-                        @Override
-                        public void success(PaymentOriginCandidate paymentOriginCandidate) {
-                            if (paymentOriginCandidate.isValid()) {
-                                paymentOriginCandidate.projectId = project.getId();
-                                notifyPaymentOriginCandidateAvailable(paymentOriginCandidate);
-                                stopPolling();
-                            } else {
-                                poll(checkoutProcessResponse);
-                            }
-                        }
+            call = project.okHttpClient.newCall(request)
+            call?.enqueue(object : SimpleJsonCallback<PaymentOriginCandidate>(PaymentOriginCandidate::class.java) {
+                override fun success(paymentOriginCandidate: PaymentOriginCandidate) {
+                    if (paymentOriginCandidate.isValid) {
+                        paymentOriginCandidate.projectId = project.id
+                        notifyPaymentOriginCandidateAvailable(paymentOriginCandidate)
+                        stopPolling()
+                    } else {
+                        poll(checkoutProcessResponse)
+                    }
+                }
 
-                        @Override
-                        public void error(Throwable t) {
-                            if (responseCode() >= 500) {
-                                poll(checkoutProcessResponse);
-                            }
-                        }
-                    });
-        }, 1000);
+                override fun error(t: Throwable) {
+                    if (responseCode() >= 500) {
+                        poll(checkoutProcessResponse)
+                    }
+                }
+            })
+        }, 1000)
     }
 
-    public void stopPolling() {
-        if (call != null) {
-            call.cancel();
-        }
-
-        isPolling = false;
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    internal fun stopPolling() {
+        call?.cancel()
+        isPolling = false
     }
 
-    public Project getProject() {
-        return project;
-    }
-
-    public void addPaymentOriginCandidateAvailableListener(PaymentOriginCandidateAvailableListener listener) {
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    internal fun addPaymentOriginCandidateAvailableListener(listener: PaymentOriginCandidateAvailableListener) {
         if (!listeners.contains(listener)) {
-            listeners.add(listener);
+            listeners.add(listener)
         }
     }
 
-    public void removePaymentOriginCandidateAvailableListener(PaymentOriginCandidateAvailableListener listener) {
-        listeners.remove(listener);
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    internal fun removePaymentOriginCandidateAvailableListener(listener: PaymentOriginCandidateAvailableListener) {
+        listeners.remove(listener)
     }
 
-    private void notifyPaymentOriginCandidateAvailable(PaymentOriginCandidate paymentOriginCandidate) {
-        Dispatch.mainThread(() -> {
-            for (PaymentOriginCandidateAvailableListener listener : listeners) {
-                listener.onPaymentOriginCandidateAvailable(paymentOriginCandidate);
+    private fun notifyPaymentOriginCandidateAvailable(paymentOriginCandidate: PaymentOriginCandidate) {
+        Dispatch.mainThread {
+            for (listener in listeners) {
+                listener.onPaymentOriginCandidateAvailable(paymentOriginCandidate)
             }
-        });
+        }
     }
 
-    public static class PaymentOriginCandidate implements Serializable {
-        public String projectId;
-        public String origin;
-        public Map<String, Href> links;
-
-        public void promote(PaymentCredentials paymentCredentials, PromoteResult result) {
-            if (getPromoteLink() == null) {
-                result.error();
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    class PaymentOriginCandidate : Serializable {
+        var projectId: String? = null
+        @JvmField
+        var origin: String? = null
+        var links: Map<String, Href>? = null
+        fun promote(paymentCredentials: PaymentCredentials, result: PromoteResult) {
+            val promoteLink = promoteLink
+            if (promoteLink == null) {
+                result.error()
+                return
             }
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("origin", paymentCredentials.getEncryptedData());
+            val jsonObject = JsonObject()
+            jsonObject.addProperty("origin", paymentCredentials.encryptedData)
 
-            Request request = new Request.Builder()
-                    .post(RequestBody.create(MediaType.parse("application/json"), GsonHolder.get().toJson(jsonObject)))
-                    .url(Snabble.getInstance().absoluteUrl(getPromoteLink()))
-                    .build();
+            val request: Request = Request.Builder()
+                .post(GsonHolder.get().toJson(jsonObject).toRequestBody("application/json".toMediaType()))
+                .url(Snabble.absoluteUrl(promoteLink))
+                .build()
 
-            Project project = Snabble.getInstance().getProjectById(projectId);
-            if (project != null) {
-                project.getOkHttpClient().newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        result.error();
+            val project = Snabble.getProjectById(projectId)
+            project?.okHttpClient?.newCall(request)?.enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    result.error()
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    if (response.code == 201) {
+                        result.success()
+                    } else {
+                        result.error()
                     }
+                }
+            })
+        }
 
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) {
-                        if (response.code() == 201) {
-                            result.success();
-                        } else {
-                            result.error();
-                        }
-                    }
-                });
+        private val promoteLink: String?
+            get() {
+                val link = links!!["promote"]
+                return if (link != null && link.href != null) {
+                    link.href
+                } else null
             }
-        }
 
-        private String getPromoteLink() {
-            Href link = links.get("promote");
-            if (link != null && link.getHref() != null) {
-                return link.getHref();
-            }
-            return null;
-        }
-
-        private boolean isValid() {
-            return origin != null && getPromoteLink() != null;
-        }
+        val isValid: Boolean
+            get() = origin != null && promoteLink != null
     }
 
-    public interface PromoteResult {
-        void success();
-        void error();
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    interface PromoteResult {
+        fun success()
+        fun error()
     }
 
-    public interface PaymentOriginCandidateAvailableListener {
-        void onPaymentOriginCandidateAvailable(PaymentOriginCandidate paymentOriginCandidate);
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    interface PaymentOriginCandidateAvailableListener {
+        fun onPaymentOriginCandidateAvailable(paymentOriginCandidate: PaymentOriginCandidate?)
     }
 }

@@ -111,6 +111,7 @@ class Checkout @JvmOverloads constructor(
         pollIfNeeded()
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     internal fun abortError() {
         abortInternal(true)
     }
