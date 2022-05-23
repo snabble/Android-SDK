@@ -1,9 +1,23 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-public interface OnProductAvailableListener {
-    void onProductAvailable(Product product, boolean wasOnline);
+import io.snabble.sdk.Product
 
-    void onProductNotFound();
+/**
+ * Interface for product api calls
+ */
+interface OnProductAvailableListener {
+    /**
+     * Called when a product is found
+     */
+    fun onProductAvailable(product: Product, wasOnline: Boolean)
 
-    void onError();
+    /**
+     * Call was successful but no product was found
+     */
+    fun onProductNotFound()
+
+    /**
+     * Call was not successful (connection error, database error, ...)
+     */
+    fun onError()
 }
