@@ -1,5 +1,7 @@
 package io.snabble.sdk.encodedcodes;
 
+import androidx.annotation.RestrictTo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,11 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.groups.EmbedGroup;
 
+/**
+ * Class for encoding scanned codes into one or multiple combined codes (e.g. a QR-Code).
+ */
 public class EncodedCodesGenerator {
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public class ProductInfo {
         Product product;
         int quantity;
@@ -43,6 +49,9 @@ public class EncodedCodesGenerator {
         options = encodedCodesOptions;
     }
 
+    /**
+     * Add a arbitrary code to the encoded code generator
+     */
     public void add(String code) {
         if (code == null) {
             return;
@@ -55,6 +64,9 @@ public class EncodedCodesGenerator {
         }
     }
 
+    /**
+     * Add a shopping cart and all its products to the encoded code
+     */
     public void add(ShoppingCart shoppingCart) {
         List<ProductInfo> productInfos = new ArrayList<>();
         List<String> coupons = new ArrayList<>();
@@ -96,15 +108,35 @@ public class EncodedCodesGenerator {
         }
     }
 
+    /**
+     * Clears the encoded codes generator
+     */
     public void clear() {
         encodedCodes = new ArrayList<>();
         stringBuilder = new StringBuilder();
     }
 
+    /**
+     * Generate a list of encoded codes
+     *
+     * Supported placeholders:
+     *
+     * {qrCodeCount}: Number of encoded codes
+     * {qrCodeIndex}: Current index
+     */
     public ArrayList<String> generate() {
         return generate(null);
     }
 
+    /**
+     * Generate a list of encoded codes, including adding the checkout id if supported.
+     *
+     * Supported placeholders:
+     *
+     * {qrCodeCount}: Number of encoded codes
+     * {qrCodeIndex}: Current index
+     * {checkoutId}: The passed checkout id
+     */
     public ArrayList<String> generate(String checkoutId) {
         if (options.finalCode != null && !options.finalCode.isEmpty()) {
             if (getCountSeparatorLength() > 0) {
