@@ -7,6 +7,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
@@ -31,6 +32,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * Class for dispatching events to the snabble Backend
+ */
 public class Events {
     private final Project project;
     private final ShoppingCart shoppingCart;
@@ -70,6 +74,9 @@ public class Events {
         });
     }
 
+    /**
+     * Updates the current shop which will be associated with future events
+     */
     public void updateShop(Shop newShop) {
         if (newShop != null) {
             cartId = shoppingCart.getId();
@@ -80,6 +87,9 @@ public class Events {
         }
     }
 
+    /**
+     * Pack a error log message into a event and dispatch it to the backend
+     */
     public void logError(String format, Object... args) {
         if (Utils.isDebugBuild(Snabble.getInstance().getApplication())) {
             return; // do not log errors in debug builds
@@ -98,6 +108,9 @@ public class Events {
         post(error, false);
     }
 
+    /**
+     * Pack a log message into a event and dispatch it to the backend
+     */
     public void log(String format, Object... args) {
         PayloadLog log = new PayloadLog();
 
@@ -112,6 +125,9 @@ public class Events {
         post(log, false);
     }
 
+    /**
+     * Pack a analytics event and dispatch it to the backend
+     */
     public void analytics(String key, String value, String comment) {
         PayloadAnalytics analytics = new PayloadAnalytics();
 
@@ -123,6 +139,9 @@ public class Events {
         post(analytics, false);
     }
 
+    /**
+     * Dispatch a product not found event
+     */
     public void productNotFound(List<ScannedCode> scannedCodes) {
         try {
             PayloadProductNotFound payload = new PayloadProductNotFound();
@@ -204,6 +223,7 @@ public class Events {
         });
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public enum EventType {
         @SerializedName("sessionStart")
         SESSION_START,
@@ -221,11 +241,12 @@ public class Events {
         PRODUCT_NOT_FOUND
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public interface Payload {
         EventType getEventType();
     }
 
-    public static class Event {
+    private static class Event {
         public EventType type;
         public String appId;
         @SerializedName("shopID")
@@ -309,6 +330,9 @@ public class Events {
         return project;
     }
 
+    /**
+     * Log a error event to the project with the matching id
+     */
     public static void logErrorEvent(@Nullable String projectId, String format, Object... args) {
         Project project = getUsableProject(projectId);
         if (project != null) {
@@ -317,13 +341,6 @@ public class Events {
             } else {
                 project.logErrorEvent(format, args);
             }
-        }
-    }
-
-    public static void logWarningEvent(String projectId, String format, Object... args) {
-        Project project = getUsableProject(projectId);
-        if (project != null) {
-            project.logErrorEvent(format, args);
         }
     }
 }
