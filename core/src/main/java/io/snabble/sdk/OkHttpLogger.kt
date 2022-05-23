@@ -1,11 +1,13 @@
 package io.snabble.sdk
 
+import androidx.annotation.RestrictTo
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class OkHttpLogger @JvmOverloads constructor(
     private val logger: HttpLoggingInterceptor.Logger = HttpLoggingInterceptor.Logger.DEFAULT
 ) : Interceptor {
