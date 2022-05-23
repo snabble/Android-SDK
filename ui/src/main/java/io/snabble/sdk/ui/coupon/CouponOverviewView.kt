@@ -37,8 +37,6 @@ class CouponOverviewView @JvmOverloads constructor(
     private val recyclerView: RecyclerView
     private var keyLineLeft: Int
     private var keyLineRight: Int
-    var hideWhenLoading = false
-    var hideWhenEmpty = false
     var isInEmptyState = true
         private set
 
@@ -51,16 +49,6 @@ class CouponOverviewView @JvmOverloads constructor(
         inflate(context, R.layout.snabble_view_coupon_overview, this)
         recyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-
-        if (attrs != null) {
-            val arr = context.theme.obtainStyledAttributes(attrs, R.styleable.CouponOverviewView, defStyleAttr, 0)
-            try {
-                hideWhenLoading = arr.getBoolean(R.styleable.CouponOverviewView_hideWhenLoading, false)
-                hideWhenEmpty = arr.getBoolean(R.styleable.CouponOverviewView_hideWhenLoading, false)
-            } finally {
-                arr.recycle()
-            }
-        }
     }
 
     fun interface EmptyStageChangeListener {
