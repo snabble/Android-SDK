@@ -14,6 +14,9 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
+/**
+ * POJO for a Coupon
+ */
 @Parcelize
 data class Coupon (
     val id: String,
@@ -37,18 +40,27 @@ data class Coupon (
     }
 }
 
+/**
+ * POJO for a CouponCode
+ */
 @Parcelize
 data class CouponCode (
     val code: String,
     val template: String,
 ) : Parcelable
 
+/**
+ * POJO for a CouponImage
+ */
 @Parcelize
 data class CouponImage (
     val name: String,
     val formats: List<CouponImageFormats>,
 ) : Parcelable
 
+/**
+ * POJO for a CouponImageFormats
+ */
 @Parcelize
 data class CouponImageFormats (
     val contentType: String,
@@ -58,35 +70,58 @@ data class CouponImageFormats (
     val url: String,
 ) : Parcelable
 
+/**
+ * POJO for a CouponType
+ */
 enum class CouponType {
     @SerializedName("manual") MANUAL,
     @SerializedName("printed") PRINTED,
     @SerializedName("digital") DIGITAL,
 }
 
+/**
+ * POJO for a CouponSource
+ */
 enum class CouponSource {
     Bundled,
     Online,
 }
 
+/**
+ * Coupon live data..
+ * Can be iterated and filtered to get the current coupons on a project
+ */
 class Coupons (
     private val project: Project
 ) : Iterable<Coupon>, LiveData<List<Coupon>>() {
     val source: LiveData<CouponSource> = MutableAccessibleLiveData(CouponSource.Bundled)
     val isLoading: LiveData<Boolean> = MutableAccessibleLiveData(false)
 
+    /**
+     * Filter coupons based on the given coupon type
+     */
     fun filter(type: CouponType): List<Coupon> =
         value?.filter { it.type == type } ?: emptyList()
 
+    /**
+     * Get all coupons
+     */
     fun get(): List<Coupon>? = value
 
     operator fun get(i: Int) = value?.getOrNull(i) ?: throw ArrayIndexOutOfBoundsException()
 
     override fun iterator() = (value ?: emptyList()).iterator()
 
+    /**
+     * The size of the coupon list
+     */
     val size: Int
         get() = value?.size ?: 0
 
+    /**
+     * Fetches new coupons from the backend. Multiple calls simultaneously are ignored until the
+     * first call is done.
+     */
     fun update() {
         if (isLoading.value == true) return
 

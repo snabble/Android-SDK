@@ -2,12 +2,14 @@ package io.snabble.sdk
 
 import android.os.Build
 import android.os.LocaleList
+import androidx.annotation.RestrictTo
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import java.util.*
 
-class AcceptedLanguageInterceptor : Interceptor {
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+internal class AcceptedLanguageInterceptor : Interceptor {
     private val acceptedLanguagesHeader: String
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val list = LocaleList.getDefault()
