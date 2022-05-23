@@ -39,6 +39,8 @@ class CouponOverviewView @JvmOverloads constructor(
     private var keyLineRight: Int
     var hideWhenLoading = false
     var hideWhenEmpty = false
+    var isInEmptyState = true
+        private set
 
     init {
         keyLineLeft = padding.left
@@ -61,6 +63,18 @@ class CouponOverviewView @JvmOverloads constructor(
         }
     }
 
+    fun interface EmptyStageChangeListener {
+        fun onEmptyStageChanged(isEmpty: Boolean)
+    }
+
+    fun addEmptyStateListener(listener: EmptyStageChangeListener) {
+        ensureAdapterExists().emptyStateListener += listener
+    }
+
+    fun removeEmptyStateListener(listener: EmptyStageChangeListener) {
+        ensureAdapterExists().emptyStateListener -= listener
+    }
+
     fun setCouponSource(coupons: LiveData<List<Coupon>>) {
         recyclerView.adapter = ensureAdapterExists().apply {
             setCouponSource(coupons)
@@ -69,7 +83,11 @@ class CouponOverviewView @JvmOverloads constructor(
 
     private fun ensureAdapterExists(): CouponsAdapter {
         if (adapter == null) {
-            adapter = CouponsAdapter(requireNotNull(findViewTreeLifecycleOwner()), keyLineLeft, keyLineRight)
+            adapter = CouponsAdapter(requireNotNull(findViewTreeLifecycleOwner()), keyLineLeft, keyLineRight).apply {
+                emptyStateListener += EmptyStageChangeListener { isEmpty ->
+                    isInEmptyState = isEmpty
+                }
+            }
         }
         return adapter!!
     }
@@ -86,8 +104,10 @@ class CouponOverviewView @JvmOverloads constructor(
         private val paddingRight: Int
     ) : ListAdapter<Coupon, CouponsHolder>(CouponDiffer()), Observer<List<Coupon>> {
         private var coupons: LiveData<List<Coupon>>? = null
+        private var wasEmpty: Boolean? = null
+        val emptyStateListener = mutableListOf<EmptyStageChangeListener>()
+
         init {
-            println("### CouponsAdapter with loading placeholder...")
             submitList(listOf(Coupon.createLoadingPlaceholder()))
             stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
@@ -105,9 +125,16 @@ class CouponOverviewView @JvmOverloads constructor(
         fun updateList(model: List<Coupon>?) {
             if (model.isNullOrEmpty()) {
                 submitList(listOf(Coupon.createEmptyPlaceholder()))
+                if (wasEmpty != true) {
+                    emptyStateListener.forEach { it.onEmptyStageChanged(true) }
+                }
             } else {
                 submitList(model)
+                if (wasEmpty != false) {
+                    emptyStateListener.forEach { it.onEmptyStageChanged(false) }
+                }
             }
+            wasEmpty = model.isNullOrEmpty()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = CouponsHolder(parent, paddingLeft, paddingRight)

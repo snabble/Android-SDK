@@ -550,7 +550,7 @@ object Snabble {
 
     private fun getUrl(jsonObject: JsonObject, urlName: String): String? {
         return try {
-            absoluteUrl(jsonObject["links"].asJsonObject[urlName].asJsonObject["href"].asString)
+            jsonObject["links"]?.asJsonObject?.get(urlName)?.asJsonObject?.get("href")?.asString?.let(::absoluteUrl)
         } catch (e: Exception) {
             null
         }
@@ -558,7 +558,7 @@ object Snabble {
 
     private fun parseBrands(jsonObject: JsonObject) {
         val jsonBrands = GsonHolder.get().fromJson(jsonObject["brands"], Array<Brand>::class.java)
-        brands = jsonBrands.map { it.id to it }.toMap()
+        brands = jsonBrands.associateBy { it.id }
     }
 
     private fun parseProjects(jsonObject: JsonObject) {
