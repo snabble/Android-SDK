@@ -33,7 +33,7 @@ data class Coupon(
     @ColorInt val textColor: Int,
     val disclaimer: String,
     val mode: Mode = Mode.Normal,
-    private val projectId: String?,
+    val projectId: String?,
 ): Parcelable {
     constructor(project: Project, sdkCoupon: io.snabble.sdk.Coupon): this(
         subtitle = sdkCoupon.description.orEmpty(),

@@ -14,9 +14,13 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.loadImage
 
-class CouponFragment : Fragment() {
-    private val coupon by lazy { arguments?.getParcelable("coupon") as? Coupon }
-    private val project by lazy { Snabble.getProjectById(arguments?.getString("projectId")) }
+open class CouponFragment : Fragment() {
+    companion object {
+        const val ARG_COUPON = "coupon"
+    }
+
+    private val coupon by lazy { arguments?.getParcelable(ARG_COUPON) as? Coupon }
+    private val project by lazy { Snabble.getProjectById(coupon?.projectId) }
 
     private lateinit var header: ImageView
     private lateinit var title: TextView

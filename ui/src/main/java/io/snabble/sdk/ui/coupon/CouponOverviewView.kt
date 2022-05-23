@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.coupon
 
 import android.content.Context
+import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.loadImage
 import io.snabble.sdk.ui.utils.margin
@@ -188,8 +190,9 @@ class CouponOverviewView @JvmOverloads constructor(
             itemView.layoutParams.width = (itemView.context.resources.displayMetrics.widthPixels * 0.7).toInt()
 
             cardView.setOnClickListener {
-                TODO("Add the logic here")
-                //SnabbleUI.executeAction(it.context, TODO) // TODO also add activity
+                val args = Bundle()
+                args.putParcelable(CouponDetailActivity.ARG_COUPON, coupon)
+                SnabbleUI.executeAction(it.context, SnabbleUI.Event.SHOW_COUPON_DETAILS, args)
             }
         }
 
