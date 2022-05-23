@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import androidx.annotation.RestrictTo;
+
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -23,6 +25,9 @@ import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 import io.snabble.sdk.utils.security.KeyStoreCipher;
 
+/**
+ * Class for managing and storing payment credentials.
+ */
 public class PaymentCredentialsStore {
     private class Data {
         private List<PaymentCredentials> credentialsList;
@@ -41,10 +46,12 @@ public class PaymentCredentialsStore {
     // this still is needed for migration
     KeyStoreCipher keyStoreCipher;
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public PaymentCredentialsStore() {
 
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public void init(Context context, Environment environment) {
         sharedPreferences = context.getSharedPreferences("snabble_payment", Context.MODE_PRIVATE);
         credentialsKey = "credentials_" + (environment != null ? environment.name() : "_UNKNOWN");
@@ -108,6 +115,12 @@ public class PaymentCredentialsStore {
         data.isKeyguarded = false;
     }
 
+    /**
+     * Validate and get list of all payment credentials stored by the user. Also validates
+     * certificate chains.
+     *
+     * For displaying a list of credentials use {@link #getAllWithoutKeyStoreValidation()}
+     */
     public List<PaymentCredentials> getAll() {
         validate();
         ensureKeyStoreIsAccessible();
@@ -124,6 +137,9 @@ public class PaymentCredentialsStore {
         return Collections.unmodifiableList(data.credentialsList);
     }
 
+    /**
+     * The unique identifier of this storage
+     */
     public String id() {
         ensureKeyStoreIsAccessible();
         return data.id;
@@ -136,6 +152,9 @@ public class PaymentCredentialsStore {
         return data.removedOldCreditCards;
     }
 
+    /**
+     * Add and persist payment credentials
+     */
     public synchronized void add(PaymentCredentials credentials) {
         if (credentials == null) {
             return;
@@ -149,6 +168,9 @@ public class PaymentCredentialsStore {
         notifyChanged();
     }
 
+    /**
+     * Remove and persist payment credentials
+     */
     public synchronized void remove(PaymentCredentials credentials) {
         if (data.credentialsList.remove(credentials)) {
             save();
@@ -156,6 +178,9 @@ public class PaymentCredentialsStore {
         }
     }
 
+    /**
+     * Remove all credentials that are not valid anymore (e.g. expired credit cards)
+     */
     public synchronized void removeInvalidCredentials() {
         // we do not lose payment information if we are not using key store
         if (data.isMigratedFromKeyStore) {
@@ -189,6 +214,9 @@ public class PaymentCredentialsStore {
         }
     }
 
+    /**
+     * Removes all payment credentials
+     */
     public synchronized void clear() {
         if (data.credentialsList.size() > 0) {
             data.credentialsList.clear();
@@ -197,6 +225,7 @@ public class PaymentCredentialsStore {
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public synchronized void maybeMigrateKeyStoreCredentials() {
         if (!data.isMigratedFromKeyStore) {
             List<PaymentCredentials> removals = new ArrayList<>();
@@ -285,6 +314,9 @@ public class PaymentCredentialsStore {
         }
     }
 
+    /**
+     * Get the number of payment credentials of a given project
+     */
     public int getCountForProject(Project project) {
         int count = 0;
 
@@ -318,6 +350,9 @@ public class PaymentCredentialsStore {
         return count;
     }
 
+    /**
+     * Get the number of payment credentials that are usable
+     */
     public int getUsablePaymentCredentialsCount() {
         int i = 0;
         for (PaymentCredentials pc : data.credentialsList) {
@@ -328,6 +363,9 @@ public class PaymentCredentialsStore {
         return i;
     }
 
+    /**
+     * Interface for getting notified when payment credentials are added
+     */
     public interface OnPaymentCredentialsAddedListener {
         void onAdded(PaymentCredentials paymentCredentials);
     }
@@ -350,6 +388,9 @@ public class PaymentCredentialsStore {
         onPaymentCredentialsAddedListeners.remove(onPaymentCredentialsAddedListener);
     }
 
+    /**
+     * Interface for getting notified when payment credentials are changed
+     */
     public interface Callback {
         void onChanged();
     }
@@ -362,12 +403,18 @@ public class PaymentCredentialsStore {
         });
     }
 
+    /**
+     * Adds a callback to the payment credentials store
+     */
     public void addCallback(Callback cb) {
         if (!callbacks.contains(cb)) {
             callbacks.add(cb);
         }
     }
 
+    /**
+     * Removes a callback to the payment credentials store
+     */
     public void removeCallback(Callback cb) {
         callbacks.remove(cb);
     }
