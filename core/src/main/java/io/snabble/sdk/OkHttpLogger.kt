@@ -6,7 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class OkHttpLogger @JvmOverloads constructor(
+internal class OkHttpLogger @JvmOverloads constructor(
     private val logger: HttpLoggingInterceptor.Logger = HttpLoggingInterceptor.Logger.DEFAULT
 ) : Interceptor {
     @Throws(IOException::class)
