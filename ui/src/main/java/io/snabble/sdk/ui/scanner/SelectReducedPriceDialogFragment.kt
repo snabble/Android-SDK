@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import io.snabble.sdk.CouponType
+import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 

@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.ShoppingCart.BackendCart
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.Product
-import io.snabble.sdk.Coupon
+import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.FulfillmentState
 import io.snabble.sdk.PaymentMethod
 import java.lang.Exception

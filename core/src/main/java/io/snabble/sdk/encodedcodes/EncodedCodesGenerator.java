@@ -3,8 +3,8 @@ package io.snabble.sdk.encodedcodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.snabble.sdk.Coupon;
-import io.snabble.sdk.CouponCode;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Unit;

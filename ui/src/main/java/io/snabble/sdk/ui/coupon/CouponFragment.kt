@@ -9,10 +9,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import io.snabble.sdk.CouponType
+import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.loadImage
+import io.snabble.sdk.ui.utils.setTextOrHide
 
 open class CouponFragment : Fragment() {
     companion object {
@@ -25,16 +26,18 @@ open class CouponFragment : Fragment() {
         }
     }
 
-    protected val coupon by lazy {
-        requireNotNull(arguments?.getParcelable(ARG_COUPON) as? Coupon) {
-            "The argument ARG_COUPON is missing or not from type ${Coupon::javaClass.name}"
+    protected val item by lazy {
+        requireNotNull(arguments?.getParcelable(ARG_COUPON) as? CouponItem) {
+            "The argument ARG_COUPON is missing or not from type ${CouponItem::javaClass.name}"
         }
     }
+
     protected val project by lazy {
-        requireNotNull(Snabble.getProjectById(coupon.projectId)) {
+        requireNotNull(Snabble.getProjectById(item.projectId)) {
             "The passed coupon has no project set, this is not supported."
         }
     }
+
     private lateinit var header: ImageView
     private lateinit var title: TextView
     private lateinit var subtitle: TextView
@@ -58,37 +61,39 @@ open class CouponFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        header.loadImage(coupon.imageURL)
-        header.setBackgroundColor(coupon.backgroundColor)
-        title.text = coupon.title
-        subtitle.text = coupon.subtitle
-        description.text = coupon.disclaimer
-        discount.text = coupon.text
-        expire.text = coupon.buildExpireString(resources)
+        item.coupon?.let { coupon ->
+            header.loadImage(coupon.image?.bestResolutionUrl)
+            header.setBackgroundColor(coupon.backgroundColor)
+            title.text = coupon.name
+            subtitle.text = coupon.description
+            description.text = coupon.disclaimer
+            discount.text = coupon.promotionDescription
+            expire.setTextOrHide(item.buildExpireString(resources))
 
-        val sdkCoupon = project.coupons.filter(CouponType.DIGITAL).firstOrNull { it.id == coupon.id }
-        if (sdkCoupon == null) {
-            redeemForScanGo.setText(R.string.Snabble_Coupons_expired)
-            redeemForScanGo.isEnabled = false
-        } else {
-            project.shoppingCart.let { cart ->
-                for (i in 0 until cart.size()) {
-                    val cartCoupon = cart.get(i).coupon
-                    if (cartCoupon != null) {
-                        if (cartCoupon.id == sdkCoupon.id) {
-                            redeem()
-                            break
+            val sdkCoupon = project.coupons.filter(CouponType.DIGITAL).firstOrNull { it.id == coupon.id }
+            if (sdkCoupon == null) {
+                redeemForScanGo.setText(R.string.Snabble_Coupons_expired)
+                redeemForScanGo.isEnabled = false
+            } else {
+                project.shoppingCart.let { cart ->
+                    for (i in 0 until cart.size()) {
+                        val cartCoupon = cart.get(i).coupon
+                        if (cartCoupon != null) {
+                            if (cartCoupon.id == sdkCoupon.id) {
+                                redeem()
+                                break
+                            }
                         }
                     }
                 }
-            }
-            redeemForScanGo.setOnClickListener {
-                onRedeem(sdkCoupon)
+                redeemForScanGo.setOnClickListener {
+                    onRedeem(sdkCoupon)
+                }
             }
         }
     }
 
-    protected open fun onRedeem(sdkCoupon: io.snabble.sdk.Coupon) {
+    protected open fun onRedeem(sdkCoupon: io.snabble.sdk.coupons.Coupon) {
         project.shoppingCart.addCoupon(sdkCoupon)
         redeem()
     }

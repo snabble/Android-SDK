@@ -22,10 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.utils.dpInPx
-import io.snabble.sdk.ui.utils.loadImage
-import io.snabble.sdk.ui.utils.margin
-import io.snabble.sdk.ui.utils.padding
+import io.snabble.sdk.ui.utils.*
 
 /**
  * Show the coupons for the given [LiveData], set via [setCouponSource]. The padding left and right is overwritten so
@@ -70,7 +67,7 @@ class CouponOverviewView @JvmOverloads constructor(
         ensureAdapterExists().emptyStateListener -= listener
     }
 
-    fun setCouponSource(coupons: LiveData<List<Coupon>>) {
+    fun setCouponSource(coupons: LiveData<List<CouponItem>>) {
         recyclerView.adapter = ensureAdapterExists().apply {
             setCouponSource(coupons)
         }
@@ -97,29 +94,29 @@ class CouponOverviewView @JvmOverloads constructor(
         private val lifecycleOwner: LifecycleOwner,
         private val paddingLeft: Int,
         private val paddingRight: Int
-    ) : ListAdapter<Coupon, CouponsHolder>(CouponDiffer()), Observer<List<Coupon>> {
-        private var coupons: LiveData<List<Coupon>>? = null
+    ) : ListAdapter<CouponItem, CouponsHolder>(CouponDiffer()), Observer<List<CouponItem>> {
+        private var coupons: LiveData<List<CouponItem>>? = null
         private var wasEmpty: Boolean? = null
         val emptyStateListener = mutableListOf<EmptyStageChangeListener>()
 
         init {
-            submitList(listOf(Coupon.createLoadingPlaceholder()))
+            submitList(listOf(CouponItem.createLoadingPlaceholder()))
             stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
 
-        fun setCouponSource(coupons: LiveData<List<Coupon>>) {
+        fun setCouponSource(coupons: LiveData<List<CouponItem>>) {
             this.coupons?.removeObserver(this)
             this.coupons = coupons
             coupons.observe(lifecycleOwner, this)
         }
 
-        override fun onChanged(coupons: List<Coupon>?) {
+        override fun onChanged(coupons: List<CouponItem>?) {
             updateList(coupons)
         }
 
-        fun updateList(model: List<Coupon>?) {
+        fun updateList(model: List<CouponItem>?) {
             if (model.isNullOrEmpty()) {
-                submitList(listOf(Coupon.createEmptyPlaceholder()))
+                submitList(listOf(CouponItem.createEmptyPlaceholder()))
                 if (wasEmpty != true) {
                     emptyStateListener.forEach { it.onEmptyStageChanged(true) }
                 }
@@ -144,9 +141,9 @@ class CouponOverviewView @JvmOverloads constructor(
         }
     }
 
-    private class CouponDiffer : DiffUtil.ItemCallback<Coupon>() {
-        override fun areItemsTheSame(oldItem: Coupon, newItem: Coupon) = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: Coupon, newItem: Coupon) = oldItem == newItem
+    private class CouponDiffer : DiffUtil.ItemCallback<CouponItem>() {
+        override fun areItemsTheSame(oldItem: CouponItem, newItem: CouponItem) = oldItem.coupon?.id == newItem.coupon?.id
+        override fun areContentsTheSame(oldItem: CouponItem, newItem: CouponItem) = oldItem == newItem
     }
 
     private enum class ItemPosition {
@@ -170,9 +167,9 @@ class CouponOverviewView @JvmOverloads constructor(
                 LayoutInflater.from(parent.context).inflate(R.layout.snabble_item_coupon, parent, false)
         }
 
-        fun bind(position: ItemPosition, coupon: Coupon) {
-            isLoading = coupon.mode == Coupon.Mode.Loading
-            hasNoCoupons = coupon.mode == Coupon.Mode.Empty
+        fun bind(position: ItemPosition, item: CouponItem) {
+            isLoading = item.mode == CouponItem.Mode.Loading
+            hasNoCoupons = item.mode == CouponItem.Mode.Empty
             if (isLoading || hasNoCoupons) {
                 cardView.setOnClickListener(null)
                 itemView.margin.left = paddingLeft
@@ -180,24 +177,27 @@ class CouponOverviewView @JvmOverloads constructor(
                 itemView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
                 return
             }
-            cardView.setCardBackgroundColor(coupon.backgroundColor)
-            background.loadImage(coupon.imageURL)
-            title.text = coupon.title
-            title.setTextColor(coupon.textColor)
-            description.text = coupon.subtitle
-            description.setTextColor(coupon.textColor)
-            discount.text = coupon.text
-            discount.setTextColor(coupon.textColor)
-            expire.text = coupon.buildExpireString(discount.resources)
-            expire.setTextColor(coupon.textColor)
-            itemView.margin.left = if (position == ItemPosition.First) paddingLeft else 12.dpInPx
-            itemView.margin.right = if (position == ItemPosition.Last) paddingRight else 12.dpInPx
-            itemView.layoutParams.width = (itemView.context.resources.displayMetrics.widthPixels * 0.7).toInt()
+            
+            item.coupon?.let { coupon ->
+                cardView.setCardBackgroundColor(coupon.backgroundColor)
+                background.loadImage(coupon.image?.bestResolutionUrl)
+                title.text = coupon.name
+                title.setTextColor(coupon.textColor)
+                description.text = coupon.description
+                description.setTextColor(coupon.textColor)
+                discount.text = coupon.promotionDescription
+                discount.setTextColor(coupon.textColor)
+                expire.setTextOrHide(item.buildExpireString(discount.resources))
+                expire.setTextColor(coupon.textColor)
+                itemView.margin.left = if (position == ItemPosition.First) paddingLeft else 12.dpInPx
+                itemView.margin.right = if (position == ItemPosition.Last) paddingRight else 12.dpInPx
+                itemView.layoutParams.width = (itemView.context.resources.displayMetrics.widthPixels * 0.7).toInt()
 
-            cardView.setOnClickListener {
-                val args = Bundle()
-                args.putParcelable(CouponDetailActivity.ARG_COUPON, coupon)
-                SnabbleUI.executeAction(it.context, SnabbleUI.Event.SHOW_COUPON_DETAILS, args)
+                cardView.setOnClickListener {
+                    val args = Bundle()
+                    args.putParcelable(CouponDetailActivity.ARG_COUPON, item)
+                    SnabbleUI.executeAction(it.context, SnabbleUI.Event.SHOW_COUPON_DETAILS, args)
+                }
             }
         }
 

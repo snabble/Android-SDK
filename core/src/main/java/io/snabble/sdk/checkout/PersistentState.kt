@@ -1,6 +1,6 @@
 package io.snabble.sdk.checkout
 
-import io.snabble.sdk.Coupon
+import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
 import io.snabble.sdk.utils.Dispatch

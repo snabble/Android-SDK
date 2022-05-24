@@ -21,6 +21,8 @@ import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
 import io.snabble.sdk.*
 import io.snabble.sdk.codes.ScannedCode
+import io.snabble.sdk.coupons.Coupon
+import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.isNotNullOrBlank

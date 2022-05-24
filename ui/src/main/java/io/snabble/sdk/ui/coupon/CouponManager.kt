@@ -2,9 +2,10 @@ package io.snabble.sdk.ui.coupon
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import io.snabble.sdk.CouponType
+import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.coupons.CouponImage
 import java.time.ZonedDateTime
 
 /**
@@ -12,15 +13,13 @@ import java.time.ZonedDateTime
  * - [withCurrentProject] to get the Coupons of the currently checked in project
  * - [withProject] to get the Coupons of a selected project
  */
-class CouponManager private constructor(private var currentProject: Project?): LiveData<List<Coupon>>() {
+class CouponManager private constructor(private var currentProject: Project?): LiveData<List<CouponItem>>() {
     private val observeProjectChanges = currentProject == null
-    private val couponObserver = Observer<List<io.snabble.sdk.Coupon>> { list ->
-        val now = ZonedDateTime.now()
-        postValue(list.filter {
-            it.type == CouponType.DIGITAL && it.image != null
-        }.map { Coupon(requireNotNull(currentProject), it) }.filter {
-            it.validFrom?.isBefore(now) ?: false && it.validUntil?.isAfter(now) ?: false
-        })
+    private val couponObserver = Observer<List<io.snabble.sdk.coupons.Coupon>> { list ->
+        postValue(list
+            .filter { it.type == CouponType.DIGITAL && it.image != null }
+            .map { CouponItem(requireNotNull(currentProject?.id), it) }
+        )
     }
     private val projectObserver = Observer<Project?> { project ->
         project?.coupons?.removeObserver(couponObserver)

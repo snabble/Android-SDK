@@ -27,6 +27,8 @@ import io.snabble.sdk.checkout.PriceModifier;
 import io.snabble.sdk.checkout.Violation;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 

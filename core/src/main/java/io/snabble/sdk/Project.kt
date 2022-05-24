@@ -3,7 +3,6 @@ package io.snabble.sdk
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import io.snabble.sdk.Snabble.instance
 
 import io.snabble.sdk.googlepay.GooglePayHelper
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions
@@ -11,6 +10,9 @@ import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
+import io.snabble.sdk.coupons.Coupon
+import io.snabble.sdk.coupons.CouponSource
+import io.snabble.sdk.coupons.Coupons
 import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
 import okhttp3.Request

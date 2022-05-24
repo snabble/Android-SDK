@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.List;
 
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponCode;
+import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
 
