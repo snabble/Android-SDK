@@ -23,6 +23,7 @@ import io.snabble.sdk.checkout.LineItemType;
 import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.checkout.SignedCheckoutInfo;
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;

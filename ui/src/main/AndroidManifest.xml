@@ -19,6 +19,7 @@
         <activity android:name=".search.ProductSearchActivity" android:exported="false" />
         <activity android:name=".cart.ShoppingCartActivity" android:exported="false" />
         <activity android:name=".scanner.SelfScanningActivity" android:exported="false" />
+        <activity android:name=".coupon.CouponDetailActivity" android:exported="false" />
 
         <provider
             android:name="io.snabble.sdk.SnabbleFileProvider"

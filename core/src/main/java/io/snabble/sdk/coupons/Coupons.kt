@@ -1,67 +1,17 @@
-package io.snabble.sdk
+package io.snabble.sdk.coupons
 
 import android.os.Looper
-import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
 import com.google.gson.GsonBuilder
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
+import io.snabble.sdk.MutableAccessibleLiveData
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-
-@Parcelize
-data class Coupon (
-    val id: String,
-    val name: String?,
-    val description: String?,
-    val promotionDescription: String?,
-    val type: CouponType,
-    val codes: List<CouponCode>?,
-    val code: String?,
-    val validFrom: String?,
-    val validUntil: String?,
-    val image: CouponImage?,
-    val disclaimer: String?,
-    val colors: Map<String, String>?,
-) : Parcelable {
-    val isValid: Boolean
-    get() = when(type) {
-        CouponType.DIGITAL -> image != null
-        CouponType.MANUAL -> name != null
-        CouponType.PRINTED -> true
-    }
-}
-
-@Parcelize
-data class CouponCode (
-    val code: String,
-    val template: String,
-) : Parcelable
-
-@Parcelize
-data class CouponImage (
-    val name: String,
-    val formats: List<CouponImageFormats>,
-) : Parcelable
-
-@Parcelize
-data class CouponImageFormats (
-    val contentType: String,
-    val width: Int?,
-    val height: Int?,
-    val size: String,
-    val url: String,
-) : Parcelable
-
-enum class CouponType {
-    @SerializedName("manual") MANUAL,
-    @SerializedName("printed") PRINTED,
-    @SerializedName("digital") DIGITAL,
-}
 
 enum class CouponSource {
     Bundled,
@@ -108,8 +58,9 @@ class Coupons (
 
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
+                        val response = response.body?.string()
                         val localizedResponse = GsonBuilder().create()
-                            .fromJson(response.body?.string(), CouponResponse::class.java)
+                            .fromJson(response, CouponResponse::class.java)
                         postValue(localizedResponse.coupons.filter { coupon ->
                             coupon.isValid
                         })
