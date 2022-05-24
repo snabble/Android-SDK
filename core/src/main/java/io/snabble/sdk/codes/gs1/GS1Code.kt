@@ -7,6 +7,11 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.math.min
 
+/**
+ * Class for parsing GS1 codes.
+ *
+ *
+ */
 class GS1Code(val code: String) {
     companion object {
         const val GS = "\u001D"
@@ -20,7 +25,14 @@ class GS1Code(val code: String) {
         )
     }
 
+    /**
+     * Contains all elements found in the GS1 code
+     */
     val elements: ArrayList<Element> = ArrayList()
+
+    /**
+     * Contains all unknown elements, not recognized by the parser
+     */
     val skipped: ArrayList<String> = ArrayList()
 
     private var remainingCode: String
@@ -110,6 +122,9 @@ class GS1Code(val code: String) {
         return df.parse(df.format(this)) as BigDecimal
     }
 
+    /**
+     * Get the weight if contained in the gs1 code, converted to [Unit].
+     */
     fun getWeight(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.MASS) {
             val weight = firstDecimal("310")
@@ -127,9 +142,15 @@ class GS1Code(val code: String) {
         return null
     }
 
+    /**
+     * Get the weight if contained in the gs1 code, converted to grams.
+     */
     val weight: Int?
         get() = getWeight(Unit.GRAM)?.toInt()
 
+    /**
+     * Get the length if contained in the gs1 code, converted to [Unit].
+     */
     fun getLength(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.DISTANCE) {
             val length = firstDecimal("311")
@@ -147,9 +168,15 @@ class GS1Code(val code: String) {
         return null
     }
 
+    /**
+     * Get the length if contained in the gs1 code, converted to millimeters.
+     */
     val length: Int?
         get() = getLength(Unit.MILLIMETER)?.toInt()
 
+    /**
+     * Get the area if contained in the gs1 code, converted to [Unit].
+     */
     fun getArea(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.AREA) {
             val area = firstDecimal("314")
@@ -168,9 +195,15 @@ class GS1Code(val code: String) {
         return null
     }
 
+    /**
+     * Get the area if contained in the gs1 code, converted to square centimeters.
+     */
     val area: Int?
         get() = getArea(Unit.SQUARE_CENTIMETER)?.toInt()
 
+    /**
+     * Get the liters if contained in the gs1 code, converted to [Unit].
+     */
     fun getLiters(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.VOLUME) {
             val liters = firstDecimal("315")
@@ -188,9 +221,15 @@ class GS1Code(val code: String) {
         return null
     }
 
+    /**
+     * Get the liters if contained in the gs1 code, converted to milliliters.
+     */
     val liters: Int?
         get() = getLiters(Unit.MILLILITER)?.toInt()
 
+    /**
+     * Get the volume if contained in the gs1 code, converted to [Unit].
+     */
     fun getVolume(unit: Unit): BigDecimal? {
         if (unit.dimension == Dimension.CAPACITY) {
             val volume = firstDecimal("316")
@@ -206,17 +245,29 @@ class GS1Code(val code: String) {
         return null
     }
 
+    /**
+     * Get the volume if contained in the gs1 code, converted to cubic centimeters.
+     */
     val volume: Int?
         get() = getVolume(Unit.CUBIC_CENTIMETER)?.toInt()
 
+    /**
+     * Get the GTIN that is contained in the GS1 code for identifying the product.
+     */
     val gtin: String?
         get() = firstValue("01")
 
+    /**
+     * Class representing a parsed price in a gs1 code
+     */
     data class Price(
         val price: BigDecimal,
         val currencyCode: String?
     )
 
+    /**
+     * Get the price if contained in the gs1 code
+     */
     val price: Price?
         get() {
             val p1 = firstDecimal("392")
@@ -234,6 +285,9 @@ class GS1Code(val code: String) {
             return null
         }
 
+    /**
+     * Get the price if contained in the gs1 code, rounding to a set number of digits
+     */
     fun getPrice(digits: Int, roundingMode: RoundingMode): Price? =
         price?.let { price ->
             Price(
@@ -242,9 +296,15 @@ class GS1Code(val code: String) {
             )
         }
 
+    /**
+     * Get the amount if contained in the gs1 code
+     */
     val amount: Int?
         get() = firstValue("30")?.toIntOrNull()
 
+    /**
+     * Get the encoded data from gs1 code, if contained.
+     */
     fun getEmbeddedData(encodingUnit: Unit?, digits: Int?, roundingMode: RoundingMode?): BigDecimal? =
         when (encodingUnit?.dimension) {
             null -> null
