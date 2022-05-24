@@ -19,7 +19,7 @@ open class CouponFragment : Fragment() {
     companion object {
         const val ARG_COUPON = "coupon"
 
-        fun createCouponFragment(coupon: Coupon) = CouponFragment().apply {
+        fun createCouponFragment(coupon: CouponItem) = CouponFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(ARG_COUPON, coupon)
             }
