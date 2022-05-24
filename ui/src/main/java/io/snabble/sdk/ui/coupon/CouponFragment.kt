@@ -19,9 +19,16 @@ open class CouponFragment : Fragment() {
         const val ARG_COUPON = "coupon"
     }
 
-    private val coupon by lazy { arguments?.getParcelable(ARG_COUPON) as? Coupon }
-    private val project by lazy { Snabble.getProjectById(coupon?.projectId) }
-
+    protected val coupon by lazy {
+        requireNotNull(arguments?.getParcelable(ARG_COUPON) as? Coupon) {
+            "The argument ARG_COUPON is missing or not from type ${Coupon::javaClass.name}"
+        }
+    }
+    protected val project by lazy {
+        requireNotNull(Snabble.getProjectById(coupon.projectId)) {
+            "The passed coupon has no project set, this is not supported."
+        }
+    }
     private lateinit var header: ImageView
     private lateinit var title: TextView
     private lateinit var subtitle: TextView
@@ -45,9 +52,6 @@ open class CouponFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val coupon = this.coupon ?: return
-        val project = this.project ?: return
-
         header.loadImage(coupon.imageURL)
         header.setBackgroundColor(coupon.backgroundColor)
         title.text = coupon.title
