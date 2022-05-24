@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.65.0]
+
+### Added
+- Added support for displaying coupons
+  - Added CouponFragment to display a single coupon
+  - Added CouponDetailActivity to display a single coupon in an Activity
+  - Added CouponOverviewView to display a collection of coupons depending on the project
+
 ## [0.64.1]
 
 ### Fixed
