@@ -9,8 +9,8 @@ import java.time.ZonedDateTime
 
 /**
  * A Coupon Manager which holds the current active Coupons as [LiveData]. There are two ways to access them:
- * - [ofCurrentProject] to get the Coupons of the currently checked in project
- * - [ofProject] to get the Coupons of a selected project
+ * - [withCurrentProject] to get the Coupons of the currently checked in project
+ * - [withProject] to get the Coupons of a selected project
  */
 class CouponManager private constructor(private var currentProject: Project?): LiveData<List<Coupon>>() {
     private val observeProjectChanges = currentProject == null
@@ -32,25 +32,12 @@ class CouponManager private constructor(private var currentProject: Project?): L
     init {
         if (observeProjectChanges) {
             currentProject = Snabble.checkedInProject.value
+            Snabble.checkedInProject.observeForever(projectObserver)
+        } else {
+            currentProject?.coupons?.observeForever(couponObserver)
         }
         currentProject?.coupons?.observeForever(couponObserver)
         updateCoupons()
-    }
-
-    override fun onActive() {
-        if (observeProjectChanges) {
-            projectObserver.onChanged(Snabble.checkedInProject.value)
-            Snabble.checkedInProject.observeForever(projectObserver)
-        } else {
-            couponObserver.onChanged(currentProject?.coupons?.get())
-            currentProject?.coupons?.observeForever(couponObserver)
-        }
-    }
-
-    override fun onInactive() {
-        if (!hasObservers()) {
-            currentProject?.coupons?.removeObserver(couponObserver)
-        }
     }
 
     fun updateCoupons() = currentProject?.coupons?.update()
@@ -58,10 +45,13 @@ class CouponManager private constructor(private var currentProject: Project?): L
     companion object {
         private val currentProject by lazy { CouponManager(null) }
         /** Returns a CouponManager/LiveData with the Coupons of the currently checked in project */
-        fun ofCurrentProject() = currentProject
+        @JvmStatic
+        fun withCurrentProject() = currentProject
         /** Returns a CouponManager/LiveData for the given project */
-        fun ofProject(project: Project) = CouponManager(project)
+        @JvmStatic
+        fun withProject(project: Project) = CouponManager(project)
         /** Check if a project has coupons setup */
+        @JvmStatic
         fun hasProjectCoupons(project: Project?) = project?.urls?.get("coupons") != null
     }
 }

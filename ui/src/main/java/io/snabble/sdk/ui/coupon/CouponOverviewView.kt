@@ -53,6 +53,11 @@ class CouponOverviewView @JvmOverloads constructor(
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        setCouponSource(CouponManager.withCurrentProject())
+    }
+
     fun interface EmptyStageChangeListener {
         fun onEmptyStageChanged(isEmpty: Boolean)
     }
