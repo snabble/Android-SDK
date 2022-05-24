@@ -8,9 +8,7 @@ import java.text.DecimalFormat
 import kotlin.math.min
 
 /**
- * Class for parsing GS1 codes.
- *
- *
+ * Class for parsing GS1 codes
  */
 class GS1Code(val code: String) {
     companion object {

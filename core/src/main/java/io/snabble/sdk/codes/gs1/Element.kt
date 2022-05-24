@@ -2,6 +2,9 @@ package io.snabble.sdk.codes.gs1
 
 import java.math.BigDecimal
 
+/**
+ * Class for holding gs1 code blocks
+ */
 class Element(val identifier: ApplicationIdentifier,
               val values: List<String>) {
     val decimal: BigDecimal?
