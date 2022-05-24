@@ -61,28 +61,33 @@ open class CouponFragment : Fragment() {
         expire.text = coupon.buildExpireString(resources)
 
         val sdkCoupon = project.coupons.filter(CouponType.DIGITAL).firstOrNull { it.id == coupon.id }
-
-        project.shoppingCart.let { cart ->
-            for (i in 0 until cart.size()) {
-                val cartCoupon = cart.get(i).coupon
-                if (cartCoupon != null && sdkCoupon != null) {
-                    if (cartCoupon.id == sdkCoupon.id) {
-                        redeem()
-                        break
+        if (sdkCoupon == null) {
+            redeemForScanGo.setText(R.string.Snabble_Coupons_expired)
+            redeemForScanGo.isEnabled = false
+        } else {
+            project.shoppingCart.let { cart ->
+                for (i in 0 until cart.size()) {
+                    val cartCoupon = cart.get(i).coupon
+                    if (cartCoupon != null) {
+                        if (cartCoupon.id == sdkCoupon.id) {
+                            redeem()
+                            break
+                        }
                     }
                 }
             }
-        }
-
-        redeemForScanGo.setOnClickListener {
-            sdkCoupon?.let {
-                project.shoppingCart.addCoupon(sdkCoupon)
-                redeem()
+            redeemForScanGo.setOnClickListener {
+                onRedeem(sdkCoupon)
             }
         }
     }
 
-    private fun redeem() {
+    protected open fun onRedeem(sdkCoupon: io.snabble.sdk.Coupon) {
+        project.shoppingCart.addCoupon(sdkCoupon)
+        redeem()
+    }
+
+    protected fun redeem() {
         redeemForScanGo.isVisible = true
         redeemForScanGo.setText(R.string.Snabble_Coupon_activated)
         redeemForScanGo.isEnabled = false
