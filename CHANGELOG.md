@@ -9,6 +9,16 @@ All notable changes to this project will be documented in this file.
   - Added CouponDetailActivity to display a single coupon in an Activity
   - Added CouponOverviewView to display a collection of coupons depending on the project
 
+### Changed
+- Added lots of Javadoc documentation to core classes
+- Converted to OkHttpClientFactory to kotlin
+- Converted to MetadataDownloader to kotlin
+- Converted to FulfillmentState to kotlin
+- Converted to OnProductAvailableListener to kotlin
+- Converted to PaymentMethod to kotlin
+- Converted to PaymentOriginCandiadateHelper to kotlin
+- Converted to ScannedCode to kotlin
+- 
 ## [0.64.1]
 
 ### Fixed
