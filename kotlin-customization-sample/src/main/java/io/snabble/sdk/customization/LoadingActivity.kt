@@ -29,14 +29,6 @@ class LoadingActivity : AppCompatActivity() {
                     // to use geofencing
                     Snabble.checkedInShop = project.shops.first()
 
-                    // this is done on the background and can be done at any time
-                    // a fully downloaded product database allows for scanning products while
-                    // being offline
-                    //
-                    // if the product database is still downloading or you did not call update()
-                    // online request will be used in the mean time
-                    project.productDatabase.update()
-
                     startActivity(Intent(this@LoadingActivity, MainActivity::class.java))
                     finish()
                 }
