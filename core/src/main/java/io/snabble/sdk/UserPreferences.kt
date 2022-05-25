@@ -195,8 +195,10 @@ class UserPreferences internal constructor(context: Context) {
                 .apply()
         }
 
-
-    internal var consentStatus: ConsentStatus
+    /**
+     * The current consent status
+     */
+    var consentStatus: ConsentStatus
         @RestrictTo(RestrictTo.Scope.LIBRARY)
         get() {
             val s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null)
@@ -213,7 +215,10 @@ class UserPreferences internal constructor(context: Context) {
                 .putString(SHARED_PREFERENCES_CONSENT_STATUS, consent.name)
                 .apply()
 
-    internal var consentVersion: String?
+    /**
+     * The current accepted consent version
+     */
+    var consentVersion: String?
         @RestrictTo(RestrictTo.Scope.LIBRARY)
         get() = sharedPreferences.getString(SHARED_PREFERENCES_CONSENT_VERSION, null)
         @RestrictTo(RestrictTo.Scope.LIBRARY)
