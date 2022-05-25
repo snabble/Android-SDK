@@ -46,21 +46,25 @@
     <plurals name="Snabble.Coupons.expiresInDays">
         <item quantity="one">encore %d jour</item>
         <item quantity="other">encore %d jours</item>
+        <item quantity="many">encore %d de jours</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInHours">
         <item quantity="one">encore %d heure</item>
         <item quantity="other">encore %d heures</item>
+        <item quantity="many">encore %d heures</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInMinutes">
         <item quantity="one">encore %d minute</item>
         <item quantity="other">encore %d minutes</item>
+        <item quantity="many">encore %d minutes</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInWeeks">
         <item quantity="one">encore %d semaine</item>
         <item quantity="other">encore %d semaines</item>
+        <item quantity="many">encore %d semaines</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <string name="Snabble.Coupons.none">Aucun coupon disponible</string>

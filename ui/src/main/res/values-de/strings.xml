@@ -342,7 +342,7 @@
     <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
     <string name="Snabble.TWINT.payNow">Jetzt mit TWINT bezahlen</string>
     <string name="Snabble.undo">Rückgängig</string>
-    <string name="Snabble.Violations.couponAlreadyVoided">Ein Coupon wurde bereits benutzt und wird aus dem Warenkorb entfernt</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">Ein Coupon wurde bereits eingelöst und wird aus dem Warenkorb entfernt</string>
     <string name="Snabble.Violations.couponCurrentlyNotValid">Ein Coupon ist aktuell ungültig und wird aus dem Warenkorb entfernt</string>
     <string name="Snabble.Violations.couponInvalid">Ein Coupon ist ungültig und wird aus dem Warenkorb entfernt</string>
     <string name="Snabble.Violations.title">Ungültiger Warenkorb</string>
