@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.util.DisplayMetrics
 import androidx.annotation.ColorInt
 import com.google.gson.annotations.SerializedName
+import io.snabble.sdk.ColorUtils.parseColor
 import io.snabble.sdk.Snabble
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -49,24 +50,6 @@ data class Coupon (
     @IgnoredOnParcel
     val textColor
         get() = parseColor(colors?.get("foreground"), Color.BLACK)
-
-    fun parseColor(color: String?, @ColorInt default: Int) =
-        color?.let {
-            Color.parseColor(when {
-                "^[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?$".toRegex().matches(color) -> {
-                    // add missing prefix
-                    "#$color"
-                }
-                "^#?[0-9a-fA-F]{3}$".toRegex().matches(color) -> {
-                    // convert 3 digit color to 6 digits
-                    color.removePrefix("#").toCharArray()
-                        .joinToString(separator = "", prefix = "#") { "$it$it" }
-                }
-                else -> {
-                    color
-                }
-            })
-        } ?: default
 }
 
 @Parcelize
