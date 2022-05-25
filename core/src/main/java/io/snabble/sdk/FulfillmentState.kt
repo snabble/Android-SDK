@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.FulfillmentState
 
 /**
- * Enum class describing the state of a fulfillment.
+ * Enum class describing the state of a fulfillment
  */
 enum class FulfillmentState {
     @SerializedName("open")
@@ -38,7 +38,7 @@ enum class FulfillmentState {
         }
 
     /**
-     * Returns true if the current fulfillment has failed. This state is final.
+     * Returns true if the current fulfillment has failed. This state is final
      */
     val isFailure: Boolean
         get() = when(this) {
@@ -50,7 +50,7 @@ enum class FulfillmentState {
         }
 
     /**
-     * Returns true if the current fulfillment is closed, successful or not. This state is final.
+     * Returns true if the current fulfillment is closed, successful or not. This state is final
      */
     val isClosed: Boolean
         get() = when(this) {

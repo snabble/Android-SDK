@@ -31,7 +31,7 @@ import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
 /**
- * Class representing the snabble shopping cart.
+ * Class representing the snabble shopping cart
  */
 public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     public static final int MAX_QUANTITY = 99999;
@@ -128,7 +128,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     }
 
     /**
-     * The id used to identify this cart session.
+     * The id used to identify this cart session
      */
     public String getId() {
         return id;

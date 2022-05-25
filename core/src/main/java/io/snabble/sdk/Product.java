@@ -26,7 +26,7 @@ import io.snabble.sdk.utils.GsonHolder;
 public class Product implements Serializable, Parcelable {
     public enum Type {
         /**
-         * A basic product with price information.
+         * A basic product with price information
          */
         Article(0),
 
@@ -224,14 +224,14 @@ public class Product implements Serializable, Parcelable {
     }
 
     /**
-     * Gets the subtitle of the product. Most of the time it is the Brand name of the product.
+     * Gets the subtitle of the product. Most of the time it is the Brand name of the product
      */
     public String getSubtitle() {
         return subtitle;
     }
 
     /**
-     * Gets the discounted price, or the default price if this product has no discounted price,
+     * Gets the discounted price, or the default price if this product has no discounted price
      */
     public int getDiscountedPrice() {
         return discountedPrice == 0 ? getListPrice() : discountedPrice;
@@ -301,14 +301,14 @@ public class Product implements Serializable, Parcelable {
     }
 
     /**
-     * @return The {@link Type} of the product.
+     * @return The {@link Type} of the product
      */
     public Type getType() {
         return type;
     }
 
     /**
-     * @return The [@link SaleRestriction} of the product.
+     * @return The [@link SaleRestriction} of the product
      */
     public SaleRestriction getSaleRestriction() {
         return saleRestriction;
@@ -386,14 +386,14 @@ public class Product implements Serializable, Parcelable {
     }
 
     /**
-     * Returns true if this product should not be available for sale anymore.
+     * Returns true if this product should not be available for sale anymore
      */
     public boolean getSaleStop() {
         return saleStop;
     }
 
     /**
-     * Returns true if this product is not for sale.
+     * Returns true if this product is not for sale
      */
     public boolean getNotForSale() {
         return notForSale;
@@ -412,7 +412,7 @@ public class Product implements Serializable, Parcelable {
     }
 
     /**
-     * Returns the price for a given quantity. Get encoded into its encoding unit, if required.
+     * Returns the price for a given quantity. Get encoded into its encoding unit, if required
      */
     public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode) {
         return getPriceForQuantity(quantity, scannedCode, roundingMode, null);

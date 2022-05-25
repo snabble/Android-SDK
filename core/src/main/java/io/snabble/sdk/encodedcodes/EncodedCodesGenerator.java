@@ -15,7 +15,7 @@ import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.groups.EmbedGroup;
 
 /**
- * Class for encoding scanned codes into one or multiple combined codes (e.g. a QR-Code).
+ * Class for encoding scanned codes into one or multiple combined codes (e.g. a QR-Code)
  */
 public class EncodedCodesGenerator {
     @RestrictTo(RestrictTo.Scope.LIBRARY)

@@ -7,7 +7,7 @@ import org.iban4j.IbanUtil;
  */
 public class IBAN {
     /**
-     * Validate a IBAN for correctness.
+     * Validate a IBAN for correctness
      */
     public static boolean validate(String iban) {
         try {

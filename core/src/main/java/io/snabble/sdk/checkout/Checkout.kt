@@ -35,7 +35,7 @@ class Checkout @JvmOverloads constructor(
         }
 
     /**
-     * Gets the currently selected payment method, or null if currently none is selected.
+     * Gets the currently selected payment method, or null if currently none is selected
      */
     var selectedPaymentMethod
         get() = persistentState.selectedPaymentMethod
@@ -46,7 +46,7 @@ class Checkout @JvmOverloads constructor(
 
     /**
      * The price to pay in cents (or equivalent integer based currency type),
-     * or 0 if no price is available.
+     * or 0 if no price is available
      */
     var priceToPay
         get() = persistentState.priceToPay
@@ -71,7 +71,7 @@ class Checkout @JvmOverloads constructor(
         }
 
     /**
-     * List of coupons that were redeemed during this checkout.
+     * List of coupons that were redeemed during this checkout
      */
     var redeemedCoupons
         get() = persistentState.redeemedCoupons
@@ -643,7 +643,7 @@ class Checkout @JvmOverloads constructor(
 
     /**
      * Gets the content of the qrcode that needs to be displayed,
-     * or null if no qrcode needs to be displayed.
+     * or null if no qrcode needs to be displayed
      */
     val qrCodePOSContent: String?
         get() = checkoutProcess?.paymentInformation?.qrCodeContent

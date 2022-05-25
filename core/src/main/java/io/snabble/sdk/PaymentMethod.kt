@@ -4,7 +4,7 @@ import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
 
 /**
- * Enum class describing payment methods.
+ * Enum class describing payment methods
  */
 enum class PaymentMethod(
     /**

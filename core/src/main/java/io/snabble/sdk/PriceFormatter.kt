@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.text.NumberFormat
 
 /**
- * A price formatter for formatting prices using the provided currency information.
+ * A price formatter for formatting prices using the provided currency information
  *
  */
 class PriceFormatter(private val project: Project) {
@@ -22,7 +22,7 @@ class PriceFormatter(private val project: Project) {
     }
 
     /**
-     * Format a price.
+     * Format a price
      */
     @JvmOverloads
     fun format(price: Int, allowZeroPrice: Boolean = true): String {

@@ -14,11 +14,11 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * Class managing local user preferences.
+ * Class managing local user preferences
  */
 class UserPreferences internal constructor(context: Context) {
     /**
-     * Enum describing the current status of given user consent.
+     * Enum describing the current status of given user consent
      */
     enum class ConsentStatus {
         /** No consent given **/

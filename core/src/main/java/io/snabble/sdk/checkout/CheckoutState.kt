@@ -2,12 +2,12 @@ package io.snabble.sdk.checkout
 
 enum class CheckoutState {
     /**
-     * The initial default state.
+     * The initial default state
      */
     NONE,
 
     /**
-     * A checkout request was started, and we are waiting for the backend to confirm.
+     * A checkout request was started, and we are waiting for the backend to confirm
      */
     HANDSHAKING,
 
@@ -22,17 +22,17 @@ enum class CheckoutState {
     REQUEST_PAYMENT_METHOD,
 
     /**
-     * Payment method was selected and we are waiting for confirmation of the backend.
+     * Payment method was selected and we are waiting for confirmation of the backend
      */
     VERIFYING_PAYMENT_METHOD,
 
     /**
-     * Age needs to be verified.
+     * Age needs to be verified
      */
     REQUEST_VERIFY_AGE,
 
     /**
-     * Ask the user for the taxation method.
+     * Ask the user for the taxation method
      */
     REQUEST_TAXATION,
 
@@ -60,62 +60,62 @@ enum class CheckoutState {
     WAIT_FOR_APPROVAL,
 
     /**
-     * Payment was approved and is currently processing.
+     * Payment was approved and is currently processing
      */
     PAYMENT_PROCESSING,
 
     /**
-     * The payment was approved. We are done.
+     * The payment was approved. We are done
      */
     PAYMENT_APPROVED,
 
     /**
-     * Age is too young.
+     * Age is too young
      */
     DENIED_TOO_YOUNG,
 
     /**
-     * The payment was denied by the payment provider.
+     * The payment was denied by the payment provider
      */
     DENIED_BY_PAYMENT_PROVIDER,
 
     /**
-     * The payment was denied by the supervisor.
+     * The payment was denied by the supervisor
      */
     DENIED_BY_SUPERVISOR,
 
     /**
-     * The payment was aborted.
+     * The payment was aborted
      */
     PAYMENT_ABORTED,
 
     /**
-     * The payment could not be aborted.
+     * The payment could not be aborted
      */
     PAYMENT_ABORT_FAILED,
 
     /**
-     * There was a unrecoverable payment processing error.
+     * There was a unrecoverable payment processing error
      */
     PAYMENT_PROCESSING_ERROR,
 
     /**
-     * There was a unrecoverable connection error.
+     * There was a unrecoverable connection error
      */
     CONNECTION_ERROR,
 
     /**
-     * Invalid products detected. For example if a sale stop was issued.
+     * Invalid products detected. For example if a sale stop was issued
      */
     INVALID_PRODUCTS,
 
     /**
-     * No payment method available.
+     * No payment method available
      */
     NO_PAYMENT_METHOD_AVAILABLE,
 
     /**
-     * No shop was selected.
+     * No shop was selected
      */
     NO_SHOP
 }

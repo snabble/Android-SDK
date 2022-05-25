@@ -111,7 +111,7 @@ public enum Unit {
     }
 
     /**
-     * Gets the smallest possible unit of a dimension group.
+     * Gets the smallest possible unit of a dimension group
      */
     public Unit getSmallestUnit() {
         switch (this) {
