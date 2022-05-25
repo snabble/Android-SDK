@@ -1,203 +1,220 @@
-package io.snabble.sdk.codes;
+package io.snabble.sdk.codes
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import io.snabble.sdk.Project
+import io.snabble.sdk.Unit
+import java.io.Serializable
+import java.math.BigDecimal
+import java.util.ArrayList
 
-import io.snabble.sdk.Project;
-import io.snabble.sdk.Unit;
-import io.snabble.sdk.codes.templates.CodeTemplate;
-import io.snabble.sdk.codes.templates.PriceOverrideTemplate;
+// TODO: Kotlinify this class more, get rid of the "hasXX" methods and use optionals
 
-public class ScannedCode implements Serializable {
-    private Integer embeddedData;
-    private BigDecimal embeddedDecimalData;
-    private Integer price;
-    private String lookupCode;
-    private String code;
-    private String templateName;
+/**
+ * Class representing a scanned code, including its potentially embedded data
+ */
+class ScannedCode private constructor() : Serializable {
+    private var _embeddedData: Int? = null
+    private var _embeddedDecimalData: BigDecimal? = null
+    private var _price: Int? = null
 
-    private Unit embeddedUnit;
-    private String transformationTemplateName;
-    private String transformationCode;
+    /**
+     * The code that you use to lookup the product in the product database
+     */
+    var lookupCode: String? = null
+        private set
 
-    private ScannedCode() {
+    /**
+     * The code that was actually scanned
+     */
+    var code: String? = null
+        private set
 
-    }
+    /**
+     * The template that this code matches to
+     */
+    var templateName: String? = null
+        private set
 
-    public String getCode() {
-        return code;
-    }
+    /**
+     * The template that this code may be transformed to when embedding in encoded codes
+     */
+    var transformationTemplateName: String? = null
+        private set
 
-    public String getLookupCode() {
-        return lookupCode;
-    }
+    /**
+     * The code used when embedding in encoded codes
+     */
+    var transformationCode: String? = null
+        private set
 
-    public int getEmbeddedData() {
-        return embeddedData != null ? embeddedData : 0;
-    }
-
-    public boolean hasEmbeddedData() {
-        return embeddedData != null;
-    }
-
-    public void setEmbeddedData(int embeddedData) {
-        this.embeddedData = embeddedData;
-    }
-
-    public BigDecimal getEmbeddedDecimalData() {
-        return embeddedDecimalData != null ? embeddedDecimalData : BigDecimal.ZERO;
-    }
-
-    public boolean hasEmbeddedDecimalData() {
-        return embeddedDecimalData != null;
-    }
-
-    public String getTemplateName() {
-        return templateName;
-    }
-
-    public Unit getEmbeddedUnit() {
-        return embeddedUnit;
-    }
-
-    public void setEmbeddedUnit(Unit embeddedUnit) {
-        this.embeddedUnit = embeddedUnit;
-    }
-
-    public String getTransformationCode() {
-        return transformationCode;
-    }
-
-    public String getTransformationTemplateName() {
-        return transformationTemplateName;
-    }
-
-    public int getPrice() {
-        return price != null ? price : 0;
-    }
-
-    public boolean hasPrice() {
-        return price != null;
-    }
-
-    public Builder newBuilder() {
-        return new Builder(this);
-    }
-
-    public static class Builder {
-        ScannedCode scannedCode;
-
-        public Builder(String templateName) {
-            scannedCode = new ScannedCode();
-            scannedCode.templateName = templateName;
+    var embeddedData: Int
+        /**
+         * Get the data embedded in the code, or 0
+         */
+        get() = _embeddedData?.let { it } ?: 0
+        /**
+         * Set the data embedded in the code, or 0
+         */
+        set(value) {
+            _embeddedData = value
         }
 
-        public Builder(ScannedCode source) {
-            scannedCode = new ScannedCode();
-            scannedCode.embeddedData = source.embeddedData;
-            scannedCode.embeddedDecimalData = source.embeddedDecimalData;
-            scannedCode.price = source.price;
-            scannedCode.lookupCode = source.lookupCode;
-            scannedCode.code = source.code;
-            scannedCode.templateName = source.templateName;
-            scannedCode.embeddedUnit = source.embeddedUnit;
-            scannedCode.transformationTemplateName = source.transformationTemplateName;
-            scannedCode.transformationCode = source.transformationCode;
-        }
-
-        public Builder setScannedCode(String scannedCode) {
-            this.scannedCode.code = scannedCode;
-            return this;
-        }
-
-        public Builder setLookupCode(String lookupCode) {
-            scannedCode.lookupCode = lookupCode;
-            return this;
-        }
-
-        public Builder setEmbeddedData(int embeddedData) {
-            scannedCode.embeddedData = embeddedData;
-            return this;
-        }
-
-        public Builder setEmbeddedDecimalData(BigDecimal embeddedDecimalData) {
-            scannedCode.embeddedDecimalData = embeddedDecimalData;
-            return this;
-        }
-
-        public Builder setEmbeddedUnit(Unit unit) {
-            scannedCode.embeddedUnit = unit;
-            return this;
-        }
-
-        public Builder setTransformationCode(String transformationCode) {
-            scannedCode.transformationCode = transformationCode;
-            return this;
-        }
-
-        public Builder setTransformationTemplateName(String name) {
-            scannedCode.transformationTemplateName = name;
-            return this;
-        }
-
-        public Builder setPrice(int price) {
-            scannedCode.price = price;
-            return this;
-        }
-
-        public ScannedCode create() {
-            return scannedCode;
-        }
+    /**
+     * Returns true if the code holds embedded data
+     */
+    fun hasEmbeddedData(): Boolean {
+        return _embeddedData != null
     }
 
-    public static ScannedCode parseDefault(Project project, String code) {
-        for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
-            ScannedCode scannedCode = codeTemplate.match(code).buildCode();
-            if (scannedCode != null && scannedCode.getTemplateName().equals("default")) {
-                return scannedCode;
+    var embeddedDecimalData: BigDecimal
+        /**
+         * Get the data embedded in the code, as a big decimal
+         */
+        get() = _embeddedDecimalData?.let { it } ?: BigDecimal.ZERO
+        /**
+         * Set the data embedded in the code, as a big decimal
+         */
+        set(value) {
+            _embeddedDecimalData = value
+        }
+
+    /**
+     * Returns true if the code holds embedded decimal data
+     */
+    fun hasEmbeddedDecimalData(): Boolean {
+        return _embeddedDecimalData != null
+    }
+
+    /**
+     * Gets the unit of the embedded data
+     */
+    var embeddedUnit: Unit? = null
+
+    /**
+     * Gets the embedded price
+     */
+    val price: Int
+        get() = _price?.let { it } ?: 0
+
+    /**
+     * Returns true if the code holds a embedded price
+     */
+    fun hasPrice(): Boolean {
+        return _price != null
+    }
+
+    /**
+     * Creates a new builder, based on this code.
+     */
+    fun newBuilder(): Builder {
+        return Builder(this)
+    }
+
+    class Builder {
+        var scannedCode: ScannedCode
+
+        constructor(templateName: String?) {
+            scannedCode = ScannedCode().apply {
+                this.templateName = templateName
             }
         }
 
-        return null;
-    }
-
-    public static List<ScannedCode> parse(Project project, String code) {
-        List<ScannedCode> matches = new ArrayList<>();
-        CodeTemplate defaultTemplate = project.getDefaultCodeTemplate();
-
-        for (CodeTemplate codeTemplate : project.getCodeTemplates()) {
-            ScannedCode scannedCode = codeTemplate.match(code).buildCode();
-            if (scannedCode != null) {
-                matches.add(scannedCode);
+        constructor(source: ScannedCode) {
+            scannedCode = ScannedCode().apply {
+                _embeddedData = source._embeddedData
+                _embeddedDecimalData = source._embeddedDecimalData
+                _price = source._price
+                lookupCode = source.lookupCode
+                code = source.code
+                templateName = source.templateName
+                embeddedUnit = source.embeddedUnit
+                transformationTemplateName = source.transformationTemplateName
+                transformationCode = source.transformationCode
             }
         }
 
-        for (PriceOverrideTemplate priceOverrideTemplate : project.getPriceOverrideTemplates()) {
-            CodeTemplate codeTemplate = priceOverrideTemplate.getCodeTemplate();
-            ScannedCode scannedCode = codeTemplate.match(code).buildCode();
-            if (scannedCode != null) {
-                String lookupCode = scannedCode.getLookupCode();
-                if (!lookupCode.equals(code)) {
-                    ScannedCode defaultCode = defaultTemplate.match(lookupCode).buildCode();
-                    if (defaultCode != null) {
-                        defaultCode.embeddedData = scannedCode.getEmbeddedData();
-                        defaultCode.embeddedUnit = Unit.PRICE;
-                        defaultCode.code = scannedCode.getCode();
+        fun setScannedCode(scannedCode: String?) = apply {
+            this.scannedCode.code = scannedCode
+        }
 
-                        CodeTemplate transformTemplate = priceOverrideTemplate.getTransmissionCodeTemplate();
-                        if (transformTemplate != null) {
-                            defaultCode.transformationTemplateName = transformTemplate.getName();
-                            defaultCode.transformationCode = priceOverrideTemplate.getTransmissionCode();
+        fun setLookupCode(lookupCode: String?) = apply {
+            this.scannedCode.lookupCode = lookupCode
+        }
+
+        fun setEmbeddedData(embeddedData: Int) = apply {
+            this.scannedCode._embeddedData = embeddedData
+        }
+
+        fun setEmbeddedDecimalData(embeddedDecimalData: BigDecimal?) = apply {
+            this.scannedCode._embeddedDecimalData = embeddedDecimalData
+        }
+
+        fun setEmbeddedUnit(unit: Unit?) = apply {
+            this.scannedCode.embeddedUnit = unit
+        }
+
+        fun setTransformationCode(transformationCode: String?) = apply {
+            this.scannedCode.transformationCode = transformationCode
+        }
+
+        fun setTransformationTemplateName(name: String?) = apply {
+            this.scannedCode.transformationTemplateName = name
+        }
+
+        fun setPrice(price: Int) = apply {
+            this.scannedCode._price = price
+        }
+
+        fun create(): ScannedCode {
+            return scannedCode
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        fun parseDefault(project: Project, code: String?): ScannedCode? {
+            project.codeTemplates.forEach { codeTemplate ->
+                val scannedCode = codeTemplate.match(code).buildCode()
+                if (scannedCode != null && scannedCode.templateName == "default") {
+                    return scannedCode
+                }
+            }
+            return null
+        }
+
+        @JvmStatic
+        fun parse(project: Project, code: String): List<ScannedCode> {
+            val matches: MutableList<ScannedCode> = ArrayList()
+            val defaultTemplate = project.defaultCodeTemplate
+
+            project.codeTemplates.forEach { codeTemplate ->
+                val scannedCode = codeTemplate.match(code).buildCode()
+                if (scannedCode != null) {
+                    matches.add(scannedCode)
+                }
+            }
+
+            project.priceOverrideTemplates.forEach { priceOverrideTemplate ->
+                val codeTemplate = priceOverrideTemplate.codeTemplate
+                val scannedCode = codeTemplate.match(code).buildCode()
+                scannedCode?.let {
+                    val lookupCode = scannedCode.lookupCode
+                    if (lookupCode != code) {
+                        val defaultCode = defaultTemplate?.match(lookupCode)?.buildCode()
+                        defaultCode?.let {
+                            defaultCode._embeddedData = scannedCode._embeddedData
+                            defaultCode.embeddedUnit = Unit.PRICE
+                            defaultCode.code = scannedCode.code
+                            val transformTemplate = priceOverrideTemplate.transmissionCodeTemplate
+                            if (transformTemplate != null) {
+                                defaultCode.transformationTemplateName = transformTemplate.name
+                                defaultCode.transformationCode = priceOverrideTemplate.transmissionCode
+                            }
+                            matches.add(defaultCode)
                         }
-
-                        matches.add(defaultCode);
                     }
                 }
             }
+            return matches
         }
-
-        return matches;
     }
 }

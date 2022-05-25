@@ -152,17 +152,20 @@ class ProductResolver private constructor(private val context: Context, private 
                     val gs1GtinScannedCodes = mutableListOf<ScannedCode>()
                     var newGs1Code: GS1Code? = null
                     for (scannedCode in scannedCodes) {
-                        newGs1Code = GS1Code(scannedCode.code)
-                        val code = project.getCodeTemplate("default")
-                            ?.match(newGs1Code.gtin)
-                            ?.buildCode()
-                        if (code != null) {
-                            gs1GtinScannedCodes.add(
-                                code.newBuilder()
-                                    .setScannedCode(newGs1Code.code)
-                                    .create()
-                            )
-                            break
+                        val codeContents = scannedCode.code
+                        if (codeContents != null) {
+                            newGs1Code = GS1Code(codeContents)
+                            val code = project.getCodeTemplate("default")
+                                ?.match(newGs1Code.gtin)
+                                ?.buildCode()
+                            if (code != null) {
+                                gs1GtinScannedCodes.add(
+                                    code.newBuilder()
+                                        .setScannedCode(newGs1Code.code)
+                                        .create()
+                                )
+                                break
+                            }
                         }
                     }
                     if (gs1GtinScannedCodes.isNotEmpty() && gs1Code == null) {

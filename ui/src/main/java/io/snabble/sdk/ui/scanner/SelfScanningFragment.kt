@@ -111,14 +111,13 @@ open class SelfScanningFragment : BaseFragment() {
         permissionContainer.visibility = View.GONE
         canAskAgain = true
 
-        if (SearchHelper.lastSearch != null) {
+        SearchHelper.lastSearch?.let {
             selfScanningView?.lookupAndShowProduct(
-                ScannedCode.parse(requireNotNull(Snabble.checkedInProject.value), SearchHelper.lastSearch)
+                ScannedCode.parse(requireNotNull(Snabble.checkedInProject.value), it)
             )
             SearchHelper.lastSearch = null
         }
     }
-
 
     val isPermissionGranted: Boolean
         get() = (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
