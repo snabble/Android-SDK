@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 - Converted to PaymentMethod to kotlin
 - Converted to PaymentOriginCandiadateHelper to kotlin
 - Converted to ScannedCode to kotlin
-- 
+
 ## [0.64.1]
 
 ### Fixed
