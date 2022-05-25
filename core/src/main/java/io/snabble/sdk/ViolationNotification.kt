@@ -1,7 +1,7 @@
 package io.snabble.sdk
 
 /**
- * A notification that a violation accrued.
+ * A notification that a violation occurred
  */
 data class ViolationNotification(
     /** The name of the affected violation item, e.g. a coupon **/

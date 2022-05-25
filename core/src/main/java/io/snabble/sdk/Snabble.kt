@@ -646,8 +646,7 @@ object Snabble {
      */
     val endpointBaseUrl: String
         get() = config.endpointBaseUrl
-
-
+    
     /**
      * Finds a project by it's id.
      */

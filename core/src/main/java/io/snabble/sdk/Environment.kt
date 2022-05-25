@@ -1,7 +1,7 @@
 package io.snabble.sdk
 
 /**
- * Enum describing the environment the app is using.
+ * Enum describing the environment the app is using
  */
 enum class Environment(domain: String) {
     TESTING("snabble-testing.io"),
