@@ -59,6 +59,18 @@ fun View.setOneShotClickListener(callback: () -> Unit) =
         }
     )
 
+inline var View.marginTop: Int
+    get() = (layoutParams as? ViewGroup.MarginLayoutParams)?.topMargin ?: 0
+    set(value) {
+        (layoutParams as? ViewGroup.MarginLayoutParams)?.topMargin = value
+    }
+
+inline var View.marginBottom: Int
+    get() = (layoutParams as? ViewGroup.MarginLayoutParams)?.bottomMargin ?: 0
+    set(value) {
+        (layoutParams as? ViewGroup.MarginLayoutParams)?.bottomMargin = value
+    }
+
 inline val View.idName: String
     get() = if (id == -1) "null" else context.resources.getResourceName(id)
 

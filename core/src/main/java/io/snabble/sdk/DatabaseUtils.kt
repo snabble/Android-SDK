@@ -1,11 +1,11 @@
 @file:JvmName("DatabaseUtils")
 package io.snabble.sdk
 
-import androidx.annotation.RestrictTo
-
 @JvmName("bindArgs")
-@RestrictTo(RestrictTo.Scope.LIBRARY)
-internal fun String.bindSqlArgs(args: Array<String>?): String {
+/**
+ * Binds the strings in args to ocurrences of '?' in a sql string
+ */
+fun String.bindSqlArgs(args: Array<String>?): String {
     if (args == null) {
         return this
     }
