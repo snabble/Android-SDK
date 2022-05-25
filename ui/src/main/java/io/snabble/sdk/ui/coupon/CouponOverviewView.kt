@@ -38,6 +38,13 @@ class CouponOverviewView @JvmOverloads constructor(
     private var keyLineRight: Int
     var isInEmptyState = true
         private set
+    var couponSource: LiveData<List<CouponItem>> = CouponManager.withCurrentProject()
+        set(value) {
+            field = value
+            if (isAttachedToWindow) {
+                ensureAdapterExists().setCouponSource(couponSource)
+            }
+        }
 
     init {
         keyLineLeft = padding.left
@@ -52,7 +59,9 @@ class CouponOverviewView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        setCouponSource(CouponManager.withCurrentProject())
+        recyclerView.adapter = ensureAdapterExists().apply {
+            setCouponSource(couponSource)
+        }
     }
 
     fun interface EmptyStageChangeListener {
@@ -65,12 +74,6 @@ class CouponOverviewView @JvmOverloads constructor(
 
     fun removeEmptyStateListener(listener: EmptyStageChangeListener) {
         ensureAdapterExists().emptyStateListener -= listener
-    }
-
-    fun setCouponSource(coupons: LiveData<List<CouponItem>>) {
-        recyclerView.adapter = ensureAdapterExists().apply {
-            setCouponSource(coupons)
-        }
     }
 
     private fun ensureAdapterExists(): CouponsAdapter {
@@ -177,7 +180,7 @@ class CouponOverviewView @JvmOverloads constructor(
                 itemView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
                 return
             }
-            
+
             item.coupon?.let { coupon ->
                 cardView.setCardBackgroundColor(coupon.backgroundColor)
                 background.loadImage(coupon.image?.bestResolutionUrl)
