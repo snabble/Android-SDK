@@ -15,7 +15,7 @@ import okhttp3.Response
 import java.io.IOException
 
 /**
- * POJO for a Coupon
+ * Data class for a Coupon
  */
 @Parcelize
 data class Coupon (
@@ -41,7 +41,7 @@ data class Coupon (
 }
 
 /**
- * POJO for a CouponCode
+ * Data class for a CouponCode
  */
 @Parcelize
 data class CouponCode (
@@ -50,7 +50,7 @@ data class CouponCode (
 ) : Parcelable
 
 /**
- * POJO for a CouponImage
+ * Data class for a CouponImage
  */
 @Parcelize
 data class CouponImage (
@@ -59,7 +59,7 @@ data class CouponImage (
 ) : Parcelable
 
 /**
- * POJO for a CouponImageFormats
+ * Data class for a CouponImageFormats
  */
 @Parcelize
 data class CouponImageFormats (
@@ -71,7 +71,7 @@ data class CouponImageFormats (
 ) : Parcelable
 
 /**
- * POJO for a CouponType
+ * Enum class for a CouponType
  */
 enum class CouponType {
     @SerializedName("manual") MANUAL,
@@ -80,7 +80,7 @@ enum class CouponType {
 }
 
 /**
- * POJO for a CouponSource
+ * Data class for a CouponSource
  */
 enum class CouponSource {
     Bundled,

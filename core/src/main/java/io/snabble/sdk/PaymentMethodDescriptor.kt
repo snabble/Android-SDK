@@ -30,7 +30,7 @@ data class PaymentMethodDescriptor(
 }
 
 /**
- * POJO for a link
+ * Data class for a link
  */
 data class Link(
     val href: String

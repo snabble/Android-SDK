@@ -22,12 +22,12 @@ import okhttp3.Request;
  * Class for interfacing with the snabble Receipts API
  */
 public class ReceiptsApi {
-    /** Receipts POJO **/
+    /** Data class for api receipts **/
     public static class ApiReceipt {
         public ApiOrder[] orders;
     }
 
-    /** Order POJO **/
+    /** Data class for api orders **/
     public static class ApiOrder {
         public String id;
         public String project;
@@ -39,7 +39,7 @@ public class ReceiptsApi {
         public Map<String, ApiLink> links;
     }
 
-    /** Link POJO **/
+    /** Data class for api links **/
     public static class ApiLink {
         public String href;
     }
@@ -68,7 +68,7 @@ public class ReceiptsApi {
     }
 
     /**
-     * Fetch receipts from the backend, providing the raw json document as a POJO
+     * Fetch receipts from the backend, providing the raw json document as a data class
      */
     public void getRaw(final RawReceiptUpdateCallback rawReceiptUpdateCallback) {
         final Snabble snabble = Snabble.getInstance();

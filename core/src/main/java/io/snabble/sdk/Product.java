@@ -116,7 +116,7 @@ public class Product implements Serializable, Parcelable {
     }
 
     /**
-     * POJO representing information required for scanning
+     * Data class representing information required for scanning
      */
     public static class Code implements Serializable {
         public final String lookupCode;
