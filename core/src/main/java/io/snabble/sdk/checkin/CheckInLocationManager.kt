@@ -21,7 +21,7 @@ private const val LOCATION_UPDATE_MIN_DISTANCE = 0f
 
 /**
  * Location manager used by the check in manager. Periodically polls location after calling
- * startTrackingLocation and stores it in location live data.
+ * startTrackingLocation and stores it in location live data
  */
 class CheckInLocationManager(val application: Application) {
     private val locationManager: LocationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -34,7 +34,7 @@ class CheckInLocationManager(val application: Application) {
 
     /**
      * Can be used to mock a location, in which case location updates
-     * are ignored and only this location is used.
+     * are ignored and only this location is used
      */
     var mockLocation: Location? = null
         set(value) {
@@ -68,7 +68,7 @@ class CheckInLocationManager(val application: Application) {
     }
 
     /**
-     * Checks if ACCESS_FINE_LOCATION is granted.
+     * Checks if ACCESS_FINE_LOCATION is granted
      */
     fun checkLocationPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(application, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -76,7 +76,7 @@ class CheckInLocationManager(val application: Application) {
     }
 
     /**
-     * Checks if location permission is granted and location is enabled by the user.
+     * Checks if location permission is granted and location is enabled by the user
      */
     fun isLocationAvailable(): Boolean {
         return if (!checkLocationPermission()) {
@@ -85,7 +85,7 @@ class CheckInLocationManager(val application: Application) {
     }
 
     /**
-     * Checks if any GPS or NETWORK location providers are enabled.
+     * Checks if any GPS or NETWORK location providers are enabled
      */
     fun isEnabled(context: Context): Boolean {
         val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager

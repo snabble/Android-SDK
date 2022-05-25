@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,7 +21,13 @@ import java.util.Objects;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 
+/**
+ * Class representing a shop
+ */
 public class Shop implements Serializable, Parcelable {
+    /**
+     * Enum describing services provided by the shop
+     */
     public enum Service {
         @SerializedName("euro")
         EURO_PAYMENT,
@@ -38,6 +45,9 @@ public class Shop implements Serializable, Parcelable {
         PARKING
     }
 
+    /**
+     * Class describing a link
+     */
     public static class Href {
         private final String href;
 
@@ -45,6 +55,9 @@ public class Shop implements Serializable, Parcelable {
             this.href = href;
         }
 
+        /**
+         * Get the url of the link
+         */
         public String getHref() {
             return href;
         }
@@ -58,29 +71,42 @@ public class Shop implements Serializable, Parcelable {
         }
     }
 
+    /**
+     * Class describing when a shop opens and closes
+     */
     public static class OpeningHourSpecification {
         private final String closes;
         private final String opens;
         private final String dayOfWeek;
 
-        public OpeningHourSpecification(String closes, String opens, String dayOfWeek) {
+        OpeningHourSpecification(String closes, String opens, String dayOfWeek) {
             this.closes = closes;
             this.opens = opens;
             this.dayOfWeek = dayOfWeek;
         }
 
+        /**
+         * Get the closing time as a String
+         */
         public String getCloses() {
             return closes;
         }
 
+        /**
+         * Get the opening time as a String
+         */
         public String getOpens() {
             return opens;
         }
 
+        /**
+         * Get the day as a String
+         */
         public String getDayOfWeek() {
             return dayOfWeek;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "OpeningHourSpecification{" +
@@ -91,13 +117,19 @@ public class Shop implements Serializable, Parcelable {
         }
     }
 
+    /**
+     * Class describing a potentially available wifi network in the shop
+     */
     public static class CustomerNetwork {
         private final String ssid;
 
-        public CustomerNetwork(String ssid) {
+        CustomerNetwork(String ssid) {
             this.ssid = ssid;
         }
 
+        /**
+         * Get the SSID associated with the public wifi network
+         */
         public String getSsid() {
             return ssid;
         }
@@ -131,81 +163,138 @@ public class Shop implements Serializable, Parcelable {
     private OpeningHourSpecification[] openingHoursSpecification;
     private JsonElement external;
 
-    public Shop() {
-
+    Shop() {
+        // for gson
     }
 
+    /**
+     * Get the unique ID associated with the shop
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Gets the external id of the shop, used to associate this shop with shops from other backends
+     */
     public String getExternalId() {
         return externalId;
     }
 
+    /**
+     * Gets the list of services provided by the shop
+     */
     public Service[] getServices() {
         return services;
     }
 
+    /**
+     * Gets the list of opening hours
+     */
     public OpeningHourSpecification[] getOpeningHours() {
         return openingHoursSpecification;
     }
 
+    /**
+     * Gets the street of the shop
+     */
     public String getStreet() {
         return street;
     }
 
+    /**
+     * Gets the zip code of the shop
+     */
     public String getZipCode() {
         return zipCode;
     }
 
+    /**
+     * Gets the city of the shop
+     */
     public String getCity() {
         return city;
     }
 
+    /**
+     * Gets the country of the shop
+     */
     public String getCountry() {
         return country;
     }
 
+    /**
+     * Gets the state of the shop
+     */
     public String getState() {
         return state;
     }
 
+    /**
+     * Gets the phone number of the shop
+     */
     public String getPhone() {
         return phone;
     }
 
+    /**
+     * Gets the latitude of the shop
+     */
     public double getLatitude() {
         return latitude;
     }
 
+    /**
+     * Gets the longitude of the shop
+     */
     public double getLongitude() {
         return longitude;
     }
 
+    /**
+     * Gets the latitude / longitude pair ot the shop as a Location object
+     */
     public Location getLocation() { 
         Location location = new Location("");
         location.setLatitude(latitude);
         location.setLongitude(longitude);
         return location;
     }
-    
+
+    /**
+     * Gets the name of the shop
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns true if the shop is only visible when setting
+     * "loadActiveShops" to true in the {@link Config}
+     */
     public boolean getIsPreLaunch() {
         return isPreLaunch;
     }
 
+    /**
+     * Gets the available wifi access points of the shop
+     */
     public CustomerNetwork[] getCustomerNetworks() {
         return customerNetworks;
     }
 
+    /**
+     * Gets optional links
+     */
+    @Nullable
     public Map<String, Href> getLinks() {
         return links;
     }
 
+    /**
+     * Gets the a json document provided by external backend systems
+     */
+    @Nullable
     public JsonElement getExternal() {
         return external;
     }

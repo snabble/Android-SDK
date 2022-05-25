@@ -1,5 +1,8 @@
 package io.snabble.sdk.codes.gs1
 
+/**
+ * Class for defining gs1 application identifiers
+ */
 data class ApplicationIdentifier(
         val prefix: String,
         val description: String,
@@ -566,10 +569,16 @@ data class ApplicationIdentifier(
             return map
         }
 
+        /**
+        * Get the application identifier by its prefix
+        */
         fun byPrefix(prefix: String): List<ApplicationIdentifier>? {
             return prefixMap[prefix]
         }
 
+        /**
+        * Get the length of the application identifier contents
+        */
         fun elementLength(prefix: String): Int {
             return predefinedLengths[prefix] ?: 0
         }

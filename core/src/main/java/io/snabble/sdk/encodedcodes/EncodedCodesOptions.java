@@ -7,6 +7,9 @@ import com.google.gson.JsonObject;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.utils.JsonUtils;
 
+/**
+ * Class for configuring a encodes codes generator
+ */
 public class EncodedCodesOptions {
     public interface Sorter {
         int compare(EncodedCodesGenerator.ProductInfo productInfo1,
@@ -52,6 +55,9 @@ public class EncodedCodesOptions {
         this.project = project;
     }
 
+    /**
+     * Builder for creating encoded codes options
+     */
     public static class Builder {
         private final Project project;
         private String prefix = "";
@@ -68,70 +74,112 @@ public class EncodedCodesOptions {
         private int maxSizeMm;
         private String manualDiscountFinalCode = "";
 
+        /**
+         * Creates a new builder on a given project
+         */
         public Builder(Project project) {
             this.project = project;
         }
 
+        /**
+         * String that gets prefixed on the encoded code
+         */
         public Builder prefix(String prefix) {
             this.prefix = prefix;
             return this;
         }
 
+        /**
+         * String that gets prefixed on the encoded code on a given index
+         */
         public Builder prefix(int index, String prefix) {
             prefixMap.put(index, prefix);
             return this;
         }
 
+        /**
+         * Separator of each added code
+         */
         public Builder separator(String separator) {
             this.separator = separator;
             return this;
         }
 
+        /**
+         * Suffix of a encoded code
+         */
         public Builder suffix(String suffix) {
             this.suffix = suffix;
             return this;
         }
 
+        /**
+         * The maximum number of characters allowed per code
+         */
         public Builder maxChars(int maxChars) {
             this.maxChars = maxChars;
             return this;
         }
 
+        /**
+         * The maximum number of scanned codes per encoded code
+         */
         public Builder maxCodes(int maxCodes) {
             this.maxCodes = maxCodes;
             return this;
         }
 
+        /**
+         * Code added after the last scanned code
+         */
         public Builder finalCode(String finalCode) {
             this.finalCode = finalCode;
             return this;
         }
 
+        /**
+         * Code added after the last scanned code of a encoded code
+         */
         public Builder nextCode(String nextCode) {
             this.nextCode = nextCode;
             return this;
         }
 
+        /**
+         * Code added after the last scanned code of a encoded code, before age restricted products
+         */
         public Builder nextCodeWithCheck(String nextCodeWithCheck) {
             this.nextCodeWithCheck = nextCodeWithCheck;
             return this;
         }
 
+        /**
+         * Set to true if products should be repeated per amount to be purchased.
+         */
         public Builder repeatCodes(boolean repeatCodes) {
             this.repeatCodes = repeatCodes;
             return this;
         }
 
+        /**
+         * Separator for amount of products and scanned code, when not using {@link #repeatCodes} option
+         */
         public Builder countSeparator(String countSeparator) {
             this.countSeparator = countSeparator;
             return this;
         }
 
+        /**
+         * The maximum size the resulting encoded code should be on display in millimeters
+         */
         public Builder maxSizeMm(int maxSizeMm) {
             this.maxSizeMm = maxSizeMm;
             return this;
         }
 
+        /**
+         * Code added after the last scanned code when a manual discount is applied
+         */
         public Builder manualDiscountFinalCode(String manualDiscountFinalCode) {
             this.manualDiscountFinalCode = manualDiscountFinalCode;
             return this;
@@ -144,6 +192,11 @@ public class EncodedCodesOptions {
         }
     }
 
+    /**
+     * Generate encoded codes options from a json definition.
+     *
+     * Usually the json is found in the snabble metadata.
+     */
     public static EncodedCodesOptions fromJsonObject(Project project, JsonObject jsonObject) {
         String format = JsonUtils.getStringOpt(jsonObject, "format", "simple");
         String separator = JsonUtils.getStringOpt(jsonObject, "separator", "\n");

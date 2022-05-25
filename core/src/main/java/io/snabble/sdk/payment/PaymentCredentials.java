@@ -3,6 +3,7 @@ package io.snabble.sdk.payment;
 import android.util.Base64;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import java.io.InputStream;
 import java.security.cert.CertPath;
@@ -40,7 +41,13 @@ import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
 
+/**
+ * Class for storing encrypting payment credentials
+ */
 public class PaymentCredentials {
+    /**
+     * Enum describing the type of the payment credentials
+     */
     public enum Type {
         SEPA(null, false, Collections.singletonList(PaymentMethod.DE_DIRECT_DEBIT)),
         // legacy credit card type, not used anymore.
@@ -64,19 +71,33 @@ public class PaymentCredentials {
             this.requiresProject = requiresProject;
         }
 
+        /**
+         * Get the backend descriptor of the payment credential,if it needs
+         * to be transferred on checkout.
+         */
         public String getOriginType() {
             return originType;
         }
 
+        /**
+         * Get a list of all payment methods that are supported by this type
+         */
         public List<PaymentMethod> getPaymentMethods() {
             return paymentMethods;
         }
 
+        /**
+         * Returns true if this those payment credentials are specific
+         * to a project and cant be shared between multiple projects
+         */
         public boolean isProjectDependantType() {
             return requiresProject;
         }
     }
 
+    /**
+     * Enum describing the brand of the payment credentials
+     */
     public enum Brand {
         UNKNOWN,
         VISA,
@@ -85,6 +106,9 @@ public class PaymentCredentials {
         TWINT,
         POST_FINANCE_CARD;
 
+        /**
+         * Create a Brand from a given {@link PaymentMethod}
+         */
         public static Brand fromPaymentMethod(PaymentMethod paymentMethod) {
             switch (paymentMethod) {
                 case AMEX:
@@ -140,6 +164,7 @@ public class PaymentCredentials {
         private final String userID;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public static class PaydirektAuthorizationData {
         public String id;
         public String name;
@@ -177,6 +202,9 @@ public class PaymentCredentials {
 
     }
 
+    /**
+     * Encrypts and stores SEPA payment credentials.
+     */
     public static PaymentCredentials fromSEPA(String name, String iban) {
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
@@ -215,6 +243,9 @@ public class PaymentCredentials {
         return pc;
     }
 
+    /**
+     * Encrypts and stores a Telecash / First Data credit card.
+     */
     public static PaymentCredentials fromCreditCardData(String name,
                                                         Brand brand,
                                                         String projectId,
@@ -304,6 +335,9 @@ public class PaymentCredentials {
         }
     }
 
+    /**
+     * Encrypts and stores a paydirekt authorization token.
+     */
     public static PaymentCredentials fromPaydirekt(PaydirektAuthorizationData authorizationData, String customerAuthorizationURI) {
         if (customerAuthorizationURI == null) {
             return null;
@@ -344,6 +378,9 @@ public class PaymentCredentials {
         return pc;
     }
 
+    /**
+     * Encrypts and stores a datatrans authorization token.
+     */
     public static PaymentCredentials fromDatatrans(String token, Brand brand, String obfuscatedId,
                                                    String expirationMonth, String expirationYear,
                                                    String projectId) {
@@ -392,6 +429,9 @@ public class PaymentCredentials {
         return pc;
     }
 
+    /**
+     * Encrypts and stores a payone pseudo card pan.
+     */
     public static PaymentCredentials fromPayone(String pseudocardpan,
                                                 String truncatedcardpan,
                                                 PaymentCredentials.Brand brand,
@@ -436,6 +476,9 @@ public class PaymentCredentials {
         return pc;
     }
 
+    /**
+     * Encrypts and stores a tegut employee card.
+     */
     public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber, String projectId) {
         if (cardNumber == null || cardNumber.length() != 19
                 || (!cardNumber.startsWith("9280001621")
@@ -473,6 +516,9 @@ public class PaymentCredentials {
         return pc;
     }
 
+    /**
+     * Encrypts and stores a leinweber customer id.
+     */
     public static PaymentCredentials fromLeinweberCustomerId(String obfuscatedId, String cardNumber, String projectId) {
         if (cardNumber == null || cardNumber.length() != 6) {
             return null;
@@ -508,6 +554,9 @@ public class PaymentCredentials {
         return pc;
     }
 
+    /**
+     * Returns the type of the payment credentials
+     */
     public Type getType() {
         if (type == null) { // backwards compatibility
             return Type.SEPA;
@@ -516,6 +565,9 @@ public class PaymentCredentials {
         return type;
     }
 
+    /**
+     * Returns the brand of the payment credentials
+     */
     public Brand getBrand() {
         if (brand == null) { // backwards compatibility
             return Brand.UNKNOWN;
@@ -524,11 +576,17 @@ public class PaymentCredentials {
         return brand;
     }
 
+    /**
+     * Returns the associated project or null if no project is needed
+     */
     @Nullable
     public String getProjectId() {
         return projectId;
     }
 
+    /**
+     * Returns the associated app id
+     */
     public String getAppId() {
         return appId;
     }
@@ -603,6 +661,7 @@ public class PaymentCredentials {
         return Snabble.getInstance().getConfig().appId.equals(appId);
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public boolean canBypassKeyStore() {
         return rsaEncryptedData != null;
     }
@@ -663,6 +722,12 @@ public class PaymentCredentials {
         return Utils.sha256Hex(Utils.hexString(certificate.getSignature()));
     }
 
+    /**
+     * Validates the current payment credentials.
+     * If this method returns false the payment credentials are not usable anymore.
+     *
+     * E.g. on timed out credit cards or expired certificates.
+     */
     public boolean validate() {
         if (type == Type.CREDIT_CARD_PSD2) {
             Date date = new Date(validTo);
@@ -701,18 +766,30 @@ public class PaymentCredentials {
         id = UUID.randomUUID().toString();
     }
 
+    /**
+     * Returns the id of the payment credentials
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Returns how long the credentials are valid as a UNIX timestamp.
+     */
     public long getValidTo() {
         return validTo;
     }
 
+    /**
+     * Returns the obfuscated and user displayable credentials string
+     */
     public String getObfuscatedId() {
         return obfuscatedId;
     }
 
+    /**
+     * Returns the encrypted payment data that can only be decrypted by the snabble payment gateway.
+     */
     public String getEncryptedData() {
         if (rsaEncryptedData != null) {
             return rsaEncryptedData;
@@ -722,6 +799,7 @@ public class PaymentCredentials {
         return decryptUsingKeyStore();
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     public boolean migrateFromKeyStore() {
         // if data is available and we have not migrated before, start migration
         if (rsaEncryptedData == null && encryptedData != null) {
@@ -745,10 +823,16 @@ public class PaymentCredentials {
         return true;
     }
 
+    /**
+     * Additional payment credentials specific key value pairs
+     */
     public Map<String, String> getAdditionalData() {
         return additionalData;
     }
 
+    /**
+     * Get the associated payment method for the payment credentials
+     */
     public PaymentMethod getPaymentMethod() {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;

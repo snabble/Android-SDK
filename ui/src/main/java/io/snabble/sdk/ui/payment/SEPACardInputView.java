@@ -22,7 +22,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-import io.snabble.sdk.PaymentOriginCandidateHelper;
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.IBAN;
 import io.snabble.sdk.payment.PaymentCredentials;

@@ -32,13 +32,24 @@ import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
+/**
+ * Class representing the snabble shopping cart
+ */
 public class ShoppingCart implements Iterable<ShoppingCart.Item> {
+    public static final int MAX_QUANTITY = 99999;
+
+    /**
+     * Enum describing the type of item
+     */
     public enum ItemType {
         PRODUCT,
         LINE_ITEM,
         COUPON
     }
 
+    /**
+     * Enum describing the type of taxation
+     */
     public enum Taxation {
         UNDECIDED("undecided"),
         IN_HOUSE("inHouse"),
@@ -54,8 +65,6 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return value;
         }
     }
-
-    public static final int MAX_QUANTITY = 99999;
 
     private String id;
     private String uuid;
@@ -120,22 +129,37 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         updatePrices(false);
     }
 
+    /**
+     * The id used to identify this cart session
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Create a new cart item using a product and a scanned code
+     */
     public Item newItem(Product product, ScannedCode scannedCode) {
         return new Item(this, product, scannedCode);
     }
 
+    /**
+     * Create a new cart item using a coupon and a scanned code
+     */
     public Item newItem(Coupon coupon, ScannedCode scannedCode) {
         return new Item(this, coupon, scannedCode);
     }
 
-    Item newItem(LineItem lineItem) {
+    /**
+     * Create a new cart item using a line item of a checkout info
+     */
+    public Item newItem(LineItem lineItem) {
         return new Item(this, lineItem);
     }
 
+    /**
+     * Add a item to the cart
+     */
     public void add(Item item) {
         insert(item, 0);
     }
@@ -156,6 +180,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         add(newItem(coupon, scannedCode));
     }
 
+    /**
+     * Insert a cart item into the shopping cart at a specific index
+     */
     public void insert(Item item, int index) {
         insert(item, index, true);
     }
@@ -209,6 +236,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
+    /**
+     * Gets the cart item a specific index
+     */
     public Item get(int index) {
         return items.get(index);
     }
@@ -219,6 +249,12 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return items.iterator();
     }
 
+    /**
+     * Returns a cart item that contains the given product, if that cart item
+     * can be merged.
+     *
+     * A cart item is not mergeable if it uses encoded data of a scanned code (e.g. a different price)
+     */
     public Item getExistingMergeableProduct(Product product) {
         if (product == null) {
             return null;
@@ -233,6 +269,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return null;
     }
 
+    /**
+     * Find a cart item by it's id
+     */
     public Item getByItemId(String itemId) {
         if (itemId == null) {
             return null;
@@ -247,10 +286,16 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return null;
     }
 
+    /**
+     * Gets the current index of a cart item
+     */
     public int indexOf(Item item) {
         return items.indexOf(item);
     }
 
+    /**
+     * Removed a cart item from the cart by its index
+     */
     public void remove(int index) {
         modCount++;
         generateNewUUID();
@@ -261,14 +306,27 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         notifyItemRemoved(this, item, index);
     }
 
+    /**
+     * The number items in the cart.
+     *
+     * This is not the sum of articles.
+     */
     public int size() {
         return items.size();
     }
 
+    /**
+     * Check if the cart is empty
+     */
     public boolean isEmpty() {
         return items.isEmpty();
     }
 
+    /**
+     * Backups the cart, so it can be restured using {@link #restore()} later.
+     *
+     * A cart is restorable for up to 5 minutes.
+     */
     public void backup() {
         if (items.size() > 0) {
             oldItems = items;
@@ -281,18 +339,16 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
-    public void clear() {
-        items = new ArrayList<>();
-        modCount = 0;
-        addCount = 0;
-        generateNewUUID();
-        onlineTotalPrice = null;
-
-        checkLimits();
-        updatePrices(false);
-        notifyCleared(this);
+    /**
+     * Check if the cart is backed up by {@link #backup()} and still in the 5 minute time window
+     */
+    public boolean isRestorable() {
+        return oldItems != null && oldCartTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
     }
 
+    /**
+     * Clears the backup storage of the cart
+     */
     public void clearBackup() {
         oldItems = null;
         oldId = null;
@@ -303,6 +359,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         oldCartTimestamp = 0;
     }
 
+    /**
+     * Restores the cart previously backed up by {@link #backup()}
+     */
     public void restore() {
         if (isRestorable()) {
             items = new ArrayList<>(oldItems);
@@ -319,6 +378,32 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
+    /**
+     * The last time the cart was backed up by using {@link #backup()}
+     * @return
+     */
+    public long getBackupTimestamp() {
+        return oldCartTimestamp;
+    }
+
+    /**
+     * Clears the cart of all items
+     */
+    public void clear() {
+        items = new ArrayList<>();
+        modCount = 0;
+        addCount = 0;
+        generateNewUUID();
+        onlineTotalPrice = null;
+
+        checkLimits();
+        updatePrices(false);
+        notifyCleared(this);
+    }
+
+    /**
+     * Gets the current {@link Taxation} type of the shopping cart
+     */
     public Taxation getTaxation() {
         // migration for old shopping carts
         if (taxation == null) {
@@ -327,25 +412,26 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return taxation;
     }
 
+    /**
+     * Sets the current taxation type of the cart
+     */
     public void setTaxation(Taxation taxation) {
         this.taxation = taxation;
         notifyTaxationChanged(this, taxation);
     }
 
-    public boolean isRestorable() {
-        return oldItems != null && oldCartTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
-    }
-
-    public long getBackupTimestamp() {
-        return oldCartTimestamp;
-    }
-
+    /**
+     * Clears the cart and generated a cart new session.
+     */
     public void invalidate() {
         id = UUID.randomUUID().toString();
         generateNewUUID();
         clear();
     }
 
+    /**
+     * Updates each items products in the shopping cart
+     */
     public void updateProducts() {
         ProductDatabase productDatabase = project.getProductDatabase();
 
@@ -364,6 +450,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         updatePrices(false);
     }
 
+    /**
+     * Resets the cart to the state before it was updated by the backend
+     */
     public void invalidateOnlinePrices() {
         invalidProducts = null;
         invalidDepositReturnVoucher = false;
@@ -384,6 +473,12 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         notifyPriceUpdate(this);
     }
 
+    /**
+     * Update all prices of the cart
+     *
+     * @param debounce if set to true delays the updating and batches
+     *                 multiple {@link #updatePrices(boolean)} calls together
+     */
     public void updatePrices(boolean debounce) {
         if (debounce) {
             updater.dispatchUpdate();
@@ -392,7 +487,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
-    public void checkForTimeout() {
+    void checkForTimeout() {
         long currentTime = System.currentTimeMillis();
 
         long timeout = Snabble.getInstance().getConfig().maxShoppingCartAge;
@@ -403,19 +498,42 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
+    /**
+     * Returns the number of times items in the shopping cart were added
+     */
+
     public int getAddCount() {
         return addCount;
     }
 
+    /**
+     * Returns the number of times items in the shopping cart were modified
+     */
     public int getModCount() {
         return modCount;
     }
 
+    /**
+     * Generate a new uuid.
+     *
+     * UUID's are used to uniquely identify a specific purchase made by the user. If a new UUID
+     * is generated a new checkout can be made.
+     *
+     * If a checkout already exist with the same UUID, the checkout will get continued.
+     */
     public void generateNewUUID() {
         uuid = UUID.randomUUID().toString();
         notifyProductsUpdate(this);
     }
 
+    /**
+     * The UUID of the cart
+     *
+     * UUID's are used to uniquely identify a specific purchase made by the user. If a new UUID
+     * is generated a new checkout can be made.
+     *
+     * If a checkout already exist with the same UUID, the checkout will get continued.
+     */
     public String getUUID() {
         return uuid;
     }
@@ -424,6 +542,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         onlineTotalPrice = totalPrice;
     }
 
+    /**
+     * Returns true of the carts price is calculated by the backend
+     */
     public boolean isOnlinePrice() {
         return onlineTotalPrice != null;
     }
@@ -436,6 +557,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         this.invalidDepositReturnVoucher = invalidDepositReturnVoucher;
     }
 
+    /**
+     * Gets a list of invalid products that were rejected by the backend.
+     */
     public List<Product> getInvalidProducts() {
         if (invalidProducts == null) {
             return Collections.emptyList();
@@ -448,6 +572,12 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return invalidDepositReturnVoucher;
     }
 
+    /**
+     * Returns the total price of the cart.
+     *
+     * If the cart was updated by the backend, the online price is used. If no update was made
+     * a locally calculated price will be used
+     */
     public int getTotalPrice() {
         if (onlineTotalPrice != null) {
             return onlineTotalPrice;
@@ -464,6 +594,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return sum;
     }
 
+    /**
+     * Returns the total sum of deposit
+     */
     public int getTotalDepositPrice() {
         int sum = 0;
         int vPOSsum = 0;
@@ -479,6 +612,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return Math.max(vPOSsum, sum);
     }
 
+    /**
+     * The quantity of items in the cart.
+     */
     public int getTotalQuantity() {
         int sum = 0;
 
@@ -503,10 +639,16 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return sum;
     }
 
+    /**
+     * Returns true if the shopping cart is over the current set limit
+     */
     public boolean hasReachedMaxCheckoutLimit() {
         return hasRaisedMaxCheckoutLimit;
     }
 
+    /**
+     * Returns true if the shopping cart is over the current set limit for online checkouts
+     */
     public boolean hasReachedMaxOnlinePaymentLimit() {
         return hasRaisedMaxOnlinePaymentLimit;
     }
@@ -536,6 +678,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
+    /**
+     * Returns the current minimum age required to purchase all items of the shopping cart
+     */
     public int getMinimumAge() {
         int minimumAge = 0;
 
@@ -546,6 +691,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return minimumAge;
     }
 
+    /**
+     * Checks if the provided scanned code is contained inside the shopping cart
+     */
     public boolean containsScannedCode(ScannedCode scannedCode) {
         for (Item item : items) {
             if (item.scannedCode != null && item.scannedCode.getCode().equals(scannedCode.getCode())) {
@@ -588,6 +736,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
+    /**
+     * Class describing a shopping cart item
+     */
     public static class Item {
         private Product product;
         private ScannedCode scannedCode;
@@ -658,6 +809,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             this.lineItem = lineItem;
         }
 
+        /**
+         * Returns the id of the shopping cart item
+         */
         public String getId() {
             return id;
         }
@@ -666,15 +820,26 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             this.lineItem = lineItem;
         }
 
+        /**
+         * Returns the product associated with the shopping cart item.
+         */
         @Nullable
         public Product getProduct() {
             return product;
         }
 
+        /**
+         * Returns the scanned code which was used when scanning the product and adding it to the shopping cart
+         */
+        @Nullable
         public ScannedCode getScannedCode() {
             return scannedCode;
         }
 
+        /**
+         * Returns the effective quantity (embedded weight OR embedded price)
+         * depending on the type
+         */
         public int getEffectiveQuantity() {
             return getEffectiveQuantity(false);
         }
@@ -685,10 +850,18 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
                     && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : getQuantity(ignoreLineItem);
         }
 
+        /**
+         * Returns the quantity of the cart item
+         */
         public int getQuantity() {
             return getQuantity(false);
         }
 
+        /**
+         * Returns the quantity of the cart item
+         *
+         * @param ignoreLineItem if set to true, only return the local quantity before backend updates
+         */
         public int getQuantity(boolean ignoreLineItem) {
             if (lineItem != null && !ignoreLineItem) {
                 if (lineItem.getWeight() != null) {
@@ -703,6 +876,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return quantity;
         }
 
+        /**
+         * Set the quantity of the cart item
+         */
         public void setQuantity(int quantity) {
             if (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() != 0) {
                 return;
@@ -726,6 +902,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
         }
 
+        /**
+         * Returns the {@link ItemType} of the cart item
+         */
         public ItemType getType() {
             if (product != null) {
                 return ItemType.PRODUCT;
@@ -738,14 +917,23 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return null;
         }
 
+        /**
+         * Sets if a manual coupon (coupon applied by the user after scanning) is applied
+         */
         public void setManualCouponApplied(boolean manualCouponApplied) {
             isManualCouponApplied = manualCouponApplied;
         }
 
+        /**
+         * Returns true if a manual coupon (coupon applied by the user after scanning) is applied
+         */
         public boolean isManualCouponApplied() {
             return isManualCouponApplied;
         }
 
+        /**
+         * Returns true if the item is editable by the user
+         */
         public boolean isEditable() {
             if (coupon != null && coupon.getType() != CouponType.MANUAL) {
                 return false;
@@ -754,6 +942,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return isEditableInDialog();
         }
 
+        /**
+         * Returns true if the item is editable by the user while scanning
+         */
         public boolean isEditableInDialog() {
             if (lineItem != null) return lineItem.getType() == LineItemType.DEFAULT
                     && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0);
@@ -762,6 +953,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
                     product.getPrice(cart.project.getCustomerCardId()) != 0;
         }
 
+        /**
+         * Returns true if the item can be merged with items that conain the same product and type
+         */
         public boolean isMergeable() {
             if (product == null && lineItem != null) return false;
             if (coupon != null) return false;
@@ -774,6 +968,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return b;
         }
 
+        /**
+         * Returns the unit associated with the cart item, or null if the cart item has no unit
+         */
         @Nullable
         public Unit getUnit() {
             if (getType() == ItemType.PRODUCT) {
@@ -788,6 +985,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return null;
         }
 
+        /**
+         * Gets the total price of the item
+         */
         public int getTotalPrice() {
             if (lineItem != null) {
                 return lineItem.getTotalPrice();
@@ -796,6 +996,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return getLocalTotalPrice();
         }
 
+        /**
+         * Gets the total price of the items, ignoring the backend response
+         */
         public int getLocalTotalPrice() {
             if (getType() == ItemType.PRODUCT) {
                 if (getUnit() == Unit.PRICE) {
@@ -813,6 +1016,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
         }
 
+        /**
+         * Gets the total deposit of the item
+         */
         public int getTotalDepositPrice() {
             if (lineItem != null && lineItem.getType() == LineItemType.DEPOSIT) {
                 return lineItem.getTotalPrice();
@@ -825,14 +1031,23 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return 0;
         }
 
+        /**
+         * Returns true if the item should be displayed as a discount
+         */
         public boolean isDiscount() {
             return lineItem != null && lineItem.getType() == LineItemType.DISCOUNT;
         }
 
+        /**
+         * Returns true if the item should be displayed as a giveaway
+         */
         public boolean isGiveaway() {
             return lineItem != null && lineItem.getType() == LineItemType.GIVEAWAY;
         }
 
+        /**
+         * Gets the price after applying all price modifiers
+         */
         public int getModifiedPrice() {
             int sum = 0;
 
@@ -845,6 +1060,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return sum;
         }
 
+        /**
+         * Gets the displayed name of the product
+         */
         public String getDisplayName() {
             if (lineItem != null) {
                 return lineItem.getName();
@@ -857,6 +1075,11 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
         }
 
+        /**
+         * Gets text displaying quantity, can be a weight or price depending on the type
+         *
+         * E.g. "1" or "100g" or "2,03 €"
+         */
         public String getQuantityText() {
             if (getType() == ItemType.LINE_ITEM) {
                 return String.valueOf(lineItem.getAmount());
@@ -879,6 +1102,11 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
         }
 
+        /**
+         * Gets text displaying price, including the calculation.
+         *
+         * E.g. "2 * 3,99 € = 7,98 €"
+         */
         public String getFullPriceText() {
             String priceText = getPriceText();
             if (priceText != null) {
@@ -891,16 +1119,6 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
 
             return null;
-        }
-
-        private int getTotalPriceModifiers() {
-            int sum = 0;
-            if (lineItem.getPriceModifiers() != null) {
-                for (PriceModifier priceModifiers : lineItem.getPriceModifiers()) {
-                    sum += priceModifiers.getPrice();
-                }
-            }
-            return sum;
         }
 
         private String getReducedPriceText() {
@@ -922,10 +1140,18 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
         }
 
+        /**
+         * Gets the displayed total price
+         */
         public String getTotalPriceText() {
             return cart.priceFormatter.format(getTotalPrice());
         }
 
+        /**
+         * Gets text displaying price, including the calculation.
+         *
+         * E.g. "3,99 €" or "2,99 € /kg = 0,47 €"
+         */
         public String getPriceText() {
             if (lineItem != null) {
                 if (lineItem.getPrice() != 0) {
@@ -970,6 +1196,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return null;
         }
 
+        /**
+         * Gets the minimum age required to purchase this item
+         */
         public int getMinimumAge() {
             if (product != null) {
                 Product.SaleRestriction saleRestriction = product.getSaleRestriction();
@@ -981,6 +1210,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return 0;
         }
 
+        /**
+         * Associate a user applied coupon with this item. E.g. manual price reductions.
+         */
         public void setCoupon(Coupon coupon) {
             if (coupon == null) {
                 this.coupon = null;
@@ -994,6 +1226,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             this.coupon = coupon;
         }
 
+        /**
+         * Gets the user associated coupon of this item
+         */
         public Coupon getCoupon() {
             return this.coupon;
         }

@@ -2,7 +2,7 @@ package io.snabble.sdk.ui.payment
 
 import android.os.Bundle
 import android.view.View
-import io.snabble.sdk.PaymentOriginCandidateHelper
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 

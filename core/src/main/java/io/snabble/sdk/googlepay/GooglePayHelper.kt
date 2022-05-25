@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Base64
 import android.widget.Toast
+import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
@@ -17,6 +18,9 @@ import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import java.lang.Exception
 
+/**
+ * Class for interfacing with google pay
+ */
 class GooglePayHelper(
     val project: Project,
     val context: Context,
@@ -39,6 +43,7 @@ class GooglePayHelper(
         return Wallet.getPaymentsClient(Snabble.application, walletOptions)
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun setUseTestEnvironment(boolean: Boolean) {
         val isUsingTestEnvironment = googlePayClient.apiOptions.environment == WalletConstants.ENVIRONMENT_TEST
         if (isUsingTestEnvironment != boolean) {
@@ -117,7 +122,7 @@ class GooglePayHelper(
         }
     }
 
-    fun getPaymentDataRequest(price: String): JsonObject {
+    private fun getPaymentDataRequest(price: String): JsonObject {
         return baseRequest().apply {
             add("allowedPaymentMethods", JsonArray().apply {
                 add(cardPaymentMethod())
@@ -136,6 +141,9 @@ class GooglePayHelper(
         }
     }
 
+    /**
+     * Checks if google pay is ready to make a payment
+     */
     fun isReadyToPay(isReadyToPayListener: IsReadyToPayListener) {
         val request = IsReadyToPayRequest.fromJson(GsonHolder.get().toJson(isReadyToPayRequest()))
 
@@ -151,10 +159,16 @@ class GooglePayHelper(
         }
     }
 
+    /**
+     * Checks if google pay is available on the snabble backend
+     */
     fun isGooglePayAvailable(): Boolean {
         return project.availablePaymentMethods.contains(PaymentMethod.GOOGLE_PAY)
     }
 
+    /**
+     * Starts a payment request with google pay
+     */
     fun requestPayment(priceToPay: Int): Boolean {
         val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
         val intent = Intent(context, GooglePayHelperActivity::class.java)
@@ -166,6 +180,9 @@ class GooglePayHelper(
         return false
     }
 
+    /**
+     * Starts a payment data request to google pay
+     */
     fun loadPaymentData(priceToPay: String, activity: Activity, requestCode: Int): Boolean {
         val paymentDataRequestJson = getPaymentDataRequest(priceToPay)
 

@@ -43,6 +43,12 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+/**
+ * Class for accessing image assets from the snabble backend.
+ *
+ * Assets are images that are downloaded all at once at first use and then saved to disk for reuse.
+ * They change very very rarely and are mostly for context (shop symbol / retailer logo / checkout orientation).
+ */
 public class Assets {
     private static final LruCache<String, Bitmap> memoryCache;
 
@@ -79,6 +85,9 @@ public class Assets {
         }
     }
 
+    /**
+     * Enum class for describing the image type
+     */
     public enum Type {
         SVG,
         JPG,
@@ -113,6 +122,9 @@ public class Assets {
         void failure();
     }
 
+    /**
+     * Callback for receiving a bitmap
+     */
     public interface Callback {
         void onReceive(Bitmap bitmap);
     }
@@ -133,6 +145,11 @@ public class Assets {
         loadManifest();
     }
 
+    /**
+     * Downloads all assets related to the project and saved them to disk.
+     *
+     * If assets are already up to date, then nothing will be done.
+     */
     public void update() {
         download(null, null);
     }
@@ -356,10 +373,16 @@ public class Assets {
         return false;
     }
 
+    /**
+     * Get a bitmap from a given name
+     */
     public Bitmap getBitmap(String name) {
         return getBitmap(name, Type.SVG);
     }
 
+    /**
+     * Get a bitmap from a given name and type
+     */
     public Bitmap getBitmap(String name, Type type) {
         Bitmap bitmap;
 
@@ -453,14 +476,23 @@ public class Assets {
         return null;
     }
 
+    /**
+     * Get a bitmap from a given name.
+     */
     public void get(String name, Callback callback) {
         get(name, Type.SVG, false, callback);
     }
 
+    /**
+     * Get a bitmap from a given name. Can be done asynchronously.
+     */
     public void get(String name, boolean async, Callback callback) {
         get(name, Type.SVG, async, callback);
     }
 
+    /**
+     * Get a bitmap from a given name and type. Can be done asynchronously.
+     */
     public void get(String name, Type type, boolean async, Callback callback) {
         String fileName = FilenameUtils.removeExtension(name);
         switch (type) {
@@ -531,14 +563,14 @@ public class Assets {
         }
     }
 
-    public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    private static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
         if (getBitmapFromMemCache(key) == null) {
             Logger.d("put lru cache %d / %d MB %s", memoryCache.size() / 1024, memoryCache.maxSize() / 1024, key);
             memoryCache.put(key, bitmap);
         }
     }
 
-    public static Bitmap getBitmapFromMemCache(String key) {
+    private static Bitmap getBitmapFromMemCache(String key) {
         Bitmap bitmap = memoryCache.get(key);
         Logger.d("get lru cache %s %s", bitmap != null ? "HIT" : "MISS", key);
         return bitmap;

@@ -1,8 +1,11 @@
 @file:JvmName("DatabaseUtils")
 package io.snabble.sdk
 
+import androidx.annotation.RestrictTo
+
 @JvmName("bindArgs")
-fun String.bindSqlArgs(args: Array<String>?): String {
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+internal fun String.bindSqlArgs(args: Array<String>?): String {
     if (args == null) {
         return this
     }

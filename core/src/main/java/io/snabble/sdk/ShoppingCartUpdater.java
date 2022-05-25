@@ -48,11 +48,11 @@ class ShoppingCartUpdater {
 
     private final Runnable updatePriceRunnable = () -> update(false);
 
-    public List<PaymentMethodInfo> getLastAvailablePaymentMethods() {
+    List<PaymentMethodInfo> getLastAvailablePaymentMethods() {
         return lastAvailablePaymentMethods;
     }
 
-    public void update(boolean force) {
+    void update(boolean force) {
         Logger.d("Updating prices...");
 
         if (cart.size() == 0) {
@@ -326,11 +326,11 @@ class ShoppingCartUpdater {
         return product[0];
     }
 
-    public boolean isUpdated() {
+    boolean isUpdated() {
         return isUpdated;
     }
 
-    public void dispatchUpdate() {
+    void dispatchUpdate() {
         handler.removeCallbacksAndMessages(this);
         handler.postAtTime(updatePriceRunnable, this, SystemClock.uptimeMillis() + DEBOUNCE_DELAY_MS);
     }

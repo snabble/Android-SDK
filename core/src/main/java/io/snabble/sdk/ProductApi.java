@@ -10,6 +10,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+/**
+ * Class for interfacing with the snabble product API
+ */
 class ProductApi {
     private static class ApiProduct {
         String sku;
@@ -78,6 +81,9 @@ class ProductApi {
         this.okHttpClient = project.getOkHttpClient();
     }
 
+    /**
+     * Fetches a product by its sku
+     */
     public void findBySku(String sku, final OnProductAvailableListener productAvailableListener) {
         if (productAvailableListener == null) {
             return;
@@ -114,6 +120,9 @@ class ProductApi {
         get(builder.build(), productAvailableListener);
     }
 
+    /**
+     * Fetches a product by its scanned code
+     */
     public void findByCode(final ScannedCode code, final OnProductAvailableListener productAvailableListener) {
         if (productAvailableListener == null) {
             return;

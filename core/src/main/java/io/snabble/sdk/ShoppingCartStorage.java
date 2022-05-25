@@ -72,7 +72,7 @@ class ShoppingCartStorage {
         }, 1000);
     }
 
-    public ShoppingCart getShoppingCart() {
+    ShoppingCart getShoppingCart() {
         return shoppingCart;
     }
 }

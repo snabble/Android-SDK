@@ -51,7 +51,8 @@ class Receipts internal constructor() {
         })
     }
 
-    @Deprecated(message = "Use getReceiptInfo instead")
+    @Deprecated(message = "Use getReceiptInfo instead",
+                replaceWith = ReplaceWith("getReceiptInfo(receiptInfoCallback)"))
     fun getReceiptInfos(receiptInfoCallback: ReceiptInfoCallback) {
         getReceiptInfo(receiptInfoCallback)
     }
@@ -65,7 +66,7 @@ class Receipts internal constructor() {
     }
 
     /**
-     * Downloads a receipts pdf and stores it in the projects internal storage directory.
+     * Downloads a receipts pdf and stores it in the projects internal storage directory
      */
     fun download(receiptInfo: ReceiptInfo, callback: ReceiptDownloadCallback?) {
         if (receiptInfo.pdfUrl == null) {

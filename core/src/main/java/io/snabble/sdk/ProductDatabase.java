@@ -31,6 +31,9 @@ import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringNormalizer;
 
+/**
+ * Class for interfacing with the local product database
+ */
 public class ProductDatabase {
     private static final int SCHEMA_VERSION_MAJOR_COMPATIBILITY = 1;
 
@@ -1068,10 +1071,19 @@ public class ProductDatabase {
         return rawQuery(productSqlString(appendFields, appendSql, true), args, cancellationSignal);
     }
 
+    /**
+     * Returns true if the product database is synchronized and available offline
+     */
     public boolean isAvailableOffline() {
         return db != null;
     }
 
+    /**
+     * Return true if the database was updated recently and can be used to display accurate prices.
+     *
+     * {@link Config#maxProductDatabaseAge} can be used to set the time window the product database
+     * is considered up to date.
+     */
     public boolean isUpToDate() {
         if (lastUpdateDate != null) {
             long time = lastUpdateDate.getTime();

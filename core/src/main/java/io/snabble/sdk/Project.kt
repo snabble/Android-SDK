@@ -30,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 class Project internal constructor(jsonObject: JsonObject) {
     /**
-     * The unique identifier of the Project.
+     * The unique identifier of the Project
      */
     lateinit var id: String
         private set
@@ -57,7 +57,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         private set
 
     /**
-     * The roundingMode which should be used when doing offline calculations.
+     * The roundingMode which should be used when doing offline calculations
      */
     var roundingMode: RoundingMode = RoundingMode.HALF_UP
         private set
@@ -69,13 +69,13 @@ class Project internal constructor(jsonObject: JsonObject) {
         private set
 
     /**
-     * The locale in which this currency is used.
+     * The locale in which this currency is used
      */
     lateinit var currencyLocale: Locale
         private set
 
     /**
-     * The number of used currency fractions digits.
+     * The number of used currency fractions digits
      */
     var currencyFractionDigits = -1
         get() =
@@ -92,27 +92,27 @@ class Project internal constructor(jsonObject: JsonObject) {
 
     /**
      * Parameters in which codes used for offline processing
-     * (for example: Checkout using a QR-Code) should be encoded.
+     * (for example: Checkout using a QR-Code) should be encoded
      */
     var encodedCodesOptions: EncodedCodesOptions? = null
         private set
 
     /**
      * List of supported barcode formats used by this retailer. The scanner should restrict its
-     * scanning to include only those formats.
+     * scanning to include only those formats
      */
     var supportedBarcodeFormats = emptyList<BarcodeFormat>()
         private set
 
     /**
-     * Indicator if prices should be displayed using the net price instead of the gross price.
+     * Indicator if prices should be displayed using the net price instead of the gross price
      */
     var isDisplayingNetPrice = false
         private set
 
     /**
      * List of payment method descriptors indicating which
-     * payment methods and providers are available in the Project.
+     * payment methods and providers are available in the Project
      */
     var paymentMethodDescriptors: List<PaymentMethodDescriptor> = emptyList()
         private set
@@ -128,7 +128,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         private set
 
     /**
-     * Returns the possible accepted cards and if a customer card is required.
+     * Returns the possible accepted cards and if a customer card is required
      */
     var customerCardInfo = emptyList<CustomerCardInfo>()
         private set
@@ -143,7 +143,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         private set
 
     /**
-     * Sets the customer card number for user identification with the backend.
+     * Sets the customer card number for user identification with the backend
      */
     var customerCardId: String? = null
         set(value) {
@@ -173,13 +173,13 @@ class Project internal constructor(jsonObject: JsonObject) {
 
     /**
      * List of code templates that are used when supplying an existing Product with a different
-     * barcode which contains a reduced price.
+     * barcode which contains a reduced price
      */
     var priceOverrideTemplates = emptyList<PriceOverrideTemplate>()
         private set
 
     /**
-     * List of code templates that are searchable using the barcode search functionality.
+     * List of code templates that are searchable using the barcode search functionality
      */
     var searchableTemplates = emptyList<String>()
         private set
@@ -200,7 +200,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         private set
 
     /**
-     * Url to retrieve authentication tokens.
+     * Url to retrieve authentication tokens
      */
     var tokensUrl: String? = null
         private set
@@ -303,13 +303,13 @@ class Project internal constructor(jsonObject: JsonObject) {
         private set
 
     /**
-     * The primary product database of this project.
+     * The primary product database of this project
      */
     lateinit var productDatabase: ProductDatabase
         private set
 
     /**
-     * Event logger which ships logging data to the snabble backend.
+     * Event logger which ships logging data to the snabble backend
      */
     lateinit var events: Events
         private set
@@ -325,7 +325,7 @@ class Project internal constructor(jsonObject: JsonObject) {
     }
 
     /**
-     * Parse a json definition of a Project.
+     * Parse a json definition of a Project
      */
     fun parse(jsonObject: JsonObject) {
         id = requireNotNull(jsonObject["id"]?.asString) { "Project has no id" }
@@ -565,7 +565,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         }
 
     /**
-     * List of payment methods that should be available to the user.
+     * List of payment methods that should be available to the user
      */
     val availablePaymentMethods
         get() = paymentMethodDescriptors.map { it.paymentMethod }
@@ -591,14 +591,14 @@ class Project internal constructor(jsonObject: JsonObject) {
         }
 
     /**
-     * Get text included in the metadata.
+     * Get text included in the metadata
      */
     @JvmOverloads
     fun getText(key: String, defaultValue: String? = null) =
         texts[key] ?: defaultValue
 
     /**
-     * Logs a event tagged with error to the snabble Backend.
+     * Logs a event tagged with error to the snabble Backend
      */
     fun logErrorEvent(format: String?, vararg args: Any?) {
         Logger.e(format, *args)
@@ -606,7 +606,7 @@ class Project internal constructor(jsonObject: JsonObject) {
     }
 
     /**
-     * Logs a event to the snabble Backend.
+     * Logs a event to the snabble Backend
      */
     fun logEvent(format: String?, vararg args: Any?) {
         Logger.e(format, *args)

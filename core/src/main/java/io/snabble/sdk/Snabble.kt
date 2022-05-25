@@ -46,7 +46,7 @@ object Snabble {
         get() = this
 
     /**
-     * The version of the SDK.
+     * The version of the SDK
      */
     @JvmStatic
     val version: String
@@ -62,7 +62,7 @@ object Snabble {
         private set
 
     /**
-     * Registry to retrieve and generate access tokens for backend api access.
+     * Registry to retrieve and generate access tokens for backend api access
      */
     lateinit var tokenRegistry: TokenRegistry
         private set
@@ -77,13 +77,13 @@ object Snabble {
         private set
 
     /**
-     * Map of available brands.
+     * Map of available brands
      */
     lateinit var brands: Map<String, Brand>
         private set
 
     /**
-     * API-Wrapper to retrieve receipts.
+     * API-Wrapper to retrieve receipts
      */
     lateinit var receipts: Receipts
         private set
@@ -127,13 +127,13 @@ object Snabble {
         private set
 
     /**
-     * The internal storage directory in which snabble stores files.
+     * The internal storage directory in which snabble stores files
      */
     lateinit var internalStorageDirectory: File
         private set
 
     /**
-     * Retrieve the link for our terms of service.
+     * Retrieve the link for our terms of service
      */
     var termsOfService: TermsOfService? = null
         private set
@@ -145,7 +145,7 @@ object Snabble {
         private set
 
     /**
-     * snabble SDK version name.
+     * snabble SDK version name
      */
     var versionName: String? = null
         private set
@@ -174,13 +174,13 @@ object Snabble {
         private set
 
     /**
-     * The url where all the properties come from.
+     * The url where all the properties come from
      */
     var metadataUrl: String? = null
         private set
 
     /**
-     * Url to retrieve receipts of the app user.
+     * Url to retrieve receipts of the app user
      */
     var receiptsUrl: String? = null
         get() = field?.let { url ->
@@ -191,13 +191,13 @@ object Snabble {
         private set
 
     /**
-     * Url to retrieve user related information.
+     * Url to retrieve user related information
      */
     var usersUrl: String? = null
         private set
 
     /**
-     * Url to retrieve consent status of the user.
+     * Url to retrieve consent status of the user
      */
     var consentUrl: String? = null
         private set
@@ -235,13 +235,13 @@ object Snabble {
     val initializationState: LiveData<InitializationState> = mutableInitializationState
 
     /**
-     * Weak reference to the current activity.
+     * Weak reference to the current activity
      */
     var currentActivity: WeakReference<Activity>? = null
 
     /**
      * Sets the shop used for receiving store specific prices and identification in the
-     * payment process.
+     * payment process
      */
     var checkedInShop: Shop? = null
         set(value) {
@@ -270,6 +270,11 @@ object Snabble {
             }
         }
 
+    /**
+     * The current checked in project.
+     *
+     * Gets automatically set, when setting a shop via [checkedInShop].
+     */
     var checkedInProject = MutableAccessibleLiveData<Project?>(null)
 
     /**
@@ -390,7 +395,7 @@ object Snabble {
                 }
 
                 override fun onError() {
-                    if (metadataDownloader.hasData()) {
+                    if (metadataDownloader.hasData) {
                         dispatchOnReady()
                     } else {
                         dispatchError(Error.CONNECTION_TIMEOUT)
@@ -493,11 +498,13 @@ object Snabble {
             json.getBooleanOpt("kill", false)
         } ?: false
 
-    /** Returns additional metadata that may be provided for apps unrelated to the SDK  */
+    /**
+     * Returns additional metadata that may be provided for apps unrelated to the SDK
+     */
     val additionalMetadata: JsonObject?
         get() {
             val jsonObject = metadataDownloader.jsonObject
-            val jsonElement = jsonObject["metadata"]
+            val jsonElement = jsonObject?.get("metadata")
             return jsonElement?.asJsonObject
         }
 
@@ -622,6 +629,11 @@ object Snabble {
         paymentCertificates = Collections.unmodifiableList(certificates)
     }
 
+    /**
+     * Converts a relative url to a absolute url, depending on the environment.
+     *
+     * E.g. /foo/bar -> https://api.snabble.io/foo/bar
+     */
     fun absoluteUrl(url: String): String {
         return if (url.startsWith("http")) {
             url
@@ -630,9 +642,16 @@ object Snabble {
         }
     }
 
+    /**
+     * The current endpoint base url used by the SDK
+     *
+     */
     val endpointBaseUrl: String
         get() = config.endpointBaseUrl
 
+    /**
+     * Finds a project by it's id
+     */
     fun getProjectById(projectId: String?): Project? {
         return projects.firstOrNull { it.id == projectId }
     }
@@ -690,7 +709,13 @@ object Snabble {
         onMetaDataUpdateListeners.remove(onMetaDataUpdateListener)
     }
 
+    /**
+     * Interface for notifying when our metadata is getting updated
+     */
     fun interface OnMetadataUpdateListener {
+        /**
+         * Gets called when our metadata has updated
+         */
         fun onMetaDataUpdated()
     }
 
@@ -736,6 +761,9 @@ object Snabble {
         }
     }
 
+    /**
+     * Exception used for SDK initialization errors
+     */
     class SnabbleException internal constructor(val error: Error?) : Exception() {
         override fun toString(): String {
             return "SnabbleException{" +
@@ -745,7 +773,7 @@ object Snabble {
     }
 
     /**
-     * Enum describing the error types, which can occur during initialization of the SDK.
+     * Enum describing the error types, which can occur during initialization of the SDK
      */
     enum class Error {
         UNSPECIFIED_ERROR,
@@ -755,7 +783,7 @@ object Snabble {
     }
 
     /**
-     * Enables debug logging.
+     * Enables debug logging
      */
     @JvmStatic
     fun setDebugLoggingEnabled(enabled: Boolean) {

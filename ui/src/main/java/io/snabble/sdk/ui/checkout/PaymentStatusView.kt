@@ -18,8 +18,8 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
-import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidate
-import io.snabble.sdk.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.checkout.Fulfillment

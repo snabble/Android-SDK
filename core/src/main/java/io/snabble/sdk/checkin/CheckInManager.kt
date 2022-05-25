@@ -23,12 +23,12 @@ import kotlin.collections.HashMap
  */
 interface OnCheckInStateChangedListener {
     /**
-     * Gets called when the user is inside or near a shop.
+     * Gets called when the user is inside or near a shop
      */
     fun onCheckIn(shop: Shop)
 
     /**
-     * Gets called after the user leaves the area of a shop for lastSeenThreshold time.
+     * Gets called after the user leaves the area of a shop for lastSeenThreshold time
      */
     fun onCheckOut()
 
@@ -46,7 +46,7 @@ private const val TAG_SHOP_ID = "shop_id"
 private const val TAG_CHECKIN_TIME = "checkin_time"
 
 /**
- * Provides functionality for checking in at shops using the users Location.
+ * Provides functionality for checking in at shops using the users Location
  */
 class CheckInManager(val snabble: Snabble,
                      val locationManager: CheckInLocationManager,
@@ -94,7 +94,7 @@ class CheckInManager(val snabble: Snabble,
 
     /**
      * The time at which the last successful check in was made. Updates itself to the current time
-     * while still inside the check in/out radius.
+     * while still inside the check in/out radius
      */
     var checkedInAt: Long
         get() = sharedPreferences.getLong(TAG_CHECKIN_TIME, 0)

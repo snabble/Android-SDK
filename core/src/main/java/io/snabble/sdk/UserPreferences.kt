@@ -3,6 +3,7 @@ package io.snabble.sdk
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Base64
+import androidx.annotation.RestrictTo
 import io.snabble.sdk.auth.AppUser
 import io.snabble.sdk.utils.Logger
 import java.io.UnsupportedEncodingException
@@ -12,11 +13,21 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * Class managing local user preferences
+ */
 class UserPreferences internal constructor(context: Context) {
+    /**
+     * Enum describing the current status of given user consent
+     */
     enum class ConsentStatus {
+        /** No consent given **/
         UNDECIDED,
+        /** The consent is currently transferred to the backend **/
         TRANSMITTING,
+        /** The consent could not be transferred to the backend **/
         TRANSMIT_FAILED,
+        /** The consent was successfully transferred to the backend **/
         ACCEPTED
     }
 
@@ -28,7 +39,6 @@ class UserPreferences internal constructor(context: Context) {
         private const val SHARED_PREFERENCES_BIRTHDAY = "Birthday_v2"
         private const val SHARED_PREFERENCES_CONSENT_STATUS = "ConsentStatus"
         private const val SHARED_PREFERENCES_CONSENT_VERSION = "ConsentVersion"
-        private const val SHARED_PREFERENCES_USE_KEYGUARD = "useKeyguard"
         private const val SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP = "lastShop"
 
         @SuppressLint("SimpleDateFormat")
@@ -69,6 +79,7 @@ class UserPreferences internal constructor(context: Context) {
         }
 
     var appUser: AppUser?
+        /** Gets the current id, secret pair of the locally generated app user */
         get() {
             val appUserId = sharedPreferences.getString(appUserIdKey, null)
             val appUserSecret = sharedPreferences.getString(appUserIdSecret, null)
@@ -79,6 +90,7 @@ class UserPreferences internal constructor(context: Context) {
                 null
             }
         }
+        /** Sets a new app user */
         set(appUser) {
             if (appUser == null) {
                 sharedPreferences.edit()
@@ -99,7 +111,13 @@ class UserPreferences internal constructor(context: Context) {
             }
         }
 
+
     var appUserBase64: String?
+        /**
+         * Gets a base64 string, which is the app user concatenated by ':'
+         *
+         * Can be used to store in other user databases to be able to restore the snabble sdk app user
+         */
         get() {
             val appUser = appUser
             if (appUser != null) {
@@ -112,22 +130,33 @@ class UserPreferences internal constructor(context: Context) {
             }
             return null
         }
+        /**
+         * Sets a base64 string, which is the app user concatenated by ':'
+         *
+         * Can be used to restore the app user
+         */
         set(appUserBase64) {
             if (appUserBase64 == null) {
                 appUser = null
                 return
             }
-            var appUserString = String(Base64.decode(appUserBase64, Base64.DEFAULT))
+            val appUserString = String(Base64.decode(appUserBase64, Base64.DEFAULT))
             val split = appUserString.split(":")
             if (split.size == 2) {
                 val appUserId = split[0]
                 val appUserSecret = split[1]
-                if (appUserId.length > 0 && appUserSecret.length > 0) {
+                if (appUserId.isNotEmpty() && appUserSecret.isNotEmpty()) {
                     appUser = AppUser(appUserId, appUserSecret)
                 }
             }
         }
 
+    /**
+     * Client id of the snabble SDK, which gets used in every request to our backend
+     * to identify different devices.
+     *
+     * Does not contain any personalized information.
+     */
     var clientId: String?
         get() =
             sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null)
@@ -137,9 +166,11 @@ class UserPreferences internal constructor(context: Context) {
                 .apply()
         }
 
-    var lastCheckedInShopId: String?
+    internal var lastCheckedInShopId: String?
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         get() =
             sharedPreferences.getString(SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP, null)
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         set(shopId) {
             sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP, shopId)
@@ -147,6 +178,7 @@ class UserPreferences internal constructor(context: Context) {
         }
 
     var birthday: Date?
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         get() {
             val s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null)
                 ?: return null
@@ -156,13 +188,16 @@ class UserPreferences internal constructor(context: Context) {
                 null
             }
         }
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         set(date) {
             sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_BIRTHDAY, date?.let { BIRTHDAY_FORMAT.format(date) })
                 .apply()
         }
 
-    var consentStatus: ConsentStatus
+
+    internal var consentStatus: ConsentStatus
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         get() {
             val s = sharedPreferences.getString(SHARED_PREFERENCES_BIRTHDAY, null)
                 ?: return ConsentStatus.UNDECIDED
@@ -172,25 +207,34 @@ class UserPreferences internal constructor(context: Context) {
                 return ConsentStatus.UNDECIDED
             }
         }
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         set(consent) =
             sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_CONSENT_STATUS, consent.name)
                 .apply()
 
-    var consentVersion: String?
+    internal var consentVersion: String?
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         get() = sharedPreferences.getString(SHARED_PREFERENCES_CONSENT_VERSION, null)
+        @RestrictTo(RestrictTo.Scope.LIBRARY)
         set(version) {
             sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_CONSENT_VERSION, version)
                 .apply()
         }
 
+    /**
+     * Adds a listener that gets notified when a new app user is generated
+     */
     fun addOnNewAppUserListener(onNewAppUserListener: OnNewAppUserListener) {
         if (!onNewAppUserListeners.contains(onNewAppUserListener)) {
             onNewAppUserListeners.add(onNewAppUserListener)
         }
     }
 
+    /**
+     * Removed a previously added listener
+     */
     fun removeOnNewAppUserListener(onNewAppUserListener: OnNewAppUserListener) {
         onNewAppUserListeners.remove(onNewAppUserListener)
     }
@@ -201,7 +245,13 @@ class UserPreferences internal constructor(context: Context) {
         }
     }
 
+    /**
+     * Interface that gets called when a new app user is generated
+     */
     fun interface OnNewAppUserListener {
+        /**
+         * Gets called when a new app user is generated
+         */
         fun onNewAppUser(appUser: AppUser?)
     }
 }

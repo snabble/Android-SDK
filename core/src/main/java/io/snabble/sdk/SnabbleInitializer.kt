@@ -8,7 +8,7 @@ import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
 
 /**
- * Initializer for the snabble SDK using androidx.startup.
+ * Initializer for the snabble SDK using androidx.startup
  */
 class SnabbleInitializer : Initializer<Snabble> {
     override fun create(context: Context): Snabble {
