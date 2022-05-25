@@ -36,6 +36,35 @@
     <string name="Snabble.Checkout.payAtCashRegister">Pagare alla cassa</string>
     <string name="Snabble.Checkout.title">Paga</string>
     <string name="Snabble.Checkout.verifying">Verifica</string>
+    <string name="Snabble.Coupon.activate">Attivare</string>
+    <string name="Snabble.Coupon.activated">Attivato</string>
+    <string name="Snabble.Coupon.countdown">Il coupon scade tra %s minuti</string>
+    <string name="Snabble.Coupon.expired">Questo coupon è già scaduto</string>
+    <string name="Snabble.Coupon.explanation">Ora il tuo coupon è attivato. Scansiona il prodotto nello shop e inseriscilo nel carrello per usufruire dei vantaggi del coupon.</string>
+    <string name="Snabble.Coupons.expired">Già scaduto</string>
+    <string name="Snabble.Coupons.expiresAtDate">valido fino al %s</string>
+    <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="one">ancora %d giorno</item>
+        <item quantity="other">ancora %d giorni</item>
+        <item quantity="zero">Già scaduto</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="one">ancora %d ora</item>
+        <item quantity="other">ancora %d ore</item>
+        <item quantity="zero">Già scaduto</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="one">ancora %d minuto</item>
+        <item quantity="other">ancora %d minuti</item>
+        <item quantity="zero">Già scaduto</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="one">ancora %d settimana</item>
+        <item quantity="other">ancora %d settimane</item>
+        <item quantity="zero">Già scaduto</item>
+    </plurals>
+    <string name="Snabble.Coupons.none">Nessun coupon disponibile</string>
+    <string name="Snabble.Coupons.title">Coupon</string>
     <string name="Snabble.CreditCard.payNow">Paga ora con carta di credito</string>
     <string name="Snabble.Delete">Cancella</string>
     <string name="Snabble.Done">Finito</string>

@@ -27,6 +27,8 @@ import io.snabble.sdk.checkout.PriceModifier;
 import io.snabble.sdk.checkout.Violation;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
@@ -119,7 +121,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
                 item.cart = this;
             }
         }
-        
+
         if (uuid == null) {
             generateNewUUID();
         }
@@ -204,7 +206,6 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
                 return;
             }
         }
-
 
         items.add(index, item);
 
@@ -479,7 +480,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      *                 multiple {@link #updatePrices(boolean)} calls together
      */
     public void updatePrices(boolean debounce) {
-        if(debounce) {
+        if (debounce) {
             updater.dispatchUpdate();
         } else {
             updater.update(true);
@@ -774,7 +775,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             } else {
                 for (Product.Code code : product.getScannableCodes()) {
                     if (code.template != null && code.template.equals(scannedCode.getTemplateName())
-                     && code.lookupCode != null && code.lookupCode.equals(scannedCode.getLookupCode())) {
+                            && code.lookupCode != null && code.lookupCode.equals(scannedCode.getLookupCode())) {
                         this.quantity = code.specifiedQuantity;
 
                         if (!code.isPrimary && code.specifiedQuantity > 1) {
@@ -865,7 +866,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             if (lineItem != null && !ignoreLineItem) {
                 if (lineItem.getWeight() != null) {
                     return lineItem.getWeight();
-                } else if (lineItem.getUnits() != null){
+                } else if (lineItem.getUnits() != null) {
                     return lineItem.getUnits();
                 } else {
                     return lineItem.getAmount();
@@ -1434,13 +1435,13 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
                     Item item = items.get(i);
                     items.remove(item);
                     boolean found = false;
-                    for(ViolationNotification notification:  violationNotifications) {
-                        if(notification.getRefersTo().equals(violation.getRefersTo())) {
+                    for (ViolationNotification notification : violationNotifications) {
+                        if (notification.getRefersTo().equals(violation.getRefersTo())) {
                             found = true;
                             break;
                         }
                     }
-                    if(!found) {
+                    if (!found) {
                         violationNotifications.add(new ViolationNotification(
                                 item.coupon.getName(),
                                 violation.getRefersTo(),
@@ -1456,6 +1457,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
     /**
      * Remove the handled ViolationNotifications.
+     *
      * @param violations the handled ViolationNotifications.
      */
     public void removeViolationNotification(List<ViolationNotification> violations) {
@@ -1560,7 +1562,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         public void onOnlinePaymentLimitReached(ShoppingCart list) {}
 
         @Override
-        public void onViolationDetected(List<ViolationNotification> violations) {}
+        public void onViolationDetected(@NonNull List<ViolationNotification> violations) {}
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Item item) {

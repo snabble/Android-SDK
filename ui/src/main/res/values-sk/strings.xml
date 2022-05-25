@@ -313,5 +313,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Vyber niektorú možnosť</string>
     <string name="Snabble.TWINT.payNow">Zaplatiť cez TWINT teraz</string>
     <string name="Snabble.undo">Vrátiť späť</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">Kupón „%s“ bol už použitý a bude odstránený z nákupného koša</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">Kupón „%s“ je momentálne neplatný a bude odstránený z nákupného koša</string>
+    <string name="Snabble.Violations.couponInvalid">Kupón „%s“ je neplatný a bude odstránený z nákupného koša</string>
+    <string name="Snabble.Violations.title">Neplatný kupón</string>
     <string name="Snabble.Yes">Áno</string>
 </resources>

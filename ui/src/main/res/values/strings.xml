@@ -36,6 +36,35 @@
     <string name="Snabble.Checkout.payAtCashRegister">Pay at cash register</string>
     <string name="Snabble.Checkout.title">Pay</string>
     <string name="Snabble.Checkout.verifying">Verifying</string>
+    <string name="Snabble.Coupon.activate">Activate</string>
+    <string name="Snabble.Coupon.activated">Activated</string>
+    <string name="Snabble.Coupon.countdown">Coupon expires in %s minutes</string>
+    <string name="Snabble.Coupon.expired">This coupon is expired.</string>
+    <string name="Snabble.Coupon.explanation">Your coupon is now activated for you. Please scan the product in the shop and put it in your shopping cart to benefit from it.</string>
+    <string name="Snabble.Coupons.expired">Already expired</string>
+    <string name="Snabble.Coupons.expiresAtDate">valid until %s</string>
+    <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="one">%d day remaining</item>
+        <item quantity="other">%d days remaining</item>
+        <item quantity="zero">Already expired</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="one">%d hour remaining</item>
+        <item quantity="other">%d hours remaining</item>
+        <item quantity="zero">Already expired</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="one">%d minute remaining</item>
+        <item quantity="other">%d minutes remaining</item>
+        <item quantity="zero">Already expired</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="one">%d week remaining</item>
+        <item quantity="other">%d weeks remaining</item>
+        <item quantity="zero">Already expired</item>
+    </plurals>
+    <string name="Snabble.Coupons.none">No Coupons available</string>
+    <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Pay now using Credit card</string>
     <string name="Snabble.Delete">Delete</string>
     <string name="Snabble.Done">Done</string>
@@ -313,9 +342,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Please choose</string>
     <string name="Snabble.TWINT.payNow">Pay now using TWINT</string>
     <string name="Snabble.undo">Undo</string>
-    <string name="Snabble.Violations.couponAlreadyVoided">The coupon „%s“ is already redeemed and will be removed from cart</string>
-    <string name="Snabble.Violations.couponCurrentlyNotValid">The coupon „%s“ is currently not valid and will be removed from cart</string>
-    <string name="Snabble.Violations.couponInvalid">The coupon „%s“ is invalid and will be removed from cart</string>
-    <string name="Snabble.Violations.title">Coupon invalid</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">A coupon is already redeemed and will be removed from cart</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">A coupon is currently not valid and will be removed from cart</string>
+    <string name="Snabble.Violations.couponInvalid">A coupon is invalid and will be removed from cart</string>
+    <string name="Snabble.Violations.title">Invalid shopping cart</string>
     <string name="Snabble.Yes">Yes</string>
 </resources>

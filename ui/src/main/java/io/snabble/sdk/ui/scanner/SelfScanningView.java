@@ -31,9 +31,9 @@ import androidx.core.util.Pair;
 import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.Coupon;
-import io.snabble.sdk.CouponCode;
-import io.snabble.sdk.CouponType;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponCode;
+import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;

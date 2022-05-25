@@ -73,5 +73,8 @@
             android:id="@+id/show_po"
             android:text="Show Payment Options" />
 
+        <io.snabble.sdk.ui.coupon.CouponOverviewView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </ScrollView>

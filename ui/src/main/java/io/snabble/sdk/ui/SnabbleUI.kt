@@ -11,6 +11,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI.Event.*
 import io.snabble.sdk.ui.cart.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
+import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.*
 import io.snabble.sdk.ui.scanner.SelfScanningActivity
 import io.snabble.sdk.ui.search.ProductSearchActivity
@@ -44,6 +45,7 @@ object SnabbleUI {
         SHOW_PAYMENT_OPTIONS,
         SHOW_PROJECT_PAYMENT_OPTIONS,
         SHOW_AGE_VERIFICATION,
+        SHOW_COUPON_DETAILS,
         GO_BACK,
         EXIT_TOKEN_AVAILABLE
     }
@@ -133,6 +135,7 @@ object SnabbleUI {
                 SHOW_PAYMENT_OPTIONS -> startActivity(context, PaymentOptionsActivity::class.java, args)
                 SHOW_PROJECT_PAYMENT_OPTIONS -> startActivity(context, ProjectPaymentOptionsActivity::class.java, args)
                 SHOW_AGE_VERIFICATION -> startActivity(context, AgeVerificationInputActivity::class.java, args)
+                SHOW_COUPON_DETAILS -> startActivity(context, CouponDetailActivity::class.java, args)
 
                 // unhandled actions
                 GO_BACK,

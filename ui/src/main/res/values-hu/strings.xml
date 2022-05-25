@@ -12,7 +12,7 @@
     <string name="Snabble.ageVerification.title">Életkor igazolása</string>
     <string name="Snabble.askForPermission">Engedély kéréséhez</string>
     <string name="Snabble.Biometry.Alert.laterButton">Most nem</string>
-    <string name="Snabble.Biometry.Alert.message">Online fizetéseid a %s segítségével szeretnéd védeni?</string>
+    <string name="Snabble.Biometry.Alert.message">Online fizetéseid a(z) %s segítségével szeretnéd védeni?</string>
     <string name="Snabble.Biometry.Alert.title">%s aktiválása?</string>
     <string name="Snabble.Biometry.enterCode">Kód megadása</string>
     <string name="Snabble.Biometry.FaceId">Face-ID</string>
@@ -162,7 +162,7 @@
     <string name="Snabble.QRCode.message">A QR-kódot tartsd készenlétben a kasszánál</string>
     <string name="Snabble.QRCode.nextCode">Tovább a %1$d / %2$d kódhoz</string>
     <string name="Snabble.QRCode.priceMayDiffer">A pontos árat a pénztár kalkulálja, és az eltérhet az itt láthatótól.</string>
-    <string name="Snabble.QRCode.showTheseCodes">Kérlek, mutasd meg ezeket a %d kódokat egymás után a pénztárnál</string>
+    <string name="Snabble.QRCode.showTheseCodes">Kérlek, mutasd meg ezeket a(z) %d kódokat egymás után a pénztárnál</string>
     <string name="Snabble.QRCode.showThisCode">Kérlek, mutasd meg ezt a kódot a pénztárnál</string>
     <string name="Snabble.QRCode.title">Fizetés a pénztárnál</string>
     <string name="Snabble.QRCode.total">Teljes összeg:</string>
@@ -313,5 +313,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Kérlek, válassz</string>
     <string name="Snabble.TWINT.payNow">Fizetés TWINT segítségével</string>
     <string name="Snabble.undo">Visszavonás</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">A(z) „%s“ kupon már felhasználásra került, és eltávolítottuk a kosárból</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">A(z) „%s“ kupon pillanatnyilag nem érvényes, és eltávolítottuk a kosárból</string>
+    <string name="Snabble.Violations.couponInvalid">A(z) „%s“ kupon nem érvényes, és eltávolítottuk a kosárból</string>
+    <string name="Snabble.Violations.title">A kupon nem érvényes</string>
     <string name="Snabble.Yes">Igen</string>
 </resources>
