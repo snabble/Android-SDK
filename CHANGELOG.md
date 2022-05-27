@@ -5,19 +5,20 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Added support for displaying coupons
-  - Added CouponFragment to display a single coupon
-  - Added CouponDetailActivity to display a single coupon in an Activity
-  - Added CouponOverviewView to display a collection of coupons depending on the project
+  - Added `CouponFragment` to display a single coupon
+  - Added `CouponDetailActivity` to display a single coupon in an `Activity`
+  - Added `CouponOverviewView` to display a collection of coupons depending on the project
 
 ### Changed
 - Added lots of Javadoc documentation to core classes
-- Converted to OkHttpClientFactory to kotlin
-- Converted to MetadataDownloader to kotlin
-- Converted to FulfillmentState to kotlin
-- Converted to OnProductAvailableListener to kotlin
-- Converted to PaymentMethod to kotlin
-- Converted to PaymentOriginCandiadateHelper to kotlin
-- Converted to ScannedCode to kotlin
+- Converted to `OkHttpClientFactory` to Kotlin
+- Converted to `MetadataDownloader` to Kotlin
+- Converted to `FulfillmentState` to Kotlin
+- Converted to `OnProductAvailableListener` to Kotlin
+- Converted to `PaymentMethod` to Kotlin
+- Converted to `PaymentOriginCandidateHelper` to Kotlin
+- Converted to `ScannedCode` to Kotlin
+- Replaced view extension properties `marginTop`/`Bottom` with `margin.top`/`bottom`
 
 ## [0.64.1]
 
