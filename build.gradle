@@ -79,6 +79,18 @@ tasks.named("dokkaHtml").configure {
 tasks.withType(org.jetbrains.dokka.gradle.AbstractDokkaTask).configureEach {
     outputDirectory.set(rootDir.toPath().resolve("docs").toFile())
     suppressObviousFunctions.set(true)
+    def escapedTemplatesDir = file("dokka/template").absolutePath.replaceAll("\\\\", "\\\\\\\\") // WTF groovy?
+    def escapedLogoPath = file("dokka/assets/logo-icon.svg").absolutePath.replaceAll("\\\\", "\\\\\\\\")
+    pluginsMapConfiguration.set(["org.jetbrains.dokka.base.DokkaBase":
+    """
+        {
+            "footerMessage": "© 2022 snabble GmbH",
+            "customAssets": [
+                "${escapedLogoPath}"
+            ],
+            "templatesDir": "${escapedTemplatesDir}"
+        }
+    """])
 }
 
 task printVersion() {
