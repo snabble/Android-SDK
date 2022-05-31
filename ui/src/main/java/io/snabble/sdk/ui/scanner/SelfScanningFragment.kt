@@ -104,7 +104,10 @@ open class SelfScanningFragment : BaseFragment() {
             selfScanningView = SelfScanningView(context).apply {
                 setAllowShowingHints(allowShowingHints)
             }
-            rootView.addView(selfScanningView, 0)
+            rootView.addView(selfScanningView, 0, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            ))
             setHasOptionsMenu(true)
             onSelfScanningViewCreated(selfScanningView!!)
         }

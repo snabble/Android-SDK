@@ -15,7 +15,6 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,6 +50,7 @@ import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.ui.views.MessageBoxStackView;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
@@ -93,10 +93,19 @@ public class SelfScanningView extends FrameLayout {
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_self_scanning, this);
 
-        project = Snabble.getInstance().getCheckedInProject().getValue();
+        ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+            if (p != null) {
+                unregisterListeners();
+                project = p;
+                shoppingCart = p.getShoppingCart();
+                productDatabase = p.getProductDatabase();
+                createView();
+                registerListeners();
+            }
+        });
+    }
 
-        shoppingCart = project.getShoppingCart();
-
+    private void createView() {
         messages = findViewById(R.id.messages);
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);
@@ -108,9 +117,11 @@ public class SelfScanningView extends FrameLayout {
                 showShoppingCart();
             }
         });
+        goToCart.setVisibility(View.VISIBLE);
 
         updateCartButton();
 
+        barcodeScanner.removeAllBarcodeFormats();
         barcodeScanner.setIndicatorOffset(0, Utils.dp2px(getContext(), -36));
 
         for (BarcodeFormat format : project.getSupportedBarcodeFormats()) {
@@ -132,17 +143,10 @@ public class SelfScanningView extends FrameLayout {
             return false;
         });
 
-        this.productDatabase = project.getProductDatabase();
-
         barcodeScanner.setCallback(this::handleBarcodeDetected);
 
         isInitialized = true;
         startBarcodeScanner(false);
-
-        setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
-        );
     }
 
     private void showShoppingCart() {
@@ -476,20 +480,24 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void registerListeners() {
-        isRunning = true;
+        if (project != null && !isRunning) {
+            isRunning = true;
 
-        startBarcodeScanner(false);
-        shoppingCart.addListener(shoppingCartListener);
-        updateCartButton();
+            startBarcodeScanner(false);
+            shoppingCart.addListener(shoppingCartListener);
+            updateCartButton();
+        }
     }
 
     private void unregisterListeners() {
-        isRunning = false;
+        if (isRunning) {
+            isRunning = false;
 
-        stopBarcodeScanner(false);
+            stopBarcodeScanner(false);
 
-        progressDialog.dismiss();
-        shoppingCart.removeListener(shoppingCartListener);
+            progressDialog.dismiss();
+            shoppingCart.removeListener(shoppingCartListener);
+        }
     }
 
     @Override

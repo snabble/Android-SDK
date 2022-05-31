@@ -309,6 +309,12 @@ open class BarcodeScannerView @JvmOverloads constructor(
     }
 
     /**
+     * Removes all [BarcodeFormat]'s
+     */
+    fun removeAllBarcodeFormats() {
+        supportedBarcodeFormats.clear()
+    }
+    /**
      * Enabled or disables the scan indicator.
      */
     var indicatorEnabled: Boolean
