@@ -15,7 +15,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -137,24 +136,21 @@ public class ShoppingCartView extends FrameLayout {
 
         if (isInEditMode()) return;
 
-        ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, new Observer<Project>() {
-            @Override
-            public void onChanged(Project p) {
-                if (p != null) {
-                    rootView.setVisibility(View.VISIBLE);
-                    unregisterListeners();
-                    project = p;
+        ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+            if (p != null) {
+                rootView.setVisibility(View.VISIBLE);
+                unregisterListeners();
+                project = p;
 
-                    if (cart != null) {
-                        cart.removeListener(shoppingCartListener);
-                    }
-
-                    cart = project.getShoppingCart();
-                    createView(context);
-                    registerListeners();
-                } else {
-                    rootView.setVisibility(View.INVISIBLE);
+                if (cart != null) {
+                    cart.removeListener(shoppingCartListener);
                 }
+
+                cart = project.getShoppingCart();
+                createView(context);
+                registerListeners();
+            } else {
+                rootView.setVisibility(View.INVISIBLE);
             }
         });
     }
