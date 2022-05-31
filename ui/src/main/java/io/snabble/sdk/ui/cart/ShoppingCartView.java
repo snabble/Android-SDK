@@ -50,6 +50,7 @@ import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ShoppingCartView extends FrameLayout {
+    private View rootView;
     private RecyclerView recyclerView;
     private ShoppingCartAdapter recyclerViewAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -131,12 +132,16 @@ public class ShoppingCartView extends FrameLayout {
 
     private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
+
+        rootView = findViewById(R.id.root);
+
         if (isInEditMode()) return;
 
         ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, new Observer<Project>() {
             @Override
             public void onChanged(Project p) {
                 if (p != null) {
+                    rootView.setVisibility(View.VISIBLE);
                     unregisterListeners();
                     project = p;
 
@@ -147,6 +152,8 @@ public class ShoppingCartView extends FrameLayout {
                     cart = project.getShoppingCart();
                     createView(context);
                     registerListeners();
+                } else {
+                    rootView.setVisibility(View.INVISIBLE);
                 }
             }
         });
