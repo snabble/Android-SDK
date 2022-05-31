@@ -37,9 +37,9 @@ class SnabbleInitializer : Initializer<Snabble> {
                 lastSeenThreshold = getLong("snabble_last_seen_threshold", lastSeenThreshold)
                 networkInterceptor =
                     try {
-                        Class.forName(getString("snabble_network_interceptor", null)).newInstance() as Interceptor?
+                        Class.forName(getString("snabble_network_interceptor", null))?.newInstance() as Interceptor?
                     } catch (e: Throwable) {
-                        Logger.d("Could not instantiate network interceptor", e.message)
+                        Logger.w("Could not instantiate network interceptor", e.message)
                         null
                     }
                 manualProductDatabaseUpdates = getBoolean("snabble_manual_product_database_updates", manualProductDatabaseUpdates)
