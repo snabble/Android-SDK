@@ -1,83 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.snabble.sdk.ui.utils.VerticalSwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:clipChildren="false"
-    android:id="@+id/swipe_refresh_layout"
+    android:id="@+id/root"
+    android:visibility="invisible"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <RelativeLayout
+    <io.snabble.sdk.ui.utils.VerticalSwipeRefreshLayout
         android:clipChildren="false"
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <RelativeLayout
+            android:clipChildren="false"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottom_payment_container"
-            android:id="@+id/coordinator_layout">
+            android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/recycler_view"
-                tools:listitem="@layout/snabble_item_shoppingcart_product"
-                tools:itemCount="3"/>
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                android:layout_above="@+id/bottom_payment_container"
+                android:id="@+id/coordinator_layout">
 
-        <LinearLayout
-            android:id="@+id/bottom_payment_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/recycler_view"
+                    tools:listitem="@layout/snabble_item_shoppingcart_product"
+                    tools:itemCount="3"/>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-            <View android:layout_height="0.5dp"
-                android:layout_width="match_parent"
-                android:background="?android:attr/listDivider"/>
-
-            <io.snabble.sdk.ui.cart.CheckoutBar
-                android:id="@+id/checkout"
+            <LinearLayout
+                android:id="@+id/bottom_payment_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"/>
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <View android:layout_height="0.5dp"
+                    android:layout_width="match_parent"
+                    android:background="?android:attr/listDivider"/>
 
-        <LinearLayout
-            android:id="@+id/empty_state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_centerInParent="true"
-            android:clipChildren="false"
-            android:gravity="center"
-            android:orientation="vertical">
+                <io.snabble.sdk.ui.cart.CheckoutBar
+                    android:id="@+id/checkout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"/>
 
-            <TextView
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/empty_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_centerInParent="true"
+                android:clipChildren="false"
                 android:gravity="center"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:text="@string/Snabble.Shoppingcart.emptyState.description" />
+                android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
-                style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
-                android:id="@+id/scan_products"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:text="@string/Snabble.Shoppingcart.emptyState.buttonTitle" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:text="@string/Snabble.Shoppingcart.emptyState.description" />
 
-            <com.google.android.material.button.MaterialButton
-                style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
-                android:id="@+id/restore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/Snabble.Shoppingcart.emptyState.restoreButtonTitle"/>
-        </LinearLayout>
-    </RelativeLayout>
-</io.snabble.sdk.ui.utils.VerticalSwipeRefreshLayout>
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+                    android:id="@+id/scan_products"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="@string/Snabble.Shoppingcart.emptyState.buttonTitle" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+                    android:id="@+id/restore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/Snabble.Shoppingcart.emptyState.restoreButtonTitle"/>
+            </LinearLayout>
+        </RelativeLayout>
+    </io.snabble.sdk.ui.utils.VerticalSwipeRefreshLayout>
+</FrameLayout>
