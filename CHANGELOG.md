@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.66.0]
+
+### Changed
+- Allow manual initialization by omitting 'snabble_app_id' or 'snabble_secret'
+
 ## [0.65.0]
 
 ### Added
