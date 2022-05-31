@@ -46,10 +46,12 @@ class SnabbleInitializer : Initializer<Snabble> {
             }
 
             if (config.appId == null || config.secret == null) {
-                throw IllegalArgumentException("You need to set 'snabble_app_id' and 'snabble_secret' in your AndroidManifest.xml")
+                Logger.w("To initialize the SDK either set 'snabble_app_id' and 'snabble_secret' or use Snabble.setup. " +
+                        "To disable this warning set 'snabble_auto_initialization_disabled' to true.")
+            } else {
+                Snabble.setup(app, config)
             }
 
-            Snabble.setup(app, config)
             return Snabble
         }
     }
