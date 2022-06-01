@@ -279,14 +279,16 @@ class Project internal constructor(jsonObject: JsonObject) {
     lateinit var okHttpClient: OkHttpClient
         private set
 
-    private lateinit var shoppingCartStorage: ShoppingCartStorage
+    private lateinit var shoppingCartStorage: MutableMap<String, ShoppingCartStorage>
         private set
 
     /**
      * The users shopping cart
      */
-    lateinit var shoppingCart: ShoppingCart
+    var shoppingCart = MutableAccessibleLiveData<ShoppingCart?>()
         private set
+
+    var allShoppingCarts = emptyList<ShoppingCart>()
 
     /**
      * Provides a list of active coupons
@@ -407,6 +409,14 @@ class Project internal constructor(jsonObject: JsonObject) {
             emptyList()
         }
 
+        shoppingCartStorage.clear()
+
+        shops.forEach {
+            shoppingCartStorage[it.id] = ShoppingCartStorage(this, id)
+        }
+
+        allShoppingCarts = shoppingCartStorage.map { it.value.shoppingCart }
+
         if (jsonObject.has("company")) {
             company = GsonHolder.get().fromJson(jsonObject["company"], Company::class.java)
         }
@@ -488,15 +498,13 @@ class Project internal constructor(jsonObject: JsonObject) {
             .addInterceptor(AcceptedLanguageInterceptor())
             .build()
 
-        shoppingCartStorage = ShoppingCartStorage(this)
+        shoppingCartStorage = mutableMapOf<String, ShoppingCartStorage>()
 
-        shoppingCart = shoppingCartStorage.shoppingCart
+        checkout = Checkout(this)
 
-        checkout = Checkout(this, shoppingCart)
+        productDatabase = ProductDatabase(this, "$id.sqlite3", Snabble.config.generateSearchIndex)
 
-        productDatabase = ProductDatabase(this, shoppingCart, "$id.sqlite3", Snabble.config.generateSearchIndex)
-
-        events = Events(this, shoppingCart)
+        events = Events(this)
 
         assets = Assets(this)
 
@@ -554,6 +562,18 @@ class Project internal constructor(jsonObject: JsonObject) {
             }
         } else {
             done?.run()
+        }
+    }
+
+    internal fun onNewCheckedInShop(shop: Shop?) {
+        if (shop != null) {
+            val newShoppingCart = shoppingCartStorage[shop.id]?.shoppingCart
+            newShoppingCart?.let {
+                shoppingCart.value = newShoppingCart
+                newShoppingCart.updatePrices(false)
+            }
+        } else {
+            shoppingCart.value = null
         }
     }
 

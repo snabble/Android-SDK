@@ -14,10 +14,7 @@ import java.util.concurrent.Future
 
 class Checkout @JvmOverloads constructor(
     private val project: Project,
-    private val shoppingCart: ShoppingCart,
-    private val checkoutApi: CheckoutApi = DefaultCheckoutApi(
-        project, shoppingCart
-    )
+    private val checkoutApi: CheckoutApi = DefaultCheckoutApi(project)
 ) {
     companion object {
         const val INVALID_PRICE = -1

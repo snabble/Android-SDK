@@ -258,11 +258,11 @@ object Snabble {
                     for (project in projects) {
                         if (project.shops.any { it.id == newShopId }) {
                             project.events.updateShop(value)
-                            project.shoppingCart.updatePrices(false)
                             if (!config.manualProductDatabaseUpdates) {
                                 project.productDatabase.update()
                             }
                             checkedInProject.value = project
+                            project.onNewCheckedInShop(value)
                             break
                         }
                     }
@@ -679,7 +679,9 @@ object Snabble {
 
     private fun checkCartTimeouts() {
         projects.forEach { project ->
-            project.shoppingCart.checkForTimeout()
+            project.allShoppingCarts.forEach {
+                it.checkForTimeout()
+            }
         }
     }
 
@@ -757,7 +759,9 @@ object Snabble {
             processPendingCheckouts()
         }
         for (project in projects) {
-            project.shoppingCart.updatePrices(false)
+            project.allShoppingCarts.forEach {
+                it.checkForTimeout()
+            }
         }
     }
 

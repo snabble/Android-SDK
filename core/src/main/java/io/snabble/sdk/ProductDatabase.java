@@ -67,9 +67,9 @@ public class ProductDatabase {
     private final ProductApi productApi;
     private int defaultAvailability;
 
-    ProductDatabase(Project project, ShoppingCart shoppingCart, String name, boolean generateSearchIndex) {
+    ProductDatabase(Project project, String name, boolean generateSearchIndex) {
         this.project = project;
-        this.shoppingCart = shoppingCart;
+        //this.shoppingCart = shoppingCart; // TODO CART
         this.application = Snabble.getInstance().getApplication();
         this.dbName = name;
 
@@ -88,8 +88,8 @@ public class ProductDatabase {
         }
     }
 
-    private ProductDatabase(Project project, ShoppingCart shoppingCart, String name) {
-        this(project, shoppingCart, name, false);
+    private ProductDatabase(Project project, String name) {
+        this(project, name, false);
     }
 
     private boolean open() {

@@ -15,10 +15,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class DefaultCheckoutApi(private val project: Project,
-                         private val shoppingCart: ShoppingCart) : CheckoutApi {
+class DefaultCheckoutApi(private val project: Project) : CheckoutApi {
     private val okHttpClient: OkHttpClient = project.okHttpClient
     private var call: Call? = null
+    private val shoppingCart = project.shoppingCart.observe(
+
+    )
 
     override fun cancel() {
         call?.cancel()

@@ -45,7 +45,7 @@ public class Events {
     private boolean hasSentSessionStart = false;
 
     @SuppressLint("SimpleDateFormat")
-    Events(Project project, ShoppingCart shoppingCart) {
+    Events(Project project) {
         this.project = project;
         this.shoppingCart = shoppingCart;
 
