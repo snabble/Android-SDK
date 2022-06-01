@@ -5,8 +5,7 @@ import androidx.lifecycle.Observer
 import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.coupons.CouponImage
-import java.time.ZonedDateTime
+import io.snabble.sdk.coupons.Coupon
 
 /**
  * A Coupon Manager which holds the current active Coupons as [LiveData]. There are two ways to access them:
@@ -15,7 +14,7 @@ import java.time.ZonedDateTime
  */
 class CouponManager private constructor(private var currentProject: Project?): LiveData<List<CouponItem>>() {
     private val observeProjectChanges = currentProject == null
-    private val couponObserver = Observer<List<io.snabble.sdk.coupons.Coupon>> { list ->
+    private val couponObserver = Observer<List<Coupon>> { list ->
         postValue(list
             .filter { it.type == CouponType.DIGITAL && it.image != null }
             .map { CouponItem(requireNotNull(currentProject?.id), it) }
