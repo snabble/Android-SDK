@@ -66,39 +66,20 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
-    private String id;
-    private String uuid;
-    private long lastModificationTime;
-    private List<Item> oldItems;
-    private List<Item> items = new ArrayList<>();
-    private final List<ViolationNotification> violationNotifications = new ArrayList<>();
-    private int modCount = 0;
-    private int addCount = 0;
-    private Integer onlineTotalPrice;
-    private List<Product> invalidProducts;
-    private Taxation taxation = Taxation.UNDECIDED;
-
-    private boolean hasRaisedMaxCheckoutLimit;
-    private boolean hasRaisedMaxOnlinePaymentLimit;
+    private ShoppingCartData data = new ShoppingCartData();
+    private ShoppingCartData oldData = new ShoppingCartData();
 
     private transient List<ShoppingCartListener> listeners;
     private transient Project project;
     private transient ShoppingCartUpdater updater;
     private transient PriceFormatter priceFormatter;
-    private String oldId;
-    private Integer oldOnlineTotalPrice;
-    private int oldAddCount;
-    private int oldModCount;
-    private long oldCartTimestamp;
-    private String oldUUID;
-    private boolean invalidDepositReturnVoucher;
 
     protected ShoppingCart() {
         // for gson
     }
 
     ShoppingCart(Project project) {
-        id = UUID.randomUUID().toString();
+        data = new ShoppingCartData();
         updateTimestamp();
 
         initWithProject(project);
@@ -112,17 +93,13 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         checkForTimeout();
 
-        for (Item item : items) {
-            item.cart = this;
+        data.applyShoppingCart(this);
+
+        if (oldData != null) {
+            oldData.applyShoppingCart(this);
         }
 
-        if (oldItems != null) {
-            for (Item item : oldItems) {
-                item.cart = this;
-            }
-        }
-
-        if (uuid == null) {
+        if (data.uuid == null) {
             generateNewUUID();
         }
 
@@ -133,7 +110,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * The id used to identify this cart session
      */
     public String getId() {
-        return id;
+        return data.id;
     }
 
     /**
@@ -191,9 +168,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         if (item.isMergeable()) {
             Item existing = getExistingMergeableProduct(item.getProduct());
             if (existing != null) {
-                items.remove(existing);
-                items.add(index, item);
-                modCount++;
+                data.items.remove(existing);
+                data.items.add(index, item);
+                data.modCount++;
                 generateNewUUID();
                 checkLimits();
 
@@ -207,14 +184,14 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
         }
 
-        items.add(index, item);
+        data.items.add(index, item);
 
         clearBackup();
         checkLimits();
         notifyItemAdded(this, item);
 
         // sort coupons to bottom
-        Collections.sort(items, (o1, o2) -> {
+        Collections.sort(data.items, (o1, o2) -> {
             ItemType t1 = o1.getType();
             ItemType t2 = o2.getType();
 
@@ -228,8 +205,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
 
         if (update) {
-            addCount++;
-            modCount++;
+            data.addCount++;
+            data.modCount++;
             generateNewUUID();
             invalidateOnlinePrices();
             updatePrices(true);
@@ -240,13 +217,13 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * Gets the cart item a specific index
      */
     public Item get(int index) {
-        return items.get(index);
+        return data.items.get(index);
     }
 
     @NonNull
     @Override
     public Iterator<Item> iterator() {
-        return items.iterator();
+        return data.items.iterator();
     }
 
     /**
@@ -260,7 +237,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return null;
         }
 
-        for (Item item : items) {
+        for (Item item : data.items) {
             if (product.equals(item.product) && item.isMergeable()) {
                 return item;
             }
@@ -277,7 +254,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             return null;
         }
 
-        for (Item item : items) {
+        for (Item item : data.items) {
             if (itemId.equals(item.id)) {
                 return item;
             }
@@ -290,16 +267,16 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * Gets the current index of a cart item
      */
     public int indexOf(Item item) {
-        return items.indexOf(item);
+        return data.items.indexOf(item);
     }
 
     /**
      * Removed a cart item from the cart by its index
      */
     public void remove(int index) {
-        modCount++;
+        data.modCount++;
         generateNewUUID();
-        Item item = items.remove(index);
+        Item item = data.items.remove(index);
         checkLimits();
         updatePrices(size() != 0);
         invalidateOnlinePrices();
@@ -312,14 +289,14 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * This is not the sum of articles.
      */
     public int size() {
-        return items.size();
+        return data.items.size();
     }
 
     /**
      * Check if the cart is empty
      */
     public boolean isEmpty() {
-        return items.isEmpty();
+        return data.items.isEmpty();
     }
 
     /**
@@ -328,14 +305,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * A cart is restorable for up to 5 minutes.
      */
     public void backup() {
-        if (items.size() > 0) {
-            oldItems = items;
-            oldModCount = modCount;
-            oldAddCount = addCount;
-            oldUUID = uuid;
-            oldId = id;
-            oldOnlineTotalPrice = onlineTotalPrice;
-            oldCartTimestamp = System.currentTimeMillis();
+        if (data.items.size() > 0) {
+            oldData = data.deepCopy();
+            data.backupTimestamp = System.currentTimeMillis();
         }
     }
 
@@ -343,20 +315,15 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * Check if the cart is backed up by {@link #backup()} and still in the 5 minute time window
      */
     public boolean isRestorable() {
-        return oldItems != null && oldCartTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
+        return oldData != null && data.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
     }
 
     /**
      * Clears the backup storage of the cart
      */
     public void clearBackup() {
-        oldItems = null;
-        oldId = null;
-        oldAddCount = 0;
-        oldModCount = 0;
-        oldUUID = null;
-        oldOnlineTotalPrice = null;
-        oldCartTimestamp = 0;
+        oldData = null;
+        data.backupTimestamp = 0;
     }
 
     /**
@@ -364,13 +331,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      */
     public void restore() {
         if (isRestorable()) {
-            items = new ArrayList<>(oldItems);
-            modCount = oldModCount;
-            addCount = oldAddCount;
-            uuid = oldUUID;
-            onlineTotalPrice = oldOnlineTotalPrice;
-            id = oldId;
-
+            data = oldData;
+            data.applyShoppingCart(this);
+            
             clearBackup();
             checkLimits();
             updatePrices(false);
@@ -383,18 +346,18 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * @return
      */
     public long getBackupTimestamp() {
-        return oldCartTimestamp;
+        return data.backupTimestamp;
     }
 
     /**
      * Clears the cart of all items
      */
     public void clear() {
-        items = new ArrayList<>();
-        modCount = 0;
-        addCount = 0;
+        data.items = new ArrayList<>();
+        data.modCount = 0;
+        data.addCount = 0;
         generateNewUUID();
-        onlineTotalPrice = null;
+        data.onlineTotalPrice = null;
 
         checkLimits();
         updatePrices(false);
@@ -406,17 +369,17 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      */
     public Taxation getTaxation() {
         // migration for old shopping carts
-        if (taxation == null) {
+        if (data.taxation == null) {
             return Taxation.UNDECIDED;
         }
-        return taxation;
+        return data.taxation;
     }
 
     /**
      * Sets the current taxation type of the cart
      */
     public void setTaxation(Taxation taxation) {
-        this.taxation = taxation;
+        this.data.taxation = taxation;
         notifyTaxationChanged(this, taxation);
     }
 
@@ -424,7 +387,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * Clears the cart and generated a cart new session.
      */
     public void invalidate() {
-        id = UUID.randomUUID().toString();
+        data.id = UUID.randomUUID().toString();
         generateNewUUID();
         clear();
     }
@@ -436,7 +399,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         ProductDatabase productDatabase = project.getProductDatabase();
 
         if (productDatabase.isUpToDate()) {
-            for (Item e : items) {
+            for (Item e : data.items) {
                 Product product = productDatabase.findByCode(e.scannedCode);
 
                 if (product != null) {
@@ -454,15 +417,15 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * Resets the cart to the state before it was updated by the backend
      */
     public void invalidateOnlinePrices() {
-        invalidProducts = null;
-        invalidDepositReturnVoucher = false;
-        onlineTotalPrice = null;
+        data.invalidProducts = null;
+        data.invalidDepositReturnVoucher = false;
+        data.onlineTotalPrice = null;
 
         // reverse-order because we are removing items
-        for (int i = items.size() - 1; i >= 0; i--) {
-            Item item = items.get(i);
+        for (int i = data.items.size() - 1; i >= 0; i--) {
+            Item item = data.items.get(i);
             if (item.getType() == ItemType.LINE_ITEM) {
-                items.remove(i);
+                data.items.remove(i);
             } else {
                 item.lineItem = null;
                 item.isManualCouponApplied = false;
@@ -492,7 +455,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         long timeout = Snabble.getInstance().getConfig().maxShoppingCartAge;
 
-        if (lastModificationTime + timeout < currentTime) {
+        if (data.lastModificationTime + timeout < currentTime) {
             clearBackup();
             invalidate();
         }
@@ -503,14 +466,14 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      */
 
     public int getAddCount() {
-        return addCount;
+        return data.addCount;
     }
 
     /**
      * Returns the number of times items in the shopping cart were modified
      */
     public int getModCount() {
-        return modCount;
+        return data.modCount;
     }
 
     /**
@@ -522,7 +485,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
     public void generateNewUUID() {
-        uuid = UUID.randomUUID().toString();
+        data.uuid = UUID.randomUUID().toString();
         notifyProductsUpdate(this);
     }
 
@@ -535,41 +498,41 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
     public String getUUID() {
-        return uuid;
+        return data.uuid;
     }
 
     void setOnlineTotalPrice(int totalPrice) {
-        onlineTotalPrice = totalPrice;
+        data.onlineTotalPrice = totalPrice;
     }
 
     /**
      * Returns true of the carts price is calculated by the backend
      */
     public boolean isOnlinePrice() {
-        return onlineTotalPrice != null;
+        return data.onlineTotalPrice != null;
     }
 
     void setInvalidProducts(List<Product> invalidProducts) {
-        this.invalidProducts = invalidProducts;
+        this.data.invalidProducts = invalidProducts;
     }
 
     void setInvalidDepositReturnVoucher(boolean invalidDepositReturnVoucher) {
-        this.invalidDepositReturnVoucher = invalidDepositReturnVoucher;
+        this.data.invalidDepositReturnVoucher = invalidDepositReturnVoucher;
     }
 
     /**
      * Gets a list of invalid products that were rejected by the backend.
      */
     public List<Product> getInvalidProducts() {
-        if (invalidProducts == null) {
+        if (data.invalidProducts == null) {
             return Collections.emptyList();
         }
 
-        return invalidProducts;
+        return data.invalidProducts;
     }
 
     public boolean hasInvalidDepositReturnVoucher() {
-        return invalidDepositReturnVoucher;
+        return data.invalidDepositReturnVoucher;
     }
 
     /**
@@ -579,13 +542,13 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * a locally calculated price will be used
      */
     public int getTotalPrice() {
-        if (onlineTotalPrice != null) {
-            return onlineTotalPrice;
+        if (data.onlineTotalPrice != null) {
+            return data.onlineTotalPrice;
         }
 
         int sum = 0;
 
-        for (Item e : items) {
+        for (Item e : data.items) {
             sum += e.getTotalPrice();
         }
 
@@ -601,7 +564,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         int sum = 0;
         int vPOSsum = 0;
 
-        for (Item e : items) {
+        for (Item e : data.items) {
             if (e.getType() == ItemType.LINE_ITEM) {
                 vPOSsum += e.getTotalDepositPrice();
             } else {
@@ -618,7 +581,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     public int getTotalQuantity() {
         int sum = 0;
 
-        for (Item e : items) {
+        for (Item e : data.items) {
             if (e.getType() == ItemType.LINE_ITEM) {
                 if (e.lineItem.getType() == LineItemType.DEFAULT) {
                     sum += e.lineItem.getAmount();
@@ -643,37 +606,37 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * Returns true if the shopping cart is over the current set limit
      */
     public boolean hasReachedMaxCheckoutLimit() {
-        return hasRaisedMaxCheckoutLimit;
+        return data.hasRaisedMaxCheckoutLimit;
     }
 
     /**
      * Returns true if the shopping cart is over the current set limit for online checkouts
      */
     public boolean hasReachedMaxOnlinePaymentLimit() {
-        return hasRaisedMaxOnlinePaymentLimit;
+        return data.hasRaisedMaxOnlinePaymentLimit;
     }
 
     private void updateTimestamp() {
-        lastModificationTime = System.currentTimeMillis();
+        data.lastModificationTime = System.currentTimeMillis();
     }
 
     void checkLimits() {
         int totalPrice = getTotalPrice();
         if (totalPrice < project.getMaxCheckoutLimit()) {
-            hasRaisedMaxCheckoutLimit = false;
+            data.hasRaisedMaxCheckoutLimit = false;
         }
 
         if (totalPrice < project.getMaxOnlinePaymentLimit()) {
-            hasRaisedMaxOnlinePaymentLimit = false;
+            data.hasRaisedMaxOnlinePaymentLimit = false;
         }
 
-        if (!hasRaisedMaxCheckoutLimit && project.getMaxCheckoutLimit() > 0
+        if (!data.hasRaisedMaxCheckoutLimit && project.getMaxCheckoutLimit() > 0
                 && totalPrice >= project.getMaxCheckoutLimit()) {
-            hasRaisedMaxCheckoutLimit = true;
+            data.hasRaisedMaxCheckoutLimit = true;
             notifyCheckoutLimitReached(this);
-        } else if (!hasRaisedMaxOnlinePaymentLimit && project.getMaxOnlinePaymentLimit() > 0
+        } else if (!data.hasRaisedMaxOnlinePaymentLimit && project.getMaxOnlinePaymentLimit() > 0
                 && totalPrice >= project.getMaxOnlinePaymentLimit()) {
-            hasRaisedMaxOnlinePaymentLimit = true;
+            data.hasRaisedMaxOnlinePaymentLimit = true;
             notifyOnlinePaymentLimitReached(this);
         }
     }
@@ -684,7 +647,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     public int getMinimumAge() {
         int minimumAge = 0;
 
-        for (Item item : items) {
+        for (Item item : data.items) {
             minimumAge = Math.max(minimumAge, item.getMinimumAge());
         }
 
@@ -695,7 +658,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * Checks if the provided scanned code is contained inside the shopping cart
      */
     public boolean containsScannedCode(ScannedCode scannedCode) {
-        for (Item item : items) {
+        for (Item item : data.items) {
             if (item.scannedCode != null && item.scannedCode.getCode().equals(scannedCode.getCode())) {
                 return true;
             }
@@ -746,7 +709,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         private LineItem lineItem;
         private String id;
         private boolean isUsingSpecifiedQuantity;
-        private transient ShoppingCart cart;
+        transient ShoppingCart cart;
         private boolean isManualCouponApplied;
         private Coupon coupon;
         // The local generated UUID of a coupon which which will be used by the backend
@@ -886,16 +849,16 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
             this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
 
-            int index = cart.items.indexOf(this);
+            int index = cart.data.items.indexOf(this);
             if (index != -1) {
                 if (quantity == 0) {
-                    cart.items.remove(this);
+                    cart.data.items.remove(this);
                     cart.notifyItemRemoved(cart, this, index);
                 } else {
                     cart.notifyQuantityChanged(cart, this);
                 }
 
-                cart.modCount++;
+                cart.data.modCount++;
                 cart.generateNewUUID();
                 cart.invalidateOnlinePrices();
                 cart.updatePrices(true);
@@ -1320,10 +1283,10 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             backendCart.requiredInformation = new ArrayList<>();
         }
 
-        if (taxation != Taxation.UNDECIDED) {
+        if (data.taxation != Taxation.UNDECIDED) {
             BackendCartRequiredInformation requiredInformation = new BackendCartRequiredInformation();
             requiredInformation.id = "taxation";
-            requiredInformation.value = taxation.getValue();
+            requiredInformation.value = data.taxation.getValue();
             backendCart.requiredInformation.add(requiredInformation);
         }
 
@@ -1430,19 +1393,19 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     void resolveViolations(List<Violation> violations) {
         for (Violation violation : violations) {
-            for (int i = items.size() - 1; i >= 0; i--) {
-                if (items.get(i).coupon != null && items.get(i).backendCouponId.equals(violation.getRefersTo())) {
-                    Item item = items.get(i);
-                    items.remove(item);
+            for (int i = data.items.size() - 1; i >= 0; i--) {
+                if (data.items.get(i).coupon != null && data.items.get(i).backendCouponId.equals(violation.getRefersTo())) {
+                    Item item = data.items.get(i);
+                    data.items.remove(item);
                     boolean found = false;
-                    for (ViolationNotification notification : violationNotifications) {
+                    for (ViolationNotification notification : data.violationNotifications) {
                         if (notification.getRefersTo().equals(violation.getRefersTo())) {
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        violationNotifications.add(new ViolationNotification(
+                        data.violationNotifications.add(new ViolationNotification(
                                 item.coupon.getName(),
                                 violation.getRefersTo(),
                                 violation.getType(),
@@ -1461,12 +1424,12 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      * @param violations the handled ViolationNotifications.
      */
     public void removeViolationNotification(List<ViolationNotification> violations) {
-        violationNotifications.removeAll(violations);
+        data.violationNotifications.removeAll(violations);
     }
 
     @NonNull
     public List<ViolationNotification> getViolationNotifications() {
-        return violationNotifications;
+        return data.violationNotifications;
     }
 
     /**
@@ -1478,8 +1441,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
-        if (!violationNotifications.isEmpty()) {
-            listener.onViolationDetected(violationNotifications);
+        if (!data.violationNotifications.isEmpty()) {
+            listener.onViolationDetected(data.violationNotifications);
         }
     }
 
@@ -1515,6 +1478,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         void onTaxationChanged(ShoppingCart list, Taxation taxation);
 
         void onViolationDetected(@NonNull List<ViolationNotification> violations);
+
+        void onShopChanged(ShoppingCart list);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -1563,13 +1528,16 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         @Override
         public void onViolationDetected(@NonNull List<ViolationNotification> violations) {}
+
+        @Override
+        public void onShopChanged(ShoppingCart list) {}
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Item item) {
         updateTimestamp();
 
         Dispatch.mainThread(() -> {
-            if (list.items.contains(item)) {
+            if (list.data.items.contains(item)) {
                 for (ShoppingCartListener listener : listeners) {
                     listener.onItemAdded(list, item);
                 }
@@ -1581,7 +1549,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         updateTimestamp();
 
         Dispatch.mainThread(() -> {
-            if (list.items.contains(item)) {
+            if (list.data.items.contains(item)) {
                 for (ShoppingCartListener listener : listeners) {
                     listener.onItemRemoved(list, item, pos);
                 }
@@ -1593,7 +1561,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         updateTimestamp();
 
         Dispatch.mainThread(() -> {
-            if (list.items.contains(item)) {
+            if (list.data.items.contains(item)) {
                 for (ShoppingCartListener listener : listeners) {
                     listener.onQuantityChanged(list, item);
                 }
@@ -1641,10 +1609,18 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
     }
 
-    public void notifyViolations() {
+    void notifyViolations() {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
-                listener.onViolationDetected(violationNotifications);
+                listener.onViolationDetected(data.violationNotifications);
+            }
+        });
+    }
+
+    private void notifyShopChanged(final ShoppingCart list) {
+        Dispatch.mainThread(() -> {
+            for (ShoppingCartListener listener : listeners) {
+                listener.onShopChanged(list);
             }
         });
     }
