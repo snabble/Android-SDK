@@ -44,10 +44,12 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.SnackbarUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
+import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
 public class ShoppingCartView extends FrameLayout {
+    private View rootView;
     private RecyclerView recyclerView;
     private ShoppingCartAdapter recyclerViewAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -61,6 +63,7 @@ public class ShoppingCartView extends FrameLayout {
     private View paymentContainer;
     private boolean hasAlreadyShownInvalidDeposit;
     private Project project;
+    private boolean isRegistered;
 
     private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
 
@@ -128,15 +131,31 @@ public class ShoppingCartView extends FrameLayout {
 
     private void inflateView(Context context, AttributeSet attrs) {
         inflate(getContext(), R.layout.snabble_view_shopping_cart, this);
+
+        rootView = findViewById(R.id.root);
+
         if (isInEditMode()) return;
-        project = Snabble.getInstance().getCheckedInProject().getValue();
 
-        if (cart != null) {
-            cart.removeListener(shoppingCartListener);
-        }
+        ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
+            if (p != null) {
+                rootView.setVisibility(View.VISIBLE);
+                unregisterListeners();
+                project = p;
 
-        cart = project.getShoppingCart();
+                if (cart != null) {
+                    cart.removeListener(shoppingCartListener);
+                }
 
+                cart = project.getShoppingCart();
+                createView(context);
+                registerListeners();
+            } else {
+                rootView.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    private void createView(Context context) {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerViewAdapter = new ShoppingCartAdapter(recyclerView, cart);
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -212,10 +231,12 @@ public class ShoppingCartView extends FrameLayout {
     }
 
     private void update() {
-        updateEmptyState();
-        scanForImages();
-        checkSaleStop();
-        checkDepositReturnVoucher();
+        if (project != null) {
+            updateEmptyState();
+            scanForImages();
+            checkSaleStop();
+            checkDepositReturnVoucher();
+        }
     }
 
     private void checkSaleStop() {
@@ -289,13 +310,19 @@ public class ShoppingCartView extends FrameLayout {
     }
 
     private void registerListeners() {
-        cart.addListener(shoppingCartListener);
-        submitList();
-        update();
+        if (!isRegistered && project != null) {
+            isRegistered = true;
+            cart.addListener(shoppingCartListener);
+            submitList();
+            update();
+        }
     }
 
     private void unregisterListeners() {
-        cart.removeListener(shoppingCartListener);
+        if (isRegistered) {
+            isRegistered = false;
+            cart.removeListener(shoppingCartListener);
+        }
     }
 
     @Override
@@ -419,7 +446,9 @@ public class ShoppingCartView extends FrameLayout {
     }
 
     private void submitList() {
-        recyclerViewAdapter.submitList(buildRows(getResources(), cart), hasAnyImages);
+        if (recyclerViewAdapter != null) {
+            recyclerViewAdapter.submitList(buildRows(getResources(), cart), hasAnyImages);
+        }
     }
 
     private static abstract class Row {

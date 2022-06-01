@@ -13,11 +13,13 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.ViewUtils
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Project
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.CheckoutState
@@ -54,7 +56,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private lateinit var progressDialog: DelayedProgressDialog
 
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
-    private val project by lazy { requireNotNull(Snabble.checkedInProject.value) }
+    private lateinit var project: Project
     private val cart: ShoppingCart by lazy { project.shoppingCart }
     private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
@@ -69,7 +71,12 @@ open class CheckoutBar @JvmOverloads constructor(
         orientation = VERTICAL
 
         if (!isInEditMode) {
-            initBusinessLogic()
+            Snabble.checkedInProject.observeView(this) { p ->
+                if (p != null) {
+                    project = p
+                    initBusinessLogic()
+                }
+            }
         }
     }
 
