@@ -1,154 +1,114 @@
-package io.snabble.sdk.ui;
+package io.snabble.sdk.ui
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.KeyguardManager;
-import android.content.Context;
-import android.content.Intent;
-import android.hardware.biometrics.BiometricManager;
-import android.hardware.biometrics.BiometricPrompt;
-import android.hardware.fingerprint.FingerprintManager;
-import android.os.Build;
-import android.os.CancellationSignal;
+import io.snabble.sdk.Snabble.instance
+import android.os.Build
+import android.app.KeyguardManager
+import android.app.Activity
+import android.content.Context
+import android.hardware.biometrics.BiometricManager
+import android.hardware.biometrics.BiometricPrompt
+import android.os.CancellationSignal
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import io.snabble.sdk.utils.Dispatch
+import java.util.concurrent.Executors
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
+object Keyguard {
+    private var currentCallback: Callback? = null
 
-import java.util.concurrent.Executors;
-
-import io.snabble.sdk.Snabble;
-import io.snabble.sdk.utils.Dispatch;
-
-public class Keyguard {
-    private static final int REQUEST_CODE_AUTHENTICATION = 4613;
-
-    private static Callback currentCallback;
-
-    public interface Callback {
-        void success();
-        void error();
-    }
-
-    @SuppressLint({"WrongConstant", "NewApi"})
-    public static void unlock(FragmentActivity activity, Callback callback) {
-        Dispatch.mainThread(() -> {
-            Keyguard.currentCallback = callback;
-
-            boolean supportsBiometricPrompt = false;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    BiometricManager biometricManager = (BiometricManager) activity.getSystemService(Context.BIOMETRIC_SERVICE);
-                    if (biometricManager != null) {
-                        supportsBiometricPrompt = biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
+    @JvmStatic
+    fun unlock(activity: FragmentActivity, callback: Callback?) {
+        Dispatch.mainThread {
+            currentCallback = callback
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                BiometricPrompt.Builder(activity).apply {
+                    setTitle(activity.getString(R.string.Snabble_Keyguard_title))
+                    setDescription(activity.getString(R.string.Snabble_Keyguard_message))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                    } else {
+                        @Suppress("deprecation") // on that runtime it was not deprecated
+                        setDeviceCredentialAllowed(true)
                     }
-                } else {
-                    FingerprintManager fingerprintManager = (FingerprintManager) activity.getSystemService(Context.FINGERPRINT_SERVICE);
-                    if (fingerprintManager != null) {
-                        supportsBiometricPrompt = fingerprintManager.hasEnrolledFingerprints();
-                    }
-                }
-            }
+                }.build()
+                    .authenticate(
+                        CancellationSignal(), Executors.newSingleThreadExecutor(),
+                        object : BiometricPrompt.AuthenticationCallback() {
+                            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                error(callback)
+                            }
 
-            if (supportsBiometricPrompt) {
-                new BiometricPrompt.Builder(activity)
-                        .setTitle(activity.getString(R.string.Snabble_Keyguard_title))
-                        .setDescription(activity.getString(R.string.Snabble_Keyguard_message))
-                        .setNegativeButton(activity.getString(R.string.Snabble_Cancel), Executors.newSingleThreadExecutor(), (dialogInterface, i) -> error(callback))
-                        .build()
-                        .authenticate(new CancellationSignal(), Executors.newSingleThreadExecutor(),
-                                new BiometricPrompt.AuthenticationCallback() {
-                                    @Override
-                                    public void onAuthenticationError(int errorCode, CharSequence errString) {
-                                        error(callback);
-                                    }
+                            override fun onAuthenticationHelp(helpCode: Int, helpString: CharSequence) {
+                                error(callback)
+                            }
 
-                                    @Override
-                                    public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-                                        error(callback);
-                                    }
+                            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                                success(callback)
+                            }
 
-                                    @Override
-                                    public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-                                        success(callback);
-                                    }
-
-                                    @Override
-                                    public void onAuthenticationFailed() {
-
-                                    }
-                                });
+                            override fun onAuthenticationFailed() {}
+                        })
             } else {
-                KeyguardManager km = (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
-
-                if (km != null && km.isKeyguardSecure()) {
-                    final FragmentManager fm = activity.getSupportFragmentManager();
-
-                    ActivityResultFragment fragment = new ActivityResultFragment();
-                    fm.beginTransaction()
-                            .add(fragment, "ActivityResultFragment")
-                            .commit();
-                    fm.executePendingTransactions();
-
-                    Intent authIntent = km.createConfirmDeviceCredentialIntent(
-                            activity.getString(R.string.Snabble_Keyguard_title),
-                            activity.getString(R.string.Snabble_Keyguard_message));
-
-                    fragment.startActivityForResult(authIntent, REQUEST_CODE_AUTHENTICATION);
-                } else {
-                    success(null);
-                }
+                unlockWithKeyguard(activity)
             }
-        });
+        }
     }
 
-    private static void success(Callback callback) {
-        Dispatch.mainThread(() -> {
-            if (callback != null && currentCallback != callback) {
-                return;
+    private fun unlockWithKeyguard(activity: FragmentActivity) {
+        val km = activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        if (km.isKeyguardSecure) {
+            val fm = activity.supportFragmentManager
+            val fragment = ActivityResultFragment()
+            fm.beginTransaction()
+                .add(fragment, "ActivityResultFragment")
+                .commit()
+            fm.executePendingTransactions()
+            @Suppress("deprecation") // this is a legacy code path, on that runtime it was not deprecated
+            val authIntent = km.createConfirmDeviceCredentialIntent(
+                activity.getString(R.string.Snabble_Keyguard_title),
+                activity.getString(R.string.Snabble_Keyguard_message)
+            )
+            fragment.activityResult.launch(authIntent)
+        } else {
+            success(null)
+        }
+    }
+
+    private fun success(callback: Callback?) {
+        Dispatch.mainThread {
+            if (callback != null && currentCallback !== callback) {
+                return@mainThread
             }
 
             // migrate key store stored values to rsa stored values
-            Snabble.getInstance().getPaymentCredentialsStore().maybeMigrateKeyStoreCredentials();
-
-            if (currentCallback != null) {
-                currentCallback.success();
-                currentCallback = null;
-            }
-        });
-    }
-
-    private static void error(Callback callback) {
-        Dispatch.mainThread(() -> {
-            if (callback != null && currentCallback != callback) {
-                return;
-            }
-
-            if (currentCallback != null) {
-                currentCallback.error();
-                currentCallback = null;
-            }
-        });
-    }
-
-    public static final class ActivityResultFragment extends androidx.fragment.app.Fragment {
-        public ActivityResultFragment() {
+            instance.paymentCredentialsStore.maybeMigrateKeyStoreCredentials()
+            currentCallback?.success()
+            currentCallback = null
         }
+    }
 
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
+    private fun error(callback: Callback?) {
+        Dispatch.mainThread {
+            if (callback != null && currentCallback !== callback) {
+                return@mainThread
+            }
+            currentCallback?.error()
+            currentCallback = null
+        }
+    }
 
-            requireFragmentManager().beginTransaction().remove(this).commit();
+    interface Callback {
+        fun success()
+        fun error()
+    }
 
-            if (requestCode == REQUEST_CODE_AUTHENTICATION) {
-                if (currentCallback != null) {
-                    if (resultCode == Activity.RESULT_OK) {
-                        success(null);
-                    } else {
-                        error(null);
-                    }
-                }
+    class ActivityResultFragment : Fragment() {
+        val activityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                success(null)
+            } else {
+                error(null)
             }
         }
     }
