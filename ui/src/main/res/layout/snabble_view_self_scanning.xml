@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:parentTag="androidx.coordinatorlayout.widget.CoordinatorLayout">
+    android:layout_height="match_parent">
 
     <io.snabble.sdk.ui.scanner.BarcodeScannerView
         android:id="@+id/barcode_scanner_view"
@@ -51,6 +50,7 @@
             android:insetRight="0dp"
             android:insetLeft="0dp"
             android:insetBottom="0dp"
+            android:visibility="gone"
             android:text="@string/Snabble.Scanner.goToCart.empty"
             tools:text="Warenkorb: 99,99 €"/>
     </LinearLayout>
