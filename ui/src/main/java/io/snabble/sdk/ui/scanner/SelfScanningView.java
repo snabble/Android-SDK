@@ -401,14 +401,14 @@ public class SelfScanningView extends FrameLayout {
 
     private void pauseBarcodeScanner() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED && barcodeScanner != null) {
             barcodeScanner.pause();
         }
     }
 
     private void resumeBarcodeScanner() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED && barcodeScanner != null) {
             barcodeScanner.resume();
         }
     }
