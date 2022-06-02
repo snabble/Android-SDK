@@ -66,8 +66,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
     }
 
-    private ShoppingCartData data = new ShoppingCartData();
-    private ShoppingCartData oldData = new ShoppingCartData();
+    ShoppingCartData data = new ShoppingCartData();
+    ShoppingCartData oldData = new ShoppingCartData();
 
     private transient List<ShoppingCartListener> listeners;
     private transient Project project;
@@ -82,14 +82,19 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         data = new ShoppingCartData();
         updateTimestamp();
 
-        initWithProject(project);
-    }
-
-    void initWithProject(Project project) {
         this.project = project;
         this.updater = new ShoppingCartUpdater(project, this);
         this.priceFormatter = project.getPriceFormatter();
         this.listeners = new CopyOnWriteArrayList<>();
+    }
+
+    void initWithData(ShoppingCartData data) {
+        this.data = data;
+        this.oldData = null;
+
+        if (data.uuid == null) {
+            generateNewUUID();
+        }
 
         checkForTimeout();
 
@@ -97,10 +102,6 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         if (oldData != null) {
             oldData.applyShoppingCart(this);
-        }
-
-        if (data.uuid == null) {
-            generateNewUUID();
         }
 
         updatePrices(false);

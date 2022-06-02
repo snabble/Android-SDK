@@ -263,12 +263,20 @@ object Snabble {
                                 project.productDatabase.update()
                             }
                             checkedInProject.value = project
+                            mutableCurrentCheckedInShop.value = value
                             break
                         }
                     }
                 }
             }
         }
+
+    private var mutableCurrentCheckedInShop = MutableAccessibleLiveData<Shop?>(null)
+
+    /**
+     * Get the current checked in shop as a live data.
+     */
+    var currentCheckedInShop: LiveData<Shop?> = mutableCurrentCheckedInShop
 
     /**
      * The current checked in project.
