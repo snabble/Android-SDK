@@ -32,8 +32,8 @@ gradlePlugin {
     plugins {
         setup {
             id = 'io.snabble.setup'
-            displayName = 'Snabble Setup'
-            description = 'The snabble Gradle Plugin is for the simplest setup of the snabble Android SDK.'
+            displayName = 'Snabble Setup Helper'
+            description = 'Plugin for simlified configutation of the Snabble Android SDK and metadata downloader'
             implementationClass = 'io.snabble.setup.SnabblePlugin'
         }
     }
