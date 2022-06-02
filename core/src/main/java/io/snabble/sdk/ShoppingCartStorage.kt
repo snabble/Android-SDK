@@ -64,16 +64,13 @@ internal class ShoppingCartStorage(project: Project) {
                 val contents = IOUtils.toString(FileInputStream(currentFile), Charset.forName("UTF-8"))
                 val shoppingCartData = GsonHolder.get().fromJson(contents, ShoppingCartData::class.java)
                 project.shoppingCart.initWithData(shoppingCartData)
-                Log.d("Cart", "Init cart " + currentFile?.absolutePath)
             } else {
-                Log.d("Cart", "Init new cart")
                 project.shoppingCart.initWithData(ShoppingCartData())
             }
         } catch (e: Exception) {
-            Log.d("Cart", "Init new cart error: " + e.message)
             //shopping cart could not be read, create a new one.
             Logger.e("Could not load shopping list from: " + currentFile?.absolutePath + ", creating a new one.")
-            project.shoppingCart.initWithData(project, ShoppingCartData())
+            project.shoppingCart.initWithData(ShoppingCartData())
         }
     }
 
