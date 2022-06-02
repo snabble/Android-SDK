@@ -488,9 +488,9 @@ class Project internal constructor(jsonObject: JsonObject) {
             .addInterceptor(AcceptedLanguageInterceptor())
             .build()
 
-        shoppingCartStorage = ShoppingCartStorage(this)
+        shoppingCart = ShoppingCart(this)
 
-        shoppingCart = shoppingCartStorage.shoppingCart
+        shoppingCartStorage = ShoppingCartStorage(this)
 
         checkout = Checkout(this, shoppingCart)
 
