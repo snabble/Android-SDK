@@ -1,0 +1,65 @@
+plugins {
+    id 'kotlin'
+    id 'maven-publish'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.0'
+}
+
+group 'io.snabble'
+version project.pluginVersion
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'io.snabble'
+            artifactId 'setup'
+            version project.pluginVersion
+
+            from components.java
+        }
+    }
+}
+
+dependencies {
+    implementation(gradleApi())
+    implementation(localGroovy())
+    api "org.jetbrains.kotlin:kotlin-stdlib"
+    api "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
+    compileOnly 'com.android.tools.build:gradle:7.1.0'
+}
+
+gradlePlugin {
+    plugins {
+        setup {
+            id = 'io.snabble.setup'
+            displayName = 'Snabble Setup Helper'
+            description = 'Plugin for simlified configutation of the Snabble Android SDK and metadata downloader'
+            implementationClass = 'io.snabble.setup.SnabblePlugin'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    google()
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin/'
+}
+
+task generateResources {
+    ext {
+        propFile = file("$buildDir/generated/snabble.properties")
+    }
+    outputs.file propFile
+    doLast {
+        mkdir propFile.parentFile
+        propFile.text = "version=$project.version"
+    }
+}
+
+processResources {
+    from files(generateResources)
+}
