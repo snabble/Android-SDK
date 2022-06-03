@@ -5,32 +5,29 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.DefaultAndroidSourceSet
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.*
 import java.io.File
-import java.io.IOException
 import java.lang.IllegalStateException
 
 open class SnabblePlugin : Plugin<Project> {
-
     override fun apply(project: Project) {
         val extension = project.extensions.create("snabble", SnabbleExtension::class.java, project)
-        project.pluginManager.withPlugin("com.android.application") {
-            val assetsDir = File(
+        project.pluginManager.withPlugin("com.android.application") { androidPlugin ->
+            val targetFile = File(
                 project.buildDir,
-                "intermediates/snabble/assets"
+                "intermediates/snabble/assets/metadata.json"
             )
             val downloadTask = project.tasks.register(
                 "downloadSnabbleMetadata",
                 DownloadTask::class.java
             ) {
-                it.appId.set(extension.appId ?: throw IllegalStateException("You must define the app id in order to download the manifest"))
-                it.outputDir.set(assetsDir)
+                val appId = extension.appId ?: throw IllegalStateException("You must define the app id in order to download the manifest")
+                val app = project.extensions.getByType(BaseExtension::class.java) as AppExtension
+                val appVersion = app.defaultConfig.versionName ?: throw IllegalStateException("No app version number detected")
+                it.url.set("https://api.snabble.io/metadata/app/$appId/android/$appVersion")
+                it.outputFile = targetFile
             }
 
             val manifestFile = File(
@@ -52,7 +49,7 @@ open class SnabblePlugin : Plugin<Project> {
                 variant.sourceSets += sourceSet
                 if (variant.buildType.isDebuggable && extension.prefetchMetaData) {
                     project.tasks.getByName("generate${variant.capitalizedName()}Resources").dependsOn += downloadTask
-                    sourceSet.assets.srcDirs(assetsDir)
+                    sourceSet.assets.srcDirs(targetFile)
                 }
                 project.tasks.getByName("generate${variant.capitalizedName()}Resources").dependsOn += manifestTask
                 sourceSet.manifest.srcFile(manifestFile)
@@ -82,73 +79,4 @@ open class SnabbleExtension(project: Project) {
     var secret: String? = null
     var endpoint: String? = null
     var prefetchMetaData = false
-}
-
-@CacheableTask
-abstract class DownloadTask : DefaultTask() {
-    @get:Input
-    abstract val appId: Property<String>
-
-    @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
-
-    @TaskAction
-    fun download() {
-        val outputDirFile = outputDir.asFile.get()
-        if (outputDirFile.exists() && !outputDirFile.deleteRecursively()) {
-            logger.warn("Failed to clear directory for snabble setup")
-        }
-        println("TODO download metadata for ${appId.get()} to $outputDirFile; User-Agent: ${UserAgentInterceptor().userAgent}")
-    }
-}
-
-@CacheableTask
-abstract class GenerateMetaTagsTask : DefaultTask() {
-    @get:Input
-    abstract val appId: Property<String>
-    @get:Input
-    abstract val secret: Property<String>
-    @get:Input
-    @get:Optional
-    abstract val endpoint: Property<String?>
-
-    @get:OutputFile
-    abstract var manifestFile: File
-
-    @TaskAction
-    fun generateManifest() {
-        val manifestPath = manifestFile.parentFile
-        if (manifestPath.exists() && manifestPath.deleteRecursively()) {
-            logger.warn("Failed to clear directory for snabble setup")
-        }
-        if (!manifestPath.mkdirs()) {
-            throw IOException("Could not create path $manifestPath")
-        }
-        val metadata = mapOf(
-            "app_id" to appId.get(),
-            "secret" to secret.get(),
-            "endpoint_baseurl" to endpoint.orNull,
-        ).filterNot {
-            it.value.isNullOrEmpty()
-        }.entries.joinToString("\n") { (key, value) ->
-            // white space is intended as it is
-            """
-                    <meta-data
-                        android:name="snabble_$key"
-                        android:value="$value" />"""
-        }.trimStart()
-        val manifest = """
-            <?xml version="1.0" encoding="utf-8"?>
-            <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-                <uses-permission android:name="android.permission.INTERNET" />
-                <uses-permission android:name="android.permission.CAMERA" />
-                <uses-permission android:name="android.permission.VIBRATE" />
-
-                <application>
-                    $metadata
-                </application>
-            </manifest>
-        """.trimIndent()
-        manifestFile.writeText(manifest)
-    }
 }
