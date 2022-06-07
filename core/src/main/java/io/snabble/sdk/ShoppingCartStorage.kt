@@ -51,9 +51,10 @@ internal class ShoppingCartStorage(project: Project) {
     }
 
     private fun updateFileMap() {
+        val env = Snabble.environment?.name?.lowercase() ?: "unknown"
         Dispatch.mainThread {
             project.shops.forEach {
-                fileMap[it.id] = File(project.internalStorageDirectory, "${it.id}/shoppingCart.json")
+                fileMap[it.id] = File(project.internalStorageDirectory, "cart/${env}/${it.id}/shoppingCart.json")
             }
         }
     }
