@@ -138,24 +138,33 @@ public class ShoppingCartView extends FrameLayout {
 
         ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
             if (p != null) {
-                rootView.setVisibility(View.VISIBLE);
-                unregisterListeners();
-                project = p;
-
-                if (cart != null) {
-                    cart.removeListener(shoppingCartListener);
-                }
-
-                cart = project.getShoppingCart();
-                createView(context);
-                registerListeners();
-            } else {
-                rootView.setVisibility(View.INVISIBLE);
+                initViewState(p);
             }
         });
+
+        Project currentProject = Snabble.getInstance().getCheckedInProject().getValue();
+        if (currentProject != null) {
+            initViewState(currentProject);
+        }
     }
 
-    private void createView(Context context) {
+    private void initViewState(Project p) {
+        if (p != project) {
+            rootView.setVisibility(View.VISIBLE);
+            unregisterListeners();
+            project = p;
+
+            if (cart != null) {
+                cart.removeListener(shoppingCartListener);
+            }
+
+            cart = project.getShoppingCart();
+            resetViewState(getContext());
+            registerListeners();
+        }
+    }
+
+    private void resetViewState(Context context) {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerViewAdapter = new ShoppingCartAdapter(recyclerView, cart);
         recyclerView.setAdapter(recyclerViewAdapter);

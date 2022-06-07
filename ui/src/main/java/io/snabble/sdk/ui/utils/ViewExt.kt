@@ -72,13 +72,13 @@ fun TextView.setTextOrHide(text: CharSequence?) {
 }
 
 fun <T> LiveData<T>.observeView(view: View, observer: Observer<T>) {
-    view.findViewTreeLifecycleOwner()?.let {
+    view.getFragmentActivity()?.let {
         observe(it, observer)
     }
 
     view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View?) {
-            view.findViewTreeLifecycleOwner()?.let {
+            view.getFragmentActivity()?.let {
                 observe(it, observer)
             }
         }
