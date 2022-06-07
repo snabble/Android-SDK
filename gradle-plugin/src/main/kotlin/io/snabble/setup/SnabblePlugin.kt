@@ -4,7 +4,7 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
-import com.android.build.gradle.internal.api.DefaultAndroidSourceSet
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -15,10 +15,18 @@ open class SnabblePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("snabble", SnabbleExtension::class.java, project)
         project.pluginManager.withPlugin("com.android.application") { androidPlugin ->
-            val targetFile = File(
+            val baseDir = File(
                 project.buildDir,
-                "intermediates/snabble/assets/metadata.json"
+                "intermediates/snabble"
             )
+            val generateAarTask = project.tasks.register(
+                "generateSnabbleAar",
+                GenerateAarTask::class.java
+            ) {
+                it.sourceDir = File(baseDir, "src")
+                it.aarFile = File(baseDir, "SnabbleSetup.aar")
+            }
+
             val downloadTask = project.tasks.register(
                 "downloadSnabbleMetadata",
                 DownloadTask::class.java
@@ -27,13 +35,9 @@ open class SnabblePlugin : Plugin<Project> {
                 val app = project.extensions.getByType(BaseExtension::class.java) as AppExtension
                 val appVersion = app.defaultConfig.versionName ?: throw IllegalStateException("No app version number detected")
                 it.url.set("https://api.snabble.io/metadata/app/$appId/android/$appVersion")
-                it.outputFile = targetFile
+                it.outputFile = File(baseDir, "src/assets/metadata.json")
             }
 
-            val manifestFile = File(
-                project.buildDir,
-                "intermediates/snabble/manifest/AndroidManifest.xml"
-            )
             val manifestTask = project.tasks.register(
                 "generateSnabbleManifest",
                 GenerateMetaTagsTask::class.java
@@ -41,19 +45,17 @@ open class SnabblePlugin : Plugin<Project> {
                 it.appId.set(extension.appId ?: throw IllegalStateException("You must define the app id"))
                 it.secret.set(extension.secret ?: throw IllegalStateException("You must define the secret"))
                 it.endpoint.set(extension.endpoint)
-                it.manifestFile = manifestFile
+                it.manifestFile = File(baseDir, "src/AndroidManifest.xml")
             }
 
             project.extensions.getByType(BaseExtension::class.java).forEachVariant { variant ->
-                val sourceSet = DefaultAndroidSourceSet("snabble", project, false)
-                variant.sourceSets += sourceSet
+                project.tasks.getByName("generate${variant.capitalizedName()}Resources").dependsOn += generateAarTask
+                generateAarTask.dependsOn(manifestTask)
                 if (variant.buildType.isDebuggable && extension.prefetchMetaData) {
-                    project.tasks.getByName("generate${variant.capitalizedName()}Resources").dependsOn += downloadTask
-                    sourceSet.assets.srcDirs(targetFile)
+                    generateAarTask.dependsOn(downloadTask)
                 }
-                project.tasks.getByName("generate${variant.capitalizedName()}Resources").dependsOn += manifestTask
-                sourceSet.manifest.srcFile(manifestFile)
             }
+            //project.dependencies.add("implementation", project.files(generateAarTask.get().aarFile))
         }
     }
 

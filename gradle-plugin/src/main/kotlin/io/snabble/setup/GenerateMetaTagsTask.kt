@@ -43,10 +43,10 @@ abstract class GenerateMetaTagsTask : DefaultTask() {
         }.trimStart()
         val manifest = """
             <?xml version="1.0" encoding="utf-8"?>
-            <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+                package="io.snabble.setup">
+
                 <uses-permission android:name="android.permission.INTERNET" />
-                <uses-permission android:name="android.permission.CAMERA" />
-                <uses-permission android:name="android.permission.VIBRATE" />
 
                 <application>
                     $metadata
