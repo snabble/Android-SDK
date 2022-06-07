@@ -105,6 +105,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
 
         updatePrices(false);
+        notifyCartDataChanged(this);
     }
 
     /**
@@ -1480,7 +1481,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         void onViolationDetected(@NonNull List<ViolationNotification> violations);
 
-        void onShopChanged(ShoppingCart list);
+        void onCartDataChanged(ShoppingCart list);
     }
 
     public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
@@ -1531,7 +1532,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         public void onViolationDetected(@NonNull List<ViolationNotification> violations) {}
 
         @Override
-        public void onShopChanged(ShoppingCart list) {}
+        public void onCartDataChanged(ShoppingCart list) {
+            onChanged(list);
+        }
     }
 
     private void notifyItemAdded(final ShoppingCart list, final Item item) {
@@ -1586,7 +1589,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
     }
 
-    void notifyTaxationChanged(final ShoppingCart list, final Taxation taxation) {
+    private void notifyTaxationChanged(final ShoppingCart list, final Taxation taxation) {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
                 listener.onTaxationChanged(list, taxation);
@@ -1594,7 +1597,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
     }
 
-    void notifyCheckoutLimitReached(final ShoppingCart list) {
+    private void notifyCheckoutLimitReached(final ShoppingCart list) {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
                 listener.onCheckoutLimitReached(list);
@@ -1602,7 +1605,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
     }
 
-    void notifyOnlinePaymentLimitReached(final ShoppingCart list) {
+    private void notifyOnlinePaymentLimitReached(final ShoppingCart list) {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
                 listener.onOnlinePaymentLimitReached(list);
@@ -1610,7 +1613,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
     }
 
-    void notifyViolations() {
+    private void notifyViolations() {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
                 listener.onViolationDetected(data.violationNotifications);
@@ -1618,10 +1621,10 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         });
     }
 
-    private void notifyShopChanged(final ShoppingCart list) {
+    private void notifyCartDataChanged(final ShoppingCart list) {
         Dispatch.mainThread(() -> {
             for (ShoppingCartListener listener : listeners) {
-                listener.onShopChanged(list);
+                listener.onCartDataChanged(list);
             }
         });
     }
