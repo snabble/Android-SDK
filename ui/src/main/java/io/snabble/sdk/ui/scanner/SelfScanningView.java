@@ -26,6 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.util.Pair;
+import androidx.lifecycle.Observer;
 
 import java.util.List;
 
@@ -53,6 +54,7 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.ui.views.MessageBoxStackView;
 import io.snabble.sdk.utils.Dispatch;
+import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
@@ -95,17 +97,28 @@ public class SelfScanningView extends FrameLayout {
 
         ViewUtils.observeView(Snabble.getInstance().getCheckedInProject(), this, p -> {
             if (p != null) {
-                unregisterListeners();
-                project = p;
-                shoppingCart = p.getShoppingCart();
-                productDatabase = p.getProductDatabase();
-                createView();
-                registerListeners();
+                initViewState(p);
             }
         });
+
+        Project currentProject = Snabble.getInstance().getCheckedInProject().getValue();
+        if (currentProject != null) {
+            initViewState(currentProject);
+        }
     }
 
-    private void createView() {
+    private void initViewState(Project p) {
+        if (p != project) {
+            unregisterListeners();
+            project = p;
+            shoppingCart = project.getShoppingCart();
+            productDatabase = project.getProductDatabase();
+            resetViewState();
+            registerListeners();
+        }
+    }
+
+    private void resetViewState() {
         messages = findViewById(R.id.messages);
         barcodeScanner = findViewById(R.id.barcode_scanner_view);
         noPermission = findViewById(R.id.no_permission);

@@ -13,15 +13,15 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.ViewUtils
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
-import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
@@ -71,16 +71,24 @@ open class CheckoutBar @JvmOverloads constructor(
         orientation = VERTICAL
 
         if (!isInEditMode) {
-            Snabble.checkedInProject.observeView(this) { p ->
-                if (p != null) {
-                    project = p
-                    initBusinessLogic()
-                }
+            val currentProject = instance.checkedInProject.getValue()
+            currentProject?.let {
+                initBusinessLogic(it)
+            }
+
+            Snabble.checkedInProject.value?.let {
+                initBusinessLogic(it)
             }
         }
     }
 
-    private fun initBusinessLogic() {
+    private fun initBusinessLogic(project: Project) {
+        if (this::project.isInitialized && this.project == project) {
+            return
+        }
+
+        this.project = project
+
         paymentSelectionHelper.selectedEntry.observe(UIUtils.getHostActivity(context) as FragmentActivity) {
             update()
         }
@@ -106,11 +114,19 @@ open class CheckoutBar @JvmOverloads constructor(
                 handleButtonClick()
             } catch (e: PackageManager.NameNotFoundException) {
                 try {
-                    context.startActivity(Intent(Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=$packageName")))
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=$packageName")
+                        )
+                    )
                 } catch (e: ActivityNotFoundException) {
-                    context.startActivity(Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                        )
+                    )
                 }
             }
         }
