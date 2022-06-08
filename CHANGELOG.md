@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Allow manual initialization by omitting 'snabble_app_id' or 'snabble_secret'
 
+### Fixed
+- Coupon manager which might cause NPE after leaving a shop
+
 ## [0.65.0]
 
 ### Added

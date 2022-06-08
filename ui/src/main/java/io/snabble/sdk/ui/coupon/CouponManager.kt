@@ -21,7 +21,7 @@ class CouponManager private constructor(private var currentProject: Project?): L
         )
     }
     private val projectObserver = Observer<Project?> { project ->
-        project?.coupons?.removeObserver(couponObserver)
+        currentProject?.coupons?.removeObserver(couponObserver)
         currentProject = project
         currentProject?.coupons?.observeForever(couponObserver)
         updateCoupons()
