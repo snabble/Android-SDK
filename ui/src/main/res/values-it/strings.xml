@@ -44,21 +44,25 @@
     <string name="Snabble.Coupons.expired">Già scaduto</string>
     <string name="Snabble.Coupons.expiresAtDate">valido fino al %s</string>
     <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="many">ancora %d giorni</item>
         <item quantity="one">ancora %d giorno</item>
         <item quantity="other">ancora %d giorni</item>
         <item quantity="zero">Già scaduto</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="many">ancora %d secondi</item>
         <item quantity="one">ancora %d ora</item>
         <item quantity="other">ancora %d ore</item>
         <item quantity="zero">Già scaduto</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="many">ancora %d minuti</item>
         <item quantity="one">ancora %d minuto</item>
         <item quantity="other">ancora %d minuti</item>
         <item quantity="zero">Già scaduto</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="many">ancora %d settimane</item>
         <item quantity="one">ancora %d settimana</item>
         <item quantity="other">ancora %d settimane</item>
         <item quantity="zero">Già scaduto</item>
@@ -81,7 +85,7 @@
     <string name="Snabble.limitsAlert.checkoutNotAvailable">A partire da un valore della merce di %s, purtroppo non è più possibile acquistare tramite app.</string>
     <string name="Snabble.limitsAlert.notAllMethodsAvailable">A partire da un valore della merce di %s, non tutti i metodi di pagamento sono disponibili.</string>
     <string name="Snabble.limitsAlert.title">Attenzione</string>
-    <string name="Snabble.loadingProductInformation">Caricamento informazioni sul prodotto...</string>
+    <string name="Snabble.loadingProductInformation">Caricamento informazioni sul prodotto…</string>
     <string name="Snabble.networkError">Errore di connessione di rete</string>
     <string name="Snabble.No">No</string>
     <string name="Snabble.noDiscount">nessuno sconto</string>
@@ -152,7 +156,7 @@
     <string name="Snabble.PaymentStatus.step1">Localizzazione in zona cassa</string>
     <string name="Snabble.PaymentStatus.step2">Autorizzazione del tuo acquisto</string>
     <string name="Snabble.PaymentStatus.step3">Autorizzazione del tuo pagamento</string>
-    <string name="Snabble.pleaseWait">Attendi...</string>
+    <string name="Snabble.pleaseWait">Attendi…</string>
     <string name="Snabble.PostFinanceCard.payNow">Paga ora con PostFinance Card</string>
     <string name="Snabble.QRCode.codeXofY">Codice %1$d di %2$d</string>
     <string name="Snabble.QRCode.didPay">Finito</string>
@@ -229,7 +233,11 @@
     <string name="Snabble.Shoppingcart.noPaymentData">Aggiungi adesso</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Non disponibile per questo acquisto</string>
     <string name="Snabble.Shoppingcart.notForVendor">Non supportato dal commerciante</string>
-    <string name="Snabble.Shoppingcart.numberOfItems">%d articoli</string>
+    <plurals name="Snabble.Shoppingcart.numberOfItems">
+        <item quantity="many">%d articoli</item>
+        <item quantity="one">%d articolo</item>
+        <item quantity="other">%d articoli</item>
+    </plurals>
     <string name="Snabble.Shoppingcart.removeItem">Rimuovere davvero %s?</string>
     <string name="Snabble.Shoppingcart.removeItems">Rimuovere davvero tutti i prodotti dal carrello?</string>
     <string name="Snabble.ShoppingCart.title">Carrello</string>

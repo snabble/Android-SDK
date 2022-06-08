@@ -291,7 +291,10 @@
     <string name="Snabble.Shoppingcart.noPaymentData">Jetzt hinzufügen</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Für diesen Einkauf nicht verfügbar</string>
     <string name="Snabble.Shoppingcart.notForVendor">Vom Händler nicht unterstützt</string>
-    <string name="Snabble.Shoppingcart.numberOfItems">%d Artikel</string>
+    <plurals name="Snabble.Shoppingcart.numberOfItems">
+        <item quantity="one">%d Artikel</item>
+        <item quantity="other">%d Artikel</item>
+    </plurals>
     <string name="Snabble.Shoppingcart.numberOfItems.one">%d Artikel</string>
     <string name="Snabble.Shoppingcart.removeItem">%s wirklich entfernen?</string>
     <string name="Snabble.Shoppingcart.removeItems">Wirklich alle Produkte aus dem Warenkorb entfernen?</string>

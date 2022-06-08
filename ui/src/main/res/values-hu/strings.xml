@@ -36,6 +36,35 @@
     <string name="Snabble.Checkout.payAtCashRegister">Fizetés a pénztárnál</string>
     <string name="Snabble.Checkout.title">Fizetés</string>
     <string name="Snabble.Checkout.verifying">Igazolja</string>
+    <string name="Snabble.Coupon.activate">Bekapcsolás</string>
+    <string name="Snabble.Coupon.activated">Aktiválva</string>
+    <string name="Snabble.Coupon.countdown">A kupon %s perc múlva lejár</string>
+    <string name="Snabble.Coupon.expired">Ez a kupon már lejárt.</string>
+    <string name="Snabble.Coupon.explanation">A kuponod most már aktiválva van számodra. Szkenneld be a terméket az üzletben, és tedd a kosaradba, hogy kihasználhasd a kupon előnyeit.</string>
+    <string name="Snabble.Coupons.expired">Már lejárt</string>
+    <string name="Snabble.Coupons.expiresAtDate">érvényes %s-ig</string>
+    <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="one">még %d nap</item>
+        <item quantity="other">még %d nap</item>
+        <item quantity="zero">Már lejárt</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="one">még %d óra</item>
+        <item quantity="other">még %d óra</item>
+        <item quantity="zero">Már lejárt</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="one">még %d perc</item>
+        <item quantity="other">még %d perc</item>
+        <item quantity="zero">Már lejárt</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="one">még %d hét</item>
+        <item quantity="other">még %d hét</item>
+        <item quantity="zero">Már lejárt</item>
+    </plurals>
+    <string name="Snabble.Coupons.none">Nincs elérhető kupon</string>
+    <string name="Snabble.Coupons.title">Kuponok</string>
     <string name="Snabble.CreditCard.payNow">Fizetés hitelkártyával</string>
     <string name="Snabble.Delete">Törlés</string>
     <string name="Snabble.Done">Kész</string>
@@ -154,7 +183,7 @@
     <string name="Snabble.Payone.expireYear">Érvényesség éve (ÉÉÉÉ)</string>
     <string name="Snabble.Payone.incompleteForm">Kérjük, hogy teljesen töltsd ki az űrlapot.</string>
     <string name="Snabble.Payone.Lastname">Vezetéknév</string>
-    <string name="Snabble.pleaseWait">Kérlek, várj...</string>
+    <string name="Snabble.pleaseWait">Kérlek, várj…</string>
     <string name="Snabble.PostFinanceCard.payNow">Most fizetés a PostFinance kártyával</string>
     <string name="Snabble.QRCode.codeXofY">%1$d / %2$d kód</string>
     <string name="Snabble.QRCode.didPay">Kész</string>
@@ -262,7 +291,10 @@
     <string name="Snabble.Shoppingcart.noPaymentData">Hozzáadás most</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Ehhez a bevásárláshoz nem áll rendelkezésre</string>
     <string name="Snabble.Shoppingcart.notForVendor">A kereskedő nem támogatja</string>
-    <string name="Snabble.Shoppingcart.numberOfItems">%d termék</string>
+    <plurals name="Snabble.Shoppingcart.numberOfItems">
+        <item quantity="one">%d termék</item>
+        <item quantity="other">%d termék</item>
+    </plurals>
     <string name="Snabble.Shoppingcart.numberOfItems.one">%d termék</string>
     <string name="Snabble.Shoppingcart.removeItem">%s tényleg eltávolítod?</string>
     <string name="Snabble.Shoppingcart.removeItems">Az összes terméket eltávolítod a kosárból?</string>
@@ -313,9 +345,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Kérlek, válassz</string>
     <string name="Snabble.TWINT.payNow">Fizetés TWINT segítségével</string>
     <string name="Snabble.undo">Visszavonás</string>
-    <string name="Snabble.Violations.couponAlreadyVoided">A(z) „%s“ kupon már felhasználásra került, és eltávolítottuk a kosárból</string>
-    <string name="Snabble.Violations.couponCurrentlyNotValid">A(z) „%s“ kupon pillanatnyilag nem érvényes, és eltávolítottuk a kosárból</string>
-    <string name="Snabble.Violations.couponInvalid">A(z) „%s“ kupon nem érvényes, és eltávolítottuk a kosárból</string>
-    <string name="Snabble.Violations.title">A kupon nem érvényes</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">Egy kupon már beváltásra került, és eltávolítottuk a kosárból</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">Egy kupon pillanatnyilag nem érvényes, és eltávolítottuk a kosárból</string>
+    <string name="Snabble.Violations.couponInvalid">Egy kupon nem érvényes, és eltávolítottuk a kosárból</string>
+    <string name="Snabble.Violations.title">Érvénytelen kosár</string>
     <string name="Snabble.Yes">Igen</string>
 </resources>

@@ -44,27 +44,27 @@
     <string name="Snabble.Coupons.expired">Déjà expiré</string>
     <string name="Snabble.Coupons.expiresAtDate">valable jusqu\'au %s</string>
     <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="many">encore %d jours</item>
         <item quantity="one">encore %d jour</item>
         <item quantity="other">encore %d jours</item>
-        <item quantity="many">encore %d de jours</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="many">encore %d heures</item>
         <item quantity="one">encore %d heure</item>
         <item quantity="other">encore %d heures</item>
-        <item quantity="many">encore %d heures</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="many">encore %d minutes</item>
         <item quantity="one">encore %d minute</item>
         <item quantity="other">encore %d minutes</item>
-        <item quantity="many">encore %d minutes</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="many">encore %d semaines</item>
         <item quantity="one">encore %d semaine</item>
         <item quantity="other">encore %d semaines</item>
-        <item quantity="many">encore %d semaines</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
     <string name="Snabble.Coupons.none">Aucun coupon disponible</string>
@@ -85,7 +85,7 @@
     <string name="Snabble.limitsAlert.checkoutNotAvailable">À partir d’une valeur des marchandises de %s, il n’est malheureusement plus possible d’effectuer les achats via l’application.</string>
     <string name="Snabble.limitsAlert.notAllMethodsAvailable">À partir d’une valeur des marchandises de %s, certains modes de paiement ne sont plus disponibles.</string>
     <string name="Snabble.limitsAlert.title">À noter</string>
-    <string name="Snabble.loadingProductInformation">Chargement des informations de produit...</string>
+    <string name="Snabble.loadingProductInformation">Chargement des informations de produit…</string>
     <string name="Snabble.networkError">Erreur de connexion au réseau</string>
     <string name="Snabble.No">Non</string>
     <string name="Snabble.noDiscount">pas de rabais</string>
@@ -156,7 +156,7 @@
     <string name="Snabble.PaymentStatus.step1">Localisation dans la zone des caisses</string>
     <string name="Snabble.PaymentStatus.step2">Autorisation de ton achat</string>
     <string name="Snabble.PaymentStatus.step3">Autorisation de ton paiement</string>
-    <string name="Snabble.pleaseWait">Merci d’attendre...</string>
+    <string name="Snabble.pleaseWait">Merci d’attendre…</string>
     <string name="Snabble.PostFinanceCard.payNow">Payer maintenant avec la carte PostFinance</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d de %2$d</string>
     <string name="Snabble.QRCode.didPay">Terminé</string>
@@ -233,7 +233,11 @@
     <string name="Snabble.Shoppingcart.noPaymentData">Ajouter maintenant</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Non disponible pour cet achat</string>
     <string name="Snabble.Shoppingcart.notForVendor">N’est pas pris en charge par le commerçant</string>
-    <string name="Snabble.Shoppingcart.numberOfItems">%d article</string>
+    <plurals name="Snabble.Shoppingcart.numberOfItems">
+        <item quantity="many">%d articles</item>
+        <item quantity="one">%d article</item>
+        <item quantity="other">%d articles</item>
+    </plurals>
     <string name="Snabble.Shoppingcart.removeItem">Es-tu sûr(e) de vouloir supprimer %s ?</string>
     <string name="Snabble.Shoppingcart.removeItems">Es-tu sûr(e) de vouloir supprimer tous les produits du panier ?</string>
     <string name="Snabble.ShoppingCart.title">Panier</string>

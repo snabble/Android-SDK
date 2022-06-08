@@ -36,6 +36,43 @@
     <string name="Snabble.Checkout.payAtCashRegister">Zaplatiť pri pokladni</string>
     <string name="Snabble.Checkout.title">Zaplatiť</string>
     <string name="Snabble.Checkout.verifying">Overujem</string>
+    <string name="Snabble.Coupon.activate">Aktivovať</string>
+    <string name="Snabble.Coupon.activated">Aktivovaný</string>
+    <string name="Snabble.Coupon.countdown">Platnosť kupónu končí o %s minút</string>
+    <string name="Snabble.Coupon.expired">Platnosť tohto kupónu už skončila.</string>
+    <string name="Snabble.Coupon.explanation">Tento kupón je teraz pre teba aktivovaný. Ak chceš využiť kupón, naskenuj výrobok v obchode a pridaj ho do nákupného košíka.</string>
+    <string name="Snabble.Coupons.expired">Platnosť už skončila</string>
+    <string name="Snabble.Coupons.expiresAtDate">platný do %s</string>
+    <plurals name="Snabble.Coupons.expiresInDays">
+        <item quantity="few">ešte %d dni</item>
+        <item quantity="many">ešte %d dní</item>
+        <item quantity="one">ešte %d deň</item>
+        <item quantity="other">ešte %d dní</item>
+        <item quantity="zero">Platnosť už skončila</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInHours">
+        <item quantity="few">ešte %d hodiny</item>
+        <item quantity="many">ešte %d hodín</item>
+        <item quantity="one">ešte %d hodina</item>
+        <item quantity="other">ešte %d hodín</item>
+        <item quantity="zero">Platnosť už skončila</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInMinutes">
+        <item quantity="few">ešte %d minúty</item>
+        <item quantity="many">ešte %d minút</item>
+        <item quantity="one">ešte %d minúta</item>
+        <item quantity="other">ešte %d minút</item>
+        <item quantity="zero">Platnosť už skončila</item>
+    </plurals>
+    <plurals name="Snabble.Coupons.expiresInWeeks">
+        <item quantity="few">ešte %d týždňov</item>
+        <item quantity="many">ešte %d týždňov</item>
+        <item quantity="one">ešte %d týždeň</item>
+        <item quantity="other">ešte %d týždňov</item>
+        <item quantity="zero">Platnosť už skončila</item>
+    </plurals>
+    <string name="Snabble.Coupons.none">Kupóny nie sú k dispozícii</string>
+    <string name="Snabble.Coupons.title">Kupóny</string>
     <string name="Snabble.CreditCard.payNow">Teraz zaplatiť kreditnou kartou</string>
     <string name="Snabble.Delete">Vymazať</string>
     <string name="Snabble.Done">Hotovo</string>
@@ -154,7 +191,7 @@
     <string name="Snabble.Payone.expireYear">Koniec platnosti – rok (RRRR)</string>
     <string name="Snabble.Payone.incompleteForm">Vyplň formulár úplne, prosím.</string>
     <string name="Snabble.Payone.Lastname">Priezvisko</string>
-    <string name="Snabble.pleaseWait">Čakaj, prosím...</string>
+    <string name="Snabble.pleaseWait">Čakaj, prosím…</string>
     <string name="Snabble.PostFinanceCard.payNow">Zaplatiť kartou PostFinance teraz</string>
     <string name="Snabble.QRCode.codeXofY">Kód %1$d z %2$d</string>
     <string name="Snabble.QRCode.didPay">Hotovo</string>
@@ -262,7 +299,12 @@
     <string name="Snabble.Shoppingcart.noPaymentData">Pridať teraz</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Pre tento nákup nie je k dispozícii</string>
     <string name="Snabble.Shoppingcart.notForVendor">Nepodporovaná obchodom</string>
-    <string name="Snabble.Shoppingcart.numberOfItems">%d položka</string>
+    <plurals name="Snabble.Shoppingcart.numberOfItems">
+        <item quantity="few">%d položky</item>
+        <item quantity="many">%d položiek</item>
+        <item quantity="one">%d položka</item>
+        <item quantity="other">%d položiek</item>
+    </plurals>
     <string name="Snabble.Shoppingcart.numberOfItems.one">%d položka</string>
     <string name="Snabble.Shoppingcart.removeItem">Naozaj chceš odstrániť %s z košíka?</string>
     <string name="Snabble.Shoppingcart.removeItems">Naozaj chceš odstrániť všetky produkty z košíka?</string>
@@ -313,9 +355,9 @@
     <string name="Snabble.Taxation.pleaseChoose">Vyber niektorú možnosť</string>
     <string name="Snabble.TWINT.payNow">Zaplatiť cez TWINT teraz</string>
     <string name="Snabble.undo">Vrátiť späť</string>
-    <string name="Snabble.Violations.couponAlreadyVoided">Kupón „%s“ bol už použitý a bude odstránený z nákupného koša</string>
-    <string name="Snabble.Violations.couponCurrentlyNotValid">Kupón „%s“ je momentálne neplatný a bude odstránený z nákupného koša</string>
-    <string name="Snabble.Violations.couponInvalid">Kupón „%s“ je neplatný a bude odstránený z nákupného koša</string>
-    <string name="Snabble.Violations.title">Neplatný kupón</string>
+    <string name="Snabble.Violations.couponAlreadyVoided">Jeden kupón už bol uplatnený a bude odstránený z nákupného koša</string>
+    <string name="Snabble.Violations.couponCurrentlyNotValid">Jeden kupón je momentálne neplatný a bude odstránený z nákupného koša</string>
+    <string name="Snabble.Violations.couponInvalid">Jeden kupón je neplatný a bude odstránený z nákupného koša</string>
+    <string name="Snabble.Violations.title">Neplatný nákupný kôš</string>
     <string name="Snabble.Yes">Áno</string>
 </resources>
