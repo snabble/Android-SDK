@@ -291,7 +291,10 @@
     <string name="Snabble.Shoppingcart.noPaymentData">Add now</string>
     <string name="Snabble.Shoppingcart.notForThisPurchase">Not available for this purchase</string>
     <string name="Snabble.Shoppingcart.notForVendor">Not supported by this retailer</string>
-    <string name="Snabble.Shoppingcart.numberOfItems">%d products</string>
+    <plurals name="Snabble.Shoppingcart.numberOfItems">
+        <item quantity="one">%d product</item>
+        <item quantity="other">%d products</item>
+    </plurals>
     <string name="Snabble.Shoppingcart.numberOfItems.one">%d product</string>
     <string name="Snabble.Shoppingcart.removeItem">Really remove %s?</string>
     <string name="Snabble.Shoppingcart.removeItems">Really remove all products from your shopping cart?</string>
