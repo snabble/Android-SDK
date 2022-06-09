@@ -3,11 +3,21 @@ All notable changes to this project will be documented in this file.
 
 ## [0.66.0]
 
+### Breaking Changes
+- Added "onCartDataChanged" to ShoppingCartListener
+
 ### Changed
 - Allow manual initialization by omitting 'snabble_app_id' or 'snabble_secret'
+- ShoppingCart serialization is now per shop, instead of per project
+- Allow the user to enter a PIN as a Fallback when prompting for the users Fingerprint
+- `ShoppingCartView` is now able to listen for `Snabble.checkedInProject` changes
+- `SelfScanningView` is now able to listen for `Snabble.checkedInProject` changes
 
 ### Fixed
 - Coupon manager which might cause NPE after leaving a shop
+- When a checkout can not be aborted, dont route the user automatically to the payment status screen
+- Checkout now does not get stuck in status PAYMNET_ABORT_FAILED
+- Excess whitespace on `DefaultProductConfirmationDialog` when a product has no price
 
 ## [0.65.0]
 
