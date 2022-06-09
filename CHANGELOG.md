@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.66.0]
 
+### Added
+- Add option to reset app user ID
+
 ### Changed
 - Allow manual initialization by omitting 'snabble_app_id' or 'snabble_secret'
 
