@@ -156,4 +156,15 @@ class TokenRegistry(
         }
         return token
     }
+
+    /**
+     * Delete all tokens and create a new AppUser.
+     *
+     * Returns null if not valid token could be generated. (invalid secret, timeouts, no connection)
+     */
+    @Synchronized
+    fun invalidateTokensAndCreateNewAppUser(project: Project) {
+        invalidate()
+        refreshToken(project, false)
+    }
 }
