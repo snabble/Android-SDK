@@ -67,7 +67,7 @@ interface ProductConfirmationDialog {
         /** The add to cart button text (varies if the user updates the quantity) */
         val addToCartButtonText: LiveData<String> = MutableLiveData()
         /** The price to display */
-        val price: LiveData<String> = MutableLiveData()
+        val price: LiveData<String?> = MutableLiveData()
         /** The content description of the price */
         val priceContentDescription: LiveData<String> = MutableLiveData()
         /** The original price of the product, can be null */
@@ -142,7 +142,7 @@ interface ProductConfirmationDialog {
             quantityContentDescription.postValue(restorer.quantityContentDescription)
             quantityCanBeChanged.postValue(restorer.quantityCanBeChanged)
             restorer.addToCartButtonText?.let { addToCartButtonText.postValue(it) }
-            restorer.price?.let { price.postValue(it) }
+            price.postValue(restorer.price)
             restorer.priceContentDescription?.let { priceContentDescription.postValue(it) }
             originalPrice.postValue(restorer.originalPrice)
             depositPrice.postValue(restorer.depositPrice)
@@ -246,8 +246,8 @@ interface ProductConfirmationDialog {
 
         private fun updatePrice() {
             val fullPriceText = cartItem.fullPriceText
+            price.postValue(cartItem.fullPriceText)
             if (fullPriceText != null) {
-                price.postValue(cartItem.fullPriceText)
                 priceContentDescription.postString(
                     R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice,
                     cartItem.fullPriceText
@@ -264,6 +264,8 @@ interface ProductConfirmationDialog {
                 } else {
                     originalPrice.postValue(null)
                 }
+            } else {
+                originalPrice.postValue(null)
             }
             var cartItemDepositPrice = cartItem.totalDepositPrice
             if (cartItemDepositPrice == 0) {
@@ -278,7 +280,7 @@ interface ProductConfirmationDialog {
             }
             val manualCoupons = project.coupons.filter(CouponType.MANUAL)
             when {
-                manualCoupons.isEmpty() -> enterReducedPriceButtonText.postValue(null)
+                manualCoupons.isEmpty() || cartItem.totalPrice <= 0 -> enterReducedPriceButtonText.postValue(null)
                 cartItem.coupon != null -> enterReducedPriceButtonText.postValue(cartItem.coupon.name)
                 else -> enterReducedPriceButtonText.postNullableString(R.string.Snabble_addDiscount)
             }

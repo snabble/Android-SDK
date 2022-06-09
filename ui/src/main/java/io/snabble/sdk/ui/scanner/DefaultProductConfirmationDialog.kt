@@ -36,6 +36,7 @@ import java.lang.NumberFormatException
  */
 class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDialog {
     private lateinit var quantity: EditText
+    private lateinit var quantityContainer: View
     private lateinit var quantityTextInput: TextInputLayout
     private lateinit var price: TextView
     private lateinit var originalPrice: TextView
@@ -86,6 +87,7 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
             viewModel = ProductConfirmationDialog.ViewModel(view.context, state)
         }
         quantity = view.findViewById(R.id.quantity)
+        quantityContainer = view.findViewById(R.id.quantity_container)
         quantityTextInput = view.findViewById(R.id.quantity_text_input)
         val subtitle = view.findViewById<TextView>(R.id.subtitle)
         val name = view.findViewById<TextView>(R.id.name)
@@ -147,6 +149,7 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
 
         originalPrice.bindTextOrHide(viewModel.originalPrice)
         depositPrice.bindTextOrHide(viewModel.depositPrice)
+        price.bindTextOrHide(viewModel.price)
 
         enterReducedPrice.bindTextOrHide(viewModel.enterReducedPriceButtonText)
         enterReducedPrice.setOnClickListener {
@@ -163,8 +166,7 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
         name.text = viewModel.product.name
         subtitle.setTextOrHide(viewModel.product.subtitle)
         quantity.bindEnabledState(viewModel.quantityCanBeChanged)
-        quantityTextInput.bindVisibility(viewModel.quantityVisible)
-        price.isVisible = true
+        quantityContainer.bindVisibility(viewModel.quantityVisible)
         quantity.clearFocus()
         quantityTextInput.suffixText = viewModel.cartItem.unit?.displayValue
         quantity.filters = arrayOf(InputFilterMinMax(1, ShoppingCart.MAX_QUANTITY))
@@ -184,7 +186,6 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
             }
             quantityTextInput.setBoxStrokeColorStateList(plus.strokeColor)
         }
-        price.bindText(viewModel.price)
         plus.setOnClickListener {
             var q = getQuantity()
             if (q < ShoppingCart.MAX_QUANTITY) {
