@@ -102,18 +102,23 @@ class PaymentStatusView @JvmOverloads constructor(
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
-        back.isEnabled = false
+        back.text = resources.getString(R.string.Snabble_Cancel)
         back.setOnClickListener {
-            ignoreStateChanges = true
             val state = lastState
-            checkout.reset()
-            requireFragmentActivity().finish()
 
             if (state == CheckoutState.PAYMENT_APPROVED) {
-                executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
-            }
+                ignoreStateChanges = true
+                checkout.reset()
+                requireFragmentActivity().finish()
 
-            project.coupons.update()
+                if (state == CheckoutState.PAYMENT_APPROVED) {
+                    executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
+                }
+
+                project.coupons.update()
+            } else {
+                checkout.abort()
+            }
         }
 
         checkout.state.observeView(this) {
@@ -196,7 +201,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 } else {
                     receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 }
-                back.isEnabled = true
+                back.text = resources.getString(R.string.Snabble_PaymentStatus_back)
                 backPressedCallback.isEnabled = false
                 ratingLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
