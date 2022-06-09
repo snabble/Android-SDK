@@ -14,11 +14,11 @@ All notable changes to this project will be documented in this file.
 - `SelfScanningView` is now able to listen for `Snabble.checkedInProject` changes
 - Converted to `ShoppingCartStorage` to Kotlin
 - Separated `ShoppingCart` data into `ShoppingCartData`
-- 
+
 ### Fixed
 - Coupon manager which might cause NPE after leaving a shop
 - When a checkout can not be aborted, dont route the user automatically to the payment status screen
-- Checkout now does not get stuck in status PAYMNET_ABORT_FAILED
+- Checkout now does not get stuck in status PAYMENT_ABORT_FAILED
 - Excess whitespace on `DefaultProductConfirmationDialog` when a product has no price
 
 ## [0.65.0]
