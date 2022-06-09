@@ -366,8 +366,10 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.CONNECTION_ERROR,
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
-                SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
-                progressDialog.dismiss()
+                if (isAttachedToWindow) {
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
+                    progressDialog.dismiss()
+                }
             }
             CheckoutState.PAYMENT_ABORTED -> {
                 progressDialog.dismiss()
