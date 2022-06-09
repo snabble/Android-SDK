@@ -16,14 +16,12 @@ import java.io.IOException
 import java.lang.Exception
 import java.nio.charset.Charset
 
-internal class ShoppingCartStorage(project: Project) {
-    private val project: Project
+internal class ShoppingCartStorage(val project: Project) {
     private val mainThreadHandler: Handler = Handler(Looper.getMainLooper())
     private val fileMap = mutableMapOf<String, File>()
     private var currentFile: File? = null
 
     init {
-        this.project = project
         updateFileMap()
         load()
 
@@ -54,7 +52,7 @@ internal class ShoppingCartStorage(project: Project) {
         val env = Snabble.environment?.name?.lowercase() ?: "unknown"
         Dispatch.mainThread {
             project.shops.forEach {
-                fileMap[it.id] = File(project.internalStorageDirectory, "cart/${env}/${it.id}/shoppingCart.json")
+                fileMap[it.id] = File(project.internalStorageDirectory, "cart/$env/${it.id}/shoppingCart.json")
             }
         }
     }
