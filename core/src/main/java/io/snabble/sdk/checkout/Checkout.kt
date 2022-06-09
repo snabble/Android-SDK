@@ -144,7 +144,12 @@ class Checkout @JvmOverloads constructor(
                     } else {
                         if (state.value != CheckoutState.PAYMENT_PROCESSING
                          && state.value != CheckoutState.PAYMENT_APPROVED) {
-                            notifyStateChanged(CheckoutState.PAYMENT_ABORT_FAILED)
+                            val lastState = state.value
+
+                            Dispatch.mainThread {
+                                notifyStateChanged(CheckoutState.PAYMENT_ABORT_FAILED)
+                                lastState?.let { notifyStateChanged(it) }
+                            }
                         }
                     }
                 }

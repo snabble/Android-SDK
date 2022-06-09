@@ -131,15 +131,6 @@ class RoutingTargetSupervisorView @JvmOverloads constructor(
         if (state == CheckoutState.PAYMENT_ABORT_FAILED) {
             cancelProgress.visibility = INVISIBLE
             cancel.isEnabled = true
-            AlertDialog.Builder(context)
-                .setTitle(R.string.Snabble_Payment_cancelError_title)
-                .setMessage(R.string.Snabble_Payment_cancelError_message)
-                .setPositiveButton(R.string.Snabble_OK) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .setCancelable(false)
-                .create()
-                .show()
         }
 
         currentState = state

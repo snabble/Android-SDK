@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.checkout
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -144,6 +145,18 @@ class CheckoutActivity : FragmentActivity() {
             }
             CheckoutState.PAYMENT_ABORTED -> {
                 finish()
+                null
+            }
+            CheckoutState.PAYMENT_ABORT_FAILED -> {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.Snabble_Payment_cancelError_title)
+                    .setMessage(R.string.Snabble_Payment_cancelError_message)
+                    .setPositiveButton(R.string.Snabble_OK) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setCancelable(false)
+                    .create()
+                    .show()
                 null
             }
             CheckoutState.PAYMENT_APPROVED -> {
