@@ -101,14 +101,12 @@ class UserPreferences internal constructor(context: Context) {
                 notifyOnNewAppUser(null)
                 return
             }
-            if (appUser.id != null && appUser.secret != null) {
-                sharedPreferences.edit()
-                    .putString(appUserIdKey, appUser.id)
-                    .putString(appUserIdSecret, appUser.secret)
-                    .apply()
-                Logger.d("Setting app user to %s", appUser.id)
-                notifyOnNewAppUser(appUser)
-            }
+            sharedPreferences.edit()
+                .putString(appUserIdKey, appUser.id)
+                .putString(appUserIdSecret, appUser.secret)
+                .apply()
+            Logger.d("Setting app user to %s", appUser.id)
+            notifyOnNewAppUser(appUser)
         }
 
 
@@ -143,8 +141,7 @@ class UserPreferences internal constructor(context: Context) {
             val appUserString = String(Base64.decode(appUserBase64, Base64.DEFAULT))
             val split = appUserString.split(":")
             if (split.size == 2) {
-                val appUserId = split[0]
-                val appUserSecret = split[1]
+                val (appUserId, appUserSecret) = split
                 if (appUserId.isNotEmpty() && appUserSecret.isNotEmpty()) {
                     appUser = AppUser(appUserId, appUserSecret)
                 }
@@ -158,8 +155,7 @@ class UserPreferences internal constructor(context: Context) {
      * Does not contain any personalized information.
      */
     var clientId: String?
-        get() =
-            sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null)
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null)
         set(clientId) {
             sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_CLIENT_ID, clientId)
@@ -168,8 +164,7 @@ class UserPreferences internal constructor(context: Context) {
 
     internal var lastCheckedInShopId: String?
         @RestrictTo(RestrictTo.Scope.LIBRARY)
-        get() =
-            sharedPreferences.getString(SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP, null)
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP, null)
         @RestrictTo(RestrictTo.Scope.LIBRARY)
         set(shopId) {
             sharedPreferences.edit()
