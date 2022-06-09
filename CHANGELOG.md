@@ -8,11 +8,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Allow manual initialization by omitting 'snabble_app_id' or 'snabble_secret'
-- ShoppingCart serialization is now per shop, instead of per project
+- `ShoppingCart` serialization is now per shop, instead of per project
 - Allow the user to enter a PIN as a Fallback when prompting for the users Fingerprint
 - `ShoppingCartView` is now able to listen for `Snabble.checkedInProject` changes
 - `SelfScanningView` is now able to listen for `Snabble.checkedInProject` changes
-
+- Converted to `ShoppingCartStorage` to Kotlin
+- Separated `ShoppingCart` data into `ShoppingCartData`
+- 
 ### Fixed
 - Coupon manager which might cause NPE after leaving a shop
 - When a checkout can not be aborted, dont route the user automatically to the payment status screen
