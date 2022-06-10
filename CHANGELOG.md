@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.66.1]
+## [0.66.2]
 
 This release is identical to 0.66.0, but re-released to deploy the documentation
 
