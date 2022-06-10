@@ -13,7 +13,6 @@ import androidx.lifecycle.MutableLiveData;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.snabble.sdk.checkout.DefaultCheckoutApi;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
@@ -392,10 +390,34 @@ public class PaymentSelectionHelper {
             return Integer.compare(p1, p2);
         });
 
+        Entry selected = findMatchingEntry(entries, selectedEntry.getValue());
+        if (selected != null && !selected.isAvailable) {
+            for (Entry entry : entries) {
+                if (entry.isAdded && entry.isAvailable) {
+                    select(entry);
+                    break;
+                }
+            }
+        }
+
         this.entries = entries;
         this.isOffline = false;
     }
 
+    private Entry findMatchingEntry(List<Entry> entries, Entry entry) {
+        if (entry == null) {
+            return null;
+        }
+
+        for (Entry e : entries) {
+            if (e.paymentMethod == entry.paymentMethod &&
+               (e.paymentCredentials == null || (e.paymentCredentials.getId().equals(entry.paymentCredentials.getId())))) {
+                return e;
+            }
+        }
+
+        return null;
+    }
 
     public void select(PaymentSelectionHelper.Entry entry) {
         setSelectedEntry(entry);
