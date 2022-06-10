@@ -10,6 +10,7 @@ io.snabble.sdk.codes
 io.snabble.sdk.codes.gs1
 io.snabble.sdk.codes.templates
 io.snabble.sdk.codes.templates.groups
+io.snabble.sdk.coupons
 io.snabble.sdk.encodedcodes
 io.snabble.sdk.googlepay
 io.snabble.sdk.payment
@@ -20,6 +21,7 @@ io.snabble.sdk.ui
 io.snabble.sdk.ui.cart
 io.snabble.sdk.ui.checkout
 io.snabble.sdk.ui.checkout.routingtargets
+io.snabble.sdk.ui.coupon
 io.snabble.sdk.ui.payment
 io.snabble.sdk.ui.scanner
 io.snabble.sdk.ui.search
