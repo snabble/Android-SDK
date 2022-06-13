@@ -351,16 +351,12 @@ object Snabble {
             return
         }
 
-        var version = this.config.versionName
-        if (version == null) {
-            version = try {
-                val pInfo = application.packageManager.getPackageInfo(application.packageName, 0)
-                pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
-            } catch (e: PackageManager.NameNotFoundException) {
-                "1.0"
-            }
+        val version = try {
+            val pInfo = application.packageManager.getPackageInfo(application.packageName, 0)
+            pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "1.0"
         }
-        versionName = version
 
         internalStorageDirectory = File(application.filesDir, "snabble/${this.config.appId}/")
         internalStorageDirectory.mkdirs()

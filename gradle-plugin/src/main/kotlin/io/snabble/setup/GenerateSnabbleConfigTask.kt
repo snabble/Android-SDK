@@ -19,9 +19,6 @@ abstract class GenerateSnabbleConfigTask : DefaultTask() {
     @get:Optional
     abstract val bundledMetadataAssetPath: Property<String?>
     @get:Input
-    @get:Optional
-    abstract val versionName: Property<String?>
-    @get:Input
     abstract val generateSearchIndex: Property<Boolean>
     @get:Input
     abstract val maxProductDatabaseAge: Property<Long>
@@ -29,9 +26,6 @@ abstract class GenerateSnabbleConfigTask : DefaultTask() {
     abstract val maxShoppingCartAge: Property<Long>
     @get:Input
     abstract val disableCertificatePinning: Property<Boolean>
-    @get:Input
-    @get:Optional
-    abstract val initialSQL: ListProperty<String>
     @get:Input
     abstract val vibrateToConfirmCartFilled: Property<Boolean>
     @get:Input
@@ -58,12 +52,10 @@ abstract class GenerateSnabbleConfigTask : DefaultTask() {
             "secret" to secret.orNull,
             "endpointBaseUrl" to endpointBaseUrl.orNull,
             "bundledMetadataAssetPath" to bundledMetadataAssetPath.orNull,
-            "versionName" to versionName.orNull,
             "generateSearchIndex" to generateSearchIndex.orNull,
             "maxProductDatabaseAge" to maxProductDatabaseAge.orNull,
             "maxShoppingCartAge" to maxShoppingCartAge.orNull,
             "disableCertificatePinning" to disableCertificatePinning.orNull,
-            "initialSQL" to initialSQL.orNull,
             "vibrateToConfirmCartFilled" to vibrateToConfirmCartFilled.orNull,
             "loadActiveShops" to loadActiveShops.orNull,
             "checkInRadius" to checkInRadius.orNull,
@@ -73,9 +65,7 @@ abstract class GenerateSnabbleConfigTask : DefaultTask() {
             "manualProductDatabaseUpdates" to manualProductDatabaseUpdates.orNull,
         )
         val config = properties.entries
-            .filterNot { (_, value) ->
-                value == null || (value as? List<Any?>)?.isEmpty() == true
-            }
+            .filter { (_, value) -> value != null }
             .joinToString("\n") { (key, value) -> "$key=$value" }
         configFile.writeText(config)
     }

@@ -45,7 +45,6 @@ open class SnabblePlugin : Plugin<Project> {
                 it.maxProductDatabaseAge.set(extension.maxProductDatabaseAge)
                 it.maxShoppingCartAge.set(extension.maxShoppingCartAge)
                 it.disableCertificatePinning.set(extension.disableCertificatePinning)
-                it.initialSQL.set(extension.initialSQL)
                 it.vibrateToConfirmCartFilled.set(extension.vibrateToConfirmCartFilled)
                 it.loadActiveShops.set(extension.loadActiveShops)
                 it.checkInRadius.set(extension.checkInRadius)
@@ -116,7 +115,6 @@ open class SnabbleExtension(project: Project) {
     var maxProductDatabaseAge: Long = TimeUnit.HOURS.toMillis(1)
     var maxShoppingCartAge: Long = TimeUnit.HOURS.toMillis(4)
     var disableCertificatePinning: Boolean = false
-    var initialSQL: List<String> = emptyList()
     var vibrateToConfirmCartFilled: Boolean = false
     var loadActiveShops: Boolean = false
     var checkInRadius: Float = 500.0f

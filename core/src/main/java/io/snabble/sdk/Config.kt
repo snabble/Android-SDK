@@ -47,16 +47,6 @@ data class Config (
     var bundledMetadataAssetPath: String? = null,
 
     /**
-     * Optional. Used to override the versionName appended to the metadata url.
-     *
-     * Defaults to the versionName in the app package.
-     *
-     * Must be in the format %d.%d
-     */
-    @JvmField
-    var versionName: String? = null,
-
-    /**
      * If set to true, creates an full text index to support searching in the product database
      * using findByName or searchByName.
      *

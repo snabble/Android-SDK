@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import androidx.startup.Initializer
 import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
+import java.lang.IllegalStateException
+import java.util.*
 
 /**
  * Initializer for the snabble SDK using androidx.startup
@@ -23,7 +25,7 @@ class SnabbleInitializer : Initializer<Snabble> {
         fun Properties.getBoolean(key: String, default: Boolean) =
             getProperty(key).toBooleanStrictOrNull() ?: default
         fun Properties.getLong(key: String, default: Long) =
-            getProperty(key).toLongOrDefault(default)
+            getProperty(key).toLongOrNull() ?: default
         fun Properties.getFloat(key: String, default: Float) =
             getProperty(key).toFloatOrNull() ?: default
         if (hasPropertiesFile) {
@@ -72,12 +74,10 @@ class SnabbleInitializer : Initializer<Snabble> {
                 endpointBaseUrl = getString("snabble_endpoint_baseurl", endpointBaseUrl)
                 secret = getString("snabble_secret", secret)
                 bundledMetadataAssetPath = getString("snabble_bundled_metadata_asset_path", bundledMetadataAssetPath)
-                versionName = getString("snabble_version_name", versionName)
                 generateSearchIndex = getBoolean("snabble_generate_search_index", generateSearchIndex)
                 maxProductDatabaseAge = getLong("snabble_max_product_database_age", maxProductDatabaseAge)
                 maxShoppingCartAge = getLong("snabble_max_shopping_cart_age", maxShoppingCartAge)
                 disableCertificatePinning = getBoolean("snabble_disable_certificate_pinning")
-                initialSQL = getStringArrayList("snabble_initial_sql") ?: initialSQL
                 vibrateToConfirmCartFilled = getBoolean("snabble_vibrate_to_confirm_cart_filled", vibrateToConfirmCartFilled)
                 loadActiveShops = getBoolean("snabble_load_active_shops", loadActiveShops)
                 checkInRadius = getFloat("snabble_check_in_radius", checkInRadius)
