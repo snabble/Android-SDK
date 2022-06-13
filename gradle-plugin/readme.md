@@ -1,6 +1,8 @@
-# The gradle plugin for Snabble [![License: MIT,][license-img]][license-url] [![at Gradle Plugin Portal,][gradle-img]][gradle-url]
+# Snabble Gradle Plugin [![License: MIT,][license-img]][license-url] [![at Gradle Plugin Portal,][gradle-img]][gradle-url]
 
-TODO add background why to use this plugin
+The snabble Gradle Plugin is for the simplest setup of the snabble Android SDK. With this plugin you can reduce the
+setup to 3 lines in your `build.gradle`. You can also download the manifest in your CI to bundle the latest metadata
+with your app so that your user it can use your app with all required meta data.
 
 ## Usage
 
@@ -16,7 +18,13 @@ plugins {
 
 ### Using the plugin
 
-TODO
+The absolut minimum is to add those two lines to make the SDK already working:
+```groovy
+snabble.appId = 'your-app-id'
+snabble.secret = 'your-app-secret'
+```
+
+That's it. However we recommend to use the normal dsl syntax like this:
 
 ```groovy
 snabble {
@@ -26,9 +34,15 @@ snabble {
 }
 ```
 
-# Development
+With the last line added the manifest will be downloaded for each release build. If you want to use it also in debug
+builds you need to execute the gradle task `downloadSnabbleMetadata` or set `prefetchMetaDataForDebugBuilds = true`.
+Caching is applied so the file won't be downloaded on each build (except clean builds).
 
-1. You need to checkout this repository
+# Plugin development
+
+If you want to contribute to this plugin you need:
+
+1. Checkout this repository
 2. Deploy the plugin to your local maven repository:
 
     ```shell

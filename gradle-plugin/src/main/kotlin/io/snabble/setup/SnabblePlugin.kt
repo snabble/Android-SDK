@@ -11,6 +11,9 @@ import org.gradle.api.Project
 import java.io.File
 import java.lang.IllegalStateException
 
+/**
+ * The snabble gradle plugin.
+ */
 open class SnabblePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("snabble", SnabbleExtension::class.java, project)
@@ -58,7 +61,7 @@ open class SnabblePlugin : Plugin<Project> {
                 // generate config.properties
                 project.tasks.getByName("generate${variant.capitalizedName()}Assets").dependsOn += generateConfigTask
                 // prefetch meta data
-                if (!variant.buildType.isDebuggable && extension.prefetchMetaData) {
+                if (!variant.buildType.isDebuggable || extension.prefetchMetaDataForDebugBuilds && extension.prefetchMetaData) {
                     project.tasks.getByName("generate${variant.capitalizedName()}Assets").dependsOn += downloadTask
                 }
                 // inject assets directory

@@ -14,6 +14,9 @@ import java.nio.file.StandardOpenOption
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 
+/**
+ * The task to download the snabble metadata.
+ */
 @CacheableTask
 abstract class DownloadTask : DefaultTask() {
     //init {
@@ -29,6 +32,9 @@ abstract class DownloadTask : DefaultTask() {
     @get:OutputFile
     abstract var outputFile: File
 
+    /**
+     * Start the download of the metadata.
+     */
     @TaskAction
     fun download() {
         val outputDirFile = outputFile.parentFile
@@ -54,7 +60,8 @@ abstract class DownloadTask : DefaultTask() {
     }
 
     /**
-     * Copy bytes from an input stream to a file and log progress
+     * Copy bytes from an input stream to a file and log progress.
+     *
      * @param is the input stream to read
      * @param destFile the file to write to
      * @param progressLogger progress logger
@@ -116,12 +123,9 @@ abstract class DownloadTask : DefaultTask() {
     }
 
     /**
-     * If [.tempAndMove] is `true`, copy bytes from an input
-     * stream to a temporary file and log progress. Upon successful
-     * completion, move the temporary file to the given destination. If
-     * [.tempAndMove] is `false`, just forward to
-     * [.stream].
-     * @param is the input stream to read
+     * Copy bytes from an input stream to a temporary file and log progress. Upon successful
+     * completion, move the temporary file to the given destination.
+     *
      * @param destFile the destination file
      * @param progressLogger progress logger
      * @throws IOException if an I/O error occurs
@@ -150,8 +154,7 @@ abstract class DownloadTask : DefaultTask() {
     }
 
     /**
-     * Move a file by calling [File.renameTo] first and, if this
-     * fails, by copying and deleting it.
+     * Move a file by calling [File.renameTo] first and, if this fails, by copying and deleting it.
      * @param src the file to move
      * @param dest the destination
      * @param progressLogger progress logger

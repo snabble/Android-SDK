@@ -6,6 +6,9 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import java.io.File
 
+/**
+ * Generated the properties file for the SDK.
+ */
 @CacheableTask
 abstract class GenerateSnabbleConfigTask : DefaultTask() {
     @get:Input
@@ -42,9 +45,15 @@ abstract class GenerateSnabbleConfigTask : DefaultTask() {
     @get:Input
     abstract val manualProductDatabaseUpdates: Property<Boolean>
 
+    /**
+     * The path of the config file.
+     */
     @get:OutputFile
     abstract var configFile: File
 
+    /**
+     * Write all the input values in a properties file on the path of [configFile].
+     */
     @TaskAction
     fun generateManifest() {
         val properties = mapOf(

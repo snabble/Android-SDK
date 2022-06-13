@@ -8,16 +8,7 @@ import java.io.IOException
 import java.util.*
 
 internal class UserAgentInterceptor : Interceptor {
-    val userAgent: String
-
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val originalRequest: Request = chain.request()
-        val requestWithUserAgent = originalRequest.newBuilder()
-            .header("User-Agent", userAgent)
-            .build()
-        return chain.proceed(requestWithUserAgent)
-    }
+    private val userAgent: String
 
     init {
         val props = Properties()
@@ -28,5 +19,14 @@ internal class UserAgentInterceptor : Interceptor {
         val osVersion = System.getProperty("os.version")
 
         userAgent = "SnabbleGradlePlugin/$version ($osName $osVersion; $osArch) okhttp/${OkHttp.VERSION}"
+    }
+
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val originalRequest: Request = chain.request()
+        val requestWithUserAgent = originalRequest.newBuilder()
+            .header("User-Agent", userAgent)
+            .build()
+        return chain.proceed(requestWithUserAgent)
     }
 }
