@@ -10,7 +10,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
 import java.lang.IllegalStateException
-import java.util.concurrent.TimeUnit
 
 open class SnabblePlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -102,24 +101,4 @@ open class SnabblePlugin : Plugin<Project> {
 
     @Suppress("DEPRECATION") // For BaseVariant should be replaced in later studio versions
     private fun BaseVariant.capitalizedName() = Character.toUpperCase(name[0]) + name.substring(1)
-}
-
-open class SnabbleExtension(project: Project) {
-    var appId: String? = null
-    var secret: String? = null
-    var endpointBaseUrl: String? = null
-    var prefetchMetaData = false
-    var bundledMetadataAssetPath: String? = null
-        get() = field ?: if (prefetchMetaData) "snabble/metadata.json" else null
-    var generateSearchIndex: Boolean = false
-    var maxProductDatabaseAge: Long = TimeUnit.HOURS.toMillis(1)
-    var maxShoppingCartAge: Long = TimeUnit.HOURS.toMillis(4)
-    var disableCertificatePinning: Boolean = false
-    var vibrateToConfirmCartFilled: Boolean = false
-    var loadActiveShops: Boolean = false
-    var checkInRadius: Float = 500.0f
-    var checkOutRadius: Float = 1000.0f
-    var lastSeenThreshold: Long = TimeUnit.MINUTES.toMillis(15)
-    var networkInterceptor: String? = null
-    var manualProductDatabaseUpdates: Boolean = false
 }
