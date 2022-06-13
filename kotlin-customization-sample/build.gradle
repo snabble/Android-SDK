@@ -35,7 +35,7 @@ android {
 
 snabble {
     appId = "snabble-sdk-demo-app-oguh3x"
-    secret = "secret"
+    secret = "2TKKEG5KXWY6DFOGTZKDUIBTNIRVCYKFZBY32FFRUUWIUAFEIBHQ===="
     prefetchMetaData = true
 }
 
