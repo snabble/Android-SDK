@@ -12,6 +12,14 @@ import okhttp3.Interceptor
  */
 class SnabbleInitializer : Initializer<Snabble> {
     override fun create(context: Context): Snabble {
+        var hasPropertiesFile = false
+        var hasMetaData = false
+        context.resources.assets.list("snabble/")?.forEach {
+            hasPropertiesFile = hasPropertiesFile || it.endsWith("config.properties")
+            hasMetaData = hasMetaData || it.endsWith("metadata.json")
+        }
+        println("### hasPropertiesFile=$hasPropertiesFile hasMetaData=$hasMetaData")
+
         val app = context.applicationContext as Application
         val applicationInfo = app.packageManager.getApplicationInfo(app.packageName, PackageManager.GET_META_DATA)
         with(applicationInfo.metaData) {

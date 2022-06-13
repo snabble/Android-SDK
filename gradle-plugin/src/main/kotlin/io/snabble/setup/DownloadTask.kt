@@ -16,6 +16,13 @@ import java.util.concurrent.Future
 
 @CacheableTask
 abstract class DownloadTask : DefaultTask() {
+    //init {
+    //    outputs.upToDateWhen { task ->
+    //        // TODO 24h caching
+    //        outputFile.exists()
+    //    }
+    //}
+
     @get:Input
     abstract val url: Property<String>
 
