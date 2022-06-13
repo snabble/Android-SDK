@@ -12,15 +12,55 @@ import okhttp3.Interceptor
  */
 class SnabbleInitializer : Initializer<Snabble> {
     override fun create(context: Context): Snabble {
+        val app = context.applicationContext as Application
         var hasPropertiesFile = false
         var hasMetaData = false
         context.resources.assets.list("snabble/")?.forEach {
             hasPropertiesFile = hasPropertiesFile || it.endsWith("config.properties")
             hasMetaData = hasMetaData || it.endsWith("metadata.json")
         }
-        println("### hasPropertiesFile=$hasPropertiesFile hasMetaData=$hasMetaData")
 
-        val app = context.applicationContext as Application
+        fun Properties.getBoolean(key: String, default: Boolean) =
+            getProperty(key).toBooleanStrictOrNull() ?: default
+        fun Properties.getLong(key: String, default: Long) =
+            getProperty(key).toLongOrDefault(default)
+        fun Properties.getFloat(key: String, default: Float) =
+            getProperty(key).toFloatOrNull() ?: default
+        if (hasPropertiesFile) {
+            val properties = Properties()
+            properties.load(context.resources.assets.open("snabble/config.properties"))
+            val config = Config().apply {
+                appId = properties.getProperty("appId")
+                endpointBaseUrl = properties.getProperty("endpointBaseUrl")
+                secret = properties.getProperty("secret")
+                bundledMetadataAssetPath = properties.getProperty("bundledMetadataAssetPath")
+                generateSearchIndex = properties.getBoolean("generateSearchIndex", generateSearchIndex)
+                maxProductDatabaseAge = properties.getLong("maxProductDatabaseAge", maxProductDatabaseAge)
+                maxShoppingCartAge = properties.getLong("maxShoppingCartAge", maxShoppingCartAge)
+                disableCertificatePinning = properties.getBoolean("disableCertificatePinning", disableCertificatePinning)
+                vibrateToConfirmCartFilled = properties.getBoolean("vibrateToConfirmCartFilled", vibrateToConfirmCartFilled)
+                loadActiveShops = properties.getBoolean("loadActiveShops", loadActiveShops)
+                checkInRadius = properties.getFloat("checkInRadius", checkInRadius)
+                checkOutRadius = properties.getFloat("checkOutRadius", checkOutRadius)
+                lastSeenThreshold = properties.getLong("lastSeenThreshold", lastSeenThreshold)
+                networkInterceptor =
+                    try {
+                        Class.forName(properties.getProperty("networkInterceptor", null))?.newInstance() as Interceptor?
+                    } catch (e: Throwable) {
+                        Logger.w("Could not instantiate network interceptor", e.message)
+                        null
+                    }
+                manualProductDatabaseUpdates = properties.getBoolean("manualProductDatabaseUpdates", manualProductDatabaseUpdates)
+            }
+
+            if (config.appId == null || config.secret == null) {
+                throw IllegalStateException("Please file a bug report with our build.gradle file. This state should not be possible.")
+            } else {
+                Snabble.setup(app, config)
+                return Snabble
+            }
+        }
+
         val applicationInfo = app.packageManager.getApplicationInfo(app.packageName, PackageManager.GET_META_DATA)
         with(applicationInfo.metaData) {
             if (getBoolean("snabble_auto_initialization_disabled")) {
