@@ -29,7 +29,8 @@ open class SnabblePlugin : Plugin<Project> {
                 val app = project.extensions.getByType(BaseExtension::class.java) as AppExtension
                 val appVersion = app.defaultConfig.versionName ?: throw IllegalStateException("No app version number detected")
                 it.url.set("https://api.snabble.io/metadata/app/$appId/android/$appVersion")
-                it.outputFile = File(baseDir, "assets/snabble/metadata.json")
+                val path = extension.bundledMetadataAssetPath ?: "snabble/metadata.json"
+                it.outputFile = File(baseDir, "assets/$path")
             }
 
             val generateConfigTask = project.tasks.register(
@@ -40,7 +41,6 @@ open class SnabblePlugin : Plugin<Project> {
                 it.secret.set(extension.secret ?: throw IllegalStateException("You must define the secret"))
                 it.endpointBaseUrl.set(extension.endpointBaseUrl)
                 it.bundledMetadataAssetPath.set(extension.bundledMetadataAssetPath)
-                it.versionName.set(extension.versionName)
                 it.generateSearchIndex.set(extension.generateSearchIndex)
                 it.maxProductDatabaseAge.set(extension.maxProductDatabaseAge)
                 it.maxShoppingCartAge.set(extension.maxShoppingCartAge)
@@ -110,7 +110,7 @@ open class SnabbleExtension(project: Project) {
     var endpointBaseUrl: String? = null
     var prefetchMetaData = false
     var bundledMetadataAssetPath: String? = null
-    var versionName: String? = null
+        get() = field ?: if (prefetchMetaData) "snabble/metadata.json" else null
     var generateSearchIndex: Boolean = false
     var maxProductDatabaseAge: Long = TimeUnit.HOURS.toMillis(1)
     var maxShoppingCartAge: Long = TimeUnit.HOURS.toMillis(4)

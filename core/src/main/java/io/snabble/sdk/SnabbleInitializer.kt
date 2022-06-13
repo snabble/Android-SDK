@@ -16,10 +16,8 @@ class SnabbleInitializer : Initializer<Snabble> {
     override fun create(context: Context): Snabble {
         val app = context.applicationContext as Application
         var hasPropertiesFile = false
-        var hasMetaData = false
         context.resources.assets.list("snabble/")?.forEach {
             hasPropertiesFile = hasPropertiesFile || it.endsWith("config.properties")
-            hasMetaData = hasMetaData || it.endsWith("metadata.json")
         }
 
         fun Properties.getBoolean(key: String, default: Boolean) =
@@ -28,12 +26,14 @@ class SnabbleInitializer : Initializer<Snabble> {
             getProperty(key).toLongOrNull() ?: default
         fun Properties.getFloat(key: String, default: Float) =
             getProperty(key).toFloatOrNull() ?: default
+
+        // load properties created by the gradle plugin
         if (hasPropertiesFile) {
             val properties = Properties()
             properties.load(context.resources.assets.open("snabble/config.properties"))
             val config = Config().apply {
                 appId = properties.getProperty("appId")
-                endpointBaseUrl = properties.getProperty("endpointBaseUrl")
+                endpointBaseUrl = properties.getProperty("endpointBaseUrl") ?: endpointBaseUrl
                 secret = properties.getProperty("secret")
                 bundledMetadataAssetPath = properties.getProperty("bundledMetadataAssetPath")
                 generateSearchIndex = properties.getBoolean("generateSearchIndex", generateSearchIndex)
