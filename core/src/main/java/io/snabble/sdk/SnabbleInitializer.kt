@@ -15,9 +15,11 @@ import java.util.*
 class SnabbleInitializer : Initializer<Snabble> {
     override fun create(context: Context): Snabble {
         val app = context.applicationContext as Application
-        var hasPropertiesFile = false
-        context.resources.assets.list("snabble/")?.forEach {
-            hasPropertiesFile = hasPropertiesFile || it.endsWith("config.properties")
+        val propertiesFiles = mutableMapOf<Environment, String>()
+        context.resources.assets.list("snabble/")?.forEach { path ->
+            Environment.values().forEach { env ->
+                if (path == "snabble/config$env.properties") propertiesFiles[env] = path
+            }
         }
 
         fun Properties.getBoolean(key: String, default: Boolean) =
@@ -28,9 +30,10 @@ class SnabbleInitializer : Initializer<Snabble> {
             getProperty(key).toFloatOrNull() ?: default
 
         // load properties created by the gradle plugin
-        if (hasPropertiesFile) {
+        val path = propertiesFiles[UserPreferences(context).environment]
+        if (path != null) {
             val properties = Properties()
-            properties.load(context.resources.assets.open("snabble/config.properties"))
+            properties.load(context.resources.assets.open(path))
             val config = Config().apply {
                 appId = properties.getProperty("appId")
                 endpointBaseUrl = properties.getProperty("endpointBaseUrl") ?: endpointBaseUrl
@@ -104,7 +107,5 @@ class SnabbleInitializer : Initializer<Snabble> {
         }
     }
 
-    override fun dependencies(): List<Class<out Initializer<*>>> {
-        return emptyList()
-    }
+    override fun dependencies() = emptyList<Class<out Initializer<*>>>()
 }

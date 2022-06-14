@@ -1,125 +1,107 @@
 package io.snabble.setup
 
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.internal.api.DefaultAndroidSourceSet
+import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Project
-import java.util.concurrent.TimeUnit
+import java.io.File
+import java.lang.IllegalStateException
 
-/**
- * Configuration of the snabble gradle plugin.
- */
-open class SnabbleExtension(project: Project) {
-    /**
-     * The project identifier, which is used in the communication with the backend.
-     */
-    var appId: String? = null
+open class SnabbleExtension(private val project: Project) {
+    val environments: Map<Environment, BuildEnvironment> = mutableMapOf()
+    private val baseDir = File(
+        project.buildDir,
+        "intermediates/snabble"
+    )
 
-    /**
-     * The secret needed for Totp token generation
-     */
-    var secret: String? = null
+    private fun getEnvironment(environment: Environment) =
+        (environments as MutableMap<Environment, BuildEnvironment>).getOrPut(environment) {
+            BuildEnvironment(environment)
+        }
 
-    /**
-     * Optional. The endpoint url of the snabble backend. For example "https://api.snabble.io" for the Production
-     * environment.
-     * Can be `null` to use the Production environment.
-     */
-    var endpointBaseUrl: String? = null
+    fun production(environment: Action<BuildEnvironment>) {
+        environment.execute(getEnvironment(Environment.Production))
+        createTasks(Environment.Production)
+    }
 
-    /**
-     * Optional. Set to `true` to download the metadata to [bundledMetadataAssetPath]. Is always `true` when
-     * [prefetchMetaDataForDebugBuilds] is set to `true`.
-     */
-    var prefetchMetaData = false
-        get() = prefetchMetaDataForDebugBuilds || field
+    fun staging(environment: Action<BuildEnvironment>) {
+        environment.execute(getEnvironment(Environment.Staging))
+        createTasks(Environment.Staging)
+    }
 
-    /**
-     * Optional. Set to `true` to download the metadata for each build similar to [prefetchMetaData]. The metadata are
-     * stored to [bundledMetadataAssetPath].
-     */
-    var prefetchMetaDataForDebugBuilds = false
+    fun testing(environment: Action<BuildEnvironment>) {
+        environment.execute(getEnvironment(Environment.Testing))
+        createTasks(Environment.Testing)
+    }
 
-    /**
-     * Relative path from the assets folder which points to a bundled file which contains the metadata.
-     *
-     * This file gets initially used to initialize the SDK before network requests are made,
-     * or be able to use the sdk in the case of no network connection.
-     *
-     * Optional. If no file is specified `"snabble/metadata.json"` will be used.
-     */
-    var bundledMetadataAssetPath: String? = null
-        get() = field ?: if (prefetchMetaData) "snabble/metadata.json" else null
+    private fun createTasks(environment: Environment) {
+        val extension = environments[environment]!!
+        val downloadTask = project.tasks.register(
+            "downloadSnabble${environment}Metadata",
+            DownloadTask::class.java
+        ) {
+            val appId = extension.appId ?: throw IllegalStateException("You must define the app id in order to download the manifest")
+            val app = project.extensions.getByType(BaseExtension::class.java) as AppExtension
+            val appVersion = app.defaultConfig.versionName ?: throw IllegalStateException("No app version number detected")
+            it.url.set("${environment.baseUrl}/metadata/app/$appId/android/$appVersion")
+            val path = extension.bundledMetadataAssetPath ?: "snabble/metadata$environment.json"
+            it.outputFile = File(baseDir, "assets/$path")
+        }
 
-    /**
-     * If set to true, creates an full text index to support searching in the product database
-     * using findByName or searchByName.
-     *
-     * Note that this increases setup time of the ProductDatabase, and it may not be
-     * immediately available offline.
-     */
-    var generateSearchIndex: Boolean = false
+        val generateConfigTask = project.tasks.register(
+            "generateSnabble${environment}Config",
+            GenerateSnabbleConfigTask::class.java
+        ) {
+            it.appId.set(extension.appId ?: throw IllegalStateException("You must define the app id"))
+            // environment secrets
+            it.secret.set(extension.secret ?: throw IllegalStateException("You must define the secret"))
+            it.endpointBaseUrl.set(extension.endpointBaseUrl)
+            it.bundledMetadataAssetPath.set(extension.bundledMetadataAssetPath)
+            it.generateSearchIndex.set(extension.generateSearchIndex)
+            it.maxProductDatabaseAge.set(extension.maxProductDatabaseAge)
+            it.maxShoppingCartAge.set(extension.maxShoppingCartAge)
+            it.disableCertificatePinning.set(extension.disableCertificatePinning)
+            it.vibrateToConfirmCartFilled.set(extension.vibrateToConfirmCartFilled)
+            it.loadActiveShops.set(extension.loadActiveShops)
+            it.checkInRadius.set(extension.checkInRadius)
+            it.checkOutRadius.set(extension.checkOutRadius)
+            it.lastSeenThreshold.set(extension.lastSeenThreshold)
+            it.networkInterceptor.set(extension.networkInterceptor)
+            it.manualProductDatabaseUpdates.set(extension.manualProductDatabaseUpdates)
+            it.configFile = File(baseDir, "assets/snabble/config$environment.properties")
+        }
 
-    /**
-     * The time that the database is allowed to be out of date. After the specified time in
-     * milliseconds the database only uses online requests for asynchronous requests.
-     *
-     * Successfully calling [ProductDatabase.update] resets the timer.
-     *
-     * The time is specified in milliseconds.
-     *
-     * The default value is 1 hour.
-     */
-    var maxProductDatabaseAge: Long = TimeUnit.HOURS.toMillis(1)
+        project.extensions.getByType(BaseExtension::class.java).forEachVariant { variant ->
+            // generate config{Environment}.properties
+            project.tasks.getByName("generate${variant.capitalizedName()}Assets").dependsOn += generateConfigTask
+            // prefetch meta data
+            if (!variant.buildType.isDebuggable && extension.prefetchMetaData) {
+                project.tasks.getByName("generate${variant.capitalizedName()}Assets").dependsOn += downloadTask
+            }
+            // inject assets directory
+            variant.sourceSets.forEach { sourceSet ->
+                (sourceSet as DefaultAndroidSourceSet).assets.srcDir(project.file(File(baseDir, "assets")))
+            }
+        }
+    }
 
-    /**
-     * The time that the shopping cart is allowed to be alive after the last modification.
-     *
-     * The time is specified in milliseconds.
-     *
-     * The default value is 4 hours.
-     */
-    var maxShoppingCartAge: Long = TimeUnit.HOURS.toMillis(4)
+    @Suppress("DEPRECATION") // For BaseVariant should be replaced in later studio versions
+    private fun BaseExtension.forEachVariant(action: (BaseVariant) -> Unit) {
+        when (this) {
+            is AppExtension -> applicationVariants.all(action)
+            is LibraryExtension -> {
+                libraryVariants.all(action)
+            }
+            else -> throw GradleException(
+                "deeplink builder plugin must be used with android app, library or feature plugin"
+            )
+        }
+    }
 
-    /** If set to true, disables certificate pinning. Not recommended for production! */
-    var disableCertificatePinning: Boolean = false
-
-    /** Vibrate while adding a product to the cart, by default false. */
-    var vibrateToConfirmCartFilled: Boolean = false
-
-    /**
-     * Set to true, to load shops that are marked as pre launch
-     * and are not part of the original metadata in the backend
-     * (for example for testing shops in production before a go-live)
-     */
-    var loadActiveShops: Boolean = false
-
-    /**
-     * The radius in which the CheckInManager tries to check in a shop.
-     *
-     * In meters.
-     */
-    var checkInRadius: Float = 500.0f
-
-    /**
-     * The radius in which the CheckInManager tries to stay in a shop, if already in it.
-     * If outside of this radius and the lastSeenThreshold, you will be checked out.
-     */
-    var checkOutRadius: Float = 1000.0f
-
-    /**
-     * The time in milliseconds which we keep you checked in at a shop.
-     *
-     * The timer will be refreshed while you are still inside the shop
-     * and only begins to run if you are not inside the checkOutRadius anymore.
-     */
-    var lastSeenThreshold: Long = TimeUnit.MINUTES.toMillis(15)
-
-    /**
-     * Network interceptor used for all calls made by the SDK.
-     */
-    var networkInterceptor: String? = null
-
-    /**
-     * Set to true if you want to control when the product database gets updated, otherwise
-     * the product database gets updated when checking in and if checked in when the app resumes
-     */
-    var manualProductDatabaseUpdates: Boolean = false
+    @Suppress("DEPRECATION") // For BaseVariant should be replaced in later studio versions
+    private fun BaseVariant.capitalizedName() = Character.toUpperCase(name[0]) + name.substring(1)
 }

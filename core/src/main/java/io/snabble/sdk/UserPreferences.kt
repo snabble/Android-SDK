@@ -40,6 +40,7 @@ class UserPreferences internal constructor(context: Context) {
         private const val SHARED_PREFERENCES_CONSENT_STATUS = "ConsentStatus"
         private const val SHARED_PREFERENCES_CONSENT_VERSION = "ConsentVersion"
         private const val SHARED_PREFERENCES_LAST_CHECKED_IN_SHOP = "lastShop"
+        private const val SHARED_PREFERENCES_BASE_URL = "base_url"
 
         @SuppressLint("SimpleDateFormat")
         private val BIRTHDAY_FORMAT = SimpleDateFormat("yyyy/MM/dd")
@@ -158,11 +159,24 @@ class UserPreferences internal constructor(context: Context) {
      * Does not contain any personalized information.
      */
     var clientId: String?
-        get() =
-            sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null)
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_CLIENT_ID, null)
         set(clientId) {
             sharedPreferences.edit()
                 .putString(SHARED_PREFERENCES_CLIENT_ID, clientId)
+                .apply()
+        }
+
+    var environment: Environment
+        get() = Environment.getEnvironmentByUrl(baseUrl)
+        set(value) {
+            baseUrl = value.baseUrl
+        }
+
+    private var baseUrl: String
+        get() = sharedPreferences.getString(SHARED_PREFERENCES_BASE_URL, null) ?: Environment.PRODUCTION.baseUrl
+        set(value) {
+            sharedPreferences.edit()
+                .putString(SHARED_PREFERENCES_BASE_URL, value)
                 .apply()
         }
 

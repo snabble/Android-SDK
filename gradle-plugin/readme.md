@@ -20,23 +20,44 @@ plugins {
 
 The absolut minimum is to add those two lines to make the SDK already working:
 ```groovy
-snabble.appId = 'your-app-id'
-snabble.secret = 'your-app-secret'
+snabble.production.appId = 'your-app-id'
+snabble.production.secret = 'your-app-secret'
 ```
 
 That's it. However we recommend to use the normal dsl syntax like this:
 
 ```groovy
-snabble {
-  appId = '...'
-  secret = '...'
+snabble.production {
+  appId = 'your-app-id'
+  secret = 'your-app-secret'
   prefetchMetaData = true
 }
 ```
 
 With the last line added the manifest will be downloaded for each release build. If you want to use it also in debug
-builds you need to execute the gradle task `downloadSnabbleMetadata` or set `prefetchMetaDataForDebugBuilds = true`.
+builds you need to execute the gradle task `downloadSnabbleMetadata`.  
 Caching is applied so the file won't be downloaded on each build (except clean builds).
+
+When your app supports multiple stages in a single app (e.g. with a developer setting) then you can define multiple
+secrets in your `build.gradle` like this:
+
+```groovy
+snabble {
+  production {
+    appId = 'your-app-id'
+    secret = 'your-production-secret'
+    prefetchMetaData = true
+  }
+  staging {
+    appId = 'your-app-id'
+    secret = 'your-staging-secret'
+  }
+  testing {
+    appId = 'your-app-id'
+    secret = 'your-testing-secret'
+  }
+}
+```
 
 # Plugin development
 
