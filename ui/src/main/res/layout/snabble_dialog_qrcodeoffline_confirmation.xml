@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:orientation="vertical">
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="@string/Snabble.QRCode.DidPayDialog.message"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+    <androidx.gridlayout.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:columnCount="2"
+        app:rowOrderPreserved="false"
+        app:alignmentMode="alignBounds"
+        app:useDefaultMargins="true">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:backgroundTint="?attr/colorPrimary"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            app:layout_gravity="fill_horizontal"
+            android:text="@string/Snabble.QRCode.DidPayDialog.ok"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:backgroundTint="?attr/colorPrimary"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1"
+            app:layout_gravity="fill_horizontal"
+            android:text="@string/Snabble.QRCode.DidPayDialog.cancel"/>
+    </androidx.gridlayout.widget.GridLayout>
+</LinearLayout>
