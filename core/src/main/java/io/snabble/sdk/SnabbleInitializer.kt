@@ -16,9 +16,11 @@ class SnabbleInitializer : Initializer<Snabble> {
     override fun create(context: Context): Snabble {
         val app = context.applicationContext as Application
         val propertiesFiles = mutableMapOf<Environment, String>()
+        fun Environment.capitalizedName() = Character.toUpperCase(name[0]) + name.substring(1).lowercase()
         context.resources.assets.list("snabble/")?.forEach { path ->
             Environment.values().forEach { env ->
-                if (path == "snabble/config$env.properties") propertiesFiles[env] = path
+                val file = "config${env.capitalizedName()}.properties"
+                if (path == file) propertiesFiles[env] = "snabble/$path"
             }
         }
 

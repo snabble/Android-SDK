@@ -57,9 +57,8 @@ open class SnabbleExtension(private val project: Project) {
             GenerateSnabbleConfigTask::class.java
         ) {
             it.appId.set(extension.appId ?: throw IllegalStateException("You must define the app id"))
-            // environment secrets
             it.secret.set(extension.secret ?: throw IllegalStateException("You must define the secret"))
-            it.endpointBaseUrl.set(extension.endpointBaseUrl)
+            it.endpointBaseUrl.set(extension.endpointBaseUrl ?: environment.baseUrl)
             it.bundledMetadataAssetPath.set(extension.bundledMetadataAssetPath)
             it.generateSearchIndex.set(extension.generateSearchIndex)
             it.maxProductDatabaseAge.set(extension.maxProductDatabaseAge)
