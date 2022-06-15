@@ -1,7 +1,7 @@
 # Snabble Gradle Plugin [![License: MIT,][license-img]][license-url] [![at Gradle Plugin Portal,][gradle-img]][gradle-url]
 
 The snabble Gradle Plugin is for the simplest setup of the snabble Android SDK. With this plugin you can reduce the
-setup to 3 lines in your `build.gradle`. You can also download the manifest in your CI to bundle the latest metadata
+SDK integration to 4 lines in your codebase. You can also download the manifest in your CI to bundle the latest metadata
 with your app so that your user it can use your app with all required meta data.
 
 ## Usage
@@ -24,7 +24,15 @@ snabble.production.appId = 'your-app-id'
 snabble.production.secret = 'your-app-secret'
 ```
 
-That's it. However we recommend to use the normal dsl syntax like this:
+To start the combined scanner you just need to start our activity:
+
+```kotlin
+startActivity(Intent(context, CombinedScannerActivity::class.java))
+```
+
+That's it. This is the absolut minimum integration.
+
+However we recommend to use the normal DSL syntax to define your config like this:
 
 ```groovy
 snabble.production {
@@ -58,6 +66,22 @@ snabble {
   }
 }
 ```
+
+To change the environment to staging you need to update this variable:
+
+```kotlin
+Snabble.userPreferences.environment = Environment.STAGING
+```
+
+Then you also need to restart the app. We use in our app for that the
+[ProcessPhoenix](https://github.com/JakeWharton/ProcessPhoenix) library like this:
+
+```kotlin
+ProcessPhoenix.triggerRebirth(context)
+```
+
+For a seamless integration check out sample apps there you can see how you integrate our SDK it with out sample Apps.
+There we show you how to customize our UI.
 
 # Plugin development
 
