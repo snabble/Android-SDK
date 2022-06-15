@@ -186,7 +186,10 @@
     <string name="Snabble.pleaseWait">Bitte warten…</string>
     <string name="Snabble.PostFinanceCard.payNow">Jetzt mit PostFinance Card bezahlen</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d von %2$d</string>
-    <string name="Snabble.QRCode.didPay">Fertig</string>
+    <string name="Snabble.QRCode.didPay">Ich habe an der Kasse bezahlt</string>
+    <string name="Snabble.QRCode.DidPayDialog.cancel">Zurück zum QR-Code</string>
+    <string name="Snabble.QRCode.DidPayDialog.message">Hast du an der Kasse bezahlt, so dass wir den Warenkorb verwerfen können?</string>
+    <string name="Snabble.QRCode.DidPayDialog.ok">Ja, Warenkorb verwerfen</string>
     <string name="Snabble.QRCode.entry.title">Code: %d</string>
     <string name="Snabble.QRCode.message">Bitte QR-Code an der Kasse vorhalten</string>
     <string name="Snabble.QRCode.nextCode">Weiter zu Code %1$d von %2$d</string>
