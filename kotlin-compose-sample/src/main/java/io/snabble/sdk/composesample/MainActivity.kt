@@ -3,6 +3,7 @@ package io.snabble.sdk.composesample
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -42,7 +43,9 @@ class MainActivity : FragmentActivity() {
         }
 
         setContent {
-            MaterialTheme {
+            MaterialTheme(
+                colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+            ) {
                 val navController = rememberNavController()
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -51,7 +54,7 @@ class MainActivity : FragmentActivity() {
                 Scaffold(
                     topBar = {
                         SmallTopAppBar(
-                            title = { Text(currentDestination?.label?.toString() ?: "") },
+                            title = { Text(currentDestination?.label?.toString().orEmpty()) },
                         )
                     },
                     bottomBar = {
