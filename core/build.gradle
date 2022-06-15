@@ -4,6 +4,8 @@ apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
 apply plugin: 'org.jetbrains.dokka'
 
+description = "Snabble Core: The business logic of the snabble SDK"
+
 android {
     compileSdkVersion project.compileSdkVersion
 
@@ -57,7 +59,7 @@ dependencies {
     implementation 'org.iban4j:iban4j:3.2.1'
     implementation 'com.caverock:androidsvg-aar:1.4'
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.biometric:biometric:1.2.0-alpha04'
     implementation 'androidx.lifecycle:lifecycle-process:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-common:2.4.1'

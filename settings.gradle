@@ -8,4 +8,4 @@ pluginManagement {
     }
 }
 
-include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':utils', ':firebase-detector', ':gradle-plugin'
+include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':utils', ':mlkit-scanner-engine', ':gradle-plugin'
