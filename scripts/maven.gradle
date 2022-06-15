@@ -46,6 +46,10 @@ afterEvaluate {
                             url = 'https://opensource.org/licenses/MIT'
                         }
                     }
+                    organization {
+                        name = 'Snabble GmbH'
+                        url = 'https://snabble.io'
+                    }
 
                     withXml {
                         asNode().dependencies.'*'.findAll() {
