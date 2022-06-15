@@ -3,6 +3,8 @@ apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.dokka'
 
+description = 'Snabble Utils: Util collection for the snabble SDK integration'
+
 android {
     compileSdkVersion project.compileSdkVersion
 
