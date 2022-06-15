@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                         navigate(Scanner.route)
                     }
                     SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
-                        navigate(Scanner.route)
+                        navigate(Cart.route)
                     }
                     SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
                         popBackStack()
