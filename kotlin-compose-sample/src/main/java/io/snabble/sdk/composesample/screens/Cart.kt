@@ -6,6 +6,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import io.snabble.sdk.composesample.databinding.CartBinding
 
+object Cart {
+    val title = "Cart"
+    val route = "cart"
+}
+
 @Composable
 fun Cart() {
     AndroidViewBinding(

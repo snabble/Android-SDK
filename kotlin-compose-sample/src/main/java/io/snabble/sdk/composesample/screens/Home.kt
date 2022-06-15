@@ -9,6 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 
+object Home {
+    val title = "Home"
+    val route = "home"
+}
+
 @Composable
 fun Home() {
     Column(

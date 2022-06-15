@@ -1,12 +1,15 @@
 package io.snabble.sdk.composesample
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,14 +26,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.findNavController
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.composesample.screens.BarcodeSearch
 import io.snabble.sdk.composesample.screens.Cart
 import io.snabble.sdk.composesample.screens.Home
 import io.snabble.sdk.composesample.screens.Scanner
+import io.snabble.sdk.ui.Action
+import io.snabble.sdk.ui.SnabbleUI
 
 @OptIn(ExperimentalMaterial3Api::class)
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +55,21 @@ class MainActivity : FragmentActivity() {
             ) {
                 val navController = rememberNavController()
 
+                with(navController) {
+                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
+                        navigate(BarcodeSearch.route)
+                    }
+                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SCANNER) { _, args ->
+                        navigate(Scanner.route)
+                    }
+                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
+                        navigate(Scanner.route)
+                    }
+                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
+                        popBackStack()
+                    }
+                }
+
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
@@ -55,6 +77,14 @@ class MainActivity : FragmentActivity() {
                     topBar = {
                         SmallTopAppBar(
                             title = { Text(currentDestination?.label?.toString().orEmpty()) },
+                            actions = {
+                                IconButton(
+                                    content = { Icon(Icons.Filled.Search, "Search") },
+                                    onClick = {
+                                        navController.navigate("barcodeSearch")
+                                    }
+                                )
+                            }
                         )
                     },
                     bottomBar = {
@@ -65,19 +95,23 @@ class MainActivity : FragmentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = BottomNavigationItem.Home.route,
+                        startDestination = Home.route,
                         modifier = Modifier.padding(innerPadding)) {
-                            composable(BottomNavigationItem.Home.route) {
-                                it.destination.label = BottomNavigationItem.Home.title
+                            composable(Home.route) {
+                                it.destination.label = Home.title
                                 Home()
                             }
-                            composable(BottomNavigationItem.Scanner.route) {
-                                it.destination.label = BottomNavigationItem.Scanner.title
+                            composable(Scanner.route) {
+                                it.destination.label = Scanner.title
                                 Scanner()
                             }
-                            composable(BottomNavigationItem.Cart.route) {
-                                it.destination.label = BottomNavigationItem.Cart.title
+                            composable(Cart.route) {
+                                it.destination.label = Cart.title
                                 Cart()
+                            }
+                            composable(BarcodeSearch.route) {
+                                it.destination.label = BarcodeSearch.title
+                                BarcodeSearch()
                             }
                     }
                 }
@@ -88,9 +122,9 @@ class MainActivity : FragmentActivity() {
     @Composable
     fun BottomBar(navController: NavController) {
         val items = listOf(
-            BottomNavigationItem.Home,
-            BottomNavigationItem.Scanner,
-            BottomNavigationItem.Cart,
+            BottomNavigationItem.MenuHome,
+            BottomNavigationItem.MenuScanner,
+            BottomNavigationItem.MenuCart,
         )
 
         NavigationBar {
