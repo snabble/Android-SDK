@@ -186,7 +186,7 @@
     <string name="Snabble.pleaseWait">Please wait…</string>
     <string name="Snabble.PostFinanceCard.payNow">Pay now using PostFinance Card</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d of %2$d</string>
-    <string name="Snabble.QRCode.didPay">Done</string>
+    <string name="Snabble.QRCode.didPay">I paid at the cash register</string>
     <string name="Snabble.QRCode.DidPayDialog.cancel">Back to QR-Code</string>
     <string name="Snabble.QRCode.DidPayDialog.message">Did you pay at checkout so we can discard the cart?</string>
     <string name="Snabble.QRCode.DidPayDialog.ok">Yes, discard shopping cart</string>
