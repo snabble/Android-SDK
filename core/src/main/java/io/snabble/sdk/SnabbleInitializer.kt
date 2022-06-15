@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.startup.Initializer
 import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
+import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -40,7 +41,14 @@ class SnabbleInitializer : Initializer<Snabble> {
                 appId = properties.getProperty("appId")
                 endpointBaseUrl = properties.getProperty("endpointBaseUrl") ?: endpointBaseUrl
                 secret = properties.getProperty("secret")
-                bundledMetadataAssetPath = properties.getProperty("bundledMetadataAssetPath")
+                val assetPath = properties.getProperty("bundledMetadataAssetPath")?.let { path ->
+                    if (context.resources.assets.list(path)?.isEmpty() != false) {
+                        null
+                    } else {
+                        path
+                    }
+                }
+                bundledMetadataAssetPath = assetPath
                 generateSearchIndex = properties.getBoolean("generateSearchIndex", generateSearchIndex)
                 maxProductDatabaseAge = properties.getLong("maxProductDatabaseAge", maxProductDatabaseAge)
                 maxShoppingCartAge = properties.getLong("maxShoppingCartAge", maxShoppingCartAge)
