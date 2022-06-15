@@ -9,7 +9,16 @@ group = 'io.snabble.sdk'
 afterEvaluate {
     publishing {
         publications {
-            "$project.name"(MavenPublication) {
+            def libDescription = null
+            def libName = project.name
+            if (project.description != null) {
+                if (project.description.contains(':')) {
+                    def parts = project.description.split(':')
+                    libName = parts[0].trim()
+                    libDescription = parts[1].trim()
+                }
+            }
+            "$libName"(MavenPublication) {
                 from project.components.release
                 artifact androidSourcesJar
 
@@ -18,7 +27,19 @@ afterEvaluate {
                 version = project.sdkVersion
 
                 pom {
-                    url = 'https://github.com/snabble/Android-SDK'
+                    url = 'https://docs.snabble.io/docs/android/'
+                    name = libName
+                    description = libDescription
+                    scm {
+                        connection = 'scm:git:git://github.com/snabble/Android-SDK.git'
+                        developerConnection = 'scm:git:git://github.com/snabble/Android-SDK.git'
+                        url = 'https://github.com/snabble/Android-SDK'
+                    }
+                    issueManagement {
+                        url = 'https://github.com/snabble/Android-SDK/issues'
+                        system = 'GitHub Issues'
+                    }
+                    inceptionYear = '2018'
                     licenses {
                         license {
                             name = 'The MIT License'
@@ -31,7 +52,7 @@ afterEvaluate {
                             it.scope.text() == 'runtime' && project.configurations.implementation.allDependencies.find { dep ->
                                 dep.name == it.artifactId.text()
                             }
-                        }.each { it.scope*.value = 'implementation'}
+                        }.each { it.scope*.value = 'implementation' }
                     }
                 }
             }
