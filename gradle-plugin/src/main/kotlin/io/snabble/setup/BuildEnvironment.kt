@@ -17,15 +17,13 @@ open class BuildEnvironment(private val environment: Environment) {
     var secret: String? = null
 
     /**
-     * Optional. The endpoint url of the snabble backend. For example "https://api.snabble.io" for the Production
-     * environment.
+     * The endpoint url of the snabble backend. For example "https://api.snabble.io" for the Production environment.
      * Can be `null` to use the Production environment.
      */
-    var endpointBaseUrl: String? = null
+    var endpointBaseUrl: String? = environment.baseUrl
 
     /**
-     * Optional. Set to `true` to download the metadata to [bundledMetadataAssetPath]. Is always `true` when
-     * [prefetchMetaDataForDebugBuilds] is set to `true`.
+     * Set to `true` to download the metadata to [bundledMetadataAssetPath].
      */
     var prefetchMetaData = false
 
@@ -47,7 +45,7 @@ open class BuildEnvironment(private val environment: Environment) {
      * Note that this increases setup time of the ProductDatabase, and it may not be
      * immediately available offline.
      */
-    var generateSearchIndex: Boolean = false
+    var generateSearchIndex: Boolean? = null
 
     /**
      * The time that the database is allowed to be out of date. After the specified time in
@@ -56,45 +54,41 @@ open class BuildEnvironment(private val environment: Environment) {
      * Successfully calling [ProductDatabase.update] resets the timer.
      *
      * The time is specified in milliseconds.
-     *
-     * The default value is 1 hour.
      */
-    var maxProductDatabaseAge: Long = TimeUnit.HOURS.toMillis(1)
+    var maxProductDatabaseAge: Long? = null
 
     /**
      * The time that the shopping cart is allowed to be alive after the last modification.
      *
      * The time is specified in milliseconds.
-     *
-     * The default value is 4 hours.
      */
-    var maxShoppingCartAge: Long = TimeUnit.HOURS.toMillis(4)
+    var maxShoppingCartAge: Long? = null
 
     /** If set to true, disables certificate pinning. Not recommended for production! */
-    var disableCertificatePinning: Boolean = false
+    var disableCertificatePinning: Boolean? = null
 
-    /** Vibrate while adding a product to the cart, by default false. */
-    var vibrateToConfirmCartFilled: Boolean = false
+    /** Vibrate while adding a product to the cart. */
+    var vibrateToConfirmCartFilled: Boolean? = null
 
     /**
      * Set to true, to load shops that are marked as pre launch
      * and are not part of the original metadata in the backend
      * (for example for testing shops in production before a go-live)
      */
-    var loadActiveShops: Boolean = false
+    var loadActiveShops: Boolean? = null
 
     /**
      * The radius in which the CheckInManager tries to check in a shop.
      *
      * In meters.
      */
-    var checkInRadius: Float = 500.0f
+    var checkInRadius: Float? = null
 
     /**
      * The radius in which the CheckInManager tries to stay in a shop, if already in it.
      * If outside of this radius and the lastSeenThreshold, you will be checked out.
      */
-    var checkOutRadius: Float = 1000.0f
+    var checkOutRadius: Float? = null
 
     /**
      * The time in milliseconds which we keep you checked in at a shop.
@@ -102,7 +96,7 @@ open class BuildEnvironment(private val environment: Environment) {
      * The timer will be refreshed while you are still inside the shop
      * and only begins to run if you are not inside the checkOutRadius anymore.
      */
-    var lastSeenThreshold: Long = TimeUnit.MINUTES.toMillis(15)
+    var lastSeenThreshold: Long? = null
 
     /**
      * Network interceptor used for all calls made by the SDK.
@@ -113,5 +107,5 @@ open class BuildEnvironment(private val environment: Environment) {
      * Set to true if you want to control when the product database gets updated, otherwise
      * the product database gets updated when checking in and if checked in when the app resumes
      */
-    var manualProductDatabaseUpdates: Boolean = false
+    var manualProductDatabaseUpdates: Boolean? = null
 }

@@ -16,34 +16,43 @@ abstract class GenerateSnabbleConfigTask : DefaultTask() {
     @get:Input
     abstract val secret: Property<String>
     @get:Input
-    @get:Optional
     abstract val endpointBaseUrl: Property<String?>
     @get:Input
     @get:Optional
     abstract val bundledMetadataAssetPath: Property<String?>
     @get:Input
-    abstract val generateSearchIndex: Property<Boolean>
+    @get:Optional
+    abstract val generateSearchIndex: Property<Boolean?>
     @get:Input
-    abstract val maxProductDatabaseAge: Property<Long>
+    @get:Optional
+    abstract val maxProductDatabaseAge: Property<Long?>
     @get:Input
-    abstract val maxShoppingCartAge: Property<Long>
+    @get:Optional
+    abstract val maxShoppingCartAge: Property<Long?>
     @get:Input
-    abstract val disableCertificatePinning: Property<Boolean>
+    @get:Optional
+    abstract val disableCertificatePinning: Property<Boolean?>
     @get:Input
-    abstract val vibrateToConfirmCartFilled: Property<Boolean>
+    @get:Optional
+    abstract val vibrateToConfirmCartFilled: Property<Boolean?>
     @get:Input
-    abstract val loadActiveShops: Property<Boolean>
+    @get:Optional
+    abstract val loadActiveShops: Property<Boolean?>
     @get:Input
-    abstract val checkInRadius: Property<Float>
+    @get:Optional
+    abstract val checkInRadius: Property<Float?>
     @get:Input
-    abstract val checkOutRadius: Property<Float>
+    @get:Optional
+    abstract val checkOutRadius: Property<Float?>
     @get:Input
-    abstract val lastSeenThreshold: Property<Long>
+    @get:Optional
+    abstract val lastSeenThreshold: Property<Long?>
     @get:Input
     @get:Optional
     abstract val networkInterceptor: Property<String?>
     @get:Input
-    abstract val manualProductDatabaseUpdates: Property<Boolean>
+    @get:Optional
+    abstract val manualProductDatabaseUpdates: Property<Boolean?>
 
     /**
      * The path of the config file.
@@ -56,10 +65,13 @@ abstract class GenerateSnabbleConfigTask : DefaultTask() {
      */
     @TaskAction
     fun generateManifest() {
+        if (endpointBaseUrl.get() == Environment.Production.baseUrl && disableCertificatePinning.orNull == true) {
+            project.logger.warn("Certificate pinning disabled on production environment")
+        }
         val properties = mapOf(
-            "appId" to appId.orNull,
-            "secret" to secret.orNull,
-            "endpointBaseUrl" to endpointBaseUrl.orNull,
+            "appId" to appId.get(),
+            "secret" to secret.get(),
+            "endpointBaseUrl" to endpointBaseUrl.get(),
             "bundledMetadataAssetPath" to bundledMetadataAssetPath.orNull,
             "generateSearchIndex" to generateSearchIndex.orNull,
             "maxProductDatabaseAge" to maxProductDatabaseAge.orNull,

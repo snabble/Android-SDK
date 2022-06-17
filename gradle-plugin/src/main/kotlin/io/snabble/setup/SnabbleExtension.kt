@@ -3,7 +3,6 @@ package io.snabble.setup
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.DefaultAndroidSourceSet
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -89,7 +88,7 @@ open class SnabbleExtension(private val project: Project) {
     }
 
     @Suppress("DEPRECATION") // For BaseVariant should be replaced in later studio versions
-    private fun BaseExtension.forEachVariant(action: (BaseVariant) -> Unit) {
+    private fun BaseExtension.forEachVariant(action: (com.android.build.gradle.api.BaseVariant) -> Unit) {
         when (this) {
             is AppExtension -> applicationVariants.all(action)
             is LibraryExtension -> {
@@ -102,5 +101,6 @@ open class SnabbleExtension(private val project: Project) {
     }
 
     @Suppress("DEPRECATION") // For BaseVariant should be replaced in later studio versions
-    private fun BaseVariant.capitalizedName() = Character.toUpperCase(name[0]) + name.substring(1)
+    private fun com.android.build.gradle.api.BaseVariant.capitalizedName() =
+        Character.toUpperCase(name[0]) + name.substring(1)
 }
