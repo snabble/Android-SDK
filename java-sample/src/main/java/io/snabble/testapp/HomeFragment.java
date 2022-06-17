@@ -41,6 +41,8 @@ public class HomeFragment extends BaseFragment {
 
         v.findViewById(R.id.scanner).setOnClickListener(btn -> ((BaseActivity)getActivity()).showScanner());
 
+        v.findViewById(R.id.combined_scanner).setOnClickListener(btn -> ((BaseActivity)getActivity()).showCombinedScanner());
+
         v.findViewById(R.id.cart).setOnClickListener(btn -> ((BaseActivity)getActivity()).showShoppingCart());
 
         v.findViewById(R.id.update_db).setOnClickListener(btn -> App.get().getProject().getProductDatabase().update());

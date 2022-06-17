@@ -33,7 +33,9 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     var shoppingCartAdapter: ShoppingCartView.ShoppingCartAdapter? = null
         set(value) {
             field = value
-            value?.fetchFrom(cart)
+            if (cart != null) {
+                value?.fetchFrom(cart)
+            }
             recyclerView.adapter = value
         }
 
@@ -118,6 +120,9 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     var cart: ShoppingCart? = null
         set(value) {
             field = value
+            if (value != null) {
+                shoppingCartAdapter?.fetchFrom(cart)
+            }
             value?.addListener(this)
         }
 
