@@ -57,6 +57,7 @@ class CheckInManager(val snabble: Snabble,
     private val sharedPreferences = application.getSharedPreferences("snabble_checkin_manager", Context.MODE_PRIVATE)
 
     private var lastLocation: Location? = null
+    private var referenceGpsTime = 0L
 
     private val handler = Handler(Looper.getMainLooper())
     private var projectByShopId = mapOf<String, Project>()
@@ -104,6 +105,7 @@ class CheckInManager(val snabble: Snabble,
 
     private val locationObserver =
         Observer<Location?> { location ->
+            referenceGpsTime = lastLocation?.time ?: System.currentTimeMillis()
             lastLocation = location
             update()
         }
@@ -136,8 +138,8 @@ class CheckInManager(val snabble: Snabble,
         }
 
         lastLocation?.let { loc ->
-            val locationAge = now - (loc.time ?: 0)
-            val locationAccuracy = loc.accuracy ?: 10000f
+            val locationAge = referenceGpsTime - loc.time
+            val locationAccuracy = loc.accuracy
 
             if (locationAge < 60000 && locationAccuracy < checkInRadius) {
                 val newCandidates = shopList.filter { it.location.distanceTo(loc) < checkInRadius }

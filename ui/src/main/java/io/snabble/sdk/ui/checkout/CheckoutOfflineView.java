@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -87,8 +88,7 @@ public class CheckoutOfflineView extends FrameLayout {
             @Override
             public void click() {
                 if (viewPager.getCurrentItem() == viewPagerAdapter.getItemCount() - 1) {
-                    project.getCheckout().approveOfflineMethod();
-                    Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
+                    showDidPayDialog();
                 } else {
                     viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                 }
@@ -151,6 +151,25 @@ public class CheckoutOfflineView extends FrameLayout {
         } else {
             checkoutId.setVisibility(View.GONE);
         }
+    }
+
+    public void showDidPayDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(R.layout.snabble_dialog_qrcodeoffline_confirmation)
+                .create();
+
+        dialog.show();
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+
+        dialog.findViewById(R.id.ok).setOnClickListener(v -> {
+            project.getCheckout().approveOfflineMethod();
+            Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
+            dialog.dismiss();
+        });
+
+        dialog.findViewById(R.id.cancel).setOnClickListener(v -> {
+            dialog.dismiss();
+        });
     }
 
     @SuppressLint("DrawAllocation")

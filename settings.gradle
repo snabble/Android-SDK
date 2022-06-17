@@ -5,7 +5,9 @@ pluginManagement {
     }
     plugins {
         id "org.jetbrains.dokka" version "1.6.21"
+        id 'com.android.application' version '7.2.1'
+        id 'org.jetbrains.kotlin.android' version '1.6.21'
     }
 }
 
-include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':utils', ':mlkit-scanner-engine', ':gradle-plugin'
+include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':utils', ':mlkit-scanner-engine', ':kotlin-compose-sample', ':gradle-plugin'
