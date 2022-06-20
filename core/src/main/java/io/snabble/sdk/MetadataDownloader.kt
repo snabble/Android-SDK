@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import okhttp3.OkHttpClient
 import io.snabble.sdk.utils.StringDownloader
 import io.snabble.sdk.utils.GsonHolder
-import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.Logger
 import java.io.File
 import java.lang.Exception
@@ -13,7 +12,8 @@ import java.lang.Exception
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class MetadataDownloader(
     okHttpClient: OkHttpClient?,
-    bundledFileAssetPath: String?)
+    bundledFileAssetPath: String?,
+    bundledFileRawResId: Int)
     : StringDownloader(okHttpClient) {
     var hasData = false
         private set
@@ -22,8 +22,8 @@ internal class MetadataDownloader(
 
     init {
         val storageFile = File(Snabble.internalStorageDirectory, "metadata_v2.json")
-        if (bundledFileAssetPath != null) {
-            setBundledData(Snabble.application, bundledFileAssetPath, storageFile)
+        if (bundledFileAssetPath != null || bundledFileRawResId != 0) {
+            setBundledData(Snabble.application, bundledFileAssetPath, bundledFileRawResId, storageFile)
         } else {
             setStorageFile(storageFile)
         }

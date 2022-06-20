@@ -39,7 +39,7 @@ data class Config (
      * This file gets initially used to initialize the SDK before network requests are made,
      * or be able to use the sdk in the case of no network connection.
      *
-     * Optional. If no file is specified every time the SDK is initialized we wait for a network response
+     * Optional. If no path and no res id are specified every time the SDK is initialized we wait for a network response
      * from the backend.
      *
      * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
@@ -47,6 +47,21 @@ data class Config (
      */
     @JvmField
     var bundledMetadataAssetPath: String? = null,
+
+    /**
+     * Resource id of the raw file which contains the metadata.
+     *
+     * This file gets initially used to initialize the SDK before network requests are made,
+     * or be able to use the sdk in the case of no network connection.
+     *
+     * Optional. If no res id and no path are specified every time the SDK is initialized we wait for a network response
+     * from the backend.
+     *
+     * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
+     * without having a network connection.
+     */
+    @JvmField
+    var bundledMetadataRawResId: Int = 0,
 
     /**
      * If set to true, creates an full text index to support searching in the product database

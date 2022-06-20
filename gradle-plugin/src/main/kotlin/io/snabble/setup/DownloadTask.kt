@@ -38,10 +38,7 @@ abstract class DownloadTask : DefaultTask() {
     @TaskAction
     fun download() {
         val outputDirFile = outputFile.parentFile
-        if (outputDirFile.exists() && !outputDirFile.deleteRecursively()) {
-            logger.warn("Failed to clear directory for snabble setup")
-        }
-        if (!outputDirFile.mkdirs()) {
+        if (!outputDirFile.exists() && !outputDirFile.mkdirs()) {
             throw IOException("Could not create path $outputDirFile")
         }
 

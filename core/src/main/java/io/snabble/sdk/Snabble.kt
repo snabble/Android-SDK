@@ -388,9 +388,9 @@ object Snabble {
             this.config.lastSeenThreshold
         )
 
-        metadataDownloader = MetadataDownloader(okHttpClient, this.config.bundledMetadataAssetPath)
+        metadataDownloader = MetadataDownloader(okHttpClient, this.config.bundledMetadataAssetPath, this.config.bundledMetadataRawResId)
 
-        if (this.config.bundledMetadataAssetPath != null) {
+        if (this.config.bundledMetadataAssetPath != null || this.config.bundledMetadataRawResId != 0) {
             dispatchOnReady()
         } else {
             metadataDownloader.loadAsync(object : Downloader.Callback() {

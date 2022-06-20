@@ -3,7 +3,6 @@ package io.snabble.setup
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.api.DefaultAndroidSourceSet
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -14,7 +13,7 @@ open class SnabbleExtension(private val project: Project) {
     val environments: Map<Environment, BuildEnvironment> = mutableMapOf()
     private val baseDir = File(
         project.buildDir,
-        "intermediates/snabble"
+        "generated/snabble"
     )
 
     private fun getEnvironment(environment: Environment) =
@@ -47,8 +46,8 @@ open class SnabbleExtension(private val project: Project) {
             val app = project.extensions.getByType(BaseExtension::class.java) as AppExtension
             val appVersion = app.defaultConfig.versionName ?: throw IllegalStateException("No app version number detected")
             it.url.set("${environment.baseUrl}/metadata/app/$appId/android/$appVersion")
-            val path = extension.bundledMetadataAssetPath ?: "snabble/metadata$environment.json"
-            it.outputFile = File(baseDir, "assets/$path")
+            val path = "snabble_${environment.name.lowercase()}_metadata.json"
+            it.outputFile = File(baseDir, "res/raw/$path")
         }
 
         val generateConfigTask = project.tasks.register(
@@ -70,20 +69,19 @@ open class SnabbleExtension(private val project: Project) {
             it.lastSeenThreshold.set(extension.lastSeenThreshold)
             it.networkInterceptor.set(extension.networkInterceptor)
             it.manualProductDatabaseUpdates.set(extension.manualProductDatabaseUpdates)
-            it.configFile = File(baseDir, "assets/snabble/config$environment.properties")
+            it.configFile = File(baseDir, "res/raw/snabble_${environment.name.lowercase()}_config.properties")
         }
 
         project.extensions.getByType(BaseExtension::class.java).forEachVariant { variant ->
             // generate config{Environment}.properties
-            project.tasks.getByName("generate${variant.capitalizedName()}Assets").dependsOn += generateConfigTask
+            project.tasks.getByName("generate${variant.capitalizedName()}Resources").dependsOn += generateConfigTask
             // prefetch meta data
-            if (!variant.buildType.isDebuggable && extension.prefetchMetaData) {
-                project.tasks.getByName("generate${variant.capitalizedName()}Assets").dependsOn += downloadTask
+            val offline = project.gradle.startParameter.isOffline
+            val debug = variant.buildType.isDebuggable
+            if (!(offline && debug) && extension.prefetchMetaData) {
+                project.tasks.getByName("generate${variant.capitalizedName()}Resources").dependsOn += downloadTask
             }
-            // inject assets directory
-            variant.sourceSets.forEach { sourceSet ->
-                (sourceSet as DefaultAndroidSourceSet).assets.srcDir(project.file(File(baseDir, "assets")))
-            }
+            variant.registerGeneratedResFolders(project.files(File(baseDir, "res")))
         }
     }
 

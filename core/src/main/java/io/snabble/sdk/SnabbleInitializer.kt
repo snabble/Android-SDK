@@ -3,10 +3,10 @@ package io.snabble.sdk
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import androidx.startup.Initializer
 import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
-import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -16,20 +16,13 @@ import java.util.*
 class SnabbleInitializer : Initializer<Snabble> {
     override fun create(context: Context): Snabble {
         val app = context.applicationContext as Application
-        val propertiesFiles = mutableMapOf<Environment, String>()
-        fun Environment.capitalizedName() = Character.toUpperCase(name[0]) + name.substring(1).lowercase()
-        context.resources.assets.list("snabble/")?.forEach { path ->
-            Environment.values().forEach { env ->
-                val file = "config${env.capitalizedName()}.properties"
-                if (path == file) propertiesFiles[env] = "snabble/$path"
-            }
-        }
 
         // load properties created by the gradle plugin
-        val path = propertiesFiles[UserPreferences(context).environment]
-        if (path != null) {
+        val env = UserPreferences(context).environment.name.lowercase()
+        val resId = context.resources.getIdentifier("snabble_${env}_config", "raw", app.packageName)
+        if (resId != Resources.ID_NULL) {
             val properties = Properties()
-            properties.load(context.resources.assets.open(path))
+            properties.load(context.resources.openRawResource(resId))
             val config = Config().apply {
                 appId = properties.getProperty("appId")
                 endpointBaseUrl = properties.getProperty("endpointBaseUrl") ?: endpointBaseUrl
@@ -42,6 +35,7 @@ class SnabbleInitializer : Initializer<Snabble> {
                     }
                 }
                 bundledMetadataAssetPath = assetPath
+                bundledMetadataRawResId = context.resources.getIdentifier("snabble_${env}_metadata", "raw", app.packageName)
                 generateSearchIndex = properties.getBoolean("generateSearchIndex", generateSearchIndex)
                 maxProductDatabaseAge = properties.getLong("maxProductDatabaseAge", maxProductDatabaseAge)
                 maxShoppingCartAge = properties.getLong("maxShoppingCartAge", maxShoppingCartAge)
