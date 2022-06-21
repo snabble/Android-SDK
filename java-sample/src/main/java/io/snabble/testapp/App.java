@@ -16,14 +16,6 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 public class App extends Application {
     private static App instance;
 
-    private Project project;
-
-    public interface InitCallback {
-        void done();
-
-        void error(String text);
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();

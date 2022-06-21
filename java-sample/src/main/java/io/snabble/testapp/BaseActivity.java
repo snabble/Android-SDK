@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -14,24 +13,20 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.ui.cart.ShoppingCartActivity;
 import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity;
 import io.snabble.sdk.ui.payment.PaymentOptionsActivity;
+import io.snabble.sdk.ui.scanner.CombinedScannerActivity;
 import io.snabble.sdk.ui.scanner.SelfScanningActivity;
 import io.snabble.sdk.ui.utils.ZebraSupport;
 import io.snabble.sdk.ui.scanner.ProductResolver;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private ProgressBar progressIndicator;
-    private View content;
-    private TextView sdkError;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        progressIndicator = findViewById(R.id.progress_indicator);
-        content = findViewById(R.id.content);
-        sdkError = findViewById(R.id.sdk_error);
+        final ProgressBar progressIndicator = findViewById(R.id.progress_indicator);
+        final View content = findViewById(R.id.content);
 
         progressIndicator.setVisibility(View.GONE);
         content.setVisibility(View.VISIBLE);
@@ -66,6 +61,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showScanner() {
         Intent intent = new Intent(this, SelfScanningActivity.class);
+        startActivity(intent);
+    }
+
+    public void showCombinedScanner() {
+        Intent intent = new Intent(this, CombinedScannerActivity.class);
         startActivity(intent);
     }
 
