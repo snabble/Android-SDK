@@ -10,4 +10,4 @@ pluginManagement {
     }
 }
 
-include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':utils', ':mlkit-scanner-engine', ':kotlin-compose-sample', ':gradle-plugin'
+include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':utils', ':mlkit-scanner-engine', ':kotlin-compose-sample'
