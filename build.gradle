@@ -34,7 +34,6 @@ allprojects {
 
     project.ext {
         sdkVersion='0.66.2'
-        pluginVersion='1.0.0'
         versionCode=1
 
         compileSdkVersion=31
