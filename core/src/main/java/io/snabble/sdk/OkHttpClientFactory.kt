@@ -42,9 +42,9 @@ internal object OkHttpClientFactory {
         builder.cache(Cache(application.cacheDir, 10 * 1024 * 1024))
         builder.retryOnConnectionFailure(true)
         builder.pingInterval(5, TimeUnit.SECONDS) // workaround for https://github.com/square/okhttp/issues/3146
-        builder.addInterceptor(OkHttpLogger(HttpLoggingInterceptor.Logger { message: String? ->
+        builder.addInterceptor(OkHttpLogger { message: String? ->
             Logger.i(message)
-        }))
+        })
         Snabble.config.networkInterceptor?.let {
             builder.addNetworkInterceptor(it)
         }

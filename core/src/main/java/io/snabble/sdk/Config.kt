@@ -11,6 +11,9 @@ import java.lang.Exception
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
+/**
+ * Configuration of the snabble SDK.
+ */
 data class Config (
     /**
      * The endpoint url of the snabble backend. For example "https://api.snabble.io" for the Production environment.
@@ -31,13 +34,12 @@ data class Config (
     var secret: String? = null,
 
     /**
-     * Relative path from the assets folder which points to a bundled file which contains the metadata
+     * Relative path from the assets folder which points to a bundled file which contains the metadata.
      *
-     *
-     * This file gets initially used to initialize the sdk before network requests are made,
+     * This file gets initially used to initialize the SDK before network requests are made,
      * or be able to use the sdk in the case of no network connection.
      *
-     * Optional. If no file is specified every time the sdk is initialized we wait for a network response
+     * Optional. If no path and no res id are specified every time the SDK is initialized we wait for a network response
      * from the backend.
      *
      * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
@@ -47,14 +49,19 @@ data class Config (
     var bundledMetadataAssetPath: String? = null,
 
     /**
-     * Optional. Used to override the versionName appended to the metadata url.
+     * Resource id of the raw file which contains the metadata.
      *
-     * Defaults to the versionName in the app package.
+     * This file gets initially used to initialize the SDK before network requests are made,
+     * or be able to use the sdk in the case of no network connection.
      *
-     * Must be in the format %d.%d
+     * Optional. If no res id and no path are specified every time the SDK is initialized we wait for a network response
+     * from the backend.
+     *
+     * It is HIGHLY recommended to provide bundled metadata to allow the sdk to function
+     * without having a network connection.
      */
     @JvmField
-    var versionName: String? = null,
+    var bundledMetadataRawResId: Int = 0,
 
     /**
      * If set to true, creates an full text index to support searching in the product database
@@ -89,21 +96,23 @@ data class Config (
     @JvmField
     var maxShoppingCartAge: Long  = TimeUnit.HOURS.toMillis(4),
 
-    /** If set to true, disables certificate pinning  */
+    /** If set to true, disables certificate pinning. Not recommended for production!  */
     @JvmField
     var disableCertificatePinning: Boolean = false,
 
-    /** SQL queries that will get executed in order on the product database  */
+    /** SQL queries that will get executed in order on the product database. */
     @JvmField
     var initialSQL: List<String> = emptyList(),
 
-    /** Vibrate while adding a product to the cart, by default false  */
+    /** Vibrate while adding a product to the cart, by default false. */
     @JvmField
     var vibrateToConfirmCartFilled: Boolean = false,
 
-    /** Set to true, to load shops that are marked as pre launch
+    /**
+     * Set to true, to load shops that are marked as pre launch
      * and are not part of the original metadata in the backend
-     * (for example for testing shops in production before a go-live)  */
+     * (for example for testing shops in production before a go-live)
+     */
     @JvmField
     var loadActiveShops: Boolean = false,
 

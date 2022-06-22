@@ -1,9 +1,9 @@
 package io.snabble.sdk.utils;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -22,7 +22,9 @@ import okhttp3.Response;
 public abstract class StringDownloader extends Downloader {
     private File storageFile = null;
     private String assetPath;
+    private int rawResId;
     private Application context;
+    private final Charset utf8 = Charset.forName("UTF-8");
 
     public StringDownloader(OkHttpClient okHttpClient) {
         super(okHttpClient);
@@ -34,10 +36,11 @@ public abstract class StringDownloader extends Downloader {
      * Copies the bundled data from the asset folder into the app internal files folder and
      * uses the app files data unless the app gets updated.
      */
-    public void setBundledData(Application context, String assetPath, File storageFile) {
+    public void setBundledData(Application context, String assetPath, int rawResId, File storageFile) {
         this.context = context;
         this.storageFile = storageFile;
         this.assetPath = assetPath;
+        this.rawResId = rawResId;
 
         try {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
@@ -61,7 +64,7 @@ public abstract class StringDownloader extends Downloader {
     private void loadFromSavedData() throws IOException {
         FileInputStream fis = new FileInputStream(storageFile);
         Logger.d("Using saved data: %s", storageFile.getAbsolutePath());
-        String savedData = IOUtils.toString(fis, Charset.forName("UTF-8"));
+        String savedData = IOUtils.toString(fis, utf8);
         if(savedData != null && savedData.length() > 0){
             onDownloadFinished(savedData);
         } else {
@@ -73,9 +76,19 @@ public abstract class StringDownloader extends Downloader {
 
     private void loadFromBundledData() {
         try {
+            if(rawResId != 0) {
+                try {
+                    InputStream bundledDataInputStream = context.getResources().openRawResource(rawResId);
+                    onDownloadFinished(IOUtils.toString(bundledDataInputStream, utf8));
+                    bundledDataInputStream.close();
+                    return;
+                } catch (Resources.NotFoundException e) {
+                    Logger.e("Could not load bundled data from resources: %s", e.toString());
+                }
+            }
             if(assetPath != null) {
                 InputStream bundledDataInputStream = context.getAssets().open(assetPath);
-                onDownloadFinished(IOUtils.toString(bundledDataInputStream, Charset.forName("UTF-8")));
+                onDownloadFinished(IOUtils.toString(bundledDataInputStream, utf8));
                 bundledDataInputStream.close();
             }
         } catch (IOException e) {
@@ -109,7 +122,7 @@ public abstract class StringDownloader extends Downloader {
                         + "_temp." + FilenameUtils.getExtension(storageFile.getName()));
 
                 FileOutputStream fos = new FileOutputStream(tempFile);
-                IOUtils.write(content, fos, Charset.forName("UTF-8"));
+                IOUtils.write(content, fos, utf8);
                 fos.close();
 
                 FileUtils.deleteQuietly(storageFile);
