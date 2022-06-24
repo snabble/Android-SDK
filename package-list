@@ -14,7 +14,7 @@ io.snabble.sdk.coupons
 io.snabble.sdk.encodedcodes
 io.snabble.sdk.googlepay
 io.snabble.sdk.payment
-module:firebase-detector
+module:mlkit-scanner-engine
 io.snabble.sdk.firebase
 module:ui
 io.snabble.sdk.ui
