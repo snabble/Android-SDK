@@ -7,6 +7,9 @@ We now have a gradle plugin which supports snabble SDK version from this version
 
 [Gradle-Plugin](https://plugins.gradle.org/plugin/io.snabble.setup)
 
+### Breaking Changes
+- Renamed firebase-detector module to mlkit-scanner-engine
+
 ### Changes
 - Added support for parsing config files using property files in resources. Use 'snabble_$env_config.xml'.
 - Added support for the new gradle plugin, which automatically generated the config files mentioned above.
