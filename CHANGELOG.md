@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.67.0]
+
+We now have a gradle plugin which supports snabble SDK version from this version and above:
+
+[Gradle-Plugin](https://plugins.gradle.org/plugin/io.snabble.setup)
+
+### Changes
+- Added support for parsing config files using property files in resources. Use 'snabble_$env_config.xml'.
+- Added support for the new gradle plugin, which automatically generated the config files mentioned above.
+- Fixed gps position updates when system time is not in sync with gps time
+
 ## [0.66.2]
 
 This release is identical to 0.66.0, but re-released to deploy the documentation
