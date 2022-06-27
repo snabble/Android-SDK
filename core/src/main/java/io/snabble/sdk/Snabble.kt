@@ -424,16 +424,6 @@ object Snabble {
     private fun dispatchOnReady() {
         Dispatch.background {
             readMetadata()
-            val appUser = userPreferences.appUser
-            if (appUser == null && projects.isNotEmpty()) {
-                val token = tokenRegistry.getToken(projects[0])
-                if (token == null) {
-                    isInitializing.set(false)
-                    mutableInitializationState.value = InitializationState.ERROR
-                    return@background
-                }
-            }
-
             isInitializing.set(false)
             mutableInitializationState.value = InitializationState.INITIALIZED
 

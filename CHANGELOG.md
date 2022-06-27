@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.67.1]
+
+### Fixed
+- Offline startup with prefetched metadata
+
 ## [0.67.0]
 
 We now have a gradle plugin which supports snabble SDK version from this version and above:
