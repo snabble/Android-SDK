@@ -9,36 +9,81 @@
     tools:orientation="vertical"
     tools:background="#ededed">
 
-        <RelativeLayout
-            android:id="@+id/sum_container"
+    <LinearLayout
+        android:id="@+id/cart_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:clipChildren="false"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/discount_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
+            android:gravity="end"
+            android:clipChildren="false"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/discount_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:text="Discount"/>
 
+            <TextView
+                android:id="@+id/discount_sum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                tools:text="\?"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp">
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/snabble_ic_baseline_shopping_cart_24" />
             <TextView
                 android:id="@+id/article_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_toStartOf="@+id/price_sum"
+                android:layout_gravity="end"
+                android:background="?attr/colorPrimary"
+                android:textColor="?attr/colorOnPrimary"
+                android:visibility="gone"
+                tools:text="10"
+                tools:visibility="visible" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/price_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:clipChildren="false"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/article_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:enabled="false"
                 android:textAppearance="?attr/textAppearanceBodySmall"
-                tools:text="2 Artikel" />
+                android:text="Total" />
 
             <TextView
                 android:id="@+id/price_sum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
                 tools:text="13,37 €"/>
-        </RelativeLayout>
+        </LinearLayout>
+
+    </LinearLayout>
         <LinearLayout
             android:id="@+id/payment_active"
             android:layout_width="match_parent"
@@ -75,15 +120,27 @@
                         android:layout_width="48dp"
                         android:layout_height="32dp"
                         android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
                         android:scaleType="centerInside"
                         tools:src="@drawable/snabble_ic_payment_select_sepa"
                         android:importantForAccessibility="no" />
 
+                    <TextView
+                        android:id="@+id/payment_text"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:layout_gravity="center"
+                        android:scaleType="centerInside"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        tools:text="Bezahle mit SEPA"
+                        android:importantForAccessibility="no" />
+
                     <ImageView
                         android:id="@+id/payment_chevron"
-                        android:layout_width="7dp"
-                        android:layout_height="7dp"
-                        android:layout_marginEnd="2dp"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginEnd="12dp"
                         android:layout_marginStart="8dp"
                         android:layout_gravity="center"
                         android:src="@drawable/snabble_ic_small_chevron_down"

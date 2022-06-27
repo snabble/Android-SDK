@@ -46,7 +46,6 @@ open class CheckoutBar @JvmOverloads constructor(
     private val paymentSelectorButtonBig = findViewById<View>(R.id.payment_selector_button_big)
     private val payButton = findViewById<Button>(R.id.pay)
     private val priceSum = findViewById<TextView>(R.id.price_sum)
-    private val sumContainer = findViewById<View>(R.id.sum_container)
     private val googlePayButtonLayout = findViewById<View>(R.id.google_pay_button_layout)
     private val paymentSelector = findViewById<View>(R.id.payment_selector)
     private val paymentIcon = findViewById<ImageView>(R.id.payment_icon)
@@ -63,7 +62,7 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     val priceHeight: Int
-        get() = priceSum.height + sumContainer.marginTop * 2
+        get() = priceSum.height // TODO: probably wrong
 
     var checkoutPreconditionHandler: CheckoutPreconditionHandler? = null
 
@@ -191,8 +190,7 @@ open class CheckoutBar @JvmOverloads constructor(
         cart.let { cart ->
             val quantity = cart.totalQuantity
             val price = cart.totalPrice
-            val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
-            articleCount.text = String.format(articlesText.toString(), quantity)
+            articleCount.text = quantity.toString()
             priceSum.text = project.priceFormatter.format(price)
 
             val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()

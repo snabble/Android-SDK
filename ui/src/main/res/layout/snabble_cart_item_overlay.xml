@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        tools:parentTag="android.widget.RelativeLayout">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            tools:src="@drawable/snabble_ic_gift" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/image"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Milk"/>
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="1,19 €"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/controls_default"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="36dp"
+                android:layout_height="36dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/snabble_ic_minus"
+                    app:tint="?attr/colorOnSurface"
+                    android:importantForAccessibility="no"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/minus"
+                    style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.decreaseQuantity"
+                    app:strokeColor="@drawable/snabble_stroke" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:minWidth="36dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                tools:text="3" />
+
+            <FrameLayout
+                android:layout_width="36dp"
+                android:layout_height="36dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/snabble_ic_add"
+                    app:tint="?attr/colorOnSurface"
+                    android:importantForAccessibility="no"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/plus"
+                    style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:strokeColor="@drawable/snabble_stroke"
+                    android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.increaseQuantity"/>
+            </FrameLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+</merge>

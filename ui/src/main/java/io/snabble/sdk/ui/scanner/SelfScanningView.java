@@ -76,6 +76,7 @@ public class SelfScanningView extends FrameLayout {
     private MessageBoxStackView messages;
     private ProductConfirmationDialog.Factory productConfirmationDialogFactory;
     private Project project;
+    private boolean addItemDirectlyToCart = false;
 
     public SelfScanningView(Context context) {
         super(context);

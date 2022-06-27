@@ -21,7 +21,7 @@ sealed class BottomNavigationItem(var title: String,
 
     object MenuCart: BottomNavigationItem(
         title = Cart.title,
-        icon = R.drawable.ic_baseline_shopping_cart_24,
+        icon = R.drawable.snabble_ic_baseline_shopping_cart_24,
         route = Cart.route
     )
 }

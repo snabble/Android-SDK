@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/navigation_cart"
-        android:icon="@drawable/ic_baseline_shopping_cart_24"
+        android:icon="@drawable/snabble_ic_baseline_shopping_cart_24"
         android:title="@string/cart_title" />
 
 <!--    <item-->
