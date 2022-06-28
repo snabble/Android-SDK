@@ -300,6 +300,7 @@ open class CheckoutBar @JvmOverloads constructor(
 
                             override fun error() {
                                 progressDialog.dismiss()
+                                project.checkout.reset()
                             }
                         })
                     }

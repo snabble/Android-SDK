@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.67.2]
+
+### Fixed
+- Repeated keyguard dialogs occurring after canceling out of a keyguard and returning to a view
+
 ## [0.67.1]
 
 ### Fixed
