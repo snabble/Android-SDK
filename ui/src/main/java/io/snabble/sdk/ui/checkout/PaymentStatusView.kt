@@ -263,15 +263,13 @@ class PaymentStatusView @JvmOverloads constructor(
                         }
                     )
 
-                    exitToken.isVisible = true
                     exitTokenContainer.isVisible = true
                     exitToken.state = PaymentStatusItemView.State.SUCCESS
                     exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))
                     exitTokenBarcode.setFormat(format)
                     exitTokenBarcode.setText(it.value)
                 } else {
-                    exitToken.isVisible = false
-                    exitTokenBarcode.isVisible = false
+                    exitTokenContainer.isVisible = false
                 }
             }
         }
