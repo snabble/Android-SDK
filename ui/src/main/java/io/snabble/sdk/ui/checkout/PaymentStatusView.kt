@@ -170,7 +170,13 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun onStateChanged(state: CheckoutState?) {
-        if (lastState == state || ignoreStateChanges) {
+        if (ignoreStateChanges) {
+            return
+        }
+
+        checkForExitToken()
+
+        if (lastState == state) {
             return
         }
 
@@ -189,8 +195,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
             CheckoutState.PAYMENT_APPROVED -> {
-                title.text =
-                    resources.getString(R.string.Snabble_PaymentStatus_Title_success)
+                title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_success)
                 image.setImageResource(R.drawable.snabble_ic_payment_success_big)
                 image.isVisible = true
                 progress.isVisible = false
@@ -241,6 +246,10 @@ class PaymentStatusView @JvmOverloads constructor(
             }
         }
 
+        statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+    }
+
+    private fun checkForExitToken() {
         checkout.checkoutProcess?.exitToken?.let {
             if (it.value != null && it.format != null) {
                 val format = BarcodeFormat.parse(it.format)
@@ -254,6 +263,7 @@ class PaymentStatusView @JvmOverloads constructor(
                         }
                     )
 
+                    exitToken.isVisible = true
                     exitTokenContainer.isVisible = true
                     exitToken.state = PaymentStatusItemView.State.SUCCESS
                     exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))
@@ -265,8 +275,6 @@ class PaymentStatusView @JvmOverloads constructor(
                 }
             }
         }
-
-        statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     private fun handlePaymentAborted() {
