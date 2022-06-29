@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
+import io.snabble.sdk.Product
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ShoppingCart.ShoppingCartListener
 import io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener
@@ -52,10 +54,43 @@ class CombinedScannerFragment : BaseFragment() {
         val selfScanningView = view.findViewById<SelfScanningView>(R.id.selfScanningView)
         selfScanningView.setIndicatorOffset(0, 0)
 
-        selfScanningView.setProductConfirmationDialogFactory(object : ProductConfirmationDialog.Factory() {
-            override fun create(): ProductConfirmationDialog {
+        selfScanningView.setProductConfirmationDialogFactory {
+            ToastDialog()
+        }
+    }
 
+    class ToastDialog : ProductConfirmationDialog {
+        private val defaultProductConfirmationDialog = DefaultProductConfirmationDialog()
+        private var onDismissListener: ProductConfirmationDialog.OnDismissListener? = null
+
+        override fun show(
+            activity: FragmentActivity,
+            viewModel: ProductConfirmationDialog.ViewModel
+        ) {
+            if (viewModel.product.type == Product.Type.Article) {
+                Toast.makeText(activity, viewModel.product.name, Toast.LENGTH_LONG).show()
+                viewModel.addToCart()
+                onDismissListener?.onDismiss()
+            } else {
+                defaultProductConfirmationDialog.show(activity, viewModel)
             }
-        })
+        }
+
+        override fun dismiss(addToCart: Boolean) {
+            defaultProductConfirmationDialog.dismiss(addToCart)
+        }
+
+        override fun setOnDismissListener(onDismissListener: ProductConfirmationDialog.OnDismissListener?) {
+            this.onDismissListener = onDismissListener
+            defaultProductConfirmationDialog.setOnDismissListener(onDismissListener)
+        }
+
+        override fun setOnShowListener(onShowListener: ProductConfirmationDialog.OnShowListener?) {
+            defaultProductConfirmationDialog.setOnShowListener(onShowListener)
+        }
+
+        override fun setOnKeyListener(onKeyListener: ProductConfirmationDialog.OnKeyListener?) {
+            defaultProductConfirmationDialog.setOnKeyListener(onKeyListener)
+        }
     }
 }
