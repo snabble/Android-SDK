@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.67.3]
+
+### Fixed
+- Fixed a NullPointerException that could occur when persisting shopping carts
+
 ## [0.67.2]
 
 ### Fixed

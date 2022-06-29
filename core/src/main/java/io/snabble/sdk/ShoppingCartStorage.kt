@@ -41,8 +41,11 @@ internal class ShoppingCartStorage(val project: Project) {
                     if (project.shops.any { it.id == shop.id }) {
                         currentFile = fileMap[shop.id]
                         load()
+                        return@observeForever
                     }
                 }
+
+                currentFile = null
             }
         }
 
@@ -74,18 +77,23 @@ internal class ShoppingCartStorage(val project: Project) {
     }
 
     private fun saveDebounced() {
-        mainThreadHandler.removeCallbacksAndMessages(null)
-        mainThreadHandler.postDelayed({
-            val json = GsonHolder.get().toJson(project.shoppingCart.data)
-            Dispatch.background {
-                try {
-                    FileUtils.forceMkdirParent(currentFile)
-                    IOUtils.write(json, FileOutputStream(currentFile), Charset.forName("UTF-8"))
-                } catch (e: IOException) {
-                    //could not save shopping cart, silently ignore
-                    Logger.e("Could not save shopping list for " + project.id + ": " + e.message)
+        val file = currentFile
+        val data = project.shoppingCart.data
+
+        if (file != null) {
+            mainThreadHandler.removeCallbacksAndMessages(null)
+            mainThreadHandler.postDelayed({
+                val json = GsonHolder.get().toJson(data)
+                Dispatch.background {
+                    try {
+                        FileUtils.forceMkdirParent(file)
+                        IOUtils.write(json, FileOutputStream(file), Charset.forName("UTF-8"))
+                    } catch (e: IOException) {
+                        //could not save shopping cart, silently ignore
+                        Logger.e("Could not save shopping list: " + e.message)
+                    }
                 }
-            }
-        }, 1000)
+            }, 1000)
+        }
     }
 }
