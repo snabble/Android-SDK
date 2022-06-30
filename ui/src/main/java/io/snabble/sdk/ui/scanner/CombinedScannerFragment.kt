@@ -1,41 +1,20 @@
 package io.snabble.sdk.ui.scanner
 
-import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
 import io.snabble.sdk.Product
-import io.snabble.sdk.ShoppingCart
-import io.snabble.sdk.ShoppingCart.ShoppingCartListener
-import io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener
-import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.BaseFragment
-import io.snabble.sdk.ui.GestureHandler
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.CheckoutBar
-import io.snabble.sdk.ui.cart.ShoppingCartView
-import io.snabble.sdk.ui.utils.SnackbarUtils
-import io.snabble.sdk.ui.utils.behavior
-import io.snabble.sdk.ui.utils.bindTextOrHide
-import io.snabble.sdk.utils.Utils
-import kotlin.math.min
-
 
 class CombinedScannerFragment : BaseFragment() {
+    lateinit var container: RelativeLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -48,6 +27,8 @@ class CombinedScannerFragment : BaseFragment() {
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActualViewCreated(view, savedInstanceState)
 
+        container = view.findViewById(R.id.container)
+
         val gotoCartButton = view.findViewById<View>(R.id.goto_cart)
         gotoCartButton.isVisible = false
 
@@ -59,7 +40,31 @@ class CombinedScannerFragment : BaseFragment() {
         }
     }
 
-    class ToastDialog : ProductConfirmationDialog {
+    fun showCartItemOverlayView(viewModel: ProductConfirmationDialog.ViewModel) {
+        val cartItemOverlayView = container.findViewById<CartItemOverlayView>(R.id.cart_item_overlay_view)
+
+        cartItemOverlayView.isVisible = true
+        cartItemOverlayView.cartItem = viewModel.cartItem
+        cartItemOverlayView.onRemovedFromCartListener = object : CartItemOverlayView.OnRemovedFromCartListener {
+            override fun onDismiss() {
+                cartItemOverlayView.isVisible = false
+            }
+        }
+
+        cartItemOverlayView.scaleX = 0.5f
+        cartItemOverlayView.scaleY = 0.5f
+        cartItemOverlayView.translationY = -container.height.toFloat()
+        cartItemOverlayView.alpha = 0.25f
+        cartItemOverlayView.animate()
+            .scaleX(1.0f)
+            .scaleY(1.0f)
+            .translationY(0.0f)
+            .alpha(1.0f)
+            .setDuration(5000)
+            .start()
+    }
+
+    inner class ToastDialog : ProductConfirmationDialog {
         private val defaultProductConfirmationDialog = DefaultProductConfirmationDialog()
         private var onDismissListener: ProductConfirmationDialog.OnDismissListener? = null
 
@@ -68,7 +73,7 @@ class CombinedScannerFragment : BaseFragment() {
             viewModel: ProductConfirmationDialog.ViewModel
         ) {
             if (viewModel.product.type == Product.Type.Article) {
-                Toast.makeText(activity, viewModel.product.name, Toast.LENGTH_LONG).show()
+                showCartItemOverlayView(viewModel)
                 viewModel.addToCart()
                 onDismissListener?.onDismiss()
             } else {

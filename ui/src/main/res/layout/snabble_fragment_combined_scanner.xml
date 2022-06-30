@@ -12,6 +12,16 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/checkout_bar" />
 
+    <io.snabble.sdk.ui.scanner.CartItemOverlayView
+        android:id="@+id/cart_item_overlay_view"
+        android:layout_above="@+id/checkout_bar"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="32dp"
+        android:background="?attr/colorSurface"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <io.snabble.sdk.ui.cart.CheckoutBar
         android:id="@+id/checkout_bar"
         android:layout_width="match_parent"
