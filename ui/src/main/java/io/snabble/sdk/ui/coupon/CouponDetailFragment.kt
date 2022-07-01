@@ -15,11 +15,11 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.loadImage
 import io.snabble.sdk.ui.utils.setTextOrHide
 
-open class CouponFragment : Fragment() {
+open class CouponDetailFragment : Fragment() {
     companion object {
         const val ARG_COUPON = "coupon"
 
-        fun createCouponFragment(coupon: CouponItem) = CouponFragment().apply {
+        fun createCouponDetailFragment(coupon: CouponItem) = CouponDetailFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(ARG_COUPON, coupon)
             }
@@ -44,20 +44,22 @@ open class CouponFragment : Fragment() {
     private lateinit var description: TextView
     private lateinit var discount: TextView
     private lateinit var expire: TextView
-    private lateinit var redeemForScanGo: Button
+    private lateinit var activateCoupon: Button
+    private lateinit var appliedCoupon: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.snabble_fragment_coupon, container, false).apply {
+    ): View = inflater.inflate(R.layout.snabble_fragment_coupon_detail, container, false).apply {
         header = findViewById(R.id.header)
         title = findViewById(R.id.title)
         subtitle = findViewById(R.id.subtitle)
         description = findViewById(R.id.description)
         discount = findViewById(R.id.discount)
         expire = findViewById(R.id.expire)
-        redeemForScanGo = findViewById(R.id.redeemForScanGo)
+        activateCoupon = findViewById(R.id.activateCoupon)
+        appliedCoupon = findViewById(R.id.appliedCoupon)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,21 +74,21 @@ open class CouponFragment : Fragment() {
 
             val sdkCoupon = project.coupons.filter(CouponType.DIGITAL).firstOrNull { it.id == coupon.id }
             if (sdkCoupon == null) {
-                redeemForScanGo.setText(R.string.Snabble_Coupons_expired)
-                redeemForScanGo.isEnabled = false
+                activateCoupon.setText(R.string.Snabble_Coupons_expired)
+                activateCoupon.isEnabled = false
             } else {
                 project.shoppingCart.let { cart ->
                     for (i in 0 until cart.size()) {
                         val cartCoupon = cart.get(i).coupon
                         if (cartCoupon != null) {
                             if (cartCoupon.id == sdkCoupon.id) {
-                                redeem()
+                                markAsApplied()
                                 break
                             }
                         }
                     }
                 }
-                redeemForScanGo.setOnClickListener {
+                activateCoupon.setOnClickListener {
                     onRedeem(sdkCoupon)
                 }
             }
@@ -95,12 +97,11 @@ open class CouponFragment : Fragment() {
 
     protected open fun onRedeem(sdkCoupon: io.snabble.sdk.coupons.Coupon) {
         project.shoppingCart.addCoupon(sdkCoupon)
-        redeem()
+        markAsApplied()
     }
 
-    protected fun redeem() {
-        redeemForScanGo.isVisible = true
-        redeemForScanGo.setText(R.string.Snabble_Coupon_activated)
-        redeemForScanGo.isEnabled = false
+    protected fun markAsApplied() {
+        activateCoupon.isVisible = false
+        appliedCoupon.isVisible = true
     }
 }

@@ -27,4 +27,29 @@
         <item name="android:minWidth">48dp</item>
         <item name="android:minHeight">48dp</item>
     </style>
+
+    <style name="Snabble" />
+    <style name="Snabble.CouponDetail" />
+    <style name="Snabble.CouponDetail.ActivateButtonStyle" parent="Widget.Material3.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">32dp</item>
+        <item name="android:layout_marginBottom">32dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:text">@string/Snabble.Coupon.activate</item>
+    </style>
+    <style name="ThemeOverlay.Snabble.CouponDetail.ActivateButtonStyle" parent="Snabble.CouponDetail.ActivateButtonStyle"/>
+    <style name="Snabble.CouponDetail.AppliedButtonStyle" parent="Widget.Material3.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">32dp</item>
+        <item name="android:layout_marginBottom">32dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:enabled">false</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:text">@string/Snabble.Coupon.activated</item>
+    </style>
+    <style name="ThemeOverlay.Snabble.CouponDetail.AppliedButtonStyle" parent="Snabble.CouponDetail.AppliedButtonStyle"/>
 </resources>

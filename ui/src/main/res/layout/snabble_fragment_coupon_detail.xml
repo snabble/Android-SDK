@@ -73,11 +73,13 @@
             tools:text="gültig bis 31.12.2022" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/redeemForScanGo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginVertical="16dp"
-            android:text="@string/Snabble.Coupon.activate" />
+            style="@style/ThemeOverlay.Snabble.CouponDetail.ActivateButtonStyle"
+            android:id="@+id/activateCoupon" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/ThemeOverlay.Snabble.CouponDetail.AppliedButtonStyle"
+            android:id="@+id/appliedCoupon"
+            tools:layout_marginTop="-16dp"
+            tools:visibility="visible" />
     </LinearLayout>
 </ScrollView>
