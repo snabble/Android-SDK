@@ -59,8 +59,10 @@ class CouponOverviewView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        recyclerView.adapter = ensureAdapterExists().apply {
-            setCouponSource(couponSource)
+        if (!isInEditMode) {
+            recyclerView.adapter = ensureAdapterExists().apply {
+                setCouponSource(couponSource)
+            }
         }
     }
 

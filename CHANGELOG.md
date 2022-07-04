@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.68.0]
+
+### Changed
+- Added experimental customization with OverlayThemes for coupons
+
+### Breaking Changes
+- Renamed CouponFragment to CouponDetailFragment
+
 ## [0.67.3]
 
 ### Fixed
