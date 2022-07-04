@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.68.0]
 
+### Fixed
+- Fixed a race condition when fetching for exit tokens
+
 ### Changed
 - Added experimental customization with OverlayThemes for coupons
 
