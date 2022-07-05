@@ -21,9 +21,13 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.view.setPadding
 import io.snabble.sdk.BarcodeFormat
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.utils.Sides
 import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.dpInPx
+import io.snabble.sdk.ui.utils.padding
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import java.nio.ByteBuffer
@@ -44,12 +48,24 @@ open class BarcodeScannerView @JvmOverloads constructor(
     private val previewView = PreviewView(context)
     private val fakePauseView = ImageView(context)
     private var cameraUnavailableView = TextView(context)
-    private var scanIndicatorView = ImageView(context).apply {
-        setImageResource(R.drawable.snabble_ic_barcode)
-        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-            gravity = Gravity.CENTER
+    private var scanIndicatorView =
+        FrameLayout(context).apply {
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.CENTER
+            }
+            addView(ImageView(context).apply {
+                setImageResource(R.drawable.snabble_scan_hint)
+                layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            })
+            addView(TextView(context).apply {
+                text = "Scan Barcode"
+                setBackgroundResource(R.drawable.snabble_ic_rounded_corners)
+                setPadding(8.dpInPx, 2.dpInPx, 8.dpInPx, 2.dpInPx)
+                setTextColor(Color.BLACK)
+                layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                    gravity = Gravity.CENTER
+            }})
         }
-    }
 
     var barcodeDetector: BarcodeDetector
         private set
