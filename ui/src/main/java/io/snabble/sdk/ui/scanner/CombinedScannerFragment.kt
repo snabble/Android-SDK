@@ -11,8 +11,13 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.Product
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.cart.CheckoutBar
+import io.snabble.sdk.ui.utils.dpInPx
+import io.snabble.sdk.utils.Dispatch
 
 class CombinedScannerFragment : BaseFragment() {
+    lateinit var selfScanningView: SelfScanningView
+    lateinit var checkoutBar: CheckoutBar
     lateinit var container: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,11 +33,12 @@ class CombinedScannerFragment : BaseFragment() {
         super.onActualViewCreated(view, savedInstanceState)
 
         container = view.findViewById(R.id.container)
+        checkoutBar = view.findViewById(R.id.checkout_bar);
 
         val gotoCartButton = view.findViewById<View>(R.id.goto_cart)
         gotoCartButton.isVisible = false
 
-        val selfScanningView = view.findViewById<SelfScanningView>(R.id.selfScanningView)
+        selfScanningView = view.findViewById<SelfScanningView>(R.id.selfScanningView)
         selfScanningView.setIndicatorOffset(0, 0)
 
         selfScanningView.setProductConfirmationDialogFactory {
@@ -42,6 +48,7 @@ class CombinedScannerFragment : BaseFragment() {
 
     fun showCartItemOverlayView(viewModel: ProductConfirmationDialog.ViewModel) {
         val cartItemOverlayView = container.findViewById<CartItemOverlayView>(R.id.cart_item_overlay_view)
+        val cartButtonView = checkoutBar.findViewById<View>(R.id.cart_button_view);
 
         cartItemOverlayView.isVisible = true
         cartItemOverlayView.cartItem = viewModel.cartItem
@@ -51,16 +58,30 @@ class CombinedScannerFragment : BaseFragment() {
             }
         }
 
-        cartItemOverlayView.scaleX = 0.5f
-        cartItemOverlayView.scaleY = 0.5f
-        cartItemOverlayView.translationY = -container.height.toFloat()
+        cartItemOverlayView.scaleX = 0.25f
+        cartItemOverlayView.scaleY = 0.25f
+        cartItemOverlayView.translationY = -selfScanningView.height / 2 + 60.dpInPx.toFloat()
         cartItemOverlayView.alpha = 0.25f
         cartItemOverlayView.animate()
+            .setStartDelay(0)
             .scaleX(1.0f)
             .scaleY(1.0f)
             .translationY(0.0f)
             .alpha(1.0f)
-            .setDuration(5000)
+            .setDuration(500)
+            .withEndAction {
+                cartItemOverlayView.animate()
+                    .setStartDelay(5000)
+                    .scaleX(0.1f)
+                    .scaleY(0.1f)
+                    .translationY(120.dpInPx.toFloat())
+                    .alpha(0.0f)
+                    .setDuration(200)
+                    .withEndAction {
+                        checkoutBar.playAddToCartAnimation()
+                    }
+                    .start()
+            }
             .start()
     }
 

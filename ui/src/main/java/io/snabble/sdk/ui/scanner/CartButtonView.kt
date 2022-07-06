@@ -18,30 +18,56 @@ import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 
-class CartBadgeView  @JvmOverloads constructor(
+class CartButtonView  @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    val background by lazy { findViewById<ImageView>(R.id.background) }
-    val badgeBackground by lazy { findViewById<ImageView>(R.id.badge_background) }
-    val badgeText by lazy { findViewById<TextView>(R.id.badge_text) }
-    var project: Project? = null
+    private val background by lazy { findViewById<ImageView>(R.id.background) }
+    private val badgeBackground by lazy { findViewById<ImageView>(R.id.badge_background) }
+    private val badgeText by lazy { findViewById<TextView>(R.id.badge_text) }
+    private var project: Project? = null
 
-    val cartListener = object : ShoppingCart.SimpleShoppingCartListener() {
+    private val cartListener = object : ShoppingCart.SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart) {
-            badgeText.text = list.totalQuantity.toString()
+            updateCartQuantity()
         }
     }
 
     init {
-        inflate(context, R.layout.snabble_cart_item_overlay, this)
+        inflate(context, R.layout.snabble_view_cart_button, this)
 
-        Snabble.checkedInProject.observeView(this) {
-            registerListeners()
+        clipChildren = false
+        clipToPadding = false
+
+        if (!isInEditMode) {
+            Snabble.checkedInProject.observeView(this) {
+                registerListeners()
+            }
         }
+    }
+
+    private fun updateCartQuantity() {
+        val q = project?.shoppingCart?.totalQuantity ?: 0
+        if (q > 0) {
+            badgeText.text = q.toString()
+            badgeText.isVisible = true
+            badgeBackground.isVisible = true
+            background.setImageResource(R.drawable.snabble_ic_cart_button_background)
+        } else {
+            badgeText.isVisible = false
+            badgeBackground.isVisible = false
+            background.setImageResource(R.drawable.snabble_ic_cart_button_background)
+        }
+    }
+
+    fun playAddToCartAnimation() {
+        animate().scaleX(1.1f).scaleY(1.1f).setDuration(100).withEndAction {
+                animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start()
+        }.start()
     }
 
     private fun registerListeners() {
         project?.shoppingCart?.addListener(cartListener)
+        updateCartQuantity()
     }
 
     private fun unregisterListeners() {

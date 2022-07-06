@@ -559,6 +559,18 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         return sum;
     }
 
+    public int getTotalDiscountPrice() {
+        int sum = 0;
+
+        for (Item e : data.items) {
+            if (e.getType() == ItemType.LINE_ITEM && e.isDiscount()) {
+                sum += e.getTotalPrice();
+            }
+        }
+
+        return sum;
+    }
+
     /**
      * Returns the total sum of deposit
      */

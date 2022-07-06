@@ -130,7 +130,7 @@ public class SelfScanningView extends FrameLayout {
                 showShoppingCart();
             }
         });
-        goToCart.setVisibility(View.VISIBLE);
+        goToCart.setVisibility(View.GONE);
 
         updateCartButton();
 
@@ -167,19 +167,19 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void updateCartButton() {
-        PriceFormatter priceFormatter = project.getPriceFormatter();
-
-        if (shoppingCart.size() > 0) {
-            goToCart.setVisibility(View.VISIBLE);
-
-            if (shoppingCart.getTotalPrice() != 0) {
-                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart, priceFormatter.format(shoppingCart.getTotalPrice())));
-            } else {
-                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart_empty));
-            }
-        } else {
-            goToCart.setVisibility(View.INVISIBLE);
-        }
+//        PriceFormatter priceFormatter = project.getPriceFormatter();
+//
+//        if (shoppingCart.size() > 0) {
+//            goToCart.setVisibility(View.VISIBLE);
+//
+//            if (shoppingCart.getTotalPrice() != 0) {
+//                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart, priceFormatter.format(shoppingCart.getTotalPrice())));
+//            } else {
+//                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart_empty));
+//            }
+//        } else {
+//            goToCart.setVisibility(View.INVISIBLE);
+//        }
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {

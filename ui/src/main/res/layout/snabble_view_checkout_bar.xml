@@ -6,21 +6,24 @@
     tools:parentTag="LinearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:orientation="vertical"
     tools:background="#ededed">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/cart_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:padding="16dp"
         android:clipChildren="false"
-        android:layout_gravity="center"
+        android:clipToPadding="false"
         android:orientation="horizontal">
         <LinearLayout
             android:id="@+id/discount_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/cart_button_view"
             android:gravity="end"
             android:clipChildren="false"
             android:orientation="vertical">
@@ -40,31 +43,21 @@
                 tools:text="\?"/>
         </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp">
-            <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/snabble_ic_baseline_shopping_cart_24" />
-            <TextView
-                android:id="@+id/article_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="?attr/colorPrimary"
-                android:textColor="?attr/colorOnPrimary"
-                android:visibility="gone"
-                tools:text="10"
-                tools:visibility="visible" />
-        </FrameLayout>
+        <io.snabble.sdk.ui.scanner.CartButtonView
+            android:id="@+id/cart_button_view"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="16dp" />
 
         <LinearLayout
             android:id="@+id/price_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start"
+            android:layout_toEndOf="@+id/cart_button_view"
             android:clipChildren="false"
             android:orientation="vertical">
             <TextView
@@ -83,19 +76,21 @@
                 tools:text="13,37 €"/>
         </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
         <LinearLayout
             android:id="@+id/payment_active"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
+            android:paddingBottom="16dp"
             android:clipChildren="false"
+            android:weightSum="2"
             android:orientation="horizontal">
             <FrameLayout android:id="@+id/payment_selector"
-                android:layout_width="wrap_content"
+                android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:clipChildren="false"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="16dp">
 
                 <com.google.android.material.button.MaterialButton
@@ -131,7 +126,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="2"
                         android:layout_gravity="center"
-                        android:scaleType="centerInside"
+                        android:paddingStart="8dp"
                         android:textAppearance="?attr/textAppearanceBodySmall"
                         tools:text="Bezahle mit SEPA"
                         android:importantForAccessibility="no" />
@@ -152,7 +147,7 @@
             <com.google.android.material.button.MaterialButton
                 style="@style/Snabble.Widget.MaterialComponents.Button"
                 android:id="@+id/pay"
-                android:layout_width="match_parent"
+                android:layout_width="0px"
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
@@ -160,15 +155,17 @@
                 android:insetRight="0dp"
                 android:insetLeft="0dp"
                 android:insetBottom="0dp"
+                android:layout_weight="1"
                 tools:visibility="gone"
                 android:text="@string/Snabble.Shoppingcart.buyProducts.now"
                 app:strokeColor="@drawable/snabble_stroke" />
 
             <include android:id="@+id/google_pay_button_layout"
-                android:layout_width="match_parent"
+                android:layout_width="0px"
                 android:layout_height="48dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
+                android:layout_weight="1"
                 layout="@layout/snabble_buy_with_googlepay_button_no_shadow"/>
         </LinearLayout>
 

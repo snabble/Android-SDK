@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:clipChildren="false"
     android:layout_width="match_parent"
@@ -12,6 +12,13 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/checkout_bar" />
 
+    <io.snabble.sdk.ui.cart.CheckoutBar
+        android:id="@+id/checkout_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/colorSurface" />
+
     <io.snabble.sdk.ui.scanner.CartItemOverlayView
         android:id="@+id/cart_item_overlay_view"
         android:layout_above="@+id/checkout_bar"
@@ -19,13 +26,8 @@
         android:layout_marginBottom="32dp"
         android:background="?attr/colorSurface"
         android:visibility="invisible"
+        app:cardCornerRadius="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <io.snabble.sdk.ui.cart.CheckoutBar
-        android:id="@+id/checkout_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="?attr/colorSurface" />
 </RelativeLayout>

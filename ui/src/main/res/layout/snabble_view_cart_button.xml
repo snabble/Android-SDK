@@ -4,25 +4,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:parentTag="android.widget.FrameLayout">
     <ImageView
         android:id="@+id/background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:src="@drawable/snabble_ic_cart_button_background_cutout" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:tint="?attr/colorPrimary"
+        android:padding="8dp"
         android:src="@drawable/snabble_ic_cart_button" />
 
     <ImageView
         android:id="@+id/badge_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:layout_gravity="end"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:tint="?attr/colorPrimary"
         android:src="@drawable/snabble_ic_badge" />
 
@@ -32,8 +41,10 @@
         android:paddingEnd="2dp"
         android:paddingTop="1dp"
         android:textSize="12dp"
-        app:textColor="?attr/colorOnPrimary"
+        android:textColor="#ffffff"
         android:layout_gravity="end"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         tools:text="99"
-        />
+        tools:ignore="RtlSymmetry,SpUsage" />
 </merge>

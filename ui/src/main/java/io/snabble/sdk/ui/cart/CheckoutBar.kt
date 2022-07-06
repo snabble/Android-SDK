@@ -11,10 +11,10 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
-import androidx.core.view.marginTop
+import androidx.core.view.*
 import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
@@ -31,6 +31,7 @@ import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
+import io.snabble.sdk.ui.scanner.CartButtonView
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.*
 import io.snabble.sdk.utils.Logger
@@ -43,14 +44,16 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     private val paymentSelectorButton = findViewById<View>(R.id.payment_selector_button)
+    private val paymentSelectorText = findViewById<TextView>(R.id.payment_text)
     private val paymentSelectorButtonBig = findViewById<View>(R.id.payment_selector_button_big)
     private val payButton = findViewById<Button>(R.id.pay)
     private val priceSum = findViewById<TextView>(R.id.price_sum)
+    private val discountSum =  findViewById<TextView>(R.id.discount_sum)
     private val googlePayButtonLayout = findViewById<View>(R.id.google_pay_button_layout)
     private val paymentSelector = findViewById<View>(R.id.payment_selector)
     private val paymentIcon = findViewById<ImageView>(R.id.payment_icon)
     private val paymentActive = findViewById<View>(R.id.payment_active)
-    private val articleCount = findViewById<TextView>(R.id.article_count)
+    private val cartButtonView = findViewById<CartButtonView>(R.id.cart_button_view)
 
     private lateinit var progressDialog: DelayedProgressDialog
 
@@ -179,6 +182,7 @@ open class CheckoutBar @JvmOverloads constructor(
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             paymentSelector.isVisible = !isHidden
             paymentIcon.setImageResource(entry.iconResId)
+            paymentSelectorText.text = entry.text
             paymentSelectorButton.contentDescription = resources.getString(R.string.Snabble_Shoppingcart_Accessibility_paymentMethod, entry.text)
             paymentSelectorButton.accessibility {
                 setClickAction(R.string.Snabble_Shoppingcart_buyProducts_selectPaymentMethod)
@@ -188,10 +192,15 @@ open class CheckoutBar @JvmOverloads constructor(
 
     private fun updatePayAndText() {
         cart.let { cart ->
-            val quantity = cart.totalQuantity
             val price = cart.totalPrice
-            articleCount.text = quantity.toString()
             priceSum.text = project.priceFormatter.format(price)
+
+            val discountPrice = cart.totalDiscountPrice
+            if (discountPrice > 0) {
+                discountSum.text = project.priceFormatter.format(cart.totalDiscountPrice)
+            } else {
+                discountSum.text = "?"
+            }
 
             val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
             payButton.isEnabled = price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
@@ -217,6 +226,15 @@ open class CheckoutBar @JvmOverloads constructor(
 
             paymentSelectorButtonBig.isVisible = showBigSelector
             paymentSelector.isVisible = price >= 0 && showSmallSelector
+            if (showSmallSelector) {
+                payButton.layoutParams = LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f).apply {
+                    setMargins(0.dpInPx, 0, 16.dpInPx, 0)
+                }
+            } else {
+                payButton.layoutParams = LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 2.0f).apply {
+                    setMargins(16.dpInPx, 0, 16.dpInPx, 0)
+                }
+            }
             paymentActive.isVisible = !showBigSelector
 
             if (cart.isRestorable) {
@@ -226,6 +244,10 @@ open class CheckoutBar @JvmOverloads constructor(
                 payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
             }
         }
+    }
+
+    fun playAddToCartAnimation() {
+        cartButtonView.playAddToCartAnimation()
     }
 
     protected fun pay() {

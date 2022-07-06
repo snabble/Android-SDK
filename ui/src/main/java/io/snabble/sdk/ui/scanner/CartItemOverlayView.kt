@@ -6,14 +6,18 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.CornerSize
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.squareup.picasso.Picasso
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ui.R
 
 class CartItemOverlayView  @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : MaterialCardView(context, attrs, defStyleAttr) {
     val name by lazy { findViewById<TextView>(R.id.name) }
     val price by lazy { findViewById<TextView>(R.id.price) }
     val image by lazy { findViewById<ImageView>(R.id.image) }
