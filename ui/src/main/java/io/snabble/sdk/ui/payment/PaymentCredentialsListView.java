@@ -61,6 +61,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_payment_credentials_list, this);
+        if (isInEditMode()) return;
         paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
 
         recyclerView = findViewById(R.id.recycler_view);
@@ -85,6 +86,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                             p = Snabble.getInstance().getCheckedInProject().getValue();
                         }
 
+                        if (p == null) {
+                            throw new IllegalStateException("Cannot get current project. Did you forget to set the projectId to the PaymentCredentialsListFragment or PaymentCredentialsListView?");
+                        }
+
                         bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, p.getId());
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
@@ -102,6 +107,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         });
 
         emptyState = findViewById(R.id.empty_state);
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public void show(List<PaymentCredentials.Type> types, Project project) {
