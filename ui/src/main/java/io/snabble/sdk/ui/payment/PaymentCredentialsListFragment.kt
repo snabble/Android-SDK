@@ -29,6 +29,6 @@ open class PaymentCredentialsListFragment : BaseFragment(
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         val v = view as PaymentCredentialsListView
-        type?.let { v.show(it, project) }
+        type?.let { v.show(it, project) } ?: v.setProject(project)
     }
 }
