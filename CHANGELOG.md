@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.68.1]
+
+### Fixed
+- Fixed a crash in single project apps when in PaymentCredentialsListView
+
 ## [0.68.0]
 
 ### Fixed
