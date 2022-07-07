@@ -18,12 +18,12 @@ import io.snabble.sdk.ui.R
 class CartItemOverlayView  @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : MaterialCardView(context, attrs, defStyleAttr) {
-    val name by lazy { findViewById<TextView>(R.id.name) }
-    val price by lazy { findViewById<TextView>(R.id.price) }
-    val image by lazy { findViewById<ImageView>(R.id.image) }
-    val plus by lazy { findViewById<View>(R.id.plus) }
-    val minus by lazy { findViewById<View>(R.id.minus) }
-    val quantity by lazy { findViewById<TextView>(R.id.quantity) }
+    private val name by lazy { findViewById<TextView>(R.id.name) }
+    private val price by lazy { findViewById<TextView>(R.id.price) }
+    private val image by lazy { findViewById<ImageView>(R.id.image) }
+    private val plus by lazy { findViewById<View>(R.id.plus) }
+    private val minus by lazy { findViewById<View>(R.id.minus) }
+    private val quantity by lazy { findViewById<TextView>(R.id.quantity) }
 
     interface OnRemovedFromCartListener {
         fun onDismiss()

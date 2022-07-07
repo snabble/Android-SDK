@@ -14,6 +14,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
@@ -40,8 +41,13 @@ class CartButtonView  @JvmOverloads constructor(
 
         if (!isInEditMode) {
             Snabble.checkedInProject.observeView(this) {
+                project = it
                 registerListeners()
             }
+        }
+
+        setOnClickListener {
+            SnabbleUI.executeAction(getContext(), SnabbleUI.Event.SHOW_SHOPPING_CART)
         }
     }
 
@@ -51,7 +57,7 @@ class CartButtonView  @JvmOverloads constructor(
             badgeText.text = q.toString()
             badgeText.isVisible = true
             badgeBackground.isVisible = true
-            background.setImageResource(R.drawable.snabble_ic_cart_button_background)
+            background.setImageResource(R.drawable.snabble_ic_cart_button_background_cutout)
         } else {
             badgeText.isVisible = false
             badgeBackground.isVisible = false

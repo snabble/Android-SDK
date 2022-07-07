@@ -36,13 +36,12 @@
         android:src="@drawable/snabble_ic_badge" />
 
     <TextView android:id="@+id/badge_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="2dp"
-        android:paddingTop="1dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:textSize="12dp"
         android:textColor="#ffffff"
         android:layout_gravity="end"
+        android:gravity="center"
         android:clipChildren="false"
         android:clipToPadding="false"
         tools:text="99"
