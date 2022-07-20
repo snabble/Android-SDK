@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.68.2]
+
+### Fixed
+- Fixed regression in shopping cart when using multiple manual coupons
+
 ## [0.68.1]
 
 ### Fixed

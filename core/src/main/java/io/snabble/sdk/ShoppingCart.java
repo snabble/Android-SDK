@@ -31,6 +31,7 @@ import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
+import io.snabble.sdk.utils.Logger;
 
 /**
  * Class representing the snabble shopping cart
@@ -1366,7 +1367,9 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
                 if (cartItem.coupon != null) {
                     BackendCartItem couponItem = new BackendCartItem();
-                    couponItem.id = cartItem.coupon.getId();
+                    // this item id needs to be unique per item or else the
+                    // promotion engine on the backend gets confused
+                    couponItem.id = UUID.randomUUID().toString();
                     couponItem.refersTo = item.id;
                     couponItem.amount = 1;
                     couponItem.couponID = cartItem.coupon.getId();
@@ -1396,9 +1399,10 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     void resolveViolations(List<Violation> violations) {
         for (Violation violation : violations) {
             for (int i = data.items.size() - 1; i >= 0; i--) {
-                if (data.items.get(i).coupon != null && data.items.get(i).backendCouponId.equals(violation.getRefersTo())) {
-                    Item item = data.items.get(i);
+                Item item = data.items.get(i);
+                if (item.coupon != null && item.backendCouponId != null && item.backendCouponId.equals(violation.getRefersTo())) {
                     data.items.remove(item);
+                    data.modCount++;
                     boolean found = false;
                     for (ViolationNotification notification : data.violationNotifications) {
                         if (notification.getRefersTo().equals(violation.getRefersTo())) {
@@ -1418,6 +1422,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
             }
         }
         notifyViolations();
+        updatePrices(false);
     }
 
     /**
@@ -1427,6 +1432,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      */
     public void removeViolationNotification(List<ViolationNotification> violations) {
         data.violationNotifications.removeAll(violations);
+        data.modCount++;
+        notifyCartDataChanged(this);
     }
 
     @NonNull
