@@ -1,10 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.68.3]
+
+- Fixed a regression when pre-weighed products to the shopping cart
+
 ## [0.68.2]
 
 ### Fixed
-- Fixed regression in shopping cart when using multiple manual coupons
+- Fixed a regression in shopping cart when using multiple manual coupons
 
 ## [0.68.1]
 
