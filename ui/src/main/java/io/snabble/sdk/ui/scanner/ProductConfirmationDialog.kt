@@ -105,6 +105,13 @@ interface ProductConfirmationDialog {
             } else if (cartItem.product?.type == Product.Type.UserWeighed && quantity.value == 0) {
                 quantity.cycleFreeValue(null)
             }
+
+            if (newQuantity > 0 && cartItem.product?.type == Product.Type.PreWeighed) {
+                quantity.postValue(newQuantity)
+                quantityCanBeChanged.postValue(false)
+                quantityVisible.postValue(true)
+            }
+
             addToCartButtonText.postString(R.string.Snabble_Scanner_addToCart)
             quantityContentDescription.postNullableString(
                 R.string.Snabble_Scanner_Accessibility_eventQuantityUpdate,
