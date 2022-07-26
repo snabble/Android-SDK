@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.68.4]
+
+- Fixed a rare formatting bug in AcceptedLanguageInterceptor
+
 ## [0.68.3]
 
 - Fixed a regression when pre-weighed products to the shopping cart
