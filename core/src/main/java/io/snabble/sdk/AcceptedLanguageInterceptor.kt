@@ -6,10 +6,14 @@ import androidx.annotation.RestrictTo
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.*
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class AcceptedLanguageInterceptor : Interceptor {
+    private val formatter = DecimalFormat("#.##", DecimalFormatSymbols(Locale.US))
+
     private val acceptedLanguagesHeader: String
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val list = LocaleList.getDefault()
@@ -17,12 +21,8 @@ internal class AcceptedLanguageInterceptor : Interceptor {
             val simplified = (all.map { it.toLanguageTag() } + all.map { it.language }).distinct()
             var str = simplified.first()
             for (i in 1 until simplified.size) {
-                str += ",${simplified[i]};q=${
-                    "%.1f".format(
-                        Locale.US,
-                        1 - (1 / simplified.size.toFloat()) * i
-                    )
-                }"
+                val weight = formatter.format(1 - (1 / simplified.size.toFloat()) * i)
+                str += ",${simplified[i]};q=$weight"
             }
             str
         } else Locale.getDefault().language
