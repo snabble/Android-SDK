@@ -165,7 +165,11 @@ class DefaultCheckoutApi(private val project: Project,
             }
 
             override fun error(t: Throwable) {
-                paymentProcessResult?.onError()
+                if (responseCode() == 404) {
+                    paymentProcessResult?.onNotFound()
+                } else {
+                    paymentProcessResult?.onError()
+                }
             }
         })
     }
@@ -259,6 +263,8 @@ class DefaultCheckoutApi(private val project: Project,
             override fun error(t: Throwable) {
                 if (responseCode() == 403) {
                     updatePaymentProcess(url, paymentProcessResult)
+                } else if (responseCode() == 404) {
+                    paymentProcessResult?.onNotFound()
                 } else {
                     paymentProcessResult?.onError()
                 }

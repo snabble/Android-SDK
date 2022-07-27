@@ -1,12 +1,10 @@
 package io.snabble.sdk.checkout
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.snabble.sdk.*
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.payment.PaymentCredentials
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -200,6 +198,45 @@ class CheckoutTest : SnabbleSdkTest() {
         ))
         checkout.poll()
         Assert.assertEquals(fulfillmentsProcessed, checkout.fulfillmentState.getOrAwaitValue())
+    }
+
+    @Test
+    fun testGotoCheckoutNoneOnAbortFulfillmentAllocationFailed() {
+        add(simpleProduct1)
+        checkout.checkout()
+        Assert.assertEquals(CheckoutState.REQUEST_PAYMENT_METHOD, checkout.state.getOrAwaitValue())
+        checkout.pay(PaymentMethod.DE_DIRECT_DEBIT, credentials)
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
+        val fulfillmentsProcessing = listOf(
+            Fulfillment(
+                type = "test",
+                state = FulfillmentState.PROCESSING
+            )
+        )
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING,
+            fulfillments = fulfillmentsProcessing
+        ))
+        checkout.poll()
+        Assert.assertNull(checkout.fulfillmentState.getOrAwaitValue())
+        Assert.assertEquals(CheckoutState.WAIT_FOR_APPROVAL, checkout.state.getOrAwaitValue())
+
+        val fulfillmentsAllocationFailed = listOf(
+            Fulfillment(
+                type = "test",
+                state = FulfillmentState.ALLOCATION_FAILED
+            )
+        )
+        mockApi.modifyMockResponse(CheckoutProcessResponse(
+            paymentState = CheckState.PENDING,
+            fulfillments = fulfillmentsAllocationFailed
+        ))
+        checkout.poll()
+        Assert.assertEquals(CheckoutState.PAYMENT_PROCESSING, checkout.state.getOrAwaitValue())
+        Assert.assertEquals(fulfillmentsAllocationFailed, checkout.fulfillmentState.getOrAwaitValue())
+
+        checkout.abort()
+        Assert.assertEquals(CheckoutState.NONE, checkout.state.getOrAwaitValue())
     }
 
     @Test

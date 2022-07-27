@@ -122,6 +122,11 @@ class Checkout @JvmOverloads constructor(
             && state.value != CheckoutState.PAYMENT_APPROVED
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
             && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
+            if (hasAnyFulfillmentAllocationFailed()) {
+                reset()
+                return
+            }
+
             checkoutApi.abort(checkoutProcess, object : PaymentAbortResult {
                 override fun onSuccess() {
                     cancelOutstandingCalls()
@@ -355,6 +360,10 @@ class Checkout @JvmOverloads constructor(
                         Logger.e("Connection error while creating checkout process")
                         notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                     }
+
+                    override fun onNotFound() {
+                        reset()
+                    }
                 })
         } else {
             Logger.e("Invalid checkout state")
@@ -438,6 +447,10 @@ class Checkout @JvmOverloads constructor(
                 }
 
                 override fun onError() {}
+
+                override fun onNotFound() {
+                    reset()
+                }
             })
         }
 

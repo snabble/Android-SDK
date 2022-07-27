@@ -1,12 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.68.5]
+
+### Fixed
+- Fixed checkout being stuck in payment status when fulfillment allocations failed
+- Allow canceling of checkout processing if the checkout process disappears on the backend side
+
 ## [0.68.4]
 
+### Fixed
 - Fixed a rare formatting bug in AcceptedLanguageInterceptor
 
 ## [0.68.3]
 
+### Fixed
 - Fixed a regression when pre-weighed products to the shopping cart
 
 ## [0.68.2]

@@ -98,6 +98,7 @@ interface CheckoutInfoResult {
 interface PaymentProcessResult {
     fun onSuccess(checkoutProcessResponse: CheckoutProcessResponse?, rawResponse: String?)
     fun onError()
+    fun onNotFound()
 }
 
 interface PaymentAbortResult {
