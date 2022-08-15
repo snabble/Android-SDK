@@ -6,16 +6,21 @@ import android.content.Context
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannedString
+import android.text.style.URLSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.textclassifier.TextLinks
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.text.getSpans
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
@@ -24,6 +29,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -31,6 +37,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import io.snabble.sdk.onboarding.entities.OnboardingModel
+import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.isTalkBackActive
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.utils.getImageId
@@ -259,66 +266,45 @@ open class OnboardingFragment : Fragment() {
                     )
             }
 
-            if (context.isTalkBackActive){
-                if (item.privacyLink.isNotNullOrBlank() || item.termsLink.isNotNullOrBlank()){
-
-                    //Depending on the project both views can hold links. Thus converting both
-                    //strings for Talkback
-                    text.apply {
-                        this.text = text.toString()
-                        movementMethod = null
-                    }
-                    footer.apply {
-                        this.text = text.toString()
-                        movementMethod = null
-                    }
-
-                    //Moving the click and long click feature on the view for easier interaction
-                    footer.apply {
-                        if (item.termsLink.isNotNullOrBlank()) {
-                            setOnClickListener {
-                                findNavController().navigate(
-                                    NavDeepLinkRequest.Builder.fromUri(
-                                        Uri.parse(item.termsLink)
-                                    ).build()
-                                )
-                                //TODO Rollback after plugin fix: findNavController().navigate(LegalFragmentDeeplink.deepLink())
+            // Accessibility optimization:
+            // Detect in "footer" and "text" view for text links if there are 2 or less links if so make those links
+            // nonclickable and add special "double tap" and "long press" handling as optimization for talkback users.
+            if (context.isTalkBackActive) {
+                listOf(footer, text).forEach { view ->
+                    // Check it text has links aka URLSpans
+                    (view.text as? SpannedString)?.let { span ->
+                        val urls = span.getSpans<URLSpan>()
+                        if (urls.size in 1..2) {
+                            urls.map { url ->
+                                // filter those out with uri
+                                val start = span.getSpanStart(url)
+                                val end = span.getSpanEnd(url)
+                                span.subSequence(start, end) to Uri.parse(url.url)
+                            }.forEachIndexed { index, (label, uri) ->
+                                // Add the special accessibility handling
+                                if (index == 0) {
+                                    // TODO string auslagern
+                                    view.accessibility.setClickAction("$label öffnen") {
+                                        view.findNavController()
+                                            .navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
+                                    }
+                                } else {
+                                    view.accessibility.setLongClickAction("$label öffnen") {
+                                        view.findNavController()
+                                            .navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
+                                    }
+                                }
+                            }
+                            // The part to make the links not clickable since we handle it with talkback
+                            view.apply {
+                                this.text = view.text.toString()
+                                movementMethod = null
                             }
                         }
-                        if (item.privacyLink.isNotNullOrBlank()) {
-                            setOnLongClickListener {
-                                findNavController().navigate(
-                                    NavDeepLinkRequest.Builder.fromUri(
-                                        Uri.parse(item.privacyLink)
-                                    ).build()
-                                )
-                                //TODO Rollback after plugin fix: findNavController().navigate(LegalFragmentDeeplink.deepLink())
-                                true
-                            }
-                        }
-
-                        //Short click to open Terms, long click to open privacy if set
-                        ViewCompat.setAccessibilityDelegate(this, object : AccessibilityDelegateCompat() {
-                            override fun onInitializeAccessibilityNodeInfo(v: View, info: AccessibilityNodeInfoCompat) {
-                                super.onInitializeAccessibilityNodeInfo(v, info)
-                                info.addAction(
-                                    AccessibilityNodeInfoCompat.AccessibilityActionCompat(
-                                        AccessibilityNodeInfoCompat.ACTION_CLICK,
-                                        context.getString(R.string.Onboarding_Accessibility_openToC)
-                                    )
-                                )
-                                info.addAction(
-                                    AccessibilityNodeInfoCompat.AccessibilityActionCompat(
-                                        AccessibilityNodeInfoCompat.ACTION_LONG_CLICK,
-                                        context.getString(R.string.Onboarding_Accessibility_openPrivacy)
-                                    )
-                                )
-                            }
-                        })
                     }
-
                 }
             }
+
             //handle link click inside the App,
             //TODO: Bug fix with bottomNavigationBar, remains white after backpress
             else if (item.privacyLink.isNotNullOrBlank() || item.termsLink.isNotNullOrBlank()) {

@@ -10,6 +10,5 @@ class ImageTextView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
     init {
         inflate(context, R.layout.snabble_view_image_hybrid, this)
-        isFocusable = true
     }
 }

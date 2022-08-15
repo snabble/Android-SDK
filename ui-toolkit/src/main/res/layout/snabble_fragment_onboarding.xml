@@ -16,22 +16,8 @@
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="16dp"
         android:accessibilityPaneTitle="@string/Onboarding.Accessibility.title"
-        android:contentDescription="@null"
-        tools:ignore="UnusedAttribute"
-        />
-
-<!--    <ImageView-->
-<!--        android:id="@+id/image_header"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentTop="true"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_gravity="top|center_horizontal"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:accessibilityPaneTitle="@string/Onboarding.Accessibility.title"-->
-<!--        android:contentDescription="@null"-->
-<!--        android:src="@android:drawable/btn_plus"-->
-<!--        tools:ignore="UnusedAttribute" />-->
+        android:importantForAccessibility="no"
+        tools:ignore="UnusedAttribute" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
@@ -63,7 +49,8 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="" />
+            tools:visibility="visible"
+            tools:text="Weiter" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_left"
@@ -78,9 +65,6 @@
             android:layout_gravity="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text=""/>
-
+            android:visibility="gone"/>
     </FrameLayout>
-
 </RelativeLayout>
