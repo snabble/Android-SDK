@@ -24,6 +24,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -42,11 +44,7 @@ import io.snabble.sdk.utils.ZoomOutPageTransformer
 import java.lang.IllegalArgumentException
 
 open class OnboardingFragment : Fragment() {
-
     companion object {
-
-        const val KEY_SEEN_ONBOARDING = "seen_onboarding"
-
         fun TextView.resolveTextOrHide(string: String?) {
             if (string.isNotNullOrBlank()) {
                 val resId = string!!.getResourceId(context)
@@ -89,6 +87,7 @@ open class OnboardingFragment : Fragment() {
     }
 
     private lateinit var viewPager: ViewPager2
+    private val viewModel: OnboardingViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -125,13 +124,7 @@ open class OnboardingFragment : Fragment() {
             if (viewPager.currentItem < model.items.lastIndex) {
                 viewPager.currentItem += 1
             } else {
-                val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences("preferences", Context.MODE_PRIVATE)
-                sharedPreferences
-                    .edit()
-                    .putBoolean(KEY_SEEN_ONBOARDING, true)
-                    .apply()
-                parentFragmentManager.popBackStack()
-                parentFragmentManager.setFragmentResult("onboarding", bundleOf("seen_onboarding" to true))
+                viewModel.onboardingFinished()
             }
         }
 
@@ -145,14 +138,7 @@ open class OnboardingFragment : Fragment() {
             if (viewPager.currentItem < model.items.lastIndex) {
                 viewPager.currentItem += 1
             } else {
-                val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences("preferences", Context.MODE_PRIVATE)
-                sharedPreferences
-                    .edit()
-                    .putBoolean(KEY_SEEN_ONBOARDING, true)
-                    .apply()
-                //TODO: switch to shared viewmodel
-                parentFragmentManager.setFragmentResult("onbaording", bundleOf("seen_onboarding" to true))
-                parentFragmentManager.popBackStack()
+                viewModel.onboardingFinished()
             }
         }
 

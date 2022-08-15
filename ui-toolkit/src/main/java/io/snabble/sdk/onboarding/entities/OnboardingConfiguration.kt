@@ -5,6 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class OnboardingConfiguration (
-    var imageSource: String?,
-    var hasPageControl: Boolean?
+    val imageSource: String?,
+    val hasPageControl: Boolean?
 ) : Parcelable

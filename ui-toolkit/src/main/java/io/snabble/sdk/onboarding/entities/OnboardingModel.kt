@@ -5,6 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class OnboardingModel(
-    var configuration: OnboardingConfiguration,
-    var items: List<OnboardingItem>
+    val configuration: OnboardingConfiguration,
+    val items: List<OnboardingItem>
 ) : Parcelable
