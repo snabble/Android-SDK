@@ -16,9 +16,9 @@ class LegalFragment : RawHtmlFragment() {
         }.orEmpty()
 
         val headerTitle = arguments?.getInt(headerTitle)?.let { headerTitleResId ->
-            if (headerTitleResId != Resources.ID_NULL){
-            """<p style="text-align: center;">${resources.getText(headerTitleResId)}</p>"""}
-            else ""
+            if (headerTitleResId != Resources.ID_NULL) {
+            """<p style="text-align: center;">${resources.getText(headerTitleResId)}</p>"""
+            } else null
         }.orEmpty()
 
         headerImage + headerTitle
