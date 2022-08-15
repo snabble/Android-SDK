@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.utils
 
+import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
@@ -21,6 +22,15 @@ import kotlin.math.max
 
 
 fun CharSequence?.isNotNullOrBlank() = !isNullOrBlank()
+
+fun String.getImageId(context: Context): Int =
+    context.resources.getIdentifier(this, "drawable", context.applicationContext.packageName)
+
+fun String.getResourceId(context: Context):Int =
+    context.resources.getIdentifier(this,"string",context.packageName)
+
+fun String.getResourceString(context: Context): CharSequence =
+    context.resources.getText(getResourceId(context))
 
 fun String.highlight(query: String): SpannableString {
     val normalizedText = StringNormalizer.normalize(lowercase())

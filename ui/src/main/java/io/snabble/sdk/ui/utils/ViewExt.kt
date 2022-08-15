@@ -71,6 +71,15 @@ fun TextView.setTextOrHide(text: CharSequence?) {
     this.text = text
 }
 
+fun ImageView.setImageResourceOrHide(resId: Int?){
+    if (resId != null && resId != Resources.ID_NULL){
+        this.setImageResource(resId)
+        isVisible = true
+    } else {
+        isVisible = false
+    }
+}
+
 fun <T> LiveData<T>.observeView(view: View, observer: Observer<T>) {
     view.getFragmentActivity()?.let {
         observe(it, observer)

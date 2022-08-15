@@ -1,0 +1,69 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: '../scripts/maven.gradle'
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
+
+description = "Snabble UI-Toolkit: The special Android User Interface snabble SDK"
+
+android {
+    compileSdkVersion project.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    buildTypes {
+        release {
+            postprocessing {
+                removeUnusedCode false
+                removeUnusedResources false
+                obfuscate false
+                optimizeCode false
+                proguardFile 'proguard-rules.pro'
+            }
+        }
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjvm-default=all']
+        jvmTarget = '1.8'
+    }
+    lint {
+        disable 'LabelFor', 'MissingTranslation'
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
+
+    implementation project(':ui')
+    implementation project(':core')
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation "androidx.navigation:navigation-runtime-ktx:2.5.1"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.1"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.1"
+
+//    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+//    implementation 'androidx.cardview:cardview:1.0.0'
+//    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+//    implementation 'androidx.webkit:webkit:1.4.0'
+//    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.google.android.material:material:1.6.0'
+//    implementation 'androidx.gridlayout:gridlayout:1.0.0'
+//    implementation 'me.relex:circleindicator:2.1.6'
+
+    implementation 'com.squareup.picasso:picasso:2.8'
+
+    testImplementation 'junit:junit:4.13.2'
+}
