@@ -3,4 +3,6 @@
     <string name="Onboarding.Accessibility.openPrivacy">Datenschutz öffnen</string>
     <string name="Onboarding.Accessibility.openToC">Nutzungsbedingungen öffnen</string>
     <string name="Onboarding.Accessibility.title">Onboarding</string>
+    <string name="Onboarding.Button">Show</string>
+
 </resources>

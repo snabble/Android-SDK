@@ -1,6 +1,7 @@
 package io.snabble.sdk.onboarding
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
@@ -16,6 +17,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
@@ -32,7 +34,9 @@ import com.squareup.picasso.Picasso
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.isTalkBackActive
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.ui.utils.*
+import io.snabble.sdk.ui.utils.getImageId
+import io.snabble.sdk.ui.utils.getResourceId
+import io.snabble.sdk.ui.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.LinkClickListener
 import io.snabble.sdk.utils.ZoomOutPageTransformer
 import java.lang.IllegalArgumentException
@@ -57,6 +61,7 @@ open class OnboardingFragment : Fragment() {
             }
         }
 
+        //TODO: Change to ImageView
         fun resolveIntoImageOrTextView(string: String?, imageHybridView: ImageHybridView) {
             imageHybridView.isVisible = false
             val imageView = imageHybridView.findViewById<ImageView>(R.id.image)
@@ -75,6 +80,7 @@ open class OnboardingFragment : Fragment() {
                         imageView.isVisible = true
                         imageView.setImageResource(imageId)
                     } else {
+                        //TODO: Show default image instead of alt text
                         textView.resolveTextOrHide(string)
                     }
                 }
@@ -90,7 +96,6 @@ open class OnboardingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val v: View = inflater.inflate(R.layout.snabble_fragment_onboarding, container, false)
-
         val model = arguments?.getParcelable<OnboardingModel>("model") ?: throw IllegalArgumentException()
         val config = model.configuration
         val headerImage = v.findViewById<ImageHybridView>(R.id.image_header)
@@ -126,6 +131,7 @@ open class OnboardingFragment : Fragment() {
                     .putBoolean(KEY_SEEN_ONBOARDING, true)
                     .apply()
                 parentFragmentManager.popBackStack()
+                parentFragmentManager.setFragmentResult("onboarding", bundleOf("seen_onboarding" to true))
             }
         }
 
@@ -144,6 +150,8 @@ open class OnboardingFragment : Fragment() {
                     .edit()
                     .putBoolean(KEY_SEEN_ONBOARDING, true)
                     .apply()
+                //TODO: switch to shared viewmodel
+                parentFragmentManager.setFragmentResult("onbaording", bundleOf("seen_onboarding" to true))
                 parentFragmentManager.popBackStack()
             }
         }
@@ -241,57 +249,102 @@ open class OnboardingFragment : Fragment() {
             return StepViewHolder(layout)
         }
 
+        @SuppressLint("ResourceType")
         override fun onBindViewHolder(holder: StepViewHolder, position: Int) {
             val layout = holder.itemView as FrameLayout
+            layout.removeAllViews()
             val page = layoutInflater.inflate(R.layout.snabble_view_onboarding_step, layout, true)
             val item = onboardingModel.items[position]
 
             val imageHybridView = page.findViewById<ImageHybridView>(R.id.image_hybrid)
+            val text = page.findViewById<TextView>(R.id.text)
+            val title = page.findViewById<TextView>(R.id.title)
+            val footer = page.findViewById<TextView>(R.id.footer)
+            val termsButton = page.findViewById<Button>(R.id.terms_button)
 
             resolveIntoImageOrTextView(item.imageSource, imageHybridView)
-            page.findViewById<TextView>(R.id.text).resolveTextOrHide(item.text)
-            page.findViewById<TextView>(R.id.title).resolveTextOrHide(item.title)
-            page.findViewById<TextView>(R.id.footer).resolveTextOrHide(item.footer)
+            text.resolveTextOrHide(item.text)
+            title.resolveTextOrHide(item.title)
+            footer.resolveTextOrHide(item.footer)
+            termsButton.resolveTextOrHide(item.termsButtonTitle)
 
-            if (position == 0 && context.isTalkBackActive) {
-                page.findViewById<TextView>(R.id.footer).apply {
-                    text = text.toString()
-                    movementMethod = null
-                    setOnClickListener {
-                        findNavController().navigate(
-                            NavDeepLinkRequest.Builder.fromUri(
-                            Uri.parse("teo://privacy")
-                        ).build())
-                        //TODO Rollback after plugin fix: findNavController().navigate(LegalFragmentDeeplink.deepLink())
+            termsButton.setOnClickListener {
+                val withoutNavigation = Uri.parse(item.termsLink).buildUpon().encodedQuery("hideBottomNavigation=true").build()
+                    page.findNavController().navigate(
+                        NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
+                    )
+            }
+
+            if (context.isTalkBackActive){
+                if (item.privacyLink.isNotNullOrBlank() || item.termsLink.isNotNullOrBlank()){
+
+                    //Depending on the project both views can hold links. Thus converting both
+                    //strings for Talkback
+                    text.apply {
+                        this.text = text.toString()
+                        movementMethod = null
                     }
-                    setOnLongClickListener {
-                        findNavController().navigate(NavDeepLinkRequest.Builder.fromUri(
-                            Uri.parse("teo://terms")
-                        ).build())
-                        //TODO Rollback after plugin fix: findNavController().navigate(LegalFragmentDeeplink.deepLink())
-                        true
+                    footer.apply {
+                        this.text = text.toString()
+                        movementMethod = null
                     }
 
-                    ViewCompat.setAccessibilityDelegate(this, object : AccessibilityDelegateCompat() {
-                        override fun onInitializeAccessibilityNodeInfo(v: View, info: AccessibilityNodeInfoCompat) {
-                            super.onInitializeAccessibilityNodeInfo(v, info)
-                            info.addAction(
-                                AccessibilityNodeInfoCompat.AccessibilityActionCompat(
-                                    AccessibilityNodeInfoCompat.ACTION_CLICK,
-                                    context.getString(R.string.Onboarding_Accessibility_openToC)
+                    //Moving the click and long click feature on the view for easier interaction
+                    footer.apply {
+                        if (item.termsLink.isNotNullOrBlank()) {
+                            setOnClickListener {
+                                findNavController().navigate(
+                                    NavDeepLinkRequest.Builder.fromUri(
+                                        Uri.parse(item.termsLink)
+                                    ).build()
                                 )
-                            )
-                            info.addAction(
-                                AccessibilityNodeInfoCompat.AccessibilityActionCompat(
-                                    AccessibilityNodeInfoCompat.ACTION_LONG_CLICK,
-                                    context.getString(R.string.Onboarding_Accessibility_openPrivacy)
-                                )
-                            )
+                                //TODO Rollback after plugin fix: findNavController().navigate(LegalFragmentDeeplink.deepLink())
+                            }
                         }
-                    })
-                }}
-             else if (position == 0) {
-                page.findViewById<TextView>(R.id.footer).movementMethod = LinkClickListener { url ->
+                        if (item.privacyLink.isNotNullOrBlank()) {
+                            setOnLongClickListener {
+                                findNavController().navigate(
+                                    NavDeepLinkRequest.Builder.fromUri(
+                                        Uri.parse(item.privacyLink)
+                                    ).build()
+                                )
+                                //TODO Rollback after plugin fix: findNavController().navigate(LegalFragmentDeeplink.deepLink())
+                                true
+                            }
+                        }
+
+                        //Short click to open Terms, long click to open privacy if set
+                        ViewCompat.setAccessibilityDelegate(this, object : AccessibilityDelegateCompat() {
+                            override fun onInitializeAccessibilityNodeInfo(v: View, info: AccessibilityNodeInfoCompat) {
+                                super.onInitializeAccessibilityNodeInfo(v, info)
+                                info.addAction(
+                                    AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                                        AccessibilityNodeInfoCompat.ACTION_CLICK,
+                                        context.getString(R.string.Onboarding_Accessibility_openToC)
+                                    )
+                                )
+                                info.addAction(
+                                    AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                                        AccessibilityNodeInfoCompat.ACTION_LONG_CLICK,
+                                        context.getString(R.string.Onboarding_Accessibility_openPrivacy)
+                                    )
+                                )
+                            }
+                        })
+                    }
+
+                }
+            }
+            //handle link click inside the App,
+            //TODO: Bug fix with bottomNavigationBar, remains white after backpress
+            else if (item.privacyLink.isNotNullOrBlank() || item.termsLink.isNotNullOrBlank()) {
+                text.movementMethod = LinkClickListener { url ->
+                    val withoutNavigation = url.buildUpon().encodedQuery("hideBottomNavigation=true").build()
+                    page.findNavController().navigate(
+                        NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
+                    )
+                }
+                footer.movementMethod = LinkClickListener { url ->
                     val withoutNavigation = url.buildUpon().encodedQuery("hideBottomNavigation=true").build()
                     page.findNavController().navigate(
                         NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
