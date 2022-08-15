@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <io.snabble.sdk.onboarding.ImageHybridView
+        android:id="@+id/image_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="16dp"
+        android:accessibilityPaneTitle="@string/Onboarding.Accessibility.title"
+        android:contentDescription="@null"
+        tools:ignore="UnusedAttribute"
+        />
+
+<!--    <ImageView-->
+<!--        android:id="@+id/image_header"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_gravity="top|center_horizontal"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:accessibilityPaneTitle="@string/Onboarding.Accessibility.title"-->
+<!--        android:contentDescription="@null"-->
+<!--        android:src="@android:drawable/btn_plus"-->
+<!--        tools:ignore="UnusedAttribute" />-->
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/circle_indicator"
+        android:layout_below="@+id/image_header" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/circle_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_above="@+id/button_container"
+        app:tabBackground="@drawable/ic_circle_indicator"
+        app:tabGravity="center"
+        app:tabMaxWidth="16dp"
+        app:tabIndicatorHeight="0dp"/>
+
+    <FrameLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="32dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:visibility="gone"
+            android:text="" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_right"
+            android:layout_gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text=""/>
+
+    </FrameLayout>
+
+</RelativeLayout>

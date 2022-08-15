@@ -1,20 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Onboarding.accept">Akzeptieren</string>
     <string name="Onboarding.Accessibility.openPrivacy">Datenschutz öffnen</string>
     <string name="Onboarding.Accessibility.openToC">Nutzungsbedingungen öffnen</string>
     <string name="Onboarding.Accessibility.title">Onboarding</string>
-    <string name="Onboarding.add">Jetzt hinzufügen</string>
-    <string name="Onboarding.button3">Ansehen</string>
-    <string name="Onboarding.button4">Überspringen</string>
-    <!-- ********* Onboarding ********* -->
-    <string name="Onboarding.next">Weiter</string>
-    <string name="Onboarding.Push.activate">Aktivieren</string>
-    <string name="Onboarding.Push.later">Später</string>
-    <string name="Onboarding.Push.request">Willst Du in Zukunft keine Coupons mehr verpassen? Dann aktiviere jetzt die Push-Benachrichtigungen</string>
-    <string name="Onboarding.see">Ansehen</string>
-    <string name="Onboarding.skip">Überspringen</string>
-    <string name="Onboarding.start">Los geht\'s</string>
-    <string name="Onboarding.Terms.introText">Bitte akzeptiere unsere aktuellen Nutzungsbedingungen und AGB, um mit dieser App einzukaufen.</string>
-    <string name="Onboarding.Terms.title">Nutzung der App</string>
 </resources>

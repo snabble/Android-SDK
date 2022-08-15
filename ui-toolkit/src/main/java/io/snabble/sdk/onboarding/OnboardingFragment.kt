@@ -2,6 +2,7 @@ package io.snabble.sdk.onboarding
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
@@ -37,7 +38,10 @@ import io.snabble.sdk.utils.ZoomOutPageTransformer
 import java.lang.IllegalArgumentException
 
 open class OnboardingFragment : Fragment() {
+
     companion object {
+
+        const val KEY_SEEN_ONBOARDING = "seen_onboarding"
 
         fun TextView.resolveTextOrHide(string: String?) {
             if (string.isNotNullOrBlank()) {
@@ -53,11 +57,15 @@ open class OnboardingFragment : Fragment() {
             }
         }
 
-        fun resolveIntoImageOrTextView(string: String?, imageView: ImageView, textView: TextView) {
+        fun resolveIntoImageOrTextView(string: String?, imageHybridView: ImageHybridView) {
+            imageHybridView.isVisible = false
+            val imageView = imageHybridView.findViewById<ImageView>(R.id.image)
+            val textView = imageHybridView.findViewById<TextView>(R.id.image_alt_text)
             imageView.isVisible = false
             textView.isVisible = false
 
             if (string.isNotNullOrBlank()) {
+                imageHybridView.isVisible = true
                 if (string!!.startsWith("http")) {
                     imageView.isVisible = true
                     Picasso.get().load(string).into(imageView)
@@ -74,7 +82,6 @@ open class OnboardingFragment : Fragment() {
         }
     }
 
-
     private lateinit var viewPager: ViewPager2
 
     override fun onCreateView(
@@ -82,38 +89,76 @@ open class OnboardingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val v: View = inflater.inflate(R.layout.fragment_onboarding, container, false)
+        val v: View = inflater.inflate(R.layout.snabble_fragment_onboarding, container, false)
 
-        val model = arguments?.getParcelable<OnboardingModel>("model")?:throw IllegalArgumentException()
-        val headerImage = v.findViewById<ImageView>(R.id.image_header)
+        val model = arguments?.getParcelable<OnboardingModel>("model") ?: throw IllegalArgumentException()
+        val config = model.configuration
+        val headerImage = v.findViewById<ImageHybridView>(R.id.image_header)
 
-        val button = v.findViewById<Button>(R.id.button)
-        button.setOnClickListener {
-            if (viewPager.currentItem < model.items.lastIndex) {
-                viewPager.currentItem += 1
-            } else {
-//                Settings.seenOnboarding = true
-//                findNavController().navigate(OnboardingFragmentDirections.finish())
-            }
-        }
+        resolveIntoImageOrTextView(model.configuration.imageSource, headerImage)
 
         viewPager = v.findViewById(R.id.view_pager)
-        viewPager.adapter = StepAdapter(requireContext(), LayoutInflater.from(requireContext()),model)
+        viewPager.adapter = StepAdapter(
+            requireContext(),
+            LayoutInflater.from(requireContext()),
+            model
+        )
 
         val circleIndicator = v.findViewById<TabLayout>(R.id.circle_indicator)
         TabLayoutMediator(circleIndicator, viewPager) { _, _ -> }.attach()
 
+        val fullscreenButton = v.findViewById<Button>(R.id.button)
+        val prevButton = v.findViewById<Button>(R.id.button_left)
+        val nextButton = v.findViewById<Button>(R.id.button_right)
+
+        if (config.hasPageControl == false) {
+            viewPager.isUserInputEnabled = false
+            circleIndicator.isVisible = false
+        }
+
+        nextButton.setOnClickListener {
+            if (viewPager.currentItem < model.items.lastIndex) {
+                viewPager.currentItem += 1
+            } else {
+                val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences("preferences", Context.MODE_PRIVATE)
+                sharedPreferences
+                    .edit()
+                    .putBoolean(KEY_SEEN_ONBOARDING, true)
+                    .apply()
+                parentFragmentManager.popBackStack()
+            }
+        }
+
+        prevButton.setOnClickListener {
+            if (viewPager.currentItem > 0) {
+                viewPager.currentItem -= 1
+            }
+        }
+
+        fullscreenButton.setOnClickListener {
+            if (viewPager.currentItem < model.items.lastIndex) {
+                viewPager.currentItem += 1
+            } else {
+                val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences("preferences", Context.MODE_PRIVATE)
+                sharedPreferences
+                    .edit()
+                    .putBoolean(KEY_SEEN_ONBOARDING, true)
+                    .apply()
+                parentFragmentManager.popBackStack()
+            }
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val index = viewPager.currentItem - 1
-                if (index < 0) {
-                    requireActivity().finish()
-                } else {
-                    viewPager.setCurrentItem(index, true)
+                override fun handleOnBackPressed() {
+                    val index = viewPager.currentItem - 1
+                    if (index < 0) {
+                        requireActivity().finish()
+                    } else {
+                        viewPager.setCurrentItem(index, true)
+                    }
                 }
-            }
-        })
+            })
 
         // from https://dev.to/bhullnatik/how-to-access-views-directly-with-viewpager2-3bo8
         fun ViewPager2.findViewHolderForAdapterPosition(position: Int): RecyclerView.ViewHolder? {
@@ -141,8 +186,21 @@ open class OnboardingFragment : Fragment() {
             }
 
             override fun onPageSelected(position: Int) {
-                val resourceId = requireContext().resources.getIdentifier(model.items[position].nextButtonTitle,"string",requireContext().packageName)
-                button.text = requireContext().resources.getString(resourceId)
+                val item = model.items[position]
+                if (item.nextButtonTitle.isNullOrBlank() || item.prevButtonTitle.isNullOrBlank()) {
+                    prevButton.isVisible = false
+                    nextButton.isVisible = false
+                    if (item.nextButtonTitle.isNotNullOrBlank()) {
+                        fullscreenButton.resolveTextOrHide(item.nextButtonTitle)
+                    } else {
+                        fullscreenButton.resolveTextOrHide(item.prevButtonTitle)
+                    }
+                } else {
+                    fullscreenButton.isVisible = false
+                    prevButton.resolveTextOrHide(item.prevButtonTitle)
+                    nextButton.resolveTextOrHide(item.nextButtonTitle)
+
+                }
                 firstRun = false
             }
         })
@@ -151,13 +209,13 @@ open class OnboardingFragment : Fragment() {
         ViewCompat.setAccessibilityDelegate(viewPager, object : AccessibilityDelegateCompat() {
             override fun onInitializeAccessibilityNodeInfo(v: View, info: AccessibilityNodeInfoCompat) {
                 super.onInitializeAccessibilityNodeInfo(v, info)
-                info.setTraversalBefore(button)
+                info.setTraversalBefore(fullscreenButton)
             }
         })
         ViewCompat.setAccessibilityDelegate(circleIndicator, object : AccessibilityDelegateCompat() {
             override fun onInitializeAccessibilityNodeInfo(v: View, info: AccessibilityNodeInfoCompat) {
                 super.onInitializeAccessibilityNodeInfo(v, info)
-                info.setTraversalAfter(button)
+                info.setTraversalAfter(fullscreenButton)
             }
         })
 
@@ -168,8 +226,12 @@ open class OnboardingFragment : Fragment() {
 
     private class StepViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    private class StepAdapter(val context: Context,
-                              val layoutInflater: LayoutInflater, val onboardingModel: OnboardingModel) : RecyclerView.Adapter<StepViewHolder>() {
+    private class StepAdapter(
+        val context: Context,
+        val layoutInflater: LayoutInflater,
+        val onboardingModel: OnboardingModel
+    ) : RecyclerView.Adapter<StepViewHolder>() {
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StepViewHolder {
             val layout = FrameLayout(context)
             layout.layoutParams = FrameLayout.LayoutParams(
@@ -184,9 +246,9 @@ open class OnboardingFragment : Fragment() {
             val page = layoutInflater.inflate(R.layout.snabble_view_onboarding_step, layout, true)
             val item = onboardingModel.items[position]
 
-            val imageView = page.findViewById<ImageView>(R.id.image)
-            val imageAltView = page.findViewById<TextView>(R.id.image_alt_text)
-            resolveIntoImageOrTextView(item.imageSource,imageView,imageAltView)
+            val imageHybridView = page.findViewById<ImageHybridView>(R.id.image_hybrid)
+
+            resolveIntoImageOrTextView(item.imageSource, imageHybridView)
             page.findViewById<TextView>(R.id.text).resolveTextOrHide(item.text)
             page.findViewById<TextView>(R.id.title).resolveTextOrHide(item.title)
             page.findViewById<TextView>(R.id.footer).resolveTextOrHide(item.footer)

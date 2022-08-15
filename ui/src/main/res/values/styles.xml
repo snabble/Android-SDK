@@ -52,4 +52,6 @@
         <item name="android:text">@string/Snabble.Coupon.activated</item>
     </style>
     <style name="ThemeOverlay.Snabble.CouponDetail.AppliedButtonStyle" parent="Snabble.CouponDetail.AppliedButtonStyle"/>
+    <style name="Snabble.TextAppearance.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+    </style>
 </resources>
