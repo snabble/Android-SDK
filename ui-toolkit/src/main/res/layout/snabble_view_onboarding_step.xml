@@ -9,11 +9,22 @@
     <io.snabble.sdk.onboarding.HideOnOverlapFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/scroll_view"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
-        android:layout_above="@+id/scroll_view"
         app:viewGroupId="@+id/bottom_container"
         tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/image_alt_text"
+            style="@style/TextAppearance.Material3.HeadlineLarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:text=""
+            tools:visibility="visible" />
+
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"

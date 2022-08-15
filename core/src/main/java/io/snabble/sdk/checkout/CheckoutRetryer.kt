@@ -113,6 +113,10 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
                                 override fun onError() {
                                     fail()
                                 }
+
+                                override fun onNotFound() {
+                                    fail()
+                                }
                             })
                     }
 

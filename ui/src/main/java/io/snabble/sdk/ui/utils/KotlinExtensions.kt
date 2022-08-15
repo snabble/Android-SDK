@@ -26,7 +26,7 @@ fun CharSequence?.isNotNullOrBlank() = !isNullOrBlank()
 fun String.getImageId(context: Context): Int =
     context.resources.getIdentifier(this, "drawable", context.applicationContext.packageName)
 
-fun String.getResourceId(context: Context):Int =
+fun String.getResourceId(context: Context): Int =
     context.resources.getIdentifier(this,"string",context.packageName)
 
 fun String.getResourceString(context: Context): CharSequence =

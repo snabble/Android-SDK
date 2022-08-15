@@ -2,6 +2,7 @@ package io.snabble.sdk.onboarding
 
 
 import android.content.Context
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
@@ -25,18 +27,52 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.squareup.picasso.Picasso
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.isTalkBackActive
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.ui.utils.getImageId
-import io.snabble.sdk.ui.utils.getResourceString
-import io.snabble.sdk.ui.utils.setImageResourceOrHide
-import io.snabble.sdk.ui.utils.setTextOrHide
+import io.snabble.sdk.ui.utils.*
 import io.snabble.sdk.utils.LinkClickListener
 import io.snabble.sdk.utils.ZoomOutPageTransformer
 import java.lang.IllegalArgumentException
 
 open class OnboardingFragment : Fragment() {
+    companion object {
+
+        fun TextView.resolveTextOrHide(string: String?) {
+            if (string.isNotNullOrBlank()) {
+                val resId = string!!.getResourceId(context)
+                if (resId != Resources.ID_NULL) {
+                    setText(resId)
+                } else {
+                    text = string
+                }
+                isVisible = true
+            } else {
+                isVisible = false
+            }
+        }
+
+        fun resolveIntoImageOrTextView(string: String?, imageView: ImageView, textView: TextView) {
+            imageView.isVisible = false
+            textView.isVisible = false
+
+            if (string.isNotNullOrBlank()) {
+                if (string!!.startsWith("http")) {
+                    imageView.isVisible = true
+                    Picasso.get().load(string).into(imageView)
+                } else {
+                    val imageId = string.getImageId(imageView.context)
+                    if (imageId != Resources.ID_NULL) {
+                        imageView.isVisible = true
+                        imageView.setImageResource(imageId)
+                    } else {
+                        textView.resolveTextOrHide(string)
+                    }
+                }
+            }
+        }
+    }
 
 
     private lateinit var viewPager: ViewPager2
@@ -49,6 +85,7 @@ open class OnboardingFragment : Fragment() {
         val v: View = inflater.inflate(R.layout.fragment_onboarding, container, false)
 
         val model = arguments?.getParcelable<OnboardingModel>("model")?:throw IllegalArgumentException()
+        val headerImage = v.findViewById<ImageView>(R.id.image_header)
 
         val button = v.findViewById<Button>(R.id.button)
         button.setOnClickListener {
@@ -144,14 +181,15 @@ open class OnboardingFragment : Fragment() {
 
         override fun onBindViewHolder(holder: StepViewHolder, position: Int) {
             val layout = holder.itemView as FrameLayout
-            layout.removeAllViews()
             val page = layoutInflater.inflate(R.layout.snabble_view_onboarding_step, layout, true)
             val item = onboardingModel.items[position]
 
-            page.findViewById<ImageView>(R.id.image).setImageResourceOrHide(item.imageSource?.getImageId(context))
-            page.findViewById<TextView>(R.id.text).setTextOrHide(item.text?.getResourceString(context))
-            page.findViewById<TextView>(R.id.title).setTextOrHide(item.title?.getResourceString(context))
-            page.findViewById<TextView>(R.id.footer).setTextOrHide(item.footer?.getResourceString(context))
+            val imageView = page.findViewById<ImageView>(R.id.image)
+            val imageAltView = page.findViewById<TextView>(R.id.image_alt_text)
+            resolveIntoImageOrTextView(item.imageSource,imageView,imageAltView)
+            page.findViewById<TextView>(R.id.text).resolveTextOrHide(item.text)
+            page.findViewById<TextView>(R.id.title).resolveTextOrHide(item.title)
+            page.findViewById<TextView>(R.id.footer).resolveTextOrHide(item.footer)
 
             if (position == 0 && context.isTalkBackActive) {
                 page.findViewById<TextView>(R.id.footer).apply {
@@ -201,10 +239,5 @@ open class OnboardingFragment : Fragment() {
         }
 
         override fun getItemCount() = onboardingModel.items.size
-
-
-
     }
-
-
 }
