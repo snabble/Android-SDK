@@ -1,4 +1,4 @@
-package io.snabble.sdk.onboarding
+package io.snabble.sdk.view
 
 import android.app.Activity
 import android.content.Context

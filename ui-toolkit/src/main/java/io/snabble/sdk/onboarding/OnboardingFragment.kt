@@ -3,7 +3,6 @@ package io.snabble.sdk.onboarding
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
@@ -17,14 +16,12 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.os.bundleOf
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
@@ -60,15 +57,15 @@ open class OnboardingFragment : Fragment() {
         }
 
         //TODO: Change to ImageView
-        fun resolveIntoImageOrTextView(string: String?, imageHybridView: ImageHybridView) {
-            imageHybridView.isVisible = false
-            val imageView = imageHybridView.findViewById<ImageView>(R.id.image)
-            val textView = imageHybridView.findViewById<TextView>(R.id.image_alt_text)
+        fun resolveIntoImageOrTextView(string: String?, imageTextView: ImageTextView) {
+            imageTextView.isVisible = false
+            val imageView = imageTextView.findViewById<ImageView>(R.id.image)
+            val textView = imageTextView.findViewById<TextView>(R.id.image_alt_text)
             imageView.isVisible = false
             textView.isVisible = false
 
             if (string.isNotNullOrBlank()) {
-                imageHybridView.isVisible = true
+                imageTextView.isVisible = true
                 if (string!!.startsWith("http")) {
                     imageView.isVisible = true
                     Picasso.get().load(string).into(imageView)
@@ -87,7 +84,9 @@ open class OnboardingFragment : Fragment() {
     }
 
     private lateinit var viewPager: ViewPager2
-    private val viewModel: OnboardingViewModel by viewModels()
+    private val viewModel by lazy {
+        ViewModelProvider(requireActivity())[OnboardingViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,8 +96,7 @@ open class OnboardingFragment : Fragment() {
         val v: View = inflater.inflate(R.layout.snabble_fragment_onboarding, container, false)
         val model = arguments?.getParcelable<OnboardingModel>("model") ?: throw IllegalArgumentException()
         val config = model.configuration
-        val headerImage = v.findViewById<ImageHybridView>(R.id.image_header)
-
+        val headerImage = v.findViewById<ImageTextView>(R.id.image_header)
         resolveIntoImageOrTextView(model.configuration.imageSource, headerImage)
 
         viewPager = v.findViewById(R.id.view_pager)
@@ -242,13 +240,13 @@ open class OnboardingFragment : Fragment() {
             val page = layoutInflater.inflate(R.layout.snabble_view_onboarding_step, layout, true)
             val item = onboardingModel.items[position]
 
-            val imageHybridView = page.findViewById<ImageHybridView>(R.id.image_hybrid)
+            val imageTextView = page.findViewById<ImageTextView>(R.id.image_hybrid)
             val text = page.findViewById<TextView>(R.id.text)
             val title = page.findViewById<TextView>(R.id.title)
             val footer = page.findViewById<TextView>(R.id.footer)
             val termsButton = page.findViewById<Button>(R.id.terms_button)
 
-            resolveIntoImageOrTextView(item.imageSource, imageHybridView)
+            resolveIntoImageOrTextView(item.imageSource, imageTextView)
             text.resolveTextOrHide(item.text)
             title.resolveTextOrHide(item.title)
             footer.resolveTextOrHide(item.footer)

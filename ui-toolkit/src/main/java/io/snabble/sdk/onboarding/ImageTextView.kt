@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import io.snabble.sdk.ui.toolkit.R
 
-class ImageHybridView @JvmOverloads constructor(
+class ImageTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
     init {

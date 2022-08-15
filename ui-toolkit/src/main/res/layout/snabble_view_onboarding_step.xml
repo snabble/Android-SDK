@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.snabble.sdk.onboarding.HideOnOverlapFrameLayout
+    <io.snabble.sdk.view.HideOnOverlapFrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,7 +16,7 @@
         app:viewGroupId="@+id/bottom_container"
         tools:visibility="visible">
 
-      <io.snabble.sdk.onboarding.ImageHybridView
+      <io.snabble.sdk.onboarding.ImageTextView
           android:id="@+id/image_hybrid"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
@@ -25,7 +25,7 @@
           tools:text=""
           tools:visibility="visible"/>
 
-    </io.snabble.sdk.onboarding.HideOnOverlapFrameLayout>
+    </io.snabble.sdk.view.HideOnOverlapFrameLayout>
 
     <ScrollView
         android:id="@+id/scroll_view"

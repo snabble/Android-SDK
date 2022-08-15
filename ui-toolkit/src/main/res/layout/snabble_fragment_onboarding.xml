@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.snabble.sdk.onboarding.ImageHybridView
+    <io.snabble.sdk.onboarding.ImageTextView
         android:id="@+id/image_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
