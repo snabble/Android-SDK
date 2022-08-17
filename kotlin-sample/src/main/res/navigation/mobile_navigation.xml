@@ -6,6 +6,42 @@
     app:startDestination="@+id/navigation_home">
 
     <fragment
+        android:id="@+id/frag_tos"
+        android:name="io.snabble.sdk.onboarding.terms.LegalFragment"
+        android:label="Terms of service">
+        <argument
+            android:name="resId"
+            android:defaultValue="@raw/en"
+            app:argType="reference"/>
+        <argument
+            android:name="imagePath"
+            android:defaultValue="/android_asset/ic_terms_header.png"
+            app:argType="string"/>
+        <argument
+            android:name="headerTitle"
+            android:defaultValue="@string/Onboarding.Terms.introText"
+            app:argType="reference"/>
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="kotlin-sample://terms" />
+    </fragment>
+
+    <fragment android:id="@+id/frag_onboarding"
+        android:name="io.snabble.sdk.onboarding.OnboardingFragment" android:label="OnboardingFragment"
+        tools:layout="@layout/snabble_fragment_onboarding">
+        <argument
+            android:name="hideToolbar"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="hideBottomNavigation"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument android:name="model"
+            app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_home"
         android:name="io.snabble.sdk.sample.HomeFragment"
         android:label="@string/home_title" />

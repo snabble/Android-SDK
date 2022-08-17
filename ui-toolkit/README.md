@@ -56,7 +56,7 @@ For each Item the following properties can be set:
 
 | Property    | Description | Values        |
 | :---        |    :---   | :---          |
-| imageSource    | Image for the current Page | Resource Identifier or String |
+| imageSource    | Image for the current Page | Resource Identifier, Url or String |
 | title     | Title for the current Page | Resource Identifier or String|
 | text    | Body text for the current Page | Resource Identifier or String|
 | footer     | Footer text for the current Page | Resource Identifier or String|
@@ -68,9 +68,9 @@ For each Item the following properties can be set:
 Each field will be hidden if it's not set.
 
 Addition:
-*1 The prevButtonTitle can only be used for back navigation.
-*2 If only one button is set, it will use the fullscreen.
-*3 If the name of the termsButtonTitle is set, the termsLink is needed.
+1. The prevButtonTitle can only be used for back navigation.
+2. If only one button is set, it will use the fullscreen.
+3. If the name of the termsButtonTitle is set, the termsLink is needed.
 
 ### Usage
 
@@ -79,11 +79,14 @@ argument model which is later used to pass the configuration for your onboarding
 
 ```xml
 
-<fragment android:id="@+id/frag_onboarding"
-    android:name="io.snabble.sdk.onboarding.OnboardingFragment" android:label="OnboardingFragment"
+<fragment 
+    android:id="@+id/frag_onboarding"
+    android:name="io.snabble.sdk.onboarding.OnboardingFragment" 
+    android:label="OnboardingFragment"
     tools:layout="@layout/snabble_fragment_onboarding">
-    <argument android:name="model"
-        app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
+        <argument 
+            android:name="model"
+            app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
 </fragment>
 ```
 
@@ -101,9 +104,9 @@ Set up the destination:
 
 ```xml
 <fragment
-        android:id="@+id/frag_tos"
-        android:name="io.snabble.sdk.onboarding.terms.LegalFragment"
-        android:label="terms of service">
+    android:id="@+id/frag_tos"
+    android:name="io.snabble.sdk.onboarding.terms.LegalFragment"
+    android:label="terms of service">
         <argument
             android:name="resId"
             android:defaultValue="@raw/terms_agb"
@@ -119,10 +122,27 @@ Set up the destination:
         <deepLink
             android:id="@+id/deepLink"
             app:uri="my.app://terms" />
-    </fragment>
+</fragment>
 ```
 
-required: 
-*1 the arguments resId needs to be set as shown in the example, to display at least the Terms or privacy.
-*2 the deeplink need to be set to handle the given uri. The uri given in the configuration need to match the deeplink to navigate to the terms fragment.
+####Required: 
+1. the arguments resId needs to be set as shown in the example, to display at least the Terms or privacy.
+2. the deeplink need to be set to handle the given uri. The uri given in the configuration need to match the deeplink to navigate to the terms fragment.
 optional: imagePath and headerTitle are optional arguments. If set they will be displayed as header on Top of the terms.
+
+#### Onoarding Finished Event
+
+To handle the onboarding finished event set up the OnboardingViewModel inside your activity or fragment
+
+```Kotlin
+     private val viewModel: OnboardingViewModel by viewModels()
+```
+
+Observe the onboardingSeen property to handle events than the onboarding is finished
+
+```kotlin
+    viewModel.onboardingSeen.observe(this) { 
+        // Your code to handle finished event
+        navController.popBackStack()
+    }
+```

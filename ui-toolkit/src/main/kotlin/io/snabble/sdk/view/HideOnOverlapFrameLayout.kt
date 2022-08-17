@@ -11,7 +11,7 @@ import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import io.snabble.sdk.ui.toolkit.R
 
-
+/** Hides and resizes the layout on overlap with other layouts*/
 class HideOnOverlapFrameLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {

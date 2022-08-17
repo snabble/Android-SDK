@@ -42,6 +42,12 @@ import java.lang.IllegalArgumentException
 
 open class OnboardingFragment : Fragment() {
     companion object {
+        /**
+         * Resolves the string and loads it into either an imageview or textview based on the given string
+         * If the string matches an url or a resource id it will be loaded into the imageview.
+         * If the string matches a string id the matching string will be displayed inside the Textview
+         * Else the plain text will be displayed.
+         */
         //TODO: Change to ImageView
         fun resolveIntoImageOrTextView(string: String?, imageTextView: ImageTextView) {
             imageTextView.isVisible = false

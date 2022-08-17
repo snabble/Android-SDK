@@ -1,30 +1,37 @@
 package io.snabble.sdk.sample
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.gson.Gson
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
+import io.snabble.sdk.onboarding.OnboardingViewModel
+import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.SnabbleUI
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var toolbar: Toolbar
+
+    private val viewModel: OnboardingViewModel by viewModels()
 
     lateinit var locationPermission: ActivityResultLauncher<String>
 
@@ -48,6 +55,41 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         toolbar.setNavigationOnClickListener { onBackPressed() }
+
+        viewModel.onboardingSeen.observe(this) {
+            navController.popBackStack()
+        }
+
+        if (savedInstanceState == null) {
+            val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
+            val model = Gson().fromJson(json, OnboardingModel::class.java)
+            navController.navigate(R.id.frag_onboarding, bundleOf("model" to model))
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            println("Nav to ${resources.getResourceName(destination.id)}")
+            // apply deeplink arguments to bundle
+            if (arguments?.containsKey(NavController.KEY_DEEP_LINK_INTENT) == true) {
+                (arguments.get(NavController.KEY_DEEP_LINK_INTENT) as? Intent)?.data?.let { deeplink ->
+                    deeplink.queryParameterNames.forEach { key ->
+                        val value = deeplink.getQueryParameter(key)
+                        when {
+                            value?.toIntOrNull() != null -> arguments.putInt(key, value.toInt())
+                            value?.toLongOrNull() != null -> arguments.putLong(key, value.toLong())
+                            value?.toBooleanStrictOrNull() != null -> arguments.putBoolean(key, value.toBoolean())
+                            else -> arguments.putString(key, deeplink.getQueryParameter(key))
+                        }
+                    }
+                }
+            }
+            toolbar.isVisible = arguments?.getBoolean("hideToolbar", false) != true
+            navView.isVisible = arguments?.getBoolean("hideBottomNavigation", false) != true
+            navView.isEnabled = arguments?.getBoolean("hideBottomNavigation", false) != true
+            toolbar.title = destination.label
+            arguments?.getString("title")?.let {
+                toolbar.title = it.replace("...", "…")
+            }
+        }
 
         with(navController) {
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->

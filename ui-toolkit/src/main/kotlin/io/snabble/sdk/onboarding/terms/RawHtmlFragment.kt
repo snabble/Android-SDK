@@ -15,6 +15,11 @@ import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.getColorByAttribute
 import okhttp3.internal.toHexString
 
+
+/**
+ * Displays the html string in web view
+ */
+
 abstract class RawHtmlFragment : Fragment() {
     abstract val html: String
     abstract val header: String

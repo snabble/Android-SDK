@@ -37,6 +37,8 @@ dependencies {
 
     implementation project(':core')
     implementation project(':ui')
+    // used for onboarding implementation
+    implementation project(':ui-toolkit')
 
     // in your app you need to use those dependencies:
     // implementation 'io.snabble.sdk:core:{currentVersion}'
