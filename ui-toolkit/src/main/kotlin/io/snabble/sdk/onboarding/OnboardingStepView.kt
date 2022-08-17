@@ -7,8 +7,8 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
-import io.snabble.sdk.setTextOrHide
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.utils.setTextOrHide
 
 class OnboardingStepView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null

@@ -46,18 +46,16 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
     }
 
     override fun onRequestSendAccessibilityEvent(
-        host: ViewGroup?,
-        child: View?,
-        event: AccessibilityEvent?
+        host: ViewGroup,
+        child: View,
+        event: AccessibilityEvent
     ): Boolean {
-        val listener = event?.let { eventListeners[event.eventType] }
-        listener?.invoke(host, child, event)
+        eventListeners[event.eventType]?.invoke(host, child, event)
         return super.onRequestSendAccessibilityEvent(host, child, event)
     }
 
-    override fun onPopulateAccessibilityEvent(host: View, event: AccessibilityEvent?) {
-        val listener = event?.let { populateListeners[event.eventType] }
-        listener?.invoke(host.parent as? ViewGroup, host, event)
+    override fun onPopulateAccessibilityEvent(host: View, event: AccessibilityEvent) {
+        populateListeners[event.eventType]?.invoke(host.parent as? ViewGroup, host, event)
         super.onPopulateAccessibilityEvent(host, event)
     }
 

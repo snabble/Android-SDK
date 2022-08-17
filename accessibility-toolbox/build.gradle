@@ -43,6 +43,7 @@ android {
         freeCompilerArgs = ['-Xjvm-default=all']
         jvmTarget = '1.8'
     }
+
     lint {
         disable 'LabelFor', 'MissingTranslation'
     }
@@ -50,6 +51,8 @@ android {
 
 dependencies {
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
+
+    implementation project(':utils')
 
     implementation 'androidx.core:core-ktx:1.7.0'
 }

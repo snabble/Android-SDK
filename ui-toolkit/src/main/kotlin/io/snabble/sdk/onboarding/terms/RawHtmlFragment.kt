@@ -11,9 +11,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
-import io.snabble.sdk.getColorByAttribute
-import io.snabble.sdk.toHexString
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.utils.getColorByAttribute
+import okhttp3.internal.toHexString
 
 abstract class RawHtmlFragment : Fragment() {
     abstract val html: String

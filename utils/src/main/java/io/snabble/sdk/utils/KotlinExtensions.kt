@@ -1,5 +1,5 @@
 @file:JvmName("KotlinExtensions")
-package io.snabble.sdk
+package io.snabble.sdk.utils
 
 import android.content.Context
 import android.content.res.Resources

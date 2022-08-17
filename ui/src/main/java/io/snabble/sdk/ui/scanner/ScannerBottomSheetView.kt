@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import io.snabble.accessibility.accessibility
+import io.snabble.accessibility.isTalkBackActive
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.cart.CheckoutBar
 import io.snabble.sdk.ui.cart.ShoppingCartView
-import io.snabble.sdk.ui.isTalkBackActive
 import io.snabble.sdk.ui.utils.behavior
 
 

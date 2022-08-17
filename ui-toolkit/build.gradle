@@ -33,10 +33,17 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    sourceSets {
+        getByName("main").java.srcDirs("src/main/kotlin")
+        getByName("test").java.srcDirs("src/test/kotlin")
+        getByName("androidTest").java.srcDirs("src/androidTest/kotlin")
+    }
+
     kotlinOptions {
         freeCompilerArgs = ['-Xjvm-default=all']
         jvmTarget = '1.8'
     }
+
     lint {
         disable 'LabelFor', 'MissingTranslation'
     }
@@ -45,8 +52,8 @@ android {
 dependencies {
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
 
-    //implementation project(':ui')
     implementation project(':accessibility-toolbox')
+    implementation project(':utils')
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'

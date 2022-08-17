@@ -13,8 +13,8 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.snabble.accessibility.accessibility
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.setTextOrHide
 import java.util.ArrayList
 

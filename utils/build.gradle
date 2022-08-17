@@ -48,6 +48,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp-tls:${project.okhttpVersion}"
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.code.gson:gson:2.8.8'
+    implementation "androidx.core:core-ktx:1.8.0"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

@@ -35,13 +35,9 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
-import io.snabble.sdk.getImageId
-import io.snabble.sdk.isNotNullOrBlank
 import io.snabble.sdk.onboarding.entities.OnboardingModel
-import io.snabble.sdk.resolveTextOrHide
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.LinkClickListener
-import io.snabble.sdk.utils.ZoomOutPageTransformer
+import io.snabble.sdk.utils.*
 import java.lang.IllegalArgumentException
 
 open class OnboardingFragment : Fragment() {
