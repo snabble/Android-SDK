@@ -52,7 +52,7 @@
                 android:layout_marginBottom="16dp"
                 android:gravity="center"
                 android:visibility="gone"
-                tools:text=""
+                tools:text="@string/Snabble.Preview.Title"
                 tools:visibility="visible" />
 
             <TextView
@@ -64,7 +64,7 @@
                 android:gravity="center_horizontal"
                 android:textColorLink="?attr/colorPrimary"
                 android:visibility="gone"
-                tools:text=""
+                tools:text="@string/Snabble.Preview.Text"
                 tools:visibility="visible" />
 
             <Button
@@ -76,7 +76,7 @@
                 android:maxWidth="280dp"
                 android:layout_gravity="center_horizontal"
                 android:visibility="gone"
-                tools:text="Weiter"
+                tools:text="@string/Snabble.Preview.Button"
                 tools:visibility="visible" />
 
             <TextView
@@ -88,7 +88,7 @@
                 android:gravity="center_horizontal"
                 android:textColorLink="?attr/colorPrimary"
                 android:visibility="gone"
-                tools:text=""
+                tools:text="@string/Snabble.Preview.Footer"
                 tools:visibility="visible" />
         </LinearLayout>
     </ScrollView>

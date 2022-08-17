@@ -1,11 +1,11 @@
 package io.snabble.sdk.onboarding.terms
 
-import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
-import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
+import io.snabble.sdk.utils.matchesAppScheme
+import io.snabble.sdk.utils.appendDeeplinkQueryParams
 
 class LegalFragment : RawHtmlFragment() {
 
@@ -30,13 +30,8 @@ class LegalFragment : RawHtmlFragment() {
     }
 
     override fun shouldOverrideUrlLoading(url: Uri): Boolean {
-        val currentDeeplink = (arguments?.get(NavController.KEY_DEEP_LINK_INTENT) as? Intent)?.data
-
-        // Check if this our scheme and we can navigate directly internal
-        if (url.scheme == currentDeeplink?.scheme) {
-            // Parse current query params to the requested Deeplink e.g. for hiding bottom navbar
-            val target = url.buildUpon().encodedQuery(currentDeeplink?.encodedQuery).build()
-            findNavController().navigate(NavDeepLinkRequest.Builder.fromUri(target).build())
+        if (url.matchesAppScheme(arguments)) {
+            findNavController().navigate(NavDeepLinkRequest.Builder.fromUri(url.appendDeeplinkQueryParams(arguments)).build())
         } else {
             try {
                 openUrl(url.toString())

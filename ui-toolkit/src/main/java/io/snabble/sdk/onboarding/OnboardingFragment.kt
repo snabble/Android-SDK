@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
-import android.text.SpannableString
 import android.text.SpannedString
 import android.text.style.URLSpan
 import android.view.LayoutInflater
@@ -14,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.view.textclassifier.TextLinks
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -29,7 +27,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -125,25 +122,19 @@ open class OnboardingFragment : Fragment() {
             circleIndicator.isVisible = false
         }
 
-        nextButton.setOnClickListener {
-            if (viewPager.currentItem < model.items.lastIndex) {
-                viewPager.currentItem += 1
-            } else {
-                viewModel.onboardingFinished()
+        listOf(nextButton, fullscreenButton).forEach { button ->
+            button.setOnClickListener {
+                if (viewPager.currentItem < model.items.lastIndex) {
+                    viewPager.currentItem += 1
+                } else {
+                    viewModel.onboardingFinished()
+                }
             }
         }
 
         prevButton.setOnClickListener {
             if (viewPager.currentItem > 0) {
                 viewPager.currentItem -= 1
-            }
-        }
-
-        fullscreenButton.setOnClickListener {
-            if (viewPager.currentItem < model.items.lastIndex) {
-                viewPager.currentItem += 1
-            } else {
-                viewModel.onboardingFinished()
             }
         }
 
@@ -198,7 +189,6 @@ open class OnboardingFragment : Fragment() {
                     fullscreenButton.isVisible = false
                     prevButton.resolveTextOrHide(item.prevButtonTitle)
                     nextButton.resolveTextOrHide(item.nextButtonTitle)
-
                 }
                 firstRun = false
             }
@@ -260,7 +250,7 @@ open class OnboardingFragment : Fragment() {
             termsButton.resolveTextOrHide(item.termsButtonTitle)
 
             termsButton.setOnClickListener {
-                val withoutNavigation = Uri.parse(item.termsLink).buildUpon().encodedQuery("hideBottomNavigation=true").build()
+                val withoutNavigation = Uri.parse(item.link).buildUpon().encodedQuery("hideBottomNavigation=true").build()
                     page.findNavController().navigate(
                         NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
                     )
@@ -307,18 +297,15 @@ open class OnboardingFragment : Fragment() {
 
             //handle link click inside the App,
             //TODO: Bug fix with bottomNavigationBar, remains white after backpress
-            else if (item.privacyLink.isNotNullOrBlank() || item.termsLink.isNotNullOrBlank()) {
-                text.movementMethod = LinkClickListener { url ->
-                    val withoutNavigation = url.buildUpon().encodedQuery("hideBottomNavigation=true").build()
-                    page.findNavController().navigate(
-                        NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
-                    )
-                }
-                footer.movementMethod = LinkClickListener { url ->
-                    val withoutNavigation = url.buildUpon().encodedQuery("hideBottomNavigation=true").build()
-                    page.findNavController().navigate(
-                        NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
-                    )
+            else {
+                listOf(footer, text).forEach { view ->
+                    view.movementMethod = LinkClickListener { url ->
+                        val withoutNavigation =
+                            url.buildUpon().encodedQuery("hideBottomNavigation=true").build()
+                        page.findNavController().navigate(
+                            NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
+                        )
+                    }
                 }
             }
         }

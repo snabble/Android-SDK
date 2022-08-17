@@ -50,21 +50,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:visibility="visible"
-            tools:text="Weiter" />
+            tools:text="@string/Snabble.Preview.Button" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:visibility="gone"
-            android:text="" />
+            tools:visibility="gone"
+            tools:text="@string/Snabble.Preview.Button" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_right"
             android:layout_gravity="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="gone"
+            tools:text="@string/Snabble.Preview.Button" />
     </FrameLayout>
 </RelativeLayout>

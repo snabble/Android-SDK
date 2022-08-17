@@ -55,7 +55,6 @@ abstract class RawHtmlFragment : Fragment() {
         val primaryColor = arr.getColor(0, -1)
         arr.recycle()
 
-
         val embed = """
             <html>
               <head>

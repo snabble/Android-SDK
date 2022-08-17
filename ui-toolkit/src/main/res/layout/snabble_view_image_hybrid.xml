@@ -15,6 +15,7 @@
         android:gravity="center"
         android:visibility="gone"
         tools:visibility="visible"
+        tools:text="😊"
         app:autoSizeTextType="uniform"/>
 
     <ImageView
@@ -24,5 +25,5 @@
         android:scaleType="centerInside"
         android:visibility="gone"
         tools:src="@drawable/snabble_ic_creditcard"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 </merge>

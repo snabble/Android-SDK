@@ -5,4 +5,9 @@
     <string name="Onboarding.Accessibility.title">Onboarding</string>
     <string name="Onboarding.Button">Show</string>
 
+    <string name="Snabble.Preview.Button">Weiter</string>
+    <string name="Snabble.Preview.Title">Willkommen bei…</string>
+    <string name="Snabble.Preview.Text">Hier findest du Produkte des täglichen Bedarfs und kannst rund um die Uhr ganz bequem einkaufen</string>
+    <string name="Snabble.Preview.Footer">Akzeptiere die Nutzungsbedingungen</string>
+
 </resources>
