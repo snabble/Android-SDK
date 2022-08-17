@@ -10,4 +10,4 @@ pluginManagement {
     }
 }
 
-include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':ui-toolkit', ':utils', ':mlkit-scanner-engine', ':kotlin-compose-sample'
+include ':core', ':java-sample', 'kotlin-sample', 'kotlin-customization-sample', ':ui', ':ui-toolkit', ':accessibility-toolbox', ':utils', ':mlkit-scanner-engine', ':kotlin-compose-sample'

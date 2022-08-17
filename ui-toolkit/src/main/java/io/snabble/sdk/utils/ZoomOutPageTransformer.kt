@@ -6,8 +6,8 @@ import kotlin.math.abs
 import kotlin.math.max
 
 // From https://developer.android.com/training/animation/screen-slide-2
-class ZoomOutPageTransformer(val minScale: Float = 0.9f,
-                             val minAlpha: Float = 0.75f) : ViewPager2.PageTransformer {
+class ZoomOutPageTransformer(private val minScale: Float = 0.9f,
+                             private val minAlpha: Float = 0.75f) : ViewPager2.PageTransformer {
     override fun transformPage(view: View, position: Float) {
         view.apply {
             val pageWidth = width

@@ -1,4 +1,4 @@
-package io.snabble.sdk
+package io.snabble.accessibility
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
@@ -15,7 +15,6 @@ import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
-import io.snabble.sdk.ui.toolkit.R
 
 typealias AccessibilityEventListener = (host: ViewGroup?,
                                         child: View?,

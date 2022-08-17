@@ -33,33 +33,19 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
+import io.snabble.accessibility.accessibility
+import io.snabble.accessibility.isTalkBackActive
+import io.snabble.sdk.getImageId
+import io.snabble.sdk.isNotNullOrBlank
 import io.snabble.sdk.onboarding.entities.OnboardingModel
-import io.snabble.sdk.ui.accessibility
-import io.snabble.sdk.ui.isTalkBackActive
+import io.snabble.sdk.resolveTextOrHide
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.ui.utils.getImageId
-import io.snabble.sdk.ui.utils.getResourceId
-import io.snabble.sdk.ui.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.LinkClickListener
 import io.snabble.sdk.utils.ZoomOutPageTransformer
 import java.lang.IllegalArgumentException
 
 open class OnboardingFragment : Fragment() {
     companion object {
-        fun TextView.resolveTextOrHide(string: String?) {
-            if (string.isNotNullOrBlank()) {
-                val resId = string!!.getResourceId(context)
-                if (resId != Resources.ID_NULL) {
-                    setText(resId)
-                } else {
-                    text = string
-                }
-                isVisible = true
-            } else {
-                isVisible = false
-            }
-        }
-
         //TODO: Change to ImageView
         fun resolveIntoImageOrTextView(string: String?, imageTextView: ImageTextView) {
             imageTextView.isVisible = false
@@ -74,7 +60,7 @@ open class OnboardingFragment : Fragment() {
                     imageView.isVisible = true
                     Picasso.get().load(string).into(imageView)
                 } else {
-                    val imageId = string.getImageId(imageView.context)
+                    val imageId = imageView.context.getImageId(string)
                     if (imageId != Resources.ID_NULL) {
                         imageView.isVisible = true
                         imageView.setImageResource(imageId)

@@ -11,9 +11,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
+import io.snabble.sdk.getColorByAttribute
+import io.snabble.sdk.toHexString
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.ui.utils.UIUtils
-import okhttp3.internal.toHexString
 
 abstract class RawHtmlFragment : Fragment() {
     abstract val html: String
@@ -27,7 +27,7 @@ abstract class RawHtmlFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         webView = view.findViewById(R.id.web_view)
-        webView.setBackgroundColor(UIUtils.getColorByAttribute(requireContext(), R.attr.colorSurface))
+        webView.setBackgroundColor(requireContext().getColorByAttribute(R.attr.colorSurface))
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 return shouldOverrideUrlLoading(request.url)
