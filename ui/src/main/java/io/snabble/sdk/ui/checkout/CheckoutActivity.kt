@@ -149,9 +149,9 @@ class CheckoutActivity : FragmentActivity() {
             }
             CheckoutState.PAYMENT_ABORT_FAILED -> {
                 AlertDialog.Builder(this)
-                    .setTitle(R.string.Snabble_Payment_cancelError_title)
-                    .setMessage(R.string.Snabble_Payment_cancelError_message)
-                    .setPositiveButton(R.string.Snabble_OK) { dialog, _ ->
+                    .setTitle(R.string.Snabble_Payment_CancelError_title)
+                    .setMessage(R.string.Snabble_Payment_CancelError_message)
+                    .setPositiveButton(R.string.Snabble_ok) { dialog, _ ->
                         dialog.dismiss()
                     }
                     .setCancelable(false)

@@ -1,12 +1,11 @@
 phrase:
-  project_id: 12f8a92f13729d6f1996d5bce9ff7cbe
+  project_id: 3e43b3f90cf19e83c7d85652df5766ca
   file_format: strings
   pull:
     targets:
       - file: ./ui/src/main/res/values/strings.xml
         params:
-          locale_id: eb9f9cf6ff99449945836ece05d93833
-          tags: "SDK"
+          locale_id: b220db5757be359631c55ec54fb65ac6
           encoding: "UTF-8"
           file_format: xml
           include_empty_translations: false
@@ -15,7 +14,6 @@ phrase:
             escape_linebreaks: true
       - file: ./ui/src/main/res/values-<locale_name>/strings.xml
         params:
-          tags: "SDK"
           encoding: "UTF-8"
           file_format: xml
           include_empty_translations: false
