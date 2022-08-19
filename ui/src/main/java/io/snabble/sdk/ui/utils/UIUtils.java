@@ -111,16 +111,16 @@ public class UIUtils {
         Resources res = parent.getContext().getResources();
         switch (type) {
             case INFO_NEUTRAL:
-                info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_infoColor, null));
-                info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_infoTextColor, null));
+                info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_info_color, null));
+                info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_info_text_color, null));
                 break;
             case INFO_WARNING:
-                info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_infoColorWarning, null));
-                info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_infoTextColorWarning, null));
+                info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_info_color_warning, null));
+                info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_info_text_color_warning, null));
                 break;
             case INFO_POSITIVE:
-                info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_infoColorPositive, null));
-                info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_infoTextColorPositive, null));
+                info.setBackgroundColor(ResourcesCompat.getColor(res, R.color.snabble_info_color_positive, null));
+                info.setTextColor(ResourcesCompat.getColor(res, R.color.snabble_info_text_color_positive, null));
                 break;
         }
 
