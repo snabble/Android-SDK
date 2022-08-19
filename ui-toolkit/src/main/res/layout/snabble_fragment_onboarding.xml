@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:layout_above="@+id/button_container"
-        app:tabBackground="@drawable/ic_circle_indicator"
+        app:tabBackground="@drawable/snabble_circle_indicator"
         app:tabGravity="center"
         app:tabMaxWidth="16dp"
         app:tabIndicatorHeight="0dp"/>

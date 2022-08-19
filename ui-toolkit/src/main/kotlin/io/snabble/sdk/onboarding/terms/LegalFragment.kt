@@ -14,6 +14,8 @@ class LegalFragment : RawHtmlFragment() {
      * converts the path of the header image and the title for the header into a readable Html block
      */
     override val header by lazy {
+        // TODO check if that asset exists, if not and this is a resource (starts with android_res), it should be checked if this is a vector drawable.
+        // If so you need to convert it to a data url first
         val headerImage = arguments?.getString(headerImagePath)?.let { imagePath ->
             """<img src="file://$imagePath" 
                      style="display: block; margin-left: auto; margin-right: auto; height: auto; max-width: 75%;"/>"""

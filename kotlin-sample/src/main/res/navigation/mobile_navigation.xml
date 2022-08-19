@@ -79,11 +79,6 @@
         android:label="Checkout" />
 
     <fragment
-        android:id="@+id/navigation_checkout_gatekeeper_fragment"
-        android:name="io.snabble.sdk.ui.checkout.CheckoutSCOFragment"
-        android:label="Checkout" />
-
-    <fragment
         android:id="@+id/navigation_checkout_pos_fragment"
         android:name="io.snabble.sdk.ui.checkout.CheckoutPOSFragment"
         android:label="Checkout" />
