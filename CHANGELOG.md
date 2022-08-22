@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.69.0]
+
+### Changed
+- Added ui-toolkit for more realistic sample app with onboarding
+- Moved accessibility toolbox to an own dependency
+
+### Breaking Changes
+- Renamed some colors which should be only used internal only
+
 ## [0.68.5]
 
 ### Fixed

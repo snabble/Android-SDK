@@ -1,11 +1,17 @@
 package io.snabble.sdk.onboarding.terms
 
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
+import android.util.Base64
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
-import io.snabble.sdk.utils.matchesAppScheme
 import io.snabble.sdk.utils.appendDeeplinkQueryParams
+import io.snabble.sdk.utils.getImageId
+import io.snabble.sdk.utils.matchesAppScheme
+import java.io.ByteArrayOutputStream
 
 class LegalFragment : RawHtmlFragment() {
 
@@ -14,9 +20,14 @@ class LegalFragment : RawHtmlFragment() {
      * converts the path of the header image and the title for the header into a readable Html block
      */
     override val header by lazy {
-        val headerImage = arguments?.getString(headerImagePath)?.let { imagePath ->
-            """<img src="file://$imagePath" 
-                     style="display: block; margin-left: auto; margin-right: auto; height: auto; max-width: 75%;"/>"""
+        val rawPath = arguments?.getString(headerImagePath)
+        val url = when {
+            rawPath?.startsWith("android_asset/") == true -> "file://$rawPath"
+            rawPath?.startsWith("android_res/drawable/") == true -> buildImageUrl(rawPath)
+            else -> null
+        }
+        val headerImage = url?.let {
+            """<img src="$url" style="display:block; margin:0 auto; height:auto; max-width:75%;"/>"""
         }.orEmpty()
 
         val headerTitle = arguments?.getInt(headerTitle)?.let { headerTitleResId ->
@@ -52,6 +63,27 @@ class LegalFragment : RawHtmlFragment() {
         }
 
         return true
+    }
+
+
+
+    // check if drawable exists and if it is a vector drawable convert it to a data url for the webview
+    private fun buildImageUrl(rawPath: String) : String? {
+        val ctx = requireContext()
+        val resId = ctx.getImageId(rawPath.substringAfterLast('/'))
+        val img = AppCompatResources.getDrawable(ctx, resId) ?: return null
+        val imgClass = img.javaClass.name.orEmpty()
+        return if (imgClass.startsWith("androidx.") || imgClass.contains("Vector")) {
+            val bitmap = Bitmap.createBitmap(img.intrinsicWidth, img.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            img.setBounds(0, 0, canvas.width, canvas.height)
+            img.draw(canvas)
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, stream)
+            val encodedImage = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+            bitmap.recycle()
+            "data:image/png;base64,$encodedImage"
+        } else "file://$rawPath"
     }
 
     companion object {

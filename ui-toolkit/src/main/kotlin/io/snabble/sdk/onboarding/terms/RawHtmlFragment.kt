@@ -34,9 +34,12 @@ abstract class RawHtmlFragment : Fragment() {
         webView = view.findViewById(R.id.web_view)
         webView.setBackgroundColor(requireContext().getColorByAttribute(R.attr.colorSurface))
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                return shouldOverrideUrlLoading(request.url)
-            }
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
+                shouldOverrideUrlLoading(request.url)
+
+            @Deprecated("Legacy code for Android 5 & 6")
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?) =
+                shouldOverrideUrlLoading(Uri.parse(url.orEmpty()))
         }
 
         showHtml(html)
