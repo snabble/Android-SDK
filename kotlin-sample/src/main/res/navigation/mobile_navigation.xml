@@ -15,7 +15,7 @@
             app:argType="reference"/>
         <argument
             android:name="imagePath"
-            android:defaultValue="/android_asset/ic_terms_header.png"
+            android:defaultValue="android_res/drawable/snabble_onboarding_terms"
             app:argType="string"/>
         <argument
             android:name="headerTitle"
