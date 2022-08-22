@@ -50,10 +50,13 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
 
     implementation project(':accessibility-toolbox')
     implementation project(':utils')
+    implementation project(':core')
+
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -62,6 +65,11 @@ dependencies {
     //implementation 'androidx.navigation:navigation-ui-ktx:2.5.1'
 
     implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    api 'androidx.preference:preference-ktx:1.2.0'
 
     implementation 'com.squareup.picasso:picasso:2.8'
+
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 /** Viewmodel to hold the state of the onboarding progress */
-class OnboardingViewModel() : ViewModel(){
+class OnboardingViewModel : ViewModel(){
 
     val onboardingSeen: LiveData<Boolean> = MutableLiveData()
 

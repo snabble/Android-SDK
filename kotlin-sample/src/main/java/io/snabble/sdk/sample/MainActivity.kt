@@ -2,6 +2,7 @@ package io.snabble.sdk.sample
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -18,6 +19,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import io.snabble.sdk.Shop
@@ -25,11 +27,16 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
 import io.snabble.sdk.onboarding.OnboardingViewModel
 import io.snabble.sdk.onboarding.entities.OnboardingModel
+import io.snabble.sdk.shopfinder.ShopDetailsFragment
 import io.snabble.sdk.ui.SnabbleUI
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var toolbar: Toolbar
+
+    val sharedPreferences: SharedPreferences
+        get() = PreferenceManager.getDefaultSharedPreferences(this)
+
 
     private val viewModel: OnboardingViewModel by viewModels()
 
@@ -37,6 +44,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPreferences
+            .edit()
+            .putBoolean(ShopDetailsFragment.KEY_MAPS_ENABLED, false)
+            .apply()
 
         setContentView(R.layout.activity_main)
         toolbar = findViewById(R.id.toolbar)
@@ -48,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_home,
                 R.id.navigation_scanner,
+                R.id.navigation_shops,
                 R.id.navigation_cart,
 //                R.id.navigation_dummy_cart
         ))

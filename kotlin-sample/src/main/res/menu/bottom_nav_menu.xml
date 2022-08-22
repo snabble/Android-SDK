@@ -12,6 +12,12 @@
         android:title="@string/scanner_title" />
 
     <item
+        android:id="@id/navigation_shops"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_menu_24"
+        android:title="Shops"/>
+
+    <item
         android:id="@+id/navigation_cart"
         android:icon="@drawable/ic_baseline_shopping_cart_24"
         android:title="@string/cart_title" />

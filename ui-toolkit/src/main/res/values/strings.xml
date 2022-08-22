@@ -5,9 +5,48 @@
     <string name="Onboarding.Accessibility.title">Onboarding</string>
     <string name="Onboarding.Button">Show</string>
 
+
+    <!--TODO: Strings in Phrase anlegen-->
+    <!--Preview Onboarding-->
     <string name="Snabble.Preview.Button">Weiter</string>
     <string name="Snabble.Preview.Title">Willkommen bei…</string>
     <string name="Snabble.Preview.Text">Hier findest du Produkte des täglichen Bedarfs und kannst rund um die Uhr ganz bequem einkaufen</string>
     <string name="Snabble.Preview.Footer">Akzeptiere die Nutzungsbedingungen</string>
 
+    <!--Accessibility BaseShopList-->
+    <string name="ShopDetails.Accessibility.address">%1$s in %2$s %3$s</string>
+    <string name="ShopDetails.Accessibility.distance">In %s entfernung</string>
+    <string name="ShopDetails.Accessibility.phonenumber">Telefonnummer %s</string>
+    <string name="ShopDetails.Accessibility.show">Shop-Details anzeigen</string>
+    <string name="ShopDetails.Accessibility.startCall">Anrufen</string>
+
+    <string name="ShopDetails.alwaysOpen">teo ist rund um die Uhr für dich da, Tag und Nacht.</string>
+    <string name="ShopDetails.contractingParty">Vertragspartner</string>
+    <string name="ShopDetails.doorOpener">Tür öffnen</string>
+    <string name="ShopDetails.ForbiddenMaps.ActionTitle">Aktivieren</string>
+    <string name="ShopDetails.ForbiddenMaps.Title">Du hast die Verwendung von %s deaktiviert.</string>
+    <string name="ShopDetails.hint.location">Du musst die Filiale betreten, um hier einzukaufen. Starte dann den Scanner.</string>
+    <string name="ShopDetails.hint.locationButton">Standort-Zugriff erlauben</string>
+    <string name="ShopDetails.hint.noLocation">Bitte erlaube uns den Zugriff auf deinen Standort, damit du hier einkaufen kannst. Betritt dann einfach die Filiale und starte den Scanner.</string>
+    <string name="ShopDetails.hint.shopWithSnabble">Einkaufen mit tegut… teo</string>
+    <string name="ShopDetails.hints">Hinweise</string>
+    <string name="ShopDetails.hints.bags">Bitte mache es dem Kassenpersonal leicht und packe deine Artikel nicht direkt in geschlossene Taschen. Danke!</string>
+    <string name="ShopDetails.openingHours">Öffnungszeiten</string>
+    <string name="ShopDetails.phone">Telefon: %s</string>
+    <string name="ShopDetails.shopHere">Hier einkaufen</string>
+    <!-- ********* ShopDetails ********* -->
+    <string name="ShopDetails.startNavigation">Navigation starten</string>
+    <string name="ShopDetails.startScanning">Einkaufen</string>
+
+    <string name="ShopList.Accessibility.address">%1$s in %2$s %3$s</string>
+    <string name="ShopList.Accessibility.colapse">collapse</string>
+    <string name="ShopList.Accessibility.eventShopColapsed">%s collapsed</string>
+    <string name="ShopList.Accessibility.eventShopExpanded">%s expanded</string>
+    <string name="ShopList.Accessibility.expand">expand</string>
+    <string name="ShopList.loading">Loading Stores...</string>
+    <string name="ShopList.loadNow">Load Stores</string>
+    <string name="ShopList.noShops">Store list could not be loaded</string>
+    <string name="ShopList.numberOfStores">%d Stores</string>
+    <string name="ShopList.numberOfStores.one">%d Store</string>
+    <string name="ShopList.title">Shops</string>
 </resources>

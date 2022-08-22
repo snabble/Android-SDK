@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:elevation="3dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/distance_container"
+            android:id="@+id/name"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            tools:text="Snabble GmbH" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/name"
+            android:layout_toStartOf="@+id/distance_container"
+            android:layout_marginTop="8dp"
+            android:id="@+id/address"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            tools:text="Acherstraße\nBonn" />
+
+        <FrameLayout android:id="@+id/distance_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/chevron"
+                android:layout_marginStart="4dp">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center"
+                    tools:text="513,31 m"
+                    android:id="@+id/distance"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_text_highlight"
+                    app:backgroundTint="?attr/colorPrimary"
+                    android:id="@+id/you_are_here_container"
+                    android:gravity="center"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:layout_marginEnd="16dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="2dp"
+                    android:paddingTop="2dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:text="You are here"/>
+        </FrameLayout>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_chevron_right"
+            android:id="@+id/chevron" />
+    </RelativeLayout>
+</FrameLayout>
