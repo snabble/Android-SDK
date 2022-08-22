@@ -41,40 +41,6 @@ import io.snabble.sdk.utils.*
 import java.lang.IllegalArgumentException
 
 open class OnboardingFragment : Fragment() {
-    companion object {
-        /**
-         * Resolves the string and loads it into either an imageview or textview based on the given string
-         * If the string matches an url or a resource id it will be loaded into the imageview.
-         * If the string matches a string id the matching string will be displayed inside the Textview
-         * Else the plain text will be displayed.
-         */
-        //TODO: Change to ImageView
-        fun resolveIntoImageOrTextView(string: String?, imageTextView: ImageTextView) {
-            imageTextView.isVisible = false
-            val imageView = imageTextView.findViewById<ImageView>(R.id.image)
-            val textView = imageTextView.findViewById<TextView>(R.id.image_alt_text)
-            imageView.isVisible = false
-            textView.isVisible = false
-
-            if (string.isNotNullOrBlank()) {
-                imageTextView.isVisible = true
-                if (string!!.startsWith("http")) {
-                    imageView.isVisible = true
-                    Picasso.get().load(string).into(imageView)
-                } else {
-                    val imageId = imageView.context.getImageId(string)
-                    if (imageId != Resources.ID_NULL) {
-                        imageView.isVisible = true
-                        imageView.setImageResource(imageId)
-                    } else {
-                        //TODO: Show default image instead of alt text
-                        textView.resolveTextOrHide(string)
-                    }
-                }
-            }
-        }
-    }
-
     private lateinit var viewPager: ViewPager2
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[OnboardingViewModel::class.java]
@@ -89,7 +55,7 @@ open class OnboardingFragment : Fragment() {
         val model = arguments?.getParcelable<OnboardingModel>("model") ?: throw IllegalArgumentException()
         val config = model.configuration
         val headerImage = v.findViewById<ImageTextView>(R.id.image_header)
-        resolveIntoImageOrTextView(model.configuration.imageSource, headerImage)
+        headerImage.setDataOrHide(model.configuration.imageSource)
 
         viewPager = v.findViewById(R.id.view_pager)
         viewPager.adapter = StepAdapter(
@@ -139,9 +105,8 @@ open class OnboardingFragment : Fragment() {
             })
 
         // from https://dev.to/bhullnatik/how-to-access-views-directly-with-viewpager2-3bo8
-        fun ViewPager2.findViewHolderForAdapterPosition(position: Int): RecyclerView.ViewHolder? {
-            return (getChildAt(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position)
-        }
+        fun ViewPager2.findViewHolderForAdapterPosition(position: Int) =
+            (getChildAt(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position)
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             var firstRun = true
@@ -231,7 +196,7 @@ open class OnboardingFragment : Fragment() {
             val footer = page.findViewById<TextView>(R.id.footer)
             val termsButton = page.findViewById<Button>(R.id.terms_button)
 
-            resolveIntoImageOrTextView(item.imageSource, imageTextView)
+            imageTextView.setDataOrHide(item.imageSource)
             text.resolveTextOrHide(item.text)
             title.resolveTextOrHide(item.title)
             footer.resolveTextOrHide(item.footer)
@@ -239,9 +204,9 @@ open class OnboardingFragment : Fragment() {
 
             termsButton.setOnClickListener {
                 val withoutNavigation = Uri.parse(item.link).buildUpon().encodedQuery("hideBottomNavigation=true").build()
-                    page.findNavController().navigate(
-                        NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
-                    )
+                page.findNavController().navigate(
+                    NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
+                )
             }
 
             // Accessibility optimization:
@@ -281,11 +246,9 @@ open class OnboardingFragment : Fragment() {
                         }
                     }
                 }
-            }
-
-            //handle link click inside the App,
-            //TODO: Bug fix with bottomNavigationBar, remains white after backpress
-            else {
+            } else {
+                //handle link click inside the App,
+                //FIXME: Edge case on Android 7 fix with bottomNavigationBar, remains white after backpress
                 listOf(footer, text).forEach { view ->
                     view.movementMethod = LinkClickListener { url ->
                         val withoutNavigation =
