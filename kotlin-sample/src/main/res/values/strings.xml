@@ -4,5 +4,6 @@
     <string name="scanner_title">Scanner</string>
     <string name="cart_title">Cart</string>
     <string name="shop_title">Shops</string>
+    <string name="Snabble.Shop.Details.button">Show Scanner</string>
     <string name="Onboarding.Terms.introText">Please accept our current terms of Use and conditions to shop with this app.</string>
 </resources>

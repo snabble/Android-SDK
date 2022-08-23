@@ -5,57 +5,41 @@ import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
-import android.content.ContextWrapper
 import android.location.Location
-import android.net.Uri
-import android.os.*
+import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.customview.view.AbsSavedState
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.*
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.location.formatDistance
-
-import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.*
 import io.snabble.sdk.shopfinder.utils.AssetHelper.load
 import io.snabble.sdk.shopfinder.utils.ConfigurableDivider
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
+import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.utils.UIUtils.getHostActivity
+import io.snabble.sdk.ui.utils.getString
+import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
+import io.snabble.sdk.utils.setTextOrHide
 
-
-class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : RecyclerView(context, attrs, defStyle), Snabble.OnMetadataUpdateListener {
-
-    companion object{
-
-        fun getHostActivity(context: Context?): Activity? {
-            var context = context
-            while (context is ContextWrapper) {
-                if (context is Activity) {
-                    return context
-                }
-                context = context.baseContext
-            }
-            return null
-        }
-
-        fun ViewHolder.getString(@StringRes string: Int, vararg args: Any?) =
-            itemView.resources.getString(string, *args)
-
-    }
+class ExpandableShopListRecyclerView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : RecyclerView(context, attrs, defStyle), Snabble.OnMetadataUpdateListener {
 
     private var viewmodel: ShopfinderViewModel
 
@@ -63,14 +47,9 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
     private val layoutManager = LinearLayoutManager(context)
     private val itemAnimator = DefaultItemAnimator()
     private var chosenProjects: List<Project>? = null
-//    var showAll: Boolean
-//        get() = adapter.showAll
-//        set(value) {
-//            adapter.showAll = value
-//        }
 
     init {
-      viewmodel = ViewModelProvider(context as AppCompatActivity)[ShopfinderViewModel::class.java]
+        viewmodel = ViewModelProvider(context as AppCompatActivity)[ShopfinderViewModel::class.java]
         setAdapter(adapter)
         setLayoutManager(layoutManager)
         itemAnimator.supportsChangeAnimations = false
@@ -85,9 +64,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
         )
         addItemDecoration(dividerItemDecoration)
     }
-    fun setToolbarTitle(title: String){
-        (context as AppCompatActivity).supportActionBar?.title = title
-    }
+
     fun setShopsByProjects(projects: List<Project>) {
         chosenProjects = projects
         val model = mutableListOf<Item>()
@@ -187,10 +164,11 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
 
         companion object {
             @JvmField
-            val CREATOR: Parcelable.Creator<SavedState?> = object : Parcelable.Creator<SavedState?> {
-                override fun createFromParcel(`in`: Parcel) = SavedState(`in`)
-                override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
-            }
+            val CREATOR: Parcelable.Creator<SavedState?> =
+                object : Parcelable.Creator<SavedState?> {
+                    override fun createFromParcel(`in`: Parcel) = SavedState(`in`)
+                    override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
+                }
         }
     }
 
@@ -206,7 +184,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
         var chevron: ImageView = itemView.findViewById(R.id.chevron)
 
 
-        fun bindTo(item: Item, onToggle: ()->Unit) {
+        fun bindTo(item: Item, onToggle: () -> Unit) {
             name.text = item.name
             shopCount.text = itemView.context.resources.getQuantityString(
                 R.plurals.ShopList_numberOfStores,
@@ -232,10 +210,20 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
                         .setDuration(itemAnimator.addDuration)
                         .start()
                     if (item.type == ViewType.ExpandedBrand) {
-                        itemView.announceForAccessibility(getString(R.string.ShopList_Accessibility_eventShopExpanded, item.name))
+                        itemView.announceForAccessibility(
+                            getString(
+                                R.string.ShopList_Accessibility_eventShopExpanded,
+                                item.name
+                            )
+                        )
                         itemView.accessibility.setClickAction(R.string.ShopList_Accessibility_colapse)
                     } else {
-                        itemView.accessibility.setClickAction(getString(R.string.ShopList_Accessibility_eventShopColapsed, item.name))
+                        itemView.accessibility.setClickAction(
+                            getString(
+                                R.string.ShopList_Accessibility_eventShopColapsed,
+                                item.name
+                            )
+                        )
                         itemView.accessibility.setClickAction(R.string.ShopList_Accessibility_expand)
                     }
                 }
@@ -264,7 +252,12 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
         fun bindTo(item: Item) {
             name.text = item.name
             address.text = item.address
-            address.contentDescription = getString(R.string.ShopList_Accessibility_address, item.street, item.zipCode, item.city)
+            address.contentDescription = getString(
+                R.string.ShopList_Accessibility_address,
+                item.street,
+                item.zipCode,
+                item.city
+            )
             youAreHereContainer.isVisible = item.isCheckedIn
 
             if (item.isCheckedIn) {
@@ -275,22 +268,15 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
 
             itemView.setOnClickListener {
                 val args = Bundle()
-                val shop = Snabble.getProjectById(item.project.id)?.shops?.first { it.id == item.id }
+                val shop =
+                    Snabble.getProjectById(item.project.id)?.shops?.first { it.id == item.id }
                 args.putParcelable("shop", shop)
-                viewModel.updateCurrentProject(item.project)
-                Log.d("TAG", "bindTo: currentProject" + viewModel.currentProject.value)
-                viewModel.updateCurrentShop(shop)
-                Log.d("TAG", "bindTo: currentShop" + viewModel.currentShop.value)
 
-                try {
-                    itemView.findNavController().navigate(NavDeepLinkRequest.Builder.fromUri(Uri.parse("kotlin-sample://shopdetails")).build())
-                }catch ( e: Exception){
-                    val supp = (itemView.context as AppCompatActivity).supportFragmentManager
-                    val transaction = supp.beginTransaction()
-                    transaction.addToBackStack(supp.fragments.first().javaClass.name)
-                    transaction.replace(supp.fragments.first().id,ShopDetailsFragment())
-                    transaction.commit()
-                }
+                SnabbleUiToolkit.executeAction(
+                    context,
+                    SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST,
+                    args
+                )
             }
         }
     }
@@ -304,24 +290,37 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
         ShopDiffer()
     ) {
         val showAll: Boolean
-        get() = Snabble.projects.size == 1
+            get() = Snabble.projects.size == 1
         val expandedProjects = mutableListOf<String>()
 
         private var items = emptyList<Item>()
         private var lastKnownLocation: Location? = null
 
-        private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        private val layoutInflater =
+            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         private val TYPE_SECTION = 0
         private val TYPE_SHOP = 1
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-            TYPE_SECTION -> ShopSectionViewHolder(layoutInflater.inflate(R.layout.snabble_shop_item_list_group, parent,false))
-            else -> ShopViewHolder(layoutInflater.inflate(R.layout.snabble_shop_item_list, parent, false),context)
+            TYPE_SECTION -> ShopSectionViewHolder(
+                layoutInflater.inflate(
+                    R.layout.snabble_shop_item_list_group,
+                    parent,
+                    false
+                )
+            )
+            else -> ShopViewHolder(
+                layoutInflater.inflate(
+                    R.layout.snabble_shop_item_list,
+                    parent,
+                    false
+                ), context
+            )
         }
 
 
         override fun getItemViewType(position: Int): Int =
-            when(getItem(position).type) {
+            when (getItem(position).type) {
                 ViewType.ExpandedBrand,
                 ViewType.CollapsedBrand -> TYPE_SECTION
                 ViewType.HiddenShop, // can never happen should be always filtered out
@@ -384,20 +383,16 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
         }
 
         private fun applyVisibility(model: List<Item>) {
-            if (showAll) {
-                submitList(model.filter { it.type.isShop })
-                return
-            }
-
             val checkInManager = Snabble.checkInManager
             val currentProjectId = checkInManager.project?.id
             val currentShopId = checkInManager.shop?.id
 
             model.forEach { item ->
-                when(item.type) {
+                when (item.type) {
                     ViewType.ExpandedBrand,
                     ViewType.CollapsedBrand -> {
-                        item.isCheckedIn = currentProjectId != null && item.project.id == currentProjectId
+                        item.isCheckedIn =
+                            currentProjectId != null && item.project.id == currentProjectId
                         item.type = if (expandedProjects.contains(item.project.id)) {
                             ViewType.ExpandedBrand
                         } else {
@@ -416,6 +411,10 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
                 }
             }
 
+            if (showAll) {
+                submitList(model.filter { it.type.isShop })
+                return
+            }
             submitList(model.filterNot { it.type == ViewType.HiddenShop })
         }
     }
@@ -442,8 +441,8 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
         val zipCode: String? = null, // null for a SectionHeader
         val city: String? = null, // null for a SectionHeader
         var distance: Float? = null // null without location
-    ): Comparable<Item> {
-        constructor(project: Project): this(
+    ) : Comparable<Item> {
+        constructor(project: Project) : this(
             id = project.id,
             project = project,
             location = project.shops.first().location,
@@ -465,7 +464,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(context: Context,
 
         val address: String?
             get() =
-                if(street != null && city != null) {
+                if (street != null && city != null) {
                     street + "\n" + zipCode.orEmpty() + " " + city
                 } else null
 

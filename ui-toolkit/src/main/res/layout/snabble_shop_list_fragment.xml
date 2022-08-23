@@ -4,8 +4,7 @@
     tools:ignore="KeyboardInaccessibleWidget"
     android:clipChildren="false"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/shoplist_fragment">
+    android:layout_height="match_parent">
 
     <io.snabble.sdk.shopfinder.ExpandableShopListRecyclerView
         android:id="@+id/recycler_view"

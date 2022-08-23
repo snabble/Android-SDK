@@ -1,51 +1,54 @@
 package io.snabble.sdk.shopfinder
 
 
-import io.snabble.sdk.Shop
-import android.widget.TextView
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.content.Intent
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.Button
 import android.widget.ImageView
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.snabble.accessibility.setClickDescription
+import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.location.LocationManager
 import io.snabble.sdk.location.distanceTo
 import io.snabble.sdk.location.formatDistance
 import io.snabble.sdk.location.toLatLng
-import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.*
 import io.snabble.sdk.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
+import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.utils.BuildConfig
+import io.snabble.sdk.utils.isNotNullOrBlank
+import io.snabble.sdk.utils.setTextOrHide
 
-class ShopDetailsFragment : Fragment(){
+class ShopDetailsFragment : Fragment() {
     private lateinit var locationManager: LocationManager
     private lateinit var shop: Shop
     private var mapView: MapView? = null
@@ -64,18 +67,23 @@ class ShopDetailsFragment : Fragment(){
 
     val isInDarkMode: Boolean
         get() {
-            val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            val currentNightMode =
+                resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
             return currentNightMode == Configuration.UI_MODE_NIGHT_YES
         }
     val sharedPreferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(requireContext().applicationContext)
 
-    val debugSharedPreferences : SharedPreferences
-    get() = requireContext().getSharedPreferences("DebugManager", Context.MODE_PRIVATE)
+    val debugSharedPreferences: SharedPreferences
+        get() = requireContext().getSharedPreferences("DebugManager", Context.MODE_PRIVATE)
 
     var isHiddenMenuAvailable: Boolean
-        get() = debugSharedPreferences.getBoolean(KEY_HIDDEN_MENU_AVAILABLE, BuildConfig.DEBUG || projectCode != null)
-        set(available) = debugSharedPreferences.edit().putBoolean(KEY_HIDDEN_MENU_AVAILABLE, available).apply()
+        get() = debugSharedPreferences.getBoolean(
+            KEY_HIDDEN_MENU_AVAILABLE,
+            BuildConfig.DEBUG || projectCode != null
+        )
+        set(available) = debugSharedPreferences.edit()
+            .putBoolean(KEY_HIDDEN_MENU_AVAILABLE, available).apply()
 
     var isDebuggingAvailable: Boolean
         get() = debugSharedPreferences.getBoolean(KEY_DEBUGGING_AVAILABLE, BuildConfig.DEBUG)
@@ -129,7 +137,16 @@ class ShopDetailsFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.snabble_shop_details_fragment, container, false)
-        shop = viewModel.currentShop.value!!
+        shop = requireNotNull(arguments?.getParcelable(BUNDLE_KEY_SHOP))
+
+        val supportActionBar = (context as AppCompatActivity).supportActionBar
+        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Details_title)
+
+        if (actionbarTitle.isNotNullOrBlank()) {
+            supportActionBar?.title = actionbarTitle
+        } else {
+            supportActionBar?.title = shop.name
+        }
         cachedGoogleMap = null
         mapViewPermission = v.findViewById(R.id.map_view_permission)
         bottomSheet = v.findViewById(R.id.bottom_sheet)
@@ -141,13 +158,17 @@ class ShopDetailsFragment : Fragment(){
             val tv = v.findViewById<TextView>(R.id.maps_notice)
             tv.text = getString(R.string.ShopDetails_ForbiddenMaps_Title, "Google Maps")
             activateMap.setOnClickListener {
-                requireContext().packageManager.getApplicationInfo(requireContext().packageName, PackageManager.GET_META_DATA)
+                requireContext().packageManager.getApplicationInfo(
+                    requireContext().packageName,
+                    PackageManager.GET_META_DATA
+                )
                     .metaData.get("com.google.android.geo.API_KEY")?.let {
-                isMapsEnabled = true
-                setupMapView(v, savedInstanceState)
-                mapView?.onStart()
-                val lp = mapViewPermission.layoutParams as MarginLayoutParams
-                setMapPadding(lp.leftMargin, lp.topMargin, lp.rightMargin, lp.bottomMargin)}
+                        isMapsEnabled = true
+                        setupMapView(v, savedInstanceState)
+                        mapView?.onStart()
+                        val lp = mapViewPermission.layoutParams as MarginLayoutParams
+                        setMapPadding(lp.leftMargin, lp.topMargin, lp.rightMargin, lp.bottomMargin)
+                    }
             }
             mapViewPermission.viewTreeObserver.addOnGlobalLayoutListener(
                 object : OnGlobalLayoutListener {
@@ -177,11 +198,9 @@ class ShopDetailsFragment : Fragment(){
 //            requireContext().analytics.event(Analytics.Event.NavigationStarted)
         }
         val companyNotice = v.findViewById<TextView>(R.id.company_notice)
-        val project = viewModel.currentProject.value
 
-//      Second way to skip Viemodel
-//      val project2 = Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
-
+        val project =
+            Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
         if (project != null) {
             val text = project.getText("companyNotice")
             if (text != null) {
@@ -198,65 +217,65 @@ class ShopDetailsFragment : Fragment(){
 
     @SuppressLint("ClickableViewAccessibility", "MissingPermission")
     private fun setupMapView(v: View, savedInstanceState: Bundle?) {
-            mapView = v.findViewById(R.id.map_view)
-            val mapControls = v.findViewById<View>(R.id.map_controls)
-            var mapViewBundle: Bundle? = null
-            if (savedInstanceState != null) {
-                mapViewBundle = savedInstanceState.getBundle(BUNDLE_KEY_MAPVIEW)
-            }
-            mapView?.visibility = View.VISIBLE
-            mapControls.visibility = View.VISIBLE
-            mapViewPermission.visibility = View.GONE
-            mapView?.onCreate(mapViewBundle)
-            mapView?.viewTreeObserver?.addOnGlobalLayoutListener(
-                object : OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        mapView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
-                        applyBottomSheetPeekHeight(v)
-                    }
-                })
-            accessGoogleMap { googleMap ->
-                val project =
-                    Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
-                project?.let {
-                    for (shop in project.shops) {
-                        project.assets.get("icon") { bitmap: Bitmap? ->
-                            if (bitmap != null) {
-                                val bd = BitmapDescriptorFactory.fromBitmap(bitmap)
-                                val latLng = LatLng(shop.latitude, shop.longitude)
-                                googleMap.addMarker(
-                                    MarkerOptions()
-                                        .icon(bd)
-                                        .anchor(0.5f, 0.5f)
-                                        .position(latLng)
-                                )
-                            }
+        mapView = v.findViewById(R.id.map_view)
+        val mapControls = v.findViewById<View>(R.id.map_controls)
+        var mapViewBundle: Bundle? = null
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(BUNDLE_KEY_MAPVIEW)
+        }
+        mapView?.visibility = View.VISIBLE
+        mapControls.visibility = View.VISIBLE
+        mapViewPermission.visibility = View.GONE
+        mapView?.onCreate(mapViewBundle)
+        mapView?.viewTreeObserver?.addOnGlobalLayoutListener(
+            object : OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    mapView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                    applyBottomSheetPeekHeight(v)
+                }
+            })
+        accessGoogleMap { googleMap ->
+            val project =
+                Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
+            project?.let {
+                for (shop in project.shops) {
+                    project.assets.get("icon") { bitmap: Bitmap? ->
+                        if (bitmap != null) {
+                            val bd = BitmapDescriptorFactory.fromBitmap(bitmap)
+                            val latLng = LatLng(shop.latitude, shop.longitude)
+                            googleMap.addMarker(
+                                MarkerOptions()
+                                    .icon(bd)
+                                    .anchor(0.5f, 0.5f)
+                                    .position(latLng)
+                            )
                         }
                     }
                 }
-                googleMap.uiSettings.isMyLocationButtonEnabled = false
-                googleMap.uiSettings.isMapToolbarEnabled = false
-                if (isInDarkMode) {
-                    googleMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(
-                            requireContext(),
-                            R.raw.google_maps_dark_style
-                        )
-                    )
-                }
-                if (LocationManager.getInstance(requireContext()).isLocationAvailable()) {
-                    googleMap.isMyLocationEnabled = true
-                }
-                googleMap.setOnCameraMoveStartedListener { reason: Int ->
-                    if (reason != OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION) {
-                        homePinned = false
-                        mapPinHome.setImageResource(R.drawable.ic_map_home)
-                    }
-                }
-                zoomToShop(shop, false)
             }
-            val pushUpBehavior = mapView?.behavior as? MapPushUpBehavior
-            pushUpBehavior?.setShopDetailsFragment(this)
+            googleMap.uiSettings.isMyLocationButtonEnabled = false
+            googleMap.uiSettings.isMapToolbarEnabled = false
+            if (isInDarkMode) {
+                googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                        requireContext(),
+                        R.raw.google_maps_dark_style
+                    )
+                )
+            }
+            if (LocationManager.getInstance(requireContext()).isLocationAvailable()) {
+                googleMap.isMyLocationEnabled = true
+            }
+            googleMap.setOnCameraMoveStartedListener { reason: Int ->
+                if (reason != OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION) {
+                    homePinned = false
+                    mapPinHome.setImageResource(R.drawable.ic_map_home)
+                }
+            }
+            zoomToShop(shop, false)
+        }
+        val pushUpBehavior = mapView?.behavior as? MapPushUpBehavior
+        pushUpBehavior?.setShopDetailsFragment(this)
     }
 
     private fun applyBottomSheetPeekHeight(v: View) {
@@ -298,8 +317,13 @@ class ShopDetailsFragment : Fragment(){
         val companyName = view.findViewById<TextView>(R.id.company_name)
         val companyStreet = view.findViewById<TextView>(R.id.company_street)
         val companyZip = view.findViewById<TextView>(R.id.company_zip)
-        address.text = shop.street+ "\n" +  shop.zipCode + " " + shop.city
-        address.contentDescription = getString(R.string.ShopDetails_Accessibility_address, shop.street, shop.zipCode, shop.city)
+        address.text = shop.street + "\n" + shop.zipCode + " " + shop.city
+        address.contentDescription = getString(
+            R.string.ShopDetails_Accessibility_address,
+            shop.street,
+            shop.zipCode,
+            shop.city
+        )
         phone.text = getString(R.string.ShopDetails_phone, shop.phone)
         phone.setClickDescription(R.string.ShopDetails_Accessibility_startCall)
         phone.setOnClickListener {
@@ -307,11 +331,14 @@ class ShopDetailsFragment : Fragment(){
             startActivity(intent)
         }
 
-        val project = Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
-        project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
+        val project =
+            Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
 
+        if (Snabble.projects.size > 1) {
+            project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
+        }
 
-        locationManager.location.observe(viewLifecycleOwner){ location ->
+        locationManager.location.observe(viewLifecycleOwner) { location ->
             distance.isVisible = location != null
             location?.let { currentLocation ->
                 distance.visibility = View.VISIBLE
@@ -320,7 +347,8 @@ class ShopDetailsFragment : Fragment(){
                     .formatDistance()
                 if (distance.text.toString() != distanceString) {
                     distance.text = distanceString
-                    distance.contentDescription = getString(R.string.ShopDetails_Accessibility_distance, distanceString)
+                    distance.contentDescription =
+                        getString(R.string.ShopDetails_Accessibility_distance, distanceString)
                 }
             }
         }
@@ -373,21 +401,32 @@ class ShopDetailsFragment : Fragment(){
         val youAreHere = view.findViewById<View>(R.id.you_are_here)
         youAreHere.isVisible = isCheckedInToShop
 
-        val startScanner = view.findViewById<View>(R.id.start_scanner)
+        val startScanner = view.findViewById<Button>(R.id.start_scanner)
+        var buttonTitle = resources.getText(R.string.Snabble_Shop_Details_button)
+
+        startScanner.setTextOrHide(buttonTitle)
         startScanner.isVisible = isCheckedInToShop
+
         startScanner.setOneShotClickListener {
-            //TODO : with(requireActivity()).push(AppSelfScanningFragment::class.java)
+            SnabbleUiToolkit.executeAction(
+                requireContext(),
+                SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION
+            )
         }
 
-        val company = project?.company
-        companyCountry.setTextOrHide(project?.company?.country?.let(::getDisplayNameByIso3Code))
-        companyName.setTextOrHide(project?.company?.name)
-        companyStreet.setTextOrHide(project?.company?.street)
-        if (company != null) {
-            companyZip.text = company.zip + " " +company.city
+        if (Snabble.projects.size > 1) {
+            val company = project?.company
+            companyCountry.setTextOrHide(project?.company?.country?.let(::getDisplayNameByIso3Code))
+            companyName.setTextOrHide(project?.company?.name)
+            companyStreet.setTextOrHide(project?.company?.street)
+            if (company != null) {
+                companyZip.text = company.zip + " " + company.city
+            } else {
+                companyHeader.visibility = View.GONE
+                companyZip.visibility = View.GONE
+            }
         } else {
             companyHeader.visibility = View.GONE
-            companyZip.visibility = View.GONE
         }
     }
 
@@ -518,13 +557,16 @@ class ShopDetailsFragment : Fragment(){
 
         fun isIntentAvailable(context: Context, intent: Intent): Boolean {
             val packageManager = context.packageManager
-            val list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            val list =
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
             return list.isNotEmpty()
         }
 
         inline var View.behavior: CoordinatorLayout.Behavior<*>?
             get() = (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior
-            set(value) { (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = value }
+            set(value) {
+                (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = value
+            }
 
         fun dp2px(dp: Float) = dp.dpInPx
 
@@ -532,7 +574,11 @@ class ShopDetailsFragment : Fragment(){
             get() = dp.toInt()
 
         inline val Number.dp: Float
-            get() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, toFloat(), Resources.getSystem().displayMetrics)
+            get() = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                toFloat(),
+                Resources.getSystem().displayMetrics
+            )
 
         fun View.setClickDescription(stringId: Int, vararg formatArgs: Any) {
             setClickDescription(context.getString(stringId, formatArgs))

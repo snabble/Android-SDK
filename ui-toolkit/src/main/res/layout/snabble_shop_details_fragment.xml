@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
@@ -119,10 +118,10 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/image"
                     android:layout_centerHorizontal="true"
+                    android:gravity="center"
                     android:lineSpacingMultiplier="1.3"
                     android:padding="8dp"
                     android:textAlignment="center"
-                    android:gravity="center"
                     tools:text="Bornheimer Straße 162\n53119 Bonn" />
 
                 <TextView
@@ -152,7 +151,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Start Scanner" />
+                    tools:text="Start Scanner" />
 
                 <TextView
                     android:id="@+id/distance"
@@ -174,10 +173,14 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/distance"
                     android:layout_centerHorizontal="true"
-                    android:padding="8dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_marginTop="-8dp"
-                    tools:text="Telefon: 0228/9086950" />
+                    android:layout_marginBottom="8dp"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    app:drawableLeftCompat="@drawable/ic_baseline_phone_forwarded_24"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="?attr/colorOnSurface"
+                    tools:text="0228/9086950" />
 
                 <TextView
                     android:id="@+id/timetable_title"
@@ -239,7 +242,7 @@
                     android:layout_below="@+id/company_street"
                     android:layout_centerHorizontal="true"
                     android:gravity="center"
-                    tools:text="12345 Musterhausen"/>
+                    tools:text="12345 Musterhausen" />
 
                 <TextView
                     android:id="@+id/company_country"

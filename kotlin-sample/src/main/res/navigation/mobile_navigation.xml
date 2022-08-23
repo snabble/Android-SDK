@@ -12,15 +12,15 @@
         <argument
             android:name="resId"
             android:defaultValue="@raw/en"
-            app:argType="reference"/>
+            app:argType="reference" />
         <argument
             android:name="imagePath"
             android:defaultValue="android_res/drawable/snabble_onboarding_terms"
-            app:argType="string"/>
+            app:argType="string" />
         <argument
             android:name="headerTitle"
             android:defaultValue="@string/Onboarding.Terms.introText"
-            app:argType="reference"/>
+            app:argType="reference" />
         <deepLink
             android:id="@+id/deepLink"
             app:uri="kotlin-sample://terms" />
@@ -61,17 +61,22 @@
     <fragment
         android:id="@+id/navigation_cart"
         android:name="io.snabble.sdk.ui.cart.ShoppingCartFragment"
-        android:label="@string/cart_title"/>
+        android:label="@string/cart_title" />
 
     <fragment
         android:id="@+id/navigation_shops"
-        android:name="io.snabble.sdk.sample.ShopListFragment"
-        android:label="@string/cart_title"/>
+        android:name="io.snabble.sdk.shopfinder.ShopListFragment"
+        android:label="@string/shop_title" />
+
+    <fragment
+        android:id="@+id/navigation_shops_details"
+        android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment"
+        android:label="Shop" />
 
     <fragment
         android:id="@+id/navigation_dummy_cart"
         android:name="io.snabble.sdk.sample.CustomShoppingCartDummy"
-        android:label="@string/cart_title"/>
+        android:label="@string/cart_title" />
 
     <fragment
         android:id="@+id/navigation_barcode_search"
@@ -81,7 +86,7 @@
     <fragment
         android:id="@+id/navigation_age_verification"
         android:name="io.snabble.sdk.ui.payment.AgeVerificationInputFragment"
-        android:label="Age verification"/>
+        android:label="Age verification" />
 
     <fragment
         android:id="@+id/navigation_checkout_customer_card_fragment"

@@ -6,5 +6,11 @@
         <activity
             android:name="io.snabble.sdk.onboarding.OnboardingActivity"
             android:exported="false" />
+        <activity
+            android:name="io.snabble.sdk.shopfinder.ShopListActivity"
+            android:exported="false" />
+        <activity
+            android:name="io.snabble.sdk.shopfinder.ShopDetailsActivity"
+            android:exported="false" />
     </application>
 </manifest>

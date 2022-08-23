@@ -1,18 +1,20 @@
 package io.snabble.sdk
 
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import io.snabble.sdk.SnabbleUiToolkit.Event.*
 import io.snabble.sdk.onboarding.OnboardingActivity
+import io.snabble.sdk.shopfinder.ShopDetailsActivity
+import io.snabble.sdk.shopfinder.ShopListActivity
+import io.snabble.sdk.ui.Action
 import io.snabble.sdk.ui.BaseFragmentActivity
+import io.snabble.sdk.ui.utils.UIUtils.getHostFragmentActivity
 import java.lang.ref.WeakReference
 import kotlin.collections.set
 
@@ -30,18 +32,8 @@ object SnabbleUiToolkit {
         SHOW_ONBOARDING_DONE,
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
+        SHOW_DETAILS_BUTTON_ACTION,
         GO_BACK
-    }
-
-    fun getHostFragmentActivity(context: Context?): FragmentActivity? {
-        var context = context
-        while (context is ContextWrapper) {
-            if (context is FragmentActivity) {
-                return context
-            }
-            context = context.baseContext
-        }
-        return null
     }
 
     private class ActivityCallback(
@@ -105,10 +97,21 @@ object SnabbleUiToolkit {
                     false
                 )
                 SHOW_ONBOARDING_DONE -> activity?.finish()
-                SHOW_SHOP_LIST -> {}
-                SHOW_DETAILS_SHOP_LIST -> {}
+                SHOW_SHOP_LIST -> startActivity(
+                    context,
+                    ShopListActivity::class.java,
+                    args,
+                    false
+                )
+                SHOW_DETAILS_SHOP_LIST -> startActivity(
+                    context,
+                    ShopDetailsActivity::class.java,
+                    args,
+                    true
+                )
                 // unhandled actions
                 GO_BACK,
+                SHOW_DETAILS_BUTTON_ACTION,
                 null -> {
                 }
             }
@@ -138,8 +141,4 @@ object SnabbleUiToolkit {
 
         context.startActivity(intent)
     }
-}
-
-interface Action {
-    fun execute(context: Context, args: Bundle?)
 }
