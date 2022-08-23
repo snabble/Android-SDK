@@ -35,6 +35,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
+import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.*
@@ -81,7 +82,7 @@ open class OnboardingFragment : Fragment() {
                 if (viewPager.currentItem < model.items.lastIndex) {
                     viewPager.currentItem += 1
                 } else {
-                    viewModel.onboardingFinished()
+                    SnabbleUiToolkit.executeAction(requireContext(),SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE)
                 }
             }
         }
