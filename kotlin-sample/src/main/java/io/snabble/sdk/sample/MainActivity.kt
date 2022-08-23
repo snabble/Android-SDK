@@ -2,13 +2,11 @@ package io.snabble.sdk.sample
 
 import android.Manifest
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -19,36 +17,23 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.onboarding.OnboardingViewModel
 import io.snabble.sdk.onboarding.entities.OnboardingModel
-import io.snabble.sdk.shopfinder.ShopDetailsFragment
 import io.snabble.sdk.ui.SnabbleUI
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var toolbar: Toolbar
 
-    val sharedPreferences: SharedPreferences
-        get() = PreferenceManager.getDefaultSharedPreferences(this)
-
-
-    private val viewModel: OnboardingViewModel by viewModels()
-
     lateinit var locationPermission: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        sharedPreferences
-            .edit()
-            .putBoolean(ShopDetailsFragment.KEY_MAPS_ENABLED, false)
-            .apply()
 
         setContentView(R.layout.activity_main)
         toolbar = findViewById(R.id.toolbar)
@@ -60,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_home,
                 R.id.navigation_scanner,
-                R.id.navigation_shops,
                 R.id.navigation_cart,
 //                R.id.navigation_dummy_cart
         ))
@@ -69,14 +53,10 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        viewModel.onboardingSeen.observe(this) {
-            navController.popBackStack()
-        }
-
         if (savedInstanceState == null) {
             val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
             val model = Gson().fromJson(json, OnboardingModel::class.java)
-            navController.navigate(R.id.frag_onboarding, bundleOf("model" to model))
+            SnabbleUiToolkit.executeAction(this, SnabbleUiToolkit.Event.SHOW_ONBOARDING,  bundleOf("model" to model))
         }
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="io.snabble.sdk.ui.toolkit"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-<!--        <activity android:name=".checkout.CheckoutActivity" android:exported="false" />-->
-
+        <activity
+            android:name="io.snabble.sdk.onboarding.OnboardingActivity"
+            android:exported="false" />
     </application>
 </manifest>
