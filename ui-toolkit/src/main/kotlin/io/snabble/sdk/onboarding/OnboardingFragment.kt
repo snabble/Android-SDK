@@ -3,7 +3,6 @@ package io.snabble.sdk.onboarding
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.text.SpannedString
@@ -15,7 +14,6 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.text.getSpans
@@ -32,14 +30,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.squareup.picasso.Picasso
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.*
-import java.lang.IllegalArgumentException
+import io.snabble.sdk.utils.LinkClickListener
+import io.snabble.sdk.utils.ZoomOutPageTransformer
+import io.snabble.sdk.utils.isNotNullOrBlank
+import io.snabble.sdk.utils.resolveTextOrHide
 
 open class OnboardingFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
@@ -226,14 +225,15 @@ open class OnboardingFragment : Fragment() {
                                 span.subSequence(start, end) to Uri.parse(url.url)
                             }.forEachIndexed { index, (label, uri) ->
                                 // Add the special accessibility handling
+                                val action =
+                                    view.context.getString(R.string.Snabble_Onboarding_Deeplink_accessibility, label)
                                 if (index == 0) {
-                                    // TODO string auslagern
-                                    view.accessibility.setClickAction("$label öffnen") {
+                                    view.accessibility.setClickAction(action) {
                                         view.findNavController()
                                             .navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
                                     }
                                 } else {
-                                    view.accessibility.setLongClickAction("$label öffnen") {
+                                    view.accessibility.setLongClickAction(action) {
                                         view.findNavController()
                                             .navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
                                     }
