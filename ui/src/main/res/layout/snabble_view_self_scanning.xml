@@ -51,7 +51,7 @@
             android:insetLeft="0dp"
             android:insetBottom="0dp"
             android:visibility="gone"
-            android:text="@string/Snabble.Scanner.goToCart.empty"
+            android:text="@string/Snabble.Scanner.GoToCart.empty"
             tools:text="Warenkorb: 99,99 €"/>
     </LinearLayout>
 </merge>

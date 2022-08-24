@@ -259,7 +259,7 @@ public class PaydirektInputView extends FrameLayout {
         Logger.d("finishWithError");
 
         Toast.makeText(getContext(),
-                R.string.Snabble_paydirekt_authorizationFailed_title,
+                R.string.Snabble_Paydirekt_AuthorizationFailed_title,
                 Toast.LENGTH_LONG)
                 .show();
 

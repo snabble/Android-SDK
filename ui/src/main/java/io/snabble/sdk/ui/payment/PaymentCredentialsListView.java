@@ -99,7 +99,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 } else {
                     new AlertDialog.Builder(getContext())
                             .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                            .setPositiveButton(R.string.Snabble_OK, null)
+                            .setPositiveButton(R.string.Snabble_ok, null)
                             .setCancelable(false)
                             .show();
                 }
@@ -278,9 +278,9 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
             if (e.paymentCredentials != null) {
                 vh.delete.setOnClickListener(view -> {
                     new AlertDialog.Builder(getContext())
-                            .setMessage(R.string.Snabble_Payment_delete_message)
-                            .setPositiveButton(R.string.Snabble_Yes, (dialog, which) -> paymentCredentialsStore.remove(e.paymentCredentials))
-                            .setNegativeButton(R.string.Snabble_No, null)
+                            .setMessage(R.string.Snabble_Payment_Delete_message)
+                            .setPositiveButton(R.string.Snabble_yes, (dialog, which) -> paymentCredentialsStore.remove(e.paymentCredentials))
+                            .setNegativeButton(R.string.Snabble_no, null)
                             .create()
                             .show();
 
