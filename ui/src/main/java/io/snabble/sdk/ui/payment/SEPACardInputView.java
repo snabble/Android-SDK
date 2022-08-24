@@ -260,7 +260,7 @@ public class SEPACardInputView extends FrameLayout {
             } else {
                 new AlertDialog.Builder(getContext())
                         .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setPositiveButton(R.string.Snabble_ok, null)
                         .setCancelable(false)
                         .show();
             }

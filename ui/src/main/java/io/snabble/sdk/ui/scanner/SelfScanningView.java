@@ -175,7 +175,7 @@ public class SelfScanningView extends FrameLayout {
             if (shoppingCart.getTotalPrice() != 0) {
                 goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart, priceFormatter.format(shoppingCart.getTotalPrice())));
             } else {
-                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_goToCart_empty));
+                goToCart.setText(getResources().getString(R.string.Snabble_Scanner_GoToCart_empty));
             }
         } else {
             goToCart.setVisibility(View.INVISIBLE);
@@ -200,9 +200,9 @@ public class SelfScanningView extends FrameLayout {
                 .setOnShelfCodeScannedListener(() ->
                         showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode))))
                 .setOnSaleStopListener(() -> new AlertDialog.Builder(getContext())
-                        .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
-                        .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_scan))
-                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_SaleStop_ErrorMsg_title))
+                        .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_SaleStop_ErrorMsg_scan))
+                        .setPositiveButton(R.string.Snabble_ok, null)
                         .setOnDismissListener(dialog -> resumeBarcodeScanner())
                         .setCancelable(false)
                         .create()
@@ -218,7 +218,7 @@ public class SelfScanningView extends FrameLayout {
                         showScanMessage(product, true);
                     } else {
                         showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(),
-                                R.string.Snabble_notForSale_errorMsg_scan)));
+                                R.string.Snabble_NotForSale_ErrorMsg_scan)));
                     }
                 })
                 .setDialogConfirmationDialogFactory(productConfirmationDialogFactory)
@@ -330,8 +330,8 @@ public class SelfScanningView extends FrameLayout {
             new AlertDialog.Builder(getContext())
                     .setView(input)
                     .setTitle(R.string.Snabble_Scanner_enterBarcode)
-                    .setPositiveButton(R.string.Snabble_Done, (dialog, which) -> lookupAndShowProduct(ScannedCode.parse(project, input.getText().toString())))
-                    .setNegativeButton(R.string.Snabble_Cancel, null)
+                    .setPositiveButton(R.string.Snabble_done, (dialog, which) -> lookupAndShowProduct(ScannedCode.parse(project, input.getText().toString())))
+                    .setNegativeButton(R.string.Snabble_cancel, null)
                     .setOnDismissListener(dialog -> resumeBarcodeScanner())
                     .create()
                     .show();
@@ -361,7 +361,7 @@ public class SelfScanningView extends FrameLayout {
                 final AlertDialog alertDialog = new AlertDialog.Builder(context)
                         .setTitle(context.getString(R.string.Snabble_Hints_title, currentShop.getName()))
                         .setMessage(context.getString(R.string.Snabble_Hints_closedBags))
-                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setPositiveButton(R.string.Snabble_ok, null)
                         .setCancelable(true)
                         .setOnDismissListener(dialog -> {
                             resumeBarcodeScanner();
@@ -563,13 +563,13 @@ public class SelfScanningView extends FrameLayout {
 
         @Override
         public void onCheckoutLimitReached(ShoppingCart list) {
-            showInfo(getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+            showInfo(getResources().getString(R.string.Snabble_LimitsAlert_checkoutNotAvailable,
                     project.getPriceFormatter().format(project.getMaxCheckoutLimit())));
         }
 
         @Override
         public void onOnlinePaymentLimitReached(ShoppingCart list) {
-            showInfo(getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
+            showInfo(getResources().getString(R.string.Snabble_LimitsAlert_notAllMethodsAvailable,
                     project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit())));
 
         }

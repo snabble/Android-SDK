@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textAppearance="?attr/textAppearanceBodyLarge"
-                    android:text="@string/Snabble.Shoppingcart.emptyState.description" />
+                    android:text="@string/Snabble.Shoppingcart.EmptyState.description" />
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:gravity="center"
-                    android:text="@string/Snabble.Shoppingcart.emptyState.buttonTitle" />
+                    android:text="@string/Snabble.Shoppingcart.EmptyState.buttonTitle" />
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
@@ -81,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/Snabble.Shoppingcart.emptyState.restoreButtonTitle"/>
+                    android:text="@string/Snabble.Shoppingcart.EmptyState.restoreButtonTitle"/>
             </LinearLayout>
         </RelativeLayout>
     </io.snabble.sdk.ui.utils.VerticalSwipeRefreshLayout>
