@@ -33,7 +33,7 @@
                         android:top="12dp" />
                 </shape>
             </item>
-            <item android:drawable="@drawable/ic_distance" />
+            <item android:drawable="@drawable/snabble_store" />
         </layer-list>
     </item>
 </ripple>

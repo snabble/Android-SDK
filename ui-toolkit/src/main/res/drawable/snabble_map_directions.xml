@@ -33,7 +33,7 @@
                         android:top="12dp" />
                 </shape>
             </item>
-            <item android:drawable="@drawable/ic_menu_start_off" />
+            <item android:drawable="@drawable/snabble_directions" />
         </layer-list>
     </item>
 </ripple>

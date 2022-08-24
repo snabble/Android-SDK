@@ -4,14 +4,10 @@ package io.snabble.sdk.shopfinder
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,18 +18,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.preference.PreferenceManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
+import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
@@ -43,14 +38,20 @@ import io.snabble.sdk.location.formatDistance
 import io.snabble.sdk.location.toLatLng
 import io.snabble.sdk.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
+import io.snabble.sdk.shopfinder.utils.ShopfinderPreferences
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.BuildConfig
+import io.snabble.sdk.ui.utils.behavior
+import io.snabble.sdk.ui.utils.dpInPx
+import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
 
-class ShopDetailsFragment : Fragment() {
+// TODO: Implement ShopDetails from Teo e.g. door opening and alwyas open text
+open class ShopDetailsFragment : Fragment() {
     private lateinit var locationManager: LocationManager
     private lateinit var shop: Shop
+    private var preferences: ShopfinderPreferences? = null
+    private var project: Project? = null
     private var mapView: MapView? = null
     private var cachedGoogleMap: GoogleMap? = null
     private lateinit var mapViewPermission: View
@@ -58,65 +59,17 @@ class ShopDetailsFragment : Fragment() {
     private lateinit var dayTable: Map<String, String>
     private lateinit var debugCheckin: TextView
     private lateinit var mapPinHome: ImageView
+    private lateinit var mapPinShop: ImageView
     private lateinit var mapPinNavigate: ImageView
     private var homePinned = false
-
-    private val viewModel by lazy {
-        ViewModelProvider(requireActivity())[ShopfinderViewModel::class.java]
-    }
-
-    val isInDarkMode: Boolean
-        get() {
-            val currentNightMode =
-                resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-            return currentNightMode == Configuration.UI_MODE_NIGHT_YES
-        }
-    val sharedPreferences: SharedPreferences
-        get() = PreferenceManager.getDefaultSharedPreferences(requireContext().applicationContext)
-
-    val debugSharedPreferences: SharedPreferences
-        get() = requireContext().getSharedPreferences("DebugManager", Context.MODE_PRIVATE)
-
-    var isHiddenMenuAvailable: Boolean
-        get() = debugSharedPreferences.getBoolean(
-            KEY_HIDDEN_MENU_AVAILABLE,
-            BuildConfig.DEBUG || projectCode != null
-        )
-        set(available) = debugSharedPreferences.edit()
-            .putBoolean(KEY_HIDDEN_MENU_AVAILABLE, available).apply()
-
-    var isDebuggingAvailable: Boolean
-        get() = debugSharedPreferences.getBoolean(KEY_DEBUGGING_AVAILABLE, BuildConfig.DEBUG)
-        set(available) {
-            isHiddenMenuAvailable = available
-            debugSharedPreferences.edit().putBoolean(KEY_DEBUGGING_AVAILABLE, available).apply()
-        }
-    var projectCode: String?
-        get() = sharedPreferences.getString(KEY_PROJECT_CODE, null)
-        set(projectCode) {
-            sharedPreferences
-                .edit()
-                .putString(KEY_PROJECT_CODE, projectCode)
-                .apply()
-        }
-
-    private var isMapsEnabled: Boolean
-        get() = sharedPreferences
-            .getBoolean(KEY_MAPS_ENABLED, true)
-        set(enabled) {
-            sharedPreferences
-                .edit()
-                .putBoolean(KEY_MAPS_ENABLED, enabled)
-                .apply()
-        }
-
-
-    //onCreateScreen analyticsname is missing
+    private var storePinned = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         locationManager = LocationManager.getInstance(requireContext())
         locationManager.startTrackingLocation()
+
+        preferences = ShopfinderPreferences.getInstance(requireContext())
 
         //Todo: insert Strings
         dayTable = mapOf(
@@ -128,7 +81,6 @@ class ShopDetailsFragment : Fragment() {
             "Saturday" to "Saturday",
             "Sunday" to "Sunday",
         )
-
     }
 
     override fun onCreateView(
@@ -137,38 +89,32 @@ class ShopDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.snabble_shop_details_fragment, container, false)
+
         shop = requireNotNull(arguments?.getParcelable(BUNDLE_KEY_SHOP))
+        project =
+            Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
 
-        val supportActionBar = (context as AppCompatActivity).supportActionBar
-        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Details_title)
-
-        if (actionbarTitle.isNotNullOrBlank()) {
-            supportActionBar?.title = actionbarTitle
-        } else {
-            supportActionBar?.title = shop.name
-        }
         cachedGoogleMap = null
         mapViewPermission = v.findViewById(R.id.map_view_permission)
         bottomSheet = v.findViewById(R.id.bottom_sheet)
         /**Shared pref Value the same? */
-        if (isMapsEnabled) {
+        if (preferences?.isMapsEnabled == true) {
             setupMapView(v, savedInstanceState)
         } else {
             val activateMap = v.findViewById<View>(R.id.activate_map)
             val tv = v.findViewById<TextView>(R.id.maps_notice)
             tv.text = getString(R.string.ShopDetails_ForbiddenMaps_Title, "Google Maps")
             activateMap.setOnClickListener {
-                requireContext().packageManager.getApplicationInfo(
-                    requireContext().packageName,
-                    PackageManager.GET_META_DATA
-                )
-                    .metaData.get("com.google.android.geo.API_KEY")?.let {
-                        isMapsEnabled = true
-                        setupMapView(v, savedInstanceState)
-                        mapView?.onStart()
-                        val lp = mapViewPermission.layoutParams as MarginLayoutParams
-                        setMapPadding(lp.leftMargin, lp.topMargin, lp.rightMargin, lp.bottomMargin)
-                    }
+                if (preferences?.hasGoogleMapsKey == true) {
+                    preferences?.isMapsEnabled = true
+                    setupMapView(v, savedInstanceState)
+                    mapView?.onStart()
+                    val lp = mapViewPermission.layoutParams as MarginLayoutParams
+                    setMapPadding(lp.leftMargin, lp.topMargin, lp.rightMargin, lp.bottomMargin)
+                } else {
+                    Toast.makeText(context, "No Google Maps API key found!", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
             mapViewPermission.viewTreeObserver.addOnGlobalLayoutListener(
                 object : OnGlobalLayoutListener {
@@ -182,11 +128,20 @@ class ShopDetailsFragment : Fragment() {
         mapPinHome.setOnClickListener(object : OneShotClickListener() {
             override fun click() {
                 if (!homePinned) {
+                    zoomToHome()
+                }
+            }
+        })
+        mapPinShop = v.findViewById(R.id.map_pin_store)
+        mapPinShop.setOnClickListener(object : OneShotClickListener() {
+            override fun click() {
+                if (!storePinned) {
                     zoomToShop(shop, true)
                 }
             }
         })
-        mapPinNavigate = v.findViewById(R.id.map_pin_navigate)
+
+        mapPinNavigate = v.findViewById(R.id.map_directions)
         mapPinNavigate.setOneShotClickListener {
             val uri = Uri.parse("google.navigation:q=${shop.latitude},${shop.longitude}")
             val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -194,14 +149,14 @@ class ShopDetailsFragment : Fragment() {
             if (isIntentAvailable(requireContext(), intent)) {
                 startActivity(intent)
             }
-//            TODO: implement later
-//            requireContext().analytics.event(Analytics.Event.NavigationStarted)
+            SnabbleUiToolkit.executeAction(
+                requireContext().applicationContext,
+                SnabbleUiToolkit.Event.START_NAVIGATION
+            )
         }
         val companyNotice = v.findViewById<TextView>(R.id.company_notice)
 
-        val project =
-            Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
-        if (project != null) {
+        project?.let { project ->
             val text = project.getText("companyNotice")
             if (text != null) {
                 companyNotice.visibility = View.VISIBLE
@@ -210,6 +165,7 @@ class ShopDetailsFragment : Fragment() {
                 companyNotice.visibility = View.GONE
             }
         }
+
         applyBottomSheetPeekHeight(v)
         updateShopDetails(v)
         return v
@@ -235,9 +191,7 @@ class ShopDetailsFragment : Fragment() {
                 }
             })
         accessGoogleMap { googleMap ->
-            val project =
-                Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
-            project?.let {
+            project?.let { project ->
                 for (shop in project.shops) {
                     project.assets.get("icon") { bitmap: Bitmap? ->
                         if (bitmap != null) {
@@ -255,7 +209,7 @@ class ShopDetailsFragment : Fragment() {
             }
             googleMap.uiSettings.isMyLocationButtonEnabled = false
             googleMap.uiSettings.isMapToolbarEnabled = false
-            if (isInDarkMode) {
+            if (preferences?.isInDarkMode == true) {
                 googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                         requireContext(),
@@ -269,7 +223,9 @@ class ShopDetailsFragment : Fragment() {
             googleMap.setOnCameraMoveStartedListener { reason: Int ->
                 if (reason != OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION) {
                     homePinned = false
-                    mapPinHome.setImageResource(R.drawable.ic_map_home)
+                    mapPinHome.setImageResource(R.drawable.snabble_map_user_postition)
+                    storePinned = false
+                    mapPinShop.setImageResource(R.drawable.snabble_map_store)
                 }
             }
             zoomToShop(shop, false)
@@ -278,33 +234,33 @@ class ShopDetailsFragment : Fragment() {
         pushUpBehavior?.setShopDetailsFragment(this)
     }
 
+    //Todo refactor
     private fun applyBottomSheetPeekHeight(v: View) {
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        var desiredPeekHeight: Int
+
+        var desiredPeekHeight = 200.dpInPx
         var view = v.findViewById<View>(R.id.start_scanner)
-        if (view.visibility == View.GONE) {
-            view = v.findViewById(R.id.timetable_title)
-            if (view.visibility == View.GONE) {
-                view = v.findViewById(R.id.company_header)
+        if (!view.isVisible) {
+            view = v.findViewById(R.id.phone)
+            if (!view.isVisible) {
+                view = v.findViewById(R.id.timetable_title)
+                if (!view.isVisible) {
+                    view = v.findViewById(R.id.company_header)
+                }
             }
-            desiredPeekHeight = if (view.visibility == View.GONE) {
-                view.bottom + dp2px(12f)
-            } else {
-                view.top + view.height / 2
-            }
+            desiredPeekHeight = view.bottom - 12.dpInPx
+        }
+
+        if (requireContext().isTalkBackActive) {
+            bottomSheetBehavior.halfExpandedRatio = 0.5f
+            bottomSheetBehavior.isFitToContents = false
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         } else {
-            desiredPeekHeight = view.bottom + dp2px(12f)
+            bottomSheetBehavior.peekHeight = desiredPeekHeight
         }
-        mapView?.let { mapView ->
-            if (mapView.height - desiredPeekHeight < desiredPeekHeight * 0.7) {
-                view = v.findViewById(R.id.image)
-                desiredPeekHeight = view.bottom + dp2px(16f)
-            }
-        }
-        bottomSheetBehavior.peekHeight = desiredPeekHeight
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "MissingPermission")
     fun updateShopDetails(view: View) {
         val image = view.findViewById<ImageView>(R.id.image)
         val address = view.findViewById<TextView>(R.id.address)
@@ -330,9 +286,6 @@ class ShopDetailsFragment : Fragment() {
             val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", shop.phone, null))
             startActivity(intent)
         }
-
-        val project =
-            Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
 
         if (Snabble.projects.size > 1) {
             project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
@@ -375,20 +328,23 @@ class ShopDetailsFragment : Fragment() {
             }
         }
 
-
         debugCheckin = view.findViewById(R.id.debug_checkin)
-        val debug = isDebuggingAvailable
-        val checkinAllowed = projectCode != null && project?.id == Snabble.projects[0].id
+        val debug = preferences?.isDebuggingAvailable == true
+        val checkinAllowed =
+            preferences?.projectCode != null && project?.id == Snabble.projects[0].id
+        val checkInManager = Snabble.checkInManager
         if (checkinAllowed || debug) {
             debugCheckin.isVisible = true
             updateDebugCheckinText()
             debugCheckin.setOneShotClickListener {
                 if (isCheckedInToShop) {
-                    viewModel.checkOut()
-                    Snabble.checkInManager.shop = null
+                    checkInManager.shop = null
+                    Snabble.checkedInProject.value = null
+                    checkInManager.startUpdating()
                 } else {
-                    viewModel.checkIn()
-                    Snabble.checkInManager.shop = shop
+                    checkInManager.shop = shop
+                    Snabble.checkedInProject.value = project
+                    checkInManager.stopUpdating()
                     Toast.makeText(context, "Checkin: ${shop.name}", Toast.LENGTH_LONG).show()
                 }
                 updateDebugCheckinText()
@@ -402,10 +358,13 @@ class ShopDetailsFragment : Fragment() {
         youAreHere.isVisible = isCheckedInToShop
 
         val startScanner = view.findViewById<Button>(R.id.start_scanner)
-        var buttonTitle = resources.getText(R.string.Snabble_Shop_Details_button)
+        val buttonTitle = resources.getText(R.string.Snabble_Shop_Details_button)
 
-        startScanner.setTextOrHide(buttonTitle)
-        startScanner.isVisible = isCheckedInToShop
+        if (isCheckedInToShop) {
+            startScanner.setTextOrHide(buttonTitle)
+        } else {
+            startScanner.isVisible = false
+        }
 
         startScanner.setOneShotClickListener {
             SnabbleUiToolkit.executeAction(
@@ -480,19 +439,39 @@ class ShopDetailsFragment : Fragment() {
         }
     }
 
-    private fun zoomToShop(shop: Shop, animate: Boolean) {
-        mapPinHome.setImageResource(R.drawable.ic_map_home_active)
+    fun zoomToHome() {
+        if (storePinned) {
+            storePinned = false
+            mapPinShop.setImageResource(R.drawable.snabble_map_store)
+        }
+        mapPinHome.setImageResource(R.drawable.snabble_map_user_position_active)
         homePinned = true
+        zoomToLocation(locationManager.location.value!!.toLatLng(), true)
+    }
+
+    private fun zoomToShop(shop: Shop, animate: Boolean) {
+        if (homePinned) {
+            homePinned = false
+            mapPinHome.setImageResource(R.drawable.snabble_map_user_postition)
+        }
+        mapPinShop.setImageResource(R.drawable.snabble_map_store_active)
+        storePinned = true
         zoomToLocation(LatLng(shop.latitude, shop.longitude), animate)
     }
 
     override fun onStart() {
         super.onStart()
         mapView?.onStart()
-        // todo think of workaround
-//        val toolbarId = requireActivity().getResourceId("R.id.toolbar")
-//        val baseActivity = requireActivity() as AppCompatActivity
-//        baseActivity.findViewById<Toolbar>(toolbarId).title = shop.name
+
+        val supportActionBar = (context as AppCompatActivity).supportActionBar
+        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Details_title)
+
+        if (actionbarTitle.isNotNullOrBlank()) {
+            supportActionBar?.title = actionbarTitle
+        } else {
+            supportActionBar?.title = shop.name
+        }
+
 //        shopManager?.addOnCheckInStateChangedListener(this)
     }
 
@@ -542,18 +521,6 @@ class ShopDetailsFragment : Fragment() {
         const val BUNDLE_KEY_SHOP = "shop"
         private const val BUNDLE_KEY_MAPVIEW = "mapView"
         const val KEY_MAPS_ENABLED = "mapsEnabled"
-        private const val KEY_HIDDEN_MENU_AVAILABLE = "hiddenMenuAvailable"
-        private const val KEY_DEBUGGING_AVAILABLE = "debuggingAvailable"
-        const val KEY_PROJECT_CODE = "projectCode"
-
-        fun View.setOneShotClickListener(callback: () -> Unit) =
-            setOnClickListener(
-                object : OneShotClickListener() {
-                    override fun click() {
-                        callback.invoke()
-                    }
-                }
-            )
 
         fun isIntentAvailable(context: Context, intent: Intent): Boolean {
             val packageManager = context.packageManager
@@ -562,27 +529,6 @@ class ShopDetailsFragment : Fragment() {
             return list.isNotEmpty()
         }
 
-        inline var View.behavior: CoordinatorLayout.Behavior<*>?
-            get() = (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior
-            set(value) {
-                (layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = value
-            }
-
-        fun dp2px(dp: Float) = dp.dpInPx
-
-        inline val Number.dpInPx: Int
-            get() = dp.toInt()
-
-        inline val Number.dp: Float
-            get() = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                toFloat(),
-                Resources.getSystem().displayMetrics
-            )
-
-        fun View.setClickDescription(stringId: Int, vararg formatArgs: Any) {
-            setClickDescription(context.getString(stringId, formatArgs))
-        }
 
     }
 }

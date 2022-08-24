@@ -26,6 +26,7 @@ import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.location.formatDistance
+import io.snabble.sdk.shopfinder.ShopListFragment.Companion.shopsOnly
 import io.snabble.sdk.shopfinder.utils.AssetHelper.load
 import io.snabble.sdk.shopfinder.utils.ConfigurableDivider
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
@@ -47,6 +48,12 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     private val layoutManager = LinearLayoutManager(context)
     private val itemAnimator = DefaultItemAnimator()
     private var chosenProjects: List<Project>? = null
+
+    var showAll: Boolean
+        get() = adapter.showAll
+        set(value) {
+            adapter.showAll = value
+        }
 
     init {
         viewmodel = ViewModelProvider(context as AppCompatActivity)[ShopfinderViewModel::class.java]
@@ -245,9 +252,6 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         var address: TextView = itemView.findViewById(R.id.address)
         var distance: TextView = itemView.findViewById(R.id.distance)
         var youAreHereContainer: View = itemView.findViewById(R.id.you_are_here_container)
-        private val viewModel by lazy {
-            ViewModelProvider(itemView.context as AppCompatActivity)[ShopfinderViewModel::class.java]
-        }
 
         fun bindTo(item: Item) {
             name.text = item.name
@@ -289,8 +293,8 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     private class ExpandableShopListAdapter(var context: Context) : ListAdapter<Item, ViewHolder>(
         ShopDiffer()
     ) {
-        val showAll: Boolean
-            get() = Snabble.projects.size == 1
+
+        var showAll: Boolean = false
         val expandedProjects = mutableListOf<String>()
 
         private var items = emptyList<Item>()
@@ -383,6 +387,12 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         }
 
         private fun applyVisibility(model: List<Item>) {
+
+            if (showAll) {
+                submitList(model.filter { it.type.isShop })
+                return
+            }
+
             val checkInManager = Snabble.checkInManager
             val currentProjectId = checkInManager.project?.id
             val currentShopId = checkInManager.shop?.id
@@ -411,10 +421,11 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
                 }
             }
 
-            if (showAll) {
+            if (shopsOnly) {
                 submitList(model.filter { it.type.isShop })
                 return
             }
+
             submitList(model.filterNot { it.type == ViewType.HiddenShop })
         }
     }
@@ -478,4 +489,5 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
 
         override fun compareTo(other: Item): Int = distance?.compareTo(other.distance ?: 0f) ?: 0
     }
+
 }

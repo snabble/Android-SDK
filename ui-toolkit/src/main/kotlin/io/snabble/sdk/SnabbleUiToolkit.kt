@@ -33,6 +33,7 @@ object SnabbleUiToolkit {
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
         SHOW_DETAILS_BUTTON_ACTION,
+        START_NAVIGATION,
         GO_BACK
     }
 
@@ -54,7 +55,6 @@ object SnabbleUiToolkit {
     fun setUiAction(activity: AppCompatActivity, event: Event, action: Action) {
         if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
             actions[event] = ActivityCallback(WeakReference<AppCompatActivity>(activity), action)
-
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                 override fun onDestroy(owner: LifecycleOwner) {
                     actions.remove(event)
@@ -112,6 +112,7 @@ object SnabbleUiToolkit {
                 // unhandled actions
                 GO_BACK,
                 SHOW_DETAILS_BUTTON_ACTION,
+                START_NAVIGATION,
                 null -> {
                 }
             }

@@ -57,13 +57,20 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_map_home" />
+            android:src="@drawable/snabble_map_user_postition" />
 
         <ImageView
-            android:id="@+id/map_pin_navigate"
+            android:id="@+id/map_pin_store"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_map_navigate" />
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/snabble_store_outline" />
+
+        <ImageView
+            android:id="@+id/map_directions"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/snabble_map_directions" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -110,7 +117,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
-                    tools:src="@drawable/ic_circle" />
+                    tools:src="@drawable/snabble_circle" />
 
                 <TextView
                     android:id="@+id/address"
@@ -131,7 +138,7 @@
                     android:layout_below="@+id/address"
                     android:layout_centerHorizontal="true"
                     android:layout_marginEnd="16dp"
-                    android:background="@drawable/ic_text_highlight"
+                    android:background="@drawable/snabble_text_highlight"
                     android:gravity="center"
                     android:paddingLeft="8dp"
                     android:paddingTop="2dp"
@@ -162,7 +169,7 @@
                     android:drawablePadding="8dp"
                     android:gravity="center"
                     android:padding="8dp"
-                    app:drawableLeftCompat="@drawable/ic_distance"
+                    app:drawableLeftCompat="@drawable/snabble_navigate"
                     app:drawableTint="?attr/colorOnSurface"
                     tools:ignore="RtlHardcoded"
                     tools:text="1,4 km" />
@@ -175,11 +182,11 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="-8dp"
                     android:layout_marginBottom="8dp"
-                    android:padding="8dp"
-                    android:gravity="center"
-                    app:drawableLeftCompat="@drawable/ic_baseline_phone_forwarded_24"
                     android:drawablePadding="8dp"
-                    android:drawableTint="?attr/colorOnSurface"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    app:drawableLeftCompat="@drawable/snabble_phone"
+                    app:drawableTint="?attr/colorOnSurface"
                     tools:text="0228/9086950" />
 
                 <TextView

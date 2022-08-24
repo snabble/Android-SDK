@@ -159,8 +159,9 @@ class MainActivity : AppCompatActivity() {
             SnabbleUiToolkit.setUiAction(
                 this@MainActivity,
                 SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION,
-            ) { _, args ->
-                navigate(R.id.navigation_scanner, args)
+            ) { _, _ ->
+                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
+                    R.id.navigation_scanner
             }
         }
 
