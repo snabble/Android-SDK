@@ -15,7 +15,6 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="16dp"
-        android:accessibilityPaneTitle="@string/Onboarding.Accessibility.title"
         android:importantForAccessibility="no"
         tools:ignore="UnusedAttribute" />
 
@@ -50,15 +49,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:visibility="visible"
-            tools:text="@string/Snabble.Preview.Button" />
+            tools:text="Next" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            tools:visibility="gone"
-            tools:text="@string/Snabble.Preview.Button" />
+            tools:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_right"
@@ -66,7 +64,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            tools:visibility="gone"
-            tools:text="@string/Snabble.Preview.Button" />
+            tools:visibility="gone" />
     </FrameLayout>
 </RelativeLayout>
