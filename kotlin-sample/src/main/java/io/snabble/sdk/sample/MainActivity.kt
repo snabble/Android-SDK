@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
             val model = Gson().fromJson(json, OnboardingModel::class.java)
-            SnabbleUiToolkit.executeAction(this, SnabbleUiToolkit.Event.SHOW_ONBOARDING,  bundleOf("model" to model))
+            SnabbleUiToolkit.executeAction(this, SnabbleUiToolkit.Event.SHOW_ONBOARDING, bundleOf("model" to model))
         }
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
