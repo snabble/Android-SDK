@@ -392,9 +392,14 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
                 return
             }
 
-            val checkInManager = Snabble.checkInManager
-            val currentProjectId = checkInManager.project?.id
-            val currentShopId = checkInManager.shop?.id
+            var currentProjectId: String? = null
+            val currentShopId = Snabble.checkedInShop?.id
+
+            (getHostActivity(context) as AppCompatActivity).let { app ->
+                Snabble.checkedInProject.observe(app) {
+                    currentProjectId = it?.id
+                }
+            }
 
             model.forEach { item ->
                 when (item.type) {

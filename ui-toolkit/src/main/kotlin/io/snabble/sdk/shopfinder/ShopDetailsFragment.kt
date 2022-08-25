@@ -342,7 +342,7 @@ open class ShopDetailsFragment : Fragment() {
             debugCheckin.setOneShotClickListener {
                 if (isCheckedInToShop) {
                     checkInManager.shop = null
-                    Snabble.checkedInProject.value = null
+                    Snabble.checkedInShop = null
                     checkInManager.startUpdating()
                 } else {
                     checkInManager.shop = shop
