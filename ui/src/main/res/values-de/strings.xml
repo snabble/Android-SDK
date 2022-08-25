@@ -88,6 +88,7 @@
     <string name="Snabble.NotForSale.ErrorMsg.scan">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse.</string>
     <string name="Snabble.ok">OK</string>
     <string name="Snabble.Onboarding.accept">Akzeptieren</string>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">%s öffnen</string>
     <string name="Snabble.Onboarding.message1">Mit Snabble scannst du deinen Einkauf selbst und bezahlt direkt in der App. Ohne in der Schlange zu stehen und ohne deinen Einkauf auf’s Band zu legen.</string>
     <string name="Snabble.Onboarding.message2">Betrete eine teilnehmende Filiale, starte den Einkauf und halte den Barcode eines Artikels vor die Kamera. Der Rest erklärt sich von selbst.</string>
     <string name="Snabble.Onboarding.message3">Bitte akzeptiere die Nutzungsbedingungen und lies die Datenschutzhinweise.</string>
@@ -270,6 +271,10 @@
     <string name="Snabble.SEPA.payNow">Jetzt mit SEPA bezahlen</string>
     <string name="Snabble.SEPA.scoTransferHint">Bitte gib noch den Namen auf der Karte ein um sie für Zahlungen direkt mit der App speichern zu können.</string>
     <string name="Snabble.Settings">Einstellungen</string>
+    <string name="Snabble.Shop.Detail.startNavigation">Möchten Sie die Navigation starten?</string>
+    <string name="Snabble.Shop.Detail.title">Details</string>
+    <string name="Snabble.Shop.Finder.title">Shop</string>
+    <string name="Snabble.Shop.Finder.youarehere">Sie sind hier</string>
     <string name="Snabble.Shopping.title">Einkaufen</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Hinzufügen</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Löschen</string>
@@ -287,7 +292,7 @@
     <string name="Snabble.Shoppingcart.Accessibility.quantity">Anzahl</string>
     <string name="Snabble.Shoppingcart.Accessibility.selected">Ausgewählt</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Artikel entfernt</string>
-    <string name="Snabble.Shoppingcart.BuyProducts">%1$d Artikel für %2$s kaufen</string>
+    <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Jetzt bezahlen</string>
     <string name="Snabble.Shoppingcart.BuyProducts.one">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Bezahlverfahren wählen</string>

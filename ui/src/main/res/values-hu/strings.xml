@@ -87,6 +87,13 @@
     <string name="Snabble.noDiscount">nincs árengedmény</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">Ezt a terméket jelenleg sajnos nem lehet az alkalmazással kifizetni. Kérlek, fizesd a szokásos módon a kasszánál.</string>
     <string name="Snabble.ok">OK</string>
+    <string name="Snabble.Onboarding.accept">Elfogadás</string>
+    <string name="Snabble.Onboarding.message1">A Snabble segítségével saját magad szkenneled be a vásárolni kívánt termékeket, és közvetlenül az alkalmazásban fizetsz. Nem kell sorban állni a pénztár előtt, és a vásárolt termékeket nem kell az áruszalagra helyezni.</string>
+    <string name="Snabble.Onboarding.message2">Lépj be egy résztvevő üzletbe, kezdd el a bevásárlást, és tartsd a termék vonalkódját a kamera elé. A többi magától értetődik.</string>
+    <string name="Snabble.Onboarding.message3">Kérlek, fogadd el a felhasználási feltételeket és az adatvédelmi tudnivalókat.</string>
+    <string name="Snabble.Onboarding.next">Tovább</string>
+    <string name="Snabble.Onboarding.Terms.show">Megtekintés</string>
+    <string name="Snabble.Onboarding.Terms.title">Az alkalmazás használata</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Kérlek, próbáld meg később még egyszer</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Nem sikerült az azonosítás</string>
     <string name="Snabble.Paydirekt.deleteAuthorization">Fizetési mód törlése</string>
@@ -112,6 +119,7 @@
     <string name="Snabble.Payment.errorStarting">A fizetési folyamat feldolgozása közben hiba lépett fel.</string>
     <string name="Snabble.Payment.noMethodAvailable">Sajnos ez a vásárlás nem végezhető el az alkalmazás segítségével.</string>
     <string name="Snabble.Payment.offlineHint">Jelenleg offline állapotban vagy, így bizonyos fizetési módok adott esetben nem érhetők el</string>
+    <string name="Snabble.Payment.Online.message">Az egyik alkalmazottnak jóvá kell hagynia a vásárlásodat.</string>
     <string name="Snabble.Payment.payAtCashDesk">Fizetés a pénztárnál</string>
     <string name="Snabble.Payment.payAtSCO">Kártya az EC-terminálra</string>
     <string name="Snabble.Payment.payUsingCustomerCard">ügyfélkártyával</string>
@@ -279,7 +287,7 @@
     <string name="Snabble.Shoppingcart.Accessibility.quantity">Mennyiség</string>
     <string name="Snabble.Shoppingcart.Accessibility.selected">Kiválasztva</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Termék eltávolítva</string>
-    <string name="Snabble.Shoppingcart.BuyProducts">%1$d termék megvásárlása %2$s-ért</string>
+    <string name="Snabble.Shoppingcart.buyProducts">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Fizetés, most</string>
     <string name="Snabble.Shoppingcart.BuyProducts.one">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Fizetési mód kiválasztása</string>

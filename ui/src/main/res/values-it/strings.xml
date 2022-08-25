@@ -209,7 +209,7 @@
     <string name="Snabble.SEPA.scoTransferHint">Inserisci anche il nome indicato sulla carta per poterla salvare direttamente con l’app per i pagamenti.</string>
     <string name="Snabble.Settings">Impostazioni</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Articolo rimosso</string>
-    <string name="Snabble.Shoppingcart.BuyProducts">Compra articolo da %1$d a %2$s</string>
+    <string name="Snabble.Shoppingcart.buyProducts">Compra articolo da %1$d a %2$s</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Paga ora</string>
     <string name="Snabble.Shoppingcart.coupon">Buono</string>
     <string name="Snabble.Shoppingcart.coupons">Buoni</string>

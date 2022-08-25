@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Snabble.Onboarding.accept">Elfogadás</string>
+    <string name="Snabble.Onboarding.message1">A Snabble segítségével saját magad szkenneled be a vásárolni kívánt termékeket, és közvetlenül az alkalmazásban fizetsz. Nem kell sorban állni a pénztár előtt, és a vásárolt termékeket nem kell az áruszalagra helyezni.</string>
+    <string name="Snabble.Onboarding.message2">Lépj be egy résztvevő üzletbe, kezdd el a bevásárlást, és tartsd a termék vonalkódját a kamera elé. A többi magától értetődik.</string>
+    <string name="Snabble.Onboarding.message3">Kérlek, fogadd el a felhasználási feltételeket és az adatvédelmi tudnivalókat.</string>
+    <string name="Snabble.Onboarding.next">Tovább</string>
+    <string name="Snabble.Onboarding.Terms.show">Megtekintés</string>
+    <string name="Snabble.Onboarding.Terms.title">Az alkalmazás használata</string>
+</resources>

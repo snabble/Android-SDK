@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Snabble.Onboarding.accept">Prijať</string>
+    <string name="Snabble.Onboarding.message1">So Snabble naskenuješ svoj nákup sám/sama a zaplatíš priamo v aplikácii. Bez vystávania v rade a vykladania tvojho nákupu na pás.</string>
+    <string name="Snabble.Onboarding.message2">Navštív niektorý zo zapojených obchodov, začni nakupovať a prilož kameru k čiarovým kódom tovarov. Ostatné už ide samé.</string>
+    <string name="Snabble.Onboarding.message3">Prosím, akceptuj podmienky používania a prečítaj si pravidlá ochrany údajov.</string>
+    <string name="Snabble.Onboarding.next">Ďalej</string>
+    <string name="Snabble.Onboarding.Terms.show">Prezrieť</string>
+    <string name="Snabble.Onboarding.Terms.title">Používanie aplikácie</string>
+</resources>
