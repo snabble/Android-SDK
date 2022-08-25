@@ -387,7 +387,6 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         }
 
         private fun applyVisibility(model: List<Item>) {
-
             if (showAll) {
                 submitList(model.filter { it.type.isShop })
                 return

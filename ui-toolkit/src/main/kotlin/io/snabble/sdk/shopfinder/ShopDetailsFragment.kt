@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +46,7 @@ import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
+import java.util.regex.Pattern
 
 // TODO: Implement ShopDetails from Teo e.g. door opening and alwyas open text
 open class ShopDetailsFragment : Fragment() {
@@ -281,6 +283,7 @@ open class ShopDetailsFragment : Fragment() {
             shop.city
         )
         phone.text = getString(R.string.ShopDetails_phone, shop.phone)
+        Linkify.addLinks(phone, Pattern.compile(".*"), shop.phone)
         phone.setClickDescription(R.string.ShopDetails_Accessibility_startCall)
         phone.setOnClickListener {
             val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", shop.phone, null))

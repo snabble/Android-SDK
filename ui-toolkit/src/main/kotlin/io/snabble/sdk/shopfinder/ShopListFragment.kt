@@ -46,16 +46,14 @@ open class ShopListFragment : Fragment() {
         }
 
         shopListRecyclerView = view.findViewById(R.id.recycler_view)
-        locationManager.location.observe(viewLifecycleOwner) { location ->
-            shopListRecyclerView.sortByDistance(location)
-        }
+        shopListRecyclerView.sortByDistance(locationManager.getLastLocation())
         shopListRecyclerView.setShopsByProjects(Snabble.projects)
+
     }
 
     override fun onResume() {
         super.onResume()
         shopListRecyclerView.update()
-        shopListRecyclerView.sortByDistance(locationManager.getLastLocation())
     }
 
 }
