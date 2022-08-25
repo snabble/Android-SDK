@@ -19,7 +19,6 @@ open class ShopListFragment : Fragment() {
         val shopsOnly = Snabble.projects.size == 1
     }
 
-    //Todo: fix delay?
     override fun onStart() {
         if (shopsOnly) {
             (context as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
@@ -44,7 +43,6 @@ open class ShopListFragment : Fragment() {
         if (actionbarTitle.isNotNullOrBlank()) {
             supportActionBar?.title = actionbarTitle
         }
-
         shopListRecyclerView = view.findViewById(R.id.recycler_view)
         shopListRecyclerView.sortByDistance(locationManager.getLastLocation())
         shopListRecyclerView.setShopsByProjects(Snabble.projects)

@@ -341,12 +341,12 @@ open class ShopDetailsFragment : Fragment() {
             updateDebugCheckinText()
             debugCheckin.setOneShotClickListener {
                 if (isCheckedInToShop) {
+                    Snabble.checkedInProject.setValue(null)
                     checkInManager.shop = null
-                    Snabble.checkedInShop = null
                     checkInManager.startUpdating()
                 } else {
                     checkInManager.shop = shop
-                    Snabble.checkedInProject.value = project
+                    Snabble.checkedInProject.setValue(project)
                     checkInManager.stopUpdating()
                     Toast.makeText(context, "Checkin: ${shop.name}", Toast.LENGTH_LONG).show()
                 }
@@ -393,7 +393,8 @@ open class ShopDetailsFragment : Fragment() {
     }
 
     private val isCheckedInToShop: Boolean
-        get() = Snabble.checkInManager.shop != null && Snabble.checkInManager.project != null && Snabble.checkInManager.shop?.id == shop.id
+        get() =
+            Snabble.checkInManager.shop != null && Snabble.checkInManager.project != null && Snabble.checkInManager.shop?.id == shop.id
 
     @SuppressLint("SetTextI18n")
     private fun updateDebugCheckinText() {

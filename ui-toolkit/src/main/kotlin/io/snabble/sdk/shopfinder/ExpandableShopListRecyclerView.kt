@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.customview.view.AbsSavedState
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.*
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.Project
@@ -120,6 +123,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
             application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
             registerListeners()
         }
+        adapter.lifecycleOwner = findViewTreeLifecycleOwner()
     }
 
     public override fun onDetachedFromWindow() {
@@ -293,7 +297,18 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     private class ExpandableShopListAdapter(var context: Context) : ListAdapter<Item, ViewHolder>(
         ShopDiffer()
     ) {
+        var currentShopId: String? = null
 
+        var lifecycleOwner: LifecycleOwner? = null
+            set(value) {
+                Log.d("TAG", "im set: ")
+                field = value
+                Snabble.currentCheckedInShop.observe(requireNotNull(value)){ shop ->
+                    Log.d("TAG", "im triggerd: $shop")
+                    currentShopId = shop?.id
+                    updateDistances(lastKnownLocation)
+                }
+            }
         var showAll: Boolean = false
         val expandedProjects = mutableListOf<String>()
 
@@ -392,21 +407,22 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
                 return
             }
 
-            var currentProjectId: String? = null
-            val currentShopId = Snabble.checkedInShop?.id
+            var currentProjectId = Snabble.checkedInProject.value?.id
+//            var currentShopId = Snabble.checkedInShop?.id
 
-            (getHostActivity(context) as AppCompatActivity).let { app ->
-                Snabble.checkedInProject.observe(app) {
-                    currentProjectId = it?.id
-                }
-            }
+            Log.d("TAG", "currentproject: $currentProjectId")
+            Log.d("TAG", "currentshop: $currentShopId")
+//            currentProjectId = Snabble.checkInManager.project?.id
+//            currentShopId = Snabble.checkInManager.shop?.id
+//            Log.d("TAG", "applyVisibility: $currentProjectId")
+//            Log.d("TAG", "applyVisibility: $currentShopId")
 
             model.forEach { item ->
                 when (item.type) {
                     ViewType.ExpandedBrand,
                     ViewType.CollapsedBrand -> {
                         item.isCheckedIn =
-                            currentProjectId != null && item.project.id == currentProjectId
+                                currentProjectId != null && item.project.id == currentProjectId
                         item.type = if (expandedProjects.contains(item.project.id)) {
                             ViewType.ExpandedBrand
                         } else {
