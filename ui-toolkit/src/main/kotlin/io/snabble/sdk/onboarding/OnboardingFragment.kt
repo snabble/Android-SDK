@@ -1,6 +1,5 @@
 package io.snabble.sdk.onboarding
 
-
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
@@ -23,7 +22,6 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -42,9 +40,6 @@ import io.snabble.sdk.utils.resolveTextOrHide
 
 open class OnboardingFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
-    private val viewModel by lazy {
-        ViewModelProvider(requireActivity())[OnboardingViewModel::class.java]
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,11 +53,7 @@ open class OnboardingFragment : Fragment() {
         headerImage.setDataOrHide(model.configuration.imageSource)
 
         viewPager = v.findViewById(R.id.view_pager)
-        viewPager.adapter = StepAdapter(
-            requireContext(),
-            LayoutInflater.from(requireContext()),
-            model
-        )
+        viewPager.adapter = StepAdapter(requireContext(), inflater, model)
 
         val circleIndicator = v.findViewById<TabLayout>(R.id.circle_indicator)
         TabLayoutMediator(circleIndicator, viewPager) { _, _ -> }.attach()
