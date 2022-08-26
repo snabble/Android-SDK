@@ -9,7 +9,7 @@ import com.google.android.gms.maps.MapView
 import io.snabble.sdk.ui.toolkit.R
 //Todo: Use for both
 @Keep
-class MapPushUpBehavior @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<MapView?>(context, attrs) {
+internal class MapPushUpBehavior @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<MapView?>(context, attrs) {
     private var shopDetailsFragment: ShopDetailsFragment? = null
 
     fun setShopDetailsFragment(shopDetailsFragment: ShopDetailsFragment?) {

@@ -28,7 +28,6 @@ class LoadingActivity : AppCompatActivity() {
 
                     // check in to the first shop - you can use CheckInManager if you want
                     // to use geofencing
-                    Snabble.checkedInShop = project.shops.first()
 
                     startActivity(Intent(this@LoadingActivity, MainActivity::class.java))
                     finish()

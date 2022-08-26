@@ -11,16 +11,19 @@ import io.snabble.sdk.location.LocationManager
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.isNotNullOrBlank
 
+/**
+ * Displays the ExpandableShopList of the selected shop.
+ * Hides back Button in Toolbar if only one project is available.
+ * If the back Button needs to displayed extend this class and
+ * setDisplayHomeAsUpEnabled to true.
+ * To set a custom page title override resource string 'Snabble_Shop_Finder_title'
+ * */
 open class ShopListFragment : Fragment() {
     private lateinit var locationManager: LocationManager
     private lateinit var shopListRecyclerView: ExpandableShopListRecyclerView
 
-    companion object {
-        val shopsOnly = Snabble.projects.size == 1
-    }
-
     override fun onStart() {
-        if (shopsOnly) {
+        if (Snabble.projects.size == 1) {
             (context as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }
         super.onStart()
@@ -43,6 +46,13 @@ open class ShopListFragment : Fragment() {
         if (actionbarTitle.isNotNullOrBlank()) {
             supportActionBar?.title = actionbarTitle
         }
+
+        //updates every 5m the location
+//        locationManager.location.observe(viewLifecycleOwner){ currentlocation ->
+//            if (currentlocation != null && currentlocation.distanceTo(locationManager.getLastLocation()) > 5){
+//                shopListRecyclerView.sortByDistance(currentlocation)
+//            }
+//        }
         shopListRecyclerView = view.findViewById(R.id.recycler_view)
         shopListRecyclerView.sortByDistance(locationManager.getLastLocation())
         shopListRecyclerView.setShopsByProjects(Snabble.projects)

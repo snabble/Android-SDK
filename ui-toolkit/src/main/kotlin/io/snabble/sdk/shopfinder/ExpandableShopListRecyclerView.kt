@@ -10,17 +10,14 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.customview.view.AbsSavedState
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.*
 import io.snabble.accessibility.accessibility
@@ -29,7 +26,6 @@ import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.location.formatDistance
-import io.snabble.sdk.shopfinder.ShopListFragment.Companion.shopsOnly
 import io.snabble.sdk.shopfinder.utils.AssetHelper.load
 import io.snabble.sdk.shopfinder.utils.ConfigurableDivider
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
@@ -39,19 +35,37 @@ import io.snabble.sdk.ui.utils.getString
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 import io.snabble.sdk.utils.setTextOrHide
 
+
+/**
+ * Recycler view for projects and shops.
+ * If there is more than one project given it inflates an expandable view, showing
+ * the projects as top layer. With a click on a specific projects
+ * the corresponding shops are shown right below.
+ *
+ * If the user is checked into a specific shop, the corresponding project is marked with a dot
+ * and the shop is marked with a "you are here" icon.
+ * For the check in marks to work 'Snabble' checkedInShop and checkedInProject properties need
+ * to be set according to the current state.
+ * */
+
 class ExpandableShopListRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle), Snabble.OnMetadataUpdateListener {
 
-    private var viewmodel: ShopfinderViewModel
-
     private val adapter = ExpandableShopListAdapter(context)
     private val layoutManager = LinearLayoutManager(context)
     private val itemAnimator = DefaultItemAnimator()
     private var chosenProjects: List<Project>? = null
 
+    /**
+     * If set to true, all the shops of a project are displayed as list directly,
+     * without the project top layer.
+     *
+     * This is needed if u pass just one project to the view but the application holds more
+     * than one project.
+     * */
     var showAll: Boolean
         get() = adapter.showAll
         set(value) {
@@ -59,7 +73,6 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         }
 
     init {
-        viewmodel = ViewModelProvider(context as AppCompatActivity)[ShopfinderViewModel::class.java]
         setAdapter(adapter)
         setLayoutManager(layoutManager)
         itemAnimator.supportsChangeAnimations = false
@@ -75,6 +88,10 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         addItemDecoration(dividerItemDecoration)
     }
 
+    /**
+     * Takes a list of projects and converts it list consisting of
+     * projects and corresponding shops for internal use.
+     * */
     fun setShopsByProjects(projects: List<Project>) {
         chosenProjects = projects
         val model = mutableListOf<Item>()
@@ -89,6 +106,10 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         adapter.updateModel(model)
     }
 
+    /**
+     * Takes a location as parameter and updates the view
+     * with the new distance to the given location
+     * */
     fun sortByDistance(location: Location?) {
         adapter.updateDistances(location)
     }
@@ -153,6 +174,9 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         update()
     }
 
+    /**
+     * Updates and refreshes the View.
+     * */
     fun update() {
         chosenProjects?.let(::setShopsByProjects)
     }
@@ -301,11 +325,10 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
 
         var lifecycleOwner: LifecycleOwner? = null
             set(value) {
-                Log.d("TAG", "im set: ")
                 field = value
                 Snabble.currentCheckedInShop.observe(requireNotNull(value)){ shop ->
-                    Log.d("TAG", "im triggerd: $shop")
                     currentShopId = shop?.id
+                    /**If the user walks into the shop trigger refresh*/
                     updateDistances(lastKnownLocation)
                 }
             }
@@ -402,20 +425,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         }
 
         private fun applyVisibility(model: List<Item>) {
-            if (showAll) {
-                submitList(model.filter { it.type.isShop })
-                return
-            }
-
-            var currentProjectId = Snabble.checkedInProject.value?.id
-//            var currentShopId = Snabble.checkedInShop?.id
-
-            Log.d("TAG", "currentproject: $currentProjectId")
-            Log.d("TAG", "currentshop: $currentShopId")
-//            currentProjectId = Snabble.checkInManager.project?.id
-//            currentShopId = Snabble.checkInManager.shop?.id
-//            Log.d("TAG", "applyVisibility: $currentProjectId")
-//            Log.d("TAG", "applyVisibility: $currentShopId")
+            val currentProjectId = Snabble.checkedInProject.value?.id
 
             model.forEach { item ->
                 when (item.type) {
@@ -441,7 +451,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
                 }
             }
 
-            if (shopsOnly) {
+            if (Snabble.projects.size == 1 || showAll) {
                 submitList(model.filter { it.type.isShop })
                 return
             }

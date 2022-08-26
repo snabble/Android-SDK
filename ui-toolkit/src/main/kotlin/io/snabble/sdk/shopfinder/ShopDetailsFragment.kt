@@ -49,6 +49,18 @@ import io.snabble.sdk.utils.setTextOrHide
 import java.util.regex.Pattern
 
 // TODO: Implement ShopDetails from Teo e.g. door opening and alwyas open text
+
+/**
+ * Displays the details of the selected shop.
+ *
+ * To set a custom page title override resource string 'Snabble_Shop_Details_title'.
+ * By default the title matches the current shop title.
+ * Keep in mind that if this string is set it is used for every details shop page.
+ *
+ * To set up a the details button with a resource string via 'Snabble_Shop_Details_button'.
+ * The button fires a SnabbleUiToolkit 'SHOW_DETAILS_BUTTON_ACTION' event. Simply set up
+ * setUiAction for this event to declare the action for the button click.
+ * */
 open class ShopDetailsFragment : Fragment() {
     private lateinit var locationManager: LocationManager
     private lateinit var shop: Shop
@@ -313,9 +325,17 @@ open class ShopDetailsFragment : Fragment() {
             timetableTitle.visibility = View.GONE
         } else {
             timetable.removeAllViews()
+            val weekDays = arrayListOf("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+            shop.openingHours.sortBy { weekDays.indexOf(it.dayOfWeek)}
+
             shop.openingHours?.forEach { spec ->
                 val day = TextView(context)
-                day.text = "${dayTable[spec.dayOfWeek]}: "
+                if (weekDays.contains(spec.dayOfWeek)) {
+                    day.text = "${dayTable[spec.dayOfWeek]}: "
+                    weekDays.remove(spec.dayOfWeek)
+                }else{
+                    day.text = ""
+                }
                 timetable.addView(
                     day,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -517,22 +537,17 @@ open class ShopDetailsFragment : Fragment() {
         }
     }
 
-//    override fun onCheckInStateChanged() {
-//        updateDebugCheckinText()
-//    }
-
     companion object {
         const val BUNDLE_KEY_SHOP = "shop"
         private const val BUNDLE_KEY_MAPVIEW = "mapView"
         const val KEY_MAPS_ENABLED = "mapsEnabled"
 
+        @SuppressLint("QueryPermissionsNeeded")
         fun isIntentAvailable(context: Context, intent: Intent): Boolean {
             val packageManager = context.packageManager
             val list =
                 packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
             return list.isNotEmpty()
         }
-
-
     }
 }

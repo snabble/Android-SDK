@@ -252,6 +252,7 @@ object Snabble {
                 if (newShopId == "") {
                     userPreferences.lastCheckedInShopId = null
                     checkedInProject.value = null
+                    mutableCurrentCheckedInShop.value = null
                 } else {
                     userPreferences.lastCheckedInShopId = newShopId
 
