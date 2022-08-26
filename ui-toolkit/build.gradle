@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
+apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
 
 description = "Snabble UI-Toolkit: Attentional views for simple and sample apps for using the snabble SDK"
 

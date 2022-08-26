@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
+apply plugin: 'de.mobilej.unmock'
 
 description = "Snabble UI: The Android User Interface snabble SDK"
 
@@ -83,7 +84,15 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.3'
     implementation 'com.squareup.picasso:picasso:2.8'
 
-    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // for testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+    unmock 'org.robolectric:android-all:4.3_r2-robolectric-0'
+}
+
+unMock {
+    keep 'android.text.style.URLSpan'
 }
