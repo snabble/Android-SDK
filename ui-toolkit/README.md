@@ -1,8 +1,8 @@
 # Snabble UI-Toolkit
 
-Android UI-Toolkit for Snabble
+Android UI-Toolkit for Snabble.
 
-##Table of Contents
+## Table of Contents
 
 1. [Onboarding](#Onboarding)
 2. [Shopfinder](#Shopfinder)
@@ -130,7 +130,7 @@ Set up the destination:
 </fragment>
 ```
 
-####Required: 
+#### Required: 
 1. the arguments resId needs to be set as shown in the example, to display at least the Terms or privacy.
 2. the deeplink need to be set to handle the given uri. The uri given in the configuration need to match the deeplink to navigate to the terms fragment.
 optional: imagePath and headerTitle are optional arguments. If set they will be displayed as header on Top of the terms.
@@ -152,7 +152,7 @@ Observe the onboardingSeen property to handle events than the onboarding is fini
     }
 ```
 
-##Shopfinder
+## Shopfinder
 
 ### Configuration
 
@@ -210,7 +210,7 @@ SHOW_SHOP_LIST_DETAILS
 ```
 
 
-###Customization
+### Customization
 
 You can set up a Toolbar title by overwriting the following strings
 
