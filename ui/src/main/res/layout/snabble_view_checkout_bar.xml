@@ -104,7 +104,7 @@
                 android:insetLeft="0dp"
                 android:insetBottom="0dp"
                 tools:visibility="gone"
-                android:text="@string/Snabble.Shoppingcart.buyProducts.now"
+                android:text="@string/Snabble.Shoppingcart.BuyProducts.now"
                 app:strokeColor="@drawable/snabble_stroke" />
 
             <include android:id="@+id/google_pay_button_layout"
@@ -128,5 +128,5 @@
             android:insetBottom="0dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:text="@string/Snabble.Shoppingcart.buyProducts.selectPaymentMethod" />
+            android:text="@string/Snabble.Shoppingcart.BuyProducts.selectPaymentMethod" />
 </merge>

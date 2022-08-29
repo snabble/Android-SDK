@@ -18,12 +18,11 @@
         tools:text="😊"
         app:autoSizeTextType="uniform"/>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerInside"
         android:visibility="gone"
-        tools:src="@drawable/snabble_ic_creditcard"
         tools:visibility="gone" />
 </merge>

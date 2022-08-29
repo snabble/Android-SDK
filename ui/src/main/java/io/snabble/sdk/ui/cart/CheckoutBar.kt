@@ -182,7 +182,7 @@ open class CheckoutBar @JvmOverloads constructor(
             paymentIcon.setImageResource(entry.iconResId)
             paymentSelectorButton.contentDescription = resources.getString(R.string.Snabble_Shoppingcart_Accessibility_paymentMethod, entry.text)
             paymentSelectorButton.accessibility {
-                setClickAction(R.string.Snabble_Shoppingcart_buyProducts_selectPaymentMethod)
+                setClickAction(R.string.Snabble_Shoppingcart_BuyProducts_selectPaymentMethod)
             }
         }
     }
@@ -223,16 +223,16 @@ open class CheckoutBar @JvmOverloads constructor(
 
             if (cart.isRestorable) {
                 payButton.isEnabled = true
-                payButton.setText(R.string.Snabble_Shoppingcart_emptyState_restoreButtonTitle)
+                payButton.setText(R.string.Snabble_Shoppingcart_EmptyState_restoreButtonTitle)
             } else {
-                payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_buyProducts_now))
+                payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_BuyProducts_now))
             }
         }
     }
 
     protected fun pay() {
         if (cart.hasReachedMaxCheckoutLimit()) {
-            val message = resources.getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+            val message = resources.getString(R.string.Snabble_LimitsAlert_checkoutNotAvailable,
                     project.priceFormatter.format(project.maxCheckoutLimit))
             SnackbarUtils.make(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
         } else {
@@ -340,9 +340,9 @@ open class CheckoutBar @JvmOverloads constructor(
                     val res = resources
                     val sb = StringBuilder()
                     if (invalidProducts.size == 1) {
-                        sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg_one))
+                        sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_SaleStop_ErrorMsg_one))
                     } else {
-                        sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg))
+                        sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_SaleStop_errorMsg))
                     }
                     sb.append("\n\n")
                     for (product in invalidProducts) {
@@ -355,9 +355,9 @@ open class CheckoutBar @JvmOverloads constructor(
                     }
                     AlertDialog.Builder(context)
                         .setCancelable(false)
-                        .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_saleStop_errorMsg_title))
+                        .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
                         .setMessage(sb.toString())
-                        .setPositiveButton(R.string.Snabble_OK, null)
+                        .setPositiveButton(R.string.Snabble_ok, null)
                         .show()
                 } else {
                     SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
@@ -385,8 +385,8 @@ open class CheckoutBar @JvmOverloads constructor(
                     .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
                     .setAdapter(
                         ArrayAdapter(context, R.layout.snabble_item_taxation, listOf(
-                            context.getString(R.string.Snabble_Taxation_consume_inhouse),
-                            context.getString(R.string.Snabble_Taxation_consume_takeaway)
+                            context.getString(R.string.Snabble_Taxation_Consume_inhouse),
+                            context.getString(R.string.Snabble_Taxation_Consume_takeaway)
                         ))
                     ) { dialog, which ->
                         if (which == 0) {
@@ -403,9 +403,9 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.NO_PAYMENT_METHOD_AVAILABLE -> {
                 AlertDialog.Builder(context)
                     .setCancelable(false)
-                    .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_saleStop_errorMsg_title))
+                    .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
                     .setMessage(I18nUtils.getIdentifier(resources, R.string.Snabble_Payment_noMethodAvailable))
-                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .setPositiveButton(R.string.Snabble_ok, null)
                     .show()
                 progressDialog.dismiss()
             }

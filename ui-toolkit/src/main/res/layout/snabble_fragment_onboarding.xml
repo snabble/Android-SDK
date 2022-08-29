@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,66 +7,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.snabble.sdk.onboarding.ImageTextView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="16dp"
-        android:accessibilityPaneTitle="@string/Onboarding.Accessibility.title"
         android:importantForAccessibility="no"
         tools:ignore="UnusedAttribute" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/circle_indicator"
-        android:layout_below="@+id/image_header" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/circle_indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:layout_above="@+id/button_container"
         app:tabBackground="@drawable/snabble_circle_indicator"
         app:tabGravity="center"
         app:tabMaxWidth="16dp"
-        app:tabIndicatorHeight="0dp"/>
+        app:tabIndicatorHeight="0dp" />
 
-    <FrameLayout
-        android:id="@+id/button_container"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        tools:visibility="visible"
+        tools:text="Next"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="32dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:visibility="visible"
-            tools:text="@string/Snabble.Preview.Button" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            tools:visibility="gone"
-            tools:text="@string/Snabble.Preview.Button" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_right"
-            android:layout_gravity="end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:visibility="gone"
-            tools:text="@string/Snabble.Preview.Button" />
-    </FrameLayout>
-</RelativeLayout>
+        android:layout_marginBottom="32dp" />
+</LinearLayout>

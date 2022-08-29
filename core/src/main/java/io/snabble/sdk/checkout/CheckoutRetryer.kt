@@ -76,7 +76,7 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
         }
 
         Dispatch.mainThread {
-            if (countDownLatch?.count ?: 0 > 0) {
+            if ((countDownLatch?.count ?: 0) > 0) {
                 return@mainThread
             }
 

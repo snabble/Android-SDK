@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="release.safety.catch">Bitte entferne (wenn vorhanden) die Flaschenhalssicherung an der dafür vorgesehenen Station am Ausgang.</string>
     <string name="Snabble.addDiscount">Rabatt eingeben</string>
-    <string name="Snabble.ageVerification.explanation">Für den Kauf bestimmter Artikel, wie z.B. Alkohol, ist ein Altersnachweis notwendig. Gib dazu die 7-stellige Zahl von der Rückseite deines Personalausweises ein.</string>
-    <string name="Snabble.ageVerification.failed.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung, du darfst sie leider nicht kaufen.</string>
-    <string name="Snabble.ageVerification.failed.title">Du bist nicht alt genug</string>
-    <string name="Snabble.ageVerification.pending.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung. Bitte verifiziere dein Alter, um den Einkauf fortzusetzen.</string>
-    <string name="Snabble.ageVerification.pending.title">Altersverifikation erforderlich</string>
-    <string name="Snabble.ageVerification.placeholder">7 Ziffern</string>
-    <!-- ********* Age Verification ********* -->
-    <string name="Snabble.ageVerification.title">Altersnachweis</string>
+    <string name="Snabble.AgeVerification.explanation">Für den Kauf bestimmter Artikel, wie z.B. Alkohol, ist ein Altersnachweis notwendig. Gib dazu die 7-stellige Zahl von der Rückseite deines Personalausweises ein.</string>
+    <string name="Snabble.AgeVerification.Failed.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung, du darfst sie leider nicht kaufen.</string>
+    <string name="Snabble.AgeVerification.Failed.title">Du bist nicht alt genug</string>
+    <string name="Snabble.AgeVerification.Pending.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung. Bitte verifiziere dein Alter, um den Einkauf fortzusetzen.</string>
+    <string name="Snabble.AgeVerification.Pending.title">Altersverifikation erforderlich</string>
+    <string name="Snabble.AgeVerification.placeholder">7 Ziffern</string>
+    <string name="Snabble.AgeVerification.title">Altersnachweis</string>
     <string name="Snabble.askForPermission">Um Erlaubnis fragen</string>
     <string name="Snabble.Biometry.Alert.laterButton">Nicht jetzt</string>
     <string name="Snabble.Biometry.Alert.message">Möchtest du deine Online-Zahlungen mit %s schützen?</string>
@@ -17,13 +15,8 @@
     <string name="Snabble.Biometry.enterCode">Code eingeben</string>
     <string name="Snabble.Biometry.FaceId">Face-ID</string>
     <string name="Snabble.Biometry.locked">%s ist gesperrt. Bitte gib deinen Code im Sperrbildschirm ein, um es wieder zu aktivieren.</string>
-    <!--
-  ********* iOS Biometry *********
-  iOS only, this is used for the iOS-specific biometry settings views
-  -->
-    <string name="Snabble.Biometry.TouchId">Touch-ID</string>
-    <!-- ********* Snabble ********* -->
-    <string name="Snabble.Cancel">Abbrechen</string>
+    <string name="Snabble.Biometry.touchId">Touch-ID</string>
+    <string name="Snabble.cancel">Abbrechen</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Gib deine Daten hier ein. Anschließend leiten wir dich zu deiner Bank weiter, um deine Daten zu bestätigen. Dabei reservieren wir 1 € (für %s) und buchen das Geld direkt wieder zurück.</string>
     <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Gib deine Daten hier ein. Anschließend leiten wir dich zu deiner Bank weiter, um deine Daten zu bestätigen. Dabei reservieren wir %s (für %s) und buchen das Geld direkt wieder zurück.</string>
     <string name="Snabble.CC.cardNumber">Kartennummer</string>
@@ -41,6 +34,7 @@
     <string name="Snabble.Coupon.countdown">Coupon läuft in %s Minuten ab</string>
     <string name="Snabble.Coupon.expired">Dieser Coupon ist bereits abgelaufen.</string>
     <string name="Snabble.Coupon.explanation">Dein Coupon ist jetzt für dich aktiviert. Bitte scanne das Produkt im Shop und lege es in deinen Warenkorb, um von den Vorteilen des Coupons zu profitieren.</string>
+    <string name="Snabble.Coupon.validIndefinitely">unbegrenzt gültig</string>
     <string name="Snabble.Coupons.expired">Bereits abgelaufen</string>
     <string name="Snabble.Coupons.expiresAtDate">gültig bis %s</string>
     <plurals name="Snabble.Coupons.expiresInDays">
@@ -66,52 +60,59 @@
     <string name="Snabble.Coupons.none">Keine Coupons verfügbar</string>
     <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Jetzt mit Kreditkarte bezahlen</string>
-    <string name="Snabble.Delete">Löschen</string>
-    <string name="Snabble.Done">Fertig</string>
-    <string name="Snabble.Edit">Bearbeiten</string>
+    <string name="Snabble.delete">Löschen</string>
+    <string name="Snabble.done">Fertig</string>
+    <string name="Snabble.edit">Bearbeiten</string>
     <string name="Snabble.goToSettings">Zu den Einstellungen</string>
     <string name="Snabble.Hints.closedBags">Weiter so! Bitte mache es dem Kassenpersonal leicht und packe deine Artikel nicht direkt in geschlossene Taschen. Danke!</string>
     <string name="Snabble.Hints.continueScanning">Weiter scannen</string>
     <string name="Snabble.Hints.title">Hinweis von %s</string>
-    <string name="Snabble.invalidDepositVoucher.errorMsg">Leergutbons können nur einmal eingelöst werden.</string>
+    <string name="Snabble.InvalidDepositVoucher.errorMsg">Leergutbons können nur einmal eingelöst werden.</string>
     <string name="Snabble.Keyguard.message">Dadurch stellen wir sicher, dass nur du selbst Zugriff auf dieses Bezahlverfahren hast</string>
     <string name="Snabble.Keyguard.requireScreenLock">Du musst dein Smartphone mit einer Display-Sperre schützen, um diese Bezahlmethode hinzuzufügen.</string>
     <!-- SECTION: Android KeyStore -->
     <string name="Snabble.Keyguard.title">Bitte entsperre dein Smartphone</string>
-    <string name="Snabble.limitsAlert.checkoutNotAvailable">Ab einem Warenwert von %s ist der Einkauf per App leider nicht mehr möglich.</string>
-    <string name="Snabble.limitsAlert.notAllMethodsAvailable">Ab einem Warenwert von %s stehen nicht mehr alle Zahlungsmethoden zur Verfügung</string>
-    <string name="Snabble.limitsAlert.title">Bitte beachten</string>
+    <string name="Snabble.LimitsAlert.checkoutNotAvailable">Ab einem Warenwert von %s ist der Einkauf per App leider nicht mehr möglich.</string>
+    <string name="Snabble.LimitsAlert.notAllMethodsAvailable">Ab einem Warenwert von %s stehen nicht mehr alle Zahlungsmethoden zur Verfügung</string>
+    <string name="Snabble.LimitsAlert.title">Bitte beachten</string>
     <string name="Snabble.loadingProductInformation">Lade Produkt-Informationen…</string>
+    <string name="Snabble.LocationRequired.MissingPermission.message">Nur so können wir Filialen in deiner Nähe anzeigen und dir das Einkaufen ermöglichen.</string>
+    <string name="Snabble.LocationRequired.MissingPermission.title">Snabble benötigt deinen Standort</string>
+    <string name="Snabble.LocationRequired.notNow">Nicht jetzt</string>
+    <string name="Snabble.LocationRequired.openSettings">Einstellungen öffnen</string>
+    <string name="Snabble.LocationRequired.ReducedAccuracy.message">Bitte öffne die Einstellungen, wähle „Standort“ und aktiviere „Genauer Standort“</string>
+    <string name="Snabble.LocationRequired.ReducedAccuracy.title">Snabble benötigt deinen genauen Standort, um zu erkennen in welchem Shop du gerade einkaufst</string>
     <string name="Snabble.networkError">Netzwerkverbindungsfehler</string>
-    <string name="Snabble.No">Nein</string>
+    <string name="Snabble.no">Nein</string>
     <string name="Snabble.noDiscount">kein Rabatt</string>
-    <string name="Snabble.notForSale.errorMsg.scan">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse.</string>
-    <string name="Snabble.OK">OK</string>
-    <string name="Snabble.paydirekt.authorizationFailed.message">Bitte versuche es später nochmal</string>
-    <string name="Snabble.paydirekt.authorizationFailed.title">Autorisierung fehlgeschlagen</string>
-    <string name="Snabble.paydirekt.deleteAuthorization">Bezahlmethode löschen</string>
-    <string name="Snabble.paydirekt.gotoWebsite">Zu paydirekt.de</string>
-    <string name="Snabble.paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
-    <string name="Snabble.paydirekt.savedAuthorization">Du hast die Snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
-    <string name="Snabble.paydirekt.title">paydirekt</string>
+    <string name="Snabble.NotForSale.ErrorMsg.scan">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse.</string>
+    <string name="Snabble.ok">OK</string>
+    <string name="Snabble.Paydirekt.AuthorizationFailed.message">Bitte versuche es später nochmal</string>
+    <string name="Snabble.Paydirekt.AuthorizationFailed.title">Autorisierung fehlgeschlagen</string>
+    <string name="Snabble.Paydirekt.deleteAuthorization">Bezahlmethode löschen</string>
+    <string name="Snabble.Paydirekt.gotoWebsite">Zu paydirekt.de</string>
+    <string name="Snabble.Paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
+    <string name="Snabble.Paydirekt.savedAuthorization">Du hast die Snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
+    <string name="Snabble.Paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Der Bezahlvorgang wurde abgebrochen</string>
     <string name="Snabble.Payment.add">Bezahlverfahren hinzufügen</string>
     <string name="Snabble.Payment.addPaymentOrigin">Zahlungsinformationen in die App übertragen?</string>
     <string name="Snabble.Payment.backToCart">Zurück zum Warenkorb</string>
     <string name="Snabble.Payment.backToHome">Zurück zur Startseite</string>
-    <string name="Snabble.Payment.cancelError.message">Die Zahlung kann jetzt nicht abgebrochen werden.</string>
-    <string name="Snabble.Payment.cancelError.title">Abbrechen nicht möglich</string>
+    <string name="Snabble.Payment.CancelError.message">Die Zahlung kann jetzt nicht abgebrochen werden.</string>
+    <string name="Snabble.Payment.CancelError.title">Abbrechen nicht möglich</string>
     <string name="Snabble.Payment.confirm">Einkauf bestätigen</string>
-    <string name="Snabble.Payment.CreditCard">Kreditkarte</string>
+    <string name="Snabble.Payment.creditCard">Kreditkarte</string>
     <string name="Snabble.Payment.CreditCard.error">Bei der Verarbeitung deiner Kreditkarte ist ein Fehler aufgetreten</string>
     <string name="Snabble.Payment.CreditCard.expireDate">Läuft ab: %s</string>
-    <string name="Snabble.Payment.delete.message">Möchtest Du diese Zahlungsmethode wirklich entfernen?</string>
-    <string name="Snabble.Payment.emptyState.add">Bezahlverfahren hinzufügen</string>
-    <string name="Snabble.Payment.emptyState.message">Noch kein Bezahlverfahren hinterlegt.</string>
+    <string name="Snabble.Payment.Delete.message">Möchtest Du diese Zahlungsmethode wirklich entfernen?</string>
+    <string name="Snabble.Payment.EmptyState.add">Bezahlverfahren hinzufügen</string>
+    <string name="Snabble.Payment.EmptyState.message">Noch kein Bezahlverfahren hinterlegt.</string>
     <string name="Snabble.Payment.errorStarting">Fehler beim Anlegen des Bezahlprozesses</string>
     <string name="Snabble.Payment.noMethodAvailable">Leider kann dieser Einkauf nicht mit der App durchgeführt werden.</string>
     <string name="Snabble.Payment.offlineHint">Du bist derzeit offline und einige Zahlungsmethoden sind möglicherweise nicht verfügbar</string>
+    <string name="Snabble.Payment.Online.message">Dein Einkauf muss von einem Mitarbeiter bestätigt werden.</string>
     <string name="Snabble.Payment.payAtCashDesk">An der Kasse bezahlen</string>
     <string name="Snabble.Payment.payAtSCO">Karte an EC-Terminal</string>
     <string name="Snabble.Payment.payUsingCustomerCard">mit Kundenkarte</string>
@@ -137,14 +138,15 @@
     <string name="Snabble.Payment.waiting">Warte auf Bestätigung</string>
     <string name="Snabble.PaymentCard.editingHint">Deine Karten-Daten werden von uns nur verschlüsselt gespeichert und können daher nicht bearbeitet werden.</string>
     <string name="Snabble.PaymentContinuation.message">Bezahlung wird fortgesetzt</string>
+    <string name="Snabble.PaymentError.msg">Deine Zahlung konnte nicht durchgeführt werden. Bitte zahle an einer normalen Kasse.\n\nEntschuldigung für die Umstände.</string>
     <string name="Snabble.PaymentError.title">Ein Fehler ist aufgetreten</string>
     <string name="Snabble.PaymentError.tryAgain">Nochmal versuchen</string>
     <string name="Snabble.PaymentMethods.add">Bezahlverfahren hinzufügen</string>
     <string name="Snabble.PaymentMethods.choose">Welches Bezahlverfahren hinzufügen?</string>
     <string name="Snabble.PaymentMethods.forAllRetailers">Händlerübergreifend</string>
     <string name="Snabble.PaymentMethods.forSingleRetailer">Für einzelne Händler</string>
-    <string name="Snabble.PaymentMethods.noCodeAlert.biometry">Dein iPhone ist weder durch einen Code noch durch Touch ID/Face ID geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
-    <string name="Snabble.PaymentMethods.noCodeAlert.noBiometry">Dein iPhone ist nicht durch einen Code geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
+    <string name="Snabble.PaymentMethods.NoCodeAlert.biometry">Dein iPhone ist weder durch einen Code noch durch Touch ID/Face ID geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
+    <string name="Snabble.PaymentMethods.NoCodeAlert.noBiometry">Dein iPhone ist nicht durch einen Code geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
     <string name="Snabble.PaymentMethods.noDeviceCode">Ungeschütztes iPhone</string>
     <!-- ********* iOS Payment Methods ********* -->
     <string name="Snabble.PaymentMethods.title">Bezahlverfahren</string>
@@ -182,7 +184,7 @@
     <string name="Snabble.Payone.expireMonth">Ablaufmonat (MM)</string>
     <string name="Snabble.Payone.expireYear">Ablaufjahr (JJJJ)</string>
     <string name="Snabble.Payone.incompleteForm">Bitte fülle das Formular vollständig aus.</string>
-    <string name="Snabble.Payone.Lastname">Nachname</string>
+    <string name="Snabble.Payone.lastname">Nachname</string>
     <string name="Snabble.pleaseWait">Bitte warten…</string>
     <string name="Snabble.PostFinanceCard.payNow">Jetzt mit PostFinance Card bezahlen</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d von %2$d</string>
@@ -190,7 +192,7 @@
     <string name="Snabble.QRCode.DidPayDialog.cancel">Zurück zum QR-Code</string>
     <string name="Snabble.QRCode.DidPayDialog.message">Hast du an der Kasse bezahlt, so dass wir den Warenkorb verwerfen können?</string>
     <string name="Snabble.QRCode.DidPayDialog.ok">Ja, Warenkorb verwerfen</string>
-    <string name="Snabble.QRCode.entry.title">Code: %d</string>
+    <string name="Snabble.QRCode.Entry.title">Code: %d</string>
     <string name="Snabble.QRCode.message">Bitte QR-Code an der Kasse vorhalten</string>
     <string name="Snabble.QRCode.nextCode">Weiter zu Code %1$d von %2$d</string>
     <string name="Snabble.QRCode.priceMayDiffer">Der genaue Preis wird von der Kasse berechnet und kann vom hier angezeigten abweichen.</string>
@@ -198,21 +200,24 @@
     <string name="Snabble.QRCode.showThisCode">Bitte zeige diesen Code an der Kasse</string>
     <string name="Snabble.QRCode.title">An der Kasse zahlen</string>
     <string name="Snabble.QRCode.total">"Gesamtsumme: "</string>
+    <string name="Snabble.Receipt.errorDownload">Quittung konnte nicht heruntergeladen werden</string>
+    <string name="Snabble.Receipt.pdfReaderUnavailable">Keine geeignete PDF-Reader-Anwendung gefunden</string>
     <string name="Snabble.Receipts.loading">(wird geladen)</string>
     <string name="Snabble.Receipts.noReceipts">Du hast noch nicht mit Snabble eingekauft</string>
     <string name="Snabble.Receipts.oClock">Uhr</string>
     <string name="Snabble.Receipts.title">Vorherige Einkäufe</string>
     <string name="Snabble.remove">Entfernen</string>
-    <string name="Snabble.saleStop.errorMsg">Diese Produkte können derzeit leider nicht mit der App bezahlt werden, bitte bezahle sie wie gewohnt an der Kasse:</string>
-    <string name="Snabble.saleStop.errorMsg.one">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse:</string>
-    <string name="Snabble.saleStop.errorMsg.scan">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse.</string>
-    <string name="Snabble.saleStop.errorMsg.title">Entschuldigung</string>
-    <string name="Snabble.Save">Speichern</string>
+    <string name="Snabble.SaleStop.errorMsg">Diese Produkte können derzeit leider nicht mit der App bezahlt werden, bitte bezahle sie wie gewohnt an der Kasse:</string>
+    <string name="Snabble.SaleStop.ErrorMsg.one">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse:</string>
+    <string name="Snabble.SaleStop.ErrorMsg.scan">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden, bitte bezahle es wie gewohnt an der Kasse.</string>
+    <string name="Snabble.SaleStop.ErrorMsg.title">Entschuldigung</string>
+    <string name="Snabble.save">Speichern</string>
     <string name="Snabble.Scanner.Accessibility.actionHideHint">Hinweis dauerhaft ausblenden</string>
     <string name="Snabble.Scanner.Accessibility.actionUnderstood">Verstanden</string>
     <string name="Snabble.Scanner.Accessibility.enterQuantity">Bitte gib die Menge in %s ein</string>
     <string name="Snabble.Scanner.Accessibility.eventBackInScanner">Du bist wieder im Scanner</string>
     <string name="Snabble.Scanner.Accessibility.eventBarcodeDetected">Barcode erkannt</string>
+    <string name="Snabble.Scanner.Accessibility.eventCartOpened">Warenkorb aufgeklappt</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Du kannst nicht mehr Artikel in den Warenkorb legen</string>
     <!-- Example: 3 times Banana for 3$ -->
     <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s mal %s für %s</string>
@@ -233,7 +238,7 @@
     <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
     <string name="Snabble.Scanner.firstScan">Scanne dein erstes Produkt. Halte dazu den Barcode eines Produktes in die Kamera.</string>
     <string name="Snabble.Scanner.goToCart">Warenkorb: %s</string>
-    <string name="Snabble.Scanner.goToCart.empty">Warenkorb</string>
+    <string name="Snabble.Scanner.GoToCart.empty">Warenkorb</string>
     <string name="Snabble.Scanner.introText">Scanne Barcodes von Produkten und lege sie in deinen Warenkorb.</string>
     <string name="Snabble.Scanner.manualCouponAdded">Du hast für deinen letzten Artikel einen rabattierten Preis eingegeben. Bitte habe Verständnis dafür, dass ein:e Mitarbeiter:in deinen Einkauf kontrollieren wird.</string>
     <string name="Snabble.Scanner.multiPack">Nicht vergessen!</string>
@@ -252,12 +257,18 @@
     <string name="Snabble.SEPA.editingHint">Deine SEPA-Daten werden von uns nur verschlüsselt gespeichert und können daher nicht bearbeitet werden.</string>
     <string name="Snabble.SEPA.encryptionError">Fehler bei der Verschlüsselung</string>
     <string name="Snabble.SEPA.iAgree">Ich stimme zu</string>
-    <string name="Snabble.SEPA.ibanTransferAlert.message">Möchtest du diese Kontodaten (IBAN: %s) für zukünftige Einkäufe speichern?</string>
-    <string name="Snabble.SEPA.ibanTransferAlert.title">Kontodaten speichern</string>
+    <string name="Snabble.SEPA.IbanTransferAlert.message">Möchtest du diese Kontodaten (IBAN: %s) für zukünftige Einkäufe speichern?</string>
+    <string name="Snabble.SEPA.IbanTransferAlert.title">Kontodaten speichern</string>
     <string name="Snabble.SEPA.mandate">SEPA-Lastschriftmandat</string>
     <string name="Snabble.SEPA.payNow">Jetzt mit SEPA bezahlen</string>
     <string name="Snabble.SEPA.scoTransferHint">Bitte gib noch den Namen auf der Karte ein um sie für Zahlungen direkt mit der App speichern zu können.</string>
     <string name="Snabble.Settings">Einstellungen</string>
+    <string name="Snabble.Shop.Detail.openingHours">Öffnungszeiten</string>
+    <string name="Snabble.Shop.Detail.shopNow">Jetzt hier einkaufen</string>
+    <string name="Snabble.Shop.Detail.startNavigation">Möchten Sie die Navigation starten?</string>
+    <string name="Snabble.Shop.Detail.title">Details</string>
+    <string name="Snabble.Shop.Finder.title">Shop</string>
+    <string name="Snabble.Shop.Finder.youarehere">Sie sind hier</string>
     <string name="Snabble.Shopping.title">Einkaufen</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Hinzufügen</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Löschen</string>
@@ -276,18 +287,18 @@
     <string name="Snabble.Shoppingcart.Accessibility.selected">Ausgewählt</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Artikel entfernt</string>
     <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
-    <string name="Snabble.Shoppingcart.buyProducts.now">Jetzt bezahlen</string>
-    <string name="Snabble.Shoppingcart.buyProducts.one">%1$d Artikel für %2$s kaufen</string>
-    <string name="Snabble.Shoppingcart.buyProducts.selectPaymentMethod">Bezahlverfahren wählen</string>
+    <string name="Snabble.Shoppingcart.BuyProducts.now">Jetzt bezahlen</string>
+    <string name="Snabble.Shoppingcart.BuyProducts.one">%1$d Artikel für %2$s kaufen</string>
+    <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Bezahlverfahren wählen</string>
     <string name="Snabble.Shoppingcart.coupon">Gutschein</string>
     <string name="Snabble.Shoppingcart.coupons">Gutscheine</string>
     <string name="Snabble.Shoppingcart.deposit">Pfand</string>
     <string name="Snabble.Shoppingcart.discounts">Rabatt</string>
-    <string name="Snabble.Shoppingcart.emptyState.buttonTitle">Jetzt scannen</string>
-    <string name="Snabble.Shoppingcart.emptyState.description">Dein Warenkorb ist leer. Scanne Barcodes von Artikeln, die du kaufen möchtest.</string>
-    <string name="Snabble.Shoppingcart.emptyState.restartButtonTitle">Neuen Einkauf beginnen</string>
-    <string name="Snabble.Shoppingcart.emptyState.restoreButtonTitle">Vorherigen Warenkorb wiederherstellen</string>
-    <string name="Snabble.Shoppingcart.emptyState.title">Dein Warenkorb ist noch leer</string>
+    <string name="Snabble.Shoppingcart.EmptyState.buttonTitle">Jetzt scannen</string>
+    <string name="Snabble.Shoppingcart.EmptyState.description">Dein Warenkorb ist leer. Scanne Barcodes von Artikeln, die du kaufen möchtest.</string>
+    <string name="Snabble.Shoppingcart.EmptyState.restartButtonTitle">Neuen Einkauf beginnen</string>
+    <string name="Snabble.Shoppingcart.EmptyState.restoreButtonTitle">Vorherigen Warenkorb wiederherstellen</string>
+    <string name="Snabble.Shoppingcart.EmptyState.title">Dein Warenkorb ist noch leer</string>
     <string name="Snabble.Shoppingcart.giveaway">Kostenloses Geschenk</string>
     <string name="Snabble.Shoppingcart.howToPay">Wie möchtest du bezahlen?</string>
     <string name="Snabble.Shoppingcart.includesDeposit">inkl. Pfand</string>
@@ -297,25 +308,41 @@
     <plurals name="Snabble.Shoppingcart.numberOfItems">
         <item quantity="one">%d Artikel</item>
         <item quantity="other">%d Artikel</item>
+        <item quantity="zero">%d Artikel</item>
     </plurals>
-    <string name="Snabble.Shoppingcart.numberOfItems.one">%d Artikel</string>
     <string name="Snabble.Shoppingcart.removeItem">%s wirklich entfernen?</string>
     <string name="Snabble.Shoppingcart.removeItems">Wirklich alle Produkte aus dem Warenkorb entfernen?</string>
     <string name="Snabble.ShoppingCart.title">Warenkorb</string>
     <!-- Hinweiß der angezeigt wird wenn ein Artikel der Einkaufsliste hinzugefügt wurde -->
     <string name="Snabble.ShoppingList.added">%s gespeichert</string>
+    <!-- Beschreibung für den Scan-Knopf -->
+    <string name="Snabble.ShoppingList.AddItem.viaScan">Produkte scannen</string>
+    <!-- Beschreibung für den Microfon-Knopf -->
+    <string name="Snabble.ShoppingList.AddItem.viaVoice">Produkte diktieren</string>
+    <string name="Snabble.ShoppingList.addToList">Zur Liste hinzufügen</string>
+    <string name="Snabble.ShoppingList.changeEntry">Eintrag ändern</string>
+    <string name="Snabble.ShoppingList.changeQuantity">Menge ändern</string>
+    <!-- Titel des Drilldown Popups wenn ein Marke mehrere Projekte hat -->
+    <string name="Snabble.ShoppingList.CreateList.drilldownTitle">Neue Einkaufsliste für %s anlegen</string>
     <!-- Der Titel des Dialogs zur Erzeugung einer neuen Einkaufsliste -->
     <string name="Snabble.ShoppingList.CreateList.title">Neue Einkaufsliste anlegen</string>
+    <!-- Name des zu editierenden Eintrags -->
+    <string name="Snabble.ShoppingList.EditItem.name">Name</string>
+    <!-- Beim Editieren von Einträgen der Einkaufsliste darf der Name nicht leer sein -->
+    <string name="Snabble.ShoppingList.EditItem.nameRequired">Name darf nicht leer sein</string>
+    <!-- Der Title beim Editieren von Einträgen der Einkaufsliste -->
+    <string name="Snabble.ShoppingList.EditItem.title">Eintrag bearbeiten</string>
     <!-- Der Löschen-Knopf beim Editieren von Einkaufslisten -->
     <string name="Snabble.ShoppingList.EditList.delete">Löschen</string>
     <!-- Der Speichern-Knopf beim Editieren von Einkaufslisten -->
     <string name="Snabble.ShoppingList.EditList.save">Speichern</string>
     <!-- Der Titel des Popups zum bearbeiten von Einkaufslisten -->
     <string name="Snabble.ShoppingList.EditList.title">Einkaufsliste bearbeiten</string>
+    <string name="Snabble.ShoppingList.isDeleted">Die Einkaufsliste wurde gelöscht</string>
     <!-- Der Text wird angezeigt wenn man ein Element der Einkaufsliste wegwischt -->
-    <string name="Snabble.ShoppingList.ItemDeleted">%s gelöscht</string>
+    <string name="Snabble.ShoppingList.itemDeleted">%s gelöscht</string>
     <!-- Der Call-To-Action wenn man das löschen eines Elements der Einkaufsliste rückgänig machen möchte -->
-    <string name="Snabble.ShoppingList.ItemDeleted.Undo">Wiederherstellen</string>
+    <string name="Snabble.ShoppingList.ItemDeleted.undo">Wiederherstellen</string>
     <!-- Der Inhalt der Snackbar wenn eine Einkaufsliste gelöscht wurde -->
     <string name="Snabble.ShoppingList.ListDeleted.title">Einkaufsliste gelöscht</string>
     <!-- Der Call-To-Action wenn eine Einkaufsliste wiederhergestellt werden soll -->
@@ -328,22 +355,35 @@
     <string name="Snabble.ShoppingList.NoLists.add">Einkaufsliste anlegen</string>
     <!-- Der Empty-State wenn noch kein Einkaufszettel angelegt wurde -->
     <string name="Snabble.ShoppingList.NoLists.title">Du hast noch keine Einkaufsliste angelegt.</string>
+    <string name="Snabble.ShoppingList.notAvailable">Die Einkaufsliste ist nicht verfügbar</string>
     <!-- Hinweiß der angezeigt wird wenn ein Artikel nicht gefunden wurde -->
     <string name="Snabble.ShoppingList.notFound">Unbekanntes Produkt</string>
+    <!-- Titel der Toolbar für den Sortiermodus -->
+    <string name="Snabble.ShoppingList.OrderItems.title">Sortierung ändern</string>
     <!-- Der Hint der angezeigt wird wenn man einen Artikel per Suche hinzufügen möchte -->
     <string name="Snabble.ShoppingList.searchHint">Suchen oder direkt eingeben</string>
+    <string name="Snabble.ShoppingList.Section.categories">Kategorien</string>
+    <string name="Snabble.ShoppingList.Section.products">Produkte</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingList.title">Einkaufsliste</string>
+    <string name="Snabble.ShoppingList.updateQuantity">Menge aktualisieren</string>
     <!-- Man soll verschiedene Artikel mit einem "und" in die Einkaufsliste legen können. Hier geht es nur um das Wort "und" -->
     <string name="Snabble.ShoppingList.Voice.connectingWord">und</string>
     <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
     <string name="Snabble.ShoppingList.Voice.details">Wolltest du mehrere Sachen auf den Einkaufsliste legen? Dann verbinde die einzelnen Einträge mit einem  „und“ - z.B. so: Toilettenpapier und Nudeln und Hefe</string>
+    <string name="Snabble.ShoppingList.Voice.discardCommand">Verwerfen</string>
+    <string name="Snabble.ShoppingList.Voice.doneCommand">Fertig</string>
+    <string name="Snabble.ShoppingList.Voice.example">Sage jetzt zum Beispiel:\n\n„Brot und Seife und Eier“\n\n„Fertig“ um die Aufnahme zu beenden,\n„Verwerfen“ um die Eingaben nicht zu speichern</string>
+    <!-- Der Hinweis der bei der Spracherkennung angezeigt werden soll was der Benutzer jetzt sagen soll -->
+    <string name="Snabble.ShoppingList.Voice.hint">Was brauchst du?</string>
     <!-- Hinweis der Eingeblendet wird wenn der Benutzer das erste mal vermutlich falsch mehrere Artikel zum Einkaufszettel ergänezen wollte -->
     <string name="Snabble.ShoppingList.Voice.title">Tipp</string>
     <!-- Der Titel der übersichtsseite der Einkaufslisten -->
     <string name="Snabble.ShoppingLists.title">Einkaufslisten</string>
-    <string name="Snabble.Taxation.consume.inhouse">hier konsumieren</string>
-    <string name="Snabble.Taxation.consume.takeaway">mitnehmen</string>
+    <string name="Snabble.SpeechAndMicRequired.message">Nur so kannst du deine Einkaufsliste diktieren.</string>
+    <string name="Snabble.SpeechAndMicRequired.title">Snabble benötigt Zugriff auf das Mikrophon und die Spracherkennung</string>
+    <string name="Snabble.Taxation.Consume.inhouse">hier konsumieren</string>
+    <string name="Snabble.Taxation.Consume.takeaway">mitnehmen</string>
     <string name="Snabble.Taxation.consumeWhere">Möchtest du deinen Einkauf</string>
     <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
     <string name="Snabble.TWINT.payNow">Jetzt mit TWINT bezahlen</string>
@@ -352,5 +392,5 @@
     <string name="Snabble.Violations.couponCurrentlyNotValid">Ein Coupon ist aktuell ungültig und wird aus dem Warenkorb entfernt</string>
     <string name="Snabble.Violations.couponInvalid">Ein Coupon ist ungültig und wird aus dem Warenkorb entfernt</string>
     <string name="Snabble.Violations.title">Ungültiger Warenkorb</string>
-    <string name="Snabble.Yes">Ja</string>
+    <string name="Snabble.yes">Ja</string>
 </resources>
