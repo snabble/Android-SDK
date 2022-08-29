@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'de.mobilej.unmock'
 
 description = 'Snabble Utils: Util collection for the snabble SDK integration'
 
@@ -53,4 +54,13 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // for testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+    unmock 'org.robolectric:android-all:4.3_r2-robolectric-0'
+}
+
+unMock {
+    keep 'android.text.style.URLSpan'
 }

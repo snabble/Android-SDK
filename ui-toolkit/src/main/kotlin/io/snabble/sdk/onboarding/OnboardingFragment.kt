@@ -13,6 +13,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.text.getSpans
@@ -20,7 +21,6 @@ import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.get
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
@@ -33,9 +33,9 @@ import io.snabble.accessibility.isTalkBackActive
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.utils.resolveImageOrHide
 import io.snabble.sdk.utils.LinkClickListener
 import io.snabble.sdk.utils.ZoomOutPageTransformer
-import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.resolveTextOrHide
 
 open class OnboardingFragment : Fragment() {
@@ -48,9 +48,8 @@ open class OnboardingFragment : Fragment() {
     ): View {
         val v: View = inflater.inflate(R.layout.snabble_fragment_onboarding, container, false)
         val model = arguments?.getParcelable<OnboardingModel>("model") ?: throw IllegalArgumentException()
-        val config = model.configuration
-        val headerImage = v.findViewById<ImageTextView>(R.id.image_header)
-        headerImage.setDataOrHide(model.configuration.imageSource)
+        val headerImage = v.findViewById<ImageView>(R.id.image_header)
+        headerImage.resolveImageOrHide(model.configuration?.imageSource)
 
         viewPager = v.findViewById(R.id.view_pager)
         viewPager.adapter = StepAdapter(requireContext(), inflater, model)
@@ -58,32 +57,18 @@ open class OnboardingFragment : Fragment() {
         val circleIndicator = v.findViewById<TabLayout>(R.id.circle_indicator)
         TabLayoutMediator(circleIndicator, viewPager) { _, _ -> }.attach()
 
-        val fullscreenButton = v.findViewById<Button>(R.id.button)
-        val prevButton = v.findViewById<Button>(R.id.button_left)
-        val nextButton = v.findViewById<Button>(R.id.button_right)
+        val button = v.findViewById<Button>(R.id.button)
 
-        if (config.hasPageControl == false) {
-            viewPager.isUserInputEnabled = false
-            circleIndicator.isVisible = false
-        }
-
-        listOf(nextButton, fullscreenButton).forEach { button ->
-            button.setOnClickListener {
-                if (viewPager.currentItem < model.items.lastIndex) {
-                    viewPager.currentItem += 1
-                } else {
-                    SnabbleUiToolkit.executeAction(requireContext(),SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE)
-                }
+        button.setOnClickListener {
+            if (viewPager.currentItem < model.items.lastIndex) {
+                viewPager.currentItem += 1
+            } else {
+                SnabbleUiToolkit.executeAction(requireContext(), SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE)
             }
         }
 
-        prevButton.setOnClickListener {
-            if (viewPager.currentItem > 0) {
-                viewPager.currentItem -= 1
-            }
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     val index = viewPager.currentItem - 1
@@ -121,19 +106,11 @@ open class OnboardingFragment : Fragment() {
 
             override fun onPageSelected(position: Int) {
                 val item = model.items[position]
-                if (item.nextButtonTitle.isNullOrBlank() || item.prevButtonTitle.isNullOrBlank()) {
-                    prevButton.isVisible = false
-                    nextButton.isVisible = false
-                    if (item.nextButtonTitle.isNotNullOrBlank()) {
-                        fullscreenButton.resolveTextOrHide(item.nextButtonTitle)
-                    } else {
-                        fullscreenButton.resolveTextOrHide(item.prevButtonTitle)
-                    }
-                } else {
-                    fullscreenButton.isVisible = false
-                    prevButton.resolveTextOrHide(item.prevButtonTitle)
-                    nextButton.resolveTextOrHide(item.nextButtonTitle)
-                }
+                button.text = item.customButtonTitle ?: getString(
+                    if (position == model.items.lastIndex)
+                        R.string.Snabble_Onboarding_done
+                    else R.string.Snabble_Onboarding_next
+                )
                 firstRun = false
             }
         })
@@ -142,13 +119,13 @@ open class OnboardingFragment : Fragment() {
         ViewCompat.setAccessibilityDelegate(viewPager, object : AccessibilityDelegateCompat() {
             override fun onInitializeAccessibilityNodeInfo(v: View, info: AccessibilityNodeInfoCompat) {
                 super.onInitializeAccessibilityNodeInfo(v, info)
-                info.setTraversalBefore(fullscreenButton)
+                info.setTraversalBefore(button)
             }
         })
         ViewCompat.setAccessibilityDelegate(circleIndicator, object : AccessibilityDelegateCompat() {
             override fun onInitializeAccessibilityNodeInfo(v: View, info: AccessibilityNodeInfoCompat) {
                 super.onInitializeAccessibilityNodeInfo(v, info)
-                info.setTraversalAfter(fullscreenButton)
+                info.setTraversalAfter(button)
             }
         })
 
@@ -181,13 +158,13 @@ open class OnboardingFragment : Fragment() {
             val page = layoutInflater.inflate(R.layout.snabble_view_onboarding_step, layout, true)
             val item = onboardingModel.items[position]
 
-            val imageTextView = page.findViewById<ImageTextView>(R.id.image_hybrid)
+            val logo = page.findViewById<ImageView>(R.id.logo)
             val text = page.findViewById<TextView>(R.id.text)
             val title = page.findViewById<TextView>(R.id.title)
             val footer = page.findViewById<TextView>(R.id.footer)
             val termsButton = page.findViewById<Button>(R.id.terms_button)
 
-            imageTextView.setDataOrHide(item.imageSource)
+            logo.resolveImageOrHide(item.imageSource)
             text.resolveTextOrHide(item.text)
             title.resolveTextOrHide(item.title)
             footer.resolveTextOrHide(item.footer)

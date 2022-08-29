@@ -6,6 +6,7 @@ phrase:
       - file: ./ui/src/main/res/values/strings.xml
         params:
           locale_id: b220db5757be359631c55ec54fb65ac6
+          tags: "sdk"
           encoding: "UTF-8"
           file_format: xml
           include_empty_translations: false
@@ -14,6 +15,17 @@ phrase:
             escape_linebreaks: true
       - file: ./ui/src/main/res/values-<locale_name>/strings.xml
         params:
+          tags: "sdk"
+          encoding: "UTF-8"
+          file_format: xml
+          include_empty_translations: false
+          format_options:
+            convert_placeholder: true
+            escape_linebreaks: true
+      - file: ./ui-toolkit/src/debug/res/values/strings.xml
+        params:
+          locale_id: b220db5757be359631c55ec54fb65ac6
+          tags: "Sample"
           encoding: "UTF-8"
           file_format: xml
           include_empty_translations: false
@@ -33,6 +45,25 @@ phrase:
       - file: ./ui-toolkit/src/main/res/values-<locale_name>/strings.xml
         params:
           tags: "Onboarding"
+          encoding: "UTF-8"
+          file_format: xml
+          include_empty_translations: false
+          format_options:
+            convert_placeholder: true
+            escape_linebreaks: true
+      - file: ./kotlin-sample/src/main/res/values/strings.xml
+        params:
+          locale_id: b220db5757be359631c55ec54fb65ac6
+          tags: "Sample"
+          encoding: "UTF-8"
+          file_format: xml
+          include_empty_translations: false
+          format_options:
+            convert_placeholder: true
+            escape_linebreaks: true
+      - file: ./kotlin-sample/src/main/res/values-<locale_name>/strings.xml
+        params:
+          tags: "Sample"
           encoding: "UTF-8"
           file_format: xml
           include_empty_translations: false

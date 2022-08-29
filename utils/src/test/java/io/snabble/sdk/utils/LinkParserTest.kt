@@ -1,7 +1,8 @@
-package io.snabble.sdk.ui
+package io.snabble.sdk.utils
 
 import android.text.SpannableStringBuilder
 import android.text.style.URLSpan
+import io.snabble.sdk.ui.parseLinksInto
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -29,11 +30,13 @@ class LinkParserTest {
             }
             whenever(builder.length).thenAnswer { data.length }
             whenever(builder.setSpan(any(), anyInt(), anyInt(), anyInt())).thenAnswer {
-                spans.add(SpanData(
-                    start = it.arguments[1] as Int,
-                    end = it.arguments[2] as Int,
-                    what = it.arguments[0]
-                ))
+                spans.add(
+                    SpanData(
+                        start = it.arguments[1] as Int,
+                        end = it.arguments[2] as Int,
+                        what = it.arguments[0]
+                    )
+                )
             }
         }
     }

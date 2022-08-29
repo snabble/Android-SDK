@@ -87,13 +87,6 @@
     <string name="Snabble.noDiscount">nincs árengedmény</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">Ezt a terméket jelenleg sajnos nem lehet az alkalmazással kifizetni. Kérlek, fizesd a szokásos módon a kasszánál.</string>
     <string name="Snabble.ok">OK</string>
-    <string name="Snabble.Onboarding.accept">Elfogadás</string>
-    <string name="Snabble.Onboarding.message1">A Snabble segítségével saját magad szkenneled be a vásárolni kívánt termékeket, és közvetlenül az alkalmazásban fizetsz. Nem kell sorban állni a pénztár előtt, és a vásárolt termékeket nem kell az áruszalagra helyezni.</string>
-    <string name="Snabble.Onboarding.message2">Lépj be egy résztvevő üzletbe, kezdd el a bevásárlást, és tartsd a termék vonalkódját a kamera elé. A többi magától értetődik.</string>
-    <string name="Snabble.Onboarding.message3">Kérlek, fogadd el a felhasználási feltételeket és az adatvédelmi tudnivalókat.</string>
-    <string name="Snabble.Onboarding.next">Tovább</string>
-    <string name="Snabble.Onboarding.Terms.show">Megtekintés</string>
-    <string name="Snabble.Onboarding.Terms.title">Az alkalmazás használata</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Kérlek, próbáld meg később még egyszer</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Nem sikerült az azonosítás</string>
     <string name="Snabble.Paydirekt.deleteAuthorization">Fizetési mód törlése</string>
@@ -270,6 +263,10 @@
     <string name="Snabble.SEPA.payNow">Fizetés SEPA segítségével</string>
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
     <string name="Snabble.Settings">Beállítások</string>
+    <string name="Snabble.Shop.Detail.startNavigation">Szeretnéd elindítani a navigációt?</string>
+    <string name="Snabble.Shop.Detail.title">Részletek</string>
+    <string name="Snabble.Shop.Finder.title">Üzlet</string>
+    <string name="Snabble.Shop.Finder.youarehere">Itt vagy</string>
     <string name="Snabble.Shopping.title">Bevásárlás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Hozzáadás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Törlés</string>

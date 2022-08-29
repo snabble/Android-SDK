@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="Snabble.Onboarding.accept">Agree</string>
     <string name="Snabble.Onboarding.Deeplink.accessibility">open %s</string>
-    <string name="Snabble.Onboarding.message1">Using Snabble, you scan your purchase yourself and pay directly in the app. No queueing and without putting your purchase on the belt.</string>
-    <string name="Snabble.Onboarding.message2">Enter a participating store, start shopping and hold the barcode of an article in front of the camera. The rest is self-explanatory.</string>
-    <string name="Snabble.Onboarding.message3">Please accept the terms of use and take note of the privacy policy.</string>
+    <string name="Snabble.Onboarding.done">Done</string>
+    <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
-    <string name="Snabble.Onboarding.Terms.show">Show</string>
-    <string name="Snabble.Onboarding.Terms.title">Terms of Use</string>
 </resources>
