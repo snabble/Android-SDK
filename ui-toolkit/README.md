@@ -2,9 +2,10 @@
 
 Android UI-Toolkit for Snabble
 
-####Table of Contents
-[Onboarding](#Onboarding)
-[Shopfinder](#Shopfinder)
+##Table of Contents
+
+1. [Onboarding](#Onboarding)
+2. [Shopfinder](#Shopfinder)
 
 ## Onboarding
 
