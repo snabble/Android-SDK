@@ -27,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Project
@@ -287,6 +288,8 @@ open class ShopDetailsFragment : Fragment() {
         val companyName = view.findViewById<TextView>(R.id.company_name)
         val companyStreet = view.findViewById<TextView>(R.id.company_street)
         val companyZip = view.findViewById<TextView>(R.id.company_zip)
+        val openDoor = view.findViewById<MaterialButton>(R.id.open_door)
+        val openTimes = view.findViewById<TextView>(R.id.opening_times)
         address.text = shop.street + "\n" + shop.zipCode + " " + shop.city
         address.contentDescription = getString(
             R.string.ShopDetails_Accessibility_address,
@@ -294,7 +297,7 @@ open class ShopDetailsFragment : Fragment() {
             shop.zipCode,
             shop.city
         )
-        phone.text = getString(R.string.ShopDetails_phone, shop.phone)
+        phone.setTextOrHide(shop.phone)
         Linkify.addLinks(phone, Pattern.compile(".*"), shop.phone)
         phone.setClickDescription(R.string.ShopDetails_Accessibility_startCall)
         phone.setOnClickListener {
@@ -321,9 +324,17 @@ open class ShopDetailsFragment : Fragment() {
             }
         }
 
-        if (shop.openingHours.isNullOrEmpty()) {
-            timetableTitle.visibility = View.GONE
+        val openingTimesString = resources.getText(R.string.ShopDetails_alwaysOpen)
+
+        if (shop.openingHours.isNullOrEmpty()){
+                if (openingTimesString.isNotNullOrBlank()){
+                    timetable.isVisible = false
+                    openTimes.setTextOrHide(openingTimesString)
+                }else{
+                    timetableTitle.isVisible = false
+                }
         } else {
+            openTimes.isVisible = false
             timetable.removeAllViews()
             val weekDays = arrayListOf("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
             shop.openingHours.sortBy { weekDays.indexOf(it.dayOfWeek)}
@@ -382,21 +393,31 @@ open class ShopDetailsFragment : Fragment() {
 
         val startScanner = view.findViewById<Button>(R.id.start_scanner)
         val buttonTitle = resources.getText(R.string.Snabble_Shop_Details_button)
+        val openDoorTitle = resources.getText(R.string.ShopDetails_doorOpener)
 
         if (isCheckedInToShop) {
             startScanner.setTextOrHide(buttonTitle)
+            openDoor.setTextOrHide(openDoorTitle)
         } else {
             startScanner.isVisible = false
+            openDoor.isVisible = false
         }
 
         startScanner.setOneShotClickListener {
             SnabbleUiToolkit.executeAction(
                 requireContext(),
-                SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION
+                SnabbleUiToolkit.Event.DETAILS_BUTTON_ACTION
             )
         }
 
-        if (Snabble.projects.size > 1) {
+        openDoor.setOneShotClickListener {
+            SnabbleUiToolkit.executeAction(
+                requireContext(),
+                SnabbleUiToolkit.Event.OPEN_DOOR_ACTION
+            )
+        }
+
+        if (Snabble.projects.isNotEmpty()) {
             val company = project?.company
             companyCountry.setTextOrHide(project?.company?.country?.let(::getDisplayNameByIso3Code))
             companyName.setTextOrHide(project?.company?.name)

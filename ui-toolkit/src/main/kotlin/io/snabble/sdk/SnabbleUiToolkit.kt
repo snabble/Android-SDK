@@ -32,7 +32,8 @@ object SnabbleUiToolkit {
         SHOW_ONBOARDING_DONE,
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
-        SHOW_DETAILS_BUTTON_ACTION,
+        DETAILS_BUTTON_ACTION,
+        OPEN_DOOR_ACTION,
         START_NAVIGATION,
         GO_BACK
     }
@@ -111,7 +112,8 @@ object SnabbleUiToolkit {
                 )
                 // unhandled actions
                 GO_BACK,
-                SHOW_DETAILS_BUTTON_ACTION,
+                DETAILS_BUTTON_ACTION,
+                OPEN_DOOR_ACTION,
                 START_NAVIGATION,
                 null -> {
                 }

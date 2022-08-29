@@ -64,7 +64,7 @@
                 android:paddingBottom="2dp"
                 android:paddingTop="2dp"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
-                android:text="You are here" />
+                android:text="@string/Shop.youAreHere" />
         </FrameLayout>
 
 

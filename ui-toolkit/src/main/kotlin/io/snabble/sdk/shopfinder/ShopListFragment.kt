@@ -47,15 +47,14 @@ open class ShopListFragment : Fragment() {
             supportActionBar?.title = actionbarTitle
         }
 
-        //updates every 5m the location
-//        locationManager.location.observe(viewLifecycleOwner){ currentlocation ->
-//            if (currentlocation != null && currentlocation.distanceTo(locationManager.getLastLocation()) > 5){
-//                shopListRecyclerView.sortByDistance(currentlocation)
-//            }
-//        }
         shopListRecyclerView = view.findViewById(R.id.recycler_view)
         shopListRecyclerView.sortByDistance(locationManager.getLastLocation())
         shopListRecyclerView.setShopsByProjects(Snabble.projects)
+        //updates every 5m the location
+        locationManager.location.observe(viewLifecycleOwner){ currentlocation ->
+            shopListRecyclerView.sortByDistance(currentlocation)
+        }
+
 
     }
 

@@ -145,16 +145,30 @@
                     android:paddingTop="2dp"
                     android:paddingRight="8dp"
                     android:paddingBottom="2dp"
-                    android:text="you are here"
+                    android:text="@string/Shop.youAreHere"
                     android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="?attr/colorOnPrimary"
                     app:backgroundTint="?attr/colorPrimary" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/start_scanner"
+                    android:id="@+id/open_door"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/you_are_here"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/ShopDetails.doorOpener"
+                    tools:text="Open Door"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/start_scanner"
+                    style="?attr/materialButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/open_door"
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="16dp"
@@ -202,22 +216,37 @@
                     android:textAppearance="?attr/textAppearanceTitleLarge"
                     android:textStyle="bold" />
 
+                <RelativeLayout
+                    android:id="@+id/opening"
+                    android:layout_below="@+id/timetable_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/opening_times"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginHorizontal="16dp"
+                    android:gravity="center"
+                    android:text="@string/ShopDetails.alwaysOpen"
+                    tools:text="Teo ist immer für dich offen"/>
+
                 <androidx.gridlayout.widget.GridLayout
                     android:id="@+id/timetable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/timetable_title"
                     android:layout_centerHorizontal="true"
                     android:gravity="center"
                     app:columnCount="2">
 
                 </androidx.gridlayout.widget.GridLayout>
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/company_header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/timetable"
+                    android:layout_below="@+id/opening"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="16dp"
                     android:text="@string/ShopDetails.contractingParty"
