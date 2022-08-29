@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.68.6]
+
+# Changed
+- Apply new Phrase key structure
+
 ## [0.68.5]
 
 ### Fixed
