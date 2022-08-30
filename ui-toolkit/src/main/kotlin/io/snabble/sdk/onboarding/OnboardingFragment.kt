@@ -55,7 +55,9 @@ open class OnboardingFragment : Fragment() {
         headerImage.resolveImageOrHide(model.configuration?.imageSource)
 
         viewPager = v.findViewById(R.id.view_pager)
-        viewPager.adapter = StepAdapter(requireContext(), inflater, model)
+        viewPager.adapter = StepAdapter(model)
+        viewPager.offscreenPageLimit = 1
+        (viewPager.getChildAt(0) as? RecyclerView)?.setItemViewCacheSize(0)
 
         val circleIndicator = v.findViewById<TabLayout>(R.id.circle_indicator)
         TabLayoutMediator(circleIndicator, viewPager) { _, _ -> }.attach()
@@ -137,101 +139,23 @@ open class OnboardingFragment : Fragment() {
         return v
     }
 
-    private class StepViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    private class StepViewHolder(itemView: OnboardingStepView) : RecyclerView.ViewHolder(itemView) {
+        fun bind(data: OnboardingItem) {
+            (itemView as OnboardingStepView).bind(data)
+        }
+    }
 
     private class StepAdapter(
-        val context: Context,
-        val layoutInflater: LayoutInflater,
         val onboardingModel: OnboardingModel
     ) : RecyclerView.Adapter<StepViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StepViewHolder {
-            val layout = FrameLayout(context)
-            layout.layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-            return StepViewHolder(layout)
-        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StepViewHolder =
+            StepViewHolder(OnboardingStepView(parent.context))
 
         @SuppressLint("ResourceType")
         override fun onBindViewHolder(holder: StepViewHolder, position: Int) {
-            val layout = holder.itemView as FrameLayout
-            layout.removeAllViews()
-            val page = layoutInflater.inflate(R.layout.snabble_view_onboarding_step, layout, true)
-            val item = onboardingModel.items[position]
-
-            val logo = page.findViewById<ImageView>(R.id.logo)
-            val text = page.findViewById<TextView>(R.id.text)
-            val title = page.findViewById<TextView>(R.id.title)
-            val footer = page.findViewById<TextView>(R.id.footer)
-            val termsButton = page.findViewById<Button>(R.id.terms_button)
-
-            logo.resolveImageOrHide(item.imageSource)
-            text.resolveTextOrHide(item.text)
-            title.resolveTextOrHide(item.title)
-            footer.resolveTextOrHide(item.footer)
-            termsButton.resolveTextOrHide(item.termsButtonTitle)
-
-            item.link?.let { deeplink ->
-                termsButton.setOnClickListener {
-                    showDeeplink(it.context, deeplink)
-                }
-            } ?: run { termsButton.isVisible = false }
-
-            // Accessibility optimization:
-            // Detect in "footer" and "text" view for text links if there are 2 or less links if so make those links
-            // nonclickable and add special "double tap" and "long press" handling as optimization for talkback users.
-            if (context.isTalkBackActive) {
-                listOf(footer, text).forEach { view ->
-                    // Check it text has links aka URLSpans
-                    (view.text as? SpannedString)?.let { span ->
-                        val urls = span.getSpans<URLSpan>()
-                        if (urls.size in 1..2) {
-                            urls.map { url ->
-                                // filter those out with uri
-                                val start = span.getSpanStart(url)
-                                val end = span.getSpanEnd(url)
-                                span.subSequence(start, end) to url.url
-                            }.forEachIndexed { index, (label, url) ->
-                                // Add the special accessibility handling
-                                val action =
-                                    view.context.getString(R.string.Snabble_Onboarding_Deeplink_accessibility, label)
-                                if (index == 0) {
-                                    view.accessibility.setClickAction(action) {
-                                        showDeeplink(view.context, url)
-                                    }
-                                } else {
-                                    view.accessibility.setLongClickAction(action) {
-                                        showDeeplink(view.context, url)
-                                    }
-                                }
-                            }
-                            // The part to make the links not clickable since we handle it with talkback
-                            view.apply {
-                                this.text = view.text.toString()
-                                movementMethod = null
-                            }
-                        }
-                    }
-                }
-            } else {
-                //handle link click inside the App,
-                //FIXME: Edge case on Android 7 fix with bottomNavigationBar, remains white after backpress
-                listOf(footer, text).forEach { view ->
-                    view.movementMethod = LinkClickListener { url ->
-                        showDeeplink(view.context, url.toString())
-                    }
-                }
-            }
+             holder.bind(onboardingModel.items[position])
         }
-
-        private fun showDeeplink(context: Context, url: String) =
-            SnabbleUiToolkit.executeAction(
-                context,
-                SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE,
-                bundleOf(SnabbleUiToolkit.DEEPLINK to url)
-            )
 
         override fun getItemCount() = onboardingModel.items.size
     }

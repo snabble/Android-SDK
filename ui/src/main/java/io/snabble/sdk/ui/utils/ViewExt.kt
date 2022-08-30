@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.getImageId
 import io.snabble.sdk.utils.isNotNullOrBlank
 import java.util.*

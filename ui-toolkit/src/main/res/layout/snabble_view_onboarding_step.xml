@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:parentTag="android.widget.RelativeLayout">
 
-    <io.snabble.sdk.view.HideOnOverlapFrameLayout
+    <io.snabble.sdk.view.HideWhenTinyFrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/scroll_view"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
-        app:viewGroupId="@+id/bottom_container"
+        app:minHeight="100dp"
         android:importantForAccessibility="no"
         tools:visibility="visible">
 
@@ -26,7 +27,7 @@
             tools:src="@drawable/snabble_onboarding_step3"
             tools:visibility="visible" />
 
-    </io.snabble.sdk.view.HideOnOverlapFrameLayout>
+    </io.snabble.sdk.view.HideWhenTinyFrameLayout>
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -92,4 +93,4 @@
                 tools:visibility="visible" />
         </LinearLayout>
     </ScrollView>
-</RelativeLayout>
+</merge>
