@@ -16,11 +16,13 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.core.text.getSpans
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
@@ -31,6 +33,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.sdk.SnabbleUiToolkit
+import io.snabble.sdk.onboarding.entities.OnboardingItem
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.utils.resolveImageOrHide
@@ -170,12 +173,11 @@ open class OnboardingFragment : Fragment() {
             footer.resolveTextOrHide(item.footer)
             termsButton.resolveTextOrHide(item.termsButtonTitle)
 
-            termsButton.setOnClickListener {
-                val withoutNavigation = Uri.parse(item.link).buildUpon().encodedQuery("hideBottomNavigation=true").build()
-                page.findNavController().navigate(
-                    NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
-                )
-            }
+            item.link?.let { deeplink ->
+                termsButton.setOnClickListener {
+                    showDeeplink(it.context, deeplink)
+                }
+            } ?: run { termsButton.isVisible = false }
 
             // Accessibility optimization:
             // Detect in "footer" and "text" view for text links if there are 2 or less links if so make those links
@@ -190,20 +192,18 @@ open class OnboardingFragment : Fragment() {
                                 // filter those out with uri
                                 val start = span.getSpanStart(url)
                                 val end = span.getSpanEnd(url)
-                                span.subSequence(start, end) to Uri.parse(url.url)
-                            }.forEachIndexed { index, (label, uri) ->
+                                span.subSequence(start, end) to url.url
+                            }.forEachIndexed { index, (label, url) ->
                                 // Add the special accessibility handling
                                 val action =
                                     view.context.getString(R.string.Snabble_Onboarding_Deeplink_accessibility, label)
                                 if (index == 0) {
                                     view.accessibility.setClickAction(action) {
-                                        view.findNavController()
-                                            .navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
+                                        showDeeplink(view.context, url)
                                     }
                                 } else {
                                     view.accessibility.setLongClickAction(action) {
-                                        view.findNavController()
-                                            .navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
+                                        showDeeplink(view.context, url)
                                     }
                                 }
                             }
@@ -220,15 +220,18 @@ open class OnboardingFragment : Fragment() {
                 //FIXME: Edge case on Android 7 fix with bottomNavigationBar, remains white after backpress
                 listOf(footer, text).forEach { view ->
                     view.movementMethod = LinkClickListener { url ->
-                        val withoutNavigation =
-                            url.buildUpon().encodedQuery("hideBottomNavigation=true").build()
-                        page.findNavController().navigate(
-                            NavDeepLinkRequest.Builder.fromUri(withoutNavigation).build()
-                        )
+                        showDeeplink(view.context, url.toString())
                     }
                 }
             }
         }
+
+        private fun showDeeplink(context: Context, url: String) =
+            SnabbleUiToolkit.executeAction(
+                context,
+                SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE,
+                bundleOf(SnabbleUiToolkit.DEEPLINK to url)
+            )
 
         override fun getItemCount() = onboardingModel.items.size
     }

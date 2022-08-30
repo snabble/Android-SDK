@@ -3,6 +3,7 @@ package io.snabble.sdk
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
@@ -25,11 +26,14 @@ import kotlin.collections.set
  * of the default Activites.
  */
 object SnabbleUiToolkit {
+    const val DEEPLINK="deeplink"
+
     enum class Event {
         SHOW_ONBOARDING,
         SHOW_ONBOARDING_DONE,
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
+        SHOW_DEEPLINK,
         GO_BACK
     }
 
@@ -107,6 +111,10 @@ object SnabbleUiToolkit {
                 SHOW_ONBOARDING_DONE -> activity?.finish()
                 SHOW_SHOP_LIST -> {}
                 SHOW_DETAILS_SHOP_LIST -> {}
+                SHOW_DEEPLINK -> {
+                    val deeplink = Uri.parse(requireNotNull(args?.getString(DEEPLINK)))
+                    context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = deeplink })
+                }
                 // unhandled actions
                 GO_BACK,
                 null -> {
