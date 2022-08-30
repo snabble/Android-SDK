@@ -26,7 +26,7 @@ import kotlin.collections.set
  * of the default Activites.
  */
 object SnabbleUiToolkit {
-    const val DEEPLINK="deeplink"
+    const val DEEPLINK = "deeplink"
 
     enum class Event {
         SHOW_ONBOARDING,
@@ -38,12 +38,12 @@ object SnabbleUiToolkit {
     }
 
     fun getHostFragmentActivity(context: Context?): FragmentActivity? {
-        var context = context
-        while (context is ContextWrapper) {
-            if (context is FragmentActivity) {
-                return context
+        var currentContext = context
+        while (currentContext is ContextWrapper) {
+            if (currentContext is FragmentActivity) {
+                return currentContext
             }
-            context = context.baseContext
+            currentContext = currentContext.baseContext
         }
         return null
     }

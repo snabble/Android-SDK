@@ -11,11 +11,11 @@ import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import io.snabble.sdk.ui.toolkit.R
 
-/** Hides and resizes the layout on overlap with other layouts*/
+/** Hides and resizes the layout on overlap with other layouts */
 class HideOnOverlapFrameLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
-    var viewGroupId: Int = -1
+    var viewGroupId: Int = View.NO_ID
 
     init {
         attrs?.let {
@@ -25,7 +25,7 @@ class HideOnOverlapFrameLayout @JvmOverloads constructor(
                 0, 0).apply {
 
                 try {
-                    viewGroupId = getResourceId(R.styleable.HideOnOverlapFrameLayout_viewGroupId, -1)
+                    viewGroupId = getResourceId(R.styleable.HideOnOverlapFrameLayout_viewGroupId, View.NO_ID)
                 } finally {
                     recycle()
                 }
