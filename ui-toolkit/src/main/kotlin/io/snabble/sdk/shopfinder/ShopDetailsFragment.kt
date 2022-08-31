@@ -27,7 +27,6 @@ import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.button.MaterialButton
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Project
@@ -48,8 +47,6 @@ import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
 import java.util.regex.Pattern
-
-// TODO: Implement ShopDetails from Teo e.g. door opening and alwyas open text
 
 /**
  * Displays the details of the selected shop.
@@ -78,11 +75,13 @@ open class ShopDetailsFragment : Fragment() {
     private lateinit var mapPinNavigate: ImageView
     private var homePinned = false
     private var storePinned = false
+    private val isCheckedInToShop: Boolean
+        get() = Snabble.currentCheckedInShop.value != null
+                && Snabble.checkedInProject.value != null
+                && Snabble.currentCheckedInShop.value?.id == shop.id
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        locationManager = LocationManager.getInstance(requireContext())
-        locationManager.startTrackingLocation()
 
         preferences = ShopfinderPreferences.getInstance(requireContext())
 
@@ -104,7 +103,7 @@ open class ShopDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.snabble_shop_details_fragment, container, false)
-
+        locationManager = LocationManager.getInstance(requireContext())
         shop = requireNotNull(arguments?.getParcelable(BUNDLE_KEY_SHOP))
         project =
             Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
@@ -112,7 +111,6 @@ open class ShopDetailsFragment : Fragment() {
         cachedGoogleMap = null
         mapViewPermission = v.findViewById(R.id.map_view_permission)
         bottomSheet = v.findViewById(R.id.bottom_sheet)
-        /**Shared pref Value the same? */
         if (preferences?.isMapsEnabled == true) {
             setupMapView(v, savedInstanceState)
         } else {
@@ -288,8 +286,7 @@ open class ShopDetailsFragment : Fragment() {
         val companyName = view.findViewById<TextView>(R.id.company_name)
         val companyStreet = view.findViewById<TextView>(R.id.company_street)
         val companyZip = view.findViewById<TextView>(R.id.company_zip)
-        val openDoor = view.findViewById<MaterialButton>(R.id.open_door)
-        val openTimes = view.findViewById<TextView>(R.id.opening_times)
+
         address.text = shop.street + "\n" + shop.zipCode + " " + shop.city
         address.contentDescription = getString(
             R.string.ShopDetails_Accessibility_address,
@@ -324,17 +321,9 @@ open class ShopDetailsFragment : Fragment() {
             }
         }
 
-        val openingTimesString = resources.getText(R.string.ShopDetails_alwaysOpen)
-
         if (shop.openingHours.isNullOrEmpty()){
-                if (openingTimesString.isNotNullOrBlank()){
-                    timetable.isVisible = false
-                    openTimes.setTextOrHide(openingTimesString)
-                }else{
-                    timetableTitle.isVisible = false
-                }
+            timetableTitle.isVisible = false
         } else {
-            openTimes.isVisible = false
             timetable.removeAllViews()
             val weekDays = arrayListOf("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
             shop.openingHours.sortBy { weekDays.indexOf(it.dayOfWeek)}
@@ -375,11 +364,12 @@ open class ShopDetailsFragment : Fragment() {
                     Snabble.checkedInProject.setValue(null)
                     checkInManager.shop = null
                     checkInManager.startUpdating()
+                    LocationManager.getInstance(requireContext()).startTrackingLocation()
                 } else {
                     checkInManager.shop = shop
                     Snabble.checkedInProject.setValue(project)
                     checkInManager.stopUpdating()
-                    Toast.makeText(context, "Checkin: ${shop.name}", Toast.LENGTH_LONG).show()
+                    LocationManager.getInstance(requireContext()).stopTrackingLocation()
                 }
                 updateDebugCheckinText()
                 updateShopDetails(view)
@@ -388,19 +378,15 @@ open class ShopDetailsFragment : Fragment() {
             debugCheckin.visibility = View.GONE
         }
 
-        val youAreHere = view.findViewById<View>(R.id.you_are_here)
-        youAreHere.isVisible = isCheckedInToShop
-
         val startScanner = view.findViewById<Button>(R.id.start_scanner)
-        val buttonTitle = resources.getText(R.string.Snabble_Shop_Details_button)
-        val openDoorTitle = resources.getText(R.string.ShopDetails_doorOpener)
+        val buttonTitle = resources.getText(R.string.Snabble_Scanner_start)
 
         if (isCheckedInToShop) {
             startScanner.setTextOrHide(buttonTitle)
-            openDoor.setTextOrHide(openDoorTitle)
+            distance.isVisible = false
         } else {
             startScanner.isVisible = false
-            openDoor.isVisible = false
+            distance.isVisible = true
         }
 
         startScanner.setOneShotClickListener {
@@ -410,14 +396,7 @@ open class ShopDetailsFragment : Fragment() {
             )
         }
 
-        openDoor.setOneShotClickListener {
-            SnabbleUiToolkit.executeAction(
-                requireContext(),
-                SnabbleUiToolkit.Event.OPEN_DOOR_ACTION
-            )
-        }
-
-        if (Snabble.projects.isNotEmpty()) {
+        if (Snabble.projects.size > 1) {
             val company = project?.company
             companyCountry.setTextOrHide(project?.company?.country?.let(::getDisplayNameByIso3Code))
             companyName.setTextOrHide(project?.company?.name)
@@ -432,10 +411,6 @@ open class ShopDetailsFragment : Fragment() {
             companyHeader.visibility = View.GONE
         }
     }
-
-    private val isCheckedInToShop: Boolean
-        get() =
-            Snabble.checkInManager.shop != null && Snabble.checkInManager.project != null && Snabble.checkInManager.shop?.id == shop.id
 
     @SuppressLint("SetTextI18n")
     private fun updateDebugCheckinText() {
@@ -570,5 +545,6 @@ open class ShopDetailsFragment : Fragment() {
                 packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
             return list.isNotEmpty()
         }
+
     }
 }

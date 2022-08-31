@@ -5,12 +5,12 @@
     <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
 
+    <string name="Snabble.Shop.Details.Shop.now">Jetzt einkaufen</string>
+
     <string name="Snabble.Shop.Finder.title" />
     <string name="Snabble.Shop.Details.title" />
-    <string name="Snabble.Shop.Details.button" />
+    <string name="Snabble.Scanner.start">Start scanner</string>
     <string name="Shop.youAreHere">Your are here</string>
-    <string name="ShopDetails.doorOpener"/>
-    <string name="ShopDetails.alwaysOpen"/>
 
     <!--Accessibility BaseShopList-->
     <string name="ShopDetails.Accessibility.address">%1$s in %2$s %3$s</string>
