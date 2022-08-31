@@ -48,6 +48,7 @@ import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.*
 import java.util.regex.Pattern
 
@@ -328,7 +329,12 @@ open class ShopDetailsFragment : Fragment() {
         val target = (if (DateFormat.is24HourFormat(requireContext()))
             DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
         else DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())).toFormat()
-        fun String.toLocalTime(): String = target.format(parser.parse(this))
+        fun String.toLocalTime(): String =
+            try {
+                target.format(parser.parse(this))
+            } catch (e: DateTimeParseException) {
+                this.take(5)
+            }
 
         if (shop.openingHours.isNullOrEmpty()) {
             timetableTitle.visibility = View.GONE
