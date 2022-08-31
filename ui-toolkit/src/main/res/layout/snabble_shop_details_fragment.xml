@@ -141,7 +141,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="8dp"
-                    tools:text="Start Scanner" />
+                    android:text="@string/Snabble.Shop.Detail.shopNow" />
 
                 <TextView
                     android:id="@+id/distance"
@@ -180,7 +180,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/ShopDetails.openingHours"
+                    android:text="@string/Snabble.Shop.Detail.openingHours"
                     android:textAppearance="?attr/textAppearanceTitleLarge"
                     android:textStyle="bold" />
 

@@ -60,7 +60,7 @@
                 android:paddingTop="2dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="2dp"
-                android:text="@string/Shop.youAreHere"
+                android:text="@string/Snabble.Shop.Finder.youarehere"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnPrimary"
                 app:backgroundTint="?attr/colorPrimary" />

@@ -44,7 +44,6 @@ import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.setOneShotClickListener
-import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -535,12 +534,12 @@ open class ShopDetailsFragment : Fragment() {
         mapView?.onStart()
 
         val supportActionBar = (context as AppCompatActivity).supportActionBar
-        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Details_title)
+        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Detail_title)
 
-        if (actionbarTitle.isNotNullOrBlank()) {
-            supportActionBar?.title = actionbarTitle
-        } else {
+        if (actionbarTitle == "Details") {
             supportActionBar?.title = shop.name
+        } else {
+            supportActionBar?.title = actionbarTitle
         }
     }
 

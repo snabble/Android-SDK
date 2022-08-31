@@ -5,10 +5,6 @@
     <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
 
-    <!--TODO: Strings in Phrase anlegen-->
-    <string name="Snabble.Shop.Finder.title" />
-    <string name="Snabble.Shop.Details.title" />
-    <string name="Snabble.Shop.Details.button" />
 
     <!--Accessibility BaseShopList-->
     <string name="ShopDetails.Accessibility.address">%1$s in %2$s %3$s</string>
@@ -19,7 +15,6 @@
     <string name="ShopDetails.contractingParty">Vertragspartner</string>
     <string name="ShopDetails.ForbiddenMaps.ActionTitle">Aktivieren</string>
     <string name="ShopDetails.ForbiddenMaps.Title">Du hast die Verwendung von %s deaktiviert.</string>
-    <string name="ShopDetails.openingHours">Öffnungszeiten</string>
     <!-- ********* ShopDetails ********* -->
     <string name="ShopList.Accessibility.address">%1$s in %2$s %3$s</string>
     <string name="ShopList.Accessibility.colapse">collapse</string>

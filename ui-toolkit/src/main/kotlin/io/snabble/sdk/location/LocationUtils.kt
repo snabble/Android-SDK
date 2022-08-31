@@ -5,7 +5,6 @@ import android.location.Location
 import android.location.LocationManager
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
-import kotlin.math.roundToInt
 
 object LocationUtils {
 
@@ -23,9 +22,9 @@ fun Location.toLatLng() = LatLng(latitude, longitude)
 
 fun Float.formatDistance() = toDouble().let {
     when {
-        it > 100000 -> it.formatThousands()
-        it > 1000 -> String.format("%.1f km", it / 1000f)
-        else -> String.format("%.0f m", it)
+        it > 100000 -> String.format("%,.0f km", it / 1000f)
+        it > 1000 -> String.format("%,.1f km", it / 1000f)
+        else -> String.format("%,.0f m", it)
     }
 }
 
@@ -34,13 +33,3 @@ fun LatLng.distanceTo(other: LatLng): Float = FloatArray(1).also {
 }[0]
 
 fun LatLng.formatted() = String.format(Locale.US, "%1.6f,%1.6f", latitude, longitude)
-
-fun Double.formatThousands(): String {
-    val distance = (this / 1000).roundToInt().toString()
-    val lastIndex = distance.length
-    return String.format(
-        "%s.%s km",
-        distance.substring(0, lastIndex - 3),
-        distance.substring(lastIndex - 3, lastIndex)
-    )
-}
