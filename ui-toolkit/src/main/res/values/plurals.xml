@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <plurals name="ShopList.numberOfStores">
-        <item quantity="one">@string/ShopList.numberOfStores.one</item>
-        <item quantity="other">@string/ShopList.numberOfStores</item>
-    </plurals>
+    
 </resources>

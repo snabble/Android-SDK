@@ -146,7 +146,7 @@ open class ShopDetailsFragment : Fragment() {
         } else {
             val activateMap = v.findViewById<View>(R.id.activate_map)
             val tv = v.findViewById<TextView>(R.id.maps_notice)
-            tv.text = getString(R.string.ShopDetails_ForbiddenMaps_Title, "Google Maps")
+            tv.text = getString(R.string.Snabble_Shop_Details_MapDisabled_title, "Google Maps")
             activateMap.setOnClickListener {
                 if (preferences?.hasGoogleMapsKey == true) {
                     preferences?.isMapsEnabled = true
@@ -314,14 +314,14 @@ open class ShopDetailsFragment : Fragment() {
     fun updateShopDetails(view: View) {
         address.text = shop.street + "\n" + shop.zipCode + " " + shop.city
         address.contentDescription = getString(
-            R.string.ShopDetails_Accessibility_address,
+            R.string.Snabble_Shop_Address_accessibility,
             shop.street,
             shop.zipCode,
             shop.city
         )
         phone.setTextOrHide(shop.phone)
         Linkify.addLinks(phone, Pattern.compile(".*"), shop.phone)
-        phone.setClickDescription(R.string.ShopDetails_Accessibility_startCall)
+        phone.setClickDescription(R.string.Snabble_Shop_Detail_Phonenumber_accessibility)
 
         phone.setOnClickListener {
             val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", shop.phone, null))
@@ -343,7 +343,7 @@ open class ShopDetailsFragment : Fragment() {
                     if (distance.text.toString() != distanceString) {
                         distance.text = distanceString
                         distance.contentDescription =
-                            getString(R.string.ShopDetails_Accessibility_distance, distanceString)
+                            getString(R.string.Snabble_Shop_Distance_accessibility, distanceString)
                     }
                 }
             }

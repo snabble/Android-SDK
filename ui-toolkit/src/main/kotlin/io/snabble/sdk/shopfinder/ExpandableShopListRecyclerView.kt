@@ -21,6 +21,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.*
 import io.snabble.accessibility.accessibility
+import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
@@ -222,7 +223,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         fun bindTo(item: Item, onToggle: () -> Unit) {
             name.text = item.name
             shopCount.text = itemView.context.resources.getQuantityString(
-                R.plurals.ShopList_numberOfStores,
+                R.plurals.Snabble_Shop_Finder_storeCount,
                 item.shops!!, item.shops
             )
             val project = item.project
@@ -230,10 +231,10 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
             load(project.assets, "icon", image)
 
             if (item.type == ViewType.ExpandedBrand) {
-                itemView.accessibility.setClickAction(R.string.ShopList_Accessibility_colapse)
+                itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
                 chevron.rotation = 270f
             } else {
-                itemView.accessibility.setClickAction(R.string.ShopList_Accessibility_expand)
+                itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
                 chevron.rotation = 90f
             }
 
@@ -247,19 +248,19 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
                     if (item.type == ViewType.ExpandedBrand) {
                         itemView.announceForAccessibility(
                             getString(
-                                R.string.ShopList_Accessibility_eventShopExpanded,
+                                R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
                                 item.name
                             )
                         )
-                        itemView.accessibility.setClickAction(R.string.ShopList_Accessibility_colapse)
+                        itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
                     } else {
                         itemView.accessibility.setClickAction(
                             getString(
-                                R.string.ShopList_Accessibility_eventShopColapsed,
+                                R.string.Snabble_Shop_List_EventShopColapsed_accessibility,
                                 item.name
                             )
                         )
-                        itemView.accessibility.setClickAction(R.string.ShopList_Accessibility_expand)
+                        itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
                     }
                 }
             })
@@ -269,6 +270,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
             } else {
                 youAreHereIndicator.isVisible = false
                 distance.setTextOrHide(item.distanceLabel)
+                distance.setClickDescription(R.string.Snabble_Shop_Distance_accessibility)
             }
         }
     }
@@ -282,10 +284,11 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         var youAreHereContainer: View = itemView.findViewById(R.id.you_are_here_container)
 
         fun bindTo(item: Item) {
+            itemView.setClickDescription(R.string.Snabble_Shop_List_ShowDetails_accessibility)
             name.text = item.name
             address.text = item.address
             address.contentDescription = getString(
-                R.string.ShopList_Accessibility_address,
+                R.string.Snabble_Shop_Address_accessibility,
                 item.street,
                 item.zipCode,
                 item.city
