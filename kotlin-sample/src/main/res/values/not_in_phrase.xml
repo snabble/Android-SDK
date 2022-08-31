@@ -6,6 +6,4 @@
     <string name="shop_title">Shops</string>
     <string name="Snabble.Shop.Details.button">Show Scanner</string>
     <string name="Onboarding.Terms.introText">Please accept our current terms of Use and conditions to shop with this app.</string>
-    <string name="ShopList.numberOfStores">%d Stores</string>
-    <string name="ShopList.numberOfStores.one">%d Store</string>
 </resources>

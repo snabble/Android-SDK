@@ -2,4 +2,21 @@
 <resources>
     <string name="Snabble.Onboarding.Link.show">Prezrieť</string>
     <string name="Snabble.Onboarding.next">Ďalej</string>
+    <!-- <street and house number> in <ZIP code> <city name> -->
+    <string name="Snabble.Shop.Address.accessibility">%1$s v %2$s %3$s</string>
+    <string name="Snabble.Shop.Detail.startNavigation">Chcete zapnúť navigáciu?</string>
+    <string name="Snabble.Shop.Detail.title">Detaily</string>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="few">%d obchody</item>
+        <item quantity="many">%d obchodov</item>
+        <item quantity="one">%d obchod</item>
+        <item quantity="other">%d  obchody/obchodov</item>
+        <item quantity="zero">Žiadne obchody</item>
+    </plurals>
+    <string name="Snabble.Shop.Finder.title">Obchod</string>
+    <string name="Snabble.Shop.Finder.youarehere">Nachádzate sa tu</string>
+    <string name="Snabble.Shop.List.Colapse.accessibility">zatvoriť</string>
+    <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s zatvorený</string>
+    <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s otvorený</string>
+    <string name="Snabble.Shop.List.Expand.accessibility">otvoriť</string>
 </resources>

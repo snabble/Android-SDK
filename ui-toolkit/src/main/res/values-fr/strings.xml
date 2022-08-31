@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources/>
+<resources>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="many">%d succursales</item>
+        <item quantity="one">%d succursale</item>
+        <item quantity="other">%d succursales</item>
+    </plurals>
+</resources>
