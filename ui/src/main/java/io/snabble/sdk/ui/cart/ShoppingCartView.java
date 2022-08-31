@@ -80,13 +80,13 @@ public class ShoppingCartView extends FrameLayout {
                 alertDialog.dismiss();
             }
 
-            String message = getResources().getString(R.string.Snabble_limitsAlert_checkoutNotAvailable,
+            String message = getResources().getString(R.string.Snabble_LimitsAlert_checkoutNotAvailable,
                     project.getPriceFormatter().format(project.getMaxCheckoutLimit()));
 
             alertDialog = new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.Snabble_limitsAlert_title)
+                    .setTitle(R.string.Snabble_LimitsAlert_title)
                     .setMessage(message)
-                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .setPositiveButton(R.string.Snabble_ok, null)
                     .create();
             alertDialog.show();
         }
@@ -97,13 +97,13 @@ public class ShoppingCartView extends FrameLayout {
                 alertDialog.dismiss();
             }
 
-            String message = getResources().getString(R.string.Snabble_limitsAlert_notAllMethodsAvailable,
+            String message = getResources().getString(R.string.Snabble_LimitsAlert_notAllMethodsAvailable,
                     project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit()));
 
             alertDialog = new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.Snabble_limitsAlert_title)
+                    .setTitle(R.string.Snabble_LimitsAlert_title)
                     .setMessage(message)
-                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .setPositiveButton(R.string.Snabble_ok, null)
                     .create();
             alertDialog.show();
         }
@@ -232,10 +232,10 @@ public class ShoppingCartView extends FrameLayout {
 
         if (cart.isRestorable()) {
             restore.setVisibility(View.VISIBLE);
-            scanProducts.setText(R.string.Snabble_Shoppingcart_emptyState_restartButtonTitle);
+            scanProducts.setText(R.string.Snabble_Shoppingcart_EmptyState_restartButtonTitle);
         } else {
             restore.setVisibility(View.GONE);
-            scanProducts.setText(R.string.Snabble_Shoppingcart_emptyState_buttonTitle);
+            scanProducts.setText(R.string.Snabble_Shoppingcart_EmptyState_buttonTitle);
         }
     }
 
@@ -255,9 +255,9 @@ public class ShoppingCartView extends FrameLayout {
             Resources res = getResources();
             StringBuilder sb = new StringBuilder();
             if (invalidProducts.size() == 1) {
-                sb.append(res.getString(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg_one)));
+                sb.append(res.getString(I18nUtils.getIdentifier(res, R.string.Snabble_SaleStop_ErrorMsg_one)));
             } else {
-                sb.append(res.getString(I18nUtils.getIdentifier(res, R.string.Snabble_saleStop_errorMsg)));
+                sb.append(res.getString(I18nUtils.getIdentifier(res, R.string.Snabble_SaleStop_errorMsg)));
             }
 
             sb.append("\n\n");
@@ -274,9 +274,9 @@ public class ShoppingCartView extends FrameLayout {
 
             new AlertDialog.Builder(getContext())
                     .setCancelable(false)
-                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
+                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_SaleStop_ErrorMsg_title))
                     .setMessage(sb.toString())
-                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .setPositiveButton(R.string.Snabble_ok, null)
                     .show();
 
             lastInvalidProducts = invalidProducts;
@@ -287,9 +287,9 @@ public class ShoppingCartView extends FrameLayout {
         if (cart.hasInvalidDepositReturnVoucher() && !hasAlreadyShownInvalidDeposit) {
             new AlertDialog.Builder(getContext())
                     .setCancelable(false)
-                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_saleStop_errorMsg_title))
-                    .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_invalidDepositVoucher_errorMsg))
-                    .setPositiveButton(R.string.Snabble_OK, null)
+                    .setTitle(I18nUtils.getIdentifier(getResources(), R.string.Snabble_SaleStop_ErrorMsg_title))
+                    .setMessage(I18nUtils.getIdentifier(getResources(), R.string.Snabble_InvalidDepositVoucher_errorMsg))
+                    .setPositiveButton(R.string.Snabble_ok, null)
                     .show();
             hasAlreadyShownInvalidDeposit = true;
         }

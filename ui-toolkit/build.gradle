@@ -2,9 +2,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
+apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
 
-description = "Snabble UI-Toolkit: The special Android User Interface snabble SDK"
+description = "Snabble UI-Toolkit: Attentional views for simple and sample apps for using the snabble SDK"
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -59,13 +59,12 @@ dependencies {
     implementation project(':ui')
 
 
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.navigation:navigation-runtime-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.1'
-    //implementation 'androidx.navigation:navigation-ui-ktx:2.5.1'
 
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
     api 'androidx.preference:preference-ktx:1.2.0'
 

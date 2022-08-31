@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -23,15 +22,12 @@ import com.google.gson.Gson
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.onboarding.OnboardingViewModel
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.ui.SnabbleUI
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var toolbar: Toolbar
-
-    private val viewModel: OnboardingViewModel by viewModels()
 
     lateinit var locationPermission: ActivityResultLauncher<String>
 
@@ -54,10 +50,6 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         toolbar.setNavigationOnClickListener { onBackPressed() }
-
-        viewModel.onboardingSeen.observe(this) {
-            navController.popBackStack()
-        }
 
         if (savedInstanceState == null) {
             val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()

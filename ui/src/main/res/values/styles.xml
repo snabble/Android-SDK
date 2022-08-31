@@ -9,7 +9,7 @@
         <item name="cornerSize">32dp</item>
     </style>
 
-    <style name="Snabble.Widget.MaterialComponents.Button" parent="Widget.Material3.Button"  />
+    <style name="Snabble.Widget.MaterialComponents.Button" parent="Widget.Material3.Button" />
     <style name="Snabble.Widget.MaterialComponents.Button.Passive" parent="Snabble.Widget.MaterialComponents.Button">
         <item name="backgroundTint">?attr/colorSurface</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
@@ -39,7 +39,7 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:text">@string/Snabble.Coupon.activate</item>
     </style>
-    <style name="ThemeOverlay.Snabble.CouponDetail.ActivateButtonStyle" parent="Snabble.CouponDetail.ActivateButtonStyle"/>
+    <style name="ThemeOverlay.Snabble.CouponDetail.ActivateButtonStyle" parent="Snabble.CouponDetail.ActivateButtonStyle" />
     <style name="Snabble.CouponDetail.AppliedButtonStyle" parent="Widget.Material3.Button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -51,7 +51,6 @@
         <item name="android:visibility">gone</item>
         <item name="android:text">@string/Snabble.Coupon.activated</item>
     </style>
-    <style name="ThemeOverlay.Snabble.CouponDetail.AppliedButtonStyle" parent="Snabble.CouponDetail.AppliedButtonStyle"/>
-    <style name="Snabble.TextAppearance.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
-    </style>
+    <style name="ThemeOverlay.Snabble.CouponDetail.AppliedButtonStyle" parent="Snabble.CouponDetail.AppliedButtonStyle" />
+    <style name="Snabble.TextAppearance.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium" />
 </resources>

@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Onboarding.Accessibility.openPrivacy">Datenschutz öffnen</string>
-    <string name="Onboarding.Accessibility.openToC">Nutzungsbedingungen öffnen</string>
-    <string name="Onboarding.Accessibility.title">Onboarding</string>
-    <string name="Onboarding.Button">Show</string>
-
+    <string name="Snabble.Onboarding.Deeplink.accessibility">open %s</string>
+    <string name="Snabble.Onboarding.done">Done</string>
+    <string name="Snabble.Onboarding.Link.show">Show</string>
+    <string name="Snabble.Onboarding.next">Continue</string>
 
     <!--TODO: Strings in Phrase anlegen-->
-    <!--Preview Onboarding-->
-    <string name="Snabble.Preview.Button">Weiter</string>
-    <string name="Snabble.Preview.Title">Willkommen bei…</string>
-    <string name="Snabble.Preview.Text">Hier findest du Produkte des täglichen Bedarfs und kannst rund um die Uhr ganz bequem einkaufen</string>
-    <string name="Snabble.Preview.Footer">Akzeptiere die Nutzungsbedingungen</string>
-
     <string name="Snabble.Shop.Finder.title" />
     <string name="Snabble.Shop.Details.title" />
     <string name="Snabble.Shop.Details.button" />
@@ -47,7 +40,7 @@
     <string name="ShopList.Accessibility.eventShopColapsed">%s collapsed</string>
     <string name="ShopList.Accessibility.eventShopExpanded">%s expanded</string>
     <string name="ShopList.Accessibility.expand">expand</string>
-    <string name="ShopList.loading">Loading Stores...</string>
+    <string name="ShopList.loading">Loading Stores…</string>
     <string name="ShopList.loadNow">Load Stores</string>
     <string name="ShopList.noShops">Store list could not be loaded</string>
     <string name="ShopList.numberOfStores">%d Stores</string>

@@ -102,7 +102,7 @@ class PaymentStatusView @JvmOverloads constructor(
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
-        back.text = resources.getString(R.string.Snabble_Cancel)
+        back.text = resources.getString(R.string.Snabble_cancel)
         back.setOnClickListener {
             val state = lastState
 

@@ -1,22 +1,44 @@
 package io.snabble.sdk.onboarding
 
 import android.content.Context
+import android.text.SpannedString
 import android.text.method.LinkMovementMethod
+import android.text.style.URLSpan
 import android.util.AttributeSet
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.view.ViewGroup
+import android.widget.*
+import androidx.core.os.bundleOf
+import androidx.core.text.getSpans
 import androidx.core.view.isVisible
+import io.snabble.accessibility.accessibility
+import io.snabble.accessibility.isTalkBackActive
+import io.snabble.sdk.SnabbleUiToolkit
+import io.snabble.sdk.onboarding.entities.OnboardingItem
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.utils.resolveImageOrHide
+import io.snabble.sdk.utils.LinkClickListener
+import io.snabble.sdk.utils.resolveTextOrHide
 import io.snabble.sdk.utils.setTextOrHide
 
 class OnboardingStepView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : RelativeLayout(context, attrs) {
+    private val logo: ImageView
+    private val text: TextView
+    private val title: TextView
+    private val footer: TextView
+    private val termsButton: Button
+
     init {
         inflate(context, R.layout.snabble_view_onboarding_step, this)
 
         isFocusable = true
+
+        logo = findViewById(R.id.logo)
+        text = findViewById(R.id.text)
+        title = findViewById(R.id.title)
+        footer = findViewById(R.id.footer)
+        termsButton = findViewById(R.id.terms_button)
 
         attrs?.let {
             context.theme.obtainStyledAttributes(attrs, R.styleable.OnboardingStepView, 0, 0).apply {
@@ -26,20 +48,98 @@ class OnboardingStepView @JvmOverloads constructor(
                     val footerText = getText(R.styleable.OnboardingStepView_footerText)
                     val image = getResourceId(R.styleable.OnboardingStepView_image, -1)
 
-                    findViewById<TextView>(R.id.title).setTextOrHide(titleText)
-                    findViewById<TextView>(R.id.text).setTextOrHide(contentText)
-                    val footer = findViewById<TextView>(R.id.footer)
+                    title.setTextOrHide(titleText)
+                    text.setTextOrHide(contentText)
                     footer.setTextOrHide(footerText)
                     footer.movementMethod = LinkMovementMethod.getInstance()
 
                     if (image != -1) {
-                        findViewById<ImageView>(R.id.image).apply {
+                        logo.apply {
                             setImageResource(image)
                             isVisible = true
                         }
                     }
                 } finally {
                     recycle()
+                }
+            }
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+        super.onAttachedToWindow()
+    }
+
+    private fun showDeeplink(context: Context, url: String) =
+        SnabbleUiToolkit.executeAction(
+            context,
+            SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE,
+            bundleOf(SnabbleUiToolkit.DEEPLINK to url)
+        )
+
+    fun bind(data: OnboardingItem) {
+        logo.resolveImageOrHide(data.imageSource)
+        text.resolveTextOrHide(data.text)
+        title.resolveTextOrHide(data.title)
+        footer.resolveTextOrHide(data.footer)
+        termsButton.resolveTextOrHide(data.termsButtonTitle)
+
+        data.link?.let { deeplink ->
+            termsButton.setOnClickListener {
+                showDeeplink(context, deeplink)
+            }
+        } ?: run { termsButton.isVisible = false }
+
+        // reset click listeners from last binding
+        listOf(footer, text).forEach { view ->
+            view.setOnClickListener(null)
+            view.setOnLongClickListener(null)
+        }
+
+        // Accessibility optimization:
+        // Detect in "footer" and "text" view for text links if there are 2 or less links if so make those links
+        // nonclickable and add special "double tap" and "long press" handling as optimization for talkback users.
+        if (context.isTalkBackActive) {
+            listOf(footer, text).forEach { view ->
+                // Check it text has links aka URLSpans
+                (view.text as? SpannedString)?.let { span ->
+                    val urls = span.getSpans<URLSpan>()
+                    if (urls.size in 1..2) {
+                        urls.map { url ->
+                            // filter those out with uri
+                            val start = span.getSpanStart(url)
+                            val end = span.getSpanEnd(url)
+                            span.subSequence(start, end) to url.url
+                        }.forEachIndexed { index, (label, url) ->
+                            // Add the special accessibility handling
+                            val action =
+                                view.context.getString(R.string.Snabble_Onboarding_Deeplink_accessibility, label)
+                            if (index == 0) {
+                                view.accessibility.setClickAction(action) {
+                                    showDeeplink(view.context, url)
+                                }
+                            } else {
+                                view.accessibility.setLongClickAction(action) {
+                                    showDeeplink(view.context, url)
+                                }
+                            }
+                        }
+                        // The part to make the links not clickable since we handle it with talkback
+                        view.apply {
+                            this.text = view.text.toString()
+                            movementMethod = null
+                        }
+                    }
+                }
+            }
+        } else {
+            //handle link click inside the App,
+            //FIXME: Edge case on Android 7 fix with bottomNavigationBar, remains white after backpress
+            listOf(footer, text).forEach { view ->
+                view.movementMethod = LinkClickListener { url ->
+                    showDeeplink(view.context, url.toString())
                 }
             }
         }

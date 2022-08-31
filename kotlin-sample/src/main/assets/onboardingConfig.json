@@ -1,24 +1,21 @@
 {
-  "configuration" : {
-    "hasPageControl" : true
-  },
   "items" : [
     {
       "imageSource": "snabble_onboarding_step1",
       "title": "Welcome to Snabble",
-      "text": "Scan your purchase yourself and pay directly in the app.",
+      "text": "Sample.Onboarding.message1",
       "footer": "No queueing and without putting your purchase on the belt.",
-      "nextButtonTitle": "Continue"
+      "customButtonTitle": "Let's go"
     }, {
       "imageSource": "snabble_onboarding_step2",
-      "text": "Enter a participating Penny store, start shopping and hold the barcode of an article in front of the camera.",
-      "nextButtonTitle": "Continue"
-    }, {
+      "text": "Sample.Onboarding.message2"
+    },
+    {
       "imageSource": "snabble_onboarding_step3",
-      "text": "Please accept the terms of use and take note of the privacy policy.",
+      "text": "Sample.Onboarding.message3",
       "termsButtonTitle": "Show",
       "link": "kotlin-sample://terms",
-      "nextButtonTitle": "Accept"
+      "customButtonTitle": "Accept"
     }
   ]
 }

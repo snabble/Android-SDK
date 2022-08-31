@@ -24,7 +24,6 @@ import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.location.LocationManager
 import io.snabble.sdk.onboarding.entities.OnboardingModel
 import io.snabble.sdk.shopfinder.ShopDetailsFragment
 import io.snabble.sdk.ui.SnabbleUI
@@ -52,14 +51,12 @@ class MainActivity : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment)
 
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
+        val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_home,
                 R.id.navigation_scanner,
                 R.id.navigation_cart,
 //                R.id.navigation_dummy_cart
-            )
-        )
+        ))
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -104,94 +101,57 @@ class MainActivity : AppCompatActivity() {
         }
 
         with(navController) {
-            SnabbleUI.setUiAction(
-                this@MainActivity,
-                SnabbleUI.Event.SHOW_BARCODE_SEARCH
-            ) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
                 navigate(R.id.navigation_barcode_search, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SCANNER) { _, args ->
                 navigate(R.id.navigation_scanner, args)
             }
-            SnabbleUI.setUiAction(
-                this@MainActivity,
-                SnabbleUI.Event.SHOW_SHOPPING_CART
-            ) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
                 navigate(R.id.navigation_cart, args)
 //                navigate(R.id.navigation_dummy_cart, args)
             }
-            SnabbleUI.setUiAction(
-                this@MainActivity,
-                SnabbleUI.Event.SHOW_SEPA_CARD_INPUT
-            ) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_sepa_card_input, args)
             }
-            SnabbleUI.setUiAction(
-                this@MainActivity,
-                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT
-            ) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_credit_card_input, args)
             }
-            SnabbleUI.setUiAction(
-                this@MainActivity,
-                SnabbleUI.Event.SHOW_PAYDIREKT_INPUT
-            ) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT) { _, args ->
                 navigate(R.id.navigation_paydirekt_input, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYONE_INPUT) { _, args ->
                 navigate(R.id.navigation_payone_input, args)
             }
-            SnabbleUI.setUiAction(
-                this@MainActivity,
-                SnabbleUI.Event.SHOW_AGE_VERIFICATION
-            ) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
                 navigate(R.id.navigation_age_verification, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
                 popBackStack()
             }
-            SnabbleUiToolkit.setUiAction(
-                this@MainActivity,
-                SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
-            ) { _, args ->
+            SnabbleUiToolkit.setUiAction(this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) { _, args ->
                 navigate(R.id.navigation_shops_details, args)
             }
-            SnabbleUiToolkit.setUiAction(
-                this@MainActivity,
-                SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION,
-            ) { _, _ ->
-                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
-                    R.id.navigation_scanner
+            SnabbleUiToolkit.setUiAction(this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION,) { _, _ ->
+                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId = R.id.navigation_scanner
             }
         }
 
-        locationPermission =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted) {
-                    if (ActivityCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                        ) == PackageManager.PERMISSION_GRANTED
-                        || ActivityCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        LocationManager.getInstance(this).startTrackingLocation()
-                        Snabble.checkInManager.startUpdating()
-                    }
-                } else {
-                    LocationManager.getInstance(this).stopTrackingLocation()
-                    Snabble.checkInManager.stopUpdating()
+        locationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    Snabble.checkInManager.startUpdating()
                 }
+            } else {
+                Snabble.checkInManager.stopUpdating()
             }
+        }
 
         // add a check in state listener to observe when a user enters or leaves a shop
-        Snabble.checkInManager.addOnCheckInStateChangedListener(object :
-            OnCheckInStateChangedListener {
+        Snabble.checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
-                Toast.makeText(this@MainActivity, "Check in: " + shop.name, Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(this@MainActivity, "Check in: " + shop.name, Toast.LENGTH_LONG).show()
             }
 
             override fun onCheckOut() {
@@ -211,15 +171,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-            || ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Snabble.checkInManager.startUpdating()
         }
     }

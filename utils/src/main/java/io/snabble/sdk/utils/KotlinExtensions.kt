@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
+import io.snabble.sdk.ui.setClickableLinks
 
 /**
  * Returns a Boolean. True if the given Charsequence is not null or blank
@@ -61,9 +62,9 @@ fun TextView.resolveTextOrHide(string: String?) {
     if (string.isNotNullOrBlank()) {
         val resId = context.getResourceId(string!!)
         if (resId != Resources.ID_NULL) {
-            setText(resId)
+            setClickableLinks(context.getText(resId))
         } else {
-            text = string
+            setClickableLinks(string)
         }
         isVisible = true
     } else {

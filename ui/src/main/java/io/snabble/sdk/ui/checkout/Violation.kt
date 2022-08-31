@@ -30,7 +30,7 @@ fun List<ViolationNotification>.showNotificationOnce(context: Context, cart: Sho
         AlertDialog.Builder(context)
             .setTitle(R.string.Snabble_Violations_title)
             .setMessage(message)
-            .setPositiveButton(R.string.Snabble_OK, null)
+            .setPositiveButton(R.string.Snabble_ok, null)
             .show()
     }
     cart.removeViolationNotification(this)

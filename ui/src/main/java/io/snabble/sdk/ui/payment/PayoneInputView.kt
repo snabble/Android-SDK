@@ -206,12 +206,12 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             .replace("{{mode}}", if(tokenizationData.isTesting) "test" else "live")
             .replace("{{language}}", language)
             .replace("{{supportedCardType}}", ccType)
-            .replace("{{lastname}}", context.getString(R.string.Snabble_Payone_Lastname))
+            .replace("{{lastname}}", context.getString(R.string.Snabble_Payone_lastname))
             .replace("{{cardNumberLabel}}", context.getString(R.string.Snabble_Payone_cardNumber))
             .replace("{{cvcLabel}}", context.getString(R.string.Snabble_Payone_cvc))
             .replace("{{expireMonthLabel}}", context.getString(R.string.Snabble_Payone_expireMonth))
             .replace("{{expireYearLabel}}", context.getString(R.string.Snabble_Payone_expireYear))
-            .replace("{{saveButtonLabel}}", context.getString(R.string.Snabble_Save))
+            .replace("{{saveButtonLabel}}", context.getString(R.string.Snabble_save))
             .replace("{{incompleteForm}}", context.getString(R.string.Snabble_Payone_incompleteForm))
             // URL is required for an origin check
             webView.loadDataWithBaseURL(

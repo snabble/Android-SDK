@@ -24,8 +24,7 @@ data class OnboardingItem(
     val title: String?,
     val text: String?,
     val footer: String?,
-    val nextButtonTitle: String?,
-    val prevButtonTitle: String?,
+    val customButtonTitle: String?,
     val termsButtonTitle: String?,
     val link: String?
 ) : Parcelable

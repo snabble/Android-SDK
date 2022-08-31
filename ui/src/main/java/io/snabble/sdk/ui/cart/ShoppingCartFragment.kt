@@ -26,12 +26,12 @@ open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppin
         if (item.itemId == R.id.action_delete) {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.Snabble_Shoppingcart_removeItems)
-                .setPositiveButton(R.string.Snabble_Yes) { _, _ ->
+                .setPositiveButton(R.string.Snabble_yes) { _, _ ->
                     requireNotNull(Snabble.checkedInProject.value).shoppingCart.clearBackup()
                     requireNotNull(Snabble.checkedInProject.value).shoppingCart.clear()
                     onCartCleared()
                 }
-                .setNegativeButton(R.string.Snabble_No, null)
+                .setNegativeButton(R.string.Snabble_no, null)
                 .create()
                 .show()
             return true

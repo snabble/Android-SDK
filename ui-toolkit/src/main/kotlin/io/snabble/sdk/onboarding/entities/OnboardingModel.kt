@@ -8,6 +8,6 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class OnboardingModel(
-    val configuration: OnboardingConfiguration,
+    val configuration: OnboardingConfiguration?,
     val items: List<OnboardingItem>
 ) : Parcelable

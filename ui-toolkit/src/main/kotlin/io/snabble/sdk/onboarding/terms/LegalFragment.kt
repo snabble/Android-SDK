@@ -6,11 +6,9 @@ import android.graphics.Canvas
 import android.net.Uri
 import android.util.Base64
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.fragment.findNavController
-import io.snabble.sdk.utils.appendDeeplinkQueryParams
+import androidx.core.os.bundleOf
+import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.utils.getImageId
-import io.snabble.sdk.utils.matchesAppScheme
 import java.io.ByteArrayOutputStream
 
 class LegalFragment : RawHtmlFragment() {
@@ -53,19 +51,14 @@ class LegalFragment : RawHtmlFragment() {
      * Otherwise it opens the url directly.
      */
     override fun shouldOverrideUrlLoading(url: Uri): Boolean {
-        if (url.matchesAppScheme(arguments)) {
-            findNavController().navigate(NavDeepLinkRequest.Builder.fromUri(url.appendDeeplinkQueryParams(arguments)).build())
-        } else {
-            try {
-                openUrl(url.toString())
-            } catch (e: Exception) {
-            }
-        }
+        SnabbleUiToolkit.executeAction(
+            requireContext(),
+            SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE,
+            bundleOf(SnabbleUiToolkit.DEEPLINK to url)
+        )
 
         return true
     }
-
-
 
     // check if drawable exists and if it is a vector drawable convert it to a data url for the webview
     private fun buildImageUrl(rawPath: String) : String? {
