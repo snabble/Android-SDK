@@ -12,10 +12,13 @@ import android.widget.TextView
 import kotlin.math.max
 import kotlin.math.min
 
-/** Handles url click events in a spannable string*/
-class LinkClickListener(private val onLinkClick : (url: Uri)->Unit) : LinkMovementMethod() {
+/** Handles url click events in a spannable string */
+class LinkClickListener(private val onLinkClick: (url: Uri) -> Unit) : LinkMovementMethod() {
     override fun handleMovementKey(widget: TextView?, buffer: Spannable, keyCode: Int, movementMetaState: Int, event: KeyEvent): Boolean {
-        if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) && KeyEvent.metaStateHasNoModifiers(movementMetaState) && event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+        if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)
+            && KeyEvent.metaStateHasNoModifiers(movementMetaState)
+            && event.action == KeyEvent.ACTION_DOWN
+            && event.repeatCount == 0) {
             val a = Selection.getSelectionStart(buffer)
             val b = Selection.getSelectionEnd(buffer)
 

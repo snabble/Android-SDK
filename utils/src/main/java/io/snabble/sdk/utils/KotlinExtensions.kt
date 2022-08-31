@@ -64,7 +64,7 @@ fun TextView.resolveTextOrHide(string: String?) {
         if (resId != Resources.ID_NULL) {
             setClickableLinks(context.getText(resId))
         } else {
-            text = string
+            setClickableLinks(string)
         }
         isVisible = true
     } else {

@@ -2,6 +2,7 @@ package io.snabble.sdk
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
@@ -27,15 +28,29 @@ import kotlin.collections.set
  * of the default Activites.
  */
 object SnabbleUiToolkit {
+    const val DEEPLINK = "deeplink"
+
     enum class Event {
         SHOW_ONBOARDING,
         SHOW_ONBOARDING_DONE,
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
+        SHOW_DEEPLINK,
         DETAILS_BUTTON_ACTION,
         OPEN_DOOR_ACTION,
         START_NAVIGATION,
         GO_BACK
+    }
+
+    fun getHostFragmentActivity(context: Context?): FragmentActivity? {
+        var currentContext = context
+        while (currentContext is ContextWrapper) {
+            if (currentContext is FragmentActivity) {
+                return currentContext
+            }
+            currentContext = currentContext.baseContext
+        }
+        return null
     }
 
     private class ActivityCallback(
@@ -56,6 +71,7 @@ object SnabbleUiToolkit {
     fun setUiAction(activity: AppCompatActivity, event: Event, action: Action) {
         if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
             actions[event] = ActivityCallback(WeakReference<AppCompatActivity>(activity), action)
+
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                 override fun onDestroy(owner: LifecycleOwner) {
                     actions.remove(event)
@@ -110,10 +126,13 @@ object SnabbleUiToolkit {
                     args,
                     true
                 )
+                SHOW_DEEPLINK -> {
+                    val deeplink = Uri.parse(requireNotNull(args?.getString(DEEPLINK)))
+                    context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = deeplink })
+                }
                 // unhandled actions
                 GO_BACK,
                 DETAILS_BUTTON_ACTION,
-                OPEN_DOOR_ACTION,
                 START_NAVIGATION,
                 null -> {
                 }
@@ -144,4 +163,8 @@ object SnabbleUiToolkit {
 
         context.startActivity(intent)
     }
+}
+
+interface Action {
+    fun execute(context: Context, args: Bundle?)
 }
