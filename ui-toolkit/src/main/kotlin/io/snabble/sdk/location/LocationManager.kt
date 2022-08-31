@@ -11,6 +11,7 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.tasks.Task
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.Logger
@@ -58,10 +59,10 @@ class LocationManager internal constructor(private val context: Context) {
 
         override fun onLocationResult(locationResult: LocationResult) {
             val checkInLocationManager = Snabble.checkInLocationManager
-            val mock = mockLocation
+            var mock = mockLocation
             if (mock != null) {
                 try {
-                    val mock = mockLocation
+                    mock = mockLocation
                     if (mock != null) {
                         val latLng = mock.split(";")
                         val loc = Location("static").apply {
@@ -112,7 +113,7 @@ class LocationManager internal constructor(private val context: Context) {
         if (checkLocationPermission()) {
             val locationRequest = LocationRequest.create()
             locationRequest.interval = 5000
-            locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            locationRequest.priority = PRIORITY_HIGH_ACCURACY
 
             logDebug("startLocationUpdates")
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)

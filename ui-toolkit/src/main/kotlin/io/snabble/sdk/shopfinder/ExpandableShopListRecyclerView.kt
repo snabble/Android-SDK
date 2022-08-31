@@ -67,6 +67,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
      * This is needed if u pass just one project to the view but the application holds more
      * than one project.
      * */
+    @Suppress("unused")
     var showAll: Boolean
         get() = adapter.showAll
         set(value) {

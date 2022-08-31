@@ -32,11 +32,17 @@ import io.snabble.sdk.ui.SnabbleUI
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var toolbar: Toolbar
+    private lateinit var locationManager: LocationManager
 
     lateinit var locationPermission: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        locationManager = LocationManager.getInstance(this)
+        //Starts location tracking after permission is granted
+        locationManager.startTrackingLocation()
+
         val sharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
 
@@ -52,17 +58,22 @@ class MainActivity : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment)
 
-        val appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.navigation_home,
-            R.id.navigation_scanner,
-            R.id.navigation_cart,
-//                R.id.navigation_dummy_cart
-        ))
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home,
+                R.id.navigation_scanner,
+                R.id.navigation_cart,
+                R.id.navigation_shops
+            )
+        )
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
+        //Onboarding Example:
+        //1. converting the json config file with Gson into the OnboardingModel object
+        //2. starting the Onboarding via the SnabbleUi action and passing the model as arg
         if (savedInstanceState == null) {
             val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
             val model = Gson().fromJson(json, OnboardingModel::class.java)
@@ -73,6 +84,9 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+
+        // Can be used to get args from deeplinks. In this case the args are used to
+        // enable/disable the toolbar and navbar for each page separately
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             println("Nav to ${resources.getResourceName(destination.id)}")
             // apply deeplink arguments to bundle
@@ -127,14 +141,22 @@ class MainActivity : AppCompatActivity() {
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
                 popBackStack()
             }
-            SnabbleUiToolkit.setUiAction(this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) { _, args ->
+            SnabbleUiToolkit.setUiAction(
+                this@MainActivity,
+                SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
+            ) { _, args ->
                 navigate(R.id.navigation_shops_details, args)
             }
-            SnabbleUiToolkit.setUiAction(this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION) { _, _ ->
-                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId = R.id.navigation_scanner
+            SnabbleUiToolkit.setUiAction(
+                this@MainActivity,
+                SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
+            ) { _, _ ->
+                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
+                    R.id.navigation_scanner
             }
         }
 
+        // listens to permission result and start tracking if permission is granted
         locationPermission =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -147,11 +169,11 @@ class MainActivity : AppCompatActivity() {
                             Manifest.permission.ACCESS_COARSE_LOCATION
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
-                        LocationManager.getInstance(this).startTrackingLocation()
+                        locationManager.startTrackingLocation()
                         Snabble.checkInManager.startUpdating()
                     }
                 } else {
-                    LocationManager.getInstance(this).stopTrackingLocation()
+                    locationManager.stopTrackingLocation()
                     Snabble.checkInManager.stopUpdating()
                 }
             }
@@ -179,8 +201,15 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-         || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+            || ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             Snabble.checkInManager.startUpdating()
         }
     }
@@ -188,5 +217,31 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Snabble.checkInManager.stopUpdating()
+    }
+
+
+    // Check in example if the "Snabble" "CheckInManager" is not used
+    @Suppress("unused")
+    fun checkIn() {
+        val shopList = Snabble.projects[0].shops
+        // CheckinRadius in Meters
+        val checkInRadius = 15.0f
+
+        // Observe the current location via the locationManager to track if a shop matches
+        // the check in radius. If yes check in.
+        locationManager.location.observe(this) { currentLocation ->
+            val nearestshop =
+                shopList.firstOrNull { it.location.distanceTo(currentLocation) < checkInRadius }
+
+            if (nearestshop != null) {
+                Snabble.checkedInShop = nearestshop
+                Snabble.checkedInProject.setValue(Snabble.projects.first())
+            } else {
+                Snabble.checkedInShop = null
+                Snabble.checkedInProject.setValue(null)
+            }
+
+        }
+
     }
 }

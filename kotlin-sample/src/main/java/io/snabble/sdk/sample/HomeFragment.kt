@@ -6,11 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import io.snabble.sdk.sample.R
 
 class HomeFragment : Fragment() {
     override fun onCreateView(
@@ -24,6 +21,7 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.navigation_payment_credentials)
         }
 
+        // Start dialog for location permission
         root.findViewById<Button>(R.id.request_location_permission).setOnClickListener {
             (requireActivity() as MainActivity).locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }

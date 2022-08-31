@@ -34,7 +34,7 @@ open class ShopListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        locationManager = LocationManager.getInstance(requireContext())
+        locationManager = LocationManager.getInstance(requireContext().applicationContext)
         return inflater.inflate(R.layout.snabble_shop_list_fragment, container, false)
     }
 
