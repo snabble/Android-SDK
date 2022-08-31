@@ -1,6 +1,6 @@
 # Snabble UI-Toolkit
 
-Android UI-Toolkit for Snabble.
+Android UI-Toolkit for Snabble
 
 ## Table of Contents
 
@@ -169,27 +169,27 @@ To set up the shop finder:
 1.1 Set it up in ur Navigation file
 
 ```xml
-     <fragment
-        android:id="@+id/navigation_shops"
-        android:name="io.snabble.sdk.shopfinder.ShopListFragment"
-        android:label="your label" />
+<fragment
+    android:id="@+id/navigation_shops"
+    android:name="io.snabble.sdk.shopfinder.ShopListFragment"
+    android:label="your label" />
 ```
 1.2 Navigate to your destination
 ```kotlin
-    navController.navigate(R.id.navigation_shops)
+navController.navigate(R.id.navigation_shops)
 ```
 2. Set it up as part of a Navigation Bar
 2.1 In your menu file set up the destination for the tab
 ```xml
-    <item
-        android:id="@id/navigation_shops"
-        android:icon="your icon"
-        android:title="your title" />
+<item
+    android:id="@id/navigation_shops"
+    android:icon="your icon"
+    android:title="your title" />
 ```
 3.Execute the SnabbleUi-Toolkit event to start the shop finder
 
 ```kotlin
-    SnabbleUiToolkit.executeAction(context,SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
+SnabbleUiToolkit.executeAction(context,SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
 ```
 
 4.Extend the 'ShopListFragment' to implement custom behaviour (e.g back button for toolbar etc.)
@@ -199,12 +199,10 @@ the 'ShopDetailsFragment' and navigate to the new destination by overwriting the
 SHOW_SHOP_LIST_DETAILS
 
 ```kotlin
-    SnabbleUiToolkit.setUiAction(
-        this@MainActivity,
-        SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) 
-        {_, args -> navigate(R.id.navigation_shops_details, args)}
+SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) {_, args ->
+    navigate(R.id.navigation_shops_details, args)
+}
 ```
-
 
 ### Customization
 
@@ -232,8 +230,7 @@ To set up the button overwrite the following string
 to set up an event for the button click set up an ui action for the SHOW_DETAILS_BUTTON_ACTION event
 
 ```kotlin
-    SnabbleUiToolkit.setUiAction(
-        this@MainActivity,
-        SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION)
-        { _, _ -> /**your action*/}
+SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION) { _, _ ->
+    // your action
+}
 ```

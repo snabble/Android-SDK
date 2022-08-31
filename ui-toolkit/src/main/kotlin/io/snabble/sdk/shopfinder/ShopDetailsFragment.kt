@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +46,9 @@ import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.util.*
 import java.util.regex.Pattern
 
 /**
@@ -347,6 +351,17 @@ open class ShopDetailsFragment : Fragment() {
         }
 
 
+        val parser = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.GERMANY)
+        val target = (if (DateFormat.is24HourFormat(requireContext()))
+            DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
+        else DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())).toFormat()
+        fun String.toLocalTime(): String =
+            try {
+                target.format(parser.parse(this))
+            } catch (e: DateTimeParseException) {
+                this.take(5)
+            }
+
         if (shop.openingHours.isNullOrEmpty()) {
             timetableTitle.isVisible = false
         } else {
@@ -377,7 +392,7 @@ open class ShopDetailsFragment : Fragment() {
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
                 val textView = TextView(context)
-                textView.text = spec.opens.take(5) + " \u2013 " + spec.closes.take(5)
+                textView.text = spec.opens.toLocalTime() + " \u2013 " + spec.closes.toLocalTime()
                 timetable.addView(
                     textView,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -578,6 +593,5 @@ open class ShopDetailsFragment : Fragment() {
                 packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
             return list.isNotEmpty()
         }
-
     }
 }

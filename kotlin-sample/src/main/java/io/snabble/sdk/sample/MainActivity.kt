@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
 
         val appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.navigation_home,
-                R.id.navigation_scanner,
-                R.id.navigation_cart,
+            R.id.navigation_home,
+            R.id.navigation_scanner,
+            R.id.navigation_cart,
 //                R.id.navigation_dummy_cart
         ))
 
@@ -66,7 +66,11 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
             val model = Gson().fromJson(json, OnboardingModel::class.java)
-            SnabbleUiToolkit.executeAction(this, SnabbleUiToolkit.Event.SHOW_ONBOARDING, bundleOf("model" to model))
+            SnabbleUiToolkit.executeAction(
+                this,
+                SnabbleUiToolkit.Event.SHOW_ONBOARDING,
+                bundleOf("model" to model)
+            )
         }
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
@@ -102,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 navigate(R.id.navigation_scanner, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
-                 navigate(R.id.navigation_cart, args)
+                navigate(R.id.navigation_cart, args)
 //                navigate(R.id.navigation_dummy_cart, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
@@ -117,25 +121,17 @@ class MainActivity : AppCompatActivity() {
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYONE_INPUT) { _, args ->
                 navigate(R.id.navigation_payone_input, args)
             }
-            SnabbleUI.setUiAction(
-                this@MainActivity,
-                SnabbleUI.Event.SHOW_AGE_VERIFICATION
-            ) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
                 navigate(R.id.navigation_age_verification, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
                 popBackStack()
             }
-            SnabbleUiToolkit.setUiAction(
-                this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
-            ) { _, args ->
+            SnabbleUiToolkit.setUiAction(this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) { _, args ->
                 navigate(R.id.navigation_shops_details, args)
             }
-            SnabbleUiToolkit.setUiAction(
-                this@MainActivity, SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION,
-            ) { _, _ ->
-                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
-                    R.id.navigation_scanner
+            SnabbleUiToolkit.setUiAction(this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION) { _, _ ->
+                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId = R.id.navigation_scanner
             }
         }
 

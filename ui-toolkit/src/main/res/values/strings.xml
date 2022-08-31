@@ -1,16 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="Snabble.Onboarding.Deeplink.accessibility">open %s</string>
     <string name="Snabble.Onboarding.done">Done</string>
     <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
 
-    <string name="Snabble.Shop.Details.Shop.now">Jetzt einkaufen</string>
-
+    <!--TODO: Strings in Phrase anlegen-->
     <string name="Snabble.Shop.Finder.title" />
     <string name="Snabble.Shop.Details.title" />
-    <string name="Snabble.Scanner.start">Start scanner</string>
-    <string name="Shop.youAreHere">Your are here</string>
+    <string name="Snabble.Shop.Details.button" />
 
     <!--Accessibility BaseShopList-->
     <string name="ShopDetails.Accessibility.address">%1$s in %2$s %3$s</string>
