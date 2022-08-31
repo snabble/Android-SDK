@@ -7,7 +7,7 @@ import androidx.annotation.Keep
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.gms.maps.MapView
 import io.snabble.sdk.ui.toolkit.R
-//Todo: Use for both
+
 @Keep
 internal class MapPushUpBehavior @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : CoordinatorLayout.Behavior<MapView?>(context, attrs) {
     private var shopDetailsFragment: ShopDetailsFragment? = null

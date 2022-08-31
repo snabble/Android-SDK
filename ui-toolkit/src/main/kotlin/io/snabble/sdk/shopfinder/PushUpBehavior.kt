@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import io.snabble.sdk.ui.toolkit.R
-//Todo: Use for snabble and teo
 
 @Keep
 internal class PushUpBehavior(context: Context?, attrs: AttributeSet?) : CoordinatorLayout.Behavior<View>(context, attrs) {

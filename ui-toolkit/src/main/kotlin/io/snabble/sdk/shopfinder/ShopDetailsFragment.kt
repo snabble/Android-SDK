@@ -1,6 +1,5 @@
 package io.snabble.sdk.shopfinder
 
-
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -60,12 +59,9 @@ import java.util.regex.Pattern
  * setUiAction for this event to declare the action for the button click.
  * */
 open class ShopDetailsFragment : Fragment() {
+
     private lateinit var locationManager: LocationManager
     private lateinit var shop: Shop
-    private var preferences: ShopfinderPreferences? = null
-    private var project: Project? = null
-    private var mapView: MapView? = null
-    private var cachedGoogleMap: GoogleMap? = null
     private lateinit var mapViewPermission: View
     private lateinit var bottomSheet: View
     private lateinit var dayTable: Map<String, String>
@@ -73,8 +69,25 @@ open class ShopDetailsFragment : Fragment() {
     private lateinit var mapPinHome: ImageView
     private lateinit var mapPinShop: ImageView
     private lateinit var mapPinNavigate: ImageView
+    private lateinit var image: ImageView
+    private lateinit var address: TextView
+    private lateinit var phone: TextView
+    private lateinit var distance: TextView
+    private lateinit var timetableTitle: View
+    private lateinit var timetable: ViewGroup
+    private lateinit var companyHeader: TextView
+    private lateinit var companyCountry: TextView
+    private lateinit var companyName: TextView
+    private lateinit var companyStreet: TextView
+    private lateinit var companyZip: TextView
+
+    private var preferences: ShopfinderPreferences? = null
+    private var project: Project? = null
+    private var mapView: MapView? = null
+    private var cachedGoogleMap: GoogleMap? = null
     private var homePinned = false
     private var storePinned = false
+
     private val isCheckedInToShop: Boolean
         get() = Snabble.currentCheckedInShop.value != null
                 && Snabble.checkedInProject.value != null
@@ -103,14 +116,28 @@ open class ShopDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.snabble_shop_details_fragment, container, false)
+        image = v.findViewById(R.id.image)
+        address = v.findViewById(R.id.address)
+        phone = v.findViewById(R.id.phone)
+        distance = v.findViewById(R.id.distance)
+        timetableTitle = v.findViewById(R.id.timetable_title)
+        timetable = v.findViewById(R.id.timetable)
+        companyHeader = v.findViewById(R.id.company_header)
+        companyCountry = v.findViewById(R.id.company_country)
+        companyName = v.findViewById(R.id.company_name)
+        companyStreet = v.findViewById(R.id.company_street)
+        companyZip = v.findViewById(R.id.company_zip)
+
         locationManager = LocationManager.getInstance(requireContext())
         shop = requireNotNull(arguments?.getParcelable(BUNDLE_KEY_SHOP))
-        project =
-            Snabble.projects.firstOrNull() { project -> project.shops.any { projectShop -> projectShop.id == shop.id } }
+        project = Snabble.projects.firstOrNull { project ->
+            project.shops.any { projectShop -> projectShop.id == shop.id }
+        }
 
         cachedGoogleMap = null
         mapViewPermission = v.findViewById(R.id.map_view_permission)
         bottomSheet = v.findViewById(R.id.bottom_sheet)
+
         if (preferences?.isMapsEnabled == true) {
             setupMapView(v, savedInstanceState)
         } else {
@@ -137,6 +164,7 @@ open class ShopDetailsFragment : Fragment() {
                     }
                 })
         }
+
         mapPinHome = v.findViewById(R.id.map_pin_home)
         mapPinHome.setOnClickListener(object : OneShotClickListener() {
             override fun click() {
@@ -145,6 +173,7 @@ open class ShopDetailsFragment : Fragment() {
                 }
             }
         })
+
         mapPinShop = v.findViewById(R.id.map_pin_store)
         mapPinShop.setOnClickListener(object : OneShotClickListener() {
             override fun click() {
@@ -167,16 +196,12 @@ open class ShopDetailsFragment : Fragment() {
                 SnabbleUiToolkit.Event.START_NAVIGATION
             )
         }
+
         val companyNotice = v.findViewById<TextView>(R.id.company_notice)
 
         project?.let { project ->
             val text = project.getText("companyNotice")
-            if (text != null) {
-                companyNotice.visibility = View.VISIBLE
-                companyNotice.text = text
-            } else {
-                companyNotice.visibility = View.GONE
-            }
+            companyNotice.setTextOrHide(text)
         }
 
         applyBottomSheetPeekHeight(v)
@@ -189,13 +214,16 @@ open class ShopDetailsFragment : Fragment() {
         mapView = v.findViewById(R.id.map_view)
         val mapControls = v.findViewById<View>(R.id.map_controls)
         var mapViewBundle: Bundle? = null
+
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(BUNDLE_KEY_MAPVIEW)
         }
-        mapView?.visibility = View.VISIBLE
-        mapControls.visibility = View.VISIBLE
-        mapViewPermission.visibility = View.GONE
+
+        mapView?.isVisible = true
+        mapControls.isVisible = true
+        mapViewPermission.isVisible = false
         mapView?.onCreate(mapViewBundle)
+
         mapView?.viewTreeObserver?.addOnGlobalLayoutListener(
             object : OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -203,6 +231,7 @@ open class ShopDetailsFragment : Fragment() {
                     applyBottomSheetPeekHeight(v)
                 }
             })
+
         accessGoogleMap { googleMap ->
             project?.let { project ->
                 for (shop in project.shops) {
@@ -220,8 +249,10 @@ open class ShopDetailsFragment : Fragment() {
                     }
                 }
             }
+
             googleMap.uiSettings.isMyLocationButtonEnabled = false
             googleMap.uiSettings.isMapToolbarEnabled = false
+
             if (preferences?.isInDarkMode == true) {
                 googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
@@ -230,9 +261,11 @@ open class ShopDetailsFragment : Fragment() {
                     )
                 )
             }
+
             if (LocationManager.getInstance(requireContext()).isLocationAvailable()) {
                 googleMap.isMyLocationEnabled = true
             }
+
             googleMap.setOnCameraMoveStartedListener { reason: Int ->
                 if (reason != OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION) {
                     homePinned = false
@@ -241,6 +274,7 @@ open class ShopDetailsFragment : Fragment() {
                     mapPinShop.setImageResource(R.drawable.snabble_map_store)
                 }
             }
+
             zoomToShop(shop, false)
         }
         val pushUpBehavior = mapView?.behavior as? MapPushUpBehavior
@@ -275,18 +309,6 @@ open class ShopDetailsFragment : Fragment() {
 
     @SuppressLint("SetTextI18n", "MissingPermission")
     fun updateShopDetails(view: View) {
-        val image = view.findViewById<ImageView>(R.id.image)
-        val address = view.findViewById<TextView>(R.id.address)
-        val phone = view.findViewById<TextView>(R.id.phone)
-        val distance = view.findViewById<TextView>(R.id.distance)
-        val timetableTitle = view.findViewById<View>(R.id.timetable_title)
-        val timetable = view.findViewById<ViewGroup>(R.id.timetable)
-        val companyHeader = view.findViewById<TextView>(R.id.company_header)
-        val companyCountry = view.findViewById<TextView>(R.id.company_country)
-        val companyName = view.findViewById<TextView>(R.id.company_name)
-        val companyStreet = view.findViewById<TextView>(R.id.company_street)
-        val companyZip = view.findViewById<TextView>(R.id.company_zip)
-
         address.text = shop.street + "\n" + shop.zipCode + " " + shop.city
         address.contentDescription = getString(
             R.string.ShopDetails_Accessibility_address,
@@ -297,6 +319,7 @@ open class ShopDetailsFragment : Fragment() {
         phone.setTextOrHide(shop.phone)
         Linkify.addLinks(phone, Pattern.compile(".*"), shop.phone)
         phone.setClickDescription(R.string.ShopDetails_Accessibility_startCall)
+
         phone.setOnClickListener {
             val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", shop.phone, null))
             startActivity(intent)
@@ -306,34 +329,46 @@ open class ShopDetailsFragment : Fragment() {
             project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
         }
 
-        locationManager.location.observe(viewLifecycleOwner) { location ->
-            distance.isVisible = location != null
-            location?.let { currentLocation ->
-                distance.visibility = View.VISIBLE
-                val distanceString = currentLocation.toLatLng()
-                    .distanceTo(LatLng(shop.latitude, shop.longitude))
-                    .formatDistance()
-                if (distance.text.toString() != distanceString) {
-                    distance.text = distanceString
-                    distance.contentDescription =
-                        getString(R.string.ShopDetails_Accessibility_distance, distanceString)
+        if (!isCheckedInToShop) {
+            locationManager.location.observe(viewLifecycleOwner) { location ->
+                distance.isVisible = location != null
+                location?.let { currentLocation ->
+                    distance.isVisible = true
+                    val distanceString = currentLocation.toLatLng()
+                        .distanceTo(LatLng(shop.latitude, shop.longitude))
+                        .formatDistance()
+                    if (distance.text.toString() != distanceString) {
+                        distance.text = distanceString
+                        distance.contentDescription =
+                            getString(R.string.ShopDetails_Accessibility_distance, distanceString)
+                    }
                 }
             }
         }
 
-        if (shop.openingHours.isNullOrEmpty()){
+
+        if (shop.openingHours.isNullOrEmpty()) {
             timetableTitle.isVisible = false
         } else {
             timetable.removeAllViews()
-            val weekDays = arrayListOf("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
-            shop.openingHours.sortBy { weekDays.indexOf(it.dayOfWeek)}
-
+            val weekDays =
+                arrayListOf(
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                )
+            shop.openingHours.sortBy { it.opens }
+            shop.openingHours.sortBy { weekDays.indexOf(it.dayOfWeek) }
             shop.openingHours?.forEach { spec ->
                 val day = TextView(context)
                 if (weekDays.contains(spec.dayOfWeek)) {
                     day.text = "${dayTable[spec.dayOfWeek]}: "
                     weekDays.remove(spec.dayOfWeek)
-                }else{
+                } else {
                     day.text = ""
                 }
                 timetable.addView(
@@ -356,6 +391,7 @@ open class ShopDetailsFragment : Fragment() {
         val checkinAllowed =
             preferences?.projectCode != null && project?.id == Snabble.projects[0].id
         val checkInManager = Snabble.checkInManager
+
         if (checkinAllowed || debug) {
             debugCheckin.isVisible = true
             updateDebugCheckinText()
@@ -364,18 +400,18 @@ open class ShopDetailsFragment : Fragment() {
                     Snabble.checkedInProject.setValue(null)
                     checkInManager.shop = null
                     checkInManager.startUpdating()
-                    LocationManager.getInstance(requireContext()).startTrackingLocation()
+                    locationManager.startTrackingLocation()
                 } else {
                     checkInManager.shop = shop
                     Snabble.checkedInProject.setValue(project)
                     checkInManager.stopUpdating()
-                    LocationManager.getInstance(requireContext()).stopTrackingLocation()
+                    locationManager.stopTrackingLocation()
                 }
                 updateDebugCheckinText()
                 updateShopDetails(view)
             }
         } else {
-            debugCheckin.visibility = View.GONE
+            debugCheckin.isVisible = false
         }
 
         val startScanner = view.findViewById<Button>(R.id.start_scanner)
@@ -392,7 +428,7 @@ open class ShopDetailsFragment : Fragment() {
         startScanner.setOneShotClickListener {
             SnabbleUiToolkit.executeAction(
                 requireContext(),
-                SnabbleUiToolkit.Event.DETAILS_BUTTON_ACTION
+                SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
             )
         }
 
@@ -404,11 +440,11 @@ open class ShopDetailsFragment : Fragment() {
             if (company != null) {
                 companyZip.text = company.zip + " " + company.city
             } else {
-                companyHeader.visibility = View.GONE
-                companyZip.visibility = View.GONE
+                companyHeader.isVisible = false
+                companyZip.isVisible = false
             }
         } else {
-            companyHeader.visibility = View.GONE
+            companyHeader.isVisible = false
         }
     }
 
@@ -491,8 +527,6 @@ open class ShopDetailsFragment : Fragment() {
         } else {
             supportActionBar?.title = shop.name
         }
-
-//        shopManager?.addOnCheckInStateChangedListener(this)
     }
 
     override fun onResume() {
@@ -508,7 +542,6 @@ open class ShopDetailsFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         mapView?.onStop()
-//        shopManager?.removeOnCheckInStateChangedListener(this)
     }
 
     override fun onDestroyView() {

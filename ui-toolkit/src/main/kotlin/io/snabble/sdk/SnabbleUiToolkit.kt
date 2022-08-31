@@ -36,21 +36,9 @@ object SnabbleUiToolkit {
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
         SHOW_DEEPLINK,
-        DETAILS_BUTTON_ACTION,
-        OPEN_DOOR_ACTION,
+        DETAILS_SHOP_BUTTON_ACTION,
         START_NAVIGATION,
         GO_BACK
-    }
-
-    fun getHostFragmentActivity(context: Context?): FragmentActivity? {
-        var currentContext = context
-        while (currentContext is ContextWrapper) {
-            if (currentContext is FragmentActivity) {
-                return currentContext
-            }
-            currentContext = currentContext.baseContext
-        }
-        return null
     }
 
     private class ActivityCallback(
@@ -132,7 +120,7 @@ object SnabbleUiToolkit {
                 }
                 // unhandled actions
                 GO_BACK,
-                DETAILS_BUTTON_ACTION,
+                DETAILS_SHOP_BUTTON_ACTION,
                 START_NAVIGATION,
                 null -> {
                 }
@@ -163,8 +151,4 @@ object SnabbleUiToolkit {
 
         context.startActivity(intent)
     }
-}
-
-interface Action {
-    fun execute(context: Context, args: Bundle?)
 }

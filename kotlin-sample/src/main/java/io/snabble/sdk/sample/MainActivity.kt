@@ -117,21 +117,22 @@ class MainActivity : AppCompatActivity() {
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYONE_INPUT) { _, args ->
                 navigate(R.id.navigation_payone_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
+            SnabbleUI.setUiAction(
+                this@MainActivity,
+                SnabbleUI.Event.SHOW_AGE_VERIFICATION
+            ) { _, args ->
                 navigate(R.id.navigation_age_verification, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
                 popBackStack()
             }
             SnabbleUiToolkit.setUiAction(
-                this@MainActivity,
-                SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
+                this@MainActivity, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
             ) { _, args ->
                 navigate(R.id.navigation_shops_details, args)
             }
             SnabbleUiToolkit.setUiAction(
-                this@MainActivity,
-                SnabbleUiToolkit.Event.DETAILS_BUTTON_ACTION,
+                this@MainActivity, SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION,
             ) { _, _ ->
                 navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
                     R.id.navigation_scanner

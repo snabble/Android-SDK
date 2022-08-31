@@ -264,10 +264,10 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
                 }
             })
             if (item.isCheckedIn) {
-                youAreHereIndicator.visibility = VISIBLE
+                youAreHereIndicator.isVisible = true
                 distance.visibility = GONE
             } else {
-                youAreHereIndicator.visibility = GONE
+                youAreHereIndicator.isVisible = false
                 distance.setTextOrHide(item.distanceLabel)
             }
         }
@@ -293,7 +293,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
             youAreHereContainer.isVisible = item.isCheckedIn
 
             if (item.isCheckedIn) {
-                distance.visibility = GONE
+                distance.isVisible = false
             } else {
                 distance.setTextOrHide(item.distanceLabel)
             }
