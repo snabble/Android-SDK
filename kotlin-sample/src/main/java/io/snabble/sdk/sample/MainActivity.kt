@@ -84,7 +84,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
         // Can be used to get args from deeplinks. In this case the args are used to
         // enable/disable the toolbar and navbar for each page separately
         navController.addOnDestinationChangedListener { _, destination, arguments ->
@@ -97,7 +96,8 @@ class MainActivity : AppCompatActivity() {
                         when {
                             value?.toIntOrNull() != null -> arguments.putInt(key, value.toInt())
                             value?.toLongOrNull() != null -> arguments.putLong(key, value.toLong())
-                            value?.toBooleanStrictOrNull() != null -> arguments.putBoolean(key, value.toBoolean())
+                            value?.toBooleanStrictOrNull() != null -> arguments.putBoolean(key,
+                                value.toBoolean())
                             else -> arguments.putString(key, deeplink.getQueryParameter(key))
                         }
                     }
@@ -113,29 +113,35 @@ class MainActivity : AppCompatActivity() {
         }
 
         with(navController) {
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity,
+                SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
                 navigate(R.id.navigation_barcode_search, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SCANNER) { _, args ->
                 navigate(R.id.navigation_scanner, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity,
+                SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
                 navigate(R.id.navigation_cart, args)
 //                navigate(R.id.navigation_dummy_cart, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity,
+                SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_sepa_card_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity,
+                SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT) { _, args ->
                 navigate(R.id.navigation_credit_card_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity,
+                SnabbleUI.Event.SHOW_PAYDIREKT_INPUT) { _, args ->
                 navigate(R.id.navigation_paydirekt_input, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_PAYONE_INPUT) { _, args ->
                 navigate(R.id.navigation_payone_input, args)
             }
-            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
+            SnabbleUI.setUiAction(this@MainActivity,
+                SnabbleUI.Event.SHOW_AGE_VERIFICATION) { _, args ->
                 navigate(R.id.navigation_age_verification, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
@@ -147,12 +153,13 @@ class MainActivity : AppCompatActivity() {
             ) { _, args ->
                 navigate(R.id.navigation_shops_details, args)
             }
-            //SnabbleUiToolkit.setUiAction(
+            SnabbleUiToolkit.setUiAction(
                 this@MainActivity,
                 SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
             ) { _, _ ->
-            navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
-                R.id.navigation_scanner
+                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
+                    R.id.navigation_scanner
+            }
         }
 
         // listens to permission result and start tracking if permission is granted
@@ -178,9 +185,11 @@ class MainActivity : AppCompatActivity() {
             }
 
         // add a check in state listener to observe when a user enters or leaves a shop
-        Snabble.checkInManager.addOnCheckInStateChangedListener(object : OnCheckInStateChangedListener {
+        Snabble.checkInManager.addOnCheckInStateChangedListener(object :
+            OnCheckInStateChangedListener {
             override fun onCheckIn(shop: Shop) {
-                Toast.makeText(this@MainActivity, "Check in: " + shop.name, Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity, "Check in: " + shop.name, Toast.LENGTH_LONG)
+                    .show()
             }
 
             override fun onCheckOut() {
@@ -218,7 +227,6 @@ class MainActivity : AppCompatActivity() {
         Snabble.checkInManager.stopUpdating()
     }
 
-
     // Check in example if the "Snabble" "CheckInManager" is not used, otherwise it is handled
     @Suppress("unused")
     fun checkIn() {
@@ -229,8 +237,9 @@ class MainActivity : AppCompatActivity() {
         // Observe the current location via the locationManager to track if a shop matches
         // the check in radius. If yes check in.
         locationManager.location.observe(this) { currentLocation ->
-            val nearestshop =
-                shopList.firstOrNull { it.location.distanceTo(currentLocation) < checkInRadius }
+            val nearestshop = currentLocation?.let { location ->
+                shopList.firstOrNull { it.location.distanceTo(location) < checkInRadius }
+            }
 
             // Set shop and project on check in
             if (nearestshop != null) {
@@ -242,6 +251,5 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-
     }
 }
