@@ -220,7 +220,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    // Check in example if the "Snabble" "CheckInManager" is not used
+    // Check in example if the "Snabble" "CheckInManager" is not used, otherwise it is handled
     @Suppress("unused")
     fun checkIn() {
         val shopList = Snabble.projects[0].shops
@@ -233,6 +233,7 @@ class MainActivity : AppCompatActivity() {
             val nearestshop =
                 shopList.firstOrNull { it.location.distanceTo(currentLocation) < checkInRadius }
 
+            // Set shop and project on check in
             if (nearestshop != null) {
                 Snabble.checkedInShop = nearestshop
                 Snabble.checkedInProject.setValue(Snabble.projects.first())

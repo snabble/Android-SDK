@@ -166,24 +166,26 @@ You can stop the tracking over the same stop method.
 To set up the shop finder:
 
 1. Navigate to the ShopList fragment
-1.1 Set it up in ur Navigation file
+   _Set it up in your Navigation file
 
 ```xml
-<fragment
-    android:id="@+id/navigation_shops"
-    android:name="io.snabble.sdk.shopfinder.ShopListFragment"
-    android:label="your label" />
+
+<fragment android:id="@+id/navigation_shops"
+        android:name="io.snabble.sdk.shopfinder.ShopListFragment" android:label="your label" />
 ```
-1.2 Navigate to your destination
+
+_Navigate to your destination
+
 ```kotlin
 navController.navigate(R.id.navigation_shops)
 ```
+
 2. Set it up as part of a Navigation Bar
-2.1 In your menu file set up the destination for the tab
+   _In your menu file set up the destination for the tab
+
 ```xml
-<item
-    android:id="@id/navigation_shops"
-    android:icon="your icon"
+
+<item android:id="@id/navigation_shops" android:icon="your icon"
     android:title="your title" />
 ```
 3.Execute the SnabbleUi-Toolkit event to start the shop finder
@@ -194,9 +196,10 @@ SnabbleUiToolkit.executeAction(context,SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
 
 4.Extend the 'ShopListFragment' to implement custom behaviour (e.g back button for toolbar etc.)
 
-The details page for each shop opens by default. If further customizations need to be done you can extend 
-the 'ShopDetailsFragment' and navigate to the new destination by overwriting the SnabbleUi-Toolkit event 
-SHOW_SHOP_LIST_DETAILS
+The details page for each shop opens on click by default. If further customizations need to be done
+you can extend the 'ShopDetailsFragment' and navigate to the new destination by overwriting the
+SnabbleUi-Toolkit event
+'SHOW_SHOP_LIST_DETAILS'
 
 ```kotlin
 SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) {_, args ->
@@ -210,8 +213,8 @@ You can set up a Toolbar title by overwriting the following strings
 
 ```xml
 <resources>
-    <string name="Snabble.Shop.Finder.title" />
-    <string name="Snabble.Shop.Details.title" />
+   <string name="Snabble.Shop.Finder.title" />
+   <string name="Snabble.Shop.Detail.title" />
 </resources>
 ```
 
@@ -223,11 +226,12 @@ You can set up button which only appears after the check in.
 To set up the button overwrite the following string
 ```xml
 <resources>
-    <string name="Snabble.Shop.Details.button" />
+    <string name="Snabble.Shop.Detail.shopNow" />
 </resources>
 ```
 
-to set up an event for the button click set up an ui action for the SHOW_DETAILS_BUTTON_ACTION event
+to set up an event for the button click set up an ui action for the 'SHOW_DETAILS_BUTTON_ACTION'
+event
 
 ```kotlin
 SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION) { _, _ ->
