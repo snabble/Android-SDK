@@ -60,7 +60,6 @@
         <item quantity="other">encore %d semaines</item>
         <item quantity="zero">Déjà expiré</item>
     </plurals>
-    <string name="Snabble.Coupons.none">Aucun coupon disponible</string>
     <string name="Snabble.Coupons.title">coupons</string>
     <string name="Snabble.CreditCard.payNow">Payer maintenant avec la carte de crédit</string>
     <string name="Snabble.delete">Effacer</string>
@@ -208,6 +207,11 @@
     <string name="Snabble.SEPA.payNow">Payer maintenant par SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Merci de saisir ton nom sur la carte afin de pouvoir l’enregistrer directement à l’aide de l’application pour les paiements.</string>
     <string name="Snabble.Settings">Paramètres</string>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="many">%d succursales</item>
+        <item quantity="one">%d succursale</item>
+        <item quantity="other">%d succursales</item>
+    </plurals>
     <string name="Snabble.Shoppingcart.articleRemoved">Article supprimé</string>
     <string name="Snabble.Shoppingcart.buyProducts">Acheter %1$d articles pour %2$s</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Payer maintenant</string>

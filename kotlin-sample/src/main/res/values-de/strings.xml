@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="Sample.account">Profil</string>
+    <string name="Sample.Dashboard.button">Jetzt starten</string>
+    <string name="Sample.Dashboard.Information.text1">Hinterlege direkt ein Bezahlverfahren, um schon bei deinem ersten Einkauf ohne Wartezeit einzukaufen.</string>
+    <string name="Sample.Dashboard.Information.text2">Nutze die Vorteile deiner Kundenkarten automatisch.</string>
+    <string name="Sample.Dashboard.text">Besuche eine unterstütze Filiale, um mit Snabble einzukaufen!</string>
+    <string name="Sample.Dashboard.title">Willkommen bei Snabble</string>
     <string name="Sample.Onboarding.accept">Akzeptieren</string>
     <string name="Sample.Onboarding.message1">Mit Snabble scannst du deinen Einkauf selbst und bezahlt direkt in der App. Ohne in der Schlange zu stehen und ohne deinen Einkauf auf’s Band zu legen.</string>
     <string name="Sample.Onboarding.message2">Betrete eine teilnehmende Filiale, starte den Einkauf und halte den Barcode eines Artikels vor die Kamera. Der Rest erklärt sich von selbst.</string>

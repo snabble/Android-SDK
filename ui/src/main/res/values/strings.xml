@@ -57,11 +57,11 @@
         <item quantity="other">%d weeks remaining</item>
         <item quantity="zero">Already expired</item>
     </plurals>
-    <string name="Snabble.Coupons.none">No Coupons available</string>
     <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Pay now using Credit card</string>
     <string name="Snabble.delete">Delete</string>
     <string name="Snabble.done">Done</string>
+    <string name="Snabble.DynamicStack.Shop.show">Show stores</string>
     <string name="Snabble.edit">Edit</string>
     <string name="Snabble.goToSettings">Go to settings</string>
     <string name="Snabble.Hints.closedBags">Well done! Please make things easy for the cashier and don\'t store your products in closed bags. Thank you!</string>
@@ -87,6 +87,10 @@
     <string name="Snabble.noDiscount">no discount</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier.</string>
     <string name="Snabble.ok">OK</string>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">open %s</string>
+    <string name="Snabble.Onboarding.done">Done</string>
+    <string name="Snabble.Onboarding.Link.show">Show</string>
+    <string name="Snabble.Onboarding.next">Continue</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Please try again later</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Authorization failed</string>
     <string name="Snabble.Paydirekt.deleteAuthorization">Delete method</string>
@@ -263,11 +267,36 @@
     <string name="Snabble.SEPA.payNow">Pay now using SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Please enter the name from the card to save it for future payments.</string>
     <string name="Snabble.Settings">Settings</string>
+    <!-- <street and house number> in <ZIP code> <city name> -->
+    <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.openingHours">Opening hours</string>
+    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Phonenumber %s</string>
     <string name="Snabble.Shop.Detail.shopNow">Start shopping</string>
     <string name="Snabble.Shop.Detail.startNavigation">Do you like to start navigation?</string>
     <string name="Snabble.Shop.Detail.title">Details</string>
+    <string name="Snabble.Shop.Details.contractingParty">Contracting Party</string>
+    <string name="Snabble.Shop.Details.friday">Friday</string>
+    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Activate</string>
+    <string name="Snabble.Shop.Details.MapDisabled.title">You have disabled the use of %s.</string>
+    <string name="Snabble.Shop.Details.monday">Monday</string>
+    <string name="Snabble.Shop.Details.saturday">Saturday</string>
+    <string name="Snabble.Shop.Details.StartCall.accessibility">Call</string>
+    <string name="Snabble.Shop.Details.sunday">Sunday</string>
+    <string name="Snabble.Shop.Details.thursday">Thursday</string>
+    <string name="Snabble.Shop.Details.tuesday">Tuesday</string>
+    <string name="Snabble.Shop.Details.wednesday">Wednesday</string>
+    <string name="Snabble.Shop.Distance.accessibility">In %s</string>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="one">%d store</item>
+        <item quantity="other">%d stores</item>
+        <item quantity="zero">No stores</item>
+    </plurals>
     <string name="Snabble.Shop.Finder.youarehere">You are here</string>
+    <string name="Snabble.Shop.List.Colapse.accessibility">collapse</string>
+    <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s collapsed</string>
+    <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s expanded</string>
+    <string name="Snabble.Shop.List.Expand.accessibility">expand</string>
+    <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
     <string name="Snabble.Shopping.title">Shopping</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Add</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Delete</string>
