@@ -12,9 +12,16 @@
     <string name="Snabble.Shop.Detail.startNavigation">Möchten Sie die Navigation starten?</string>
     <string name="Snabble.Shop.Detail.title">Details</string>
     <string name="Snabble.Shop.Details.contractingParty">Vertragspartner</string>
+    <string name="Snabble.Shop.Details.friday">Freitag</string>
     <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Aktivieren</string>
     <string name="Snabble.Shop.Details.MapDisabled.title">Du hast die Verwendung von %s deaktiviert.</string>
+    <string name="Snabble.Shop.Details.monday">Montag</string>
+    <string name="Snabble.Shop.Details.saturday">Samstag</string>
     <string name="Snabble.Shop.Details.StartCall.accessibility">Anrufen</string>
+    <string name="Snabble.Shop.Details.sunday">Sonntag</string>
+    <string name="Snabble.Shop.Details.thursday">Donnerstag</string>
+    <string name="Snabble.Shop.Details.tuesday">Dienstag</string>
+    <string name="Snabble.Shop.Details.wednesday">Mittwoch</string>
     <string name="Snabble.Shop.Distance.accessibility">In %s entfernung</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
         <item quantity="one">%d Filiale</item>

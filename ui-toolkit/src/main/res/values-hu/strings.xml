@@ -6,6 +6,13 @@
     <string name="Snabble.Shop.Address.accessibility">%1$s %2$s %3$s-ban</string>
     <string name="Snabble.Shop.Detail.startNavigation">Szeretnéd elindítani a navigációt?</string>
     <string name="Snabble.Shop.Detail.title">Részletek</string>
+    <string name="Snabble.Shop.Details.friday">Péntek</string>
+    <string name="Snabble.Shop.Details.monday">Hétfő</string>
+    <string name="Snabble.Shop.Details.saturday">Szombat</string>
+    <string name="Snabble.Shop.Details.sunday">Vasárnap</string>
+    <string name="Snabble.Shop.Details.thursday">Csütörtök</string>
+    <string name="Snabble.Shop.Details.tuesday">Kedd</string>
+    <string name="Snabble.Shop.Details.wednesday">Szerda</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
         <item quantity="one">%d üzlet</item>
         <item quantity="other">%d üzletek</item>

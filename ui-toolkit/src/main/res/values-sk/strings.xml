@@ -6,6 +6,13 @@
     <string name="Snabble.Shop.Address.accessibility">%1$s v %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.startNavigation">Chcete zapnúť navigáciu?</string>
     <string name="Snabble.Shop.Detail.title">Detaily</string>
+    <string name="Snabble.Shop.Details.friday">Piatok</string>
+    <string name="Snabble.Shop.Details.monday">Pondelok</string>
+    <string name="Snabble.Shop.Details.saturday">Sobota</string>
+    <string name="Snabble.Shop.Details.sunday">Nedeľa</string>
+    <string name="Snabble.Shop.Details.thursday">Štvrtok</string>
+    <string name="Snabble.Shop.Details.tuesday">Utorok</string>
+    <string name="Snabble.Shop.Details.wednesday">Streda</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
         <item quantity="few">%d obchody</item>
         <item quantity="many">%d obchodov</item>
