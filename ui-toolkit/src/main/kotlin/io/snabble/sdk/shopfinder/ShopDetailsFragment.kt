@@ -45,8 +45,8 @@ import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.setTextOrHide
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -101,15 +101,14 @@ open class ShopDetailsFragment : Fragment() {
 
         preferences = ShopfinderPreferences.getInstance(requireContext())
 
-        //Todo: insert Strings
         dayTable = mapOf(
-            "Monday" to "Monday",
-            "Tuesday" to "Tuesday",
-            "Wednesday" to "Wednesday",
-            "Thursday" to "Thursday",
-            "Friday" to "Friday",
-            "Saturday" to "Saturday",
-            "Sunday" to "Sunday",
+            "Monday" to getString(R.string.Snabble_Shop_Details_monday),
+            "Tuesday" to getString(R.string.Snabble_Shop_Details_tuesday),
+            "Wednesday" to getString(R.string.Snabble_Shop_Details_wednesday),
+            "Thursday" to getString(R.string.Snabble_Shop_Details_thursday),
+            "Friday" to getString(R.string.Snabble_Shop_Details_friday),
+            "Saturday" to getString(R.string.Snabble_Shop_Details_saturday),
+            "Sunday" to getString(R.string.Snabble_Shop_Details_sunday),
         )
     }
 
@@ -350,15 +349,15 @@ open class ShopDetailsFragment : Fragment() {
         }
 
 
-        val parser = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.GERMANY)
+        val parser = SimpleDateFormat("HH:mm:ss", Locale.GERMANY)
         val target = (if (DateFormat.is24HourFormat(requireContext()))
-            DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
-        else DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())).toFormat()
+            SimpleDateFormat("HH:mm", Locale.getDefault())
+        else SimpleDateFormat("hh:mm a", Locale.getDefault()))
         fun String.toLocalTime(): String =
             try {
-                target.format(parser.parse(this))
-            } catch (e: DateTimeParseException) {
-                this.take(5)
+                target.format(parser.parse(this)!!) // fixme
+            } catch (e: ParseException) {
+                take(5)
             }
 
         if (shop.openingHours.isNullOrEmpty()) {

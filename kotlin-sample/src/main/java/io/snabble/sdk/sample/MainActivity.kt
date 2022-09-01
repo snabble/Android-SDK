@@ -147,13 +147,12 @@ class MainActivity : AppCompatActivity() {
             ) { _, args ->
                 navigate(R.id.navigation_shops_details, args)
             }
-            SnabbleUiToolkit.setUiAction(
+            //SnabbleUiToolkit.setUiAction(
                 this@MainActivity,
                 SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
             ) { _, _ ->
-                navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
-                    R.id.navigation_scanner
-            }
+            navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId =
+                R.id.navigation_scanner
         }
 
         // listens to permission result and start tracking if permission is granted
