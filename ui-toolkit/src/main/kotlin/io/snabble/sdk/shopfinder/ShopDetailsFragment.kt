@@ -25,7 +25,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
@@ -47,7 +51,7 @@ import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.setTextOrHide
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
 
 /**
@@ -93,8 +97,8 @@ open class ShopDetailsFragment : Fragment() {
 
     private val isCheckedInToShop: Boolean
         get() = Snabble.currentCheckedInShop.value != null
-                && Snabble.checkedInProject.value != null
-                && Snabble.currentCheckedInShop.value?.id == shop.id
+            && Snabble.checkedInProject.value != null
+            && Snabble.currentCheckedInShop.value?.id == shop.id
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +119,7 @@ open class ShopDetailsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val v = inflater.inflate(R.layout.snabble_shop_details_fragment, container, false)
         image = v.findViewById(R.id.image)
@@ -349,17 +353,6 @@ open class ShopDetailsFragment : Fragment() {
         }
 
 
-        val parser = SimpleDateFormat("HH:mm:ss", Locale.GERMANY)
-        val target = (if (DateFormat.is24HourFormat(requireContext()))
-            SimpleDateFormat("HH:mm", Locale.getDefault())
-        else SimpleDateFormat("hh:mm a", Locale.getDefault()))
-        fun String.toLocalTime(): String =
-            try {
-                target.format(parser.parse(this)!!) // fixme
-            } catch (e: ParseException) {
-                take(5)
-            }
-
         if (shop.openingHours.isNullOrEmpty()) {
             timetableTitle.isVisible = false
         } else {
@@ -458,6 +451,23 @@ open class ShopDetailsFragment : Fragment() {
             }
         } else {
             companyHeader.isVisible = false
+        }
+    }
+
+    private val localTimeParser = SimpleDateFormat("HH:mm:ss", Locale.GERMANY)
+
+    private val formatter: SimpleDateFormat by lazy {
+        val pattern = if (DateFormat.is24HourFormat(requireContext())) "HH:mm" else "hh:mm a"
+        SimpleDateFormat(pattern, Locale.getDefault())
+    }
+
+    private fun String.toLocalTime(): String {
+        val hourSecondsCount = 5
+        return try {
+            val date = localTimeParser.parse(this) ?: return take(hourSecondsCount)
+            formatter.format(date)
+        } catch (e: ParseException) {
+            take(hourSecondsCount)
         }
     }
 
