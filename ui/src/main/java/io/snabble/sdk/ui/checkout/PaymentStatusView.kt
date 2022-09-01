@@ -7,7 +7,12 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.ScrollView
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -17,14 +22,19 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
-import io.snabble.sdk.*
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
+import io.snabble.sdk.BarcodeFormat
+import io.snabble.sdk.FulfillmentState
+import io.snabble.sdk.Project
+import io.snabble.sdk.ReceiptInfo
+import io.snabble.sdk.Receipts
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.checkout.Fulfillment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -34,9 +44,8 @@ import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.utils.Dispatch
 
-
 class PaymentStatusView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : ScrollView(context, attrs, defStyleAttr),
     LifecycleObserver, PaymentOriginCandidateAvailableListener {
     init {
@@ -70,7 +79,6 @@ class PaymentStatusView @JvmOverloads constructor(
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-
         }
     }
 
@@ -149,7 +157,8 @@ class PaymentStatusView @JvmOverloads constructor(
         addIbanButton.setOnClickListener {
             val paymentOriginCandidate = paymentOriginCandidate
             val intent = Intent(context, SEPACardInputActivity::class.java)
-            intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
+            intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE,
+                paymentOriginCandidate)
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             context?.startActivity(intent)
             addIbanLayout.isVisible = false
@@ -191,7 +200,8 @@ class PaymentStatusView @JvmOverloads constructor(
 
         when (state) {
             CheckoutState.PAYMENT_PROCESSING,
-            CheckoutState.VERIFYING_PAYMENT_METHOD -> {
+            CheckoutState.VERIFYING_PAYMENT_METHOD,
+            -> {
                 payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
             CheckoutState.PAYMENT_APPROVED -> {
@@ -243,6 +253,9 @@ class PaymentStatusView @JvmOverloads constructor(
                 } else {
                     checkout.abort()
                 }
+            }
+            else -> {
+                // TODO: Handle else case gracefully}
             }
         }
 
@@ -397,7 +410,8 @@ class PaymentStatusView @JvmOverloads constructor(
             if (it.type == "tobaccolandEWA") {
                 if (state == null || state.isFailure) {
                     if (it.state == FulfillmentState.ALLOCATION_FAILED
-                        || it.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
+                        || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
+                    ) {
                         handlePaymentAborted()
                     }
 
