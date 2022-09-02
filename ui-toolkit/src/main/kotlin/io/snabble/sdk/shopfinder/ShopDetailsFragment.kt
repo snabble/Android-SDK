@@ -49,9 +49,10 @@ import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.setTextOrHide
+import java.text.DateFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 import java.util.regex.Pattern
 
 /**
@@ -66,12 +67,12 @@ import java.util.regex.Pattern
  * setUiAction for this event to declare the action for the button click.
  * */
 open class ShopDetailsFragment : Fragment() {
-
+    private val dayTable: Map<String, String>
+    private val sortedWeek: List<String>
     private lateinit var locationManager: LocationManager
     private lateinit var shop: Shop
     private lateinit var mapViewPermission: View
     private lateinit var bottomSheet: View
-    private lateinit var dayTable: Map<String, String>
     private lateinit var debugCheckin: TextView
     private lateinit var mapPinHome: ImageView
     private lateinit var mapPinShop: ImageView
@@ -100,20 +101,23 @@ open class ShopDetailsFragment : Fragment() {
             && Snabble.checkedInProject.value != null
             && Snabble.currentCheckedInShop.value?.id == shop.id
 
+    init {
+        val usWeekdays = DateFormatSymbols.getInstance(Locale.US).weekdays.drop(1)
+        val localWeekdays = DateFormatSymbols.getInstance().weekdays.drop(1)
+
+        dayTable = usWeekdays.mapIndexed { index, englishWeekday ->
+            englishWeekday to localWeekdays[index]
+        }.toMap()
+
+        sortedWeek = usWeekdays
+        val firstDayOfWeek = GregorianCalendar.getInstance().firstDayOfWeek
+        Collections.rotate(sortedWeek, -(firstDayOfWeek - 1))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         preferences = ShopfinderPreferences.getInstance(requireContext())
-
-        dayTable = mapOf(
-            "Monday" to getString(R.string.Snabble_Shop_Details_monday),
-            "Tuesday" to getString(R.string.Snabble_Shop_Details_tuesday),
-            "Wednesday" to getString(R.string.Snabble_Shop_Details_wednesday),
-            "Thursday" to getString(R.string.Snabble_Shop_Details_thursday),
-            "Friday" to getString(R.string.Snabble_Shop_Details_friday),
-            "Saturday" to getString(R.string.Snabble_Shop_Details_saturday),
-            "Sunday" to getString(R.string.Snabble_Shop_Details_sunday),
-        )
     }
 
     override fun onCreateView(
@@ -158,8 +162,7 @@ open class ShopDetailsFragment : Fragment() {
                     val lp = mapViewPermission.layoutParams as MarginLayoutParams
                     setMapPadding(lp.leftMargin, lp.topMargin, lp.rightMargin, lp.bottomMargin)
                 } else {
-                    Toast.makeText(context, "No Google Maps API key found!", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "No Google Maps API key found!", Toast.LENGTH_SHORT).show()
                 }
             }
             mapViewPermission.viewTreeObserver.addOnGlobalLayoutListener(
@@ -323,13 +326,8 @@ open class ShopDetailsFragment : Fragment() {
             shop.city
         )
         phone.setTextOrHide(shop.phone)
-        Linkify.addLinks(phone, Pattern.compile(".*"), shop.phone)
+        Linkify.addLinks(phone, Linkify.PHONE_NUMBERS)
         phone.setClickDescription(R.string.Snabble_Shop_Detail_Phonenumber_accessibility)
-
-        phone.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", shop.phone, null))
-            startActivity(intent)
-        }
 
         if (Snabble.projects.size > 1) {
             project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
@@ -357,16 +355,7 @@ open class ShopDetailsFragment : Fragment() {
             timetableTitle.isVisible = false
         } else {
             timetable.removeAllViews()
-            val weekDays =
-                arrayListOf(
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday",
-                    "Friday",
-                    "Saturday",
-                    "Sunday"
-                )
+            val weekDays = sortedWeek.toMutableList()
             shop.openingHours.sortBy { it.opens }
             shop.openingHours.sortBy { weekDays.indexOf(it.dayOfWeek) }
             shop.openingHours?.forEach { spec ->
