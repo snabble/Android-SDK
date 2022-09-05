@@ -101,7 +101,7 @@ After that navigate to the onboarding fragment and pass the model as argument.
 navController.navigate(R.id.frag_onboarding, bundleOf("model" to model))
 ```
 
-### Terms and Privacy Custom Set up
+### Terms and privacy custom setup
 
 Place the HTML file for the terms or privacy in the raw folder.
 
@@ -132,8 +132,8 @@ Set up the destination:
 
 **Required**
 
-1. the arguments resId needs to be set as shown in the example, to display at least the Terms or privacy.
-2. the deeplink need to be set to handle the given Uri. The Uri given in the configuration need to match the deeplink to
+1. The argument `resId` needs to be set as shown in the example, to display at least the Terms or privacy.
+2. The deeplink need to be set to handle the given Uri. The Uri given in the configuration need to match the deeplink to
    navigate to the terms fragment. optional: imagePath and headerTitle are optional arguments. If set they will be
    displayed as header on Top of the terms. VectorDrawables in the resources are also supported.
 
@@ -167,52 +167,51 @@ Snabble.checkInManager.startUpdating()
 
 You can stop the tracking over the same stop method.
 
-### Set up
+### Setup
 
-To set up the shop finder:
+To setup the shop finder:
 
-1. Navigate to the ShopList fragment
-   _Set it up in your Navigation file
+1. Navigate to the `ShopListFragment` and set it up in your Navigation file:
 
-```xml
-<fragment
-    android:id="@+id/navigation_shops"
-    android:name="io.snabble.sdk.shopfinder.ShopListFragment"
-    android:label="Your label" />
-```
+    ```xml
+    <fragment
+        android:id="@+id/navigation_shops"
+        android:name="io.snabble.sdk.shopfinder.ShopListFragment"
+        android:label="Your label" />
+    ```
 
-_Navigate to your destination
+    Navigate to your destination:
 
-```kotlin
-navController.navigate(R.id.navigation_shops)
-```
+    ```kotlin
+    navController.navigate(R.id.navigation_shops)
+    ```
 
-2. Set it up as part of a Navigation Bar in your menu file set up the destination for the tab
+2. Set it up as part of a `NavigationBar`: in your menu file set up the destination for the tab
 
-```xml
-<item
-    android:id="@id/navigation_shops"
-    android:icon="@drawable/your_icon"
-    android:title="Your title" />
-```
+    ```xml
+    <item
+        android:id="@id/navigation_shops"
+        android:icon="@drawable/your_icon"
+        android:title="Your title" />
+    ```
+
 3. Execute the SnabbleUi-Toolkit event to start the shop finder
 
-```kotlin
-SnabbleUiToolkit.executeAction(context,SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
-```
+    ```kotlin
+    SnabbleUiToolkit.executeAction(context,SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
+    ```
 
 4. Extend the 'ShopListFragment' to implement custom behaviour (e.g back button for toolbar etc.)
 
-The details page for each shop opens on click by default. If further customizations need to be done
-you can extend the 'ShopDetailsFragment' and navigate to the new destination by overwriting the
-SnabbleUi-Toolkit event
-'SHOW_SHOP_LIST_DETAILS'
+    The details page for each shop opens on click by default. If further customizations need to be done
+    you can extend the 'ShopDetailsFragment' and navigate to the new destination by overwriting the
+    SnabbleUi-Toolkit event `SHOW_SHOP_LIST_DETAILS`:
 
-```kotlin
-SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) { _, args ->
-    navigate(R.id.navigation_shops_details, args)
-}
-```
+    ```kotlin
+    SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) { _, args ->
+        navigate(R.id.navigation_shops_details, args)
+    }
+    ```
 
 ### Customization
 
