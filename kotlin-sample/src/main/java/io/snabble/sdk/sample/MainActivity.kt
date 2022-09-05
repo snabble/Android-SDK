@@ -17,39 +17,28 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
+import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.location.LocationManager
 import io.snabble.sdk.onboarding.entities.OnboardingModel
-import io.snabble.sdk.shopfinder.ShopDetailsFragment
 import io.snabble.sdk.ui.SnabbleUI
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var toolbar: Toolbar
-    private lateinit var locationManager: LocationManager
+    private lateinit var locationManager: CheckInLocationManager
 
     lateinit var locationPermission: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        locationManager = LocationManager.getInstance(this)
+        locationManager = Snabble.checkInLocationManager
         // start location tracking after permission is granted
         locationManager.startTrackingLocation()
-
-        val sharedPreferences =
-            PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
-
-        sharedPreferences
-            .edit()
-            .putBoolean(ShopDetailsFragment.KEY_MAPS_ENABLED, false)
-            .apply()
 
         setContentView(R.layout.activity_main)
         toolbar = findViewById(R.id.toolbar)
@@ -142,7 +131,7 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.navigation_shops_details, args)
         }
         SnabbleUiToolkit.setUiAction(this, SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION) { _, _ ->
-            navView.findViewById<BottomNavigationView>(R.id.nav_view).selectedItemId = R.id.navigation_scanner
+            navView.selectedItemId = R.id.navigation_scanner
         }
 
         // listens to permission result and start tracking if permission is granted
@@ -152,6 +141,7 @@ class MainActivity : AppCompatActivity() {
                     || isHoldingPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     // noinspection MissingPermission
                     Snabble.checkInManager.startUpdating()
+                    locationManager.startTrackingLocation()
                 } else {
                     locationManager.stopTrackingLocation()
                     Snabble.checkInManager.stopUpdating()

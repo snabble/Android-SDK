@@ -26,7 +26,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
-import io.snabble.sdk.location.formatDistance
+import io.snabble.sdk.shopfinder.utils.formatDistance
 import io.snabble.sdk.shopfinder.utils.AssetHelper.load
 import io.snabble.sdk.shopfinder.utils.ConfigurableDivider
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener

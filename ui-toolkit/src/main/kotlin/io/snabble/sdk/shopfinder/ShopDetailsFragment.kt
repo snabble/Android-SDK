@@ -37,10 +37,10 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
-import io.snabble.sdk.location.LocationManager
-import io.snabble.sdk.location.distanceTo
-import io.snabble.sdk.location.formatDistance
-import io.snabble.sdk.location.toLatLng
+import io.snabble.sdk.checkin.CheckInLocationManager
+import io.snabble.sdk.shopfinder.utils.distanceTo
+import io.snabble.sdk.shopfinder.utils.formatDistance
+import io.snabble.sdk.shopfinder.utils.toLatLng
 import io.snabble.sdk.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
 import io.snabble.sdk.shopfinder.utils.ShopfinderPreferences
@@ -53,7 +53,6 @@ import java.text.DateFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Pattern
 
 /**
  * Displays the details of the selected shop.
@@ -65,11 +64,11 @@ import java.util.regex.Pattern
  * To set up a the details button with a resource string via 'Snabble_Shop_Details_button'.
  * The button fires a SnabbleUiToolkit 'SHOW_DETAILS_BUTTON_ACTION' event. Simply set up
  * setUiAction for this event to declare the action for the button click.
- * */
+ */
 open class ShopDetailsFragment : Fragment() {
     private val dayTable: Map<String, String>
     private val sortedWeek: List<String>
-    private lateinit var locationManager: LocationManager
+    private lateinit var locationManager: CheckInLocationManager
     private lateinit var shop: Shop
     private lateinit var mapViewPermission: View
     private lateinit var bottomSheet: View
@@ -138,7 +137,7 @@ open class ShopDetailsFragment : Fragment() {
         companyStreet = v.findViewById(R.id.company_street)
         companyZip = v.findViewById(R.id.company_zip)
 
-        locationManager = LocationManager.getInstance(requireContext())
+        locationManager = Snabble.checkInLocationManager
         shop = requireNotNull(arguments?.getParcelable(BUNDLE_KEY_SHOP))
         project = Snabble.projects.firstOrNull { project ->
             project.shops.any { projectShop -> projectShop.id == shop.id }
@@ -148,7 +147,7 @@ open class ShopDetailsFragment : Fragment() {
         mapViewPermission = v.findViewById(R.id.map_view_permission)
         bottomSheet = v.findViewById(R.id.bottom_sheet)
 
-        if (preferences?.isMapsEnabled == true) {
+        if (preferences?.isMapsEnabled == true && preferences?.hasGoogleMapsKey == true) {
             setupMapView(v, savedInstanceState)
         } else {
             val activateMap = v.findViewById<View>(R.id.activate_map)
@@ -271,7 +270,7 @@ open class ShopDetailsFragment : Fragment() {
                 )
             }
 
-            if (LocationManager.getInstance(requireContext()).isLocationAvailable()) {
+            if (locationManager.isLocationAvailable()) {
                 googleMap.isMyLocationEnabled = true
             }
 

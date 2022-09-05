@@ -4,14 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.*
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.tasks.Task
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger

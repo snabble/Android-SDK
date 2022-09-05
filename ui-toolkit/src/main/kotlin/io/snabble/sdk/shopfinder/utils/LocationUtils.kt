@@ -1,4 +1,4 @@
-package io.snabble.sdk.location
+package io.snabble.sdk.shopfinder.utils
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng

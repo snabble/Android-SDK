@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.location.LocationManager
+import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.isNotNullOrBlank
 
@@ -19,7 +19,7 @@ import io.snabble.sdk.utils.isNotNullOrBlank
  * To set a custom page title override resource string 'Snabble_Shop_Finder_title'
  * */
 open class ShopListFragment : Fragment() {
-    private lateinit var locationManager: LocationManager
+    private lateinit var locationManager: CheckInLocationManager
     private lateinit var shopListRecyclerView: ExpandableShopListRecyclerView
 
     override fun onStart() {
@@ -34,7 +34,7 @@ open class ShopListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        locationManager = LocationManager.getInstance(requireContext().applicationContext)
+        locationManager = Snabble.checkInLocationManager
         return inflater.inflate(R.layout.snabble_shop_list_fragment, container, false)
     }
 
@@ -48,13 +48,12 @@ open class ShopListFragment : Fragment() {
         }
 
         shopListRecyclerView = view.findViewById(R.id.recycler_view)
-        shopListRecyclerView.sortByDistance(locationManager.getLastLocation())
+        shopListRecyclerView.sortByDistance(locationManager.location.value)
         shopListRecyclerView.setShopsByProjects(Snabble.projects)
-        //updates every 5m the location
-        locationManager.location.observe(viewLifecycleOwner){ currentlocation ->
-            shopListRecyclerView.sortByDistance(currentlocation)
-        }
 
+        locationManager.location.observe(viewLifecycleOwner){ currentLocation ->
+            shopListRecyclerView.sortByDistance(currentLocation)
+        }
 
     }
 
