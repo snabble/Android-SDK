@@ -63,15 +63,23 @@
         android:name="io.snabble.sdk.ui.cart.ShoppingCartFragment"
         android:label="@string/cart_title" />
 
-    <fragment
-        android:id="@+id/navigation_shops"
-        android:name="io.snabble.sdk.shopfinder.ShopListFragment"
-        android:label="Shop" />
+    <navigation
+        android:id="@+id/navigation_shop"
+        app:startDestination="@id/navigation_shops">
+        <fragment
+            android:id="@+id/navigation_shops"
+            android:name="io.snabble.sdk.shopfinder.ShopListFragment"
+            android:label="Shop" >
+            <action
+                android:id="@+id/shop_details"
+                app:destination="@id/navigation_shops_details"/>
+        </fragment>
 
-    <fragment
-        android:id="@+id/navigation_shops_details"
-        android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment"
-        android:label="Shop" />
+        <fragment
+            android:id="@+id/navigation_shops_details"
+            android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment"
+            android:label="Shop" />
+    </navigation>
 
     <fragment
         android:id="@+id/navigation_dummy_cart"

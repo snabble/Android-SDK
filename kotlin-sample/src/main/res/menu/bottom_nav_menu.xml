@@ -12,7 +12,7 @@
         android:title="@string/scanner_title" />
 
     <item
-        android:id="@id/navigation_shops"
+        android:id="@id/navigation_shop"
         android:icon="@drawable/ic_baseline_menu_24"
         android:title="Shops" />
 
