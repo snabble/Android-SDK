@@ -3,15 +3,12 @@ package io.snabble.sdk.sample
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -39,9 +36,9 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
 
         val appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.navigation_home,
-                R.id.navigation_scanner,
-                R.id.navigation_cart,
+            R.id.navigation_home,
+            R.id.navigation_scanner,
+            R.id.navigation_cart,
 //                R.id.navigation_dummy_cart
         ))
 
@@ -57,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                 navigate(R.id.navigation_scanner, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
-                 navigate(R.id.navigation_cart, args)
+                navigate(R.id.navigation_cart, args)
 //                navigate(R.id.navigation_dummy_cart, args)
             }
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT) { _, args ->
@@ -78,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
                 popBackStack()
             }
-            SnabbleUI.setUiAction(this@MainActivity,SnabbleUI.Event.NOT_CHECKED_IN){_,_->
+            SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.NOT_CHECKED_IN) { _, _ ->
                 navigate(R.id.not_checked_in)
             }
         }
@@ -118,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-         || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Snabble.checkInManager.startUpdating()
         }
     }

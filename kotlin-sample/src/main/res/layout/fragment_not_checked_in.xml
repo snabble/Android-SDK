@@ -19,8 +19,7 @@
             android:layout_margin="16dp"
             android:gravity="center"
             android:text="You're not checked in.\n\n You can set and read your current checked in status via Snabble.checkedInShop.\n\n To check in into the first known shop use the check in now button."
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            />
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
 
         <Button
             android:id="@+id/check_in_now"
