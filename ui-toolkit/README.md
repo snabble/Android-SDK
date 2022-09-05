@@ -17,7 +17,7 @@ The configuration can be set up as JSON or any other type and needs to be deseri
 The following shows an example JSON config:
 
 ```json
- {
+{
   "configuration": {
     "imageSource": "app-logo",
     "hasPageControl": true
@@ -84,12 +84,14 @@ You can simply use the onboarding by setting the destination in your navigation 
 is later used to pass the configuration for your onboarding.
 
 ```xml
-
-<fragment android:id="@+id/frag_onboarding" android:name="io.snabble.sdk.onboarding.OnboardingFragment" android:label="OnboardingFragment"
+<fragment
+    android:id="@+id/frag_onboarding"
+    android:name="io.snabble.sdk.onboarding.OnboardingFragment"
+    android:label="OnboardingFragment"
     tools:layout="@layout/snabble_fragment_onboarding">
-        <argument 
-            android:name="model"
-            app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
+    <argument 
+        android:name="model"
+        app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
 </fragment>
 ```
 
@@ -110,17 +112,21 @@ Set up the destination:
     android:id="@+id/frag_tos"
     android:name="io.snabble.sdk.onboarding.terms.LegalFragment"
     android:label="terms of service">
-        <argument
-            android:name="resId"
-            android:defaultValue="@raw/terms_agb"
-            app:argType="reference"/>
-        <argument
-            android:name="imagePath"
-            android:defaultValue="/android_asset/ic_terms_header.png"
-            app:argType="string"/>
-    <argument android:name="headerTitle" android:defaultValue="@string/Onboarding.Terms.introText"
+    <argument
+        android:name="resId"
+        android:defaultValue="@raw/terms_agb"
         app:argType="reference" />
-    <deepLink android:id="@+id/deepLink" app:uri="my.app://terms" />
+    <argument
+        android:name="imagePath"
+        android:defaultValue="/android_asset/ic_terms_header.png"
+        app:argType="string" />
+    <argument 
+        android:name="headerTitle"
+        android:defaultValue="@string/Onboarding.Terms.introText"
+        app:argType="reference" />
+    <deepLink
+        android:id="@+id/deepLink"
+        app:uri="my.app://terms" />
 </fragment>
 ```
 
@@ -155,8 +161,8 @@ viewModel.onboardingSeen.observe(this) {
 For the shop finder and the details page the location tracking needs to be started as soon as permission is granted.
 You can either start location tracking directly via an instance of the location manager or with the snabble check in manager if used.
 ```kotlin
-    LocationManager.getInstance(this).startTrackingLocation()
-    Snabble.checkInManager.startUpdating()
+LocationManager.getInstance(this).startTrackingLocation()
+Snabble.checkInManager.startUpdating()
 ```
 
 You can stop the tracking over the same stop method.
@@ -169,9 +175,10 @@ To set up the shop finder:
    _Set it up in your Navigation file
 
 ```xml
-
-<fragment android:id="@+id/navigation_shops"
-        android:name="io.snabble.sdk.shopfinder.ShopListFragment" android:label="your label" />
+<fragment
+    android:id="@+id/navigation_shops"
+    android:name="io.snabble.sdk.shopfinder.ShopListFragment"
+    android:label="Your label" />
 ```
 
 _Navigate to your destination
@@ -180,21 +187,21 @@ _Navigate to your destination
 navController.navigate(R.id.navigation_shops)
 ```
 
-2. Set it up as part of a Navigation Bar
-   _In your menu file set up the destination for the tab
+2. Set it up as part of a Navigation Bar in your menu file set up the destination for the tab
 
 ```xml
-
-<item android:id="@id/navigation_shops" android:icon="your icon"
-    android:title="your title" />
+<item
+    android:id="@id/navigation_shops"
+    android:icon="@drawable/your_icon"
+    android:title="Your title" />
 ```
-3.Execute the SnabbleUi-Toolkit event to start the shop finder
+3. Execute the SnabbleUi-Toolkit event to start the shop finder
 
 ```kotlin
 SnabbleUiToolkit.executeAction(context,SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
 ```
 
-4.Extend the 'ShopListFragment' to implement custom behaviour (e.g back button for toolbar etc.)
+4. Extend the 'ShopListFragment' to implement custom behaviour (e.g back button for toolbar etc.)
 
 The details page for each shop opens on click by default. If further customizations need to be done
 you can extend the 'ShopDetailsFragment' and navigate to the new destination by overwriting the
@@ -202,7 +209,7 @@ SnabbleUi-Toolkit event
 'SHOW_SHOP_LIST_DETAILS'
 
 ```kotlin
-SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) {_, args ->
+SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST) { _, args ->
     navigate(R.id.navigation_shops_details, args)
 }
 ```
@@ -230,8 +237,7 @@ To set up the button overwrite the following string
 </resources>
 ```
 
-to set up an event for the button click set up an ui action for the 'SHOW_DETAILS_BUTTON_ACTION'
-event
+To set up an event for the button click set up an ui action for the 'SHOW_DETAILS_BUTTON_ACTION' event
 
 ```kotlin
 SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION) { _, _ ->

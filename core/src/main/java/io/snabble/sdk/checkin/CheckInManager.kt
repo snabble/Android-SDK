@@ -223,7 +223,6 @@ class CheckInManager(val snabble: Snabble,
 
                 if (lastCheckedInProject != newCheckedInProject) {
                     lastCheckedInProject = newCheckedInProject
-//                    Snabble.checkedInShop = null
                 }
 
                 Snabble.checkedInShop = checkInShop
