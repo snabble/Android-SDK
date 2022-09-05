@@ -47,8 +47,7 @@ import io.snabble.sdk.utils.setTextOrHide
  * and the shop is marked with a "you are here" icon.
  * For the check in marks to work 'Snabble' checkedInShop and checkedInProject properties need
  * to be set according to the current state.
- * */
-
+ */
 class ExpandableShopListRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -93,7 +92,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     /**
      * Takes a list of projects and converts it list consisting of
      * projects and corresponding shops for internal use.
-     * */
+     */
     fun setShopsByProjects(projects: List<Project>) {
         chosenProjects = projects
         val model = mutableListOf<Item>()
@@ -111,7 +110,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     /**
      * Takes a location as parameter and updates the view
      * with the new distance to the given location
-     * */
+     */
     fun sortByDistance(location: Location?) {
         adapter.updateDistances(location)
     }
@@ -177,8 +176,8 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Updates and refreshes the View.
-     * */
+     * Update and refreshe the shown shops.
+     */
     fun update() {
         chosenProjects?.let(::setShopsByProjects)
     }
@@ -523,5 +522,4 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
 
         override fun compareTo(other: Item): Int = distance?.compareTo(other.distance ?: 0f) ?: 0
     }
-
 }

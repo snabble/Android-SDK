@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.Observer
-import com.google.android.gms.maps.model.LatLng
 import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
@@ -15,7 +14,6 @@ import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
-import kotlin.collections.HashMap
 
 /**
  * Listener for check in states. Notifies about check in / check out and if multiple shops are
