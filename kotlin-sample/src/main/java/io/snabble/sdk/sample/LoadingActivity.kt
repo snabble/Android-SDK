@@ -22,6 +22,9 @@ class LoadingActivity : AppCompatActivity() {
                 InitializationState.UNINITIALIZED,
                 InitializationState.INITIALIZING -> {}
                 InitializationState.INITIALIZED -> {
+                    // check in to a project via the examples below
+                    // the check in is needed for the scanner and shopping card to work
+
                     // an application can have multiple projects, for example for
                     // multiple independent regions / countries
                     // val project = Snabble.projects.first()

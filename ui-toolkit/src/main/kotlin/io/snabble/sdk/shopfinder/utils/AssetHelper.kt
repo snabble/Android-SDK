@@ -22,22 +22,6 @@ object AssetHelper {
     }
 
     @JvmStatic
-    fun load(assets: Assets, name: String, imageView: ImageView, defaultImageResource: Int) {
-        load(imageView.context.resources, assets, name, Assets.Type.SVG, imageView, false, defaultImageResource, false)
-    }
-
-    @JvmStatic
-    fun load(assets: Assets, name: String, toolbar: Toolbar) {
-        val randomUUID = UUID.randomUUID().toString()
-        toolbar.setTag(R.id.asset_load_id, randomUUID)
-        assets.get(name, Assets.Type.SVG, false) { bitmap ->
-            if (toolbar.getTag(R.id.asset_load_id) == randomUUID) {
-                toolbar.logo = BitmapDrawable(toolbar.context.resources, bitmap)
-            }
-        }
-    }
-
-    @JvmStatic
     fun load(
         res: Resources,
         assets: Assets,
@@ -73,11 +57,6 @@ object AssetHelper {
         }
     }
 
-    fun loadExtend(imageView: ImageView, bitmap: Bitmap?) {
-        imageView.setImageBitmap(bitmap)
-        extend(imageView, bitmap)
-    }
-
     private fun extend(imageView: ImageView, bitmap: Bitmap?) {
         if (bitmap != null) {
             val color = bitmap.getPixel(0, bitmap.height - 1)
@@ -87,31 +66,4 @@ object AssetHelper {
         }
     }
 
-    enum class ComponentPosition(val id: Int) {
-        Top(R.id.asset_load_id_top),
-        Left(R.id.asset_load_id_left),
-        Right(R.id.asset_load_id_right),
-        Bottom(R.id.asset_load_id_bottom)
-    }
-
-    @JvmStatic
-    fun TextView.setComponentDrawable(assets: Assets?, name: String, position: ComponentPosition = ComponentPosition.Left) {
-        val randomUUID = UUID.randomUUID().toString()
-        setTag(position.id, randomUUID)
-        assets?.get(name) { bitmap: Bitmap? ->
-            if (getTag(position.id) == randomUUID) {
-                val drawable = bitmap?.let {
-                    BitmapDrawable(resources, bitmap).apply {
-                        setBounds(0, 0, bitmap.width, bitmap.height)
-                    }
-                }
-                when(position) {
-                    ComponentPosition.Left -> setCompoundDrawables(drawable, compoundDrawables[1], compoundDrawables[2], compoundDrawables[3])
-                    ComponentPosition.Top -> setCompoundDrawables(compoundDrawables[0], drawable, compoundDrawables[2], compoundDrawables[3])
-                    ComponentPosition.Right -> setCompoundDrawables(compoundDrawables[0], compoundDrawables[1], drawable, compoundDrawables[3])
-                    ComponentPosition.Bottom -> setCompoundDrawables(compoundDrawables[0], compoundDrawables[1], compoundDrawables[2], drawable)
-                }
-            }
-        }
-    }
 }
