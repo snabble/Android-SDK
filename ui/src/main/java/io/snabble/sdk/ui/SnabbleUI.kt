@@ -47,7 +47,8 @@ object SnabbleUI {
         SHOW_AGE_VERIFICATION,
         SHOW_COUPON_DETAILS,
         GO_BACK,
-        EXIT_TOKEN_AVAILABLE
+        EXIT_TOKEN_AVAILABLE,
+        NOT_CHECKED_IN
     }
 
     private class ActivityCallback(
@@ -140,6 +141,7 @@ object SnabbleUI {
                 // unhandled actions
                 GO_BACK,
                 SHOW_CHECKOUT_DONE,
+                NOT_CHECKED_IN,
                 EXIT_TOKEN_AVAILABLE,
                 null -> {}
             }

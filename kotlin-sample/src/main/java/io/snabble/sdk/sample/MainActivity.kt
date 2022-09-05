@@ -78,6 +78,9 @@ class MainActivity : AppCompatActivity() {
             SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
                 popBackStack()
             }
+            SnabbleUI.setUiAction(this@MainActivity,SnabbleUI.Event.NOT_CHECKED_IN){_,_->
+                navigate(R.id.not_checked_in)
+            }
         }
 
         locationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
