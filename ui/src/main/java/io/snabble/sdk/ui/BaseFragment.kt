@@ -38,7 +38,8 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
                     sdkNotInitialized.isVisible = true
                 }
                 InitializationState.UNINITIALIZED,
-                InitializationState.INITIALIZING -> {} // ignore
+                InitializationState.INITIALIZING -> {
+                } // ignore
             }
         }
     }
@@ -50,7 +51,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
             if (Snabble.checkedInProject.value == null) {
                 isReady = false
                 fragmentContainer.removeAllViews()
-                SnabbleUI.executeAction(requireContext(),SnabbleUI.Event.NOT_CHECKED_IN)
+                SnabbleUI.executeAction(requireContext(), SnabbleUI.Event.NOT_CHECKED_IN)
             } else {
                 Snabble.checkedInProject.observe(viewLifecycleOwner) {
                     if (it != null) {
@@ -58,7 +59,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
                     } else {
                         isReady = false
                         fragmentContainer.removeAllViews()
-                        SnabbleUI.executeAction(requireContext(),SnabbleUI.Event.NOT_CHECKED_IN)
+                        SnabbleUI.executeAction(requireContext(), SnabbleUI.Event.NOT_CHECKED_IN)
                     }
                 }
             }
@@ -86,7 +87,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?)
-    : View? {
+        : View? {
         if (layoutResId != 0) {
             return inflater.inflate(layoutResId, container, false)
         }
