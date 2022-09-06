@@ -11,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.utils.inflate
 
+// Example fragment to handle the NOT_CHECKED_IN event.
+// Todo: replace with dynamic stack for customization
 class NotCheckedInFragment : Fragment() {
 
     override fun onCreateView(
