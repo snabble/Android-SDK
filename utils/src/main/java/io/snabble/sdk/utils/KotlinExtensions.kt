@@ -1,4 +1,5 @@
 @file:JvmName("KotlinExtensions")
+
 package io.snabble.sdk.utils
 
 import android.content.Context
@@ -8,11 +9,17 @@ import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import io.snabble.sdk.ui.setClickableLinks
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 /**
  * Returns a Boolean. True if the given Charsequence is not null or blank
  */
-fun CharSequence?.isNotNullOrBlank() = !isNullOrBlank()
+@OptIn(ExperimentalContracts::class)
+fun CharSequence?.isNotNullOrBlank(): Boolean {
+    contract { returns(true) implies (this@isNotNullOrBlank != null) }
+    return !isNullOrBlank()
+}
 
 /**
  * Resolves the given into image resource identifier
@@ -24,7 +31,7 @@ fun Context.getImageId(resource: String): Int =
  * Resolves the given into string resource identifier
  */
 fun Context.getResourceId(resource: String): Int =
-    resources.getIdentifier(resource,"string", packageName)
+    resources.getIdentifier(resource, "string", packageName)
 
 /**
  * Converts the string into a resource id and returns the matching resource String
@@ -59,15 +66,15 @@ fun Int.toHexString(): String = Integer.toHexString(this)
  * The text will be set as resource string if the string matches a string resoruce id. Otherwise the plain text will be displayed
  */
 fun TextView.resolveTextOrHide(string: String?) {
-    if (string.isNotNullOrBlank()) {
-        val resId = context.getResourceId(string!!)
+    isVisible = if (string.isNotNullOrBlank()) {
+        val resId = context.getResourceId(string)
         if (resId != Resources.ID_NULL) {
             setClickableLinks(context.getText(resId))
         } else {
             setClickableLinks(string)
         }
-        isVisible = true
+        true
     } else {
-        isVisible = false
+        false
     }
 }
