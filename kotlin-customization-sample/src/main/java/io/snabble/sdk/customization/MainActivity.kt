@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             toolbar.isVisible = arguments?.getBoolean("hideToolbar", false) != true
+            navView.isVisible = arguments?.getBoolean("hideBottomNavigation", false) != true
             navView.isEnabled = arguments?.getBoolean("hideBottomNavigation", false) != true
             toolbar.title = destination.label
             arguments?.getString("title")?.let {
