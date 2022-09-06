@@ -35,7 +35,7 @@ android {
     }
 
     kotlinOptions {
-        freeCompilerArgs = ['-Xjvm-default=all']
+        freeCompilerArgs = ['-Xjvm-default=all', '-opt-in=kotlin.RequiresOptIn']
         jvmTarget = '1.8'
     }
 }
