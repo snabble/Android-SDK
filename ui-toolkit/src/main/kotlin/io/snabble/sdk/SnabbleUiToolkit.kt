@@ -133,20 +133,12 @@ object SnabbleUiToolkit {
         context: Context,
         clazz: Class<T>, args: Bundle?,
         canGoBack: Boolean = true,
-        unique: Boolean = false
+        unique: Boolean = false,
     ) {
-        val intent = Intent(context, clazz)
-
-        if (args != null) {
-            intent.putExtras(args)
-        }
-
-        if (!canGoBack) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-        }
-
-        if (unique) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val intent = Intent(context, clazz).apply {
+            if (args != null) putExtras(args)
+            if (!canGoBack) addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            if (unique) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 
         context.startActivity(intent)
