@@ -10,6 +10,11 @@ All notable changes to this project will be documented in this file.
 ### Breaking Changes
 - Renamed some colors which should be only used internal only
 
+## [0.68.6]
+
+### Changed
+- Apply new Phrase key structure
+
 ## [0.68.5]
 
 ### Fixed
