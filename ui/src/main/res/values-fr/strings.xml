@@ -18,7 +18,7 @@
     <string name="Snabble.Biometry.touchId">Touch-ID</string>
     <string name="Snabble.cancel">Annuler</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Entrez vos données ici. Ensuite, nous vous redirigeons vers votre banque pour confirmer vos données. Dans ce cas, nous réservons 1 € (pour %s) et nous reversons directement le montant.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Entrez vos données ici. Ensuite, nous vous redirigeons vers votre banque pour confirmer vos données. Dans ce cas, nous réservons %s (pour %s) et nous reversons directement le montant.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Entrez vos données ici. Ensuite, nous vous redirigeons vers votre banque pour confirmer vos données. Dans ce cas, nous réservons %1$s (pour %2$s) et nous reversons directement le montant.</string>
     <string name="Snabble.CC.cardNumber">Numéro de carte</string>
     <string name="Snabble.CC.editingHint">Nous n\'enregistrons les données de votre carte de crédit que sous forme cryptée et ces données ne peuvent donc pas être utilisées à d\'autres fins.</string>
     <string name="Snabble.CC.noEntryPossible">Malheureusement, les cartes de crédit ne peuvent pas être déposées pour le moment.</string>
@@ -61,6 +61,7 @@
         <item quantity="other">encore %d semaines</item>
         <item quantity="zero">Expiré</item>
     </plurals>
+    <string name="Snabble.Coupons.none">Aucun coupon disponible</string>
     <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Payer maintenant avec une carte de crédit</string>
     <string name="Snabble.Dashboard.lastPurchase">Votre dernier achat</string>
@@ -231,9 +232,9 @@
     <string name="Snabble.Scanner.Accessibility.eventCartOpened">Panier d\'achats ouvert</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Vous ne pouvez plus ajouter d’articles au panier</string>
     <!-- Example: 3 times Banana for 3$ -->
-    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s %s pour %s</string>
+    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%1$s %2$s pour %3$s</string>
     <string name="Snabble.Scanner.Accessibility.eventScannerOpened">Vous avez ouvert le scanner.</string>
-    <string name="Snabble.Scanner.Accessibility.hintCartContent">Dans votre panier se trouvent %s articles pour %s.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">Dans votre panier se trouvent %1$s articles pour %2$s.</string>
     <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">Votre panier est vide.</string>
     <string name="Snabble.Scanner.Accessibility.hintPermission">Pour scanner, nous avons encore besoin d\'une autorisation de votre part.</string>
     <string name="Snabble.Scanner.addCodeAsIs">%s ajouté</string>
@@ -294,6 +295,7 @@
     <string name="Snabble.Shop.Details.wednesday">Mercredi</string>
     <string name="Snabble.Shop.Distance.accessibility">À une distance de %s</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="many"/>
         <item quantity="one">Filiale %d</item>
         <item quantity="other">Filiales %d</item>
         <item quantity="zero">Aucune filiale</item>

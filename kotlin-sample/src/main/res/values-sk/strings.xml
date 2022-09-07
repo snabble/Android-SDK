@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="Sample.Dashboard.button">Start now</string>
+    <string name="Sample.Dashboard.Information.text1">You can choose a payment method directly to make your first purchase without having to wait.</string>
+    <string name="Sample.Dashboard.Information.text2">Take advantage of your store cards automatically.</string>
+    <string name="Sample.Dashboard.text">Visit a supported store to shop with Snabble!</string>
+    <string name="Sample.Dashboard.title">Welcome to Snabble</string>
     <string name="Sample.home">Štart</string>
     <string name="Sample.Onboarding.accept">Prijať</string>
     <string name="Sample.Onboarding.message1">So Snabble naskenuješ svoj nákup sám/sama a zaplatíš priamo v aplikácii. Bez vystávania v rade a vykladania tvojho nákupu na pás.</string>
     <string name="Sample.Onboarding.message2">Navštív niektorý zo zapojených obchodov, začni nakupovať a prilož kameru k čiarovým kódom tovarov. Ostatné už ide samé.</string>
     <string name="Sample.Onboarding.message3">Prosím, akceptuj podmienky používania a prečítaj si pravidlá ochrany údajov.</string>
+    <string name="Sample.profile">Profile</string>
     <string name="Sample.scanner">Skener</string>
+    <string name="Sample.Section.Profile.deleteAccount">Delete Account</string>
+    <string name="Sample.Section.Profile.header">Your Profile</string>
+    <string name="Sample.Section.Profile.paymentMethods">Payment Methods</string>
+    <string name="Sample.Section.Profile.saveEnergy">Save energy</string>
+    <string name="Sample.Section.Profile.showOnboarding">Show Onboarding</string>
     <string name="Sample.shoppingCart">Košík</string>
     <string name="Sample.shops">Obchody</string>
 </resources>

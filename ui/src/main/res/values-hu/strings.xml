@@ -18,7 +18,7 @@
     <string name="Snabble.Biometry.touchId">Touch-ID</string>
     <string name="Snabble.cancel">Mégsem</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Itt add meg az adataidat. Ezután átirányítunk a bankodhoz, hogy megerősítse az adataidat. Ekkor zárolunk 1 eurót (%s-re), majd a pénzt közvetlenül visszautaljuk.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Itt add meg az adataidat. Ezután átirányítunk a bankodhoz, hogy megerősítse az adataidat. Ekkor zárolunk %s-t (%s-re), majd a pénzt közvetlenül visszautaljuk.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Itt add meg az adataidat. Ezután átirányítunk a bankodhoz, hogy megerősítse az adataidat. Ekkor zárolunk %1$s-t (%2$s-re), majd a pénzt közvetlenül visszautaljuk.</string>
     <string name="Snabble.CC.cardNumber">Kártyaszám</string>
     <string name="Snabble.CC.editingHint">A hitelkártyaadatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.CC.noEntryPossible">Jelenleg sajnos nem tudsz hitelkártyaadatokat elmenteni.</string>
@@ -57,8 +57,12 @@
         <item quantity="other">még %d hétig</item>
         <item quantity="zero">Már lejárt</item>
     </plurals>
+    <string name="Snabble.Coupons.none">Nincs elérhető kupon</string>
     <string name="Snabble.Coupons.title">Kuponok</string>
     <string name="Snabble.CreditCard.payNow">Fizetés hitelkártyával</string>
+    <string name="Snabble.Dashboard.lastPurchase">Your last purchase</string>
+    <string name="Snabble.Dashboard.lastPurchases">Your last purchases</string>
+    <string name="Snabble.Dashboard.lastPurchasesShowAll">Show All</string>
     <string name="Snabble.delete">Törlés</string>
     <string name="Snabble.done">Kész</string>
     <string name="Snabble.DynamicStack.Shop.show">Üzletek mutatása</string>
@@ -224,9 +228,9 @@
     <string name="Snabble.Scanner.Accessibility.eventCartOpened">Kosár megnyitva</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Nem tudsz több terméket tenni a kosárba</string>
     <!-- Example: 3 times Banana for 3$ -->
-    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s db %s %s-ért</string>
+    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%1$s db %2$s %3$s-ért</string>
     <string name="Snabble.Scanner.Accessibility.eventScannerOpened">Megnyitottad a szkennert.</string>
-    <string name="Snabble.Scanner.Accessibility.hintCartContent">A kosárban %s termék van %s-ért.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">A kosárban %1$s termék van %2$s-ért.</string>
     <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">A kosarad pillanatnyilag üres.</string>
     <string name="Snabble.Scanner.Accessibility.hintPermission">A szkenneléshez szükségünk van még az engedélyedre.</string>
     <string name="Snabble.Scanner.addCodeAsIs">%s hozzáadása így</string>
@@ -270,16 +274,22 @@
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s %2$s %3$s-ban</string>
     <string name="Snabble.Shop.Detail.openingHours">Nyitvatartási idők</string>
+    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Phonenumber %s</string>
     <string name="Snabble.Shop.Detail.shopNow">Vásárolj be most itt</string>
     <string name="Snabble.Shop.Detail.startNavigation">Szeretnéd elindítani a navigációt?</string>
     <string name="Snabble.Shop.Detail.title">Részletek</string>
+    <string name="Snabble.Shop.Details.contractingParty">Contracting Party</string>
     <string name="Snabble.Shop.Details.friday">Péntek</string>
+    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Activate</string>
+    <string name="Snabble.Shop.Details.MapDisabled.title">You have disabled the use of %s.</string>
     <string name="Snabble.Shop.Details.monday">Hétfő</string>
     <string name="Snabble.Shop.Details.saturday">Szombat</string>
+    <string name="Snabble.Shop.Details.StartCall.accessibility">Call</string>
     <string name="Snabble.Shop.Details.sunday">Vasárnap</string>
     <string name="Snabble.Shop.Details.thursday">Csütörtök</string>
     <string name="Snabble.Shop.Details.tuesday">Kedd</string>
     <string name="Snabble.Shop.Details.wednesday">Szerda</string>
+    <string name="Snabble.Shop.Distance.accessibility">In %s</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
         <item quantity="one">%d üzlet</item>
         <item quantity="other">%d üzletek</item>
@@ -290,6 +300,7 @@
     <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s összecsukva</string>
     <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s kinyitva</string>
     <string name="Snabble.Shop.List.Expand.accessibility">kinyitni</string>
+    <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
     <string name="Snabble.Shopping.title">Bevásárlás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Hozzáadás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Törlés</string>

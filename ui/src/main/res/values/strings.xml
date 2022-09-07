@@ -18,7 +18,7 @@
     <string name="Snabble.Biometry.touchId">Touch ID</string>
     <string name="Snabble.cancel">Cancel</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Enter your data here. We will then forward you to your bank to confirm your details. We reserve 1 € (for %s) and book the money back immediately.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Enter your data here. We will then forward you to your bank to confirm your details. We reserve %s (for %s) and book the money back immediately.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Enter your data here. We will then forward you to your bank to confirm your details. We reserve %1$s (for %2$s) and book the money back immediately.</string>
     <string name="Snabble.CC.cardNumber">Card number</string>
     <string name="Snabble.CC.editingHint">Your credit card data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.CC.noEntryPossible">Unfortunately you can\'t add credit cards at this time.</string>
@@ -57,6 +57,7 @@
         <item quantity="other">%d weeks remaining</item>
         <item quantity="zero">Already expired</item>
     </plurals>
+    <string name="Snabble.Coupons.none">No Coupons available</string>
     <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Pay now using Credit card</string>
     <string name="Snabble.Dashboard.lastPurchase">Your last purchase</string>
@@ -227,9 +228,9 @@
     <string name="Snabble.Scanner.Accessibility.eventCartOpened">Cart extended</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">You reached the maximum count of items for the cart</string>
     <!-- Example: 3 times Banana for 3$ -->
-    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s times %s for %s</string>
+    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%1$s times %2$s for %3$s</string>
     <string name="Snabble.Scanner.Accessibility.eventScannerOpened">You opened the scanner.</string>
-    <string name="Snabble.Scanner.Accessibility.hintCartContent">There are %s items for %s in your cart.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">There are %1$s items for %2$s in your cart.</string>
     <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">Your cart is empty.</string>
     <string name="Snabble.Scanner.Accessibility.hintPermission">In order to scan we need a permission from you.</string>
     <string name="Snabble.Scanner.addCodeAsIs">Add %s as-is</string>
