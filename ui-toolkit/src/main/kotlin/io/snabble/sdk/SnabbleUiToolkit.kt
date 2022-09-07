@@ -37,7 +37,7 @@ object SnabbleUiToolkit {
         GO_BACK
     }
 
-    fun getHostFragmentActivity(context: Context?): FragmentActivity? {
+    private fun getHostFragmentActivity(context: Context?): FragmentActivity? {
         var currentContext = context
         while (currentContext is ContextWrapper) {
             if (currentContext is FragmentActivity) {
