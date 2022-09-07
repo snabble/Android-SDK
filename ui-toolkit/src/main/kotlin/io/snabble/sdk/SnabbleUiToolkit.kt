@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import io.snabble.sdk.SnabbleUiToolkit.Event.*
 import io.snabble.sdk.onboarding.OnboardingActivity
+import io.snabble.sdk.ui.Action
 import io.snabble.sdk.ui.BaseFragmentActivity
 import java.lang.ref.WeakReference
 import kotlin.collections.set
@@ -50,7 +51,7 @@ object SnabbleUiToolkit {
 
     private class ActivityCallback(
         var activity: WeakReference<AppCompatActivity>,
-        val action: Action
+        val action: Action,
     )
 
     private var actions = mutableMapOf<Event, ActivityCallback?>()
@@ -146,8 +147,4 @@ object SnabbleUiToolkit {
 
         context.startActivity(intent)
     }
-}
-
-interface Action {
-    fun execute(context: Context, args: Bundle?)
 }
