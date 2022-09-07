@@ -89,17 +89,17 @@ object SnabbleUiToolkit {
             activity.finish()
             return
         }
-        val cb = actions[event]
-        val hostingActivity = cb?.activity?.get()
-        if (cb != null) {
+        val callback = actions[event]
+        val hostingActivity = callback?.activity?.get()
+        if (callback != null) {
             if (hostingActivity != null) {
                 if (hostingActivity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                    cb.action.execute(context, args)
+                    callback.action.execute(context, args)
                 } else {
                     hostingActivity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                         override fun onStart(owner: LifecycleOwner) {
                             hostingActivity.lifecycle.removeObserver(this)
-                            cb.action.execute(context, args)
+                            callback.action.execute(context, args)
                         }
                     })
                 }
