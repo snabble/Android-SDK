@@ -31,6 +31,7 @@ import kotlin.collections.set
  * You can use setUiAction to implement custom behaviour or deeply integrated fragments instead
  * of the default Activites.
  */
+@Suppress("unused")
 object SnabbleUiToolkit {
     const val DEEPLINK = "deeplink"
 
