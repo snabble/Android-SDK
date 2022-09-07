@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <!-- ********* Home ********* -->
     <string name="Sample.home">Štart</string>
     <string name="Sample.Onboarding.accept">Prijať</string>
     <string name="Sample.Onboarding.message1">So Snabble naskenuješ svoj nákup sám/sama a zaplatíš priamo v aplikácii. Bez vystávania v rade a vykladania tvojho nákupu na pás.</string>

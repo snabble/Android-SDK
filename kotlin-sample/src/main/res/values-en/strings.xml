@@ -5,7 +5,6 @@
     <string name="Sample.Dashboard.Information.text2">Take advantage of your store cards automatically.</string>
     <string name="Sample.Dashboard.text">Visit a supported store to shop with Snabble!</string>
     <string name="Sample.Dashboard.title">Welcome to Snabble</string>
-    <!-- ********* Home ********* -->
     <string name="Sample.home">Start</string>
     <string name="Sample.Onboarding.accept">Agree</string>
     <string name="Sample.Onboarding.message1">Using Snabble, you scan your purchase yourself and pay directly in the app. No queueing and without putting your purchase on the belt.</string>

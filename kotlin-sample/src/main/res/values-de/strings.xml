@@ -5,7 +5,6 @@
     <string name="Sample.Dashboard.Information.text2">Nutze die Vorteile deiner Kundenkarten automatisch.</string>
     <string name="Sample.Dashboard.text">Besuche eine unterstütze Filiale, um mit Snabble einzukaufen!</string>
     <string name="Sample.Dashboard.title">Willkommen bei Snabble</string>
-    <!-- ********* Home ********* -->
     <string name="Sample.home">Start</string>
     <string name="Sample.Onboarding.accept">Akzeptieren</string>
     <string name="Sample.Onboarding.message1">Mit Snabble scannst du deinen Einkauf selbst und bezahlt direkt in der App. Ohne in der Schlange zu stehen und ohne deinen Einkauf auf’s Band zu legen.</string>

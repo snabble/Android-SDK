@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-    <string name="Snabble.Onboarding.Deeplink.accessibility">Ouvrir %s</string>
-    <string name="Snabble.Onboarding.done">Terminé</string>
-    <string name="Snabble.Onboarding.Link.show">Consulter</string>
-    <string name="Snabble.Onboarding.next">Continuer</string>
-</resources>
