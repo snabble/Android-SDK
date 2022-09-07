@@ -11,7 +11,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import io.snabble.sdk.SnabbleUiToolkit.Event.*
+import io.snabble.sdk.SnabbleUiToolkit.Event.GO_BACK
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DEEPLINK
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_SHOP_LIST
 import io.snabble.sdk.onboarding.OnboardingActivity
 import io.snabble.sdk.ui.Action
 import io.snabble.sdk.ui.BaseFragmentActivity
@@ -110,16 +115,15 @@ object SnabbleUiToolkit {
                     false
                 )
                 SHOW_ONBOARDING_DONE -> activity?.finish()
-                SHOW_SHOP_LIST -> {}
-                SHOW_DETAILS_SHOP_LIST -> {}
                 SHOW_DEEPLINK -> {
                     val deeplink = Uri.parse(requireNotNull(args?.getString(DEEPLINK)))
                     context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = deeplink })
                 }
-                // unhandled actions
+                SHOW_SHOP_LIST,
+                SHOW_DETAILS_SHOP_LIST,
                 GO_BACK,
-                null -> {
-                }
+                null,
+                -> Unit // unhandled actions
             }
         }
     }
