@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <!-- ********* Home ********* -->
+    <string name="Sample.home">Start</string>
     <string name="Sample.Onboarding.accept">Elfogadás</string>
     <string name="Sample.Onboarding.message1">A Snabble segítségével saját magad szkenneled be a vásárolni kívánt termékeket, és közvetlenül az alkalmazásban fizetsz. Nem kell sorban állni a pénztár előtt, és a vásárolt termékeket nem kell az áruszalagra helyezni.</string>
     <string name="Sample.Onboarding.message2">Lépj be egy résztvevő üzletbe, kezdd el a bevásárlást, és tartsd a termék vonalkódját a kamera elé. A többi magától értetődik.</string>
     <string name="Sample.Onboarding.message3">Kérlek, fogadd el a felhasználási feltételeket és az adatvédelmi tudnivalókat.</string>
+    <string name="Sample.scanner">Szkenner</string>
+    <string name="Sample.shoppingCart">Kosár</string>
+    <string name="Sample.shops">Üzletek</string>
 </resources>

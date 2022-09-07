@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">Otvoriť %s</string>
+    <string name="Snabble.Onboarding.done">Hotovo</string>
     <string name="Snabble.Onboarding.Link.show">Prezrieť</string>
     <string name="Snabble.Onboarding.next">Ďalej</string>
 </resources>

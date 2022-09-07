@@ -57,11 +57,11 @@
         <item quantity="other">még %d hétig</item>
         <item quantity="zero">Már lejárt</item>
     </plurals>
-    <string name="Snabble.Coupons.none">Nincs elérhető kupon</string>
     <string name="Snabble.Coupons.title">Kuponok</string>
     <string name="Snabble.CreditCard.payNow">Fizetés hitelkártyával</string>
     <string name="Snabble.delete">Törlés</string>
     <string name="Snabble.done">Kész</string>
+    <string name="Snabble.DynamicStack.Shop.show">Üzletek mutatása</string>
     <string name="Snabble.edit">Szerkesztés</string>
     <string name="Snabble.goToSettings">A beállításokhoz</string>
     <string name="Snabble.Hints.closedBags">Csak így tovább! Kérjük, könnyítsd meg a pénztáros munkáját, és ne csomagold közvetlenül lezárt tasakba a termékedet. Köszönjük!</string>
@@ -87,6 +87,10 @@
     <string name="Snabble.noDiscount">nincs árengedmény</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">Ezt a terméket jelenleg sajnos nem lehet az alkalmazással kifizetni. Kérlek, fizesd a szokásos módon a kasszánál.</string>
     <string name="Snabble.ok">OK</string>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">%s megnyitása</string>
+    <string name="Snabble.Onboarding.done">Kész</string>
+    <string name="Snabble.Onboarding.Link.show">Megtekintés</string>
+    <string name="Snabble.Onboarding.next">Tovább</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Kérlek, próbáld meg később még egyszer</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Nem sikerült az azonosítás</string>
     <string name="Snabble.Paydirekt.deleteAuthorization">Fizetési mód törlése</string>
@@ -263,10 +267,29 @@
     <string name="Snabble.SEPA.payNow">Fizetés SEPA segítségével</string>
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
     <string name="Snabble.Settings">Beállítások</string>
+    <!-- <street and house number> in <ZIP code> <city name> -->
+    <string name="Snabble.Shop.Address.accessibility">%1$s %2$s %3$s-ban</string>
+    <string name="Snabble.Shop.Detail.openingHours">Nyitvatartási idők</string>
+    <string name="Snabble.Shop.Detail.shopNow">Vásárolj be most itt</string>
     <string name="Snabble.Shop.Detail.startNavigation">Szeretnéd elindítani a navigációt?</string>
     <string name="Snabble.Shop.Detail.title">Részletek</string>
-    <string name="Snabble.Shop.Finder.title">Üzlet</string>
+    <string name="Snabble.Shop.Details.friday">Péntek</string>
+    <string name="Snabble.Shop.Details.monday">Hétfő</string>
+    <string name="Snabble.Shop.Details.saturday">Szombat</string>
+    <string name="Snabble.Shop.Details.sunday">Vasárnap</string>
+    <string name="Snabble.Shop.Details.thursday">Csütörtök</string>
+    <string name="Snabble.Shop.Details.tuesday">Kedd</string>
+    <string name="Snabble.Shop.Details.wednesday">Szerda</string>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="one">%d üzlet</item>
+        <item quantity="other">%d üzletek</item>
+        <item quantity="zero">Nincsenek üzletek</item>
+    </plurals>
     <string name="Snabble.Shop.Finder.youarehere">Itt vagy</string>
+    <string name="Snabble.Shop.List.Colapse.accessibility">összecsukni</string>
+    <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s összecsukva</string>
+    <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s kinyitva</string>
+    <string name="Snabble.Shop.List.Expand.accessibility">kinyitni</string>
     <string name="Snabble.Shopping.title">Bevásárlás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Hozzáadás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Törlés</string>

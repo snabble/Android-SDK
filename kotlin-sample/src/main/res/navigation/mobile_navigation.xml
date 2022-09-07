@@ -19,7 +19,7 @@
             app:argType="string" />
         <argument
             android:name="headerTitle"
-            android:defaultValue="@string/Onboarding.Terms.introText"
+            android:defaultValue="@string/Sample.Onboarding.message3"
             app:argType="reference" />
         <deepLink
             android:id="@+id/deepLink"
@@ -47,12 +47,12 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="io.snabble.sdk.sample.HomeFragment"
-        android:label="@string/home_title" />
+        android:label="@string/Sample.home" />
 
     <fragment
         android:id="@+id/navigation_scanner"
         android:name="io.snabble.sdk.ui.scanner.SelfScanningFragment"
-        android:label="@string/scanner_title">
+        android:label="@string/Sample.scanner">
         <argument
             android:name="showProductCode"
             app:argType="string" />
@@ -61,12 +61,12 @@
     <fragment
         android:id="@+id/navigation_cart"
         android:name="io.snabble.sdk.ui.cart.ShoppingCartFragment"
-        android:label="@string/cart_title" />
+        android:label="@string/Sample.shoppingCart" />
 
     <fragment
         android:id="@+id/navigation_dummy_cart"
         android:name="io.snabble.sdk.sample.CustomShoppingCartDummy"
-        android:label="@string/cart_title" />
+        android:label="@string/Sample.shoppingCart" />
 
     <fragment
         android:id="@+id/navigation_barcode_search"

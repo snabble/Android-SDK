@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <!-- ********* Home ********* -->
+    <string name="Sample.home">Štart</string>
     <string name="Sample.Onboarding.accept">Prijať</string>
     <string name="Sample.Onboarding.message1">So Snabble naskenuješ svoj nákup sám/sama a zaplatíš priamo v aplikácii. Bez vystávania v rade a vykladania tvojho nákupu na pás.</string>
     <string name="Sample.Onboarding.message2">Navštív niektorý zo zapojených obchodov, začni nakupovať a prilož kameru k čiarovým kódom tovarov. Ostatné už ide samé.</string>
     <string name="Sample.Onboarding.message3">Prosím, akceptuj podmienky používania a prečítaj si pravidlá ochrany údajov.</string>
+    <string name="Sample.scanner">Skener</string>
+    <string name="Sample.shoppingCart">Košík</string>
+    <string name="Sample.shops">Obchody</string>
 </resources>
