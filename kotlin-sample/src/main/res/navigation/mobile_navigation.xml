@@ -40,7 +40,7 @@
             android:defaultValue="true"
             app:argType="boolean" />
         <argument
-            android:name="model"
+            android:name="@string/bundle_key_model"
             app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
     </fragment>
 
