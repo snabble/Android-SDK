@@ -86,11 +86,13 @@ class OnboardingStepView @JvmOverloads constructor(
         footer.resolveTextOrHide(data.footer)
         termsButton.resolveTextOrHide(data.termsButtonTitle)
 
-        data.link?.let { deeplink ->
+        if (data.link != null) {
             termsButton.setOnClickListener {
-                showDeeplink(context, deeplink)
+                showDeeplink(context, data.link)
             }
-        } ?: run { termsButton.isVisible = false }
+        } else {
+            termsButton.isVisible = false
+        }
 
         // reset click listeners from last binding
         listOf(footer, text).forEach { view ->
