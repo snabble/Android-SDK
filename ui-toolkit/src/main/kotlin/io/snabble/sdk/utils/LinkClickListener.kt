@@ -14,18 +14,28 @@ import kotlin.math.min
 
 /** Handles url click events in a spannable string */
 class LinkClickListener(private val onLinkClick: (url: Uri) -> Unit) : LinkMovementMethod() {
-    override fun handleMovementKey(widget: TextView?, buffer: Spannable, keyCode: Int, movementMetaState: Int, event: KeyEvent): Boolean {
+
+    override fun handleMovementKey(
+        widget: TextView?,
+        buffer: Spannable,
+        keyCode: Int,
+        movementMetaState: Int,
+        event: KeyEvent,
+    ): Boolean {
         if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)
             && KeyEvent.metaStateHasNoModifiers(movementMetaState)
             && event.action == KeyEvent.ACTION_DOWN
-            && event.repeatCount == 0) {
-            val a = Selection.getSelectionStart(buffer)
-            val b = Selection.getSelectionEnd(buffer)
+            && event.repeatCount == 0
+        ) {
+            val selectionStart = Selection.getSelectionStart(buffer)
+            val selectionEnd = Selection.getSelectionEnd(buffer)
 
-            val selStart = min(a, b)
-            val selEnd = max(a, b)
+            // Selection could have been made from right to left,
+            // this way we're ensuring start will be a lower number than end
+            val start = min(selectionStart, selectionEnd)
+            val end = max(selectionStart, selectionEnd)
 
-            if (selStart != selEnd && handleSpanClick(buffer, selStart, selEnd)) return true
+            if (start != end && handleSpanClick(buffer, start, end)) return true
         }
         return super.handleMovementKey(widget, buffer, keyCode, movementMetaState, event)
     }
@@ -39,8 +49,8 @@ class LinkClickListener(private val onLinkClick: (url: Uri) -> Unit) : LinkMovem
             x += widget.scrollX
             y += widget.scrollY
             val line = widget.layout.getLineForVertical(y)
-            val off = widget.layout.getOffsetForHorizontal(line, x.toFloat())
-            if (handleSpanClick(buffer, off, off)) return true
+            val offset = widget.layout.getOffsetForHorizontal(line, x.toFloat())
+            if (handleSpanClick(buffer, offset, offset)) return true
         }
         return super.onTouchEvent(widget, buffer, event)
     }
