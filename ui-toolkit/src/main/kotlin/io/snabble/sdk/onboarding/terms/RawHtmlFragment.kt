@@ -17,11 +17,16 @@ import okhttp3.internal.toHexString
 
 /** Displays any given HTML in a [WebView] */
 abstract class RawHtmlFragment : Fragment() {
+
     abstract val html: String
     abstract val header: String
     private lateinit var webView: WebView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View =
         inflater.inflate(R.layout.snabble_fragment_raw_html, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,7 +38,7 @@ abstract class RawHtmlFragment : Fragment() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
                 shouldOverrideUrlLoading(request.url)
 
-            @Deprecated("Legacy code for Android 5 & 6")
+            @Deprecated("Legacy code for Android 5 & 6", replaceWith = ReplaceWith(""))
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?) =
                 shouldOverrideUrlLoading(Uri.parse(url.orEmpty()))
         }
@@ -44,7 +49,8 @@ abstract class RawHtmlFragment : Fragment() {
     open fun shouldOverrideUrlLoading(url: Uri): Boolean {
         try {
             openUrl(url.toString())
-        } catch (e: Exception) {}
+        } catch (ignored: Exception) {
+        }
         return true
     }
 
@@ -84,5 +90,6 @@ abstract class RawHtmlFragment : Fragment() {
         webView.loadDataWithBaseURL(null, embed, "text/html", "UTF-8", null)
     }
 
-    fun Fragment.openUrl(url: String) = startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+    private fun Fragment.openUrl(url: String) =
+        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
 }
