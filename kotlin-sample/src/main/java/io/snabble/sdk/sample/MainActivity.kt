@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -22,12 +23,18 @@ import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.onboarding.entities.OnboardingModel
+import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
+import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.ui.SnabbleUI
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var locationPermission: ActivityResultLauncher<String>
+
+    private val onboardingRepo: OnboardingRepository by lazy {
+        OnboardingRepositoryImpl(assets, Gson())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,13 +49,14 @@ class MainActivity : AppCompatActivity() {
         setupToolbar(toolbar, navController, navBarView)
 
         if (savedInstanceState == null) {
-            val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
-            val model = Gson().fromJson(json, OnboardingModel::class.java)
-            SnabbleUiToolkit.executeAction(
-                context = this,
-                SnabbleUiToolkit.Event.SHOW_ONBOARDING,
-                bundleOf("model" to model)
-            )
+            lifecycleScope.launch {
+                val model = onboardingRepo.getOnboardingModel()
+                SnabbleUiToolkit.executeAction(
+                    context = this@MainActivity,
+                    SnabbleUiToolkit.Event.SHOW_ONBOARDING,
+                    bundleOf(getString(R.string.bundle_key_model) to model)
+                )
+            }
         }
 
         locationPermission = createLocationPermissionRequestResultLauncher()
