@@ -1,40 +1,25 @@
 package io.snabble.sdk.shopfinder
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.location.Location
-import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.customview.view.AbsSavedState
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.*
-import io.snabble.accessibility.accessibility
-import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.SnabbleUiToolkit
-import io.snabble.sdk.shopfinder.utils.formatDistance
-import io.snabble.sdk.shopfinder.utils.AssetHelper.load
 import io.snabble.sdk.shopfinder.utils.ConfigurableDivider
-import io.snabble.sdk.shopfinder.utils.OneShotClickListener
-import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.shopfinder.utils.formatDistance
 import io.snabble.sdk.ui.utils.UIUtils.getHostActivity
-import io.snabble.sdk.ui.utils.getString
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
-import io.snabble.sdk.utils.setTextOrHide
 
 
 /**
@@ -54,7 +39,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle), Snabble.OnMetadataUpdateListener {
 
-    private val adapter = ExpandableShopListAdapter(context)
+    private val adapter = ExpandableShopListAdapter()
     private val layoutManager = LinearLayoutManager(context)
     private val itemAnimator = DefaultItemAnimator()
     private var chosenProjects: List<Project>? = null
@@ -83,8 +68,8 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         val dividerItemDecoration = ConfigurableDivider(
             context,
             DividerItemDecoration.VERTICAL,
-            true,
-            false
+            skipLastDivider = true,
+            justBetweenSameType = false
         )
         addItemDecoration(dividerItemDecoration)
     }
@@ -176,16 +161,14 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Update and refreshe the shown shops.
+     * Update and refresh the shown shops.
      */
     fun update() {
         chosenProjects?.let(::setShopsByProjects)
     }
 
-    class SavedState : AbsSavedState {
+    class SavedState(superState: Parcelable) : AbsSavedState(superState) {
         var expanded: Array<String> = emptyArray()
-
-        constructor(superState: Parcelable) : super(superState)
 
         override fun writeToParcel(out: Parcel, flags: Int) {
             super.writeToParcel(out, flags)
@@ -193,126 +176,23 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
             out.writeStringArray(expanded)
         }
 
-        @SuppressLint("RestrictedApi")
-        private constructor(`in`: Parcel) : super(requireNotNull(`in`.readParcelable(RecyclerView.SavedState::class.java.classLoader))) {
-            expanded = `in`.createStringArray() ?: emptyArray()
-        }
-
-        companion object {
-            @JvmField
-            val CREATOR: Parcelable.Creator<SavedState?> =
-                object : Parcelable.Creator<SavedState?> {
-                    override fun createFromParcel(`in`: Parcel) = SavedState(`in`)
-                    override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
-                }
-        }
     }
 
     // Inflates Item shop group Layout
     // e.g. preview shows projects as list with numbers of shops available
-    private class ShopSectionViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val itemAnimator = DefaultItemAnimator()
-        var image: ImageView = itemView.findViewById(R.id.image)
-        var name: TextView = itemView.findViewById(R.id.name)
-        var shopCount: TextView = itemView.findViewById(R.id.shop_count)
-        var youAreHereIndicator: View = itemView.findViewById(R.id.you_are_here_indicator)
-        var distance: TextView = itemView.findViewById(R.id.distance)
-        var chevron: ImageView = itemView.findViewById(R.id.chevron)
-
+    private class ShopSectionViewHolder(itemView: ProjectListView) : ViewHolder(itemView) {
 
         fun bindTo(item: Item, onToggle: () -> Unit) {
-            name.text = item.name
-            shopCount.text = itemView.context.resources.getQuantityString(
-                R.plurals.Snabble_Shop_Finder_storeCount,
-                item.shops!!, item.shops
-            )
-            val project = item.project
-            image.setImageBitmap(null)
-            load(project.assets, "icon", image)
-
-            if (item.type == ViewType.ExpandedBrand) {
-                itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
-                chevron.rotation = 270f
-            } else {
-                itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
-                chevron.rotation = 90f
-            }
-
-            itemView.setOnClickListener(object : OneShotClickListener() {
-                override fun click() {
-                    onToggle()
-                    chevron.animate()
-                        .rotationBy(if (item.type == ViewType.CollapsedBrand) -180f else 180f)
-                        .setDuration(itemAnimator.addDuration)
-                        .start()
-                    if (item.type == ViewType.ExpandedBrand) {
-                        itemView.announceForAccessibility(
-                            getString(
-                                R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
-                                item.name
-                            )
-                        )
-                        itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
-                    } else {
-                        itemView.accessibility.setClickAction(
-                            getString(
-                                R.string.Snabble_Shop_List_EventShopColapsed_accessibility,
-                                item.name
-                            )
-                        )
-                        itemView.accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
-                    }
-                }
-            })
-            if (item.isCheckedIn) {
-                youAreHereIndicator.isVisible = true
-                distance.visibility = GONE
-            } else {
-                youAreHereIndicator.isVisible = false
-                distance.setTextOrHide(item.distanceLabel)
-                distance.setClickDescription(R.string.Snabble_Shop_Distance_accessibility)
-            }
+            (itemView as ProjectListView).bind(item, onToggle)
         }
     }
 
     // Inflates list shop layout
     // e.g. sublist of expandable view. shows all shops
-    private class ShopViewHolder(itemView: View, var context: Context) : ViewHolder(itemView) {
-        var name: TextView = itemView.findViewById(R.id.name)
-        var address: TextView = itemView.findViewById(R.id.address)
-        var distance: TextView = itemView.findViewById(R.id.distance)
-        var youAreHereContainer: View = itemView.findViewById(R.id.you_are_here_container)
+    private class ShopViewHolder(itemView: ShopListView) : ViewHolder(itemView) {
 
         fun bindTo(item: Item) {
-            itemView.setClickDescription(R.string.Snabble_Shop_List_ShowDetails_accessibility)
-            name.text = item.name
-            address.text = item.address
-            address.contentDescription = getString(
-                R.string.Snabble_Shop_Address_accessibility,
-                item.street,
-                item.zipCode,
-                item.city
-            )
-            youAreHereContainer.isVisible = item.isCheckedIn
-
-            if (item.isCheckedIn) {
-                distance.isVisible = false
-            } else {
-                distance.setTextOrHide(item.distanceLabel)
-            }
-
-            itemView.setOnClickListener {
-                val args = Bundle()
-                val shop =
-                    Snabble.getProjectById(item.project.id)?.shops?.first { it.id == item.id }
-                args.putParcelable("shop", shop)
-
-                SnabbleUiToolkit.executeAction(
-                    context,
-                    SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST,
-                    args
-                )
-            }
+            (itemView as ShopListView).bind(item)
         }
     }
 
@@ -321,7 +201,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         override fun areContentsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
     }
 
-    private class ExpandableShopListAdapter(var context: Context) : ListAdapter<Item, ViewHolder>(
+    private class ExpandableShopListAdapter : ListAdapter<Item, ViewHolder>(
         ShopDiffer()
     ) {
         var currentShopId: String? = null
@@ -329,7 +209,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         var lifecycleOwner: LifecycleOwner? = null
             set(value) {
                 field = value
-                Snabble.currentCheckedInShop.observe(requireNotNull(value)){ shop ->
+                Snabble.currentCheckedInShop.observe(requireNotNull(value)) { shop ->
                     currentShopId = shop?.id
                     /**If the user walks into the shop trigger refresh*/
                     updateDistances(lastKnownLocation)
@@ -341,28 +221,17 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         private var items = emptyList<Item>()
         private var lastKnownLocation: Location? = null
 
-        private val layoutInflater =
-            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         private val TYPE_SECTION = 0
         private val TYPE_SHOP = 1
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
             TYPE_SECTION -> ShopSectionViewHolder(
-                layoutInflater.inflate(
-                    R.layout.snabble_shop_item_list_group,
-                    parent,
-                    false
-                )
+                ProjectListView(parent.context)
             )
             else -> ShopViewHolder(
-                layoutInflater.inflate(
-                    R.layout.snabble_shop_item_list,
-                    parent,
-                    false
-                ), context
+                ShopListView(parent.context)
             )
         }
-
 
         override fun getItemViewType(position: Int): Int =
             when (getItem(position).type) {
@@ -435,7 +304,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
                     ViewType.ExpandedBrand,
                     ViewType.CollapsedBrand -> {
                         item.isCheckedIn =
-                                currentProjectId != null && item.project.id == currentProjectId
+                            currentProjectId != null && item.project.id == currentProjectId
                         item.type = if (expandedProjects.contains(item.project.id)) {
                             ViewType.ExpandedBrand
                         } else {

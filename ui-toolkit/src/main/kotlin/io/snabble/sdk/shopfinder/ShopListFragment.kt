@@ -24,7 +24,7 @@ open class ShopListFragment : Fragment() {
 
     override fun onStart() {
         if (Snabble.projects.size == 1) {
-            (context as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            (context as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }
         super.onStart()
     }
