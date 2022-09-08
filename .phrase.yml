@@ -43,12 +43,12 @@ phrase:
       - file: ./ui-toolkit/src/debug/res/values/strings.xml
         params:
           <<: *defaults
-          locale_id: b220db5757be359631c55ec54fb65ac6
+          locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
           tags: Sample
       - file: ./ui-toolkit/src/main/res/values/strings.xml
         params:
           <<: *defaults
-          locale_id: b220db5757be359631c55ec54fb65ac6
+          locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
           tags: Onboarding
       - file: ./ui-toolkit/src/main/res/values-de/strings.xml
         params:
@@ -85,7 +85,7 @@ phrase:
       - file: ./kotlin-sample/src/main/res/values/strings.xml
         params:
           <<: *defaults
-          locale_id: b220db5757be359631c55ec54fb65ac6
+          locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
           tags: Sample
       - file: ./kotlin-sample/src/main/res/values-de/strings.xml
         params:
