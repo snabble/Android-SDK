@@ -40,19 +40,25 @@ open class ShopListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val supportActionBar = (context as AppCompatActivity).supportActionBar
+        val supportActionBar = (context as? AppCompatActivity)?.supportActionBar
         val actionbarTitle = resources.getText(R.string.Snabble_Shop_Finder_title)
 
         if (actionbarTitle.isNotNullOrBlank()) {
             supportActionBar?.title = actionbarTitle
         }
+        var lastLocation = locationManager.location.value
 
         shopListRecyclerView = view.findViewById(R.id.recycler_view)
-        shopListRecyclerView.sortByDistance(locationManager.location.value)
+        shopListRecyclerView.sortByDistance(lastLocation)
         shopListRecyclerView.setShopsByProjects(Snabble.projects)
 
         locationManager.location.observe(viewLifecycleOwner){ currentLocation ->
-            shopListRecyclerView.sortByDistance(currentLocation)
+            currentLocation?.let {
+                if(currentLocation != lastLocation)
+                    lastLocation = currentLocation
+                    shopListRecyclerView.sortByDistance(currentLocation)
+                    shopListRecyclerView.setShopsByProjects(Snabble.projects)
+            }
         }
 
     }

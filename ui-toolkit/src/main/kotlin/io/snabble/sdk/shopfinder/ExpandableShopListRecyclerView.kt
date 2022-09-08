@@ -325,10 +325,12 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
 
             if (Snabble.projects.size == 1 || showAll) {
                 submitList(model.filter { it.type.isShop })
+                this.notifyDataSetChanged()
                 return
             }
 
             submitList(model.filterNot { it.type == ViewType.HiddenShop })
+            this.notifyDataSetChanged()
         }
     }
 
