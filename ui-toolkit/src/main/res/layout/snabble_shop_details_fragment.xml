@@ -14,7 +14,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_behavior="io.snabble.sdk.shopfinder.PushUpBehavior"
         tools:layout_marginTop="-1400px">
 
         <TextView
