@@ -15,24 +15,15 @@ class LoadingActivity : AppCompatActivity() {
         initSdk()
     }
 
-    fun initSdk() {
+    private fun initSdk() {
         Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
         Snabble.initializationState.observe(this) {
             when (it) {
                 InitializationState.UNINITIALIZED,
-                InitializationState.INITIALIZING -> {}
+                InitializationState.INITIALIZING,
+                null -> {
+                }
                 InitializationState.INITIALIZED -> {
-                    // check in to a project via the examples below
-                    // the check in is needed for the scanner and shopping card to work
-
-                    // an application can have multiple projects, for example for
-                    // multiple independent regions / countries
-                    // val project = Snabble.projects.first()
-
-                    // check in to the first shop - you can use CheckInManager if you want
-                    // to use geofencing
-                    // Snabble.checkedInShop = project.shops.first()
-
                     startActivity(Intent(this@LoadingActivity, MainActivity::class.java))
                     finish()
                 }
