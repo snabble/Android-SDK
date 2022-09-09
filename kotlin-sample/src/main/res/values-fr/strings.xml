@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Sample.Dashboard.button">Commencer maintenant</string>
+    <string name="Sample.Dashboard.Information.text1">Enregistrez directement un mode de paiement pour pouvoir acheter dès maintenant.</string>
+    <string name="Sample.Dashboard.Information.text2">Profitez automatiquement des avantages de vos cartes de fidélité</string>
+    <string name="Sample.Dashboard.text">Visitez une boutique du programme pour faire vos achats avec Snabble !</string>
+    <string name="Sample.Dashboard.title">Bienvenue sur Snabble</string>
+    <string name="Sample.home">Démarrer</string>
+    <string name="Sample.Onboarding.accept">Accepter</string>
+    <string name="Sample.Onboarding.message1">Avec Snabble, vous scannez vous-même vos achats et vous payez directement dans l\'application, sans faire la queue et sans mettre vos achats sur le tapis roulant.</string>
+    <string name="Sample.Onboarding.message2">Entrez dans un magasin participant, commencez vos achats et présentez le code-barres d\'un article devant la caméra. Le reste s\'explique de lui-même.</string>
+    <string name="Sample.Onboarding.message3">Merci d\'accepter les conditions d\'utilisation et de lire les informations sur la protection des données.</string>
+    <string name="Sample.profile">Profil</string>
+    <string name="Sample.scanner">Scanner</string>
+    <string name="Sample.Section.Profile.deleteAccount">Supprimer le compte</string>
+    <string name="Sample.Section.Profile.header">Votre profil</string>
+    <string name="Sample.Section.Profile.paymentMethods">Modalités de paiement</string>
+    <string name="Sample.Section.Profile.saveEnergy">Économiser de l\'électricité</string>
+    <string name="Sample.Section.Profile.showOnboarding">Afficher l\'intégration</string>
+    <string name="Sample.shoppingCart">Panier d\'achat</string>
+    <string name="Sample.shops">Filiales</string>
+</resources>

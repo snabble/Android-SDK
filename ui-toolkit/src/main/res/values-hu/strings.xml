@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">%s megnyitása</string>
+    <string name="Snabble.Onboarding.done">Kész</string>
+    <string name="Snabble.Onboarding.Link.show">Megtekintés</string>
+    <string name="Snabble.Onboarding.next">Tovább</string>
+</resources>

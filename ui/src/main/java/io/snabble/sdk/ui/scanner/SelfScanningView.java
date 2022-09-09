@@ -26,7 +26,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.util.Pair;
-import androidx.lifecycle.Observer;
 
 import java.util.List;
 
@@ -54,7 +53,6 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.ui.views.MessageBoxStackView;
 import io.snabble.sdk.utils.Dispatch;
-import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.Utils;
 
@@ -279,8 +277,8 @@ public class SelfScanningView extends FrameLayout {
         Dispatch.mainThread(() -> messages.show(
                 text,
                 UIUtils.getDurationByLength(text),
-                ResourcesCompat.getColor(getResources(), R.color.snabble_infoColor, null),
-                ResourcesCompat.getColor(getResources(), R.color.snabble_infoTextColor, null)
+                ResourcesCompat.getColor(getResources(), R.color.snabble_info_color, null),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_info_text_color, null)
         ));
     }
 
@@ -288,8 +286,8 @@ public class SelfScanningView extends FrameLayout {
         Dispatch.mainThread(() -> messages.show(
                 text,
                 UIUtils.getDurationByLength(text),
-                ResourcesCompat.getColor(getResources(), R.color.snabble_infoColorWarning, null),
-                ResourcesCompat.getColor(getResources(), R.color.snabble_infoTextColorWarning, null)
+                ResourcesCompat.getColor(getResources(), R.color.snabble_info_color_warning, null),
+                ResourcesCompat.getColor(getResources(), R.color.snabble_info_text_color_warning, null)
         ));
     }
 

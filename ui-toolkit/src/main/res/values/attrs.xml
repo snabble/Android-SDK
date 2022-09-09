@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HideWhenTinyFrameLayout">
+        <attr name="minHeight" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="OnboardingStepView">
+        <attr name="image" format="reference" />
+        <attr name="title" format="string" />
+        <attr name="text" format="string" />
+        <attr name="footerText" format="string" />
+    </declare-styleable>
+</resources>

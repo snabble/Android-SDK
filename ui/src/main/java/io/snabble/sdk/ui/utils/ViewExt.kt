@@ -16,12 +16,14 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import io.snabble.sdk.Assets
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.getImageId
+import io.snabble.sdk.utils.isNotNullOrBlank
 import java.util.*
 
 fun View.executeUiAction(event: SnabbleUI.Event, args: Bundle? = null) {
@@ -69,6 +71,39 @@ inline var View.behavior: CoordinatorLayout.Behavior<*>?
 fun TextView.setTextOrHide(text: CharSequence?) {
     this.isVisible = text.isNotNullOrBlank()
     this.text = text
+}
+
+fun ImageView.setImageResourceOrHide(resId: Int?) {
+    if (resId != null && resId != Resources.ID_NULL) {
+        this.setImageResource(resId)
+        isVisible = true
+    } else {
+        isVisible = false
+    }
+}
+
+/**
+ * Resolves the string and loads it into either an [ImageView] or [TextView] based on the given string.
+ * When the [data] matches an http(s) url or a resource id it will be loaded into the [ImageView].
+ * When the [data] matches a string id can be resolved the localized string will be displayed inside the [TextView]
+ * otherwise the plain text will be displayed.
+ * When [data] is `null` the view will be hidden.
+ */
+fun ImageView.resolveImageOrHide(data: String?) {
+    isVisible = data.isNotNullOrBlank()
+
+    if (data.isNotNullOrBlank()) {
+        if (data!!.startsWith("http")) {
+            Picasso.get().load(data).into(this)
+        } else {
+            val imageId = context.getImageId(data)
+            if (imageId != Resources.ID_NULL) {
+                setImageResource(imageId)
+            } else {
+                isVisible = false
+            }
+        }
+    }
 }
 
 fun <T> LiveData<T>.observeView(view: View, observer: Observer<T>) {

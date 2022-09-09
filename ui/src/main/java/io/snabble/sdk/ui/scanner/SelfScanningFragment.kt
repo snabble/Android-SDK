@@ -15,6 +15,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import com.google.android.material.snackbar.Snackbar
+import io.snabble.accessibility.focusForAccessibility
+import io.snabble.accessibility.isTalkBackActive
+import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.*

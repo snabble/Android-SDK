@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui
+package io.snabble.accessibility
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
@@ -15,7 +15,6 @@ import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
-import io.snabble.sdk.Snabble
 
 typealias AccessibilityEventListener = (host: ViewGroup?,
                                         child: View?,
@@ -47,18 +46,16 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
     }
 
     override fun onRequestSendAccessibilityEvent(
-        host: ViewGroup?,
-        child: View?,
-        event: AccessibilityEvent?
+        host: ViewGroup,
+        child: View,
+        event: AccessibilityEvent
     ): Boolean {
-        val listener = event?.let { eventListeners[event.eventType] }
-        listener?.invoke(host, child, event)
+        eventListeners[event.eventType]?.invoke(host, child, event)
         return super.onRequestSendAccessibilityEvent(host, child, event)
     }
 
-    override fun onPopulateAccessibilityEvent(host: View, event: AccessibilityEvent?) {
-        val listener = event?.let { populateListeners[event.eventType] }
-        listener?.invoke(host.parent as? ViewGroup, host, event)
+    override fun onPopulateAccessibilityEvent(host: View, event: AccessibilityEvent) {
+        populateListeners[event.eventType]?.invoke(host.parent as? ViewGroup, host, event)
         super.onPopulateAccessibilityEvent(host, event)
     }
 
@@ -234,17 +231,4 @@ fun <T> Iterable<T>.forEachWindow(iterator: (last: T?, current: T, next: T?) -> 
             }
         }
     }
-}
-
-object AccessibilityPreferences {
-    private const val KEY_SUPPRESS_SCANNER_HINT = "suppress_scanner_hint"
-    private val sharedPreferences = Snabble.application.getSharedPreferences("accessibility", Context.MODE_PRIVATE)
-    var suppressScannerHint: Boolean
-        get() = sharedPreferences.getBoolean(KEY_SUPPRESS_SCANNER_HINT, false)
-        set(seen) {
-            sharedPreferences
-                .edit()
-                .putBoolean(KEY_SUPPRESS_SCANNER_HINT, seen)
-                .apply()
-        }
 }

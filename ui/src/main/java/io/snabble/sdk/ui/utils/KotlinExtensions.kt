@@ -57,16 +57,16 @@ fun Snackbar.setPriority(@UIUtils.InfoLevel level: Int) = apply {
     (view.layoutParams as? CoordinatorLayout.LayoutParams)?.gravity = Gravity.TOP
     when (level) {
         UIUtils.INFO_NEUTRAL -> {
-            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_infoColor))
-            textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_infoTextColor))
+            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_info_color))
+            textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_info_text_color))
         }
         UIUtils.INFO_WARNING -> {
-            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_infoColorWarning))
-            textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_infoTextColorWarning))
+            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_info_color_warning))
+            textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_info_text_color_warning))
         }
         UIUtils.INFO_POSITIVE -> {
-            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_infoColorPositive))
-            textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_infoTextColorPositive))
+            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_info_color_positive))
+            textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_info_text_color_positive))
         }
     }
 }
