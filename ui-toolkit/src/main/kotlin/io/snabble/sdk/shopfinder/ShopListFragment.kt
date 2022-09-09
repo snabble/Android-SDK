@@ -20,35 +20,24 @@ import io.snabble.sdk.utils.isNotNullOrBlank
  * To set a custom page title override resource string 'Snabble_Shop_Finder_title'
  * */
 open class ShopListFragment : Fragment() {
+
     private lateinit var locationManager: CheckInLocationManager
     private lateinit var shopListRecyclerView: ExpandableShopListRecyclerView
-
-    override fun onStart() {
-        if (Snabble.projects.size == 1) {
-            (context as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        }
-        super.onStart()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setupActionBar()
         locationManager = Snabble.checkInLocationManager
         return inflater.inflate(R.layout.snabble_shop_list_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val supportActionBar = (context as? AppCompatActivity)?.supportActionBar
-        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Finder_title)
 
-        if (actionbarTitle.isNotNullOrBlank()) {
-            supportActionBar?.title = actionbarTitle
-        }
         var lastLocation = locationManager.location.value
-
         shopListRecyclerView = view.findViewById(R.id.recycler_view)
         shopListRecyclerView.sortByDistance(lastLocation)
         shopListRecyclerView.setShopsByProjects(Snabble.projects)
@@ -65,5 +54,18 @@ open class ShopListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         shopListRecyclerView.update()
+    }
+
+    private fun setupActionBar() {
+        val supportActionBar = (context as? AppCompatActivity)?.supportActionBar ?: return
+
+        if (Snabble.projects.size == 1) {
+            supportActionBar.setDisplayHomeAsUpEnabled(false)
+        }
+
+        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Finder_title)
+        if (actionbarTitle.isNotNullOrBlank()) {
+            supportActionBar.title = actionbarTitle
+        }
     }
 }
