@@ -9,7 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import io.snabble.sdk.SnabbleUiToolkit.Event.*
+import io.snabble.sdk.SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
+import io.snabble.sdk.SnabbleUiToolkit.Event.GO_BACK
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DEEPLINK
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_SHOP_LIST
+import io.snabble.sdk.SnabbleUiToolkit.Event.START_NAVIGATION
 import io.snabble.sdk.onboarding.OnboardingActivity
 import io.snabble.sdk.shopfinder.ShopDetailsActivity
 import io.snabble.sdk.shopfinder.ShopListActivity
@@ -27,6 +34,7 @@ import kotlin.collections.set
  * You can use setUiAction to implement custom behaviour or deeply integrated fragments instead
  * of the default Activites.
  */
+@Suppress("unused")
 object SnabbleUiToolkit {
     const val DEEPLINK = "deeplink"
 
@@ -43,7 +51,7 @@ object SnabbleUiToolkit {
 
     private class ActivityCallback(
         var activity: WeakReference<AppCompatActivity>,
-        val action: Action
+        val action: Action,
     )
 
     private var actions = mutableMapOf<Event, ActivityCallback?>()
@@ -76,17 +84,17 @@ object SnabbleUiToolkit {
             activity.finish()
             return
         }
-        val cb = actions[event]
-        val hostingActivity = cb?.activity?.get()
-        if (cb != null) {
+        val callback = actions[event]
+        val hostingActivity = callback?.activity?.get()
+        if (callback != null) {
             if (hostingActivity != null) {
                 if (hostingActivity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                    cb.action.execute(context, args)
+                    callback.action.execute(context, args)
                 } else {
                     hostingActivity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                         override fun onStart(owner: LifecycleOwner) {
                             hostingActivity.lifecycle.removeObserver(this)
-                            cb.action.execute(context, args)
+                            callback.action.execute(context, args)
                         }
                     })
                 }
@@ -118,12 +126,10 @@ object SnabbleUiToolkit {
                     val deeplink = Uri.parse(requireNotNull(args?.getString(DEEPLINK)))
                     context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = deeplink })
                 }
-                // unhandled actions
                 GO_BACK,
                 DETAILS_SHOP_BUTTON_ACTION,
                 START_NAVIGATION,
-                null -> {
-                }
+                null -> Unit // unhandled actions
             }
         }
     }
@@ -133,20 +139,12 @@ object SnabbleUiToolkit {
         context: Context,
         clazz: Class<T>, args: Bundle?,
         canGoBack: Boolean = true,
-        unique: Boolean = false
+        unique: Boolean = false,
     ) {
-        val intent = Intent(context, clazz)
-
-        if (args != null) {
-            intent.putExtras(args)
-        }
-
-        if (!canGoBack) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-        }
-
-        if (unique) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val intent = Intent(context, clazz).apply {
+            if (args != null) putExtras(args)
+            if (!canGoBack) addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            if (unique) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 
         context.startActivity(intent)

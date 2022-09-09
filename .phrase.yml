@@ -1,72 +1,119 @@
+# Configuration for Android projects: https://help.phrase.com/help/examples
 phrase:
   project_id: 3e43b3f90cf19e83c7d85652df5766ca
-  file_format: strings
+  file_format: xml
   pull:
     targets:
+      # ui module
       - file: ./ui/src/main/res/values/strings.xml
-        params:
-          locale_id: b220db5757be359631c55ec54fb65ac6
-          tags: "sdk"
-          encoding: "UTF-8"
-          file_format: xml
-          include_empty_translations: false
+        params: &defaults
+          locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
+          fallback_locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
+          tags: SDK,Coupons
+          include_empty_translations: true
           format_options:
             convert_placeholder: true
             escape_linebreaks: true
-      - file: ./ui/src/main/res/values-<locale_name>/strings.xml
+      - file: ./ui/src/main/res/values-de/strings.xml
         params:
-          tags: "sdk"
-          encoding: "UTF-8"
-          file_format: xml
-          include_empty_translations: false
-          format_options:
-            convert_placeholder: true
-            escape_linebreaks: true
+          <<: *defaults
+          locale_id: 512f99f8cd03c80affd16303fb5de9c2 # de
+      - file: ./ui/src/main/res/values-fr/strings.xml
+        params:
+          <<: *defaults
+          locale_id: edf0b29dd998221329199f185d360ae4 # fr
+      - file: ./ui/src/main/res/values-fr-rCH/strings.xml
+        params:
+          <<: *defaults
+          locale_id: fae2e092d1704da2ed88f3f56eb6f219 # fr-CH
+      - file: ./ui/src/main/res/values-hu/strings.xml
+        params:
+          <<: *defaults
+          locale_id: 8f797bd77008e27f6286531a5ad55f67 # hu
+      - file: ./ui/src/main/res/values-it/strings.xml
+        params:
+          <<: *defaults
+          locale_id: a4dea5c3e2c77e7c6ea344e69db63ed9 # it
+      - file: ./ui/src/main/res/values-sk/strings.xml
+        params:
+          <<: *defaults
+          locale_id: 9ee4c528e480d56878c98ee8bfbc521b # sk
+
+      # ui-toolkit module
       - file: ./ui-toolkit/src/debug/res/values/strings.xml
         params:
-          locale_id: b220db5757be359631c55ec54fb65ac6
-          tags: "Sample"
-          encoding: "UTF-8"
-          file_format: xml
-          include_empty_translations: false
-          format_options:
-            convert_placeholder: true
-            escape_linebreaks: true
+          <<: *defaults
+          locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
+          tags: Sample
       - file: ./ui-toolkit/src/main/res/values/strings.xml
         params:
-          locale_id: b220db5757be359631c55ec54fb65ac6
-          tags: "Onboarding,Shop"
-          encoding: "UTF-8"
-          file_format: xml
-          include_empty_translations: false
-          format_options:
-            convert_placeholder: true
-            escape_linebreaks: true
-      - file: ./ui-toolkit/src/main/res/values-<locale_name>/strings.xml
+          <<: *defaults
+          locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
+          tags: Onboarding,Shop
+      - file: ./ui-toolkit/src/main/res/values-de/strings.xml
         params:
-          tags: "Onboarding,Shop"
-          encoding: "UTF-8"
-          file_format: xml
-          include_empty_translations: false
-          format_options:
-            convert_placeholder: true
-            escape_linebreaks: true
+          <<: *defaults
+          locale_id: 512f99f8cd03c80affd16303fb5de9c2 # de
+          tags: Onboarding,Shop
+      - file: ./ui-toolkit/src/main/res/values-fr/strings.xml
+        params:
+          <<: *defaults
+          locale_id: edf0b29dd998221329199f185d360ae4 # fr
+          tags: Onboarding,Shop
+      - file: ./ui-toolkit/src/main/res/values-fr-rCH/strings.xml
+        params:
+          <<: *defaults
+          locale_id: fae2e092d1704da2ed88f3f56eb6f219 # fr-CH
+          tags: Onboarding,Shop
+      - file: ./ui-toolkit/src/main/res/values-hu/strings.xml
+        params:
+          <<: *defaults
+          locale_id: 8f797bd77008e27f6286531a5ad55f67 # hu
+          tags: Onboarding,Shop
+      - file: ./ui-toolkit/src/main/res/values-it/strings.xml
+        params:
+          <<: *defaults
+          locale_id: a4dea5c3e2c77e7c6ea344e69db63ed9 # it
+          tags: Onboarding,Shop
+      - file: ./ui-toolkit/src/main/res/values-sk/strings.xml
+        params:
+          <<: *defaults
+          locale_id: 9ee4c528e480d56878c98ee8bfbc521b # sk
+          tags: Onboarding,Shop
+
+      # kotlin-sample module
       - file: ./kotlin-sample/src/main/res/values/strings.xml
         params:
-          locale_id: b220db5757be359631c55ec54fb65ac6
-          tags: "Sample"
-          encoding: "UTF-8"
-          file_format: xml
-          include_empty_translations: false
-          format_options:
-            convert_placeholder: true
-            escape_linebreaks: true
-      - file: ./kotlin-sample/src/main/res/values-<locale_name>/strings.xml
+          <<: *defaults
+          locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
+          tags: Sample
+      - file: ./kotlin-sample/src/main/res/values-de/strings.xml
         params:
-          tags: "Sample"
-          encoding: "UTF-8"
-          file_format: xml
-          include_empty_translations: false
-          format_options:
-            convert_placeholder: true
-            escape_linebreaks: true
+          <<: *defaults
+          locale_id: 512f99f8cd03c80affd16303fb5de9c2 # de
+          tags: Sample
+      - file: ./kotlin-sample/src/main/res/values-fr/strings.xml
+        params:
+          <<: *defaults
+          locale_id: edf0b29dd998221329199f185d360ae4 # fr
+          tags: Sample
+      - file: ./kotlin-sample/src/main/res/values-fr-rCH/strings.xml
+        params:
+          <<: *defaults
+          locale_id: fae2e092d1704da2ed88f3f56eb6f219 # fr-CH
+          tags: Sample
+      - file: ./kotlin-sample/src/main/res/values-hu/strings.xml
+        params:
+          <<: *defaults
+          locale_id: 8f797bd77008e27f6286531a5ad55f67 # hu
+          tags: Sample
+      - file: ./kotlin-sample/src/main/res/values-it/strings.xml
+        params:
+          <<: *defaults
+          locale_id: a4dea5c3e2c77e7c6ea344e69db63ed9 # it
+          tags: Sample
+      - file: ./kotlin-sample/src/main/res/values-sk/strings.xml
+        params:
+          <<: *defaults
+          locale_id: 9ee4c528e480d56878c98ee8bfbc521b # sk
+          tags: Sample

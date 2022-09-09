@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="Sample.account">Account</string>
     <string name="Sample.Dashboard.button">Start now</string>
     <string name="Sample.Dashboard.Information.text1">You can choose a payment method directly to make your first purchase without having to wait.</string>
     <string name="Sample.Dashboard.Information.text2">Take advantage of your store cards automatically.</string>
     <string name="Sample.Dashboard.text">Visit a supported store to shop with Snabble!</string>
     <string name="Sample.Dashboard.title">Welcome to Snabble</string>
+    <string name="Sample.home">Start</string>
     <string name="Sample.Onboarding.accept">Agree</string>
     <string name="Sample.Onboarding.message1">Using Snabble, you scan your purchase yourself and pay directly in the app. No queueing and without putting your purchase on the belt.</string>
     <string name="Sample.Onboarding.message2">Enter a participating store, start shopping and hold the barcode of an article in front of the camera. The rest is self-explanatory.</string>
     <string name="Sample.Onboarding.message3">Please accept the terms of use and take note of the privacy policy.</string>
+    <string name="Sample.profile">Profile</string>
     <string name="Sample.scanner">Scanner</string>
+    <string name="Sample.Section.Profile.deleteAccount">Delete Account</string>
+    <string name="Sample.Section.Profile.header">Your Profile</string>
+    <string name="Sample.Section.Profile.paymentMethods">Payment Methods</string>
+    <string name="Sample.Section.Profile.saveEnergy">Save energy</string>
+    <string name="Sample.Section.Profile.showOnboarding">Show Onboarding</string>
     <string name="Sample.shoppingCart">Shopping Cart</string>
     <string name="Sample.shops">Shops</string>
 </resources>

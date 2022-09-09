@@ -24,8 +24,9 @@
     <string name="Snabble.Shop.Details.wednesday">Wednesday</string>
     <string name="Snabble.Shop.Distance.accessibility">In %s</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
-        <item quantity="one">%d store</item>
-        <item quantity="other">%d stores</item>
+        <item quantity="many">%d succursales</item>
+        <item quantity="one">%d succursale</item>
+        <item quantity="other">%d succursales</item>
         <item quantity="zero">No stores</item>
     </plurals>
     <string name="Snabble.Shop.Finder.title">Shop</string>

@@ -3,18 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [0.69.0] (not yet released)
 
-## Added
-- New UI-Toolkit with rich configurable widgets to create full samples apps. Containing:
-  - Onboarding
-  - Shop finder
-  - Shop details
-  - Location based CheckinManager
-  - Soon: DynamicStack
-- AccessibilityToolbox as own dependency
+### Changed
+- Added ui-toolkit for more realistic sample app with onboarding
+- Moved accessibility toolbox to an own dependency
+
+### Breaking Changes
+- Renamed some colors which should be only used internal only
 
 ## [0.68.6]
 
-## Changed
+### Changed
 - Apply new Phrase key structure
 
 ## [0.68.5]

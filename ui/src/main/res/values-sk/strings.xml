@@ -65,8 +65,12 @@
         <item quantity="other">ešte %d týždňov</item>
         <item quantity="zero">Platnosť už skončila</item>
     </plurals>
+    <string name="Snabble.Coupons.none">Kupóny nie sú k dispozícii</string>
     <string name="Snabble.Coupons.title">Kupóny</string>
     <string name="Snabble.CreditCard.payNow">Teraz zaplatiť kreditnou kartou</string>
+    <string name="Snabble.Dashboard.lastPurchase">Tvoj posledný nákup</string>
+    <string name="Snabble.Dashboard.lastPurchases">Tvoje posledné nákupy</string>
+    <string name="Snabble.Dashboard.lastPurchasesShowAll">Všetko</string>
     <string name="Snabble.delete">Vymazať</string>
     <string name="Snabble.done">Hotovo</string>
     <string name="Snabble.DynamicStack.Shop.show">Zobraziť obchody</string>
@@ -95,6 +99,8 @@
     <string name="Snabble.noDiscount">žiadna zľava</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">Tento produkt momentálne nie je možné zaplatiť cez aplikáciu. Zaplať ho pri pokladni ako obvykle.</string>
     <string name="Snabble.ok">OK</string>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">Otvoriť %s</string>
+    <string name="Snabble.Onboarding.done">Hotovo</string>
     <string name="Snabble.Onboarding.Link.show">Prezrieť</string>
     <string name="Snabble.Onboarding.next">Ďalej</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Skús neskôr znovu, prosím</string>
@@ -275,15 +281,23 @@
     <string name="Snabble.Settings">Nastavenia</string>
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s v %2$s %3$s</string>
+    <string name="Snabble.Shop.Detail.openingHours">Otváracie hodiny</string>
+    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Telefónne číslo %s</string>
+    <string name="Snabble.Shop.Detail.shopNow">Teraz nakúpiť tu</string>
     <string name="Snabble.Shop.Detail.startNavigation">Chcete zapnúť navigáciu?</string>
     <string name="Snabble.Shop.Detail.title">Detaily</string>
+    <string name="Snabble.Shop.Details.contractingParty">Zmluvný partner</string>
     <string name="Snabble.Shop.Details.friday">Piatok</string>
+    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Aktivovať</string>
+    <string name="Snabble.Shop.Details.MapDisabled.title">Deaktivoval/a si používanie služby %s.</string>
     <string name="Snabble.Shop.Details.monday">Pondelok</string>
     <string name="Snabble.Shop.Details.saturday">Sobota</string>
+    <string name="Snabble.Shop.Details.StartCall.accessibility">Zavolať</string>
     <string name="Snabble.Shop.Details.sunday">Nedeľa</string>
     <string name="Snabble.Shop.Details.thursday">Štvrtok</string>
     <string name="Snabble.Shop.Details.tuesday">Utorok</string>
     <string name="Snabble.Shop.Details.wednesday">Streda</string>
+    <string name="Snabble.Shop.Distance.accessibility">Vo vzdialenosti %s</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
         <item quantity="few">%d obchody</item>
         <item quantity="many">%d obchodov</item>
@@ -296,6 +310,7 @@
     <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s zatvorený</string>
     <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s otvorený</string>
     <string name="Snabble.Shop.List.Expand.accessibility">otvoriť</string>
+    <string name="Snabble.Shop.List.ShowDetails.accessibility">Zobraziť detaily obchodu</string>
     <string name="Snabble.Shopping.title">Nakúpiť</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Pridať</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Vymazať</string>

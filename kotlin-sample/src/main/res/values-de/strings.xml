@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="Sample.account">Profil</string>
     <string name="Sample.Dashboard.button">Jetzt starten</string>
     <string name="Sample.Dashboard.Information.text1">Hinterlege direkt ein Bezahlverfahren, um schon bei deinem ersten Einkauf ohne Wartezeit einzukaufen.</string>
     <string name="Sample.Dashboard.Information.text2">Nutze die Vorteile deiner Kundenkarten automatisch.</string>
     <string name="Sample.Dashboard.text">Besuche eine unterstütze Filiale, um mit Snabble einzukaufen!</string>
     <string name="Sample.Dashboard.title">Willkommen bei Snabble</string>
+    <string name="Sample.home">Start</string>
     <string name="Sample.Onboarding.accept">Akzeptieren</string>
     <string name="Sample.Onboarding.message1">Mit Snabble scannst du deinen Einkauf selbst und bezahlt direkt in der App. Ohne in der Schlange zu stehen und ohne deinen Einkauf auf’s Band zu legen.</string>
     <string name="Sample.Onboarding.message2">Betrete eine teilnehmende Filiale, starte den Einkauf und halte den Barcode eines Artikels vor die Kamera. Der Rest erklärt sich von selbst.</string>
     <string name="Sample.Onboarding.message3">Bitte akzeptiere die Nutzungsbedingungen und lies die Datenschutzhinweise.</string>
+    <string name="Sample.profile">Profil</string>
     <string name="Sample.scanner">Scanner</string>
+    <string name="Sample.Section.Profile.deleteAccount">Account löschen</string>
+    <string name="Sample.Section.Profile.header">Dein Profil</string>
+    <string name="Sample.Section.Profile.paymentMethods">Bezahlverfahren</string>
+    <string name="Sample.Section.Profile.saveEnergy">Strom sparen</string>
+    <string name="Sample.Section.Profile.showOnboarding">Zeige Onboarding</string>
     <string name="Sample.shoppingCart">Warenkorb</string>
     <string name="Sample.shops">Filialen</string>
 </resources>
