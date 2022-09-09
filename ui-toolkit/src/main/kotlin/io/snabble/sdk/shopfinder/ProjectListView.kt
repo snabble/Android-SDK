@@ -18,7 +18,8 @@ import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.setTextOrHide
 
 class ProjectListView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null
 ) : LinearLayout(context, attrs) {
 
     private val itemAnimator = DefaultItemAnimator()
@@ -41,25 +42,23 @@ class ProjectListView @JvmOverloads constructor(
     }
 
     fun bind(item: Item, onToggle: () -> Unit) {
-        val view = this
         name.text = item.name
         shopCount.text = context.resources.getQuantityString(
             R.plurals.Snabble_Shop_Finder_storeCount,
             item.shops!!, item.shops
         )
-        val project = item.project
         image.setImageBitmap(null)
-        AssetHelper.load(project.assets, "icon", image)
+        AssetHelper.load(item.project.assets, "icon", image)
 
         if (item.type == ViewType.ExpandedBrand) {
-            view.accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
+            accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
             chevron.rotation = 270f
         } else {
-            view.accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
+            accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
             chevron.rotation = 90f
         }
 
-        view.setOnClickListener(object : OneShotClickListener() {
+        setOnClickListener(object : OneShotClickListener() {
             override fun click() {
                 onToggle()
                 chevron.animate()
@@ -67,21 +66,21 @@ class ProjectListView @JvmOverloads constructor(
                     .setDuration(itemAnimator.addDuration)
                     .start()
                 if (item.type == ViewType.ExpandedBrand) {
-                    view.announceForAccessibility(
-                        view.resources.getString(
+                    announceForAccessibility(
+                        resources.getString(
                             R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
                             item.name
                         )
                     )
-                    view.accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
+                    accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
                 } else {
-                    view.accessibility.setClickAction(
-                        view.resources.getString(
+                    accessibility.setClickAction(
+                        resources.getString(
                             R.string.Snabble_Shop_List_EventShopColapsed_accessibility,
                             item.name
                         )
                     )
-                    view.accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
+                    accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
                 }
             }
         })

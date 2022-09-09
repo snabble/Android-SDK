@@ -1,11 +1,11 @@
 package io.snabble.sdk.shopfinder
 
 import android.content.Context
-import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Snabble
@@ -15,7 +15,8 @@ import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.setTextOrHide
 
 class ShopListView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null
 ) : LinearLayout(context, attrs) {
 
     private var name: TextView
@@ -33,11 +34,10 @@ class ShopListView @JvmOverloads constructor(
     }
 
     fun bind(item: Item) {
-        val view = this
-        view.setClickDescription(R.string.Snabble_Shop_List_ShowDetails_accessibility)
+        setClickDescription(R.string.Snabble_Shop_List_ShowDetails_accessibility)
         name.text = item.name
         address.text = item.address
-        address.contentDescription = view.resources.getString(
+        address.contentDescription = resources.getString(
             R.string.Snabble_Shop_Address_accessibility,
             item.street,
             item.zipCode,
@@ -45,22 +45,15 @@ class ShopListView @JvmOverloads constructor(
         )
         youAreHereContainer.isVisible = item.isCheckedIn
 
-        if (item.isCheckedIn) {
-            distance.isVisible = false
-        } else {
-            distance.setTextOrHide(item.distanceLabel)
-        }
+        val label = if (item.isCheckedIn) item.distanceLabel else null
+        distance.setTextOrHide(label)
 
-        view.setOnClickListener {
-            val args = Bundle()
-            val shop =
-                Snabble.getProjectById(item.project.id)?.shops?.first { it.id == item.id }
-            args.putParcelable("shop", shop)
-
+        setOnClickListener {
+            val shop = Snabble.getProjectById(item.project.id)?.shops?.first { it.id == item.id }
             SnabbleUiToolkit.executeAction(
                 context,
                 SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST,
-                args
+                bundleOf("shop" to shop)
             )
         }
     }
