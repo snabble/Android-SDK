@@ -8,44 +8,27 @@ import android.content.res.Configuration
 import androidx.preference.PreferenceManager
 import io.snabble.sdk.utils.BuildConfig
 
-class ShopfinderPreferences internal constructor(private val context: Context) {
-    companion object {
-
-        private const val KEY_MAPS_ENABLED = "mapsEnabled"
-        private const val KEY_HIDDEN_MENU_AVAILABLE = "hiddenMenuAvailable"
-        private const val KEY_DEBUGGING_AVAILABLE = "debuggingAvailable"
-        private const val KEY_PROJECT_CODE = "projectCode"
-
-        @SuppressLint("StaticFieldLeak")
-        private var instance: ShopfinderPreferences? = null
-
-        fun getInstance(context: Context): ShopfinderPreferences {
-            if (instance == null) {
-                instance = ShopfinderPreferences(context)
-            }
-            return instance!!
-        }
-    }
-
+internal class ShopFinderPreferences internal constructor(private val context: Context) {
 
     val hasGoogleMapsKey: Boolean by lazy {
-        context.applicationContext.packageManager.getApplicationInfo(
-            context.packageName,
-            PackageManager.GET_META_DATA
-        )
-            .metaData.containsKey("com.google.android.geo.API_KEY")
+        context
+            .packageManager
+            .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+            .metaData
+            .containsKey("com.google.android.geo.API_KEY")
     }
 
     val isInDarkMode: Boolean
         get() {
             val currentNightMode =
-                context.applicationContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
             return currentNightMode == Configuration.UI_MODE_NIGHT_YES
         }
-    val sharedPreferences: SharedPreferences
-        get() = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
-    val debugSharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences
+        get() = PreferenceManager.getDefaultSharedPreferences(context)
+
+    private val debugSharedPreferences: SharedPreferences
         get() = context.getSharedPreferences("DebugManager", Context.MODE_PRIVATE)
 
     var isHiddenMenuAvailable: Boolean
@@ -80,4 +63,19 @@ class ShopfinderPreferences internal constructor(private val context: Context) {
                 .putBoolean(KEY_MAPS_ENABLED, enabled)
                 .apply()
         }
+
+    companion object {
+
+        private const val KEY_MAPS_ENABLED = "mapsEnabled"
+        private const val KEY_HIDDEN_MENU_AVAILABLE = "hiddenMenuAvailable"
+        private const val KEY_DEBUGGING_AVAILABLE = "debuggingAvailable"
+        private const val KEY_PROJECT_CODE = "projectCode"
+
+        @SuppressLint("StaticFieldLeak")
+        private var instance: ShopFinderPreferences? = null
+
+        fun getInstance(context: Context): ShopFinderPreferences =
+            instance ?: ShopFinderPreferences(context.applicationContext)
+                .also { instance = it }
+    }
 }

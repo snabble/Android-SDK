@@ -43,8 +43,7 @@ import io.snabble.sdk.shopfinder.utils.formatDistance
 import io.snabble.sdk.shopfinder.utils.toLatLng
 import io.snabble.sdk.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
-import io.snabble.sdk.shopfinder.utils.ShopfinderPreferences
-import io.snabble.sdk.utils.setClickableLinks
+import io.snabble.sdk.shopfinder.utils.ShopFinderPreferences
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.ui.utils.dpInPx
@@ -92,7 +91,7 @@ open class ShopDetailsFragment : Fragment() {
     private lateinit var companyStreet: TextView
     private lateinit var companyZip: TextView
 
-    private var preferences: ShopfinderPreferences? = null
+    private var preferences: ShopFinderPreferences? = null
     private var project: Project? = null
     private var mapView: MapView? = null
     private var cachedGoogleMap: GoogleMap? = null
@@ -139,7 +138,7 @@ open class ShopDetailsFragment : Fragment() {
         companyStreet = findViewById(R.id.company_street)
         companyZip = findViewById(R.id.company_zip)
 
-        preferences = ShopfinderPreferences.getInstance(requireContext())
+        preferences = ShopFinderPreferences.getInstance(requireContext())
         locationManager = Snabble.checkInLocationManager
         shop = requireNotNull(arguments?.getParcelable(BUNDLE_KEY_SHOP))
         project = Snabble.projects.firstOrNull { project ->
