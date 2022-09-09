@@ -14,7 +14,7 @@
     <item
         android:id="@id/navigation_shop"
         android:icon="@drawable/ic_baseline_menu_24"
-        android:title="Shops" />
+        android:title="@string/Sample.shops" />
 
     <item
         android:id="@+id/navigation_cart"
