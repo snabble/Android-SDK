@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
+import io.snabble.sdk.shopfinder.shoplist.Item
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.setTextOrHide
 
@@ -31,7 +32,7 @@ class ShopListView @JvmOverloads constructor(
         youAreHereContainer = findViewById(R.id.you_are_here_container)
     }
 
-    fun bind(item: ExpandableShopListRecyclerView.Item) {
+    fun bind(item: Item) {
         val view = this
         view.setClickDescription(R.string.Snabble_Shop_List_ShowDetails_accessibility)
         name.text = item.name

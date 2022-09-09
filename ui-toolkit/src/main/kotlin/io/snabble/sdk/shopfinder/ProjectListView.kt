@@ -10,11 +10,12 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.setClickDescription
+import io.snabble.sdk.shopfinder.shoplist.Item
+import io.snabble.sdk.shopfinder.shoplist.ViewType
 import io.snabble.sdk.shopfinder.utils.AssetHelper
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.setTextOrHide
-
 
 class ProjectListView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -39,7 +40,7 @@ class ProjectListView @JvmOverloads constructor(
         chevron = findViewById(R.id.chevron)
     }
 
-    fun bind(item: ExpandableShopListRecyclerView.Item, onToggle: () -> Unit) {
+    fun bind(item: Item, onToggle: () -> Unit) {
         val view = this
         name.text = item.name
         shopCount.text = context.resources.getQuantityString(
@@ -50,7 +51,7 @@ class ProjectListView @JvmOverloads constructor(
         image.setImageBitmap(null)
         AssetHelper.load(project.assets, "icon", image)
 
-        if (item.type == ExpandableShopListRecyclerView.ViewType.ExpandedBrand) {
+        if (item.type == ViewType.ExpandedBrand) {
             view.accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
             chevron.rotation = 270f
         } else {
@@ -62,10 +63,10 @@ class ProjectListView @JvmOverloads constructor(
             override fun click() {
                 onToggle()
                 chevron.animate()
-                    .rotationBy(if (item.type == ExpandableShopListRecyclerView.ViewType.CollapsedBrand) -180f else 180f)
+                    .rotationBy(if (item.type == ViewType.CollapsedBrand) -180f else 180f)
                     .setDuration(itemAnimator.addDuration)
                     .start()
-                if (item.type == ExpandableShopListRecyclerView.ViewType.ExpandedBrand) {
+                if (item.type == ViewType.ExpandedBrand) {
                     view.announceForAccessibility(
                         view.resources.getString(
                             R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
@@ -93,5 +94,4 @@ class ProjectListView @JvmOverloads constructor(
             distance.setClickDescription(R.string.Snabble_Shop_Distance_accessibility)
         }
     }
-
 }
