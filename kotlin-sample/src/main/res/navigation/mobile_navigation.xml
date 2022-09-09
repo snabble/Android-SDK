@@ -68,17 +68,15 @@
         app:startDestination="@id/navigation_shops">
         <fragment
             android:id="@+id/navigation_shops"
-            android:name="io.snabble.sdk.shopfinder.ShopListFragment"
-            android:label="Shop" >
+            android:name="io.snabble.sdk.shopfinder.ShopListFragment">
             <action
                 android:id="@+id/shop_details"
-                app:destination="@id/navigation_shops_details"/>
+                app:destination="@id/navigation_shops_details" />
         </fragment>
 
         <fragment
             android:id="@+id/navigation_shops_details"
-            android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment"
-            android:label="Shop" />
+            android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment" />
     </navigation>
 
     <fragment
