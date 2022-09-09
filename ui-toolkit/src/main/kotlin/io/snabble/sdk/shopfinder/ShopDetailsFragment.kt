@@ -222,8 +222,7 @@ open class ShopDetailsFragment : Fragment() {
                         applyBottomSheetPeekHeight(view)
                     }
                 })
-            val pushUpBehavior = mapViewPermission.behavior as? MapPushUpBehavior
-            pushUpBehavior?.setShopDetailsFragment(this)
+
         }
     }
 
@@ -249,6 +248,9 @@ open class ShopDetailsFragment : Fragment() {
                     applyBottomSheetPeekHeight(v)
                 }
             })
+
+        val pushUpBehavior = mapView?.behavior as? MapPushUpBehavior
+        pushUpBehavior?.setShopDetailsFragment(this)
 
         accessGoogleMap { googleMap ->
             project?.let { project ->
