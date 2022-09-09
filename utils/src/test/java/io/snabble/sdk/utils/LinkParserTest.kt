@@ -2,7 +2,6 @@ package io.snabble.sdk.utils
 
 import android.text.SpannableStringBuilder
 import android.text.style.URLSpan
-import io.snabble.sdk.ui.parseLinksInto
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt

@@ -8,7 +8,6 @@ import android.util.TypedValue
 import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
-import io.snabble.sdk.ui.setClickableLinks
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 

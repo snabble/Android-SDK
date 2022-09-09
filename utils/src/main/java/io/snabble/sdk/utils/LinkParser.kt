@@ -1,11 +1,10 @@
-package io.snabble.sdk.ui
+package io.snabble.sdk.utils
 
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.URLSpan
 import android.widget.TextView
-import androidx.annotation.VisibleForTesting
 import kotlin.math.min
 
 // Scan the html for a tags and make them clickable with an URLSpan
@@ -39,7 +38,6 @@ private fun CharSequence.hasCorrectOrder(vararg snipit: String, ignoreCase: Bool
     }
 }
 
-@VisibleForTesting
 internal fun parseLinksInto(input: CharSequence, spannable: SpannableStringBuilder): CharSequence {
     val hasHtml = input.hasValidHtmlLink
     val hasMarkdown = input.hasValidMarkdownLink

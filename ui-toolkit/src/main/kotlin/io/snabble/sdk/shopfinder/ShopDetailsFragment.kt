@@ -8,7 +8,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.text.util.Linkify
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,10 +44,13 @@ import io.snabble.sdk.shopfinder.utils.toLatLng
 import io.snabble.sdk.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
 import io.snabble.sdk.shopfinder.utils.ShopfinderPreferences
+import io.snabble.sdk.utils.setClickableLinks
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.ui.utils.dpInPx
 import io.snabble.sdk.ui.utils.setOneShotClickListener
+import io.snabble.sdk.utils.PhoneNumberUtils
+import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
 import java.text.DateFormatSymbols
 import java.text.ParseException
@@ -323,9 +326,13 @@ open class ShopDetailsFragment : Fragment() {
             shop.city
         )
 
-        phone.setTextOrHide(shop.phone)
-        Linkify.addLinks(phone, Linkify.PHONE_NUMBERS)
-        phone.setClickDescription(R.string.Snabble_Shop_Detail_Phonenumber_accessibility)
+        if (shop.phone.isNotNullOrBlank()) {
+            phone.text = PhoneNumberUtils.convertPhoneNumberToUrlSpan(shop.phone)
+            phone.movementMethod = LinkMovementMethod.getInstance()
+            phone.setClickDescription(R.string.Snabble_Shop_Detail_Phonenumber_accessibility)
+        } else {
+            phone.isVisible = false
+        }
 
         if (isMultiProject) {
             project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
