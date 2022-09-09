@@ -26,10 +26,11 @@ import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
+import io.snabble.sdk.sample.utils.PermissionSupport
 import io.snabble.sdk.ui.SnabbleUI
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PermissionSupport {
 
     lateinit var locationPermission: ActivityResultLauncher<String>
 
@@ -79,6 +80,10 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
 
         Snabble.checkInManager.stopUpdating()
+    }
+
+    override fun startLocationPermissionRequest() {
+        locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     private fun addSnabbleSdkCheckInListener() {
