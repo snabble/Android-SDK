@@ -1,22 +1,20 @@
 package io.snabble.sdk.sample
 
-import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import io.snabble.sdk.sample.R
+import io.snabble.sdk.sample.utils.PermissionSupport
 
 class HomeFragment : Fragment() {
+
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
@@ -24,9 +22,10 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.navigation_payment_credentials)
         }
 
-        root.findViewById<Button>(R.id.request_location_permission).setOnClickListener {
-            (requireActivity() as MainActivity).locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
+        root.findViewById<Button>(R.id.request_location_permission)
+            .setOnClickListener {
+                (requireActivity() as? PermissionSupport)?.startLocationPermissionRequest()
+            }
 
         return root
     }

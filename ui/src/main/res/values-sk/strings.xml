@@ -18,7 +18,7 @@
     <string name="Snabble.Biometry.touchId">Touch ID</string>
     <string name="Snabble.cancel">Zrušiť</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Zadaj svoje údaje tu. Následne ťa presmerujeme do tvojej banky za účelom potvrdenia tvojich údajov. Dovtedy si rezervujeme 1 € (na %s), a potom ti budú peniaze opäť priamo pripísané.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Zadaj svoje údaje tu. Následne ťa presmerujeme do tvojej banky za účelom potvrdenia tvojich údajov. Dovtedy si rezervujeme %1$s (na %2$s), a potom ti budú peniaze opäť priamo pripísané.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Zadaj svoje údaje tu. Následne ťa presmerujeme do tvojej banky za účelom potvrdenia tvojich údajov. Dovtedy si rezervujeme %s (na %s), a potom ti budú peniaze opäť priamo pripísané.</string>
     <string name="Snabble.CC.cardNumber">Číslo karty</string>
     <string name="Snabble.CC.editingHint">Údaje tvojej kreditnej karty budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.CC.noEntryPossible">Momentálne nemôžete uložiť žiadnu kreditnú kartu.</string>
@@ -68,9 +68,9 @@
     <string name="Snabble.Coupons.none">Kupóny nie sú k dispozícii</string>
     <string name="Snabble.Coupons.title">Kupóny</string>
     <string name="Snabble.CreditCard.payNow">Teraz zaplatiť kreditnou kartou</string>
-    <string name="Snabble.Dashboard.lastPurchase">Your last purchase</string>
-    <string name="Snabble.Dashboard.lastPurchases">Your last purchases</string>
-    <string name="Snabble.Dashboard.lastPurchasesShowAll">Show All</string>
+    <string name="Snabble.Dashboard.lastPurchase">Tvoj posledný nákup</string>
+    <string name="Snabble.Dashboard.lastPurchases">Tvoje posledné nákupy</string>
+    <string name="Snabble.Dashboard.lastPurchasesShowAll">Všetko</string>
     <string name="Snabble.delete">Vymazať</string>
     <string name="Snabble.done">Hotovo</string>
     <string name="Snabble.DynamicStack.Shop.show">Zobraziť obchody</string>
@@ -236,9 +236,9 @@
     <string name="Snabble.Scanner.Accessibility.eventCartOpened">Košík je otvorený</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">Nemôžeš vložiť do košíka ďalšie položky</string>
     <!-- Example: 3 times Banana for 3$ -->
-    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%1$s krát %2$s pre %3$s</string>
+    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s krát %s pre %s</string>
     <string name="Snabble.Scanner.Accessibility.eventScannerOpened">Otvoril(a) si skener.</string>
-    <string name="Snabble.Scanner.Accessibility.hintCartContent">V košíku je %1$s položiek pre %2$s.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">V košíku je %s položiek pre %s.</string>
     <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">Tvoj košík je momentálne prázdny.</string>
     <string name="Snabble.Scanner.Accessibility.hintPermission">Na skenovanie potrebujeme od teba oprávnenie.</string>
     <string name="Snabble.Scanner.addCodeAsIs">Pridať %s takto</string>
@@ -282,22 +282,22 @@
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s v %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.openingHours">Otváracie hodiny</string>
-    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Phonenumber %s</string>
+    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Telefónne číslo %s</string>
     <string name="Snabble.Shop.Detail.shopNow">Teraz nakúpiť tu</string>
     <string name="Snabble.Shop.Detail.startNavigation">Chcete zapnúť navigáciu?</string>
     <string name="Snabble.Shop.Detail.title">Detaily</string>
-    <string name="Snabble.Shop.Details.contractingParty">Contracting Party</string>
+    <string name="Snabble.Shop.Details.contractingParty">Zmluvný partner</string>
     <string name="Snabble.Shop.Details.friday">Piatok</string>
-    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Activate</string>
-    <string name="Snabble.Shop.Details.MapDisabled.title">You have disabled the use of %s.</string>
+    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Aktivovať</string>
+    <string name="Snabble.Shop.Details.MapDisabled.title">Deaktivoval/a si používanie služby %s.</string>
     <string name="Snabble.Shop.Details.monday">Pondelok</string>
     <string name="Snabble.Shop.Details.saturday">Sobota</string>
-    <string name="Snabble.Shop.Details.StartCall.accessibility">Call</string>
+    <string name="Snabble.Shop.Details.StartCall.accessibility">Zavolať</string>
     <string name="Snabble.Shop.Details.sunday">Nedeľa</string>
     <string name="Snabble.Shop.Details.thursday">Štvrtok</string>
     <string name="Snabble.Shop.Details.tuesday">Utorok</string>
     <string name="Snabble.Shop.Details.wednesday">Streda</string>
-    <string name="Snabble.Shop.Distance.accessibility">In %s</string>
+    <string name="Snabble.Shop.Distance.accessibility">Vo vzdialenosti %s</string>
     <plurals name="Snabble.Shop.Finder.storeCount">
         <item quantity="few">%d obchody</item>
         <item quantity="many">%d obchodov</item>
@@ -310,7 +310,7 @@
     <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s zatvorený</string>
     <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s otvorený</string>
     <string name="Snabble.Shop.List.Expand.accessibility">otvoriť</string>
-    <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
+    <string name="Snabble.Shop.List.ShowDetails.accessibility">Zobraziť detaily obchodu</string>
     <string name="Snabble.Shopping.title">Nakúpiť</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Pridať</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Vymazať</string>

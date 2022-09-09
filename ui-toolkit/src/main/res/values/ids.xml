@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="asset_load_id" />
+    <item type="id" name="asset_load_id_left" />
+    <item type="id" name="asset_load_id_top" />
+    <item type="id" name="asset_load_id_right" />
+    <item type="id" name="asset_load_id_bottom" />
+</resources>

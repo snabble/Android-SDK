@@ -1,25 +1,28 @@
 package io.snabble.sdk
 
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import io.snabble.sdk.SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
 import io.snabble.sdk.SnabbleUiToolkit.Event.GO_BACK
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DEEPLINK
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_SHOP_LIST
+import io.snabble.sdk.SnabbleUiToolkit.Event.START_NAVIGATION
 import io.snabble.sdk.onboarding.OnboardingActivity
+import io.snabble.sdk.shopfinder.ShopDetailsActivity
+import io.snabble.sdk.shopfinder.ShopListActivity
 import io.snabble.sdk.ui.Action
 import io.snabble.sdk.ui.BaseFragmentActivity
+import io.snabble.sdk.ui.utils.UIUtils.getHostFragmentActivity
 import java.lang.ref.WeakReference
 import kotlin.collections.set
 
@@ -41,18 +44,9 @@ object SnabbleUiToolkit {
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
         SHOW_DEEPLINK,
+        DETAILS_SHOP_BUTTON_ACTION,
+        START_NAVIGATION,
         GO_BACK
-    }
-
-    private fun getHostFragmentActivity(context: Context?): FragmentActivity? {
-        var currentContext = context
-        while (currentContext is ContextWrapper) {
-            if (currentContext is FragmentActivity) {
-                return currentContext
-            }
-            currentContext = currentContext.baseContext
-        }
-        return null
     }
 
     private class ActivityCallback(
@@ -116,15 +110,26 @@ object SnabbleUiToolkit {
                     false
                 )
                 SHOW_ONBOARDING_DONE -> activity?.finish()
+                SHOW_SHOP_LIST -> startActivity(
+                    context,
+                    ShopListActivity::class.java,
+                    args,
+                    false
+                )
+                SHOW_DETAILS_SHOP_LIST -> startActivity(
+                    context,
+                    ShopDetailsActivity::class.java,
+                    args,
+                    true
+                )
                 SHOW_DEEPLINK -> {
                     val deeplink = Uri.parse(requireNotNull(args?.getString(DEEPLINK)))
                     context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = deeplink })
                 }
-                SHOW_SHOP_LIST,
-                SHOW_DETAILS_SHOP_LIST,
                 GO_BACK,
-                null,
-                -> Unit // unhandled actions
+                DETAILS_SHOP_BUTTON_ACTION,
+                START_NAVIGATION,
+                null -> Unit // unhandled actions
             }
         }
     }

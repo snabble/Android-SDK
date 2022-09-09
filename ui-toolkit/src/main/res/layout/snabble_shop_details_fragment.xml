@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    tools:ignore="KeyboardInaccessibleWidget">
+
+    <LinearLayout
+        android:id="@+id/map_view_permission"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:layout_marginTop="-1400px">
+
+        <TextView
+            android:id="@+id/maps_notice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:text="@string/Snabble.Shop.Details.MapDisabled.title" />
+
+        <Button
+            android:id="@+id/activate_map"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Snabble.Shop.Details.MapDisabled.actionTitle" />
+    </LinearLayout>
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_behavior="io.snabble.sdk.shopfinder.MapPushUpBehavior" />
+
+    <LinearLayout
+        android:id="@+id/map_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/map_pin_home"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/snabble_map_user_postition" />
+
+        <ImageView
+            android:id="@+id/map_pin_store"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/snabble_store_outline" />
+
+        <ImageView
+            android:id="@+id/map_directions"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/snabble_map_directions" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:fillViewport="true"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        tools:behavior_peekHeight="550dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:elevation="2dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp">
+
+                <Button
+                    android:id="@+id/debug_checkin"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="4dp"
+                    android:text="Checkin"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    tools:src="@drawable/snabble_circle" />
+
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/image"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.3"
+                    android:padding="8dp"
+                    android:textAlignment="center"
+                    tools:text="Bornheimer Straße 162\n53119 Bonn" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/start_scanner"
+                    style="?attr/materialButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/address"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/Snabble.Shop.Detail.shopNow" />
+
+                <TextView
+                    android:id="@+id/distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/start_scanner"
+                    android:layout_centerHorizontal="true"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    app:drawableLeftCompat="@drawable/snabble_location"
+                    app:drawableTint="?attr/colorOnSurface"
+                    tools:ignore="RtlHardcoded"
+                    tools:text="1,4 km" />
+
+                <TextView
+                    android:id="@+id/phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/distance"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="-8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    app:drawableLeftCompat="@drawable/snabble_phone"
+                    app:drawableTint="?attr/colorOnSurface"
+                    tools:text="0228/9086950" />
+
+                <TextView
+                    android:id="@+id/timetable_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/phone"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/Snabble.Shop.Detail.openingHours"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textStyle="bold" />
+
+                <androidx.gridlayout.widget.GridLayout
+                    android:id="@+id/timetable"
+                    android:layout_below="@id/timetable_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    app:columnCount="2">
+
+                </androidx.gridlayout.widget.GridLayout>
+
+                <TextView
+                    android:id="@+id/company_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/timetable"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/Snabble.Shop.Details.contractingParty"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/company_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/company_header"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    tools:text="Supermarkt GmbH" />
+
+                <TextView
+                    android:id="@+id/company_street"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/company_name"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    tools:text="Musterstraße 123" />
+
+                <TextView
+                    android:id="@+id/company_zip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/company_street"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    tools:text="12345 Musterhausen" />
+
+                <TextView
+                    android:id="@+id/company_country"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/company_zip"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    tools:text="Atlantis" />
+
+                <TextView
+                    android:id="@+id/company_notice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/company_country"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="16dp"
+                    android:gravity="center"
+                    tools:text="Wichtiger Hinweis..." />
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
