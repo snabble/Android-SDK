@@ -56,13 +56,13 @@ class MainActivity : AppCompatActivity() {
                 val navController = rememberNavController()
 
                 with(navController) {
-                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
+                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, _ ->
                         navigate(BarcodeSearch.route)
                     }
-                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SCANNER) { _, args ->
+                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SCANNER) { _, _ ->
                         navigate(Scanner.route)
                     }
-                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, args ->
+                    SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.SHOW_SHOPPING_CART) { _, _ ->
                         navigate(Cart.route)
                     }
                     SnabbleUI.setUiAction(this@MainActivity, SnabbleUI.Event.GO_BACK) { _, _ ->
