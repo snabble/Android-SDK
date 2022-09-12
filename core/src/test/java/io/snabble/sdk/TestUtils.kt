@@ -19,7 +19,7 @@ inline infix fun <reified T : Any> T.merge(other: T): T {
 }
 
 @Throws(InterruptedException::class)
-fun <T> LiveData<T>.getOrAwaitValue(): T? {
+inline fun <reified T> LiveData<T>.getOrAwaitValue(): T? {
     val data = arrayOfNulls<Any>(1)
     val latch = CountDownLatch(1)
     val observer: Observer<T> = object : Observer<T> {

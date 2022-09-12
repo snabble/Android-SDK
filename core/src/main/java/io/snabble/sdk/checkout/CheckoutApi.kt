@@ -156,7 +156,7 @@ data class SignedCheckoutInfo(
         get() {
             try {
                 if (checkoutInfo?.has("requiredInformation") == true) {
-                    val jsonArray = checkoutInfo?.getAsJsonArray("requiredInformation")
+                    val jsonArray = checkoutInfo.getAsJsonArray("requiredInformation")
                     jsonArray?.forEach { element ->
                         val id = element.asJsonObject["id"].asString
                         val hasValue = element.asJsonObject.has("value")
@@ -173,7 +173,7 @@ data class SignedCheckoutInfo(
 
     fun getAvailablePaymentMethods(): List<PaymentMethodInfo> {
         if (checkoutInfo?.has("paymentMethods") == true) {
-            val jsonArray = checkoutInfo?.getAsJsonArray("paymentMethods")
+            val jsonArray = checkoutInfo.getAsJsonArray("paymentMethods")
             if (jsonArray != null) {
                 val type = object : TypeToken<List<PaymentMethodInfo>?>() {}.type
                 return Gson().fromJson(jsonArray, type)

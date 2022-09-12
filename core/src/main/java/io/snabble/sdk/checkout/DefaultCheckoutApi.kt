@@ -238,7 +238,7 @@ class DefaultCheckoutApi(private val project: Project,
             }
         )
 
-        var url = signedCheckoutInfo?.checkoutProcessLink
+        var url = signedCheckoutInfo.checkoutProcessLink
         if (url == null) {
             paymentProcessResult?.onError()
             return
