@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), PermissionSupport {
 
-    lateinit var locationPermission: ActivityResultLauncher<String>
+    private lateinit var locationPermission: ActivityResultLauncher<String>
 
     private lateinit var locationManager: CheckInLocationManager
 
