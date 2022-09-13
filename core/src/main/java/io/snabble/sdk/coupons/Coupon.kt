@@ -3,7 +3,6 @@ package io.snabble.sdk.coupons
 import android.graphics.Color
 import android.os.Parcelable
 import android.util.DisplayMetrics
-import androidx.annotation.ColorInt
 import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.ColorUtils.parseColor
 import io.snabble.sdk.Snabble
@@ -31,7 +30,7 @@ data class Coupon (
     val isValid: Boolean
     get() = when(type) {
         CouponType.DIGITAL -> image != null
-        CouponType.MANUAL -> name != null
+        CouponType.MANUAL,
         CouponType.PRINTED -> true
     }
 

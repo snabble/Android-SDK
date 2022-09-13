@@ -47,6 +47,7 @@ class LoadingActivity : AppCompatActivity() {
                             .show()
                     }
                 }
+                null -> Unit
             }
         }
     }

@@ -93,7 +93,7 @@ fun ImageView.resolveImageOrHide(data: String?) {
     isVisible = data.isNotNullOrBlank()
 
     if (data.isNotNullOrBlank()) {
-        if (data!!.startsWith("http")) {
+        if (data.startsWith("http")) {
             Picasso.get().load(data).into(this)
         } else {
             val imageId = context.getImageId(data)
