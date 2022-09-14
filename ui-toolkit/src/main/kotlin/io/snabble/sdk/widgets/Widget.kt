@@ -1,81 +1,75 @@
 package io.snabble.sdk.widgets
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 sealed interface Widget {
-    var id: Int
-    var type: WidgetType
+    val id: Int
 }
 
-enum class WidgetType {
-    Text,
-    Image,
-    Button,
-    Information,
-    Purchases,
-    Section,
-    LocationPermission,
-    Toggle
-}
-
+@Serializable
+@SerialName("text")
 data class TextModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.Text,
-    var text: String,
-    var textColorSource: String?,
-    var textStyleSource: String?,
-    var showDisclosure: Boolean?,
-    var spacing: Float?
+    override val id: Int,
+    val text: String,
+    val textColorSource: String? = null,
+    val textStyleSource: String? = null,
+    val showDisclosure: Boolean? = null,
+    val spacing: Float? = null,
 ) : Widget
 
+@Serializable
+@SerialName("image")
 data class ImageModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.Image,
-    var imageSource: String,
-    var spacing: Float?
+    override val id: Int,
+    val imageSource: String,
+    val spacing: Float,
 ) : Widget
 
+@SerialName("button")
 data class ButtonModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.Button,
-    var text: String,
-    var foregroundColorSource: String?,
-    var backgroundColorSource: String?,
-    var spacing: Float?
+    override val id: Int,
+    val text: String,
+    val foregroundColorSource: String?,
+    val backgroundColorSource: String?,
+    val spacing: Float?
 ) : Widget
 
+@SerialName("information")
 data class InformationModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.Information,
-    var text: String,
-    var ImageSource: String?,
-    var hideable: Boolean?,
-    var spacing: Float?
+    override val id: Int,
+    val text: String,
+    val imageSource: String?,
+    val hideable: Boolean?,
+    val spacing: Float?
 ) : Widget
 
+@SerialName("purchases")
 data class PurchasesModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.Purchases,
-    var projectId: String,
-    var spacing: Float?
+    override val id: Int,
+    val projectId: String,
+    val spacing: Float?
 ) : Widget
 
+@SerialName("toggle")
 data class ToggleModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.Toggle,
-    var text: String,
-    var key: String,
-    var spacing: Float?
+    override val id: Int,
+    val text: String,
+    val key: String,
+    val spacing: Float?
 ) : Widget
 
+@SerialName("section")
 data class SectionModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.Section,
-    var header: String,
-    var items: List<Widget>,
-    var spacing: Float?
+    override val id: Int,
+    val header: String,
+    val items: List<Widget>,
+    val spacing: Float?
 ) : Widget
 
+@SerialName("locationPermission")
 data class LocationPermissionModel(
-    override var id: Int,
-    override var type: WidgetType = WidgetType.LocationPermission,
-    var spacing: Float?
+    override val id: Int,
+    val spacing: Float?
 ) : Widget

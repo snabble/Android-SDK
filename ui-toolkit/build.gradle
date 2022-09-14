@@ -1,8 +1,12 @@
+plugins {
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+}
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
+
 
 description = "Snabble UI-Toolkit: Attentional views for simple and sample apps for using the snabble SDK"
 
@@ -77,6 +81,10 @@ dependencies {
     api 'androidx.preference:preference-ktx:1.2.0'
 
     implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'io.coil-kt:coil:2.2.1'
+    implementation 'io.coil-kt:coil-compose:2.2.1'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0'
 
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
@@ -90,4 +98,14 @@ dependencies {
     // Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363
     debugImplementation "androidx.customview:customview:1.2.0-alpha01"
     debugImplementation "androidx.customview:customview-poolingcontainer:1.0.0"
+
+    def kotest_version = '5.4.0'
+    testImplementation "io.kotest:kotest-runner-junit5:$kotest_version"
+    testImplementation "io.kotest:kotest-assertions-core:$kotest_version"
+}
+
+android.testOptions {
+    unitTests.all {
+        useJUnitPlatform()
+    }
 }
