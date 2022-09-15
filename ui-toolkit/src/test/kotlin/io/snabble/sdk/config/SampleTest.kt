@@ -31,7 +31,7 @@ class SampleTest : FreeSpec({
             val image = ImageModel(
                 id = 6,
                 imageSource = "R.drawable.background",
-                spacing = 5f
+                text = 5f
             )
             val json = Json {
                 encodeDefaults = true
@@ -48,7 +48,7 @@ class SampleTest : FreeSpec({
             val image = ImageModel(
                 id = 6,
                 imageSource = "R.drawable.background",
-                spacing = 5f
+                text = 5f
             )
             val json = Json {
                 encodeDefaults = true

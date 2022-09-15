@@ -7,3 +7,5 @@ data class Config(
     val backgroundImage: ImageModel,
     val widgets: List<Widget>,
 )
+
+

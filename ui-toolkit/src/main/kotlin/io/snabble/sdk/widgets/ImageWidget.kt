@@ -15,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.getImageId
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
@@ -25,7 +24,7 @@ fun ImageWidgetPreview() {
         model = ImageModel(
             id = 1,
             imageSource = "R.drawable.snabble_onboarding_step1",
-            spacing = 8f,
+            spacing = 8,
         )
     )
 }

@@ -24,7 +24,7 @@ fun HomeScreenPreview() {
             backgroundImage = ImageModel(
                 0,
                 imageSource = "R.drawable.background",
-                spacing = 8f
+                spacing = 8
             ),
             widgets = listOf()
         ),
@@ -41,7 +41,7 @@ fun DynamicView(
 ) {
     if (imageRes != null) {
         ImageWidget(
-            model = config.backgroundImage.copy(spacing = 0f),
+            model = config.backgroundImage.copy(spacing = 0),
             contentScale = ContentScale.Crop,
         )
     }
