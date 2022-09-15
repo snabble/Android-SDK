@@ -1,20 +1,20 @@
-package io.snabble.sdk.widgets
+package io.snabble.sdk.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-data class Root(
-    @SerialName("configuration") val configuration: Configuration,
+data class RootDto(
+    @SerialName("configuration") val configuration: ConfigurationDto,
     @SerialName("widgets") val widgets: List<Widget>,
 )
 
-data class Configuration(
+data class ConfigurationDto(
     @SerialName("image") val image: String,
     @SerialName("style") val style: String,
     @SerialName("padding") val padding: Int,
 )
 
-interface Text {
+interface HasText {
     @SerialName("spacing")
     val text: String
 }
@@ -30,58 +30,58 @@ sealed interface Widget {
 
 @Serializable
 @SerialName("text")
-data class TextModel(
+data class TextDto(
     @SerialName("id") override val id: Int,
     @SerialName("text") override val text: String,
     @SerialName("textColorSource") val textColorSource: String? = null,
     @SerialName("textStyleSource") val textStyleSource: String? = null,
     @SerialName("showDisclosure") val showDisclosure: Boolean? = null,
     @SerialName("spacing") override val spacing: Int,
-) : Widget, Text
+) : Widget, HasText
 
 @Serializable
 @SerialName("image")
-data class ImageModel(
+data class ImageDto(
     @SerialName("id") override val id: Int,
     @SerialName("imageSource") val imageSource: String,
     @SerialName("spacing") override val spacing: Int,
 ) : Widget
 
 @SerialName("button")
-data class ButtonModel(
+data class ButtonDto(
     @SerialName("id") override val id: Int,
     @SerialName("text") override val text: String,
     @SerialName("foregroundColorSource") val foregroundColorSource: String?,
     @SerialName("backgroundColorSource") val backgroundColorSource: String?,
     @SerialName("spacing") override val spacing: Int,
-) : Widget, Text
+) : Widget, HasText
 
 @SerialName("information")
-data class InformationModel(
+data class InformationDto(
     @SerialName("id") override val id: Int,
     @SerialName("text") override val text: String,
     @SerialName("imageSource") val imageSource: String?,
     @SerialName("hideable") val hideable: Boolean?,
     @SerialName("spacing") override val spacing: Int,
-) : Widget, Text
+) : Widget, HasText
 
 @SerialName("purchases")
-data class PurchasesModel(
+data class PurchasesDto(
     @SerialName("id") override val id: Int,
     @SerialName("projectId") val projectId: String,
     @SerialName("spacing") override val spacing: Int,
 ) : Widget
 
 @SerialName("toggle")
-data class ToggleModel(
+data class ToggleDto(
     @SerialName("id") override val id: Int,
     @SerialName("text") override val text: String,
     @SerialName("key") val key: String,
     @SerialName("spacing") override val spacing: Int,
-) : Widget, Text
+) : Widget, HasText
 
 @SerialName("section")
-data class SectionModel(
+data class SectionDto(
     @SerialName("id") override val id: Int,
     @SerialName("header") val header: String,
     @SerialName("items") val items: List<Widget>,
@@ -89,7 +89,7 @@ data class SectionModel(
 ) : Widget
 
 @SerialName("locationPermission")
-data class LocationPermissionModel(
+data class LocationPermissionDto(
     @SerialName("id") override val id: Int,
     @SerialName("spacing") override val spacing: Int,
 ) : Widget

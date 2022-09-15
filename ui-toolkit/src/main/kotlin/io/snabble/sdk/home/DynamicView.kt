@@ -7,11 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.config.Config
+import io.snabble.sdk.domain.Configuration
+import io.snabble.sdk.domain.Image
+import io.snabble.sdk.domain.Root
+import io.snabble.sdk.domain.Widget
+import io.snabble.sdk.ui.ImageWidget
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.widgets.ImageModel
-import io.snabble.sdk.widgets.ImageWidget
-import io.snabble.sdk.widgets.Widget
 
 typealias WidgetClick = (id: String) -> Unit
 
@@ -19,12 +20,11 @@ typealias WidgetClick = (id: String) -> Unit
 @Composable
 fun HomeScreenPreview() {
     DynamicView(
-        imageRes = R.drawable.snabble_onboarding_step1,
-        config = Config(
-            backgroundImage = ImageModel(
-                0,
-                imageSource = "R.drawable.background",
-                spacing = 8
+        root = Root(
+            configuration = Configuration(
+                image = R.drawable.snabble_gps_fixed,
+                style = "",
+                padding = 8
             ),
             widgets = listOf()
         ),
@@ -34,21 +34,20 @@ fun HomeScreenPreview() {
 
 @Composable
 fun DynamicView(
-    imageRes: Int? = null,
-    config: Config,
+    root: Root,
     widgetFactory: WidgetFactory,
     onClick: WidgetClick? = null,
 ) {
-    if (imageRes != null) {
+    if (root.configuration.image != null) {
         ImageWidget(
-            model = config.backgroundImage.copy(spacing = 0),
+            model = Image(0, root.configuration.image, 0),
             contentScale = ContentScale.Crop,
         )
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(items = config.widgets) { widget ->
+        items(items = root.widgets) { widget ->
             widgetFactory.createWidget(widget, onClick)
         }
     }

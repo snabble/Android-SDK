@@ -21,10 +21,36 @@ fun CharSequence?.isNotNullOrBlank(): Boolean {
 }
 
 /**
- * Resolves the given into image resource identifier
+ * Resolves the given into image string into resource identifier
+ * returns the id if found else 0
  */
 fun Context.getImageId(resource: String): Int =
     resources.getIdentifier(resource, "drawable", packageName)
+
+/**
+ * Resolves the given into image string into resource identifier
+ * returns the id if found else null
+ */
+fun Context.resolveImageId(resource: String): Int? {
+    val resId = getImageId(resource)
+    return if (resId != Resources.ID_NULL) resId else null
+}
+/**
+ * Resolves the given into color string into resource identifier
+ * returns the id if found else 0
+ */
+fun Context.getColorId(resource: String): Int =
+    resources.getIdentifier(resource, "color", packageName)
+
+/**
+ * Resolves the given into image string into resource identifier
+ * returns the id if found else null
+ */
+fun Context.resolveColorId(resource: String): Int? {
+    val resId = getColorId(resource)
+    return if (resId != Resources.ID_NULL) resId else null
+}
+
 
 /**
  * Resolves the given into string resource identifier

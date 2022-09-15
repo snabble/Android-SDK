@@ -2,9 +2,11 @@ package io.snabble.sdk.config
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
-import io.snabble.sdk.widgets.ImageModel
-import io.snabble.sdk.widgets.TextModel
-import io.snabble.sdk.widgets.Widget
+import io.snabble.sdk.data.ImageDto
+import io.snabble.sdk.data.TextDto
+import io.snabble.sdk.data.Widget
+import io.snabble.sdk.domain.Image
+import io.snabble.sdk.domain.Text
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -15,8 +17,8 @@ class SampleTest : FreeSpec({
     "a" - {
 
         "b" {
-            val text = TextModel(
-                id = 5, text = "Hello World!",
+            val text = Text(
+                id = 5, text = "Hello World!", spacing = 5
             )
             val json = Json {
                 encodeDefaults = true
@@ -24,32 +26,33 @@ class SampleTest : FreeSpec({
             }
             val jsonString = json.encodeToString(text)
             println("Message: $jsonString")
-            println("Object: ${json.decodeFromString<TextModel>(jsonString)}")
+            println("Object: ${json.decodeFromString<Text>(jsonString)}")
         }
 
         "c" {
-            val image = ImageModel(
+            val image = ImageDto(
                 id = 6,
                 imageSource = "R.drawable.background",
-                text = 5f
+                spacing = 5
             )
             val json = Json {
                 encodeDefaults = true
             }
             val jsonString = json.encodeToString(image)
             println(jsonString)
-            println("${json.decodeFromString<ImageModel>(jsonString)}")
+            println("${json.decodeFromString<Image>(jsonString)}")
         }
 
         "d" {
-            val text = TextModel(
-                id = 5, text = "Hello World!",
+            val text = TextDto(
+                id = 5, text = "Hello World!", spacing = 5
             )
-            val image = ImageModel(
+            val image = ImageDto(
                 id = 6,
                 imageSource = "R.drawable.background",
-                text = 5f
+                spacing = 5
             )
+            "Ulla.json"
             val json = Json {
                 encodeDefaults = true
                 ignoreUnknownKeys = true
