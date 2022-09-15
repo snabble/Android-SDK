@@ -23,7 +23,7 @@ data class Text(
     override val text: String,
     val textColorSource: Int? = null,
     val textStyleSource: String? = null,
-    val showDisclosure: Boolean? = null,
+    val showDisclosure: Boolean,
     override val spacing: Int,
 ) : Widget, HasText
 
@@ -45,7 +45,7 @@ data class Information(
     override val id: Int,
     override val text: String,
     val imageSource: Int?,
-    val hideable: Boolean?,
+    val hideable: Boolean,
     override val spacing: Int,
 ) : Widget, HasText
 

@@ -22,31 +22,29 @@ interface ConfigMapper {
 
 class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
-    override fun mapTo(rootDto: RootDto): Root {
-        val configuration = rootDto.configuration.toConfiguration()
-        val widgetList = rootDto.widgets.toWidgets()
-        return Root(configuration, widgetList)
-    }
+    override fun mapTo(rootDto: RootDto): Root = Root(
+        configuration = rootDto.configuration.toConfiguration(),
+        widgets = rootDto.widgets.toWidgets()
+    )
 
     private fun ConfigurationDto.toConfiguration(): Configuration = Configuration(
-            image = context.resolveImageId(image),
-            style = style,
-            padding = padding
-        )
+        image = context.resolveImageId(image),
+        style = style,
+        padding = padding
+    )
 
-    private fun List<WidgetDto>.toWidgets(): List<Widget> = map {
-            widget ->
-            when (widget) {
-                is ImageDto -> widget.toImage()
-                is TextDto -> widget.toText()
-                is ButtonDto -> TODO()
-                is InformationDto -> TODO()
-                is LocationPermissionDto -> TODO()
-                is PurchasesDto -> TODO()
-                is SectionDto -> TODO()
-                is ToggleDto -> TODO()
-            }
+    private fun List<WidgetDto>.toWidgets(): List<Widget> = map { widget ->
+        when (widget) {
+            is ImageDto -> widget.toImage()
+            is TextDto -> widget.toText()
+            is ButtonDto -> TODO()
+            is InformationDto -> TODO()
+            is LocationPermissionDto -> TODO()
+            is PurchasesDto -> TODO()
+            is SectionDto -> TODO()
+            is ToggleDto -> TODO()
         }
+    }
 
     private fun ImageDto.toImage(): Image = Image(
         id = id,
@@ -57,9 +55,9 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun TextDto.toText(): Text = Text(
         id = id,
         text = text,
-        textColorSource = if (textColorSource != null) context.resolveColorId(textColorSource) else null,
+        textColorSource = context.resolveColorId(textColorSource),
         textStyleSource = textStyleSource,
-        showDisclosure = null,
+        showDisclosure = showDisclosure ?: false,
         spacing = spacing
     )
 }

@@ -35,6 +35,7 @@ fun Context.resolveImageId(resource: String): Int? {
     val resId = getImageId(resource)
     return if (resId != Resources.ID_NULL) resId else null
 }
+
 /**
  * Resolves the given into color string into resource identifier
  * returns the id if found else 0
@@ -46,11 +47,11 @@ fun Context.getColorId(resource: String): Int =
  * Resolves the given into image string into resource identifier
  * returns the id if found else null
  */
-fun Context.resolveColorId(resource: String): Int? {
+fun Context.resolveColorId(resource: String?): Int? {
+    resource ?: return null
     val resId = getColorId(resource)
     return if (resId != Resources.ID_NULL) resId else null
 }
-
 
 /**
  * Resolves the given into string resource identifier
