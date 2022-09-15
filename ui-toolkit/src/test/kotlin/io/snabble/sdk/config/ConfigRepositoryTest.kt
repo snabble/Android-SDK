@@ -2,7 +2,7 @@ package io.snabble.sdk.config
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
-class ConfigRepositoryTest : FreeSpec({
+internal class ConfigRepositoryTest : FreeSpec({
 
     fun createSut(json: String) = ConfigRepository(
         fileProvider = mockk { coEvery { getFile(any()) } returns json },
@@ -20,9 +20,9 @@ class ConfigRepositoryTest : FreeSpec({
 
     "Parsing a " - {
 
-        "well formed json string" - {
+        "well formed json string containing" - {
 
-            "w/ a simple object" {
+            "a simple object" {
                 val simpleJsonObject = """{ "name": "John", "age": 32 }"""
 
                 val sut = createSut(simpleJsonObject)
@@ -32,7 +32,7 @@ class ConfigRepositoryTest : FreeSpec({
                 person.age shouldBe 32
             }
 
-            "w/ a polymorphic array" {
+            "a polymorphic array" {
                 val polymorphicJsonObject =
                     """
                     [
@@ -45,7 +45,7 @@ class ConfigRepositoryTest : FreeSpec({
                 val world: List<World> = sut.getConfig("")
 
                 world.size shouldBe 2
-                world.shouldContainAll(
+                world.shouldContainInOrder(
                     Person(name = "John", age = 32),
                     Thing(label = "Socket", purpose = "power delivery")
                 )
@@ -65,12 +65,12 @@ class ConfigRepositoryTest : FreeSpec({
 })
 
 @Serializable
-sealed interface World
+private sealed interface World
 
 @Serializable
 @SerialName("a.user")
-data class Person(val name: String, val age: Int) : World
+private data class Person(val name: String, val age: Int) : World
 
 @Serializable
 @SerialName("a.thing")
-data class Thing(val label: String, val purpose: String) : World
+private data class Thing(val label: String, val purpose: String) : World
