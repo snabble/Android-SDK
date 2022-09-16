@@ -7,6 +7,8 @@ apply plugin: 'de.mobilej.unmock'
 description = 'Snabble Utils: Util collection for the snabble SDK integration'
 
 android {
+    namespace 'io.snabble.sdk.utils'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {

@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'io.snabble.testapp'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {
@@ -26,9 +28,9 @@ android {
         }
 
         manifestPlaceholders = [
-                appId: appId,
+                appId   : appId,
                 endpoint: endpoint,
-                secret: secret,
+                secret  : secret,
         ]
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

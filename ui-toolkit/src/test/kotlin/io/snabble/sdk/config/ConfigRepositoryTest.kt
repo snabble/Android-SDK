@@ -1,5 +1,6 @@
 package io.snabble.sdk.config
 
+import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainInOrder
@@ -15,40 +16,63 @@ internal class ConfigRepositoryTest : FreeSpec({
 
     fun createSut(json: String) = ConfigRepository(
         fileProvider = mockk { coEvery { getFile(any()) } returns json },
-        json = Json
+        json = Json { ignoreUnknownKeys = true }
     )
 
     "Parsing a " - {
 
-        "well formed json string containing" - {
+        "well formed json string" - {
 
-            "a simple object" {
-                val simpleJsonObject = """{ "name": "John", "age": 32 }"""
+            "containing" - {
 
-                val sut = createSut(simpleJsonObject)
-                val person: Person = sut.getConfig("")
+                "a simple object" {
+                    val simpleJsonObject = """{ "name": "John", "age": 32 }"""
 
-                person.name shouldBe "John"
-                person.age shouldBe 32
-            }
+                    val sut = createSut(simpleJsonObject)
+                    val person: Person = sut.getConfig("")
 
-            "a polymorphic array" {
-                val polymorphicJsonObject =
-                    """
+                    person.name shouldBe "John"
+                    person.age shouldBe 32
+                }
+
+                "a polymorphic array" {
+                    val polymorphicJsonObject =
+                        """
                     [
                       { "type": "a.user", "name": "John" , "age": 32 },
                       { "type": "a.thing", "label": "Socket", "purpose": "power delivery" }
                     ]
                 """.trimIndent()
 
-                val sut = createSut(polymorphicJsonObject)
-                val world: List<World> = sut.getConfig("")
+                    val sut = createSut(polymorphicJsonObject)
+                    val world: List<World> = sut.getConfig("")
 
-                world.size shouldBe 2
-                world.shouldContainInOrder(
-                    Person(name = "John", age = 32),
-                    Thing(label = "Socket", purpose = "power delivery")
-                )
+                    world.size shouldBe 2
+                    world.shouldContainInOrder(
+                        Person(name = "John", age = 32),
+                        Thing(label = "Socket", purpose = "power delivery")
+                    )
+                }
+            }
+
+            "missing an optional key" {
+                val missingKeyJson = """{ "name": "Bicycle" }"""
+
+                val sut = createSut(missingKeyJson)
+
+                shouldNotThrow<SerializationException> {
+                    sut.getConfig<Vehicle>("")
+                }
+            }
+
+            "including additional unused keys" {
+                val missingKeyJson = """{ "name": "Car", "production_year": 1972 }"""
+
+                val sut = createSut(missingKeyJson)
+
+                shouldNotThrow<SerializationException> {
+                    sut.getConfig<Vehicle>("")
+                }
             }
         }
 
@@ -58,7 +82,7 @@ internal class ConfigRepositoryTest : FreeSpec({
             val sut = createSut(simpleJsonObject)
 
             shouldThrow<SerializationException> {
-                sut.getConfig<Person>("users.json")
+                sut.getConfig<Person>("")
             }
         }
     }
@@ -73,4 +97,13 @@ private data class Person(val name: String, val age: Int) : World
 
 @Serializable
 @SerialName("a.thing")
-private data class Thing(val label: String, val purpose: String) : World
+private data class Thing(
+    val label: String,
+    val purpose: String,
+) : World
+
+@Serializable
+private data class Vehicle(
+    val name: String,
+    val tireCount: Int? = null,
+) : World
