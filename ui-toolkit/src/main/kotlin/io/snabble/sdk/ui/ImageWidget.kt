@@ -22,6 +22,7 @@ fun ImageWidgetPreview() {
             id = 1,
             imageSource = R.drawable.snabble_ic_small_chevron_down,
             spacing = 8,
+            padding = 8
         )
     )
 }
