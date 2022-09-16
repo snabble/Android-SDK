@@ -49,7 +49,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun ImageDto.toImage(padding: Int): Image = Image(
         id = id,
         imageSource = context.resolveImageId(imageSource),
-        spacing = spacing,
+        spacing = spacing ?: 5,
         padding = padding
     )
 
@@ -59,7 +59,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         textColorSource = context.resolveColorId(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
-        spacing = spacing,
+        spacing = spacing ?: 5,
         padding = padding
     )
 }
