@@ -40,7 +40,7 @@ fun DynamicView(
 ) {
     if (root.configuration.image != null) {
         ImageWidget(
-            model = Image(0, root.configuration.image, 0),
+            model = Image(0, root.configuration.image, 0,8),
             contentScale = ContentScale.Crop,
         )
     }

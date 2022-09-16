@@ -24,7 +24,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     override fun mapTo(rootDto: RootDto): Root = Root(
         configuration = rootDto.configuration.toConfiguration(),
-        widgets = rootDto.widgets.toWidgets()
+        widgets = rootDto.widgets.toWidgets(rootDto.configuration.padding)
     )
 
     private fun ConfigurationDto.toConfiguration(): Configuration = Configuration(
@@ -33,10 +33,10 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         padding = padding
     )
 
-    private fun List<WidgetDto>.toWidgets(): List<Widget> = map { widget ->
+    private fun List<WidgetDto>.toWidgets(padding: Int): List<Widget> = map { widget ->
         when (widget) {
-            is ImageDto -> widget.toImage()
-            is TextDto -> widget.toText()
+            is ImageDto -> widget.toImage(padding)
+            is TextDto -> widget.toText(padding)
             is ButtonDto -> TODO()
             is InformationDto -> TODO()
             is LocationPermissionDto -> TODO()
@@ -46,18 +46,20 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         }
     }
 
-    private fun ImageDto.toImage(): Image = Image(
+    private fun ImageDto.toImage(padding: Int): Image = Image(
         id = id,
         imageSource = context.resolveImageId(imageSource),
-        spacing = spacing
+        spacing = spacing,
+        padding = padding
     )
 
-    private fun TextDto.toText(): Text = Text(
+    private fun TextDto.toText(padding: Int): Text = Text(
         id = id,
         text = text,
         textColorSource = context.resolveColorId(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
-        spacing = spacing
+        spacing = spacing,
+        padding = padding
     )
 }

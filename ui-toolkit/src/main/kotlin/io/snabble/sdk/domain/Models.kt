@@ -1,7 +1,5 @@
 package io.snabble.sdk.domain
 
-import io.snabble.sdk.data.HasText
-
 data class Root(
     val configuration: Configuration,
     val widgets: List<Widget>,
@@ -16,6 +14,11 @@ data class Configuration(
 sealed interface Widget {
     val id: Int
     val spacing: Int?
+    val padding: Int
+}
+
+interface HasText {
+    val text: String
 }
 
 data class Text(
@@ -25,12 +28,14 @@ data class Text(
     val textStyleSource: String? = null,
     val showDisclosure: Boolean,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget, HasText
 
 data class Image(
     override val id: Int,
     val imageSource: Int?,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget
 
 data class Button(
@@ -39,6 +44,7 @@ data class Button(
     val foregroundColorSource: Int?,
     val backgroundColorSource: Int?,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget, HasText
 
 data class Information(
@@ -47,12 +53,14 @@ data class Information(
     val imageSource: Int?,
     val hideable: Boolean,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget, HasText
 
 data class Purchases(
     override val id: Int,
     val projectId: String,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget
 
 data class Toggle(
@@ -60,6 +68,7 @@ data class Toggle(
     override val text: String,
     val key: String,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget, HasText
 
 data class Section(
@@ -67,9 +76,11 @@ data class Section(
     val header: String,
     val items: List<Widget>,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget
 
 data class LocationPermission(
     override val id: Int,
     override val spacing: Int,
+    override val padding: Int
 ) : Widget
