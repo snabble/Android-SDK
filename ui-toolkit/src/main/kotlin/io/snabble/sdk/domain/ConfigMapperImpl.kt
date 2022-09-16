@@ -11,7 +11,7 @@ import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.SectionDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.data.ToggleDto
-import io.snabble.sdk.utils.resolveColorId
+import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.resolveImageId
 import io.snabble.sdk.data.Widget as WidgetDto
 
@@ -56,10 +56,11 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun TextDto.toText(padding: Int): Text = Text(
         id = id,
         text = text,
-        textColorSource = context.resolveColorId(textColorSource),
+        textColorSource = context.getComposeColor(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
         spacing = spacing ?: 5,
         padding = padding
     )
+
 }

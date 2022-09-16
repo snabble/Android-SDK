@@ -4,9 +4,11 @@ package io.snabble.sdk.utils
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Color
 import android.util.TypedValue
 import android.widget.TextView
 import androidx.annotation.AttrRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -44,13 +46,25 @@ fun Context.getColorId(resource: String): Int =
     resources.getIdentifier(resource, "color", packageName)
 
 /**
- * Resolves the given into image string into resource identifier
- * returns the id if found else null
+ * Resolves the given color string into resource identifier
+ * returns the id on success else null
  */
 fun Context.resolveColorId(resource: String?): Int? {
     resource ?: return null
     val resId = getColorId(resource)
     return if (resId != Resources.ID_NULL) resId else null
+}
+
+/**
+ * Resolves the given color string into a color for Compose
+ * returns the color as Int on success else null
+ */
+fun Context.getComposeColor(resource: String?): Int? {
+    val resId = resolveColorId(resource)
+    resId ?: return null
+
+    val color = ContextCompat.getColor(this, resId).toHexStringWithPrefix()
+    return Color.parseColor(color)
 }
 
 /**
@@ -86,6 +100,8 @@ fun Context.getColorByAttribute(@AttrRes attrResId: Int): Int {
  * Returns a converted hex string matching the previous int value
  */
 fun Int.toHexString(): String = Integer.toHexString(this)
+
+fun Int.toHexStringWithPrefix(): String = "#" + Integer.toHexString(this)
 
 /**
  * Sets the textview to visible and the text to be displayed if the given char sequence is not null or blank.
