@@ -7,6 +7,8 @@ apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
 description = "Accessibility-Toolbox: Make it easy to make your app accessibile"
 
 android {
+    namespace 'io.snabble.accessibility'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {

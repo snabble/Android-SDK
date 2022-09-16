@@ -1,36 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.snabble.sdk.ui"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
-    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application>
-        <activity android:name=".checkout.CheckoutActivity" android:exported="false" />
-        <activity android:name=".payment.SEPACardInputActivity" android:exported="false" />
-        <activity android:name=".payment.CreditCardInputActivity" android:exported="false" />
-        <activity android:name=".payment.PaymentOptionsActivity" android:exported="false" />
-        <activity android:name=".payment.ProjectPaymentOptionsActivity" android:exported="false" />
-        <activity android:name=".payment.PayoneInputActivity" android:exported="false" />
-        <activity android:name=".payment.PaydirektInputActivity" android:exported="false" />
-        <activity android:name=".payment.PaymentCredentialsListActivity" android:exported="false" />
-        <activity android:name=".payment.AgeVerificationInputActivity" android:exported="false" />
-        <activity android:name=".search.ProductSearchActivity" android:exported="false" />
-        <activity android:name=".cart.ShoppingCartActivity" android:exported="false" />
-        <activity android:name=".scanner.SelfScanningActivity" android:exported="false" />
-        <activity android:name=".scanner.CombinedScannerActivity" android:exported="false" />
-        <activity android:name=".coupon.CouponDetailActivity" android:exported="false" />
+        <activity
+            android:name=".checkout.CheckoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.SEPACardInputActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.CreditCardInputActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.PaymentOptionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.ProjectPaymentOptionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.PayoneInputActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.PaydirektInputActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.PaymentCredentialsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".payment.AgeVerificationInputActivity"
+            android:exported="false" />
+        <activity
+            android:name=".search.ProductSearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".cart.ShoppingCartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".scanner.SelfScanningActivity"
+            android:exported="false" />
+        <activity
+            android:name=".scanner.CombinedScannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".coupon.CouponDetailActivity"
+            android:exported="false" />
 
         <provider
             android:name="io.snabble.sdk.SnabbleFileProvider"
-            android:grantUriPermissions="true"
+            android:authorities="${applicationId}.ReceiptFileProvider"
             android:exported="false"
-            android:authorities="${applicationId}.ReceiptFileProvider">
+            android:grantUriPermissions="true">
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/snabble_file_provider_paths"/>
+                android:resource="@xml/snabble_file_provider_paths" />
 
         </provider>
 
@@ -40,7 +67,8 @@
             android:exported="false"
             tools:node="merge">
 
-            <meta-data  android:name="io.snabble.sdk.ui.CheckoutContinuationInitializer"
+            <meta-data
+                android:name="io.snabble.sdk.ui.CheckoutContinuationInitializer"
                 android:value="androidx.startup" />
         </provider>
 

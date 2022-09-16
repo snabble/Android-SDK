@@ -11,6 +11,8 @@ apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
 description = "Snabble UI-Toolkit: Attentional views for simple and sample apps for using the snabble SDK"
 
 android {
+    namespace 'io.snabble.sdk.ui.toolkit'
+
     compileSdkVersion 33
 
     defaultConfig {

@@ -7,6 +7,8 @@ apply plugin: 'org.jetbrains.dokka'
 description = "Snabble Core: The business logic of the snabble SDK"
 
 android {
+    namespace 'io.snabble.sdk'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {

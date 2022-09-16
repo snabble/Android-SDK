@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.snabble.sdk.firebase"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <application>
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
