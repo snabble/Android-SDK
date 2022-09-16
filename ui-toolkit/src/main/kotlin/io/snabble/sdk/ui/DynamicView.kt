@@ -13,8 +13,8 @@ typealias WidgetClick = (id: String) -> Unit
 fun DynamicView(
     header: @Composable (() -> Unit),
     widgets: List<Widget>,
+    onClick: WidgetClick,
     widgetFactory: WidgetFactory,
-    onClick: WidgetClick? = null,
 ) {
     header()
 
@@ -22,7 +22,7 @@ fun DynamicView(
         modifier = Modifier.fillMaxSize()
     ) {
         items(items = widgets) { widget ->
-            widgetFactory.createWidget(widget, onClick)
+            widgetFactory.createWidget(widget, onClick)()
         }
     }
 }

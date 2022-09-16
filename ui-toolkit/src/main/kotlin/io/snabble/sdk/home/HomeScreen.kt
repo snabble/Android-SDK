@@ -7,9 +7,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.Image
 import io.snabble.sdk.domain.Root
+import io.snabble.sdk.domain.Text
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.ImageWidget
 import io.snabble.sdk.ui.WidgetFactory
+import io.snabble.sdk.ui.WidgetFactoryImpl
 import io.snabble.sdk.ui.toolkit.R
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
@@ -22,9 +24,31 @@ fun HomeScreenPreview() {
                 style = "",
                 padding = 8
             ),
-            widgets = listOf()
+            widgets = listOf(
+                Text(
+                    id = 42,
+                    text = "Hello World",
+                    showDisclosure = false,
+                    spacing = 5,
+                    padding = 5
+                ),
+                Text(
+                    id = 42,
+                    text = "Towel day",
+                    showDisclosure = false,
+                    spacing = 5,
+                    padding = 5
+                ),
+                Text(
+                    id = 1,
+                    text = "Snabble",
+                    showDisclosure = false,
+                    spacing = 5,
+                    padding = 5
+                )
+            )
         ),
-        object : WidgetFactory {}
+        widgetFactory = WidgetFactoryImpl()
     )
 }
 
@@ -34,7 +58,6 @@ fun HomeScreen(
     widgetFactory: WidgetFactory,
 ) {
     DynamicView(
-        widgetFactory = widgetFactory,
         header = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
@@ -46,6 +69,7 @@ fun HomeScreen(
         widgets = homeConfig.widgets,
         onClick = { widgetId ->
             Log.i("HomeScreen", "::onClick widgetId -> $widgetId")
-        }
+        },
+        widgetFactory = widgetFactory,
     )
 }
