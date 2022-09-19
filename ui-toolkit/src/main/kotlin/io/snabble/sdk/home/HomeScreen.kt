@@ -39,7 +39,7 @@ fun HomeScreenPreview() {
                 Text(
                     id = 1,
                     text = "Deine App für Scan and Go!",
-                    textColorSource = LocalContext.current.getComposeColor("snabble_secondary"),
+                    textColorSource = LocalContext.current.getComposeColor(null),
                     textStyleSource = "body",
                     showDisclosure = false,
                     spacing = 10,
@@ -66,7 +66,7 @@ fun HomeScreen(
     widgetFactory: WidgetFactory,
 ) {
     DynamicView(
-        header = {
+        background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
                     model = Image(0, homeConfig.configuration.image, 0, 8),
