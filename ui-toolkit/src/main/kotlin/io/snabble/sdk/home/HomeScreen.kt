@@ -10,11 +10,9 @@ import io.snabble.sdk.domain.Image
 import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.Text
 import io.snabble.sdk.ui.DynamicView
-import io.snabble.sdk.ui.ImageWidget
-import io.snabble.sdk.ui.WidgetFactory
-import io.snabble.sdk.ui.WidgetFactoryImpl
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.getComposeColor
+import io.snabble.sdk.ui.widgets.ImageWidget
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
 @Composable
@@ -28,7 +26,7 @@ fun HomeScreenPreview() {
             ),
             widgets = listOf(
                 Text(
-                    id = 1,
+                    id = "hello.world.text",
                     text = "Willkommen bei Snabble",
                     textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                     textStyleSource = "header",
@@ -37,7 +35,7 @@ fun HomeScreenPreview() {
                     padding = 16
                 ),
                 Text(
-                    id = 1,
+                    id = "title",
                     text = "Deine App für Scan and Go!",
                     textColorSource = LocalContext.current.getComposeColor(null),
                     textStyleSource = "body",
@@ -46,8 +44,8 @@ fun HomeScreenPreview() {
                     padding = 16
                 ),
                 Text(
-                    id = 1,
-                    text = "Begib dich in eine Filiale um einzukaufen.",
+                    id = "brand",
+                    text = "Snabble",
                     textColorSource = null,
                     textStyleSource = "footer",
                     showDisclosure = false,
@@ -56,20 +54,18 @@ fun HomeScreenPreview() {
                 ),
             )
         ),
-        widgetFactory = WidgetFactoryImpl()
     )
 }
 
 @Composable
 fun HomeScreen(
     homeConfig: Root,
-    widgetFactory: WidgetFactory,
 ) {
     DynamicView(
         background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
-                    model = Image(0, homeConfig.configuration.image, 0, 8),
+                    model = Image("background.image", homeConfig.configuration.image, 0, 8),
                     contentScale = ContentScale.Crop,
                 )
             }
@@ -78,6 +74,5 @@ fun HomeScreen(
         onClick = { widgetId ->
             Log.i("HomeScreen", "::onClick widgetId -> $widgetId")
         },
-        widgetFactory = widgetFactory,
     )
 }

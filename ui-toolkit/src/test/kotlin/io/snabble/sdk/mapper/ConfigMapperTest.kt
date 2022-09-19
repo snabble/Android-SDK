@@ -59,8 +59,8 @@ internal class ConfigMapperTest : FreeSpec({
         }
 
         "rootDto containing a config and a List of Widgets" - {
-            val imageDto = ImageDto(1, "R.drawable.abc", 5)
-            val textDto = TextDto(2, "Hello World", "asdb", null, null, 5)
+            val imageDto = ImageDto("an.image", "R.drawable.abc", 5)
+            val textDto = TextDto("a.title", "Hello World", "asdb", null, null, 5)
 
             val rootDto = RootDto(
                 ConfigurationDto(image = "R.drawable.abc", style = "", padding = 0),
@@ -80,7 +80,7 @@ internal class ConfigMapperTest : FreeSpec({
 
                     "Image properties"{
                         image.imageSource shouldBe 5
-                        image.id shouldBe 1
+                        image.id shouldBe "an.image"
                     }
                 }
 
@@ -90,7 +90,7 @@ internal class ConfigMapperTest : FreeSpec({
 
                     "Text poperties"{
                         text.textColorSource shouldBe 8
-                        text.id shouldBe 2
+                        text.id shouldBe "a.title"
                     }
                 }
             }
