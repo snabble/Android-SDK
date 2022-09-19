@@ -11,6 +11,7 @@ import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.SectionDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.data.ToggleDto
+import io.snabble.sdk.utils.getResourceString
 import io.snabble.sdk.utils.resolveColorId
 import io.snabble.sdk.utils.resolveImageId
 import io.snabble.sdk.data.Widget as WidgetDto
@@ -34,15 +35,17 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     )
 
     private fun List<WidgetDto>.toWidgets(padding: Int): List<Widget> = map { widget ->
-        when (widget) {
-            is ImageDto -> widget.toImage(padding)
-            is TextDto -> widget.toText(padding)
-            is ButtonDto -> TODO()
-            is InformationDto -> TODO()
-            is LocationPermissionDto -> TODO()
-            is PurchasesDto -> TODO()
-            is SectionDto -> TODO()
-            is ToggleDto -> TODO()
+        with(widget) {
+            when (this) {
+                is ImageDto -> toImage(padding)
+                is TextDto -> toText(padding)
+                is ButtonDto -> toButton(padding)
+                is InformationDto -> TODO()
+                is LocationPermissionDto -> TODO()
+                is PurchasesDto -> TODO()
+                is SectionDto -> TODO()
+                is ToggleDto -> TODO()
+            }
         }
     }
 
@@ -59,6 +62,15 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         textColorSource = context.resolveColorId(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
+        spacing = spacing ?: 5,
+        padding = padding
+    )
+
+    private fun ButtonDto.toButton(padding: Int): Button = Button(
+        id = id,
+        text = "${context.getResourceString(text)}",
+        foregroundColorSource = context.resolveColorId(foregroundColorSource),
+        backgroundColorSource = context.resolveColorId(backgroundColorSource),
         spacing = spacing ?: 5,
         padding = padding
     )

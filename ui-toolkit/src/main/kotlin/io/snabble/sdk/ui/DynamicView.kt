@@ -7,9 +7,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import io.snabble.sdk.domain.Button
 import io.snabble.sdk.domain.Image
 import io.snabble.sdk.domain.Text
 import io.snabble.sdk.domain.Widget
+import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 
 typealias WidgetClick = (id: String) -> Unit
@@ -45,6 +47,12 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
             model = widget,
             modifier = Modifier
                 .clickable { click(widget.id) }
+        )
+    }
+    is Button -> {
+        ButtonWidget(
+            model = widget,
+            onClick = click,
         )
     }
     else -> {}
