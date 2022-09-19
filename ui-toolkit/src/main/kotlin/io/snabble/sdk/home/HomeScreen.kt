@@ -9,10 +9,8 @@ import io.snabble.sdk.domain.Image
 import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.Text
 import io.snabble.sdk.ui.DynamicView
-import io.snabble.sdk.ui.ImageWidget
-import io.snabble.sdk.ui.WidgetFactory
-import io.snabble.sdk.ui.WidgetFactoryImpl
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.ImageWidget
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
 @Composable
@@ -41,7 +39,7 @@ fun HomeScreenPreview() {
                     padding = 5
                 ),
                 Text(
-                    id = 1,
+                    id = 3,
                     text = "Snabble",
                     showDisclosure = false,
                     spacing = 5,
@@ -49,14 +47,12 @@ fun HomeScreenPreview() {
                 )
             )
         ),
-        widgetFactory = WidgetFactoryImpl()
     )
 }
 
 @Composable
 fun HomeScreen(
     homeConfig: Root,
-    widgetFactory: WidgetFactory,
 ) {
     DynamicView(
         background = {
@@ -71,6 +67,5 @@ fun HomeScreen(
         onClick = { widgetId ->
             Log.i("HomeScreen", "::onClick widgetId -> $widgetId")
         },
-        widgetFactory = widgetFactory,
     )
 }
