@@ -12,11 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ImageItem
+import io.snabble.sdk.domain.LocationPermissionItem
+import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.SpacerItem
+import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
+import io.snabble.sdk.ui.widgets.LocationPermissionWidget
+import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
+import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
 
 typealias WidgetClick = (id: String) -> Unit
@@ -67,5 +73,25 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         )
     }
     is SpacerItem -> Spacer(modifier = Modifier.height(widget.length.dp))
+    is LocationPermissionItem -> {
+        // pass via ViewModel
+//        val permissionIsGranted: Boolean by remember {
+//            mutableStateOf(Snabble.checkInLocationManager.checkLocationPermission())
+//        }
+        LocationPermissionWidget(model = widget, permissionState = false)
+    }
+    is SeeAllStoresItem -> {
+        // pass via ViewModel
+//        val isCheckedIn: Boolean by remember {
+//            mutableStateOf(Snabble.currentCheckedInShop.value != null)
+//        }
+        SeeAllStoresWidget(model = widget, checkinState = false)
+    }
+    is StartShoppingItem -> {
+//        val isCheckedIn: Boolean by remember {
+//            mutableStateOf(Snabble.currentCheckedInShop.value != null)
+//        }
+        StartShoppingWidget(model = widget, checkinState = true)
+    }
     else -> {}
 }

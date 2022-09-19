@@ -82,3 +82,13 @@ data class LocationPermissionItem(
     override val id: String,
     override val padding: Int
 ) : Widget
+
+data class SeeAllStoresItem(
+    override val id: String,
+    override val padding: Int
+) : Widget
+
+data class StartShoppingItem(
+    override val id: String,
+    override val padding: Int
+) : Widget

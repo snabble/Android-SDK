@@ -11,11 +11,13 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.ImageItem
+import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Root
+import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.SpacerItem
+import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.toolkit.R
@@ -64,15 +66,20 @@ fun HomeScreenPreview() {
                     padding = 16,
                 ),
                 SpacerItem(length = 5),
-                ButtonItem(
-                    id = "stores.button",
-                    text = "See all stores",
-                    foregroundColorSource = null,
-                    backgroundColorSource = LocalContext.current
-                        .getComposeColor("snabble_onboarding_primary"),
-                    padding = 5,
+                StartShoppingItem(
+                    id = "start",
+                    padding = 16,
                 ),
                 SpacerItem(length = 5),
+                SeeAllStoresItem(
+                    id = "stores",
+                    padding = 16
+                ),
+                SpacerItem(length = 5),
+                LocationPermissionItem(
+                    id = "location",
+                    padding = 16
+                )
             )
         ),
     )
