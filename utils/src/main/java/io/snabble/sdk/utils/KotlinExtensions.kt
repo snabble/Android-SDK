@@ -60,8 +60,7 @@ fun Context.resolveColorId(resource: String?): Int? {
  * returns the color as Int on success else null
  */
 fun Context.getComposeColor(resource: String?): Int? {
-    val resId = resolveColorId(resource)
-    resId ?: return null
+    val resId = resolveColorId(resource) ?: return null
 
     val color = ContextCompat.getColor(this, resId).toHexStringWithPrefix()
     return Color.parseColor(color)

@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.Text
-import io.snabble.sdk.ui.theme.Typography
 import io.snabble.sdk.utils.getComposeColor
 
 
@@ -65,10 +64,10 @@ fun TextWidget(
             text = model.text,
             color = Color(model.textColorSource ?: Color.Black.toArgb()),
             style = when (model.textStyleSource) {
-                "body" -> Typography.body1
-                "footer" -> Typography.body2
-                "header" -> Typography.h1
-                else -> MaterialTheme.typography.body1
+                "body" -> MaterialTheme.typography.bodyMedium
+                "footer" -> MaterialTheme.typography.bodySmall
+                "header" -> MaterialTheme.typography.headlineLarge
+                else -> MaterialTheme.typography.bodyMedium
             }
         )
         Spacer(
