@@ -1,67 +1,78 @@
 package io.snabble.sdk.home
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Magenta
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.domain.Button
+import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.Configuration
-import io.snabble.sdk.domain.Image
+import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.Root
-import io.snabble.sdk.domain.Text
+import io.snabble.sdk.domain.SpacerItem
+import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.utils.getComposeColor
 
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
+@Preview(
+    backgroundColor = 0xFFFFFF,
+    showBackground = true,
+    showSystemUi = true,
+)
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
         homeConfig = Root(
             configuration = Configuration(
-                image = R.drawable.snabble_gps_fixed,
+                image = R.drawable.home_default_background,
                 style = "",
                 padding = 8
             ),
             widgets = listOf(
-                Text(
+                SpacerItem(length = 16),
+                TextItem(
                     id = "hello.world.text",
                     text = "Willkommen bei Snabble",
                     textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                     textStyleSource = "header",
                     showDisclosure = false,
-                    spacing = 0,
                     padding = 16
                 ),
-                Text(
+                TextItem(
                     id = "title",
                     text = "Deine App für Scan and Go!",
                     textColorSource = LocalContext.current.getComposeColor(null),
                     textStyleSource = "body",
                     showDisclosure = false,
-                    spacing = 10,
                     padding = 16
                 ),
-                Text(
+                SpacerItem(length = 10),
+                TextItem(
                     id = "brand",
                     text = "Snabble",
                     textColorSource = null,
                     textStyleSource = "footer",
                     showDisclosure = false,
-                    spacing = 5,
-                    padding = 16
+                    padding = 16,
                 ),
-                Button(
+                SpacerItem(length = 5),
+                ButtonItem(
                     id = "stores.button",
                     text = "See all stores",
                     foregroundColorSource = null,
                     backgroundColorSource = LocalContext.current
                         .getComposeColor("snabble_onboarding_primary"),
-                    spacing = 5,
-                    padding = 5
-                )
+                    padding = 5,
+                ),
+                SpacerItem(length = 5),
             )
         ),
     )
@@ -72,11 +83,18 @@ fun HomeScreen(
     homeConfig: Root,
 ) {
     DynamicView(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Color(
+                    LocalContext.current.getComposeColor("snabble_background") ?: Magenta.toArgb()
+                )
+            ),
         background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
-                    model = Image("background.image", homeConfig.configuration.image, 0, 8),
-                    contentScale = ContentScale.Crop,
+                    model = ImageItem("background.image", homeConfig.configuration.image, 8),
+                    contentScale = ContentScale.Fit,
                 )
             }
         },

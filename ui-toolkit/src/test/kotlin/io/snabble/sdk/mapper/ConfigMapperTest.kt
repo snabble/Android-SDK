@@ -7,22 +7,21 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.snabble.sdk.data.ConfigurationDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.domain.ConfigMapperImpl
-import io.snabble.sdk.domain.Image
-import io.snabble.sdk.domain.Text
-import io.snabble.sdk.utils.resolveColorId
+import io.snabble.sdk.domain.ImageItem
+import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.resolveImageId
 
 internal class ConfigMapperTest : FreeSpec({
 
     val context = mockk<Context>(relaxed = true)
-    fun createMapper() = ConfigMapperImpl(
-        context
-    )
+    fun createMapper() = ConfigMapperImpl(context)
 
     beforeEach {
         clearAllMocks()
@@ -59,8 +58,10 @@ internal class ConfigMapperTest : FreeSpec({
         }
 
         "rootDto containing a config and a List of Widgets" - {
-            val imageDto = ImageDto("an.image", "R.drawable.abc", 5)
-            val textDto = TextDto("a.title", "Hello World", "asdb", null, null, 5)
+            mockkStatic("io.snabble.sdk.utils.KotlinExtensions")
+
+            val imageDto = ImageDto("an.image", "R.drawable.abc")
+            val textDto = TextDto("a.title", "Hello World", "asdb", null, null)
 
             val rootDto = RootDto(
                 ConfigurationDto(image = "R.drawable.abc", style = "", padding = 0),
@@ -68,7 +69,7 @@ internal class ConfigMapperTest : FreeSpec({
             )
             every { context.resolveImageId(rootDto.configuration.image) } returns 5
             every { context.resolveImageId(imageDto.imageSource) } returns 5
-            every { context.resolveColorId(textDto.textColorSource) } returns 8
+            every { context.getComposeColor(textDto.textColorSource) } returns 8
 
             val sut = createMapper().mapTo(rootDto)
 
@@ -76,21 +77,21 @@ internal class ConfigMapperTest : FreeSpec({
 
                 "Image Type" - {
 
-                    val image = sut.widgets.first().shouldBeTypeOf<Image>()
+                    val imageItem = sut.widgets.first().shouldBeTypeOf<ImageItem>()
 
                     "Image properties"{
-                        image.imageSource shouldBe 5
-                        image.id shouldBe "an.image"
+                        imageItem.imageSource shouldBe 5
+                        imageItem.id shouldBe "an.image"
                     }
                 }
 
                 "Text Type" - {
 
-                    val text = sut.widgets[1].shouldBeTypeOf<Text>()
+                    val textItem = sut.widgets[1].shouldBeTypeOf<TextItem>()
 
                     "Text poperties"{
-                        text.textColorSource shouldBe 8
-                        text.id shouldBe "a.title"
+                        textItem.textColorSource shouldBe 8
+                        textItem.id shouldBe "a.title"
                     }
                 }
             }

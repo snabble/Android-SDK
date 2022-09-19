@@ -1,10 +1,8 @@
 package io.snabble.sdk.ui.widgets
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
@@ -16,7 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.domain.Text
+import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.utils.getComposeColor
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
@@ -24,25 +22,23 @@ import io.snabble.sdk.utils.getComposeColor
 fun TextWidgetPreview() {
     Column(Modifier.fillMaxSize()) {
         TextWidget(
-            model = Text(
+            model = TextItem(
                 id = "1",
                 text = "Willkommen bei Snabble",
                 textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                 textStyleSource = "header",
                 showDisclosure = false,
-                spacing = 5,
-                padding = 16
+                padding = 16,
             )
         )
         TextWidget(
-            model = Text(
+            model = TextItem(
                 id = "2",
                 text = "Scanne deine Produkte und kaufe jetzt ein",
                 textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                 textStyleSource = "body",
                 showDisclosure = false,
-                spacing = 5,
-                padding = 16
+                padding = 16,
             )
         )
     }
@@ -50,14 +46,13 @@ fun TextWidgetPreview() {
 
 @Composable
 fun TextWidget(
-    model: Text,
+    model: TextItem,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
             .wrapContentHeight()
-            .padding(model.padding.dp, 0.dp)
+            .padding(horizontal = model.padding.dp, vertical = 0.dp)
     ) {
         Text(
             text = model.text,
@@ -68,11 +63,6 @@ fun TextWidget(
                 "header" -> MaterialTheme.typography.headlineLarge
                 else -> MaterialTheme.typography.bodyMedium
             }
-        )
-        Spacer(
-            modifier = Modifier
-                .height(model.spacing.dp)
-                .fillMaxWidth()
         )
     }
 }

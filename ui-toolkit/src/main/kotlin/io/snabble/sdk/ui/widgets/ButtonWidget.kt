@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.widgets
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -14,9 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.domain.Button
+import androidx.compose.ui.unit.dp
+import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.ui.WidgetClick
-import io.snabble.sdk.ui.utils.dp
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
 
@@ -24,7 +25,7 @@ import io.snabble.sdk.utils.getResourceString
 @Composable
 fun ButtonPreview() {
     ButtonWidget(
-        model = Button(
+        model = ButtonItem(
             id = "a.button",
             text = LocalContext.current
                 .getResourceString("Sample_Dashboard_button")
@@ -32,7 +33,6 @@ fun ButtonPreview() {
             foregroundColorSource = null,
             backgroundColorSource = LocalContext.current
                 .getComposeColor("snabble_onboarding_primary"),
-            spacing = 8,
             padding = 8,
         )
     )
@@ -40,11 +40,15 @@ fun ButtonPreview() {
 
 @Composable
 fun ButtonWidget(
-    model: Button,
+    model: ButtonItem,
     modifier: Modifier = Modifier,
     onClick: WidgetClick = {},
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = model.padding.dp, vertical = 0.dp)
+    ) {
         Button(
             onClick = { onClick(model.id) },
             colors = ButtonDefaults.buttonColors(

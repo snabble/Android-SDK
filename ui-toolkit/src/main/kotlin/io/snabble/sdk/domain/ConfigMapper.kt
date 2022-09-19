@@ -9,6 +9,7 @@ import io.snabble.sdk.data.LocationPermissionDto
 import io.snabble.sdk.data.PurchasesDto
 import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.SectionDto
+import io.snabble.sdk.data.SpacerDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.data.ToggleDto
 import io.snabble.sdk.utils.getComposeColor
@@ -38,6 +39,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun List<WidgetDto>.toWidgets(padding: Int): List<Widget> = map { widget ->
         with(widget) {
             when (this) {
+                is SpacerDto -> toSpacer()
                 is ImageDto -> toImage(padding)
                 is TextDto -> toText(padding)
                 is ButtonDto -> toButton(padding)
@@ -50,29 +52,28 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         }
     }
 
-    private fun ImageDto.toImage(padding: Int): Image = Image(
-        id = id,
-        imageSource = context.resolveImageId(imageSource),
-        spacing = spacing ?: 5,
-        padding = padding
-    )
+    private fun SpacerDto.toSpacer(): SpacerItem = SpacerItem(length = length)
 
-    private fun TextDto.toText(padding: Int): Text = Text(
+    private fun TextDto.toText(padding: Int): TextItem = TextItem(
         id = id,
         text = text,
         textColorSource = context.getComposeColor(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
-        spacing = spacing ?: 5,
         padding = padding
     )
 
-    private fun ButtonDto.toButton(padding: Int): Button = Button(
+    private fun ImageDto.toImage(padding: Int): ImageItem = ImageItem(
+        id = id,
+        imageSource = context.resolveImageId(imageSource),
+        padding = padding
+    )
+
+    private fun ButtonDto.toButton(padding: Int): ButtonItem = ButtonItem(
         id = id,
         text = "${context.getResourceString(text)}",
         foregroundColorSource = context.resolveColorId(foregroundColorSource),
         backgroundColorSource = context.resolveColorId(backgroundColorSource),
-        spacing = spacing ?: 5,
         padding = padding
     )
 }

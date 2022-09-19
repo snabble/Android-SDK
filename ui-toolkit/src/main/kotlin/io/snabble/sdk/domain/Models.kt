@@ -12,8 +12,8 @@ data class Configuration(
 )
 
 sealed interface Widget {
+
     val id: String
-    val spacing: Int
     val padding: Int
 }
 
@@ -21,66 +21,64 @@ interface HasText {
     val text: String
 }
 
-data class Text(
+data class SpacerItem(
+    override val id: String = "",
+    val length: Int,
+    override val padding: Int = 0,
+) : Widget
+
+data class TextItem(
     override val id: String,
     override val text: String,
     val textColorSource: Int? = null,
     val textStyleSource: String? = null,
     val showDisclosure: Boolean,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget, HasText
 
-data class Image(
+data class ImageItem(
     override val id: String,
     val imageSource: Int?,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget
 
-data class Button(
+data class ButtonItem(
     override val id: String,
     override val text: String,
     val foregroundColorSource: Int?,
     val backgroundColorSource: Int?,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget, HasText
 
-data class Information(
+data class InformationItemItem(
     override val id: String,
     override val text: String,
     val imageSource: Int?,
     val hideable: Boolean,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget, HasText
 
-data class Purchases(
+data class PurchasesItem(
     override val id: String,
     val projectId: String,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget
 
-data class Toggle(
+data class ToggleItem(
     override val id: String,
     override val text: String,
     val key: String,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget, HasText
 
-data class Section(
+data class SectionItem(
     override val id: String,
     val header: String,
     val items: List<Widget>,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget
 
-data class LocationPermission(
+data class LocationPermissionItem(
     override val id: String,
-    override val spacing: Int,
     override val padding: Int
 ) : Widget
