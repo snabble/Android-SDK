@@ -26,7 +26,7 @@ fun TextWidgetPreview() {
     Column(Modifier.fillMaxSize()) {
         TextWidget(
             model = Text(
-                id = 1,
+                id = "1",
                 text = "Willkommen bei Snabble",
                 textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                 textStyleSource = "header",
@@ -37,7 +37,7 @@ fun TextWidgetPreview() {
         )
         TextWidget(
             model = Text(
-                id = 1,
+                id = "2",
                 text = "Scanne deine Produkte und kaufe jetzt ein",
                 textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                 textStyleSource = "body",
@@ -53,6 +53,7 @@ fun TextWidgetPreview() {
 @Composable
 fun TextWidget(
     model: Text,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier
