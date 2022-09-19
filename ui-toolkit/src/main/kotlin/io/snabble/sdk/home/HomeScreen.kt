@@ -33,8 +33,9 @@ fun HomeScreenPreview() {
                     padding = 5
                 ),
                 Text(
-                    id = 42,
-                    text = "Towel day",
+                    id = 1,
+                    text = "Deine App für Scan and Go!",
+                    textStyleSource = "body",
                     showDisclosure = false,
                     spacing = 5,
                     padding = 5
@@ -58,7 +59,7 @@ fun HomeScreen(
     widgetFactory: WidgetFactory,
 ) {
     DynamicView(
-        header = {
+        background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
                     model = Image(0, homeConfig.configuration.image, 0, 8),

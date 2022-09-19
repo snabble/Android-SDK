@@ -11,18 +11,18 @@ typealias WidgetClick = (id: String) -> Unit
 
 @Composable
 fun DynamicView(
-    header: @Composable (() -> Unit),
+    background: @Composable (() -> Unit),
     widgets: List<Widget>,
     onClick: WidgetClick,
     widgetFactory: WidgetFactory,
 ) {
-    header()
+    background()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
         items(items = widgets) { widget ->
-            widgetFactory.createWidget(widget, onClick)()
+            widgetFactory.createWidget(widget, onClick)
         }
     }
 }
