@@ -20,7 +20,7 @@ import io.snabble.sdk.ui.R
 fun ImageWidgetPreview() {
     ImageWidget(
         model = Image(
-            id = 2,
+            id = "an.image",
             imageSource = R.drawable.snabble_ic_small_chevron_down,
             spacing = 8,
             padding = 8

@@ -12,7 +12,7 @@ data class Configuration(
 )
 
 sealed interface Widget {
-    val id: Int
+    val id: String
     val spacing: Int
     val padding: Int
 }
@@ -22,7 +22,7 @@ interface HasText {
 }
 
 data class Text(
-    override val id: Int,
+    override val id: String,
     override val text: String,
     val textColorSource: Int? = null,
     val textStyleSource: String? = null,
@@ -32,14 +32,14 @@ data class Text(
 ) : Widget, HasText
 
 data class Image(
-    override val id: Int,
+    override val id: String,
     val imageSource: Int?,
     override val spacing: Int,
     override val padding: Int
 ) : Widget
 
 data class Button(
-    override val id: Int,
+    override val id: String,
     override val text: String,
     val foregroundColorSource: Int?,
     val backgroundColorSource: Int?,
@@ -48,7 +48,7 @@ data class Button(
 ) : Widget, HasText
 
 data class Information(
-    override val id: Int,
+    override val id: String,
     override val text: String,
     val imageSource: Int?,
     val hideable: Boolean,
@@ -57,14 +57,14 @@ data class Information(
 ) : Widget, HasText
 
 data class Purchases(
-    override val id: Int,
+    override val id: String,
     val projectId: String,
     override val spacing: Int,
     override val padding: Int
 ) : Widget
 
 data class Toggle(
-    override val id: Int,
+    override val id: String,
     override val text: String,
     val key: String,
     override val spacing: Int,
@@ -72,7 +72,7 @@ data class Toggle(
 ) : Widget, HasText
 
 data class Section(
-    override val id: Int,
+    override val id: String,
     val header: String,
     val items: List<Widget>,
     override val spacing: Int,
@@ -80,7 +80,7 @@ data class Section(
 ) : Widget
 
 data class LocationPermission(
-    override val id: Int,
+    override val id: String,
     override val spacing: Int,
     override val padding: Int
 ) : Widget

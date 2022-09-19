@@ -37,14 +37,14 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         Text(
             text = widget.text,
             modifier = Modifier
-                .clickable { click("${widget.id}") }
+                .clickable { click(widget.id) }
         )
     }
     is Image -> {
         ImageWidget(
             model = widget,
             modifier = Modifier
-                .clickable { click("${widget.id}") }
+                .clickable { click(widget.id) }
         )
     }
     else -> {}

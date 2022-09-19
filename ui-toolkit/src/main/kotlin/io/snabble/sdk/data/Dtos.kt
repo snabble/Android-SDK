@@ -19,14 +19,14 @@ data class ConfigurationDto(
 @Serializable
 sealed interface Widget {
 
-    val id: Int
+    val id: String
     val spacing: Int?
 }
 
 @Serializable
 @SerialName("text")
 data class TextDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("textColorSource") val textColorSource: String? = null,
     @SerialName("textStyleSource") val textStyleSource: String? = null,
@@ -37,14 +37,14 @@ data class TextDto(
 @Serializable
 @SerialName("image")
 data class ImageDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("imageSource") val imageSource: String,
     @SerialName("spacing") override val spacing: Int? = null,
 ) : Widget
 
 @SerialName("button")
 data class ButtonDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("foregroundColorSource") val foregroundColorSource: String?,
     @SerialName("backgroundColorSource") val backgroundColorSource: String?,
@@ -53,7 +53,7 @@ data class ButtonDto(
 
 @SerialName("information")
 data class InformationDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("imageSource") val imageSource: String?,
     @SerialName("hideable") val hideable: Boolean?,
@@ -62,14 +62,14 @@ data class InformationDto(
 
 @SerialName("purchases")
 data class PurchasesDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("projectId") val projectId: String,
     @SerialName("spacing") override val spacing: Int? = null,
 ) : Widget
 
 @SerialName("toggle")
 data class ToggleDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("key") val key: String,
     @SerialName("spacing") override val spacing: Int? = null,
@@ -77,7 +77,7 @@ data class ToggleDto(
 
 @SerialName("section")
 data class SectionDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("header") val header: String,
     @SerialName("items") val items: List<Widget>,
     @SerialName("spacing") override val spacing: Int? = null,
@@ -85,6 +85,6 @@ data class SectionDto(
 
 @SerialName("locationPermission")
 data class LocationPermissionDto(
-    @SerialName("id") override val id: Int,
+    @SerialName("id") override val id: String,
     @SerialName("spacing") override val spacing: Int? = null,
 ) : Widget

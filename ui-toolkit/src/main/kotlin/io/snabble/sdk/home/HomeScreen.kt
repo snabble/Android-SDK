@@ -24,14 +24,14 @@ fun HomeScreenPreview() {
             ),
             widgets = listOf(
                 Text(
-                    id = 42,
+                    id = "hello.world.text",
                     text = "Hello World",
                     showDisclosure = false,
                     spacing = 5,
                     padding = 5
                 ),
                 Text(
-                    id = 1,
+                    id = "title",
                     text = "Deine App für Scan and Go!",
                     textStyleSource = "body",
                     showDisclosure = false,
@@ -39,7 +39,7 @@ fun HomeScreenPreview() {
                     padding = 5
                 ),
                 Text(
-                    id = 3,
+                    id = "brand",
                     text = "Snabble",
                     showDisclosure = false,
                     spacing = 5,
@@ -58,7 +58,7 @@ fun HomeScreen(
         background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
-                    model = Image(0, homeConfig.configuration.image, 0, 8),
+                    model = Image("background.image", homeConfig.configuration.image, 0, 8),
                     contentScale = ContentScale.Crop,
                 )
             }
