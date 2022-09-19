@@ -28,25 +28,30 @@ fun HomeScreenPreview() {
             widgets = listOf(
                 Text(
                     id = "hello.world.text",
-                    text = "Hello World",
+                    text = "Willkommen bei Snabble",
+                    textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
+                    textStyleSource = "header",
                     showDisclosure = false,
-                    spacing = 5,
-                    padding = 5
+                    spacing = 0,
+                    padding = 16
                 ),
                 Text(
                     id = "title",
                     text = "Deine App für Scan and Go!",
+                    textColorSource = LocalContext.current.getComposeColor(null),
                     textStyleSource = "body",
                     showDisclosure = false,
-                    spacing = 5,
-                    padding = 5
+                    spacing = 10,
+                    padding = 16
                 ),
                 Text(
                     id = "brand",
                     text = "Snabble",
+                    textColorSource = null,
+                    textStyleSource = "footer",
                     showDisclosure = false,
                     spacing = 5,
-                    padding = 5
+                    padding = 16
                 ),
                 Button(
                     id = "stores.button",
