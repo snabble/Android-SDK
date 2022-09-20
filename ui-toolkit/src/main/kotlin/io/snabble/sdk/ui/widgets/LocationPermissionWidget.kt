@@ -32,9 +32,9 @@ fun LocationPermissionPreview() {
 
 @Composable
 fun LocationPermissionWidget(
+    modifier: Modifier = Modifier,
     model: LocationPermissionItem,
     permissionState: Boolean = false,
-    modifier: Modifier = Modifier,
     onClick: WidgetClick = {},
 ) {
     if (!permissionState) {

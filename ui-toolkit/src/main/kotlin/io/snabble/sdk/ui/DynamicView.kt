@@ -88,6 +88,7 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         SeeAllStoresWidget(model = widget, checkinState = false)
     }
     is StartShoppingItem -> {
+        //pass vie ViewModel
 //        val isCheckedIn: Boolean by remember {
 //            mutableStateOf(Snabble.currentCheckedInShop.value != null)
 //        }
