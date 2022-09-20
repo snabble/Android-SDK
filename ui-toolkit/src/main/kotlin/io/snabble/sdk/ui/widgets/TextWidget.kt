@@ -11,11 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.TextItem
-import io.snabble.sdk.utils.getComposeColor
+import io.snabble.sdk.ui.AppTheme
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
 @Composable
@@ -25,7 +24,7 @@ fun TextWidgetPreview() {
             model = TextItem(
                 id = "1",
                 text = "Willkommen bei Snabble",
-                textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
+                textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
                 textStyleSource = "header",
                 showDisclosure = false,
                 padding = 16,
@@ -35,7 +34,7 @@ fun TextWidgetPreview() {
             model = TextItem(
                 id = "2",
                 text = "Scanne deine Produkte und kaufe jetzt ein",
-                textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
+                textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
                 textStyleSource = "body",
                 showDisclosure = false,
                 padding = 16,

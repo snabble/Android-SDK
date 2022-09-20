@@ -19,6 +19,7 @@ import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.SpacerItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ImageWidget
@@ -43,7 +44,7 @@ fun HomeScreenPreview() {
                 TextItem(
                     id = "hello.world.text",
                     text = "Willkommen bei Snabble",
-                    textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
+                    textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
                     textStyleSource = "header",
                     showDisclosure = false,
                     padding = 16
@@ -51,7 +52,7 @@ fun HomeScreenPreview() {
                 TextItem(
                     id = "title",
                     text = "Deine App für Scan and Go!",
-                    textColorSource = LocalContext.current.getComposeColor(null),
+                    textColorSource = AppTheme.colors.snabble_textColorDark.toArgb(),
                     textStyleSource = "body",
                     showDisclosure = false,
                     padding = 16

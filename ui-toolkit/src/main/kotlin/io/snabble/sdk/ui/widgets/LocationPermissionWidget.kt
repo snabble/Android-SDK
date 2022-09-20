@@ -30,7 +30,7 @@ fun LocationPermissionWidget(
             modifier = modifier,
             model = model,
             text = stringResource(id = R.string.Snabble_askForPermission),
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }

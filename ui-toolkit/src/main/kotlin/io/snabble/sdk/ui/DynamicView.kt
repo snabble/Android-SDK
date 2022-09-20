@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.ButtonItem
@@ -24,6 +26,8 @@ import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
+import io.snabble.sdk.usecase.GetCheckInStateUseCase
+import io.snabble.sdk.usecase.GetPermissionStateUseCase
 
 typealias WidgetClick = (id: String) -> Unit
 
@@ -75,24 +79,24 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
     is SpacerItem -> Spacer(modifier = Modifier.height(widget.length.dp))
     is LocationPermissionItem -> {
         // pass via ViewModel
-//        val permissionIsGranted: Boolean by remember {
-//            mutableStateOf(Snabble.checkInLocationManager.checkLocationPermission())
-//        }
-        LocationPermissionWidget(model = widget, permissionState = false)
+        val permissionIsGranted: Boolean by remember {
+            GetPermissionStateUseCase().invoke()
+        }
+        LocationPermissionWidget(model = widget, permissionState = permissionIsGranted)
     }
     is SeeAllStoresItem -> {
         // pass via ViewModel
-//        val isCheckedIn: Boolean by remember {
-//            mutableStateOf(Snabble.currentCheckedInShop.value != null)
-//        }
-        SeeAllStoresWidget(model = widget, checkinState = false)
+        val isCheckedIn: Boolean by remember {
+            GetCheckInStateUseCase().invoke()
+        }
+        SeeAllStoresWidget(model = widget, checkinState = isCheckedIn)
     }
     is StartShoppingItem -> {
         //pass vie ViewModel
-//        val isCheckedIn: Boolean by remember {
-//            mutableStateOf(Snabble.currentCheckedInShop.value != null)
-//        }
-        StartShoppingWidget(model = widget, checkinState = true)
+        val isCheckedIn: Boolean by remember {
+            GetCheckInStateUseCase().invoke()
+        }
+        StartShoppingWidget(model = widget, checkinState = isCheckedIn)
     }
     else -> {}
 }
