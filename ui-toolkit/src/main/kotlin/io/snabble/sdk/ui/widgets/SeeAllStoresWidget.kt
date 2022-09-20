@@ -45,7 +45,8 @@ fun SeeAllStoresWidget(
     if (!checkinState) {
         ButtonWidget(
             model = model,
-            text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show)
+            text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
+            onClick = onClick
         )
     } else {
         Box(

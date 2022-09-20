@@ -82,21 +82,21 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         val permissionIsGranted: Boolean by remember {
             GetPermissionStateUseCase().invoke()
         }
-        LocationPermissionWidget(model = widget, permissionState = permissionIsGranted)
+        LocationPermissionWidget(model = widget, permissionState = permissionIsGranted, onClick = click)
     }
     is SeeAllStoresItem -> {
         // pass via ViewModel
         val isCheckedIn: Boolean by remember {
             GetCheckInStateUseCase().invoke()
         }
-        SeeAllStoresWidget(model = widget, checkinState = isCheckedIn)
+        SeeAllStoresWidget(model = widget, checkinState = isCheckedIn, onClick = click)
     }
     is StartShoppingItem -> {
         //pass vie ViewModel
         val isCheckedIn: Boolean by remember {
             GetCheckInStateUseCase().invoke()
         }
-        StartShoppingWidget(model = widget, checkinState = isCheckedIn)
+        StartShoppingWidget(model = widget, checkinState = isCheckedIn, onClick = click)
     }
     else -> {}
 }
