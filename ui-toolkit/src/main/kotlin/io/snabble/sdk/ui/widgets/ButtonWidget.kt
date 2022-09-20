@@ -47,8 +47,7 @@ fun ButtonWidget(
     onClick: WidgetClick = {},
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(horizontal = model.padding.dp, vertical = 0.dp)
     ) {
         Button(
@@ -74,22 +73,20 @@ fun ButtonWidget(
 @Composable
 fun ButtonWidget(
     modifier: Modifier = Modifier,
-    model: Widget,
+    widget: Widget,
     text: String,
     onClick: WidgetClick = {}
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = model.padding.dp, vertical = 0.dp)
+        modifier = modifier
+            .padding(horizontal = widget.padding.dp, vertical = 0.dp)
     ) {
         Button(
-            onClick = { onClick(model.id) },
+            onClick = { onClick(widget.id) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = AppTheme.colors.snabble_primaryColor,
             ),
             shape = RoundedCornerShape(8.dp),
-            modifier = modifier.align(Center),
         ) {
             Text(
                 text = text,

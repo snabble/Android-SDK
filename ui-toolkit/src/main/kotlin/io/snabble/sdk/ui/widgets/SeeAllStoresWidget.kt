@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,24 +44,29 @@ fun SeeAllStoresWidget(
     onClick: WidgetClick = {},
 ) {
 
-    if (!checkinState) {
-        ButtonWidget(
-            model = model,
-            text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
-            onClick = onClick
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = model.padding.dp, vertical = 0.dp)
-                .clickable { onClick(model.id) },
-        ) {
-            Text(
+    Box(modifier = Modifier.fillMaxWidth()) {
+        if (!checkinState) {
+            ButtonWidget(
                 modifier = Modifier.align(Alignment.Center),
+                widget = model,
                 text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
-                color = AppTheme.colors.snabble_primaryColor
+                onClick = onClick
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .align(Alignment.Center)
+                    .height(48.dp)
+                    .padding(horizontal = model.padding.dp, vertical = 0.dp)
+                    .clickable { onClick(model.id) },
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
+                    color = AppTheme.colors.snabble_primaryColor
+                )
+            }
         }
     }
 }
