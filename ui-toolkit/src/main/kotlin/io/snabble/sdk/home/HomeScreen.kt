@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.LocationPermissionItem
+import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.SpacerItem
@@ -37,17 +38,16 @@ fun HomeScreenPreview() {
             configuration = Configuration(
                 image = R.drawable.home_default_background,
                 style = "",
-                padding = 8
+                padding = Padding(horizontal = 8, vertical = 0),
             ),
             widgets = listOf(
-                SpacerItem(length = 16),
                 TextItem(
                     id = "hello.world.text",
                     text = "Willkommen bei Snabble",
                     textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
                     textStyleSource = "header",
                     showDisclosure = false,
-                    padding = 16
+                    padding = Padding(start = 16, top = 16, end = 16, bottom = 0),
                 ),
                 TextItem(
                     id = "title",
@@ -55,28 +55,31 @@ fun HomeScreenPreview() {
                     textColorSource = AppTheme.colors.snabble_textColorDark.toArgb(),
                     textStyleSource = "body",
                     showDisclosure = false,
-                    padding = 16
+                    padding = Padding(16, 0),
                 ),
-                SpacerItem(length = 10),
                 TextItem(
                     id = "brand",
                     text = "Snabble",
                     textColorSource = null,
                     textStyleSource = "footer",
                     showDisclosure = false,
-                    padding = 16,
+                    padding = Padding(start = 16, top = 10, end = 16, bottom = 0),
                 ),
-                SpacerItem(length = 5),
+                ButtonItem(
+                    id = "stores.button",
+                    text = "See all stores",
+                    foregroundColorSource = null,
+                    backgroundColorSource = LocalContext.current
+                        .getComposeColor("snabble_onboarding_primary"),
+                    padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
                 StartShoppingItem(
                     id = "start",
                     padding = 16,
                 ),
-                SpacerItem(length = 5),
                 SeeAllStoresItem(
                     id = "stores",
                     padding = 16
                 ),
-                SpacerItem(length = 5),
                 LocationPermissionItem(
                     id = "location",
                     padding = 16
@@ -101,7 +104,11 @@ fun HomeScreen(
         background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
-                    model = ImageItem("background.image", homeConfig.configuration.image, 8),
+                    model = ImageItem(
+                        "background.image",
+                        homeConfig.configuration.image,
+                        Padding(all = 0)
+                    ),
                     contentScale = ContentScale.Fit,
                 )
             }
