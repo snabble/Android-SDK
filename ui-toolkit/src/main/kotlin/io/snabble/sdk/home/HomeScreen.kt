@@ -17,7 +17,6 @@ import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.SeeAllStoresItem
-import io.snabble.sdk.domain.SpacerItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.ui.AppTheme
@@ -65,24 +64,17 @@ fun HomeScreenPreview() {
                     showDisclosure = false,
                     padding = Padding(start = 16, top = 10, end = 16, bottom = 0),
                 ),
-                ButtonItem(
-                    id = "stores.button",
-                    text = "See all stores",
-                    foregroundColorSource = null,
-                    backgroundColorSource = LocalContext.current
-                        .getComposeColor("snabble_onboarding_primary"),
-                    padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
                 StartShoppingItem(
                     id = "start",
-                    padding = 16,
+                    padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
                 ),
                 SeeAllStoresItem(
                     id = "stores",
-                    padding = 16
+                    padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
                 ),
                 LocationPermissionItem(
                     id = "location",
-                    padding = 16
+                    padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
                 )
             )
         ),

@@ -13,7 +13,6 @@ import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.SeeAllStoresItem
-import io.snabble.sdk.domain.SpacerItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
@@ -73,7 +72,6 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
             onClick = click,
         )
     }
-    is SpacerItem -> Spacer(modifier = Modifier.height(widget.length.dp))
     is LocationPermissionItem -> {
 
         val permissionIsGranted: Boolean by remember {

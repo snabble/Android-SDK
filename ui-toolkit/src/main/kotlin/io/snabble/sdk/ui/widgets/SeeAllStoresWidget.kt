@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 
 
@@ -26,11 +28,17 @@ import io.snabble.sdk.ui.toolkit.R
 fun SeeAllStoresPreview() {
     Column(Modifier.fillMaxSize()) {
         SeeAllStoresWidget(
-            model = SeeAllStoresItem("1", 16),
+            model = SeeAllStoresItem(
+                id = "1",
+                padding = Padding(start = 16, top = 5, end = 16, bottom = 5)
+            ),
             checkinState = true
         )
         SeeAllStoresWidget(
-            model = SeeAllStoresItem("1", 16),
+            model = SeeAllStoresItem(
+                id = "1",
+                padding = Padding(start = 16, top = 5, end = 16, bottom = 5)
+            ),
             checkinState = false
         )
     }
@@ -58,7 +66,7 @@ fun SeeAllStoresWidget(
                     .wrapContentWidth()
                     .align(Alignment.Center)
                     .height(48.dp)
-                    .padding(horizontal = model.padding.dp, vertical = 0.dp)
+                    .padding(model.padding.toPaddingValues())
                     .clickable { onClick(model.id) },
             ) {
                 Text(

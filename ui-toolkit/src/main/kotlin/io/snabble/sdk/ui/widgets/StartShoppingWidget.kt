@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toolkit.R
@@ -15,7 +16,10 @@ import io.snabble.sdk.ui.toolkit.R
 @Composable
 fun StartShoppingPreview() {
     StartShoppingWidget(
-        model = StartShoppingItem("1", 16),
+        model = StartShoppingItem(
+            id = "1",
+            padding = Padding(start = 16, top = 5, end = 16, bottom = 5)
+        ),
         checkinState = true
     )
 }
