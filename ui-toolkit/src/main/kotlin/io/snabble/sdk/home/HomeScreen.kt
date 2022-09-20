@@ -15,6 +15,8 @@ import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.Padding
+import io.snabble.sdk.domain.ProjectId
+import io.snabble.sdk.domain.PurchasesItem
 import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.ui.DynamicView
@@ -34,7 +36,7 @@ fun HomeScreenPreview() {
             configuration = Configuration(
                 image = R.drawable.home_default_background,
                 style = "",
-                padding = Padding(horizontal = 8, vertical = 0),
+                padding = Padding(horizontal = 8),
             ),
             widgets = listOf(
                 TextItem(
@@ -51,7 +53,7 @@ fun HomeScreenPreview() {
                     textColorSource = LocalContext.current.getComposeColor(null),
                     textStyleSource = "body",
                     showDisclosure = false,
-                    padding = Padding(16, 0),
+                    padding = Padding(horizontal = 16),
                 ),
                 TextItem(
                     id = "brand",
@@ -69,6 +71,11 @@ fun HomeScreenPreview() {
                         .getComposeColor("snabble_onboarding_primary"),
                     padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
                 ),
+                PurchasesItem(
+                    id = "last.purchases",
+                    projectId = ProjectId("0123"),
+                    padding = Padding(horizontal = 16),
+                )
             )
         ),
     )

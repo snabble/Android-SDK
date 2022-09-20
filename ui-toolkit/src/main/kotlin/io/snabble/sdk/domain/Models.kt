@@ -52,9 +52,12 @@ data class InformationItemItem(
     override val padding: Padding,
 ) : Widget, HasText
 
+@JvmInline
+value class ProjectId(val id: String)
+
 data class PurchasesItem(
     override val id: String,
-    val projectId: String,
+    val projectId: ProjectId,
     override val padding: Padding,
 ) : Widget
 
@@ -87,6 +90,6 @@ data class Padding(
     constructor(all: Int)
         : this(start = all, top = all, end = all, bottom = all)
 
-    constructor(horizontal: Int, vertical: Int)
+    constructor(horizontal: Int = 0, vertical: Int = 0)
         : this(start = horizontal, top = vertical, end = horizontal, bottom = vertical)
 }

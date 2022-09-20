@@ -35,7 +35,7 @@ fun ButtonPreview() {
             foregroundColorSource = null,
             backgroundColorSource = LocalContext.current
                 .getComposeColor("snabble_onboarding_primary"),
-            padding = Padding(horizontal = 8, vertical = 0),
+            padding = Padding(horizontal = 8),
         )
     )
 }

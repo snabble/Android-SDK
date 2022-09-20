@@ -9,10 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ImageItem
+import io.snabble.sdk.domain.PurchasesItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
+import io.snabble.sdk.ui.widgets.Purchase
+import io.snabble.sdk.ui.widgets.PurchasesWidget
 import io.snabble.sdk.ui.widgets.TextWidget
 
 typealias WidgetClick = (id: String) -> Unit
@@ -60,6 +63,27 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         ButtonWidget(
             model = widget,
             onClick = click,
+        )
+    }
+    is PurchasesItem -> {
+        PurchasesWidget(
+            model = widget,
+            // TODO: State!!
+            purchases = listOf(
+                Purchase(amount = "13,37 €", title = "Snabble Store Bonn", time = "Today"),
+                Purchase(
+                    amount = "7,56 €",
+                    title = "Snabble Store Bonn Dransdorf",
+                    time = "Yesterday"
+                ),
+                Purchase(
+                    amount = "42,08 €",
+                    title = "Snabble Store Bonn Bad Godesberg",
+                    time = "Two days Ago"
+                ),
+                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
+                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
+            )
         )
     }
     else -> {}
