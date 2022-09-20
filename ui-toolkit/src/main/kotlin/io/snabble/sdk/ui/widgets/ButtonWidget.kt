@@ -17,7 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.ButtonItem
+import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
 
@@ -33,7 +35,7 @@ fun ButtonPreview() {
             foregroundColorSource = null,
             backgroundColorSource = LocalContext.current
                 .getComposeColor("snabble_onboarding_primary"),
-            padding = 8,
+            padding = Padding(horizontal = 8, vertical = 0),
         )
     )
 }
@@ -47,7 +49,7 @@ fun ButtonWidget(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = model.padding.dp, vertical = 0.dp)
+            .padding(model.padding.toPaddingValues())
     ) {
         Button(
             onClick = { onClick(model.id) },

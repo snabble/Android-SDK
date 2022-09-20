@@ -10,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.snabble.sdk.data.ConfigurationDto
 import io.snabble.sdk.data.ImageDto
+import io.snabble.sdk.data.PaddingDto
 import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.domain.ConfigMapperImpl
@@ -32,7 +33,11 @@ internal class ConfigMapperTest : FreeSpec({
         "rootDto containing a config and an empty Widget list" - {
 
             val rootDto = RootDto(
-                ConfigurationDto(image = "R.drawable.abc", style = "", padding = 0),
+                ConfigurationDto(
+                    image = "R.drawable.abc",
+                    style = "",
+                    padding = PaddingDto(0, 0, 0, 0)
+                ),
                 emptyList()
             )
             every { context.resolveImageId(rootDto.configuration.image) } returns 5
@@ -60,11 +65,22 @@ internal class ConfigMapperTest : FreeSpec({
         "rootDto containing a config and a List of Widgets" - {
             mockkStatic("io.snabble.sdk.utils.KotlinExtensions")
 
-            val imageDto = ImageDto("an.image", "R.drawable.abc")
-            val textDto = TextDto("a.title", "Hello World", "asdb", null, null)
+            val imageDto = ImageDto("an.image", "R.drawable.abc", PaddingDto(0, 0, 0, 0))
+            val textDto = TextDto(
+                "a.title",
+                "Hello World",
+                "asdb",
+                null,
+                null,
+                PaddingDto(0, 0, 0, 0)
+            )
 
             val rootDto = RootDto(
-                ConfigurationDto(image = "R.drawable.abc", style = "", padding = 0),
+                ConfigurationDto(
+                    image = "R.drawable.abc",
+                    style = "",
+                    padding = PaddingDto(0, 0, 0, 0)
+                ),
                 listOf(imageDto, textDto)
             )
             every { context.resolveImageId(rootDto.configuration.image) } returns 5

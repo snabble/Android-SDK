@@ -13,8 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.utils.getComposeColor
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
@@ -28,7 +29,7 @@ fun TextWidgetPreview() {
                 textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                 textStyleSource = "header",
                 showDisclosure = false,
-                padding = 16,
+                padding = Padding(start = 16, top = 0, end = 16, bottom = 0),
             )
         )
         TextWidget(
@@ -38,7 +39,7 @@ fun TextWidgetPreview() {
                 textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
                 textStyleSource = "body",
                 showDisclosure = false,
-                padding = 16,
+                padding = Padding(start = 16, top = 0, end = 16, bottom = 0),
             )
         )
     }
@@ -52,7 +53,7 @@ fun TextWidget(
     Box(
         modifier = Modifier
             .wrapContentHeight()
-            .padding(horizontal = model.padding.dp, vertical = 0.dp)
+            .padding(model.padding.toPaddingValues())
     ) {
         Text(
             text = model.text,

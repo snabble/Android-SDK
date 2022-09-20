@@ -6,10 +6,10 @@ import io.snabble.sdk.data.ConfigurationDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
+import io.snabble.sdk.data.PaddingDto
 import io.snabble.sdk.data.PurchasesDto
 import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.SectionDto
-import io.snabble.sdk.data.SpacerDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.data.ToggleDto
 import io.snabble.sdk.utils.getComposeColor
@@ -27,22 +27,21 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     override fun mapTo(rootDto: RootDto): Root = Root(
         configuration = rootDto.configuration.toConfiguration(),
-        widgets = rootDto.widgets.toWidgets(rootDto.configuration.padding)
+        widgets = rootDto.widgets.toWidgets(rootDto.configuration.padding.toPadding())
     )
 
     private fun ConfigurationDto.toConfiguration(): Configuration = Configuration(
         image = context.resolveImageId(image),
         style = style,
-        padding = padding
+        padding = padding.toPadding()
     )
 
-    private fun List<WidgetDto>.toWidgets(padding: Int): List<Widget> = map { widget ->
+    private fun List<WidgetDto>.toWidgets(outerPadding: Padding): List<Widget> = map { widget ->
         with(widget) {
             when (this) {
-                is SpacerDto -> toSpacer()
-                is ImageDto -> toImage(padding)
-                is TextDto -> toText(padding)
-                is ButtonDto -> toButton(padding)
+                is ImageDto -> toImage(outerPadding)
+                is TextDto -> toText(outerPadding)
+                is ButtonDto -> toButton(outerPadding)
                 is InformationDto -> TODO()
                 is LocationPermissionDto -> TODO()
                 is PurchasesDto -> TODO()
@@ -52,28 +51,36 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         }
     }
 
-    private fun SpacerDto.toSpacer(): SpacerItem = SpacerItem(length = length)
-
-    private fun TextDto.toText(padding: Int): TextItem = TextItem(
+    private fun TextDto.toText(outerPadding: Padding): TextItem = TextItem(
         id = id,
         text = text,
         textColorSource = context.getComposeColor(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
-        padding = padding
+        padding = padding.toPadding() + outerPadding
     )
 
-    private fun ImageDto.toImage(padding: Int): ImageItem = ImageItem(
+    private fun ImageDto.toImage(outerPadding: Padding): ImageItem = ImageItem(
         id = id,
         imageSource = context.resolveImageId(imageSource),
-        padding = padding
+        padding = padding.toPadding() + outerPadding
     )
 
-    private fun ButtonDto.toButton(padding: Int): ButtonItem = ButtonItem(
+    private fun ButtonDto.toButton(outerPadding: Padding): ButtonItem = ButtonItem(
         id = id,
         text = "${context.getResourceString(text)}",
         foregroundColorSource = context.resolveColorId(foregroundColorSource),
         backgroundColorSource = context.resolveColorId(backgroundColorSource),
-        padding = padding
+        padding = padding.toPadding() + outerPadding
     )
 }
+
+private fun PaddingDto.toPadding() = Padding(start, top, end, bottom)
+
+private operator fun Padding.plus(other: Padding): Padding =
+    Padding(
+        start + other.start,
+        top + other.top,
+        end + other.end,
+        bottom + other.bottom
+    )
