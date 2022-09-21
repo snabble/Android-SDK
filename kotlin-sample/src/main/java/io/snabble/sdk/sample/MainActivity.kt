@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -37,6 +38,8 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
 
     private lateinit var locationManager: CheckInLocationManager
 
+    private val viewModel: HomeViewModel by viewModels()
+
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
     }
@@ -56,7 +59,7 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setupToolbar(toolbar, navController, navBarView)
 
-        HomeViewModel.instance.widgetEvent.observe(this) { event ->
+        viewModel.widgetEvent.observe(this) { event ->
             when (event) {
                 "location" -> startLocationPermissionRequest()
                 "start" -> navBarView.selectedItemId = R.id.navigation_cart

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.LocationPermissionItem
@@ -51,7 +52,11 @@ fun DynamicView(
 }
 
 @Composable
-fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
+fun Widget(
+    widget: Widget,
+    click: WidgetClick,
+    viewModel: HomeViewModel = viewModel()
+) = when (widget) {
     is TextItem -> {
         TextWidget(
             model = widget,
@@ -81,10 +86,10 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         LocationPermissionWidget(model = widget, permissionState = permissionIsGranted, onClick = click)
     }
     is SeeAllStoresItem -> {
-        SeeAllStoresWidget(model = widget, checkinState = HomeViewModel.instance.checkInState.value, onClick = click)
+        SeeAllStoresWidget(model = widget, checkinState = viewModel.checkInState.value, onClick = click)
     }
     is StartShoppingItem -> {
-        StartShoppingWidget(model = widget, checkinState = HomeViewModel.instance.checkInState.value, onClick = click)
+        StartShoppingWidget(model = widget, checkinState = viewModel.checkInState.value, onClick = click)
     }
     else -> {}
 }

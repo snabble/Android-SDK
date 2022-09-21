@@ -20,10 +20,6 @@ import kotlinx.serialization.json.Json
 
 class HomeViewModel : ViewModel() {
 
-    companion object {
-        val instance = HomeViewModel()
-    }
-
     val checkInState: MutableState<Boolean>
         get() {
             var state = mutableStateOf(Snabble.currentCheckedInShop.value != null)
@@ -42,7 +38,7 @@ class HomeViewModel : ViewModel() {
     private val state: MutableStateFlow<UiState> = MutableStateFlow(Loading)
     val homeState: StateFlow<UiState> = state
 
-    fun fetchHomeConfig(context: Context){
+    fun fetchHomeConfig(context: Context) {
         val repo = ConfigRepository(
             ConfigFileProviderImpl(context.resources.assets),
             Json

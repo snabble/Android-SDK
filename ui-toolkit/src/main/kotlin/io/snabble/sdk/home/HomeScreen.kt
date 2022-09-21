@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.LocationPermissionItem
@@ -83,6 +84,7 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreen(
     homeConfig: Root,
+    viewModel: HomeViewModel = viewModel()
 ) {
     DynamicView(
         modifier = Modifier
@@ -106,7 +108,7 @@ fun HomeScreen(
         },
         widgets = homeConfig.widgets,
         onClick = { widgetId ->
-            HomeViewModel.instance.onClick(widgetId)
+            viewModel.onClick(widgetId)
         },
     )
 }
