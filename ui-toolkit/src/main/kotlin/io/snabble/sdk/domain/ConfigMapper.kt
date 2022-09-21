@@ -14,11 +14,11 @@ import io.snabble.sdk.data.SeeAllStoresDto
 import io.snabble.sdk.data.StartShoppingDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.data.ToggleDto
+import io.snabble.sdk.data.WidgetDto
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
 import io.snabble.sdk.utils.resolveColorId
 import io.snabble.sdk.utils.resolveImageId
-import io.snabble.sdk.data.Widget as WidgetDto
 
 interface ConfigMapper {
 
