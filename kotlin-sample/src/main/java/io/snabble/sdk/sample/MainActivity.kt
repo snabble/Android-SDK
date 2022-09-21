@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -24,6 +25,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
+import io.snabble.sdk.home.HomeViewModel
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.sample.utils.PermissionSupport
@@ -35,6 +37,8 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
     private lateinit var locationPermission: ActivityResultLauncher<String>
 
     private lateinit var locationManager: CheckInLocationManager
+
+    private val viewModel: HomeViewModel by viewModels()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -54,6 +58,14 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setupToolbar(toolbar, navController, navBarView)
+
+        viewModel.widgetEvent.observe(this) { event ->
+            when (event) {
+                "location" -> startLocationPermissionRequest()
+                "start" -> navBarView.selectedItemId = R.id.navigation_cart
+                "stores" -> navBarView.selectedItemId = R.id.navigation_shop
+            }
+        }
 
         if (savedInstanceState == null) {
             lifecycleScope.launch {
@@ -242,26 +254,6 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
                     }
                 }
             }
-
-        // add a check in state listener to observe when a user enters or leaves a shop
-        Snabble.checkInManager.addOnCheckInStateChangedListener(object :
-            OnCheckInStateChangedListener {
-            override fun onCheckIn(shop: Shop) {
-                Toast.makeText(this@MainActivity, "Check in: " + shop.name, Toast.LENGTH_LONG)
-                    .show()
-            }
-
-            override fun onCheckOut() {
-                Toast.makeText(this@MainActivity, "Check out", Toast.LENGTH_LONG).show()
-            }
-
-            override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-                // if multiple shops are in range a list will be provided
-                // a valid implementation of this can be just doing nothing
-                // as this will use the first shop (the nearest) of the list and stick to it
-                // a proper implementation would hint the user to select the shop he is currently in
-            }
-        })
     }
 
     private fun isHoldingPermission(permission: String): Boolean =

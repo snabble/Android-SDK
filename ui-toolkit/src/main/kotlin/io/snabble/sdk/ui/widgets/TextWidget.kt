@@ -11,12 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.toPaddingValues
-import io.snabble.sdk.utils.getComposeColor
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
 @Composable
@@ -26,8 +25,8 @@ fun TextWidgetPreview() {
             model = TextItem(
                 id = "1",
                 text = "Willkommen bei Snabble",
-                textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
-                textStyleSource = "header",
+                textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
+                textStyleSource = "title",
                 showDisclosure = false,
                 padding = Padding(start = 16, top = 0, end = 16, bottom = 0),
             )
@@ -36,7 +35,7 @@ fun TextWidgetPreview() {
             model = TextItem(
                 id = "2",
                 text = "Scanne deine Produkte und kaufe jetzt ein",
-                textColorSource = LocalContext.current.getComposeColor("snabble_onboarding_primary"),
+                textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
                 textStyleSource = "body",
                 showDisclosure = false,
                 padding = Padding(start = 16, top = 0, end = 16, bottom = 0),
@@ -61,7 +60,7 @@ fun TextWidget(
             style = when (model.textStyleSource) {
                 "body" -> MaterialTheme.typography.bodyMedium
                 "footer" -> MaterialTheme.typography.bodySmall
-                "header" -> MaterialTheme.typography.headlineLarge
+                "title" -> MaterialTheme.typography.headlineLarge
                 else -> MaterialTheme.typography.bodyMedium
             }
         )

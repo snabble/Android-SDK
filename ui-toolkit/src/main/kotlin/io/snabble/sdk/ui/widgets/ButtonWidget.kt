@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.widgets
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -18,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.Padding
+import io.snabble.sdk.domain.Widget
+import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.utils.getComposeColor
@@ -42,13 +43,12 @@ fun ButtonPreview() {
 
 @Composable
 fun ButtonWidget(
-    model: ButtonItem,
     modifier: Modifier = Modifier,
+    model: ButtonItem,
     onClick: WidgetClick = {},
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(model.padding.toPaddingValues())
     ) {
         Button(
@@ -70,3 +70,30 @@ fun ButtonWidget(
         }
     }
 }
+
+@Composable
+fun ButtonWidget(
+    modifier: Modifier = Modifier,
+    widget: Widget,
+    text: String,
+    onClick: WidgetClick = {}
+) {
+    Box(
+        modifier = modifier
+            .padding(widget.padding.toPaddingValues())
+    ) {
+        Button(
+            onClick = { onClick(widget.id) },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = AppTheme.colors.snabble_primaryColor,
+            ),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Text(
+                text = text,
+                color = AppTheme.colors.snabble_colorOnPrimary
+            )
+        }
+    }
+}
+

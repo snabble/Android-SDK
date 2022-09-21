@@ -35,8 +35,7 @@ internal class ConfigMapperTest : FreeSpec({
             val rootDto = RootDto(
                 ConfigurationDto(
                     image = "R.drawable.abc",
-                    style = "",
-                    padding = PaddingDto(0, 0, 0, 0)
+                    style = ""
                 ),
                 emptyList()
             )
@@ -48,9 +47,6 @@ internal class ConfigMapperTest : FreeSpec({
 
                 "image"{
                     sut.configuration.image shouldBe 5
-                }
-                "padding"{
-                    sut.configuration.padding shouldBe 0
                 }
                 "style"{
                     sut.configuration.style shouldBe ""
@@ -78,8 +74,7 @@ internal class ConfigMapperTest : FreeSpec({
             val rootDto = RootDto(
                 ConfigurationDto(
                     image = "R.drawable.abc",
-                    style = "",
-                    padding = PaddingDto(0, 0, 0, 0)
+                    style = ""
                 ),
                 listOf(imageDto, textDto)
             )
