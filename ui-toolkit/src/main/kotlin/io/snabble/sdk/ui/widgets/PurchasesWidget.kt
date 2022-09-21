@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.SizeMode
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
@@ -93,9 +92,8 @@ fun PurchasesWidget(
                     end = model.padding.start.dp,
                     bottom = model.padding.start.dp,
                 ),
-            mainAxisSize = SizeMode.Expand,
-            mainAxisSpacing = 16.dp,
-            crossAxisSpacing = 16.dp
+            mainAxisSpacing = model.padding.start.dp,
+            crossAxisSpacing = model.padding.start.dp,
         ) {
             purchases.forEach { data ->
                 Purchase(data, padding = model.padding.start)
