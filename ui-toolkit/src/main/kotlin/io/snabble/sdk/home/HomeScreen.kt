@@ -1,6 +1,5 @@
 package io.snabble.sdk.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -107,7 +106,7 @@ fun HomeScreen(
         },
         widgets = homeConfig.widgets,
         onClick = { widgetId ->
-            Log.i("HomeScreen", "::onClick widgetId -> $widgetId")
+            HomeViewModel.instance.onClick(widgetId)
         },
     )
 }

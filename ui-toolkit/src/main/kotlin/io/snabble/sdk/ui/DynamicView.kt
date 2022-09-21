@@ -16,6 +16,7 @@ import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
+import io.snabble.sdk.home.HomeViewModel
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.LocationPermissionWidget
@@ -88,11 +89,7 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         SeeAllStoresWidget(model = widget, checkinState = isCheckedIn, onClick = click)
     }
     is StartShoppingItem -> {
-
-        val isCheckedIn: Boolean by remember {
-            GetCheckInStateUseCase().invoke()
-        }
-        StartShoppingWidget(model = widget, checkinState = isCheckedIn, onClick = click)
+        StartShoppingWidget(model = widget, checkinState = HomeViewModel.instance.checkInState.value, onClick = click)
     }
     else -> {}
 }

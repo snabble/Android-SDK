@@ -46,7 +46,7 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="io.snabble.sdk.sample.HomeFragment"
+        android:name="io.snabble.sdk.home.HomeFragment"
         android:label="@string/Sample.home" />
 
     <fragment

@@ -1,0 +1,31 @@
+{
+  "configuration": {
+    "image": "home_default_background",
+    "style": "scroll",
+    "padding": [
+      16
+    ]
+  },
+  "widgets": [
+    {
+      "type": "text",
+      "id": "2",
+      "text": "Hello",
+      "textColor": "snabble_onboarding_primary",
+      "textStyle": "title",
+      "padding": [
+        16
+      ]
+    },
+    {
+      "type": "button",
+      "id": "2",
+      "text": "Hello",
+      "textColor": "snabble_onboarding_primary",
+      "textStyle": "title",
+      "padding": [
+        16
+      ]
+    }]
+
+}
