@@ -175,4 +175,3 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         }
     }
 }
-

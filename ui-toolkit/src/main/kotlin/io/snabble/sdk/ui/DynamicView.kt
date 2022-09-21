@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.ButtonItem
@@ -24,7 +22,6 @@ import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
-import io.snabble.sdk.usecase.GetPermissionStateUseCase
 
 typealias WidgetClick = (id: String) -> Unit
 
@@ -78,12 +75,7 @@ fun Widget(
         )
     }
     is LocationPermissionItem -> {
-
-        val permissionIsGranted: Boolean by remember {
-            val getPermissionStateUseCase = GetPermissionStateUseCase()
-            getPermissionStateUseCase()
-        }
-        LocationPermissionWidget(model = widget, permissionState = permissionIsGranted, onClick = click)
+        LocationPermissionWidget(model = widget, permissionState = viewModel.permissionState.value, onClick = click)
     }
     is SeeAllStoresItem -> {
         SeeAllStoresWidget(model = widget, checkinState = viewModel.checkInState.value, onClick = click)

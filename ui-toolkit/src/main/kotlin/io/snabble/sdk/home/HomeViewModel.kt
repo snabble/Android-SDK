@@ -7,24 +7,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.config.ConfigFileProviderImpl
-import io.snabble.sdk.config.ConfigRepository
-import io.snabble.sdk.data.RootDto
-import io.snabble.sdk.domain.ConfigMapperImpl
 import io.snabble.sdk.domain.Root
-import kotlinx.coroutines.delay
+import io.snabble.sdk.usecase.GetHomeConfigUseCase
+import io.snabble.sdk.usecase.GetPermissionStateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 class HomeViewModel : ViewModel() {
 
+    var permissionState = GetPermissionStateUseCase()()
+
     val checkInState: MutableState<Boolean>
         get() {
-            var state = mutableStateOf(Snabble.currentCheckedInShop.value != null)
-            Snabble.currentCheckedInShop.observeForever {
-                state = mutableStateOf(it != null)
+            val state = mutableStateOf(Snabble.currentCheckedInShop.value != null)
+            Snabble.currentCheckedInShop.observeForever { shop ->
+                state.value = shop != null
             }
             return state
         }
@@ -35,19 +33,13 @@ class HomeViewModel : ViewModel() {
         widgetEvent.postValue(string)
     }
 
-    private val state: MutableStateFlow<UiState> = MutableStateFlow(Loading)
-    val homeState: StateFlow<UiState> = state
+    private val _homeState: MutableStateFlow<UiState> = MutableStateFlow(Loading)
+    val homeState: StateFlow<UiState> = _homeState
 
     fun fetchHomeConfig(context: Context) {
-        val repo = ConfigRepository(
-            ConfigFileProviderImpl(context.resources.assets),
-            Json
-        )
         viewModelScope.launch {
-            delay(3500)
-            val rootDto = repo.getConfig<RootDto>("homeConfig.json")
-            val root = ConfigMapperImpl(context).mapTo(rootDto)
-            state.value = Finished(root)
+            val root = GetHomeConfigUseCase()(context)
+            _homeState.value = Finished(root)
         }
     }
 }
