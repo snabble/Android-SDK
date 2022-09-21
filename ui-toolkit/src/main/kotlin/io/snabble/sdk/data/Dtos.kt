@@ -29,8 +29,8 @@ sealed interface Widget {
 data class TextDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
-    @SerialName("textColorSource") val textColorSource: String? = null,
-    @SerialName("textStyleSource") val textStyleSource: String? = null,
+    @SerialName("textColor") val textColorSource: String? = null,
+    @SerialName("textStyle") val textStyleSource: String? = null,
     @SerialName("showDisclosure") val showDisclosure: Boolean? = null,
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget
@@ -43,6 +43,7 @@ data class ImageDto(
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget
 
+@Serializable
 @SerialName("button")
 data class ButtonDto(
     @SerialName("id") override val id: String,
@@ -52,6 +53,7 @@ data class ButtonDto(
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget
 
+@Serializable
 @SerialName("information")
 data class InformationDto(
     @SerialName("id") override val id: String,
@@ -61,6 +63,7 @@ data class InformationDto(
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget
 
+@Serializable
 @SerialName("purchases")
 data class PurchasesDto(
     @SerialName("id") override val id: String,
@@ -68,6 +71,7 @@ data class PurchasesDto(
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget
 
+@Serializable
 @SerialName("toggle")
 data class ToggleDto(
     @SerialName("id") override val id: String,
@@ -76,6 +80,7 @@ data class ToggleDto(
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget
 
+@Serializable
 @SerialName("section")
 data class SectionDto(
     @SerialName("id") override val id: String,
@@ -84,8 +89,23 @@ data class SectionDto(
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget
 
-@SerialName("locationPermission")
+@Serializable
+@SerialName("snabble.locationPermission")
 data class LocationPermissionDto(
+    @SerialName("id") override val id: String,
+    @SerialName("padding") override val padding: PaddingDto,
+) : Widget
+
+@Serializable
+@SerialName("snabble.startShopping")
+data class StartShoppingDto(
+    @SerialName("id") override val id: String,
+    @SerialName("padding") override val padding: PaddingDto,
+) : Widget
+
+@Serializable
+@SerialName("snabble.allstores")
+data class SeeAllStoresDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : Widget

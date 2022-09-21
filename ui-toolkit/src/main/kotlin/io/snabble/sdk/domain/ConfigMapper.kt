@@ -10,6 +10,8 @@ import io.snabble.sdk.data.PaddingDto
 import io.snabble.sdk.data.PurchasesDto
 import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.SectionDto
+import io.snabble.sdk.data.SeeAllStoresDto
+import io.snabble.sdk.data.StartShoppingDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.data.ToggleDto
 import io.snabble.sdk.utils.getComposeColor
@@ -43,10 +45,12 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
                 is TextDto -> toText(outerPadding)
                 is ButtonDto -> toButton(outerPadding)
                 is InformationDto -> TODO()
-                is LocationPermissionDto -> TODO()
+                is LocationPermissionDto -> toLocationPermission(outerPadding)
                 is PurchasesDto -> TODO()
                 is SectionDto -> TODO()
                 is ToggleDto -> TODO()
+                is SeeAllStoresDto -> toSeeAllStores(outerPadding)
+                is StartShoppingDto -> toStartShopping(outerPadding)
             }
         }
     }
@@ -71,6 +75,19 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         text = "${context.getResourceString(text)}",
         foregroundColorSource = context.resolveColorId(foregroundColorSource),
         backgroundColorSource = context.resolveColorId(backgroundColorSource),
+        padding = padding.toPadding() + outerPadding
+    )
+
+    private fun LocationPermissionDto.toLocationPermission(outerPadding: Padding): LocationPermissionItem = LocationPermissionItem(
+        id = id,
+        padding = padding.toPadding() + outerPadding
+    )
+    private fun SeeAllStoresDto.toSeeAllStores(outerPadding: Padding): SeeAllStoresItem = io.snabble.sdk.domain.SeeAllStoresItem(
+        id = id,
+        padding = padding.toPadding() + outerPadding
+    )
+    private fun StartShoppingDto.toStartShopping(outerPadding: Padding): StartShoppingItem = StartShoppingItem(
+        id = id,
         padding = padding.toPadding() + outerPadding
     )
 }
