@@ -103,6 +103,12 @@ fun Widget(
                 ),
                 Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
                 Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
+                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
+                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
+                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
+                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
+                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
+                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
             )
         )
     }

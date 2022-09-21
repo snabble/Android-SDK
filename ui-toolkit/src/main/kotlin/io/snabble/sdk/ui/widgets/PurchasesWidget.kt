@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.widgets
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,10 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.SizeMode
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
-import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 
 @Preview(
@@ -49,7 +48,7 @@ fun PurchasesPreview() {
         model = PurchasesItem(
             id = "last.purchases",
             projectId = ProjectId("0123"),
-            padding = Padding(horizontal = 16)
+            padding = Padding(horizontal = 0)
         ),
         purchases = listOf(
             Purchase(amount = "13,37 €", title = "Snabble Store Bonn", time = "Today"),
@@ -65,7 +64,7 @@ fun PurchasesPreview() {
             ),
             Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
             Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
-        )
+        ).subList(0, 5)
     )
 }
 
@@ -75,7 +74,9 @@ fun PurchasesWidget(
     purchases: List<Purchase>,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = model.padding.bottom.dp)
     ) {
         Text(
             text = "Previous purchases",
@@ -83,14 +84,21 @@ fun PurchasesWidget(
             modifier = Modifier
                 .padding(PaddingValues(horizontal = (model.padding.start + 8).dp))
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = model.padding.toPaddingValues(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        Spacer(modifier = Modifier.height(8.dp))
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = model.padding.start.dp,
+                    end = model.padding.start.dp,
+                    bottom = model.padding.start.dp,
+                ),
+            mainAxisSize = SizeMode.Expand,
+            mainAxisSpacing = 16.dp,
+            crossAxisSpacing = 16.dp
         ) {
-            items(items = purchases) { item ->
-                Purchase(item)
+            purchases.forEach { data ->
+                Purchase(data, padding = model.padding.start)
             }
         }
     }
@@ -102,9 +110,30 @@ data class Purchase(
     val time: String,
 )
 
+@Preview(
+    backgroundColor = 0xEBEBEB,
+    showBackground = true,
+)
+@Composable
+private fun PurchaseItemPreview() {
+    Purchase(
+        Purchase(
+            amount = "7,56 €",
+            title = "Snabble Store Bonn Dransdorf",
+            time = "Yesterday",
+        ),
+        2,
+        padding = 16,
+    )
+}
+
 @OptIn(ExperimentalUnitApi::class)
 @Composable
-private fun Purchase(data: Purchase) {
+private fun Purchase(
+    data: Purchase,
+    columns: Int = 2,
+    padding: Int,
+) {
     Surface(
         shadowElevation = 4.dp,
         shape = RoundedCornerShape(8.dp),
@@ -112,7 +141,7 @@ private fun Purchase(data: Purchase) {
     ) {
         ConstraintLayout(
             modifier = Modifier
-                .width(165.dp)
+                .width(calculateWidth(columns, padding).dp)
                 .wrapContentHeight()
                 .padding(PaddingValues(12.dp))
         ) {
@@ -172,3 +201,7 @@ private fun Purchase(data: Purchase) {
         }
     }
 }
+
+@Composable
+private fun calculateWidth(columns: Int, padding: Int): Float =
+    LocalConfiguration.current.screenWidthDp / columns - padding * (1 + 1f / columns)
