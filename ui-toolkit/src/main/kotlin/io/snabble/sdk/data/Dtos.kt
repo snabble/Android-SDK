@@ -104,7 +104,7 @@ data class StartShoppingDto(
 ) : Widget
 
 @Serializable
-@SerialName("snabble.allstores")
+@SerialName("snabble.allStores")
 data class SeeAllStoresDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,

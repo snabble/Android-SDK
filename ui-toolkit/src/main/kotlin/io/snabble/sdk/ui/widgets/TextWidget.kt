@@ -27,7 +27,7 @@ fun TextWidgetPreview() {
                 id = "1",
                 text = "Willkommen bei Snabble",
                 textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
-                textStyleSource = "header",
+                textStyleSource = "title",
                 showDisclosure = false,
                 padding = Padding(start = 16, top = 0, end = 16, bottom = 0),
             )
@@ -61,7 +61,7 @@ fun TextWidget(
             style = when (model.textStyleSource) {
                 "body" -> MaterialTheme.typography.bodyMedium
                 "footer" -> MaterialTheme.typography.bodySmall
-                "header" -> MaterialTheme.typography.headlineLarge
+                "title" -> MaterialTheme.typography.headlineLarge
                 else -> MaterialTheme.typography.bodyMedium
             }
         )

@@ -82,11 +82,7 @@ fun Widget(widget: Widget, click: WidgetClick) = when (widget) {
         LocationPermissionWidget(model = widget, permissionState = permissionIsGranted, onClick = click)
     }
     is SeeAllStoresItem -> {
-
-        val isCheckedIn: Boolean by remember {
-            GetCheckInStateUseCase().invoke()
-        }
-        SeeAllStoresWidget(model = widget, checkinState = isCheckedIn, onClick = click)
+        SeeAllStoresWidget(model = widget, checkinState = HomeViewModel.instance.checkInState.value, onClick = click)
     }
     is StartShoppingItem -> {
         StartShoppingWidget(model = widget, checkinState = HomeViewModel.instance.checkInState.value, onClick = click)

@@ -13,10 +13,6 @@ class HomeViewModel : ViewModel() {
         val instance = HomeViewModel()
     }
 
-    init {
-        Log.d("TAG", "im: $this ")
-    }
-
     val checkInState: MutableState<Boolean>
         get() {
             var state = mutableStateOf(Snabble.currentCheckedInShop.value != null)

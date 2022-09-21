@@ -1,31 +1,50 @@
 {
-  "configuration": {
-    "image": "home_default_background",
-    "style": "scroll",
-    "padding": [
+  "configuration":{
+    "image":"home_default_background",
+    "style":"scroll",
+    "padding":[
       16
     ]
   },
-  "widgets": [
+  "widgets":[
     {
-      "type": "text",
-      "id": "2",
-      "text": "Hello",
-      "textColor": "snabble_onboarding_primary",
-      "textStyle": "title",
-      "padding": [
+      "type":"text",
+      "id":"2",
+      "text":"Willkommen bei Snabble",
+      "textColor":"snabble_onboarding_primary",
+      "textStyle":"title",
+      "padding":[
         16
       ]
     },
     {
-      "type": "button",
-      "id": "2",
-      "text": "Hello",
-      "textColor": "snabble_onboarding_primary",
-      "textStyle": "title",
-      "padding": [
+      "type":"text",
+      "id":"3",
+      "text":"Snabble",
+      "padding":[
         16
       ]
-    }]
-
+    },
+    {
+      "type":"snabble.locationPermission",
+      "id":"location",
+      "padding":[
+        16
+      ]
+    },
+    {
+      "type":"snabble.startShopping",
+      "id":"start",
+      "padding":[
+        16
+      ]
+    },
+    {
+      "type":"snabble.allStores",
+      "id":"stores",
+      "padding":[
+        16,0
+      ]
+    }
+  ]
 }
