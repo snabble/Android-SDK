@@ -22,8 +22,7 @@ data class PaddingDto(
 @Serializable
 data class ConfigurationDto(
     @SerialName("image") val image: String,
-    @SerialName("style") val style: String,
-    @SerialName("padding") val padding: PaddingDto,
+    @SerialName("style") val style: String
 )
 
 @Serializable

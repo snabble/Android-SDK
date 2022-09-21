@@ -7,8 +7,7 @@ data class Root(
 
 data class Configuration(
     val image: Int?,
-    val style: String,
-    val padding: Padding,
+    val style: String
 )
 
 sealed interface Widget {

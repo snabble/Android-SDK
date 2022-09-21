@@ -1,10 +1,7 @@
 {
   "configuration":{
     "image":"home_default_background",
-    "style":"scroll",
-    "padding":[
-      0
-    ]
+    "style":"scroll"
   },
   "widgets":[
     {

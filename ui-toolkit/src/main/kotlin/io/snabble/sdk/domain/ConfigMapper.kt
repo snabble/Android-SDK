@@ -29,75 +29,67 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     override fun mapTo(rootDto: RootDto): Root = Root(
         configuration = rootDto.configuration.toConfiguration(),
-        widgets = rootDto.widgets.toWidgets(rootDto.configuration.padding.toPadding())
+        widgets = rootDto.widgets.toWidgets()
     )
 
     private fun ConfigurationDto.toConfiguration(): Configuration = Configuration(
         image = context.resolveImageId(image),
         style = style,
-        padding = padding.toPadding()
     )
 
-    private fun List<WidgetDto>.toWidgets(outerPadding: Padding): List<Widget> = map { widget ->
+    private fun List<WidgetDto>.toWidgets(): List<Widget> = map { widget ->
         with(widget) {
             when (this) {
-                is ImageDto -> toImage(outerPadding)
-                is TextDto -> toText(outerPadding)
-                is ButtonDto -> toButton(outerPadding)
+                is ImageDto -> toImage()
+                is TextDto -> toText()
+                is ButtonDto -> toButton()
                 is InformationDto -> TODO()
-                is LocationPermissionDto -> toLocationPermission(outerPadding)
+                is LocationPermissionDto -> toLocationPermission()
                 is PurchasesDto -> TODO()
                 is SectionDto -> TODO()
                 is ToggleDto -> TODO()
-                is SeeAllStoresDto -> toSeeAllStores(outerPadding)
-                is StartShoppingDto -> toStartShopping(outerPadding)
+                is SeeAllStoresDto -> toSeeAllStores()
+                is StartShoppingDto -> toStartShopping()
             }
         }
     }
 
-    private fun TextDto.toText(outerPadding: Padding): TextItem = TextItem(
+    private fun TextDto.toText(): TextItem = TextItem(
         id = id,
         text = text,
         textColorSource = context.getComposeColor(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
-        padding = padding.toPadding() + outerPadding
+        padding = padding.toPadding()
     )
 
-    private fun ImageDto.toImage(outerPadding: Padding): ImageItem = ImageItem(
+    private fun ImageDto.toImage(): ImageItem = ImageItem(
         id = id,
         imageSource = context.resolveImageId(imageSource),
-        padding = padding.toPadding() + outerPadding
+        padding = padding.toPadding()
     )
 
-    private fun ButtonDto.toButton(outerPadding: Padding): ButtonItem = ButtonItem(
+    private fun ButtonDto.toButton(): ButtonItem = ButtonItem(
         id = id,
         text = "${context.getResourceString(text)}",
         foregroundColorSource = context.resolveColorId(foregroundColorSource),
         backgroundColorSource = context.resolveColorId(backgroundColorSource),
-        padding = padding.toPadding() + outerPadding
+        padding = padding.toPadding()
     )
 
-    private fun LocationPermissionDto.toLocationPermission(outerPadding: Padding): LocationPermissionItem = LocationPermissionItem(
+    private fun LocationPermissionDto.toLocationPermission(): LocationPermissionItem = LocationPermissionItem(
         id = id,
-        padding = padding.toPadding() + outerPadding
+        padding = padding.toPadding()
     )
-    private fun SeeAllStoresDto.toSeeAllStores(outerPadding: Padding): SeeAllStoresItem = io.snabble.sdk.domain.SeeAllStoresItem(
+    private fun SeeAllStoresDto.toSeeAllStores(): SeeAllStoresItem = io.snabble.sdk.domain.SeeAllStoresItem(
         id = id,
-        padding = padding.toPadding() + outerPadding
+        padding = padding.toPadding()
     )
-    private fun StartShoppingDto.toStartShopping(outerPadding: Padding): StartShoppingItem = StartShoppingItem(
+    private fun StartShoppingDto.toStartShopping(): StartShoppingItem = StartShoppingItem(
         id = id,
-        padding = padding.toPadding() + outerPadding
+        padding = padding.toPadding()
     )
 }
 
 private fun PaddingDto.toPadding() = Padding(start, top, end, bottom)
 
-private operator fun Padding.plus(other: Padding): Padding =
-    Padding(
-        start + other.start,
-        top + other.top,
-        end + other.end,
-        bottom + other.bottom
-    )

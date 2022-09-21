@@ -25,8 +25,7 @@ internal class ConfigRepositoryTest : FreeSpec({
     fun createJson(widgetsJson: String = "[]"): String = """{
               "configuration": {
                 "image": "home_default_background",
-                "style": "scroll",
-                "padding": [ 16 ]
+                "style": "scroll"
               },
               "widgets": $widgetsJson
             }"""
@@ -44,8 +43,7 @@ internal class ConfigRepositoryTest : FreeSpec({
 
             config.configuration shouldBe ConfigurationDto(
                 image = "home_default_background",
-                style = "scroll",
-                padding = PaddingDto(16, 16, 16, 16)
+                style = "scroll"
             )
         }
 
