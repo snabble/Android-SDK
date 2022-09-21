@@ -23,7 +23,6 @@ import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
-import io.snabble.sdk.usecase.GetCheckInStateUseCase
 import io.snabble.sdk.usecase.GetPermissionStateUseCase
 
 typealias WidgetClick = (id: String) -> Unit

@@ -3,47 +3,57 @@
     "image":"home_default_background",
     "style":"scroll",
     "padding":[
-      16
+      0
     ]
   },
   "widgets":[
     {
       "type":"text",
       "id":"2",
-      "text":"Willkommen bei Snabble",
+      "text":"Willkommen bei \nSnabble",
       "textColor":"snabble_onboarding_primary",
       "textStyle":"title",
       "padding":[
-        16
+        16,16,5,16
       ]
     },
     {
       "type":"text",
       "id":"3",
-      "text":"Snabble",
+      "text":"Begib dich zum Einkaufen in den nächsten Shop.",
+      "textStyle":"body",
       "padding":[
-        16
+        16,0,5,16
+      ]
+    },
+    {
+      "type":"text",
+      "id":"4",
+      "text":"Scanne Produkte und bezahle direkt über die App! Alles bequem, schnell und einfach.",
+      "textStyle":"footer",
+      "padding":[
+        16,0,5,16
       ]
     },
     {
       "type":"snabble.locationPermission",
       "id":"location",
       "padding":[
-        16
+        16,0,5,16
       ]
     },
     {
       "type":"snabble.startShopping",
       "id":"start",
       "padding":[
-        16
+        16,0,5,16
       ]
     },
     {
       "type":"snabble.allStores",
       "id":"stores",
       "padding":[
-        16,0
+        16,0,5,16
       ]
     }
   ]
