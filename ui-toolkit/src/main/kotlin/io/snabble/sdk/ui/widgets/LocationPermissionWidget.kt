@@ -18,7 +18,7 @@ fun LocationPermissionPreview() {
     LocationPermissionWidget(
         model = LocationPermissionItem(
             id = "1",
-            padding = Padding(start = 16, top = 5, end = 16, bottom = 5)
+            padding = Padding(horizontal = 16, vertical = 5)
         ),
         permissionState = false
     )

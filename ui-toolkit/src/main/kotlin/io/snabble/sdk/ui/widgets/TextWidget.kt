@@ -28,7 +28,7 @@ fun TextWidgetPreview() {
                 textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
                 textStyleSource = "title",
                 showDisclosure = false,
-                padding = Padding(start = 16, top = 0, end = 16, bottom = 0),
+                padding = Padding(horizontal = 16),
             )
         )
         TextWidget(
@@ -38,7 +38,7 @@ fun TextWidgetPreview() {
                 textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
                 textStyleSource = "body",
                 showDisclosure = false,
-                padding = Padding(start = 16, top = 0, end = 16, bottom = 0),
+                padding = Padding(horizontal = 16),
             )
         )
     }

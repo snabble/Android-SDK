@@ -90,10 +90,10 @@ data class StartShoppingItem(
 ) : Widget
 
 data class Padding(
-    val start: Int,
-    val top: Int,
-    val end: Int,
-    val bottom: Int,
+    val start: Int = 0,
+    val top: Int = 0,
+    val end: Int = 0,
+    val bottom: Int = 0,
 ) {
 
     constructor(all: Int)
