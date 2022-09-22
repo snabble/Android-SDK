@@ -2,6 +2,7 @@ package io.snabble.sdk.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ImageItem
@@ -44,6 +46,7 @@ fun DynamicView(
         background()
 
         LazyColumn(
+            contentPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .fillMaxSize()
         ) {
@@ -89,26 +92,13 @@ fun Widget(
         PurchasesWidget(
             model = widget,
             // TODO: State!!
-            purchases = listOf(
+            purchaseList = listOf(
                 Purchase(amount = "13,37 €", title = "Snabble Store Bonn", time = "Today"),
                 Purchase(
                     amount = "7,56 €",
                     title = "Snabble Store Bonn Dransdorf",
                     time = "Yesterday"
                 ),
-                Purchase(
-                    amount = "42,08 €",
-                    title = "Snabble Store Bonn Bad Godesberg",
-                    time = "Two days Ago"
-                ),
-                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
-                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
-                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
-                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
-                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
-                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
-                Purchase(amount = "156,87 €", title = "Snabble Store Koblenz", time = "Last week"),
-                Purchase(amount = "20,01 €", title = "Snabble Store London", time = "Last month"),
             )
         )
     }

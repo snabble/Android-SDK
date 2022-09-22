@@ -80,7 +80,7 @@ fun HomeScreenPreview() {
                 PurchasesItem(
                     id = "last.purchases",
                     projectId = ProjectId("0123"),
-                    padding = Padding(horizontal = 16),
+                    padding = Padding(0),
                 )
             )
         ),
