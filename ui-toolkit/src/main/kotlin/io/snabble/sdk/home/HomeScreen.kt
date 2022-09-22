@@ -37,7 +37,6 @@ fun HomeScreenPreview() {
             configuration = Configuration(
                 image = R.drawable.home_default_background,
                 style = "",
-                padding = Padding(horizontal = 8, vertical = 0),
             ),
             widgets = listOf(
                 TextItem(
