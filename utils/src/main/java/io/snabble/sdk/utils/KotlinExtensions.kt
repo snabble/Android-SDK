@@ -33,7 +33,8 @@ fun Context.getImageId(resource: String): Int =
  * Resolves the given into image string into resource identifier
  * returns the id if found else null
  */
-fun Context.resolveImageId(resource: String): Int? {
+fun Context.resolveImageId(resource: String?): Int? {
+    resource?: return null
     val resId = getImageId(resource)
     return if (resId != Resources.ID_NULL) resId else null
 }

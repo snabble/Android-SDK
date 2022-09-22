@@ -56,7 +56,15 @@ data class InformationDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("imageSource") val imageSource: String? = null,
-    @SerialName("hideable") val hideable: Boolean? = null,
+    @SerialName("padding") override val padding: PaddingDto,
+) : WidgetDto
+
+@Serializable
+@SerialName("snabble.customerCard")
+data class CustomerCardDto(
+    @SerialName("id") override val id: String,
+    @SerialName("text") val text: String,
+    @SerialName("imageSource") val imageSource: String? = null,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto
 

@@ -3,6 +3,7 @@ package io.snabble.sdk.domain
 import android.content.Context
 import io.snabble.sdk.data.ButtonDto
 import io.snabble.sdk.data.ConfigurationDto
+import io.snabble.sdk.data.CustomerCardDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
@@ -43,13 +44,14 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
                 is ImageDto -> toImage()
                 is TextDto -> toText()
                 is ButtonDto -> toButton()
-                is InformationDto -> TODO()
+                is InformationDto -> toInformation()
+                is CustomerCardDto -> toCustomCardItem()
                 is LocationPermissionDto -> toLocationPermission()
+                is SeeAllStoresDto -> toSeeAllStores()
+                is StartShoppingDto -> toStartShopping()
                 is PurchasesDto -> TODO()
                 is SectionDto -> TODO()
                 is ToggleDto -> TODO()
-                is SeeAllStoresDto -> toSeeAllStores()
-                is StartShoppingDto -> toStartShopping()
             }
         }
     }
@@ -77,14 +79,30 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         padding = padding.toPadding()
     )
 
+    private fun InformationDto.toInformation(): InformationItem = InformationItem(
+        id = id,
+        text = text,
+        imageSource = context.resolveImageId(imageSource),
+        padding = padding.toPadding()
+    )
+
+    private fun CustomerCardDto.toCustomCardItem(): CustomerCardItem = CustomerCardItem(
+        id = id,
+        text = text,
+        imageSource = context.resolveImageId(imageSource),
+        padding = padding.toPadding()
+    )
+
     private fun LocationPermissionDto.toLocationPermission(): LocationPermissionItem = LocationPermissionItem(
         id = id,
         padding = padding.toPadding()
     )
+
     private fun SeeAllStoresDto.toSeeAllStores(): SeeAllStoresItem = io.snabble.sdk.domain.SeeAllStoresItem(
         id = id,
         padding = padding.toPadding()
     )
+
     private fun StartShoppingDto.toStartShopping(): StartShoppingItem = StartShoppingItem(
         id = id,
         padding = padding.toPadding()
@@ -92,4 +110,11 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 }
 
 private fun PaddingDto.toPadding() = Padding(start, top, end, bottom)
+
+fun CustomerCardItem.toInformationItem(): InformationItem = InformationItem(
+    id = id,
+    text = text,
+    imageSource = imageSource,
+    padding = padding
+)
 

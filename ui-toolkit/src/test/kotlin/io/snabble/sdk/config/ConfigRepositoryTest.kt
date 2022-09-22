@@ -7,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.snabble.sdk.data.ButtonDto
 import io.snabble.sdk.data.ConfigurationDto
+import io.snabble.sdk.data.CustomerCardDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
@@ -103,7 +104,6 @@ internal class ConfigRepositoryTest : FreeSpec({
                             "id": "info",
                             "text": "Some useful information here.",
                             "imageSource": "snabble_logo",
-                            "hideable": true,
                             "padding": [ 16, 12, 4, 16 ]
                           }]"""
                     )
@@ -112,7 +112,26 @@ internal class ConfigRepositoryTest : FreeSpec({
                     id = "info",
                     text = "Some useful information here.",
                     imageSource = "snabble_logo",
-                    hideable = true,
+                    padding = PaddingDto(start = 16, top = 12, end = 16, bottom = 4)
+                )
+            }
+
+            "a customer card"{
+                val sut = createSut(
+                    createJson(
+                        """[{
+                            "type": "snabble.customerCard",
+                            "id": "info",
+                            "text": "Some useful information here.",
+                            "imageSource": "snabble_logo",
+                            "padding": [ 16, 12, 4, 16 ]
+                          }]"""
+                    )
+                )
+                sut.getConfig<RootDto>("").widgets.first() shouldBe CustomerCardDto(
+                    id = "info",
+                    text = "Some useful information here.",
+                    imageSource = "snabble_logo",
                     padding = PaddingDto(start = 16, top = 12, end = 16, bottom = 4)
                 )
             }

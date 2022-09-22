@@ -39,3 +39,11 @@ class GetHomeConfigUseCase {
 
     }
 }
+
+class GetCustomerCardInfo() {
+
+    operator fun invoke(): MutableState<Boolean> {
+        // TODO: Evaluate wether to take checkedInProject or like given
+        return mutableStateOf(Snabble.projects.first().customerCardInfo.isNotEmpty())
+    }
+}

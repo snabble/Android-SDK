@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.domain.Root
+import io.snabble.sdk.usecase.GetCustomerCardInfo
 import io.snabble.sdk.usecase.GetHomeConfigUseCase
 import io.snabble.sdk.usecase.GetPermissionStateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,8 @@ class HomeViewModel : ViewModel() {
             }
             return state
         }
+
+    val customerCardVisibilityState = GetCustomerCardInfo()()
 
     var widgetEvent = MutableLiveData<String>()
 

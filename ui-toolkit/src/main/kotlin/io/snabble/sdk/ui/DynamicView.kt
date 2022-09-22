@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.ButtonItem
+import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.ImageItem
+import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
@@ -17,7 +19,9 @@ import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.home.HomeViewModel
 import io.snabble.sdk.ui.widgets.ButtonWidget
+import io.snabble.sdk.ui.widgets.CustomerCardWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
+import io.snabble.sdk.ui.widgets.InformationWidget
 import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
@@ -75,13 +79,38 @@ fun Widget(
         )
     }
     is LocationPermissionItem -> {
-        LocationPermissionWidget(model = widget, permissionState = viewModel.permissionState.value, onClick = click)
+        LocationPermissionWidget(
+            model = widget,
+            permissionState = viewModel.permissionState.value,
+            onClick = click
+        )
     }
     is SeeAllStoresItem -> {
-        SeeAllStoresWidget(model = widget, checkinState = viewModel.checkInState.value, onClick = click)
+        SeeAllStoresWidget(
+            model = widget,
+            checkinState = viewModel.checkInState.value,
+            onClick = click
+        )
     }
     is StartShoppingItem -> {
-        StartShoppingWidget(model = widget, checkinState = viewModel.checkInState.value, onClick = click)
+        StartShoppingWidget(
+            model = widget,
+            checkinState = viewModel.checkInState.value,
+            onClick = click
+        )
+    }
+    is CustomerCardItem -> {
+        CustomerCardWidget(
+            model = widget,
+            isVisible = viewModel.customerCardVisibilityState.value,
+            modifier = Modifier
+                .clickable { click(widget.id) })
+    }
+    is InformationItem -> {
+        InformationWidget(
+            model = widget,
+            modifier = Modifier
+                .clickable { click(widget.id) })
     }
     else -> {}
 }
