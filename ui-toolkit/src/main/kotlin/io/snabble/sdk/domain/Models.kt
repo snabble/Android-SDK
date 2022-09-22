@@ -43,7 +43,7 @@ data class ButtonItem(
     override val padding: Padding,
 ) : Widget, HasText
 
-data class InformationItemItem(
+data class InformationItem(
     override val id: String,
     override val text: String,
     val imageSource: Int?,
