@@ -10,6 +10,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.domain.Root
 import io.snabble.sdk.usecase.GetHomeConfigUseCase
 import io.snabble.sdk.usecase.GetPermissionStateUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -38,6 +39,7 @@ class HomeViewModel : ViewModel() {
 
     fun fetchHomeConfig(context: Context) {
         viewModelScope.launch {
+            delay(5_000)
             val root = GetHomeConfigUseCase()(context)
             _homeState.value = Finished(root)
         }
