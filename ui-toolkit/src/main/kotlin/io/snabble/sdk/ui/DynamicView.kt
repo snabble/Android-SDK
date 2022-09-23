@@ -15,7 +15,7 @@ import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
-import io.snabble.sdk.home.HomeViewModel
+import io.snabble.sdk.home.viewmodel.HomeViewModel
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.LocationPermissionWidget
@@ -75,13 +75,25 @@ fun Widget(
         )
     }
     is LocationPermissionItem -> {
-        LocationPermissionWidget(model = widget, permissionState = viewModel.permissionState.value, onClick = click)
+        LocationPermissionWidget(
+            model = widget,
+            permissionState = viewModel.permissionState.value,
+            onClick = click
+        )
     }
     is SeeAllStoresItem -> {
-        SeeAllStoresWidget(model = widget, checkinState = viewModel.checkInState.value, onClick = click)
+        SeeAllStoresWidget(
+            model = widget,
+            checkinState = viewModel.checkInState.value,
+            onClick = click
+        )
     }
     is StartShoppingItem -> {
-        StartShoppingWidget(model = widget, checkinState = viewModel.checkInState.value, onClick = click)
+        StartShoppingWidget(
+            model = widget,
+            checkinState = viewModel.checkInState.value,
+            onClick = click
+        )
     }
     else -> {}
 }

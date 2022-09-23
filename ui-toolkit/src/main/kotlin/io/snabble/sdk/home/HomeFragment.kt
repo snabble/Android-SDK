@@ -1,7 +1,6 @@
 package io.snabble.sdk.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,17 +10,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toolkit.R
 
-class HomeFragment : Fragment(), WidgetClick {
+class HomeFragment : Fragment() {
 
     private lateinit var composeView: ComposeView
-
-    private val viewModel: HomeViewModel by viewModels(ownerProducer = ::requireActivity)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,18 +25,11 @@ class HomeFragment : Fragment(), WidgetClick {
 
         composeView = findViewById(R.id.composable)
 
-        viewModel.fetchHomeConfig(context)
-
         composeView.setContent {
             ViewModelStoreOwnerLocalProvider {
-                // HomeScreen(onClick = this@HomeFragment)
                 HomeScreen()
             }
         }
-    }
-
-    override fun invoke(id: String) {
-        Log.i("HomeFragment", "Widget w/ id $id clicked.")
     }
 
     override fun onStart() {

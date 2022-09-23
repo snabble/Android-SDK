@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.LocationPermissionItem
@@ -26,12 +26,78 @@ import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.home.viewmodel.Error
+import io.snabble.sdk.home.viewmodel.Finished
+import io.snabble.sdk.home.viewmodel.HomeViewModel
+import io.snabble.sdk.home.viewmodel.Loading
 import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.utils.getComposeColor
+import org.koin.androidx.compose.getViewModel
+
+@Composable
+private fun Home(
+    homeConfig: Root,
+    onClick: WidgetClick
+) {
+    DynamicView(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Color(
+                    LocalContext.current.getComposeColor("snabble_background") ?: Magenta.toArgb()
+                )
+            ),
+        background = {
+            if (homeConfig.configuration.image != null) {
+                ImageWidget(
+                    model = ImageItem(
+                        "background.image",
+                        homeConfig.configuration.image,
+                        Padding(all = 0)
+                    ),
+                    contentScale = ContentScale.Fit,
+                )
+            }
+        },
+        widgets = homeConfig.widgets,
+        onClick = onClick,
+    )
+}
+
+@Composable
+fun HomeScreen(
+    viewModel: HomeViewModel = getViewModel(scope = KoinProvider.scope)
+    // FIXME: Delete me!
+    // viewModel: HomeViewModel = viewModel(
+    //     factory = HomeViewModelFactory(
+    //         GetPermissionStateUseCase(),
+    //         GetHomeConfigUseCase(LocalContext.current)
+    //     )
+    // )
+) {
+    when (val state = viewModel.homeState.collectAsState().value) {
+        Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .align(Alignment.Center),
+                    color = AppTheme.colors.snabble_primaryColor
+                )
+            }
+        }
+        is Finished -> {
+            Home(state.root, viewModel::onClick)
+        }
+        is Error -> {
+            Toast.makeText(LocalContext.current, state.e.message, Toast.LENGTH_LONG).show()
+        }
+    }
+}
 
 @Preview(
     backgroundColor = 0xFFFFFF,
@@ -87,59 +153,4 @@ fun HomePreview() {
         ),
         onClick = {}
     )
-}
-
-@Composable
-private fun Home(
-    homeConfig: Root,
-    onClick: WidgetClick
-) {
-    DynamicView(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Color(
-                    LocalContext.current.getComposeColor("snabble_background") ?: Magenta.toArgb()
-                )
-            ),
-        background = {
-            if (homeConfig.configuration.image != null) {
-                ImageWidget(
-                    model = ImageItem(
-                        "background.image",
-                        homeConfig.configuration.image,
-                        Padding(all = 0)
-                    ),
-                    contentScale = ContentScale.Fit,
-                )
-            }
-        },
-        widgets = homeConfig.widgets,
-        onClick = onClick,
-    )
-}
-
-@Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(),
-    onClick: WidgetClick? = null,
-) {
-    when (val state = viewModel.homeState.collectAsState().value) {
-        Loading -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .align(Alignment.Center),
-                    color = AppTheme.colors.snabble_primaryColor
-                )
-            }
-        }
-        is Finished -> {
-            Home(state.root, onClick ?: viewModel::onClick)
-        }
-        is Error -> {
-            Toast.makeText(LocalContext.current, state.e.message, Toast.LENGTH_LONG).show()
-        }
-    }
 }

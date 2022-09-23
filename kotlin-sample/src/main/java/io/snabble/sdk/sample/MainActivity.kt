@@ -25,12 +25,19 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.home.HomeViewModel
+import io.snabble.sdk.config.ConfigFileProviderImpl
+import io.snabble.sdk.config.ConfigRepository
+import io.snabble.sdk.domain.ConfigMapperImpl
+import io.snabble.sdk.home.viewmodel.HomeViewModel
+import io.snabble.sdk.home.viewmodel.HomeViewModelFactory
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.sample.utils.PermissionSupport
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.usecases.GetHomeConfigUseCase
+import io.snabble.sdk.usecases.GetPermissionStateUseCase
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 class MainActivity : AppCompatActivity(), PermissionSupport {
 
@@ -38,7 +45,22 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
 
     private lateinit var locationManager: CheckInLocationManager
 
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels(
+        factoryProducer = {
+            HomeViewModelFactory(
+                GetPermissionStateUseCase(),
+                GetHomeConfigUseCase(
+                    configRepository = ConfigRepository(
+                        fileProvider = ConfigFileProviderImpl(
+                            assets
+                        ),
+                        json = Json { ignoreUnknownKeys = true }
+                    ),
+                    configMapper = ConfigMapperImpl(this)
+                )
+            )
+        }
+    )
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())

@@ -1,6 +1,5 @@
-package io.snabble.sdk.home
+package io.snabble.sdk.home.viewmodel
 
-import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
@@ -8,16 +7,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.domain.Root
-import io.snabble.sdk.usecase.GetHomeConfigUseCase
-import io.snabble.sdk.usecase.GetPermissionStateUseCase
+import io.snabble.sdk.usecases.GetHomeConfigUseCase
+import io.snabble.sdk.usecases.GetPermissionStateUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel internal constructor(
+    getPermissionState: GetPermissionStateUseCase,
+    private val getHomeConfig: GetHomeConfigUseCase,
+) : ViewModel() {
 
-    var permissionState = GetPermissionStateUseCase()()
+    init {
+        fetchHomeConfig()
+    }
+
+    var permissionState = getPermissionState()
 
     val checkInState: MutableState<Boolean>
         get() {
@@ -37,10 +43,10 @@ class HomeViewModel : ViewModel() {
     private val _homeState: MutableStateFlow<UiState> = MutableStateFlow(Loading)
     val homeState: StateFlow<UiState> = _homeState
 
-    fun fetchHomeConfig(context: Context) {
+    private fun fetchHomeConfig() {
         viewModelScope.launch {
             delay(5_000)
-            val root = GetHomeConfigUseCase()(context)
+            val root = getHomeConfig()
             _homeState.value = Finished(root)
         }
     }
