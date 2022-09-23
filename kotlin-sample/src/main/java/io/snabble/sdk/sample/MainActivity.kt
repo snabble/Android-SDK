@@ -2,6 +2,7 @@ package io.snabble.sdk.sample
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -13,6 +14,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -211,19 +213,26 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
             this@MainActivity,
             SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
         ) { _, _ ->
-            popBackStack()
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
-        ) { _, args ->
-            navigate(R.id.navigation_shops_details, args)
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
-        ) { _, _ ->
             navBarView.selectedItemId = R.id.navigation_scanner
+        }
+        SnabbleUiToolkit.setUiAction(
+            this@MainActivity,
+            SnabbleUiToolkit.Event.SHOW_DEEPLINK
+        ) { _, args ->
+            val uri = Uri.parse(requireNotNull(args?.getString(SnabbleUiToolkit.DEEPLINK)))
+            navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
+        }
+        SnabbleUiToolkit.setUiAction(
+            this@MainActivity,
+            SnabbleUiToolkit.Event.SHOW_ONBOARDING
+        ) { _, args ->
+            navigate(R.id.frag_onboarding, args)
+        }
+        SnabbleUiToolkit.setUiAction(
+            this@MainActivity,
+            SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
+        ) { _, _ ->
+            popBackStack()
         }
 
         // listens to permission result and start tracking if permission is granted
