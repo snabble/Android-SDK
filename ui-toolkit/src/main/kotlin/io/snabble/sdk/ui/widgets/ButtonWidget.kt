@@ -53,7 +53,7 @@ fun ButtonWidget(
             .padding(model.padding.toPaddingValues())
     ) {
         Button(
-            onClick = { onClick(model.id) },
+            onClick = { onClick },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(
                     model.backgroundColorSource ?: MaterialTheme.colors.primary.toArgb()

@@ -103,14 +103,12 @@ fun Widget(
         CustomerCardWidget(
             model = widget,
             isVisible = viewModel.customerCardVisibilityState.value,
-            modifier = Modifier
-                .clickable { click(widget.id) })
+            onClick = { click(widget.id) })
     }
     is InformationItem -> {
         InformationWidget(
             model = widget,
-            modifier = Modifier
-                .clickable { click(widget.id) })
+            onclick = { click(widget.id) })
     }
     else -> {}
 }

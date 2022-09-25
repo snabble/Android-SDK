@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.toInformationItem
+import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toolkit.R
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
@@ -19,7 +20,8 @@ fun CustomerCardWidgetPreview() {
             imageSource = R.drawable.store_logo,
             padding = Padding(start = 8, top = 8, end = 8, bottom = 8),
         ),
-        isVisible = true
+        isVisible = true,
+        onClick = {}
     )
 }
 
@@ -27,10 +29,11 @@ fun CustomerCardWidgetPreview() {
 fun CustomerCardWidget(
     modifier: Modifier = Modifier,
     isVisible: Boolean = true,
-    model: CustomerCardItem
+    model: CustomerCardItem,
+    onClick: WidgetClick
 ) {
     if (isVisible) {
-        InformationWidget(model = (model.toInformationItem()), modifier = modifier)
+        InformationWidget(model = (model.toInformationItem()), onclick = onClick)
     }
 }
 
