@@ -5,8 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.Padding
-import io.snabble.sdk.domain.toInformationItem
 import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.toInformationItem
 import io.snabble.sdk.ui.toolkit.R
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)

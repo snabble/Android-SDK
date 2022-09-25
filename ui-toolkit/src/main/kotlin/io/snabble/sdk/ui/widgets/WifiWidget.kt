@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.domain.InformationItem
+import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.WidgetClick
@@ -35,23 +36,23 @@ import io.snabble.sdk.ui.toolkit.R
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun InformationWidgetPreview() {
-    InformationWidget(
-        model = InformationItem(
-            id = "an.image",
-            text = "Füge deine Kundenkarte hinzu.",
-            imageSource = R.drawable.store_logo,
+fun WifiWidgetPreview() {
+    ConnectWifiWidget(
+        model = ConnectWifiItem(
+            id = "wifiii",
             padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
         ),
-        onclick = {}
+        onclick = {},
+        isVisible = true
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InformationWidget(
+fun ConnectWifiWidget(
     modifier: Modifier = Modifier,
-    model: InformationItem,
+    model: ConnectWifiItem,
+    isVisible: Boolean,
     onclick: WidgetClick
 ) {
     CompositionLocalProvider(
@@ -82,18 +83,22 @@ fun InformationWidget(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(model.padding.toPaddingValues()),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                if (model.imageSource != null) {
-                    Image(
-                        modifier = Modifier
-                            .padding(end = 16.dp),
-                        contentScale = ContentScale.Fit,
-                        painter = painterResource(id = model.imageSource),
-                        contentDescription = "",
-                    )
-                }
-                Text(text = model.text, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "connect to Wifi",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Image(
+                    modifier = Modifier
+                        .padding(start = 16.dp),
+                    contentScale = ContentScale.Fit,
+                    painter = painterResource(id = R.drawable.snabble_wifi),
+                    contentDescription = "",
+                )
+
             }
         }
     }

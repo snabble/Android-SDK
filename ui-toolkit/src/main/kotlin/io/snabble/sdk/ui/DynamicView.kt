@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.ButtonItem
+import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.InformationItem
@@ -19,6 +20,7 @@ import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.home.HomeViewModel
 import io.snabble.sdk.ui.widgets.ButtonWidget
+import io.snabble.sdk.ui.widgets.ConnectWifiWidget
 import io.snabble.sdk.ui.widgets.CustomerCardWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.InformationWidget
@@ -109,6 +111,13 @@ fun Widget(
         InformationWidget(
             model = widget,
             onclick = { click(widget.id) })
+    }
+    is ConnectWifiItem -> {
+        ConnectWifiWidget(
+            model = widget,
+            onclick = { click(widget.id) },
+            isVisible = true
+        )
     }
     else -> {}
 }

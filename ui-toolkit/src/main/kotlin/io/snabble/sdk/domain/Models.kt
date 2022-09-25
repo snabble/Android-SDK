@@ -7,7 +7,8 @@ data class Root(
 
 data class Configuration(
     val image: Int?,
-    val style: String
+    val style: String,
+    val padding: Padding
 )
 
 sealed interface Widget {
@@ -88,6 +89,11 @@ data class SeeAllStoresItem(
 ) : Widget
 
 data class StartShoppingItem(
+    override val id: String,
+    override val padding: Padding
+) : Widget
+
+data class ConnectWifiItem(
     override val id: String,
     override val padding: Padding
 ) : Widget

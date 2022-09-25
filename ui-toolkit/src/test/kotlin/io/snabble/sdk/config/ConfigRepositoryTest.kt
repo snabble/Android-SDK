@@ -7,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.snabble.sdk.data.ButtonDto
 import io.snabble.sdk.data.ConfigurationDto
+import io.snabble.sdk.data.ConnectWifiDto
 import io.snabble.sdk.data.CustomerCardDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
@@ -26,7 +27,8 @@ internal class ConfigRepositoryTest : FreeSpec({
     fun createJson(widgetsJson: String = "[]"): String = """{
               "configuration": {
                 "image": "home_default_background",
-                "style": "scroll"
+                "style": "scroll",
+                "padding": [ 16 ]
               },
               "widgets": $widgetsJson
             }"""
@@ -44,7 +46,8 @@ internal class ConfigRepositoryTest : FreeSpec({
 
             config.configuration shouldBe ConfigurationDto(
                 image = "home_default_background",
-                style = "scroll"
+                style = "scroll",
+                padding = PaddingDto(16, 16, 16, 16)
             )
         }
 
@@ -148,6 +151,22 @@ internal class ConfigRepositoryTest : FreeSpec({
                 )
                 sut.getConfig<RootDto>("").widgets.first() shouldBe LocationPermissionDto(
                     id = "location_permission",
+                    padding = PaddingDto(16, 16, 16, 16)
+                )
+            }
+
+            "a connect wifi widget" {
+                val sut = createSut(
+                    createJson(
+                        """[{
+                            "type": "snabble.connectWifi",
+                            "id": "connect_wifi",
+                            "padding": [ 16 ]
+                          }]"""
+                    )
+                )
+                sut.getConfig<RootDto>("").widgets.first() shouldBe ConnectWifiDto(
+                    id = "connect_wifi",
                     padding = PaddingDto(16, 16, 16, 16)
                 )
             }

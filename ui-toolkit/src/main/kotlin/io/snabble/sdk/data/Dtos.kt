@@ -22,7 +22,8 @@ data class PaddingDto(
 @Serializable
 data class ConfigurationDto(
     @SerialName("image") val image: String,
-    @SerialName("style") val style: String
+    @SerialName("style") val style: String,
+    @SerialName("padding") val padding: PaddingDto,
 )
 
 @Serializable
@@ -102,6 +103,13 @@ data class SeeAllStoresDto(
 @Serializable
 @SerialName("snabble.startShopping")
 data class StartShoppingDto(
+    @SerialName("id") override val id: String,
+    @SerialName("padding") override val padding: PaddingDto,
+) : WidgetDto
+
+@Serializable
+@SerialName("snabble.connectWifi")
+data class ConnectWifiDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto

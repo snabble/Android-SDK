@@ -15,6 +15,7 @@ import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.TextDto
 import io.snabble.sdk.domain.ConfigMapperImpl
 import io.snabble.sdk.domain.ImageItem
+import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.resolveImageId
@@ -35,7 +36,8 @@ internal class ConfigMapperTest : FreeSpec({
             val rootDto = RootDto(
                 ConfigurationDto(
                     image = "R.drawable.abc",
-                    style = ""
+                    style = "",
+                    padding = PaddingDto(0, 0, 0, 0)
                 ),
                 emptyList()
             )
@@ -47,6 +49,9 @@ internal class ConfigMapperTest : FreeSpec({
 
                 "image"{
                     sut.configuration.image shouldBe 5
+                }
+                "padding"{
+                    sut.configuration.padding shouldBe Padding(0, 0, 0, 0)
                 }
                 "style"{
                     sut.configuration.style shouldBe ""
@@ -74,7 +79,8 @@ internal class ConfigMapperTest : FreeSpec({
             val rootDto = RootDto(
                 ConfigurationDto(
                     image = "R.drawable.abc",
-                    style = ""
+                    style = "",
+                    padding = PaddingDto(0, 0, 0, 0)
                 ),
                 listOf(imageDto, textDto)
             )
