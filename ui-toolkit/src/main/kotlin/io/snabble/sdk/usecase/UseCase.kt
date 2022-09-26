@@ -65,13 +65,13 @@ class GetAvailableWifiUseCase(private val context: Context) {
     }
 
     private fun isConnectedToStoreWifi(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork
-            return network != null && connectivityManager.getNetworkCapabilities(network)?.hasTransport(
+            network != null && connectivityManager.getNetworkCapabilities(network)?.hasTransport(
                 NetworkCapabilities.TRANSPORT_WIFI
             ) == true
         } else {
-            return connectivityManager.activeNetworkInfo?.isConnected ?: false
+            connectivityManager.activeNetworkInfo?.isConnected ?: false
         }
     }
 }

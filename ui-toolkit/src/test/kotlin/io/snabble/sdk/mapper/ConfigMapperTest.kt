@@ -8,11 +8,14 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.snabble.sdk.data.ButtonDto
 import io.snabble.sdk.data.ConfigurationDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.PaddingDto
 import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.data.TextDto
+import io.snabble.sdk.data.WidgetDto
+import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ConfigMapperImpl
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.Padding
@@ -24,16 +27,9 @@ internal class ConfigMapperTest : FreeSpec({
 
     val context = mockk<Context>(relaxed = true)
     fun createMapper() = ConfigMapperImpl(context)
-
-    beforeEach {
-        clearAllMocks()
-    }
-
-    "Mapping a rootDto to root with" - {
-
-        "rootDto containing a config and an empty Widget list" - {
-
-            val rootDto = RootDto(
+    fun setUpSutDto(widgetDto: WidgetDto?): RootDto {
+        if (widgetDto == null) {
+            return RootDto(
                 ConfigurationDto(
                     image = "R.drawable.abc",
                     style = "",
@@ -41,11 +37,33 @@ internal class ConfigMapperTest : FreeSpec({
                 ),
                 emptyList()
             )
+        } else {
+            return RootDto(
+                ConfigurationDto(
+                    image = "R.drawable.abc",
+                    style = "",
+                    padding = PaddingDto(0, 0, 0, 0)
+                ),
+                listOf(widgetDto)
+            )
+        }
+    }
+
+    beforeEach {
+        clearAllMocks()
+    }
+
+    "Mapping a" - {
+
+        "rootDto containing a config and an empty Widget list" - {
+
+            val rootDto = setUpSutDto(null)
+
             every { context.resolveImageId(rootDto.configuration.image) } returns 5
 
             val sut = createMapper().mapTo(rootDto)
 
-            "the root config is successfully mapped" - {
+            "configurationDto to ConfigurationItem" - {
 
                 "image"{
                     sut.configuration.image shouldBe 5
@@ -58,7 +76,7 @@ internal class ConfigMapperTest : FreeSpec({
                 }
             }
 
-            "the root Widget list is successfully mapped" {
+            "widgetDto list to empty widgetItem list" {
                 sut.widgets shouldBe emptyList()
             }
         }
@@ -66,50 +84,102 @@ internal class ConfigMapperTest : FreeSpec({
         "rootDto containing a config and a List of Widgets" - {
             mockkStatic("io.snabble.sdk.utils.KotlinExtensions")
 
-            val imageDto = ImageDto("an.image", "R.drawable.abc", PaddingDto(0, 0, 0, 0))
-            val textDto = TextDto(
-                "a.title",
-                "Hello World",
-                "asdb",
-                null,
-                null,
-                PaddingDto(0, 0, 0, 0)
-            )
+            "ImageDto to ImageItem" - {
 
-            val rootDto = RootDto(
-                ConfigurationDto(
-                    image = "R.drawable.abc",
-                    style = "",
+                val imageDto = ImageDto(
+                    id = "an.image",
+                    imageSource = "R.drawable.abc",
                     padding = PaddingDto(0, 0, 0, 0)
-                ),
-                listOf(imageDto, textDto)
-            )
-            every { context.resolveImageId(rootDto.configuration.image) } returns 5
-            every { context.resolveImageId(imageDto.imageSource) } returns 5
-            every { context.getComposeColor(textDto.textColorSource) } returns 8
+                )
 
-            val sut = createMapper().mapTo(rootDto)
+                every { context.resolveImageId(imageDto.imageSource) } returns 5
 
-            "the root Widget list is successfully mapped" - {
+                val rootDto = setUpSutDto(imageDto)
+                val sut = createMapper().mapTo(rootDto)
 
-                "Image Type" - {
+                val imageItem = sut.widgets.first().shouldBeTypeOf<ImageItem>()
 
-                    val imageItem = sut.widgets.first().shouldBeTypeOf<ImageItem>()
-
-                    "Image properties"{
-                        imageItem.imageSource shouldBe 5
-                        imageItem.id shouldBe "an.image"
-                    }
+                "id" {
+                    imageItem.id shouldBe "an.image"
+                }
+                "image" {
+                    imageItem.imageSource shouldBe 5
+                }
+                "padding"{
+                    imageItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
 
-                "Text Type" - {
+            }
 
-                    val textItem = sut.widgets[1].shouldBeTypeOf<TextItem>()
+            "TextDto to TextItem" - {
 
-                    "Text poperties"{
-                        textItem.textColorSource shouldBe 8
-                        textItem.id shouldBe "a.title"
-                    }
+                val textDto = TextDto(
+                    id = "a.title",
+                    text = "Hello World",
+                    textColorSource = "asd",
+                    textStyleSource = null,
+                    showDisclosure = null,
+                    PaddingDto(0, 0, 0, 0)
+                )
+
+                val rootDto = setUpSutDto(textDto)
+                every { context.resolveImageId(rootDto.configuration.image) } returns 5
+                every { context.getComposeColor(textDto.textColorSource) } returns 8
+                val sut = createMapper().mapTo(rootDto)
+
+                val textItem = sut.widgets.first().shouldBeTypeOf<TextItem>()
+
+
+                "id" {
+                    textItem.id shouldBe "a.title"
+                }
+                "text"{
+                    textItem.text shouldBe "Hello World"
+                }
+                "text color"{
+                    textItem.textColorSource shouldBe 8
+                }
+                "text style"{
+                    textItem.textStyleSource shouldBe null
+                }
+                "padding"{
+                    textItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+            }
+
+            "ButtonDto to ButtonItem" - {
+
+                val buttonDto = ButtonDto(
+                    id = "a.button",
+                    text = "Hello World",
+                    foregroundColorSource = "test",
+                    backgroundColorSource = null,
+                    padding = PaddingDto(0,0,0,0)
+                )
+
+                val rootDto = setUpSutDto(buttonDto)
+                every { context.resolveImageId(rootDto.configuration.image) } returns 1
+                every { context.getComposeColor(buttonDto.foregroundColorSource) } returns 2
+                every { context.getComposeColor(buttonDto.backgroundColorSource) } returns 3
+                val sut = createMapper().mapTo(rootDto)
+
+                val buttonItem = sut.widgets.first().shouldBeTypeOf<ButtonItem>()
+
+
+                "id" {
+                    buttonItem.id shouldBe "a.button"
+                }
+                "text"{
+                    buttonItem.text shouldBe "Hello World"
+                }
+                "foreground color"{
+                    buttonItem.foregroundColorSource shouldBe 2
+                }
+                "background color"{
+                    buttonItem.backgroundColorSource shouldBe 3
+                }
+                "padding"{
+                    buttonItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
         }
