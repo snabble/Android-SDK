@@ -24,11 +24,10 @@ import io.snabble.sdk.home.HomeViewModel
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.LocationPermissionWidget
-import io.snabble.sdk.ui.widgets.Purchase
-import io.snabble.sdk.ui.widgets.PurchasesWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
+import io.snabble.sdk.ui.widgets.purchase.PurchaseScreen
 import io.snabble.sdk.usecase.GetPermissionStateUseCase
 
 typealias WidgetClick = (id: String) -> Unit
@@ -89,18 +88,7 @@ fun Widget(
         )
     }
     is PurchasesItem -> {
-        PurchasesWidget(
-            model = widget,
-            // TODO: State!!
-            purchaseList = listOf(
-                Purchase(amount = "13,37 €", title = "Snabble Store Bonn", time = "Today"),
-                Purchase(
-                    amount = "7,56 €",
-                    title = "Snabble Store Bonn Dransdorf",
-                    time = "Yesterday"
-                ),
-            )
-        )
+        PurchaseScreen(model = widget)
     }
     is SeeAllStoresItem -> {
         SeeAllStoresWidget(

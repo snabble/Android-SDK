@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.widgets
+package io.snabble.sdk.ui.widgets.purchase
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
@@ -47,7 +49,26 @@ import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.toolkit.R
 
 @Composable
-fun PurchasesWidget(
+internal fun PurchaseScreen(
+    model: PurchasesItem,
+    viewModel: PurchaseViewModel = viewModel()
+) {
+    OnLifecycleEvent(Lifecycle.Event.ON_RESUME) { _, _ ->
+        viewModel.updatePurchases()
+    }
+
+    when (val state = viewModel.state) {
+        Loading -> Unit
+        is ShowPurchases -> {
+            if (state.data.isNotEmpty()) {
+                PurchasesWidget(model = model, purchaseList = state.data)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PurchasesWidget(
     model: PurchasesItem,
     purchaseList: List<Purchase>,
 ) {
@@ -110,7 +131,7 @@ fun PurchasesWidget(
                 }
         ) {
             purchaseList.forEachIndexed { index, purchase ->
-                Purchase(
+                PurchaseDetail(
                     modifier = Modifier
                         .weight(1f),
                     data = purchase
@@ -123,15 +144,9 @@ fun PurchasesWidget(
     }
 }
 
-data class Purchase(
-    val amount: String,
-    val title: String,
-    val time: String,
-)
-
 @OptIn(ExperimentalUnitApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun Purchase(
+private fun PurchaseDetail(
     modifier: Modifier = Modifier,
     data: Purchase,
 ) {
@@ -178,12 +193,18 @@ private fun Purchase(
                     letterSpacing = TextUnit(-.21f, TextUnitType.Sp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.End,
                     modifier = Modifier
                         .constrainAs(amount) {
                             top.linkTo(icon.top)
                             bottom.linkTo(icon.bottom)
-                            linkTo(start = icon.end, end = parent.end, bias = 1f)
-                            width = Dimension.preferredWrapContent
+                            linkTo(
+                                start = icon.end,
+                                end = parent.end,
+                                bias = 1f,
+                                startMargin = 4.dp
+                            )
+                            width = Dimension.fillToConstraints
                         }
                 )
                 Text(
@@ -218,13 +239,13 @@ private fun Purchase(
 
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
-private fun PurchaseItemPreview() {
-    Purchase(data = Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"))
+private fun PurchaseDetailPreview() {
+    PurchaseDetail(data = Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"))
 }
 
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
-fun PurchasesPreview() {
+private fun PurchaseWidgetPreview() {
     PurchasesWidget(
         model = PurchasesItem(
             id = "last.purchases",
@@ -237,7 +258,7 @@ fun PurchasesPreview() {
 
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
-fun TwoPurchasesPreview() {
+private fun TwoPurchasesPreview() {
     PurchasesWidget(
         model = PurchasesItem(
             id = "last.purchases",

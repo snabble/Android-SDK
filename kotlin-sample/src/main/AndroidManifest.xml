@@ -30,14 +30,6 @@
             android:windowSoftInputMode="adjustPan" />
 
         <meta-data
-            android:name="snabble_app_id"
-            android:value="snabble-sdk-demo-app-oguh3x" />
-
-        <meta-data
-            android:name="snabble_secret"
-            android:value="2TKKEG5KXWY6DFOGTZKDUIBTNIRVCYKFZBY32FFRUUWIUAFEIBHQ====" />
-
-        <meta-data
             android:name="snabble_network_interceptor"
             android:value="io.snabble.sdk.sample.LoggingInterceptor" />
     </application>

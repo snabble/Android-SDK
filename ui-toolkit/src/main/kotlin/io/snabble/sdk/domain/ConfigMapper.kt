@@ -45,7 +45,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
                 is ButtonDto -> toButton()
                 is InformationDto -> TODO()
                 is LocationPermissionDto -> toLocationPermission()
-                is PurchasesDto -> TODO()
+                is PurchasesDto -> toPurchases()
                 is SectionDto -> TODO()
                 is ToggleDto -> TODO()
                 is SeeAllStoresDto -> toSeeAllStores()
@@ -77,16 +77,26 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         padding = padding.toPadding()
     )
 
-    private fun LocationPermissionDto.toLocationPermission(): LocationPermissionItem = LocationPermissionItem(
-        id = id,
-        padding = padding.toPadding()
-    )
-    private fun SeeAllStoresDto.toSeeAllStores(): SeeAllStoresItem = io.snabble.sdk.domain.SeeAllStoresItem(
-        id = id,
-        padding = padding.toPadding()
-    )
+    private fun LocationPermissionDto.toLocationPermission(): LocationPermissionItem =
+        LocationPermissionItem(
+            id = id,
+            padding = padding.toPadding()
+        )
+
+    private fun SeeAllStoresDto.toSeeAllStores(): SeeAllStoresItem =
+        io.snabble.sdk.domain.SeeAllStoresItem(
+            id = id,
+            padding = padding.toPadding()
+        )
+
     private fun StartShoppingDto.toStartShopping(): StartShoppingItem = StartShoppingItem(
         id = id,
+        padding = padding.toPadding()
+    )
+
+    private fun PurchasesDto.toPurchases(): PurchasesItem = PurchasesItem(
+        id = id,
+        projectId = ProjectId(projectId),
         padding = padding.toPadding()
     )
 }
