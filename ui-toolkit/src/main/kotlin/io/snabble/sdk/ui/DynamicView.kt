@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ConnectWifiItem
@@ -28,6 +29,7 @@ import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
+import io.snabble.sdk.usecase.GetAvailableWifiUseCase
 
 typealias WidgetClick = (id: String) -> Unit
 
@@ -116,7 +118,7 @@ fun Widget(
         ConnectWifiWidget(
             model = widget,
             onclick = { click(widget.id) },
-            isVisible = true
+            isVisible = GetAvailableWifiUseCase(LocalContext.current)().value
         )
     }
     else -> {}
