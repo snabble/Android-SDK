@@ -2,6 +2,7 @@ package io.snabble.sdk.usecase
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.util.Log
@@ -58,14 +59,17 @@ class GetAvailableWifiUseCase(private val context: Context) {
         context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     operator fun invoke(): MutableState<Boolean> {
-        val connectionAvailable: Boolean = wifiManager.isWifiEnabled && !isConnectedToStoreWifi()
+        val connectionAvailable: Boolean =
+            Snabble.currentCheckedInShop.value != null && wifiManager.isWifiEnabled && !isConnectedToStoreWifi()
         return mutableStateOf(connectionAvailable)
     }
 
     private fun isConnectedToStoreWifi(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork
-            return network != null
+            return network != null && connectivityManager.getNetworkCapabilities(network)?.hasTransport(
+                NetworkCapabilities.TRANSPORT_WIFI
+            ) == true
         } else {
             return connectivityManager.activeNetworkInfo?.isConnected ?: false
         }
