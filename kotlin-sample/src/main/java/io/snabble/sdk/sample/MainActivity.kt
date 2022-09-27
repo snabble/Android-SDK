@@ -1,6 +1,7 @@
 package io.snabble.sdk.sample
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -19,6 +20,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationBarView
 import com.google.gson.Gson
 import io.snabble.sdk.Shop
@@ -37,6 +39,17 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
     private lateinit var locationPermission: ActivityResultLauncher<String>
 
     private lateinit var locationManager: CheckInLocationManager
+
+    private val sharedPreferences: SharedPreferences
+        get() = PreferenceManager.getDefaultSharedPreferences(this)
+
+    var onboardingSeen: Boolean
+        get() = sharedPreferences.getBoolean(
+            ONBOARDING_SEEN,
+            false
+        )
+        set(onboardingSeen) = sharedPreferences.edit()
+            .putBoolean(ONBOARDING_SEEN, onboardingSeen).apply()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -57,7 +70,8 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setupToolbar(toolbar, navController, navBarView)
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && !onboardingSeen) {
+
             lifecycleScope.launch {
                 val model = onboardingRepo.getOnboardingModel()
                 SnabbleUiToolkit.executeAction(
@@ -233,6 +247,7 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
             SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
         ) { _, _ ->
             popBackStack()
+            onboardingSeen = true
         }
 
         // listens to permission result and start tracking if permission is granted
@@ -319,5 +334,9 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
                 Snabble.checkedInProject.setValue(null)
             }
         }
+    }
+
+    companion object {
+        private const val ONBOARDING_SEEN = "onboarding_seen"
     }
 }
