@@ -21,6 +21,7 @@ import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicView
+import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.utils.getComposeColor
@@ -94,6 +95,7 @@ fun HomeScreen(
                     LocalContext.current.getComposeColor("snabble_background") ?: Magenta.toArgb()
                 )
             ),
+        contentPadding = homeConfig.configuration.padding.toPaddingValues(),
         background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(

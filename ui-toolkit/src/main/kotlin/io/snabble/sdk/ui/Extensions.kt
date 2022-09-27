@@ -10,14 +10,6 @@ import io.snabble.sdk.domain.Padding
 fun Padding.toPaddingValues(): PaddingValues =
     PaddingValues(start = start.dp, top = top.dp, end = end.dp, bottom = bottom.dp)
 
-operator fun Padding.plus(other: Padding): Padding =
-    Padding(
-        start + other.start,
-        top + other.top,
-        end + other.end,
-        bottom + other.bottom
-    )
-
 fun PaddingDto.toPadding() = Padding(start, top, end, bottom)
 
 fun CustomerCardItem.toInformationItem(): InformationItem = InformationItem(

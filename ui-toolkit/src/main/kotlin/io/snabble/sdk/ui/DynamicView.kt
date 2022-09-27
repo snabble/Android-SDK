@@ -2,6 +2,7 @@ package io.snabble.sdk.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,6 +37,7 @@ typealias WidgetClick = (id: String) -> Unit
 @Composable
 fun DynamicView(
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
     background: @Composable (() -> Unit),
     widgets: List<Widget>,
     onClick: WidgetClick,
@@ -47,7 +49,8 @@ fun DynamicView(
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize(),
+            contentPadding = contentPadding,
         ) {
             items(items = widgets) { widget ->
                 Widget(widget = widget, onClick)
