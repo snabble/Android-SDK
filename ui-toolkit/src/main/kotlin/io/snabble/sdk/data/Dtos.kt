@@ -70,6 +70,13 @@ data class CustomerCardDto(
 ) : WidgetDto
 
 @Serializable
+@SerialName("snabble.connectWifi")
+data class ConnectWifiDto(
+    @SerialName("id") override val id: String,
+    @SerialName("padding") override val padding: PaddingDto,
+) : WidgetDto
+
+@Serializable
 @SerialName("snabble.locationPermission")
 data class LocationPermissionDto(
     @SerialName("id") override val id: String,
@@ -103,13 +110,6 @@ data class SeeAllStoresDto(
 @Serializable
 @SerialName("snabble.startShopping")
 data class StartShoppingDto(
-    @SerialName("id") override val id: String,
-    @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
-
-@Serializable
-@SerialName("snabble.connectWifi")
-data class ConnectWifiDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto

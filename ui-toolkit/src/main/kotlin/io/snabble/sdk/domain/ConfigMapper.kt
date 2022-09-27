@@ -43,36 +43,21 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun List<WidgetDto>.toWidgets(): List<Widget> = map { widget ->
         with(widget) {
             when (this) {
-                is ImageDto -> toImage()
-                is TextDto -> toText()
                 is ButtonDto -> toButton()
-                is InformationDto -> toInformation()
-                is CustomerCardDto -> toCustomCardItem()
-                is LocationPermissionDto -> toLocationPermission()
-                is SeeAllStoresDto -> toSeeAllStores()
-                is PurchasesDto -> toPurchases()
-                is StartShoppingDto -> toStartShopping()
                 is ConnectWifiDto -> toConnectWifi()
+                is CustomerCardDto -> toCustomCardItem()
+                is ImageDto -> toImage()
+                is InformationDto -> toInformation()
+                is LocationPermissionDto -> toLocationPermission()
+                is PurchasesDto -> toPurchases()
                 is SectionDto -> TODO()
+                is SeeAllStoresDto -> toSeeAllStores()
+                is StartShoppingDto -> toStartShopping()
+                is TextDto -> toText()
                 is ToggleDto -> TODO()
             }
         }
     }
-
-    private fun TextDto.toText(): TextItem = TextItem(
-        id = id,
-        text = text,
-        textColorSource = context.getComposeColor(textColorSource),
-        textStyleSource = textStyleSource,
-        showDisclosure = showDisclosure ?: false,
-        padding = padding.toPadding()
-    )
-
-    private fun ImageDto.toImage(): ImageItem = ImageItem(
-        id = id,
-        imageSource = context.resolveImageId(imageSource),
-        padding = padding.toPadding()
-    )
 
     private fun ButtonDto.toButton(): ButtonItem = ButtonItem(
         id = id,
@@ -82,14 +67,25 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         padding = padding.toPadding()
     )
 
-    private fun InformationDto.toInformation(): InformationItem = InformationItem(
+    private fun ConnectWifiDto.toConnectWifi(): ConnectWifiItem = ConnectWifiItem(
+        id = id,
+        padding = padding.toPadding()
+    )
+
+    private fun CustomerCardDto.toCustomCardItem(): CustomerCardItem = CustomerCardItem(
         id = id,
         text = text,
         imageSource = context.resolveImageId(imageSource),
         padding = padding.toPadding()
     )
 
-    private fun CustomerCardDto.toCustomCardItem(): CustomerCardItem = CustomerCardItem(
+    private fun ImageDto.toImage(): ImageItem = ImageItem(
+        id = id,
+        imageSource = context.resolveImageId(imageSource),
+        padding = padding.toPadding()
+    )
+
+    private fun InformationDto.toInformation(): InformationItem = InformationItem(
         id = id,
         text = text,
         imageSource = context.resolveImageId(imageSource),
@@ -102,6 +98,12 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
             padding = padding.toPadding()
         )
 
+    private fun PurchasesDto.toPurchases(): PurchasesItem = PurchasesItem(
+        id = id,
+        projectId = ProjectId(projectId),
+        padding = padding.toPadding()
+    )
+
     private fun SeeAllStoresDto.toSeeAllStores(): SeeAllStoresItem = SeeAllStoresItem(
         id = id,
         padding = padding.toPadding()
@@ -112,14 +114,12 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         padding = padding.toPadding()
     )
 
-    private fun ConnectWifiDto.toConnectWifi(): ConnectWifiItem = ConnectWifiItem(
+    private fun TextDto.toText(): TextItem = TextItem(
         id = id,
-        padding = padding.toPadding()
-    )
-
-    private fun PurchasesDto.toPurchases(): PurchasesItem = PurchasesItem(
-        id = id,
-        projectId = ProjectId(projectId),
+        text = text,
+        textColorSource = context.getComposeColor(textColorSource),
+        textStyleSource = textStyleSource,
+        showDisclosure = showDisclosure ?: false,
         padding = padding.toPadding()
     )
 }

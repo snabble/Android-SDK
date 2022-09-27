@@ -67,11 +67,23 @@ fun Widget(
     click: WidgetClick,
     viewModel: HomeViewModel = viewModel()
 ) = when (widget) {
-    is TextItem -> {
-        TextWidget(
+    is ButtonItem -> {
+        ButtonWidget(
             model = widget,
-            modifier = Modifier
-                .clickable { click(widget.id) }
+            onClick = click,
+        )
+    }
+    is CustomerCardItem -> {
+        CustomerCardWidget(
+            model = widget,
+            isVisible = viewModel.customerCardVisibilityState.value,
+            onClick = { click(widget.id) })
+    }
+    is ConnectWifiItem -> {
+        ConnectWifiWidget(
+            model = widget,
+            onclick = { click(widget.id) },
+            isVisible = GetAvailableWifiUseCase(LocalContext.current)().value
         )
     }
     is ImageItem -> {
@@ -81,11 +93,10 @@ fun Widget(
                 .clickable { click(widget.id) }
         )
     }
-    is ButtonItem -> {
-        ButtonWidget(
+    is InformationItem -> {
+        InformationWidget(
             model = widget,
-            onClick = click,
-        )
+            onclick = { click(widget.id) })
     }
     is LocationPermissionItem -> {
         LocationPermissionWidget(
@@ -111,23 +122,12 @@ fun Widget(
             onClick = click
         )
     }
-    is CustomerCardItem -> {
-        CustomerCardWidget(
+    is TextItem -> {
+        TextWidget(
             model = widget,
-            isVisible = viewModel.customerCardVisibilityState.value,
-            onClick = { click(widget.id) })
-    }
-    is InformationItem -> {
-        InformationWidget(
-            model = widget,
-            onclick = { click(widget.id) })
-    }
-    is ConnectWifiItem -> {
-        ConnectWifiWidget(
-            model = widget,
-            onclick = { click(widget.id) },
-            isVisible = GetAvailableWifiUseCase(LocalContext.current)().value
+            modifier = Modifier
+                .clickable { click(widget.id) }
         )
     }
-    else -> {}
+    else -> Unit
 }
