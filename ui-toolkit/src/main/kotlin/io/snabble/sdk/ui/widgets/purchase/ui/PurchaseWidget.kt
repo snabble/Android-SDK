@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.widgets.purchase
+package io.snabble.sdk.ui.widgets.purchase.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -47,6 +47,11 @@ import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
 import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.purchase.OnLifecycleEvent
+import io.snabble.sdk.ui.widgets.purchase.Purchase
+import io.snabble.sdk.ui.widgets.purchase.viewmodel.Loading
+import io.snabble.sdk.ui.widgets.purchase.viewmodel.PurchaseViewModel
+import io.snabble.sdk.ui.widgets.purchase.viewmodel.ShowPurchases
 
 @Composable
 internal fun PurchaseScreen(

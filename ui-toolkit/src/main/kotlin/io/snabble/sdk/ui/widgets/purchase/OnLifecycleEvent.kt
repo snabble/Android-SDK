@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 
 @Composable
-fun OnLifecycleEvent(
+internal fun OnLifecycleEvent(
     lifecycleEvent: Lifecycle.Event? = null,
     onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit
 ) {

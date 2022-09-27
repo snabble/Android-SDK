@@ -27,7 +27,7 @@ import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
-import io.snabble.sdk.ui.widgets.purchase.PurchaseScreen
+import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseScreen
 import io.snabble.sdk.usecase.GetPermissionStateUseCase
 
 typealias WidgetClick = (id: String) -> Unit
