@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.widgets
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -8,7 +9,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -49,17 +49,19 @@ fun ButtonWidget(
 ) {
     Box(
         modifier = modifier
+            .fillMaxWidth()
             .padding(model.padding.toPaddingValues())
     ) {
         Button(
-            onClick = { onClick(model.id) },
+            onClick = { onClick },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(
                     model.backgroundColorSource ?: MaterialTheme.colors.primary.toArgb()
                 ),
             ),
             shape = RoundedCornerShape(8.dp),
-            modifier = modifier.align(Center),
+            modifier = Modifier
+                .fillMaxWidth(),
         ) {
             Text(
                 text = model.text,
@@ -83,6 +85,7 @@ fun ButtonWidget(
             .padding(widget.padding.toPaddingValues())
     ) {
         Button(
+            modifier = Modifier.fillMaxWidth(),
             onClick = { onClick(widget.id) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = AppTheme.colors.snabble_primaryColor,

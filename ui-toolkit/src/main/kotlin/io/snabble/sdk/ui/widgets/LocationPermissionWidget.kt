@@ -34,7 +34,7 @@ fun LocationPermissionWidget(
     if (!permissionState) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
-                modifier = modifier.align(Alignment.Center),
+                modifier = modifier.fillMaxWidth(),
                 widget = model,
                 text = stringResource(id = R.string.Snabble_askForPermission),
                 onClick = onClick,

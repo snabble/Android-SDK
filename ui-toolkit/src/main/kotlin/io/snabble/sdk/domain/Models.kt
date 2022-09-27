@@ -7,7 +7,8 @@ data class Root(
 
 data class Configuration(
     val image: Int?,
-    val style: String
+    val style: String,
+    val padding: Padding
 )
 
 sealed interface Widget {
@@ -43,11 +44,17 @@ data class ButtonItem(
     override val padding: Padding,
 ) : Widget, HasText
 
-data class InformationItemItem(
+data class InformationItem(
     override val id: String,
     override val text: String,
     val imageSource: Int?,
-    val hideable: Boolean,
+    override val padding: Padding,
+) : Widget, HasText
+
+data class CustomerCardItem(
+    override val id: String,
+    override val text: String,
+    val imageSource: Int?,
     override val padding: Padding,
 ) : Widget, HasText
 
@@ -85,6 +92,11 @@ data class SeeAllStoresItem(
 ) : Widget
 
 data class StartShoppingItem(
+    override val id: String,
+    override val padding: Padding
+) : Widget
+
+data class ConnectWifiItem(
     override val id: String,
     override val padding: Padding
 ) : Widget

@@ -130,6 +130,7 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
             } else {
                 Snabble.checkInManager.stopUpdating()
             }
+            viewModel.permissionState.value = true
         }
 
     private fun startCheckInManagerUpdating() {

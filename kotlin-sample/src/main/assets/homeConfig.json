@@ -1,7 +1,10 @@
 {
   "configuration": {
     "image": "home_default_background",
-    "style": "scroll"
+    "style": "scroll",
+    "padding": [
+      16
+    ]
   },
   "widgets": [
     {
@@ -11,10 +14,10 @@
       "textColor": "snabble_onboarding_primary",
       "textStyle": "title",
       "padding": [
-        16,
+        0,
         16,
         5,
-        16
+        0
       ]
     },
     {
@@ -23,10 +26,10 @@
       "text": "Begib dich zum Einkaufen in den nächsten Shop.",
       "textStyle": "body",
       "padding": [
-        16,
+        0,
         0,
         5,
-        16
+        0
       ]
     },
     {
@@ -35,40 +38,40 @@
       "text": "Scanne Produkte und bezahle direkt über die App! Alles bequem, schnell und einfach.",
       "textStyle": "footer",
       "padding": [
-        16,
+        0,
         0,
         5,
-        16
+        0
       ]
     },
     {
       "type": "snabble.locationPermission",
       "id": "location",
       "padding": [
-        16,
+        0,
         0,
         5,
-        16
+        0
       ]
     },
     {
       "type": "snabble.startShopping",
       "id": "start",
       "padding": [
-        16,
+        0,
         0,
         5,
-        16
+        0
       ]
     },
     {
       "type": "snabble.allStores",
       "id": "stores",
       "padding": [
-        16,
+        0,
         0,
         5,
-        16
+        0
       ]
     },
     {
@@ -76,7 +79,7 @@
       "id": "purchases",
       "projectId": "snabble-sdk-demo-app-oguh3x",
       "padding": [
-        16
+        0
       ]
     }
   ]
