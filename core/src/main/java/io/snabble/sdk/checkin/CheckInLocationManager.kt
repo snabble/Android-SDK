@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.*
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationListenerCompat
 import androidx.lifecycle.MutableLiveData
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.Dispatch
@@ -60,6 +61,9 @@ class CheckInLocationManager(val application: Application) {
         override fun onProviderEnabled(provider: String) {}
 
         override fun onProviderDisabled(provider: String) {}
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        }
     }
 
     /**
@@ -125,4 +129,5 @@ class CheckInLocationManager(val application: Application) {
             locationManager.removeUpdates(locationListener)
         }
     }
+
 }
