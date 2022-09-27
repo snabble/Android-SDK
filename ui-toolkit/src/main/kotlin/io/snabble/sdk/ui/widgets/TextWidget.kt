@@ -50,7 +50,7 @@ fun TextWidget(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .wrapContentHeight()
             .padding(model.padding.toPaddingValues())
     ) {

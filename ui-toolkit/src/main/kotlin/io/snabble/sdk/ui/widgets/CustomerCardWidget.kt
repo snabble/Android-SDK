@@ -33,7 +33,7 @@ fun CustomerCardWidget(
     onClick: WidgetClick
 ) {
     if (isVisible) {
-        InformationWidget(model = (model.toInformationItem()), onclick = onClick)
+        InformationWidget(modifier = modifier, model = (model.toInformationItem()), onclick = onClick)
     }
 }
 
