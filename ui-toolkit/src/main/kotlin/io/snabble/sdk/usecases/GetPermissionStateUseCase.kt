@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import io.snabble.sdk.Snabble
 
+// FIXME: Scope should be internal
 class GetPermissionStateUseCase {
 
     operator fun invoke(): MutableState<Boolean> = try {

@@ -5,6 +5,7 @@ import io.snabble.sdk.data.RootDto
 import io.snabble.sdk.domain.ConfigMapper
 import io.snabble.sdk.domain.Root
 
+// FIXME: Scope should be internal
 class GetHomeConfigUseCase(
     private val configRepository: ConfigRepository,
     private val configMapper: ConfigMapper,

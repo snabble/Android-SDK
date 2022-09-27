@@ -17,6 +17,7 @@ internal class KoinInitializer : Initializer<Koin> {
         koinApplication {
             androidContext(context)
             modules(
+                coreModule,
                 configModule,
                 domainModule,
                 homeModule,

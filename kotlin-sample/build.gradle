@@ -1,5 +1,8 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'io.snabble.setup' version '1.0.1'
+}
 
 android {
     namespace 'io.snabble.sdk.sample'
@@ -36,6 +39,22 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.3.0'
+    }
+}
+
+snabble {
+    production {
+        appId = "snabble-sdk-demo-app-oguh3x"
+        secret = "2TKKEG5KXWY6DFOGTZKDUIBTNIRVCYKFZBY32FFRUUWIUAFEIBHQ===="
+        prefetchMetaData = true
+    }
+    staging {
+        appId = "snabble-sdk-demo-app-oguh3x"
+        secret = "P3SZXAPPVAZA5JWYXVKFSGGBN4ZV7CKCWJPQDMXSUMNPZ5IPB6NQ===="
+    }
+    testing {
+        appId = "snabble-sdk-demo-app-oguh3x"
+        secret = "BWXJ2BFC2JRKRNW4QBASQCF2TTANPTVPOXQJM57JDIECZJQHZWOQ===="
     }
 }
 

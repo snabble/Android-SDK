@@ -22,6 +22,8 @@ import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Padding
+import io.snabble.sdk.domain.ProjectId
+import io.snabble.sdk.domain.PurchasesItem
 import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
@@ -33,6 +35,7 @@ import io.snabble.sdk.home.viewmodel.Loading
 import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.utils.getComposeColor
@@ -51,6 +54,7 @@ private fun Home(
                     LocalContext.current.getComposeColor("snabble_background") ?: Magenta.toArgb()
                 )
             ),
+        contentPadding = homeConfig.configuration.padding.toPaddingValues(),
         background = {
             if (homeConfig.configuration.image != null) {
                 ImageWidget(
@@ -111,6 +115,7 @@ fun HomePreview() {
             configuration = Configuration(
                 image = R.drawable.home_default_background,
                 style = "",
+                padding = Padding(16)
             ),
             widgets = listOf(
                 TextItem(
@@ -148,7 +153,12 @@ fun HomePreview() {
                 LocationPermissionItem(
                     id = "location",
                     padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
-                )
+                ),
+                PurchasesItem(
+                    id = "last.purchases",
+                    projectId = ProjectId("0123"),
+                    padding = Padding(0),
+                ),
             )
         ),
         onClick = {}

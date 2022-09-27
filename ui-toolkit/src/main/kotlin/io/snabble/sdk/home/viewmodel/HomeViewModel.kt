@@ -7,16 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.domain.Root
+import io.snabble.sdk.usecases.GetCustomerCardInfo
 import io.snabble.sdk.usecases.GetHomeConfigUseCase
 import io.snabble.sdk.usecases.GetPermissionStateUseCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+// FIXME: Scope should be internal
 class HomeViewModel internal constructor(
     getPermissionState: GetPermissionStateUseCase,
     private val getHomeConfig: GetHomeConfigUseCase,
+    getCustomerCardInfo: GetCustomerCardInfo,
 ) : ViewModel() {
 
     init {
@@ -34,6 +36,9 @@ class HomeViewModel internal constructor(
             return state
         }
 
+    val customerCardVisibilityState =
+        getCustomerCardInfo() // FIXME: MutableState visible from outside
+
     var widgetEvent = MutableLiveData<String>()
 
     fun onClick(string: String) {
@@ -45,7 +50,6 @@ class HomeViewModel internal constructor(
 
     private fun fetchHomeConfig() {
         viewModelScope.launch {
-            delay(5_000)
             val root = getHomeConfig()
             _homeState.value = Finished(root)
         }

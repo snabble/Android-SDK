@@ -41,7 +41,7 @@ class HomeFragment : Fragment() {
 }
 
 @Composable
-fun Fragment.ViewModelStoreOwnerLocalProvider(content: @Composable () -> Unit) {
+internal fun Fragment.ViewModelStoreOwnerLocalProvider(content: @Composable () -> Unit) {
     val viewModelStoreOwner = compositionLocalOf<ViewModelStoreOwner> { requireActivity() }
     CompositionLocalProvider(LocalViewModelStoreOwner provides viewModelStoreOwner.current) {
         content()

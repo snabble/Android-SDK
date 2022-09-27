@@ -18,7 +18,7 @@ fun StartShoppingPreview() {
     StartShoppingWidget(
         model = StartShoppingItem(
             id = "1",
-            padding = Padding(start = 16, top = 5, end = 16, bottom = 5)
+            padding = Padding(horizontal = 16, vertical = 5)
         ),
         checkinState = true
     )

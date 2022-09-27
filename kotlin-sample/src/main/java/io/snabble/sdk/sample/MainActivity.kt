@@ -34,6 +34,7 @@ import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.sample.utils.PermissionSupport
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.usecases.GetCustomerCardInfo
 import io.snabble.sdk.usecases.GetHomeConfigUseCase
 import io.snabble.sdk.usecases.GetPermissionStateUseCase
 import kotlinx.coroutines.launch
@@ -57,7 +58,8 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
                         json = Json { ignoreUnknownKeys = true }
                     ),
                     configMapper = ConfigMapperImpl(this)
-                )
+                ),
+                GetCustomerCardInfo(Snabble),
             )
         }
     )

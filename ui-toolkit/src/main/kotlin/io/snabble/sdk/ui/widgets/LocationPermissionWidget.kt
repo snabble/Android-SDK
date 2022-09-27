@@ -12,14 +12,13 @@ import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toolkit.R
 
-
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 fun LocationPermissionPreview() {
     LocationPermissionWidget(
         model = LocationPermissionItem(
             id = "1",
-            padding = Padding(start = 16, top = 5, end = 16, bottom = 5)
+            padding = Padding(horizontal = 16, vertical = 5)
         ),
         permissionState = false
     )
@@ -35,7 +34,7 @@ fun LocationPermissionWidget(
     if (!permissionState) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
-                modifier = modifier.align(Alignment.Center),
+                modifier = modifier.fillMaxWidth(),
                 widget = model,
                 text = stringResource(id = R.string.Snabble_askForPermission),
                 onClick = onClick,

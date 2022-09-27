@@ -20,7 +20,7 @@ fun ImageWidgetPreview() {
         model = ImageItem(
             id = "an.image",
             imageSource = R.drawable.snabble_ic_small_chevron_down,
-            padding = Padding(start = 8, top = 0, end = 8, bottom = 0),
+            padding = Padding(horizontal = 8),
         )
     )
 }
