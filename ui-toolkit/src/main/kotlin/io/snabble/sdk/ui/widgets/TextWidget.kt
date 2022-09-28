@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.TextItem
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.toPaddingValues
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
@@ -25,7 +24,7 @@ fun TextWidgetPreview() {
             model = TextItem(
                 id = "1",
                 text = "Willkommen bei Snabble",
-                textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
+                textColorSource = MaterialTheme.colorScheme.primary.toArgb(),
                 textStyleSource = "title",
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),
@@ -35,7 +34,7 @@ fun TextWidgetPreview() {
             model = TextItem(
                 id = "2",
                 text = "Scanne deine Produkte und kaufe jetzt ein",
-                textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
+                textColorSource = MaterialTheme.colorScheme.primary.toArgb(),
                 textStyleSource = "body",
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),

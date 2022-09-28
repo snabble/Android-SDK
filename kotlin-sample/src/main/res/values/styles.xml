@@ -8,14 +8,33 @@
 
         <item name="colorSecondary">@color/snabbleBlue</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="colorSecondaryContainer">@color/snabbleBlue</item>
-        <item name="colorOnSecondaryContainer">@color/white</item>
+        <item name="colorSecondaryContainer">@color/white</item>
+        <item name="colorOnSecondaryContainer">@color/black</item>
 
         <item name="colorTertiary">@color/snabbleBlue</item>
         <item name="colorOnTertiary">@color/white</item>
         <item name="colorTertiaryContainer">@color/snabbleBlue</item>
         <item name="colorOnTertiaryContainer">@color/white</item>
+
+<!--        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.App.Medium</item>-->
+<!--        <item name="textAppearanceBodyMedium">@style/bodyMedium</item>-->
+
+
     </style>
+
+<!--    <style name="ShapeAppearance.App.Medium" parent="ShapeAppearance.MaterialComponents.SmallComponent">-->
+<!--        <item name="cornerFamily">cut</item>-->
+<!--        <item name="cornerSize">20dp</item>-->
+<!--    </style>-->
+
+<!--    <style name="bodyMedium" parent="TextAppearance.Material3.BodyMedium">-->
+<!--        <item name="fontFamily">@font/aovel_sans</item>-->
+<!--        <item name="android:textStyle">bold</item>-->
+<!--        <item name="android:textSize">12sp</item>-->
+<!--        <item name="android:textAlignment">center</item>-->
+<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
+<!--    </style>-->
+
 
 <!--    <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">-->
 <!--        <item name="colorPrimary">#880000</item>-->
@@ -30,11 +49,6 @@
 <!--        <item name="textAppearanceBodyLarge">@style/TextAppearance.BodyLarge</item>-->
 <!--        <item name="textAppearanceBodyMedium">@style/TextAppearance.BodyMedium</item>-->
 <!--        <item name="textAppearanceBodySmall">@style/TextAppearance.BodySmall</item>-->
-<!--    </style>-->
-
-<!--    <style name="TextAppearance.HeadlineLarge" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
 <!--    </style>-->
 
 <!--    <style name="TextAppearance.HeadlineMedium" parent="TextAppearance.Material3.BodyLarge">-->

@@ -2,6 +2,7 @@ package io.snabble.sdk.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,7 +22,6 @@ import io.snabble.sdk.domain.Root
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
@@ -46,7 +46,7 @@ fun HomeScreenPreview() {
                 TextItem(
                     id = "hello.world.text",
                     text = "Willkommen bei Snabble",
-                    textColorSource = AppTheme.colors.snabble_primaryColor.toArgb(),
+                    textColorSource = MaterialTheme.colorScheme.primary.toArgb(),
                     textStyleSource = "header",
                     showDisclosure = false,
                     padding = Padding(start = 16, top = 16, end = 16),
@@ -54,7 +54,7 @@ fun HomeScreenPreview() {
                 TextItem(
                     id = "title",
                     text = "Deine App für Scan and Go!",
-                    textColorSource = AppTheme.colors.snabble_textColorDark.toArgb(),
+                    textColorSource = MaterialTheme.colorScheme.primary.toArgb(),
                     textStyleSource = "body",
                     showDisclosure = false,
                     padding = Padding(horizontal = 16),

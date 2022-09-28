@@ -104,6 +104,8 @@ dependencies {
     debugImplementation "androidx.customview:customview:1.2.0-alpha01"
     debugImplementation "androidx.customview:customview-poolingcontainer:1.0.0"
 
+    implementation "com.google.android.material:compose-theme-adapter-3:1.0.19"
+
     def kotest_version = '5.4.0'
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version"
     testImplementation "io.kotest:kotest-assertions-core:$kotest_version"

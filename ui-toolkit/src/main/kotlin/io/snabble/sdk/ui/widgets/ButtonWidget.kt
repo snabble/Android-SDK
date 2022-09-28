@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.Widget
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.utils.getComposeColor
@@ -56,17 +55,18 @@ fun ButtonWidget(
             onClick = { onClick },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(
-                    model.backgroundColorSource ?: MaterialTheme.colors.primary.toArgb()
+                    model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
                 ),
             ),
-            shape = RoundedCornerShape(8.dp),
+            shape = MaterialTheme.shapes.small,
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
             Text(
                 text = model.text,
+                style = MaterialTheme.typography.labelLarge,
                 color = Color(
-                    model.foregroundColorSource ?: MaterialTheme.colors.onPrimary.toArgb()
+                    model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb()
                 )
             )
         }
@@ -88,13 +88,14 @@ fun ButtonWidget(
             modifier = Modifier.fillMaxWidth(),
             onClick = { onClick(widget.id) },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = AppTheme.colors.snabble_primaryColor,
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
             ),
-            shape = RoundedCornerShape(8.dp),
+            shape = MaterialTheme.shapes.small,
         ) {
             Text(
                 text = text,
-                color = AppTheme.colors.snabble_colorOnPrimary
+                style = MaterialTheme.typography.labelLarge, //TODO: Evaluate right typo
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }

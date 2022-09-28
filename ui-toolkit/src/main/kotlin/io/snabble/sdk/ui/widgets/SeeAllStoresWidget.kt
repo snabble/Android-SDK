@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.SeeAllStoresItem
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.WidgetClick
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
@@ -71,7 +71,8 @@ fun SeeAllStoresWidget(
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
-                    color = AppTheme.colors.snabble_primaryColor
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }

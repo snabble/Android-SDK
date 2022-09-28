@@ -45,7 +45,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.purchase.OnLifecycleEvent
 import io.snabble.sdk.ui.widgets.purchase.Purchase
@@ -110,7 +109,7 @@ private fun PurchasesWidget(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(
                         bounded = false,
-                        color = AppTheme.colors.snabble_primaryColor
+                        color = MaterialTheme.colorScheme.primary
                     ),
                 ) {
 
@@ -122,7 +121,7 @@ private fun PurchasesWidget(
                 textAlign = TextAlign.Center,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = AppTheme.colors.snabble_primaryColor,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -160,7 +159,7 @@ private fun PurchaseDetail(
         LocalRippleTheme provides object : RippleTheme {
 
             @Composable
-            override fun defaultColor(): Color = AppTheme.colors.snabble_primaryColor
+            override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
 
             @Composable
             override fun rippleAlpha(): RippleAlpha =

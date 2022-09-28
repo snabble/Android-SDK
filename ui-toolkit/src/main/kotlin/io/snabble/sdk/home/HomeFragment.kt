@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -17,12 +18,14 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import io.snabble.sdk.ui.AppTheme
+import com.google.android.material.composethemeadapter3.createMdc3Theme
 import io.snabble.sdk.ui.toolkit.R
 
 class HomeFragment : Fragment() {
@@ -41,26 +44,32 @@ class HomeFragment : Fragment() {
         viewModel.fetchHomeConfig(context)
 
         composeView.setContent {
+
             when (val state = viewModel.homeState.collectAsState().value) {
                 Loading -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .align(Alignment.Center),
-                            color = AppTheme.colors.snabble_primaryColor
-                        )
+                    ThemeWrapper {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .align(Alignment.Center),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
                 is Finished -> {
                     ViewModelStoreOwnerLocalProvider {
-                        HomeScreen(homeConfig = state.root)
+                        ThemeWrapper {
+                            HomeScreen(homeConfig = state.root)
+                        }
                     }
                 }
                 is Error -> {
                     Toast.makeText(context, state.e.message, Toast.LENGTH_LONG).show()
                 }
             }
+
         }
     }
 
@@ -69,6 +78,23 @@ class HomeFragment : Fragment() {
 
         val supportActionBar = (context as? AppCompatActivity)?.supportActionBar
         supportActionBar?.hide()
+    }
+
+}
+
+@Composable
+fun Fragment.ThemeWrapper(content: @Composable () -> Unit) {
+    var (colorScheme, typography, shapes) = createMdc3Theme(
+        context = LocalContext.current,
+        layoutDirection = LayoutDirection.Ltr
+    )
+
+    MaterialTheme(
+        colorScheme = colorScheme ?: MaterialTheme.colorScheme,
+        typography = typography ?: MaterialTheme.typography,
+        shapes = shapes ?: MaterialTheme.shapes
+    ) {
+        content()
     }
 
 }

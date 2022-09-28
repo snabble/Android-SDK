@@ -11,7 +11,7 @@
       "type": "text",
       "id": "2",
       "text": "Willkommen bei \nSnabble",
-      "textColor": "snabble_onboarding_primary",
+      "textColor": "snabbleBlue",
       "textStyle": "title",
       "padding": [
         0,
