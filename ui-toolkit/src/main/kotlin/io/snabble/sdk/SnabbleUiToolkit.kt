@@ -2,7 +2,6 @@ package io.snabble.sdk
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
@@ -122,10 +121,7 @@ object SnabbleUiToolkit {
                     args,
                     true
                 )
-                SHOW_DEEPLINK -> {
-                    val deeplink = Uri.parse(requireNotNull(args?.getString(DEEPLINK)))
-                    context.startActivity(Intent(Intent.ACTION_VIEW).apply { data = deeplink })
-                }
+                SHOW_DEEPLINK,
                 GO_BACK,
                 DETAILS_SHOP_BUTTON_ACTION,
                 START_NAVIGATION,

@@ -80,7 +80,7 @@ class OnboardingStepView @JvmOverloads constructor(
     private fun showDeeplink(context: Context, url: String) =
         SnabbleUiToolkit.executeAction(
             context,
-            SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE,
+            SnabbleUiToolkit.Event.SHOW_DEEPLINK,
             bundleOf(SnabbleUiToolkit.DEEPLINK to url)
         )
 

@@ -1,7 +1,9 @@
 package io.snabble.sdk.sample
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -14,10 +16,12 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationBarView
 import com.google.gson.Gson
 import io.snabble.sdk.Shop
@@ -37,6 +41,15 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
     private lateinit var locationPermission: ActivityResultLauncher<String>
 
     private lateinit var locationManager: CheckInLocationManager
+
+    private val sharedPreferences: SharedPreferences
+        get() = PreferenceManager.getDefaultSharedPreferences(this)
+
+    private var onboardingSeen: Boolean
+        get() = sharedPreferences.getBoolean(ONBOARDING_SEEN, false)
+        set(onboardingSeen) = sharedPreferences.edit()
+            .putBoolean(ONBOARDING_SEEN, onboardingSeen)
+            .apply()
 
     private val viewModel: HomeViewModel by viewModels()
 
@@ -68,18 +81,20 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
         }
 
         if (savedInstanceState == null) {
-            lifecycleScope.launch {
-                val model = onboardingRepo.getOnboardingModel()
-                SnabbleUiToolkit.executeAction(
-                    context = this@MainActivity,
-                    SnabbleUiToolkit.Event.SHOW_ONBOARDING,
-                    bundleOf(getString(R.string.bundle_key_model) to model)
-                )
+            if (savedInstanceState == null && !onboardingSeen) {
+                lifecycleScope.launch {
+                    val model = onboardingRepo.getOnboardingModel()
+                    SnabbleUiToolkit.executeAction(
+                        context = this@MainActivity,
+                        SnabbleUiToolkit.Event.SHOW_ONBOARDING,
+                        bundleOf(getString(R.string.bundle_key_model) to model)
+                    )
+                }
             }
-        }
 
-        locationPermission = createLocationPermissionRequestResultLauncher()
-        addSnabbleSdkCheckInListener()
+            locationPermission = createLocationPermissionRequestResultLauncher()
+            addSnabbleSdkCheckInListener()
+        }
     }
 
     override fun onResume() {
@@ -224,19 +239,27 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
             this@MainActivity,
             SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
         ) { _, _ ->
-            popBackStack()
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
-        ) { _, args ->
-            navigate(R.id.navigation_shops_details, args)
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
-        ) { _, _ ->
             navBarView.selectedItemId = R.id.navigation_scanner
+        }
+        SnabbleUiToolkit.setUiAction(
+            this@MainActivity,
+            SnabbleUiToolkit.Event.SHOW_DEEPLINK
+        ) { _, args ->
+            val uri = Uri.parse(requireNotNull(args?.getString(SnabbleUiToolkit.DEEPLINK)))
+            navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
+        }
+        SnabbleUiToolkit.setUiAction(
+            this@MainActivity,
+            SnabbleUiToolkit.Event.SHOW_ONBOARDING
+        ) { _, args ->
+            navigate(R.id.frag_onboarding, args)
+        }
+        SnabbleUiToolkit.setUiAction(
+            this@MainActivity,
+            SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
+        ) { _, _ ->
+            popBackStack()
+            onboardingSeen = true
         }
 
         // listens to permission result and start tracking if permission is granted
@@ -303,5 +326,9 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
                 Snabble.checkedInProject.setValue(null)
             }
         }
+    }
+
+    companion object {
+        private const val ONBOARDING_SEEN = "onboarding_seen"
     }
 }
