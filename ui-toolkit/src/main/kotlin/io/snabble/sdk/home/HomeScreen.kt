@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.ImageItem
@@ -40,13 +41,12 @@ import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.utils.getComposeColor
-import io.snabble.sdk.utils.xx
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 private fun Home(
     homeConfig: Root,
-    action: OnDynamicAction
+    onAction: OnDynamicAction
 ) {
     DynamicView(
         modifier = Modifier
@@ -66,19 +66,19 @@ private fun Home(
                         Padding(all = 0)
                     ),
                     contentScale = ContentScale.Fit,
-                    onClick = action,
+                    onClick = onAction,
                 )
             }
         },
         widgets = homeConfig.widgets,
-        onAction = action,
+        onAction = onAction,
     )
 }
 
 @Composable
 internal fun HomeScreen(
     homeViewModel: HomeViewModel = getViewModel(scope = KoinProvider.scope),
-    dynamicViewModel: DynamicViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    dynamicViewModel: DynamicViewModel = viewModel(),
 ) {
     when (val state = homeViewModel.homeState.collectAsState().value) {
         Loading -> {
@@ -92,7 +92,7 @@ internal fun HomeScreen(
             }
         }
         is Finished -> {
-            Home(state.root) { dynamicViewModel.xx("HomeScreen click").sendAction(it) }
+            Home(homeConfig = state.root, onAction = dynamicViewModel::sendAction)
         }
         is Error -> {
             Toast.makeText(LocalContext.current, state.e.message, Toast.LENGTH_LONG).show()
@@ -158,6 +158,6 @@ private fun HomePreview() {
                 ),
             )
         ),
-        action = {}
+        onAction = {}
     )
 }
