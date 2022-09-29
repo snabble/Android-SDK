@@ -18,8 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.SeeAllStoresItem
-import io.snabble.sdk.ui.WidgetClick
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicAction
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues

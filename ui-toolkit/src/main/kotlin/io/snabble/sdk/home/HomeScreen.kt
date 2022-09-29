@@ -4,9 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -33,7 +33,6 @@ import io.snabble.sdk.home.viewmodel.Error
 import io.snabble.sdk.home.viewmodel.Finished
 import io.snabble.sdk.home.viewmodel.HomeViewModel
 import io.snabble.sdk.home.viewmodel.Loading
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.DynamicViewModel
 import io.snabble.sdk.ui.OnDynamicAction

@@ -25,9 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.Padding
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.theme.properties.Elevation
 import io.snabble.sdk.ui.theme.properties.LocalElevation
 import io.snabble.sdk.ui.theme.properties.LocalPadding
@@ -35,9 +37,6 @@ import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
 import io.snabble.sdk.ui.theme.properties.elevation
 import io.snabble.sdk.ui.theme.properties.padding
-import io.snabble.sdk.ui.AppTheme
-import io.snabble.sdk.ui.DynamicAction
-import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 
@@ -83,7 +82,11 @@ fun InformationWidget(
                 if (model.imageSource != null) {
                     Image(
                         modifier = Modifier
-                            .padding(top = MaterialTheme.padding.large, bottom = MaterialTheme.padding.large, end = MaterialTheme.padding.large),
+                            .padding(
+                                top = MaterialTheme.padding.large,
+                                bottom = MaterialTheme.padding.large,
+                                end = MaterialTheme.padding.large
+                            ),
                         contentScale = ContentScale.Fit,
                         painter = painterResource(id = model.imageSource),
                         contentDescription = "",

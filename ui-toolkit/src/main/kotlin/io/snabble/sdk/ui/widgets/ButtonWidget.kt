@@ -22,22 +22,6 @@ import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
 
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
-@Composable
-fun ButtonPreview() {
-    ButtonWidget(
-        model = ButtonItem(
-            id = "a.button",
-            text = LocalContext.current
-                .getResourceString("Sample_Dashboard_button")
-                .toString(),
-            foregroundColorSource = null,
-            backgroundColorSource = LocalContext.current
-                .getComposeColor("snabble_onboarding_primary"),
-            padding = Padding(horizontal = 8),
-        )
-    )
-}
 
 @Composable
 fun ButtonWidget(
@@ -100,3 +84,19 @@ fun ButtonWidget(
     }
 }
 
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+fun ButtonPreview() {
+    ButtonWidget(
+        model = ButtonItem(
+            id = "a.button",
+            text = LocalContext.current
+                .getResourceString("Sample_Dashboard_button")
+                .toString(),
+            foregroundColorSource = null,
+            backgroundColorSource = LocalContext.current
+                .getComposeColor("snabble_onboarding_primary"),
+            padding = Padding(horizontal = 8),
+        )
+    )
+}

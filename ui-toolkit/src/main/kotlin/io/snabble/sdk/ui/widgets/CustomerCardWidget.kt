@@ -6,14 +6,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.Padding
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.theme.properties.Elevation
 import io.snabble.sdk.ui.theme.properties.LocalElevation
 import io.snabble.sdk.ui.theme.properties.LocalPadding
 import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
-import io.snabble.sdk.ui.DynamicAction
-import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toInformationItem
 import io.snabble.sdk.ui.toolkit.R
 

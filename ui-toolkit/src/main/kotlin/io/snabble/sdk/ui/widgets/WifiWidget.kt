@@ -29,7 +29,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.Padding
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.theme.properties.Elevation
 import io.snabble.sdk.ui.theme.properties.LocalElevation
 import io.snabble.sdk.ui.theme.properties.LocalPadding
@@ -37,9 +38,6 @@ import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
 import io.snabble.sdk.ui.theme.properties.elevation
 import io.snabble.sdk.ui.theme.properties.padding
-import io.snabble.sdk.ui.AppTheme
-import io.snabble.sdk.ui.DynamicAction
-import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 

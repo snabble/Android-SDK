@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.TextItem
-import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicAction
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
