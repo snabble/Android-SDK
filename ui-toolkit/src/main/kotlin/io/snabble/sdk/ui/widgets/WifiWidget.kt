@@ -90,7 +90,7 @@ fun ConnectWifiWidget(
                         modifier = Modifier.weight(1f),
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         text = "Connect to free Wifi",
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Image(
                         modifier = Modifier

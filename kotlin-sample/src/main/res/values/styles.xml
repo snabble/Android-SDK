@@ -14,7 +14,7 @@
         <item name="colorTertiary">@color/snabbleBlue</item>
         <item name="colorOnTertiary">@color/white</item>
         <item name="colorTertiaryContainer">@color/snabbleBlue</item>
-        <item name="colorOnTertiaryContainer">@color/white</item>
+        <item name="colorOnTertiaryContainer">@color/grey</item>
 
 <!--        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.App.Medium</item>-->
 <!--        <item name="textAppearanceBodyMedium">@style/bodyMedium</item>-->

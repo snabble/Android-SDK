@@ -168,9 +168,9 @@ private fun PurchaseDetail(
     ) {
         Card(
             modifier = modifier,
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            shape = RoundedCornerShape(8.dp),
+            shape = MaterialTheme.shapes.small,
             onClick = {}
         ) {
             ConstraintLayout(
@@ -191,10 +191,8 @@ private fun PurchaseDetail(
                 )
                 Text(
                     text = data.amount,
-                    color = Color(0xFF8E8E93),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    letterSpacing = TextUnit(-.21f, TextUnitType.Sp),
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.End,
@@ -212,10 +210,8 @@ private fun PurchaseDetail(
                         }
                 )
                 Text(
-                    text = "${data.title}\n",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = TextUnit(-.24f, TextUnitType.Sp),
+                    text = "${data.title}\n\n",
+                    style = MaterialTheme.typography.bodyLarge,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
@@ -225,10 +221,8 @@ private fun PurchaseDetail(
                 )
                 Text(
                     text = data.time,
-                    color = Color(0xFF8E8E93),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    letterSpacing = TextUnit(-.21f, TextUnitType.Sp),
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
