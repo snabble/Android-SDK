@@ -81,19 +81,20 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
         }
 
         if (savedInstanceState == null) {
-        if (savedInstanceState == null && !onboardingSeen) {
-            lifecycleScope.launch {
-                val model = onboardingRepo.getOnboardingModel()
-                SnabbleUiToolkit.executeAction(
-                    context = this@MainActivity,
-                    SnabbleUiToolkit.Event.SHOW_ONBOARDING,
-                    bundleOf(getString(R.string.bundle_key_model) to model)
-                )
+            if (savedInstanceState == null && !onboardingSeen) {
+                lifecycleScope.launch {
+                    val model = onboardingRepo.getOnboardingModel()
+                    SnabbleUiToolkit.executeAction(
+                        context = this@MainActivity,
+                        SnabbleUiToolkit.Event.SHOW_ONBOARDING,
+                        bundleOf(getString(R.string.bundle_key_model) to model)
+                    )
+                }
             }
-        }
 
-        locationPermission = createLocationPermissionRequestResultLauncher()
-        addSnabbleSdkCheckInListener()
+            locationPermission = createLocationPermissionRequestResultLauncher()
+            addSnabbleSdkCheckInListener()
+        }
     }
 
     override fun onResume() {
