@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.widgets
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +15,35 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.ui.AppTheme
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
+
+@Composable
+fun TextWidget(
+    model: TextItem,
+    modifier: Modifier = Modifier,
+    onClick: OnDynamicAction,
+) {
+    Box(
+        modifier = modifier
+            .wrapContentHeight()
+            .padding(model.padding.toPaddingValues())
+            .clickable { onClick(DynamicAction(model)) }
+    ) {
+        Text(
+            text = model.text,
+            color = Color(model.textColorSource ?: Color.Black.toArgb()),
+            style = when (model.textStyleSource) {
+                "body" -> MaterialTheme.typography.bodyMedium
+                "footer" -> MaterialTheme.typography.bodySmall
+                "title" -> MaterialTheme.typography.headlineLarge
+                else -> MaterialTheme.typography.bodyMedium
+            }
+        )
+    }
+}
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
 @Composable
@@ -28,7 +57,8 @@ fun TextWidgetPreview() {
                 textStyleSource = "title",
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),
-            )
+            ),
+            onClick = {},
         )
         TextWidget(
             model = TextItem(
@@ -38,30 +68,8 @@ fun TextWidgetPreview() {
                 textStyleSource = "body",
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),
-            )
-        )
-    }
-}
-
-@Composable
-fun TextWidget(
-    model: TextItem,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .wrapContentHeight()
-            .padding(model.padding.toPaddingValues())
-    ) {
-        Text(
-            text = model.text,
-            color = Color(model.textColorSource ?: Color.Black.toArgb()),
-            style = when (model.textStyleSource) {
-                "body" -> MaterialTheme.typography.bodyMedium
-                "footer" -> MaterialTheme.typography.bodySmall
-                "title" -> MaterialTheme.typography.headlineLarge
-                else -> MaterialTheme.typography.bodyMedium
-            }
+            ),
+            onClick = {},
         )
     }
 }

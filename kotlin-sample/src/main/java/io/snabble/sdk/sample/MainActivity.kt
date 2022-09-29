@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
@@ -29,11 +31,12 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.home.HomeViewModel
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.sample.utils.PermissionSupport
+import io.snabble.sdk.ui.DynamicViewModel
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.utils.xx
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), PermissionSupport {
@@ -51,7 +54,7 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
             .putBoolean(ONBOARDING_SEEN, onboardingSeen)
             .apply()
 
-    private val viewModel: HomeViewModel by viewModels()
+    private val dynamicViewModel: DynamicViewModel by viewModels()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -72,13 +75,15 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setupToolbar(toolbar, navController, navBarView)
 
-        viewModel.widgetEvent.observe(this) { event ->
-            when (event) {
-                "location" -> startLocationPermissionRequest()
-                "start" -> navBarView.selectedItemId = R.id.navigation_cart
-                "stores" -> navBarView.selectedItemId = R.id.navigation_shop
+        dynamicViewModel.xx("MainActivity:").actions.asLiveData()
+            .observe(this) { action ->
+                when (action.widget.id) {
+                    "location" -> startLocationPermissionRequest()
+                    "start" -> navBarView.selectedItemId = R.id.navigation_cart
+                    "stores" -> navBarView.selectedItemId = R.id.navigation_shop
+                    else -> Log.d("DynamicAction", "-> $action")
+                }
             }
-        }
 
         if (savedInstanceState == null && !onboardingSeen) {
             lifecycleScope.launch {
@@ -89,10 +94,10 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
                     bundleOf(getString(R.string.bundle_key_model) to model)
                 )
             }
-
-            locationPermission = createLocationPermissionRequestResultLauncher()
-            addSnabbleSdkCheckInListener()
         }
+
+        locationPermission = createLocationPermissionRequestResultLauncher()
+        addSnabbleSdkCheckInListener()
     }
 
     override fun onResume() {
@@ -143,7 +148,7 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
             } else {
                 Snabble.checkInManager.stopUpdating()
             }
-            viewModel.permissionState.value = true
+            // viewModel.permissionState.value = true // FIXME: Find another way!?
         }
 
     private fun startCheckInManagerUpdating() {

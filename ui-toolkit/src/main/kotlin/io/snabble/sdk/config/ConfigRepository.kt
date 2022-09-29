@@ -5,9 +5,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-internal class ConfigRepository(
+class ConfigRepository(
     private val fileProvider: ConfigFileProvider,
-    private val json: Json,
+    val json: Json,
 ) {
 
     suspend inline fun <reified T> getConfig(jsonFileName: String): T {
@@ -15,10 +15,10 @@ internal class ConfigRepository(
         return parse(json)
     }
 
-    private suspend fun getFile(jsonFileName: String): String =
+    suspend fun getFile(jsonFileName: String): String =
         fileProvider.getFile(jsonFileName)
 
-    private suspend inline fun <reified T> parse(json: String): T =
+    suspend inline fun <reified T> parse(json: String): T =
         withContext(Dispatchers.Default) {
             this@ConfigRepository.json.decodeFromString(json)
         }

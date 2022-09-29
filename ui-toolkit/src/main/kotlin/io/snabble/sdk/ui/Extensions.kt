@@ -7,12 +7,12 @@ import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.Padding
 
-fun Padding.toPaddingValues(): PaddingValues =
+internal fun Padding.toPaddingValues(): PaddingValues =
     PaddingValues(start = start.dp, top = top.dp, end = end.dp, bottom = bottom.dp)
 
-fun PaddingDto.toPadding() = Padding(start, top, end, bottom)
+internal fun PaddingDto.toPadding() = Padding(start, top, end, bottom)
 
-fun CustomerCardItem.toInformationItem(): InformationItem = InformationItem(
+internal fun CustomerCardItem.toInformationItem(): InformationItem = InformationItem(
     id = id,
     text = text,
     imageSource = imageSource,

@@ -12,8 +12,26 @@ import io.snabble.sdk.ui.theme.properties.LocalElevation
 import io.snabble.sdk.ui.theme.properties.LocalPadding
 import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toInformationItem
 import io.snabble.sdk.ui.toolkit.R
+
+@Composable
+fun CustomerCardWidget(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean = true,
+    model: CustomerCardItem,
+    onClick: OnDynamicAction,
+) {
+    if (isVisible) {
+        InformationWidget(
+            modifier = modifier,
+            model = (model.toInformationItem()),
+            onClick = { onClick(DynamicAction(model)) },
+        )
+    }
+}
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
@@ -35,16 +53,3 @@ fun CustomerCardWidgetPreview() {
         )
     }
 }
-
-@Composable
-fun CustomerCardWidget(
-    modifier: Modifier = Modifier,
-    isVisible: Boolean = true,
-    model: CustomerCardItem,
-    onClick: WidgetClick
-) {
-    if (isVisible) {
-        InformationWidget(modifier = modifier, model = (model.toInformationItem()), onclick = onClick)
-    }
-}
-

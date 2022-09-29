@@ -9,7 +9,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-object PaddingValueListSerializer : KSerializer<PaddingDto> {
+internal object PaddingValueListSerializer : KSerializer<PaddingDto> {
 
     override val descriptor: SerialDescriptor = ListSerializer(Int.serializer()).descriptor
 

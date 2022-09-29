@@ -16,7 +16,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.Widget
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
@@ -42,7 +43,7 @@ fun ButtonPreview() {
 fun ButtonWidget(
     modifier: Modifier = Modifier,
     model: ButtonItem,
-    onClick: WidgetClick = {},
+    onClick: OnDynamicAction = {},
 ) {
     Box(
         modifier = modifier
@@ -50,7 +51,7 @@ fun ButtonWidget(
             .padding(model.padding.toPaddingValues())
     ) {
         Button(
-            onClick = { onClick },
+            onClick = { onClick(DynamicAction(model)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(
                     model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
@@ -76,7 +77,7 @@ fun ButtonWidget(
     modifier: Modifier = Modifier,
     widget: Widget,
     text: String,
-    onClick: WidgetClick = {}
+    onClick: OnDynamicAction = {}
 ) {
     Box(
         modifier = modifier
@@ -84,7 +85,7 @@ fun ButtonWidget(
     ) {
         Button(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onClick(widget.id) },
+            onClick = { onClick(DynamicAction(widget)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer,
             ),

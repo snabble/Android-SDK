@@ -5,6 +5,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ripple.LocalRippleTheme
@@ -34,8 +35,69 @@ import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
 import io.snabble.sdk.ui.theme.properties.elevation
 import io.snabble.sdk.ui.theme.properties.padding
+import io.snabble.sdk.ui.AppTheme
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InformationWidget(
+    modifier: Modifier = Modifier,
+    model: InformationItem,
+    onClick: OnDynamicAction
+) {
+    CompositionLocalProvider(
+        // TODO: Providing this app wide?
+        LocalRippleTheme provides object : RippleTheme {
+
+            @Composable
+            override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
+
+            @Composable
+            override fun rippleAlpha(): RippleAlpha =
+                RippleTheme.defaultRippleAlpha(Color.Black, lightTheme = !isSystemInDarkTheme())
+        }
+    ) {
+        rememberRipple()
+        Card(
+            onClick = { onClick(DynamicAction(model)) },
+            modifier = Modifier
+                .padding(model.padding.toPaddingValues())
+                .indication(
+                    interactionSource = MutableInteractionSource(),
+                    indication = rememberRipple()
+                ),
+            shape = MaterialTheme.shapes.small,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
+        ) {
+            Row(
+                modifier = modifier
+                    .defaultMinSize(minHeight = 48.dp)
+                    .padding(horizontal = MaterialTheme.padding.medium)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (model.imageSource != null) {
+                    Image(
+                        modifier = Modifier
+                            .padding(top = MaterialTheme.padding.large, bottom = MaterialTheme.padding.large, end = MaterialTheme.padding.large),
+                        contentScale = ContentScale.Fit,
+                        painter = painterResource(id = model.imageSource),
+                        contentDescription = "",
+                    )
+                }
+                Text(
+                    text = model.text,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
@@ -51,64 +113,7 @@ fun InformationWidgetPreview() {
                 imageSource = R.drawable.store_logo,
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
-            onclick = {}
+            onClick = {}
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InformationWidget(
-    modifier: Modifier = Modifier,
-    model: InformationItem,
-    onclick: WidgetClick
-) {
-    CompositionLocalProvider(
-
-        // TODO: Providing this app wide?
-        LocalRippleTheme provides object : RippleTheme {
-
-            @Composable
-            override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
-
-            @Composable
-            override fun rippleAlpha(): RippleAlpha =
-                RippleTheme.defaultRippleAlpha(Color.Black, lightTheme = !isSystemInDarkTheme())
-        }
-    ) {
-        rememberRipple()
-        Card(
-            onClick = { onclick },
-            modifier = Modifier
-                .indication(
-                    interactionSource = MutableInteractionSource(),
-                    indication = rememberRipple()
-                ),
-            shape = MaterialTheme.shapes.small,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
-        ) {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(model.padding.toPaddingValues()),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (model.imageSource != null) {
-                    Image(
-                        modifier = Modifier
-                            .padding(end = MaterialTheme.padding.large),
-                        contentScale = ContentScale.Fit,
-                        painter = painterResource(id = model.imageSource),
-                        contentDescription = "",
-                    )
-                }
-                Text(
-                    text = model.text,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
     }
 }
