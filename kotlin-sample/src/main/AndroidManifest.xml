@@ -33,5 +33,9 @@
         <meta-data
             android:name="snabble_network_interceptor"
             android:value="io.snabble.sdk.sample.LoggingInterceptor" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value=""/>
     </application>
 </manifest>

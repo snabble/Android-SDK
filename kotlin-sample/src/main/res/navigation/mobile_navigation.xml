@@ -21,6 +21,10 @@
             android:name="headerTitle"
             android:defaultValue="@string/Sample.Onboarding.message3"
             app:argType="reference" />
+        <argument
+            android:name="hideBottomNavigation"
+            android:defaultValue="true"
+            app:argType="boolean" />
         <deepLink
             android:id="@+id/deepLink"
             app:uri="kotlin-sample://terms" />

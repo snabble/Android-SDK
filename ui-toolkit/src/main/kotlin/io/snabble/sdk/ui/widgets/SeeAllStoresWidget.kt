@@ -34,7 +34,7 @@ fun SeeAllStoresWidget(
     Box(modifier = modifier.fillMaxWidth()) {
         if (!checkInState) {
             ButtonWidget(
-                modifier = Modifier.align(Alignment.Center),
+                modifier = modifier.align(Alignment.Center),
                 widget = model,
                 text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
                 onClick = onClick

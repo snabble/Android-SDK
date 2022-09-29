@@ -19,6 +19,7 @@ fun CustomerCardWidget(
 ) {
     if (isVisible) {
         InformationWidget(
+            modifier = modifier,
             model = (model.toInformationItem()),
             onClick = { onClick(DynamicAction(model)) },
         )
