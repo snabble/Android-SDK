@@ -42,7 +42,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
-import io.snabble.sdk.ui.theme.spacing
+import io.snabble.sdk.ui.theme.properties.Elevation
+import io.snabble.sdk.ui.theme.properties.LocalElevation
+import io.snabble.sdk.ui.theme.properties.LocalPadding
+import io.snabble.sdk.ui.theme.properties.applyElevation
+import io.snabble.sdk.ui.theme.properties.applyPadding
+import io.snabble.sdk.ui.theme.properties.elevation
+import io.snabble.sdk.ui.theme.properties.padding
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.purchase.OnLifecycleEvent
 import io.snabble.sdk.ui.widgets.purchase.Purchase
@@ -86,7 +92,7 @@ private fun PurchasesWidget(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .padding(PaddingValues(horizontal = (model.padding.start + 8).dp))
+                .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
                 .constrainAs(title) {
                     linkTo(start = parent.start, end = more.start, bias = 0f)
                     top.linkTo(parent.top)
@@ -102,7 +108,7 @@ private fun PurchasesWidget(
                     bottom.linkTo(title.bottom)
                     height = Dimension.fillToConstraints
                 }
-                .padding(PaddingValues(horizontal = (model.padding.start + 8).dp))
+                .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(
@@ -126,7 +132,7 @@ private fun PurchasesWidget(
         }
         Row(
             modifier = Modifier
-                .padding(top = 16.dp)
+                .padding(top = MaterialTheme.padding.large)
                 .constrainAs(purchases) {
                     start.linkTo(parent.start)
                     top.linkTo(title.bottom)
@@ -139,7 +145,7 @@ private fun PurchasesWidget(
                     data = purchase
                 )
                 if (index < purchaseList.lastIndex) {
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(MaterialTheme.padding.large))
                 }
             }
         }
@@ -167,14 +173,14 @@ private fun PurchaseDetail(
         Card(
             modifier = modifier,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.spacing.small),
+            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
             shape = MaterialTheme.shapes.small,
             onClick = {}
         ) {
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(PaddingValues(12.dp))
+                    .padding(PaddingValues(MaterialTheme.padding.medium))
             ) {
                 val (icon, amount, title, time) = createRefs()
                 Image(
@@ -236,34 +242,52 @@ private fun PurchaseDetail(
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun PurchaseDetailPreview() {
-    PurchaseDetail(data = Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"))
+    CompositionLocalProvider(
+        LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+
+        PurchaseDetail(data = Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"))
+    }
 }
 
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun PurchaseWidgetPreview() {
-    PurchasesWidget(
-        model = PurchasesItem(
-            id = "last.purchases",
-            projectId = ProjectId("0123"),
-            padding = Padding(horizontal = 0)
-        ),
-        purchaseList = listOf(Purchase("13,37 €", "Snabble Store Bonn", "Today"))
-    )
+    CompositionLocalProvider(
+        LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+
+        PurchasesWidget(
+            model = PurchasesItem(
+                id = "last.purchases",
+                projectId = ProjectId("0123"),
+                padding = Padding(horizontal = 0)
+            ),
+            purchaseList = listOf(Purchase("13,37 €", "Snabble Store Bonn", "Today"))
+        )
+    }
 }
 
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun TwoPurchasesPreview() {
-    PurchasesWidget(
-        model = PurchasesItem(
-            id = "last.purchases",
-            projectId = ProjectId("0123"),
-            padding = Padding(horizontal = 0)
-        ),
-        purchaseList = listOf(
-            Purchase("13,37 €", "Snabble Store Bonn", "Today"),
-            Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"),
+    CompositionLocalProvider(
+        LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+
+        PurchasesWidget(
+            model = PurchasesItem(
+                id = "last.purchases",
+                projectId = ProjectId("0123"),
+                padding = Padding(horizontal = 0)
+            ),
+            purchaseList = listOf(
+                Purchase("13,37 €", "Snabble Store Bonn", "Today"),
+                Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"),
+            )
         )
-    )
+    }
 }

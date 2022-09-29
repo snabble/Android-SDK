@@ -1,7 +1,5 @@
 package io.snabble.sdk.home
 
-import android.content.Context
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,17 +18,12 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import com.google.android.material.composethemeadapter3.createMdc3Theme
-import io.snabble.sdk.ui.theme.LocalSpacing
-import io.snabble.sdk.ui.theme.Spacing
-import io.snabble.sdk.ui.theme.mergeSpacing
+import io.snabble.sdk.ui.theme.ThemeWrapper
 import io.snabble.sdk.ui.toolkit.R
 
 class HomeFragment : Fragment() {
@@ -85,35 +78,6 @@ class HomeFragment : Fragment() {
         supportActionBar?.hide()
     }
 
-}
-
-@Composable
-fun Fragment.ThemeWrapper(content: @Composable () -> Unit) {
-    var (colorScheme, typography, shapes) = createMdc3Theme(
-        context = LocalContext.current,
-        layoutDirection = LayoutDirection.Ltr
-    )
-    CompositionLocalProvider(LocalSpacing provides Spacing().mergeSpacing()) {
-        MaterialTheme(
-            colorScheme = colorScheme ?: MaterialTheme.colorScheme,
-            typography = typography ?: MaterialTheme.typography,
-            shapes = shapes ?: MaterialTheme.shapes
-        ) {
-            content()
-        }
-    }
-}
-
-fun Context.getDimenId(resource: String): Int =
-    resources.getIdentifier(resource, "dimen", packageName)
-
-fun Context.resolveDimenId(resource: String): Int? {
-    val resId = getDimenId(resource)
-    return if (resId == Resources.ID_NULL) {
-        null
-    } else {
-        resId
-    }
 }
 
 @Composable

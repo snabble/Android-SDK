@@ -27,24 +27,34 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.WidgetClick
-import io.snabble.sdk.ui.theme.spacing
+import io.snabble.sdk.ui.theme.properties.Elevation
+import io.snabble.sdk.ui.theme.properties.LocalElevation
+import io.snabble.sdk.ui.theme.properties.LocalPadding
+import io.snabble.sdk.ui.theme.properties.applyElevation
+import io.snabble.sdk.ui.theme.properties.applyPadding
+import io.snabble.sdk.ui.theme.properties.elevation
+import io.snabble.sdk.ui.theme.properties.padding
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 fun WifiWidgetPreview() {
-    ConnectWifiWidget(
-        model = ConnectWifiItem(
-            id = "wifiii",
-            padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
-        ),
-        isVisible = true
-    )
+    CompositionLocalProvider(
+        LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+        ConnectWifiWidget(
+            model = ConnectWifiItem(
+                id = "wifiii",
+                padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
+            ),
+            isVisible = true
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +88,7 @@ fun ConnectWifiWidget(
                     ),
                 shape = MaterialTheme.shapes.small,
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.spacing.small),
+                elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
             ) {
                 Row(
                     modifier = modifier
@@ -95,7 +105,7 @@ fun ConnectWifiWidget(
                     )
                     Image(
                         modifier = Modifier
-                            .padding(start = 16.dp)
+                            .padding(start = MaterialTheme.padding.large)
                             .wrapContentSize(),
                         contentScale = ContentScale.Fit,
                         painter = painterResource(id = R.drawable.snabble_wifi),

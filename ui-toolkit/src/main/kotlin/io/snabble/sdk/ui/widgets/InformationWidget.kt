@@ -24,26 +24,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.WidgetClick
-import io.snabble.sdk.ui.theme.spacing
+import io.snabble.sdk.ui.theme.properties.Elevation
+import io.snabble.sdk.ui.theme.properties.LocalElevation
+import io.snabble.sdk.ui.theme.properties.LocalPadding
+import io.snabble.sdk.ui.theme.properties.applyElevation
+import io.snabble.sdk.ui.theme.properties.applyPadding
+import io.snabble.sdk.ui.theme.properties.elevation
+import io.snabble.sdk.ui.theme.properties.padding
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 fun InformationWidgetPreview() {
-    InformationWidget(
-        model = InformationItem(
-            id = "an.image",
-            text = "Füge deine Kundenkarte hinzu.",
-            imageSource = R.drawable.store_logo,
-            padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
-        ),
-        onclick = {}
-    )
+    CompositionLocalProvider(
+        LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+        InformationWidget(
+            model = InformationItem(
+                id = "an.image",
+                text = "Füge deine Kundenkarte hinzu.",
+                imageSource = R.drawable.store_logo,
+                padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
+            ),
+            onclick = {}
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +86,7 @@ fun InformationWidget(
                 ),
             shape = MaterialTheme.shapes.small,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.spacing.small),
+            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
         ) {
             Row(
                 modifier = modifier
@@ -87,7 +97,7 @@ fun InformationWidget(
                 if (model.imageSource != null) {
                     Image(
                         modifier = Modifier
-                            .padding(end = 16.dp),
+                            .padding(end = MaterialTheme.padding.large),
                         contentScale = ContentScale.Fit,
                         painter = painterResource(id = model.imageSource),
                         contentDescription = "",
