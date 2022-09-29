@@ -10,13 +10,19 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import io.snabble.sdk.ui.DynamicViewModel
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.utils.xx
 
 class HomeFragment : Fragment() {
 
     private lateinit var composeView: ComposeView
+
+    private val dynamicViewModel: DynamicViewModel by viewModels(
+        ownerProducer = { ViewModelStoreOwner { requireActivity().viewModelStore } })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,10 +31,11 @@ class HomeFragment : Fragment() {
 
         composeView = findViewById(R.id.composable)
 
+        dynamicViewModel.xx("HomeFragment")
         composeView.setContent {
-            ViewModelStoreOwnerLocalProvider {
-                HomeScreen()
-            }
+            // ViewModelStoreOwnerLocalProvider {
+            HomeScreen(dynamicViewModel = dynamicViewModel)
+            // }
         }
     }
 

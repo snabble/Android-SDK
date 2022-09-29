@@ -5,7 +5,5 @@ import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 internal val homeModule = module {
-    module {
-        viewModelOf(::HomeViewModel)
-    }
+    viewModelOf(::HomeViewModel)
 }

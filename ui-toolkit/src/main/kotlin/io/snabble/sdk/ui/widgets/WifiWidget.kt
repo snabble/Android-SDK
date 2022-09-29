@@ -34,21 +34,10 @@ import androidx.compose.ui.unit.sp
 import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.AppTheme
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
-
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
-@Composable
-fun WifiWidgetPreview() {
-    ConnectWifiWidget(
-        model = ConnectWifiItem(
-            id = "wifiii",
-            padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
-        ),
-        isVisible = true
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +45,7 @@ fun ConnectWifiWidget(
     modifier: Modifier = Modifier,
     model: ConnectWifiItem,
     isVisible: Boolean,
-    onclick: WidgetClick = {}
+    onClick: OnDynamicAction,
 ) {
     if (isVisible) {
         CompositionLocalProvider(
@@ -73,7 +62,7 @@ fun ConnectWifiWidget(
         ) {
             rememberRipple()
             Card(
-                onClick = { onclick },
+                onClick = { onClick(DynamicAction(model)) },
                 modifier = Modifier
                     .indication(
                         interactionSource = MutableInteractionSource(),
@@ -112,4 +101,17 @@ fun ConnectWifiWidget(
             }
         }
     }
+}
+
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+fun WifiWidgetPreview() {
+    ConnectWifiWidget(
+        model = ConnectWifiItem(
+            id = "wifiii",
+            padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
+        ),
+        isVisible = true,
+        onClick = {}
+    )
 }

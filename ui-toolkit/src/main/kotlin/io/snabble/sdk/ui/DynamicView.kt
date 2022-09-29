@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.CustomerCardItem
@@ -20,7 +18,6 @@ import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
-import io.snabble.sdk.home.viewmodel.HomeViewModel
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ConnectWifiWidget
 import io.snabble.sdk.ui.widgets.CustomerCardWidget
@@ -30,9 +27,9 @@ import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
-import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseScreen
+import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseWidget
 
-typealias WidgetClick = (id: String) -> Unit
+typealias OnDynamicAction = (action: DynamicAction) -> Unit
 
 @Composable
 fun DynamicView(
@@ -40,7 +37,7 @@ fun DynamicView(
     contentPadding: PaddingValues,
     background: @Composable (() -> Unit),
     widgets: List<Widget>,
-    onClick: WidgetClick,
+    onAction: OnDynamicAction,
 ) {
     Box(
         modifier = modifier
@@ -53,7 +50,7 @@ fun DynamicView(
             contentPadding = contentPadding,
         ) {
             items(items = widgets) { widget ->
-                Widget(widget = widget, onClick)
+                Widget(widget = widget, onAction)
             }
         }
     }
@@ -62,69 +59,72 @@ fun DynamicView(
 @Composable
 fun Widget(
     widget: Widget,
-    click: WidgetClick,
-    viewModel: HomeViewModel = viewModel()
+    onAction: OnDynamicAction,
 ) = when (widget) {
     is ButtonItem -> {
         ButtonWidget(
             model = widget,
-            onClick = click,
+            onClick = onAction,
         )
     }
     is CustomerCardItem -> {
         CustomerCardWidget(
             model = widget,
-            isVisible = viewModel.customerCardVisibilityState.value,
-            onClick = { click(widget.id) })
+            // FIXME: Create a ViewModel: viewModel.customerCardVisibilityState.value
+            isVisible = true,
+            onClick = onAction,
+        )
     }
     is ConnectWifiItem -> {
         ConnectWifiWidget(
             model = widget,
-            onclick = { click(widget.id) },
-            isVisible = true // FIXME: Move to ViewModel: GetAvailableWifiUseCase(LocalContext.current)().value
+            onClick = onAction,
+            isVisible = true // FIXME: Create a ViewModel: GetAvailableWifiUseCase(LocalContext.current)().value
         )
     }
     is ImageItem -> {
         ImageWidget(
             model = widget,
-            modifier = Modifier
-                .clickable { click(widget.id) }
+            onClick = onAction
         )
     }
     is InformationItem -> {
         InformationWidget(
             model = widget,
-            onclick = { click(widget.id) })
+            onClick = onAction,
+        )
     }
     is LocationPermissionItem -> {
         LocationPermissionWidget(
             model = widget,
-            permissionState = viewModel.permissionState.value,
-            onClick = click
+            // FIXME: Create a ViewModel: viewModel.permissionState.value,
+            permissionState = true,
+            onClick = onAction,
         )
     }
     is PurchasesItem -> {
-        PurchaseScreen(model = widget)
+        PurchaseWidget(model = widget)
     }
     is SeeAllStoresItem -> {
         SeeAllStoresWidget(
             model = widget,
-            checkinState = viewModel.checkInState.value,
-            onClick = click
+            // FIXME: Create a ViewModel: viewModel.checkInState.value
+            checkInState = true,
+            onClick = onAction,
         )
     }
     is StartShoppingItem -> {
         StartShoppingWidget(
             model = widget,
-            checkinState = viewModel.checkInState.value,
-            onClick = click
+            // FIXME: Create a ViewModel: viewModel.checkInState.value
+            checkInState = true,
+            onClick = onAction,
         )
     }
     is TextItem -> {
         TextWidget(
             model = widget,
-            modifier = Modifier
-                .clickable { click(widget.id) }
+            onClick = onAction,
         )
     }
     else -> Unit

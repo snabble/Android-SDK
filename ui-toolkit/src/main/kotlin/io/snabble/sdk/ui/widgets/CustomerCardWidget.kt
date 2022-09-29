@@ -5,14 +5,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.Padding
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toInformationItem
 import io.snabble.sdk.ui.toolkit.R
+
+@Composable
+fun CustomerCardWidget(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean = true,
+    model: CustomerCardItem,
+    onClick: OnDynamicAction,
+) {
+    if (isVisible) {
+        InformationWidget(
+            model = (model.toInformationItem()),
+            onClick = { onClick(DynamicAction(model)) },
+        )
+    }
+}
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 fun CustomerCardWidgetPreview() {
-
     CustomerCardWidget(
         model = CustomerCardItem(
             id = "an.image",
@@ -24,16 +39,3 @@ fun CustomerCardWidgetPreview() {
         onClick = {}
     )
 }
-
-@Composable
-fun CustomerCardWidget(
-    modifier: Modifier = Modifier,
-    isVisible: Boolean = true,
-    model: CustomerCardItem,
-    onClick: WidgetClick
-) {
-    if (isVisible) {
-        InformationWidget(model = (model.toInformationItem()), onclick = onClick)
-    }
-}
-

@@ -34,17 +34,19 @@ import io.snabble.sdk.home.viewmodel.HomeViewModel
 import io.snabble.sdk.home.viewmodel.Loading
 import io.snabble.sdk.ui.AppTheme
 import io.snabble.sdk.ui.DynamicView
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicViewModel
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.utils.getComposeColor
+import io.snabble.sdk.utils.xx
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 private fun Home(
     homeConfig: Root,
-    onClick: WidgetClick
+    action: OnDynamicAction
 ) {
     DynamicView(
         modifier = Modifier
@@ -64,26 +66,21 @@ private fun Home(
                         Padding(all = 0)
                     ),
                     contentScale = ContentScale.Fit,
+                    onClick = action,
                 )
             }
         },
         widgets = homeConfig.widgets,
-        onClick = onClick,
+        onAction = action,
     )
 }
 
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = getViewModel(scope = KoinProvider.scope)
-    // FIXME: Delete me!
-    // viewModel: HomeViewModel = viewModel(
-    //     factory = HomeViewModelFactory(
-    //         GetPermissionStateUseCase(),
-    //         GetHomeConfigUseCase(LocalContext.current)
-    //     )
-    // )
+internal fun HomeScreen(
+    homeViewModel: HomeViewModel = getViewModel(scope = KoinProvider.scope),
+    dynamicViewModel: DynamicViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
-    when (val state = viewModel.homeState.collectAsState().value) {
+    when (val state = homeViewModel.homeState.collectAsState().value) {
         Loading -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
@@ -95,7 +92,7 @@ fun HomeScreen(
             }
         }
         is Finished -> {
-            Home(state.root, viewModel::onClick)
+            Home(state.root) { dynamicViewModel.xx("HomeScreen click").sendAction(it) }
         }
         is Error -> {
             Toast.makeText(LocalContext.current, state.e.message, Toast.LENGTH_LONG).show()
@@ -109,7 +106,7 @@ fun HomeScreen(
     showSystemUi = true,
 )
 @Composable
-fun HomePreview() {
+private fun HomePreview() {
     Home(
         homeConfig = Root(
             configuration = Configuration(
@@ -161,6 +158,6 @@ fun HomePreview() {
                 ),
             )
         ),
-        onClick = {}
+        action = {}
     )
 }

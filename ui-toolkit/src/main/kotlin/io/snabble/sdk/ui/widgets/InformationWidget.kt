@@ -5,6 +5,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,30 +32,17 @@ import androidx.compose.ui.unit.sp
 import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.AppTheme
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
-
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
-@Composable
-fun InformationWidgetPreview() {
-    InformationWidget(
-        model = InformationItem(
-            id = "an.image",
-            text = "Füge deine Kundenkarte hinzu.",
-            imageSource = R.drawable.store_logo,
-            padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
-        ),
-        onclick = {}
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InformationWidget(
     modifier: Modifier = Modifier,
     model: InformationItem,
-    onclick: WidgetClick
+    onClick: OnDynamicAction
 ) {
     CompositionLocalProvider(
         // TODO: Providing this app wide?
@@ -70,8 +58,9 @@ fun InformationWidget(
     ) {
         rememberRipple()
         Card(
-            onClick = { onclick },
+            onClick = { onClick(DynamicAction(model)) },
             modifier = Modifier
+                .padding(model.padding.toPaddingValues())
                 .indication(
                     interactionSource = MutableInteractionSource(),
                     indication = rememberRipple()
@@ -82,14 +71,15 @@ fun InformationWidget(
         ) {
             Row(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .padding(model.padding.toPaddingValues()),
-                verticalAlignment = Alignment.CenterVertically
+                    .defaultMinSize(minHeight = 48.dp)
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (model.imageSource != null) {
                     Image(
                         modifier = Modifier
-                            .padding(end = 16.dp),
+                            .padding(top = 8.dp, bottom = 8.dp, end = 8.dp),
                         contentScale = ContentScale.Fit,
                         painter = painterResource(id = model.imageSource),
                         contentDescription = "",
@@ -105,4 +95,18 @@ fun InformationWidget(
             }
         }
     }
+}
+
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+fun InformationWidgetPreview() {
+    InformationWidget(
+        model = InformationItem(
+            id = "an.image",
+            text = "Füge deine Kundenkarte hinzu.",
+            imageSource = R.drawable.store_logo,
+            padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
+        ),
+        onClick = {}
+    )
 }

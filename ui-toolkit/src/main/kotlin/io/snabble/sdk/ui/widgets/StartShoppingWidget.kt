@@ -9,29 +9,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.StartShoppingItem
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toolkit.R
 
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun StartShoppingPreview() {
-    StartShoppingWidget(
-        model = StartShoppingItem(
-            id = "1",
-            padding = Padding(horizontal = 16, vertical = 5)
-        ),
-        checkinState = true
-    )
-}
-
-@Composable
-fun StartShoppingWidget(
+internal fun StartShoppingWidget(
     modifier: Modifier = Modifier,
     model: StartShoppingItem,
-    checkinState: Boolean = false,
-    onClick: WidgetClick = {},
+    checkInState: Boolean = false,
+    onClick: OnDynamicAction,
 ) {
-    if (checkinState) {
+    if (checkInState) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
@@ -41,4 +29,17 @@ fun StartShoppingWidget(
             )
         }
     }
+}
+
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+fun StartShoppingPreview() {
+    StartShoppingWidget(
+        model = StartShoppingItem(
+            id = "1",
+            padding = Padding(horizontal = 16, vertical = 5)
+        ),
+        checkInState = true,
+        onClick = {}
+    )
 }

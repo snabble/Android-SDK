@@ -18,41 +18,21 @@ import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.ui.AppTheme
-import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
-
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
-@Composable
-fun SeeAllStoresPreview() {
-    Column(Modifier.fillMaxSize()) {
-        SeeAllStoresWidget(
-            model = SeeAllStoresItem(
-                id = "1",
-                padding = Padding(horizontal = 16, vertical = 5)
-            ),
-            checkinState = true
-        )
-        SeeAllStoresWidget(
-            model = SeeAllStoresItem(
-                id = "1",
-                padding = Padding(horizontal = 16, vertical = 5)
-            ),
-            checkinState = false
-        )
-    }
-}
 
 @Composable
 fun SeeAllStoresWidget(
     modifier: Modifier = Modifier,
     model: SeeAllStoresItem,
-    checkinState: Boolean,
-    onClick: WidgetClick = {},
+    checkInState: Boolean,
+    onClick: OnDynamicAction = {},
 ) {
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        if (!checkinState) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        if (!checkInState) {
             ButtonWidget(
                 modifier = Modifier.align(Alignment.Center),
                 widget = model,
@@ -66,7 +46,7 @@ fun SeeAllStoresWidget(
                     .align(Alignment.Center)
                     .height(48.dp)
                     .padding(model.padding.toPaddingValues())
-                    .clickable { onClick(model.id) },
+                    .clickable { onClick(DynamicAction(model)) },
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -75,5 +55,26 @@ fun SeeAllStoresWidget(
                 )
             }
         }
+    }
+}
+
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+fun SeeAllStoresPreview() {
+    Column(Modifier.fillMaxSize()) {
+        SeeAllStoresWidget(
+            model = SeeAllStoresItem(
+                id = "1",
+                padding = Padding(horizontal = 16, vertical = 5)
+            ),
+            checkInState = true
+        )
+        SeeAllStoresWidget(
+            model = SeeAllStoresItem(
+                id = "1",
+                padding = Padding(horizontal = 16, vertical = 5)
+            ),
+            checkInState = false
+        )
     }
 }

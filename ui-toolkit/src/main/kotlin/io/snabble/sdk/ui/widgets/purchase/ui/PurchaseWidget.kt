@@ -54,7 +54,7 @@ import io.snabble.sdk.ui.widgets.purchase.viewmodel.PurchaseViewModel
 import io.snabble.sdk.ui.widgets.purchase.viewmodel.ShowPurchases
 
 @Composable
-internal fun PurchaseScreen(
+internal fun PurchaseWidget(
     model: PurchasesItem,
     viewModel: PurchaseViewModel = viewModel()
 ) {
@@ -66,14 +66,14 @@ internal fun PurchaseScreen(
         Loading -> Unit
         is ShowPurchases -> {
             if (state.data.isNotEmpty()) {
-                PurchasesWidget(model = model, purchaseList = state.data)
+                Purchases(model = model, purchaseList = state.data)
             }
         }
     }
 }
 
 @Composable
-private fun PurchasesWidget(
+private fun Purchases(
     model: PurchasesItem,
     purchaseList: List<Purchase>,
 ) {
@@ -251,7 +251,7 @@ private fun PurchaseDetailPreview() {
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun PurchaseWidgetPreview() {
-    PurchasesWidget(
+    Purchases(
         model = PurchasesItem(
             id = "last.purchases",
             projectId = ProjectId("0123"),
@@ -264,7 +264,7 @@ private fun PurchaseWidgetPreview() {
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun TwoPurchasesPreview() {
-    PurchasesWidget(
+    Purchases(
         model = PurchasesItem(
             id = "last.purchases",
             projectId = ProjectId("0123"),
