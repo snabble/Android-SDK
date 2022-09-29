@@ -45,7 +45,7 @@ class ShopListView @JvmOverloads constructor(
         )
         youAreHereContainer.isVisible = item.isCheckedIn
 
-        val label = if (item.isCheckedIn) null else item.distanceLabel
+        val label = if (!item.isCheckedIn) item.distanceLabel else null
         distance.setTextOrHide(label)
 
         setOnClickListener {

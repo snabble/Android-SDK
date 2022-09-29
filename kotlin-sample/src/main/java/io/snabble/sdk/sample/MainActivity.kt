@@ -43,13 +43,11 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
     private val sharedPreferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(this)
 
-    var onboardingSeen: Boolean
-        get() = sharedPreferences.getBoolean(
-            ONBOARDING_SEEN,
-            false
-        )
+    private var onboardingSeen: Boolean
+        get() = sharedPreferences.getBoolean(ONBOARDING_SEEN, false)
         set(onboardingSeen) = sharedPreferences.edit()
-            .putBoolean(ONBOARDING_SEEN, onboardingSeen).apply()
+            .putBoolean(ONBOARDING_SEEN, onboardingSeen)
+            .apply()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -71,7 +69,6 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
         setupToolbar(toolbar, navController, navBarView)
 
         if (savedInstanceState == null && !onboardingSeen) {
-
             lifecycleScope.launch {
                 val model = onboardingRepo.getOnboardingModel()
                 SnabbleUiToolkit.executeAction(
