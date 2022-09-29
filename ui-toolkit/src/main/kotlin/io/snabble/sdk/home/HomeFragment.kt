@@ -1,5 +1,7 @@
 package io.snabble.sdk.home
 
+import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.android.material.composethemeadapter3.createMdc3Theme
 import io.snabble.sdk.ui.theme.LocalSpacing
 import io.snabble.sdk.ui.theme.Spacing
+import io.snabble.sdk.ui.theme.mergeSpacing
 import io.snabble.sdk.ui.toolkit.R
 
 class HomeFragment : Fragment() {
@@ -90,7 +93,7 @@ fun Fragment.ThemeWrapper(content: @Composable () -> Unit) {
         context = LocalContext.current,
         layoutDirection = LayoutDirection.Ltr
     )
-    CompositionLocalProvider(LocalSpacing provides Spacing()) {
+    CompositionLocalProvider(LocalSpacing provides Spacing().mergeSpacing()) {
         MaterialTheme(
             colorScheme = colorScheme ?: MaterialTheme.colorScheme,
             typography = typography ?: MaterialTheme.typography,
@@ -99,7 +102,18 @@ fun Fragment.ThemeWrapper(content: @Composable () -> Unit) {
             content()
         }
     }
+}
 
+fun Context.getDimenId(resource: String): Int =
+    resources.getIdentifier(resource, "dimen", packageName)
+
+fun Context.resolveDimenId(resource: String): Int? {
+    val resId = getDimenId(resource)
+    return if (resId == Resources.ID_NULL) {
+        null
+    } else {
+        resId
+    }
 }
 
 @Composable
