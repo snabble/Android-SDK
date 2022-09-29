@@ -103,7 +103,10 @@ fun Widget(
         )
     }
     is PurchasesItem -> {
-        PurchaseWidget(model = widget)
+        PurchaseWidget(
+            model = widget,
+            onAction = onAction,
+        )
     }
     is SeeAllStoresItem -> {
         SeeAllStoresWidget(

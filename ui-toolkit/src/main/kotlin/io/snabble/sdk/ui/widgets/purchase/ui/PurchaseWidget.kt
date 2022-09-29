@@ -42,6 +42,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
+import io.snabble.sdk.ui.DynamicAction
+import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.theme.properties.Elevation
 import io.snabble.sdk.ui.theme.properties.LocalElevation
 import io.snabble.sdk.ui.theme.properties.LocalPadding
@@ -59,7 +61,8 @@ import io.snabble.sdk.ui.widgets.purchase.viewmodel.ShowPurchases
 @Composable
 internal fun PurchaseWidget(
     model: PurchasesItem,
-    viewModel: PurchaseViewModel = viewModel()
+    viewModel: PurchaseViewModel = viewModel(),
+    onAction: OnDynamicAction,
 ) {
     OnLifecycleEvent(Lifecycle.Event.ON_RESUME) { _, _ ->
         viewModel.updatePurchases()
@@ -69,7 +72,7 @@ internal fun PurchaseWidget(
         Loading -> Unit
         is ShowPurchases -> {
             if (state.data.isNotEmpty()) {
-                Purchases(model = model, purchaseList = state.data)
+                Purchases(model = model, purchaseList = state.data, onAction)
             }
         }
     }
@@ -79,6 +82,7 @@ internal fun PurchaseWidget(
 private fun Purchases(
     model: PurchasesItem,
     purchaseList: List<Purchase>,
+    onAction: OnDynamicAction,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -116,7 +120,7 @@ private fun Purchases(
                         color = MaterialTheme.colorScheme.primary
                     ),
                 ) {
-
+                    onAction(DynamicAction(model, mapOf("more" to Unit)))
                 }
         ) {
             Text(
@@ -142,7 +146,8 @@ private fun Purchases(
                 PurchaseDetail(
                     modifier = Modifier
                         .weight(1f),
-                    data = purchase
+                    data = purchase,
+                    clickAction = { onAction(DynamicAction(model, mapOf("id" to purchase.id))) }
                 )
                 if (index < purchaseList.lastIndex) {
                     Spacer(modifier = Modifier.width(MaterialTheme.padding.large))
@@ -157,6 +162,7 @@ private fun Purchases(
 private fun PurchaseDetail(
     modifier: Modifier = Modifier,
     data: Purchase,
+    clickAction: () -> Unit,
 ) {
     CompositionLocalProvider(
         // TODO: Providing this app wide?
@@ -175,7 +181,7 @@ private fun PurchaseDetail(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
             shape = MaterialTheme.shapes.small,
-            onClick = {}
+            onClick = clickAction
         ) {
             ConstraintLayout(
                 modifier = Modifier
@@ -246,8 +252,10 @@ private fun PurchaseDetailPreview() {
         LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()
     ) {
-
-        PurchaseDetail(data = Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"))
+        PurchaseDetail(
+            data = Purchase("a01", "7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"),
+            clickAction = {},
+        )
     }
 }
 
@@ -258,14 +266,14 @@ private fun PurchaseWidgetPreview() {
         LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()
     ) {
-
         Purchases(
             model = PurchasesItem(
                 id = "last.purchases",
                 projectId = ProjectId("0123"),
                 padding = Padding(horizontal = 0)
             ),
-            purchaseList = listOf(Purchase("13,37 €", "Snabble Store Bonn", "Today"))
+            purchaseList = listOf(Purchase("a01", "13,37 €", "Snabble Store Bonn", "Today")),
+            onAction = {},
         )
     }
 }
@@ -277,7 +285,6 @@ private fun TwoPurchasesPreview() {
         LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()
     ) {
-
         Purchases(
             model = PurchasesItem(
                 id = "last.purchases",
@@ -285,9 +292,10 @@ private fun TwoPurchasesPreview() {
                 padding = Padding(horizontal = 0)
             ),
             purchaseList = listOf(
-                Purchase("13,37 €", "Snabble Store Bonn", "Today"),
-                Purchase("7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"),
-            )
+                Purchase("a01", "13,37 €", "Snabble Store Bonn", "Today"),
+                Purchase("a02", "7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"),
+            ),
+            onAction = {},
         )
     }
 }
