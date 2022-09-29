@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.DynamicAction
@@ -40,16 +41,18 @@ import io.snabble.sdk.ui.theme.properties.elevation
 import io.snabble.sdk.ui.theme.properties.padding
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.stores.WifiViewModel
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectWifiWidget(
     modifier: Modifier = Modifier,
     model: ConnectWifiItem,
-    isVisible: Boolean,
+    viewModel: WifiViewModel = getViewModel(scope = KoinProvider.scope),
     onClick: OnDynamicAction,
 ) {
-    if (isVisible) {
+    if (viewModel.wifiState.value) {
         CompositionLocalProvider(
             // TODO: Providing this app wide?
             LocalRippleTheme provides object : RippleTheme {
@@ -114,7 +117,6 @@ fun WifiWidgetPreview() {
                 id = "wifiii",
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
-            isVisible = true,
             onClick = {}
         )
     }

@@ -7,19 +7,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.stores.StoresViewModel
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 internal fun StartShoppingWidget(
     modifier: Modifier = Modifier,
     model: StartShoppingItem,
-    checkInState: Boolean = false,
+    viewModel: StoresViewModel = getViewModel(scope = KoinProvider.scope),
     onClick: OnDynamicAction,
 ) {
-    if (checkInState) {
+    if (viewModel.checkInState.value) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
@@ -39,7 +42,6 @@ fun StartShoppingPreview() {
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)
         ),
-        checkInState = true,
         onClick = {}
     )
 }

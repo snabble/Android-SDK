@@ -16,23 +16,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.ui.DynamicAction
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.stores.StoresViewModel
+import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun SeeAllStoresWidget(
+internal fun SeeAllStoresWidget(
     modifier: Modifier = Modifier,
     model: SeeAllStoresItem,
-    checkInState: Boolean,
+    viewModel: StoresViewModel = getViewModel(scope = KoinProvider.scope),
     onClick: OnDynamicAction = {},
 ) {
 
     Box(modifier = modifier.fillMaxWidth()) {
-        if (!checkInState) {
+        if (!viewModel.checkInState.value) {
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
                 widget = model,
@@ -68,14 +71,12 @@ fun SeeAllStoresPreview() {
                 id = "1",
                 padding = Padding(horizontal = 16, vertical = 5)
             ),
-            checkInState = true
         )
         SeeAllStoresWidget(
             model = SeeAllStoresItem(
                 id = "1",
                 padding = Padding(horizontal = 16, vertical = 5)
             ),
-            checkInState = false
         )
     }
 }

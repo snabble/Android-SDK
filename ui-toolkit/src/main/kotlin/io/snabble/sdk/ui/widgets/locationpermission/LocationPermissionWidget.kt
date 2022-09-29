@@ -6,19 +6,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.locationpermission.LocationPermissionViewModel
+import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun LocationPermissionWidget(
+internal fun LocationPermissionWidget(
     modifier: Modifier = Modifier,
     model: LocationPermissionItem,
-    permissionState: Boolean = false,
+    viewModel: LocationPermissionViewModel = getViewModel(scope = KoinProvider.scope),
     onClick: OnDynamicAction,
 ) {
-    if (!permissionState) {
+    if (!viewModel.permissionState.value) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
                 modifier = modifier.fillMaxWidth(),
@@ -38,7 +41,6 @@ fun LocationPermissionPreview() {
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)
         ),
-        permissionState = false,
         onClick = {},
     )
 }

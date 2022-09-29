@@ -70,8 +70,6 @@ fun Widget(
     is CustomerCardItem -> {
         CustomerCardWidget(
             model = widget,
-            // FIXME: Create a ViewModel: viewModel.customerCardVisibilityState.value
-            isVisible = true,
             onClick = onAction,
         )
     }
@@ -79,13 +77,12 @@ fun Widget(
         ConnectWifiWidget(
             model = widget,
             onClick = onAction,
-            isVisible = true // FIXME: Create a ViewModel: GetAvailableWifiUseCase(LocalContext.current)().value
         )
     }
     is ImageItem -> {
         ImageWidget(
             model = widget,
-            onClick = onAction
+            onClick = onAction,
         )
     }
     is InformationItem -> {
@@ -97,8 +94,6 @@ fun Widget(
     is LocationPermissionItem -> {
         LocationPermissionWidget(
             model = widget,
-            // FIXME: Create a ViewModel: viewModel.permissionState.value,
-            permissionState = true,
             onClick = onAction,
         )
     }
@@ -111,16 +106,12 @@ fun Widget(
     is SeeAllStoresItem -> {
         SeeAllStoresWidget(
             model = widget,
-            // FIXME: Create a ViewModel: viewModel.checkInState.value
-            checkInState = true,
             onClick = onAction,
         )
     }
     is StartShoppingItem -> {
         StartShoppingWidget(
             model = widget,
-            // FIXME: Create a ViewModel: viewModel.checkInState.value
-            checkInState = true,
             onClick = onAction,
         )
     }
