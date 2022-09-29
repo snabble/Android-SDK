@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.WidgetClick
+import io.snabble.sdk.ui.theme.spacing
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.toolkit.R
 
@@ -75,7 +76,7 @@ fun InformationWidget(
                 ),
             shape = MaterialTheme.shapes.small,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.spacing.small),
         ) {
             Row(
                 modifier = modifier

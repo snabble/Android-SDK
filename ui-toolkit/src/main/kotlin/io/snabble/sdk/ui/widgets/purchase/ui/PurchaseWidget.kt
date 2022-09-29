@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
@@ -34,8 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -45,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
+import io.snabble.sdk.ui.theme.spacing
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.purchase.OnLifecycleEvent
 import io.snabble.sdk.ui.widgets.purchase.Purchase
@@ -169,7 +167,7 @@ private fun PurchaseDetail(
         Card(
             modifier = modifier,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.spacing.small),
             shape = MaterialTheme.shapes.small,
             onClick = {}
         ) {

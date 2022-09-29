@@ -26,6 +26,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.android.material.composethemeadapter3.createMdc3Theme
+import io.snabble.sdk.ui.theme.LocalSpacing
+import io.snabble.sdk.ui.theme.Spacing
 import io.snabble.sdk.ui.toolkit.R
 
 class HomeFragment : Fragment() {
@@ -88,13 +90,14 @@ fun Fragment.ThemeWrapper(content: @Composable () -> Unit) {
         context = LocalContext.current,
         layoutDirection = LayoutDirection.Ltr
     )
-
-    MaterialTheme(
-        colorScheme = colorScheme ?: MaterialTheme.colorScheme,
-        typography = typography ?: MaterialTheme.typography,
-        shapes = shapes ?: MaterialTheme.shapes
-    ) {
-        content()
+    CompositionLocalProvider(LocalSpacing provides Spacing()) {
+        MaterialTheme(
+            colorScheme = colorScheme ?: MaterialTheme.colorScheme,
+            typography = typography ?: MaterialTheme.typography,
+            shapes = shapes ?: MaterialTheme.shapes
+        ) {
+            content()
+        }
     }
 
 }
