@@ -5,11 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -18,10 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import io.snabble.sdk.ui.theme.ThemeWrapper
 import io.snabble.sdk.ui.DynamicViewModel
+import io.snabble.sdk.ui.theme.ThemeWrapper
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.xx
 
 class HomeFragment : Fragment() {
 
@@ -37,13 +31,12 @@ class HomeFragment : Fragment() {
 
         composeView = findViewById(R.id.composable)
 
-        dynamicViewModel.xx("HomeFragment")
         composeView.setContent {
 
             ThemeWrapper {
-            // ViewModelStoreOwnerLocalProvider {
-            HomeScreen(dynamicViewModel = dynamicViewModel)
-            // }
+                // ViewModelStoreOwnerLocalProvider {
+                HomeScreen(dynamicViewModel = dynamicViewModel)
+                // }
             }
         }
     }

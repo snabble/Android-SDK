@@ -220,7 +220,7 @@ private fun PurchaseDetail(
                         }
                 )
                 Text(
-                    text = "${data.title}\n\n",
+                    text = "${data.title}\n",
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
