@@ -28,11 +28,9 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.snabble_fragment_home, container, false).apply {
-
         composeView = findViewById(R.id.composable)
 
         composeView.setContent {
-
             ThemeWrapper {
                 // ViewModelStoreOwnerLocalProvider {
                 HomeScreen(dynamicViewModel = dynamicViewModel)
