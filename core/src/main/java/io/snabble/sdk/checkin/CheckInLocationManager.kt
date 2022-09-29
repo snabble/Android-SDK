@@ -5,7 +5,9 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.*
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
@@ -60,6 +62,10 @@ class CheckInLocationManager(val application: Application) {
         override fun onProviderEnabled(provider: String) {}
 
         override fun onProviderDisabled(provider: String) {}
+
+        @Deprecated("Deprecated in Java")
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        }
     }
 
     /**
