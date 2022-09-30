@@ -12,7 +12,7 @@ import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.ui.widgets.stores.StoresViewModel
+import io.snabble.sdk.ui.widgets.stores.viewmodel.StoresViewModel
 import org.koin.androidx.compose.getViewModel
 
 @Composable

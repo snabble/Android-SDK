@@ -1,20 +1,17 @@
 package io.snabble.sdk.usecases
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import io.snabble.sdk.Snabble
 
-class GetPermissionStateUseCase {
+internal class GetPermissionStateUseCase(
+    private val snabble: Snabble
+) {
 
-    //TODO: Get way to update state if permission is granted or denied
-
-    operator fun invoke(): MutableState<Boolean> =
+    operator fun invoke(): Boolean =
         try {
-            mutableStateOf(Snabble.checkInLocationManager.checkLocationPermission())
+            snabble.checkInLocationManager.checkLocationPermission()
         } catch (e: UninitializedPropertyAccessException) {
             Log.d(this.javaClass.name, "invokeError: ${e.message} ")
-            mutableStateOf(false)
+            true
         }
-
 }

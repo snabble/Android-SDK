@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.widgets.stores
+package io.snabble.sdk.ui.widgets.stores.viewmodel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -17,5 +17,4 @@ internal class StoresViewModel(
             }
             return state
         }
-
 }

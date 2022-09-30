@@ -94,7 +94,7 @@ fun Widget(
     is LocationPermissionItem -> {
         LocationPermissionWidget(
             model = widget,
-            onClick = onAction,
+            onAction = onAction,
         )
     }
     is PurchasesItem -> {

@@ -53,6 +53,7 @@ fun logError(message: String?, vararg args: Any?) {
     }
 }
 
+@Deprecated("Only for debugging", replaceWith = ReplaceWith("this"))
 fun <T> T.xx(msg: String? = null, tag: String = "xx", throwable: Throwable? = null): T {
     Log.d(tag, "${msg ?: ""} <$this>", throwable)
     return this
