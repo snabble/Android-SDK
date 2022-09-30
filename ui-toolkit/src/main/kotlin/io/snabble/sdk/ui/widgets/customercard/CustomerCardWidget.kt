@@ -1,7 +1,8 @@
-package io.snabble.sdk.ui.widgets
+package io.snabble.sdk.ui.widgets.customercard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.di.KoinProvider
@@ -16,6 +17,7 @@ import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
 import io.snabble.sdk.ui.toInformationItem
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.InformationWidget
 import io.snabble.sdk.ui.widgets.customercard.viewmodel.CustomerCardViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -24,13 +26,13 @@ internal fun CustomerCardWidget(
     modifier: Modifier = Modifier,
     customerCardViewModel: CustomerCardViewModel = getViewModel(scope = KoinProvider.scope),
     model: CustomerCardItem,
-    onClick: OnDynamicAction,
+    onAction: OnDynamicAction,
 ) {
-    if (customerCardViewModel.customerCardVisibilityState.value) {
+    if (customerCardViewModel.isCustomerCardVisible.collectAsState().value) {
         InformationWidget(
             modifier = modifier,
             model = (model.toInformationItem()),
-            onClick = { onClick(DynamicAction(model)) },
+            onClick = { onAction(DynamicAction(model)) },
         )
     }
 }
@@ -50,7 +52,7 @@ fun CustomerCardWidgetPreview() {
                 imageSource = R.drawable.store_logo,
                 padding = Padding(start = 8, top = 8, end = 8, bottom = 8),
             ),
-            onClick = {}
+            onAction = {}
         )
     }
 }
