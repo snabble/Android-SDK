@@ -23,10 +23,10 @@ import io.snabble.sdk.ui.widgets.ConnectWifiWidget
 import io.snabble.sdk.ui.widgets.CustomerCardWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.InformationWidget
-import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
+import io.snabble.sdk.ui.widgets.locationpermission.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseWidget
 
 typealias OnDynamicAction = (action: DynamicAction) -> Unit

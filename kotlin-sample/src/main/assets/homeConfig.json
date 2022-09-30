@@ -75,6 +75,18 @@
       ]
     },
     {
+      "type": "snabble.customerCard",
+      "id": "card",
+      "text": "Füge eine KundenKarte hinzu",
+      "imageSource": "store_logo",
+      "padding": [
+        0,
+        0,
+        16,
+        0
+      ]
+    },
+    {
       "type": "purchases",
       "id": "purchases",
       "projectId": "snabble-sdk-demo-app-oguh3x",

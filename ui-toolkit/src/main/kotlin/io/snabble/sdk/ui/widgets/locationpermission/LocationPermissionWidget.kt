@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.widgets
+package io.snabble.sdk.ui.widgets.locationpermission
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,7 +16,7 @@ import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.ui.DynamicAction
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.ui.widgets.locationpermission.LocationPermissionViewModel
+import io.snabble.sdk.ui.widgets.ButtonWidget
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -26,11 +26,10 @@ internal fun LocationPermissionWidget(
     viewModel: LocationPermissionViewModel = getViewModel(scope = KoinProvider.scope),
     onAction: OnDynamicAction,
 ) {
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
-        viewModel.updatePermissionState(true)
-    }
+    val launcher =
+        createActivityResultLauncher(viewModel)
 
-    if (!viewModel.permissionState.collectAsState().value) {
+    if (!viewModel.permissionButtonIsVisible.collectAsState().value) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
                 modifier = modifier.fillMaxWidth(),
@@ -44,6 +43,12 @@ internal fun LocationPermissionWidget(
         }
     }
 }
+
+@Composable
+private fun createActivityResultLauncher(viewModel: LocationPermissionViewModel) =
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+        viewModel.update(true)
+    }
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable

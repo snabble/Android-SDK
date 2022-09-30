@@ -1,6 +1,7 @@
 package io.snabble.sdk.sample
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -33,13 +34,12 @@ import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
-import io.snabble.sdk.sample.utils.PermissionSupport
 import io.snabble.sdk.ui.DynamicViewModel
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.xx
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity(), PermissionSupport {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var locationPermission: ActivityResultLauncher<String>
 
@@ -78,9 +78,11 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
         dynamicViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
                 when (action.widget.id) {
-                    "location" -> startLocationPermissionRequest()
+                    "location" -> {}
                     "start" -> navBarView.selectedItemId = R.id.navigation_cart
-                    "stores" -> navBarView.selectedItemId = R.id.navigation_shop
+                    "stores" -> {
+                        SnabbleUiToolkit.executeAction(this, SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
+                    }
                     else -> Log.d("DynamicAction", "-> $action")
                 }
             }
@@ -96,24 +98,20 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
             }
         }
 
-        locationPermission = createLocationPermissionRequestResultLauncher()
         addSnabbleSdkCheckInListener()
     }
 
+    @SuppressLint("MissingPermission")
     override fun onResume() {
         super.onResume()
 
-        startCheckInManagerUpdating()
+        Snabble.checkInManager.startUpdating()
     }
 
     override fun onPause() {
         super.onPause()
 
         Snabble.checkInManager.stopUpdating()
-    }
-
-    override fun startLocationPermissionRequest() {
-        locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     private fun addSnabbleSdkCheckInListener() {
@@ -139,30 +137,6 @@ class MainActivity : AppCompatActivity(), PermissionSupport {
                 }
             }
         )
-    }
-
-    private fun createLocationPermissionRequestResultLauncher(): ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                startCheckInManagerUpdating()
-            } else {
-                Snabble.checkInManager.stopUpdating()
-            }
-            // viewModel.permissionState.value = true // FIXME: Find another way!?
-        }
-
-    private fun startCheckInManagerUpdating() {
-        val hasLocationFinePermission = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        val hasLocationCoarsePermission = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        if (hasLocationFinePermission || hasLocationCoarsePermission) {
-            Snabble.checkInManager.startUpdating()
-        }
     }
 
     // Can be used to get args from deeplinks. In this case the args are used to
