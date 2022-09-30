@@ -24,10 +24,10 @@ import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.InformationWidget
 import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
-import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
 import io.snabble.sdk.ui.widgets.customercard.CustomerCardWidget
 import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseWidget
+import io.snabble.sdk.ui.widgets.stores.StartShoppingWidget
 
 typealias OnDynamicAction = (action: DynamicAction) -> Unit
 
@@ -112,7 +112,7 @@ fun Widget(
     is StartShoppingItem -> {
         StartShoppingWidget(
             model = widget,
-            onClick = onAction,
+            onAction = onAction,
         )
     }
     is TextItem -> {

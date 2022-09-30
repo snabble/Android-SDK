@@ -1,8 +1,9 @@
-package io.snabble.sdk.ui.widgets
+package io.snabble.sdk.ui.widgets.stores
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -12,6 +13,7 @@ import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.stores.viewmodel.StoresViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -20,15 +22,15 @@ internal fun StartShoppingWidget(
     modifier: Modifier = Modifier,
     model: StartShoppingItem,
     viewModel: StoresViewModel = getViewModel(scope = KoinProvider.scope),
-    onClick: OnDynamicAction,
+    onAction: OnDynamicAction,
 ) {
-    if (viewModel.checkInState.value) {
+    if (viewModel.isCheckedInFlow.collectAsState().value) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
                 widget = model,
                 text = stringResource(id = R.string.Snabble_Shop_Detail_shopNow),
-                onClick = onClick
+                onClick = onAction
             )
         }
     }
@@ -42,6 +44,6 @@ fun StartShoppingPreview() {
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)
         ),
-        onClick = {}
+        onAction = {}
     )
 }

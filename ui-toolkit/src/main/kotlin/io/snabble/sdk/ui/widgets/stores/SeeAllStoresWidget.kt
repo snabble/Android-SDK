@@ -35,7 +35,7 @@ internal fun SeeAllStoresWidget(
 ) {
 
     Box(modifier = modifier.fillMaxWidth()) {
-        if (!viewModel.checkInState.value) {
+        if (!viewModel.isCheckedInFlow.value) {
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
                 widget = model,
