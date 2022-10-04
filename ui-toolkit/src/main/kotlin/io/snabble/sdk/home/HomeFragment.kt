@@ -1,40 +1,34 @@
 package io.snabble.sdk.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import io.snabble.sdk.ui.DynamicViewModel
 import io.snabble.sdk.ui.theme.ThemeWrapper
 import io.snabble.sdk.ui.toolkit.R
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(R.layout.snabble_fragment_home) {
 
-    private lateinit var composeView: ComposeView
+    private val dynamicViewModel: DynamicViewModel by activityViewModels()
 
-    private val dynamicViewModel: DynamicViewModel by viewModels(
-        ownerProducer = { ViewModelStoreOwner { requireActivity().viewModelStore } })
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.snabble_fragment_home, container, false).apply {
-        composeView = findViewById(R.id.composable)
-
-        composeView.setContent {
-            ThemeWrapper {
-                // ViewModelStoreOwnerLocalProvider {
-                HomeScreen(dynamicViewModel = dynamicViewModel)
-                // }
+        view.findViewById<ComposeView>(R.id.composable).apply {
+            setContent {
+                ThemeWrapper {
+                    // ViewModelStoreOwnerLocalProvider {
+                    HomeScreen(dynamicViewModel = dynamicViewModel)
+                    // }
+                }
             }
         }
     }
