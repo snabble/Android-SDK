@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,9 +31,9 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
+import io.snabble.sdk.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
-import io.snabble.sdk.ui.DynamicViewModel
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.xx
 import kotlinx.coroutines.launch
@@ -54,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             .putBoolean(ONBOARDING_SEEN, onboardingSeen)
             .apply()
 
-    private val dynamicViewModel: DynamicViewModel by viewModels()
+    private val dynamicViewModel: DynamicHomeViewModel by viewModels()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                     "stores" -> {
                         SnabbleUiToolkit.executeAction(this, SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
                     }
-                    else -> Log.d("DynamicAction", "-> $action")
+                    else -> action.xx("DynamicAction ->")
                 }
             }
 
@@ -306,6 +305,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+
         private const val ONBOARDING_SEEN = "onboarding_seen"
     }
 }

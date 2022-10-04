@@ -60,12 +60,13 @@ fun ButtonWidget(
 fun ButtonWidget(
     modifier: Modifier = Modifier,
     widget: Widget,
+    padding: Padding,
     text: String,
-    onClick: OnDynamicAction = {}
+    onClick: OnDynamicAction = {},
 ) {
     Box(
         modifier = modifier
-            .padding(widget.padding.toPaddingValues())
+            .padding(padding.toPaddingValues())
     ) {
         Button(
             modifier = Modifier.fillMaxWidth(),

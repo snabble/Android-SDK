@@ -16,7 +16,7 @@ import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
 import io.snabble.sdk.data.PaddingDto
-import io.snabble.sdk.data.RootDto
+import io.snabble.sdk.data.DynamicConfigDto
 import io.snabble.sdk.data.SeeAllStoresDto
 import io.snabble.sdk.data.StartShoppingDto
 import io.snabble.sdk.data.TextDto
@@ -41,9 +41,9 @@ internal class ConfigMapperTest : FreeSpec({
 
     val context = mockk<Context>(relaxed = true)
     fun createMapper() = ConfigMapperImpl(context)
-    fun setUpSutDto(widgetDto: WidgetDto?): RootDto {
+    fun setUpSutDto(widgetDto: WidgetDto?): DynamicConfigDto {
         if (widgetDto == null) {
-            return RootDto(
+            return DynamicConfigDto(
                 ConfigurationDto(
                     image = "R.drawable.abc",
                     style = "",
@@ -52,7 +52,7 @@ internal class ConfigMapperTest : FreeSpec({
                 emptyList()
             )
         } else {
-            return RootDto(
+            return DynamicConfigDto(
                 ConfigurationDto(
                     image = "R.drawable.abc",
                     style = "",

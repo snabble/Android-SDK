@@ -34,6 +34,7 @@ internal fun LocationPermissionWidget(
             ButtonWidget(
                 modifier = modifier.fillMaxWidth(),
                 widget = model,
+                padding = model.padding,
                 text = stringResource(id = R.string.Snabble_askForPermission),
                 onClick = {
                     onAction(DynamicAction(widget = model))

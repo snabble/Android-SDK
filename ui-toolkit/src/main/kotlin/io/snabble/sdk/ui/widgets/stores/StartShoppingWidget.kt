@@ -29,6 +29,7 @@ internal fun StartShoppingWidget(
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
                 widget = model,
+                padding = model.padding,
                 text = stringResource(id = R.string.Snabble_Shop_Detail_shopNow),
                 onClick = onAction
             )

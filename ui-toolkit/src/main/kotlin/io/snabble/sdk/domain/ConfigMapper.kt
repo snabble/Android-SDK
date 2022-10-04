@@ -9,7 +9,7 @@ import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
 import io.snabble.sdk.data.PurchasesDto
-import io.snabble.sdk.data.RootDto
+import io.snabble.sdk.data.DynamicConfigDto
 import io.snabble.sdk.data.SectionDto
 import io.snabble.sdk.data.SeeAllStoresDto
 import io.snabble.sdk.data.StartShoppingDto
@@ -24,14 +24,14 @@ import io.snabble.sdk.utils.resolveImageId
 
 interface ConfigMapper {
 
-    fun mapTo(rootDto: RootDto): Root
+    fun mapTo(dynamicConfigDto: DynamicConfigDto): DynamicConfig
 }
 
 class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
-    override fun mapTo(rootDto: RootDto): Root = Root(
-        configuration = rootDto.configuration.toConfiguration(),
-        widgets = rootDto.widgets.toWidgets()
+    override fun mapTo(dynamicConfigDto: DynamicConfigDto): DynamicConfig = DynamicConfig(
+        configuration = dynamicConfigDto.configuration.toConfiguration(),
+        widgets = dynamicConfigDto.widgets.toWidgets()
     )
 
     private fun ConfigurationDto.toConfiguration(): Configuration = Configuration(

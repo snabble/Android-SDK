@@ -1,19 +1,18 @@
 package io.snabble.sdk.usecases
 
 import io.snabble.sdk.config.ConfigRepository
-import io.snabble.sdk.data.RootDto
+import io.snabble.sdk.data.DynamicConfigDto
 import io.snabble.sdk.domain.ConfigMapper
-import io.snabble.sdk.domain.Root
+import io.snabble.sdk.domain.DynamicConfig
 
-// FIXME: Scope should be internal
-class GetHomeConfigUseCase(
+internal class GetHomeConfigUseCase(
     private val configRepository: ConfigRepository,
     private val configMapper: ConfigMapper,
 ) {
 
-    suspend operator fun invoke(): Root {
-        val rootDto: RootDto = configRepository.getConfig(CONFIG_FILE_NAME)
-        return configMapper.mapTo(rootDto)
+    suspend operator fun invoke(): DynamicConfig {
+        val configDto: DynamicConfigDto = configRepository.getConfig(CONFIG_FILE_NAME)
+        return configMapper.mapTo(configDto)
     }
 
     companion object {

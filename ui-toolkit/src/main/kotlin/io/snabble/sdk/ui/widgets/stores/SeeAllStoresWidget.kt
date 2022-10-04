@@ -42,6 +42,7 @@ internal fun SeeAllStoresWidget(
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
                 widget = model,
+                padding = model.padding,
                 text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
                 onClick = onClick
             )

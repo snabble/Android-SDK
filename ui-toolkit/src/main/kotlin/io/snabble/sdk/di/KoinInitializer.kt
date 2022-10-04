@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.startup.Initializer
 import io.snabble.sdk.config.di.configModule
 import io.snabble.sdk.domain.di.domainModule
-import io.snabble.sdk.home.di.homeModule
 import io.snabble.sdk.ui.toolkit.BuildConfig
 import io.snabble.sdk.ui.widgets.customercard.di.customerCardModule
 import io.snabble.sdk.ui.widgets.locationpermission.di.locationPermissionModule
@@ -27,7 +26,6 @@ internal class KoinInitializer : Initializer<Koin> {
                 coreModule,
                 configModule,
                 domainModule,
-                homeModule,
                 useCaseModule,
                 customerCardModule,
                 locationPermissionModule,

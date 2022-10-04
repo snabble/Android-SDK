@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RootDto(
+data class DynamicConfigDto(
     @SerialName("configuration") val configuration: ConfigurationDto,
     @SerialName("widgets") val widgets: List<WidgetDto>,
 )
@@ -19,6 +19,11 @@ data class PaddingDto(
     @SerialName("bottom") val bottom: Int,
 )
 
+interface HasPadding {
+
+    val padding: PaddingDto
+}
+
 @Serializable
 data class ConfigurationDto(
     @SerialName("image") val image: String,
@@ -30,7 +35,6 @@ data class ConfigurationDto(
 sealed interface WidgetDto {
 
     val id: String
-    val padding: PaddingDto
 }
 
 @Serializable
@@ -41,7 +45,7 @@ data class ButtonDto(
     @SerialName("foregroundColorSource") val foregroundColorSource: String? = null,
     @SerialName("backgroundColorSource") val backgroundColorSource: String? = null,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("image")
@@ -49,7 +53,7 @@ data class ImageDto(
     @SerialName("id") override val id: String,
     @SerialName("imageSource") val imageSource: String,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("information")
@@ -58,7 +62,7 @@ data class InformationDto(
     @SerialName("text") val text: String,
     @SerialName("imageSource") val imageSource: String? = null,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("snabble.customerCard")
@@ -67,21 +71,21 @@ data class CustomerCardDto(
     @SerialName("text") val text: String,
     @SerialName("imageSource") val imageSource: String? = null,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("snabble.connectWifi")
 data class ConnectWifiDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("snabble.locationPermission")
 data class LocationPermissionDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("purchases")
@@ -89,7 +93,7 @@ data class PurchasesDto(
     @SerialName("id") override val id: String,
     @SerialName("projectId") val projectId: String,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("section")
@@ -98,21 +102,21 @@ data class SectionDto(
     @SerialName("header") val header: String,
     @SerialName("items") val widgets: List<WidgetDto>,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("snabble.allStores")
 data class SeeAllStoresDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("snabble.startShopping")
 data class StartShoppingDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("text")
@@ -123,7 +127,7 @@ data class TextDto(
     @SerialName("textStyle") val textStyleSource: String? = null,
     @SerialName("showDisclosure") val showDisclosure: Boolean? = null,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("toggle")
@@ -132,4 +136,4 @@ data class ToggleDto(
     @SerialName("text") val text: String,
     @SerialName("key") val key: String,
     @SerialName("padding") override val padding: PaddingDto,
-) : WidgetDto
+) : WidgetDto, HasPadding

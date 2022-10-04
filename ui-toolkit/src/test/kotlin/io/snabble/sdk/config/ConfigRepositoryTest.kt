@@ -14,7 +14,7 @@ import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
 import io.snabble.sdk.data.PaddingDto
 import io.snabble.sdk.data.PurchasesDto
-import io.snabble.sdk.data.RootDto
+import io.snabble.sdk.data.DynamicConfigDto
 import io.snabble.sdk.data.SectionDto
 import io.snabble.sdk.data.SeeAllStoresDto
 import io.snabble.sdk.data.StartShoppingDto
@@ -42,7 +42,7 @@ internal class ConfigRepositoryTest : FreeSpec({
 
         "the configuration object" {
             val sut = createSut(createJson())
-            val config: RootDto = sut.getConfig("")
+            val config: DynamicConfigDto = sut.getConfig("")
 
             config.configuration shouldBe ConfigurationDto(
                 image = "home_default_background",
@@ -54,7 +54,7 @@ internal class ConfigRepositoryTest : FreeSpec({
         "a configuration w/ widgets being empty" {
             val sut = createSut(createJson())
 
-            sut.getConfig<RootDto>("").widgets.shouldBeEmpty()
+            sut.getConfig<DynamicConfigDto>("").widgets.shouldBeEmpty()
         }
 
         "a widget configuration w/" - {
@@ -72,7 +72,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe ButtonDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ButtonDto(
                     id = "submit",
                     text = "Submit",
                     foregroundColorSource = "white",
@@ -92,7 +92,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe ImageDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ImageDto(
                     id = "logo",
                     imageSource = "snabble_logo",
                     padding = PaddingDto(4, 4, 4, 4)
@@ -111,7 +111,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe InformationDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe InformationDto(
                     id = "info",
                     text = "Some useful information here.",
                     imageSource = "snabble_logo",
@@ -131,7 +131,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe CustomerCardDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe CustomerCardDto(
                     id = "info",
                     text = "Some useful information here.",
                     imageSource = "snabble_logo",
@@ -149,7 +149,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe LocationPermissionDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe LocationPermissionDto(
                     id = "location_permission",
                     padding = PaddingDto(16, 16, 16, 16)
                 )
@@ -165,7 +165,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe ConnectWifiDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ConnectWifiDto(
                     id = "connect_wifi",
                     padding = PaddingDto(16, 16, 16, 16)
                 )
@@ -182,7 +182,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe PurchasesDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe PurchasesDto(
                     id = "purchases",
                     projectId = "ab1234",
                     padding = PaddingDto(16, 16, 16, 16)
@@ -201,7 +201,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe SectionDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe SectionDto(
                     id = "section1",
                     header = "Settings",
                     widgets = emptyList(),
@@ -219,7 +219,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe SeeAllStoresDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe SeeAllStoresDto(
                     id = "all_stores",
                     padding = PaddingDto(8, 8, 8, 8)
                 )
@@ -235,7 +235,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe StartShoppingDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe StartShoppingDto(
                     id = "start_shopping",
                     padding = PaddingDto(8, 8, 8, 8)
                 )
@@ -255,7 +255,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe TextDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe TextDto(
                     id = "title",
                     text = "Hello World!",
                     textColorSource = "black",
@@ -277,7 +277,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<RootDto>("").widgets.first() shouldBe ToggleDto(
+                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ToggleDto(
                     id = "onboarding_toggle",
                     text = "Show Onboarding",
                     key = "show_onboarding",

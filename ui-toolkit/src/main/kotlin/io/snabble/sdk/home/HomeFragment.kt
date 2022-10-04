@@ -11,13 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import io.snabble.sdk.ui.DynamicViewModel
+import io.snabble.sdk.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.ui.theme.ThemeWrapper
 import io.snabble.sdk.ui.toolkit.R
 
 class HomeFragment : Fragment(R.layout.snabble_fragment_home) {
 
-    private val dynamicViewModel: DynamicViewModel by activityViewModels()
+    private val viewModel: DynamicHomeViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,7 +26,7 @@ class HomeFragment : Fragment(R.layout.snabble_fragment_home) {
             setContent {
                 ThemeWrapper {
                     // ViewModelStoreOwnerLocalProvider {
-                    HomeScreen(dynamicViewModel = dynamicViewModel)
+                    DynamicScreen(dynamicViewModel = viewModel)
                     // }
                 }
             }

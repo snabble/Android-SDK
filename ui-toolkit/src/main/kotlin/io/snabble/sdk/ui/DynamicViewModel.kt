@@ -1,22 +1,30 @@
 package io.snabble.sdk.ui
 
 import androidx.lifecycle.ViewModel
+import io.snabble.sdk.domain.DynamicConfig
 import io.snabble.sdk.domain.Widget
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-class DynamicViewModel(
-// TODO: ???
-) : ViewModel() {
+open class DynamicViewModel : ViewModel() {
+
+    private val _dynamicConfig = MutableStateFlow<DynamicConfig?>(null)
+    val dynamicConfig: StateFlow<DynamicConfig?> = _dynamicConfig.asStateFlow()
+
+    fun setConfig(config: DynamicConfig?) {
+        _dynamicConfig.tryEmit(config)
+    }
 
     private val _actions = MutableSharedFlow<DynamicAction>(
         replay = 0,
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-
     val actions: SharedFlow<DynamicAction> = _actions.asSharedFlow()
 
     internal fun sendAction(action: DynamicAction) {
@@ -26,5 +34,5 @@ class DynamicViewModel(
 
 data class DynamicAction(
     val widget: Widget,
-    val info: Map<String, Any>? = null
+    val info: Map<String, Any>? = null,
 )
