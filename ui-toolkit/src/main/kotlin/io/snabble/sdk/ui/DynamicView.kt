@@ -20,14 +20,17 @@ import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ConnectWifiWidget
-import io.snabble.sdk.ui.widgets.CustomerCardWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.InformationWidget
+import io.snabble.sdk.ui.widgets.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.TextWidget
+import io.snabble.sdk.ui.widgets.customercard.CustomerCardWidget
 import io.snabble.sdk.ui.widgets.locationpermission.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseWidget
+import io.snabble.sdk.ui.widgets.stores.SeeAllStoresWidget
+import io.snabble.sdk.ui.widgets.stores.StartShoppingWidget
 
 typealias OnDynamicAction = (action: DynamicAction) -> Unit
 
@@ -39,14 +42,11 @@ fun DynamicView(
     widgets: List<Widget>,
     onAction: OnDynamicAction,
 ) {
-    Box(
-        modifier = modifier
-    ) {
+    Box(modifier = modifier) {
         background()
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding,
         ) {
             items(items = widgets) { widget ->
@@ -70,7 +70,7 @@ fun Widget(
     is CustomerCardItem -> {
         CustomerCardWidget(
             model = widget,
-            onClick = onAction,
+            onAction = onAction,
         )
     }
     is ConnectWifiItem -> {
@@ -112,7 +112,7 @@ fun Widget(
     is StartShoppingItem -> {
         StartShoppingWidget(
             model = widget,
-            onClick = onAction,
+            onAction = onAction,
         )
     }
     is TextItem -> {
