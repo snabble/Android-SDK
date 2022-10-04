@@ -13,13 +13,13 @@ internal class GetAvailableWifiUseCase(
     private val connectivityManager: ConnectivityManager,
 ) {
 
-    operator fun invoke(): MutableState<Boolean> {
-        val connectionAvailable: Boolean =
-            Snabble.currentCheckedInShop.value != null && wifiManager.isWifiEnabled && !isConnectedToStoreWifi()
-        return mutableStateOf(connectionAvailable)
-    }
+    operator fun invoke(): Boolean =
+            Snabble.currentCheckedInShop.value != null
+                && wifiManager.isWifiEnabled
+                && !isConnectedToStoreWifi()
 
-    // FIXME: Deal w/ deprecation warning
+
+    @Suppress("DEPRECATION")
     private fun isConnectedToStoreWifi(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork

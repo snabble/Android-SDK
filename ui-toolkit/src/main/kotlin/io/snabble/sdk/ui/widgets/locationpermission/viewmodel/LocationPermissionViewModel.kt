@@ -19,7 +19,7 @@ internal class LocationPermissionViewModel(
         updateChechkinManager()
     }
 
-    private fun updatePermissionButtonIsVisible(showPermissionButto: Boolean) {
-        _permissionButtonIsVisible.tryEmit(showPermissionButto)
+    private fun updatePermissionButtonIsVisible(showPermissionButton: Boolean) {
+        _permissionButtonIsVisible.tryEmit(showPermissionButton)
     }
 }
