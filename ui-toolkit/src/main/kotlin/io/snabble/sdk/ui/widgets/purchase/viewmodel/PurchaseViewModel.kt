@@ -5,19 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.snabble.sdk.Snabble
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.ui.widgets.purchase.Purchase
-import io.snabble.sdk.ui.widgets.purchase.RelativeTimeStringFormatterImpl
 import io.snabble.sdk.ui.widgets.purchase.repository.PurchasesRepository
-import io.snabble.sdk.ui.widgets.purchase.repository.PurchasesRepositoryImpl
 import kotlinx.coroutines.launch
 
-internal class PurchaseViewModel(
-    private val purchasesRepository: PurchasesRepository = PurchasesRepositoryImpl(
-        snabble = Snabble,
-        timeFormatter = RelativeTimeStringFormatterImpl(),
-    )
-) : ViewModel() {
+internal class PurchaseViewModel : ViewModel() {
+
+    private val repo: PurchasesRepository by KoinProvider.getKoin().inject()
 
     var state: State by mutableStateOf(Loading)
         private set
@@ -29,8 +24,7 @@ internal class PurchaseViewModel(
         }
     }
 
-    private suspend fun loadPurchases(): List<Purchase> =
-        purchasesRepository.getPurchases(count = 2)
+    private suspend fun loadPurchases(): List<Purchase> = repo.getPurchases(count = 2)
 }
 
 internal sealed class State

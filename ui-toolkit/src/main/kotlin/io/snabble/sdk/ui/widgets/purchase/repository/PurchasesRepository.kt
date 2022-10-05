@@ -17,13 +17,13 @@ internal interface PurchasesRepository {
 }
 
 internal class PurchasesRepositoryImpl(
-    private val snabble: Snabble,
+    private val Snabble: Snabble,
     private val timeFormatter: RelativeTimeStringFormatter,
 ) : PurchasesRepository {
 
     override suspend fun getPurchases(count: Int): List<Purchase> = withContext(Dispatchers.IO) {
         suspendCancellableCoroutine { continuation ->
-            snabble.receipts.getReceiptInfo(object : Receipts.ReceiptInfoCallback {
+            Snabble.receipts.getReceiptInfo(object : Receipts.ReceiptInfoCallback {
 
                 override fun success(receiptInfos: Array<ReceiptInfo>?) {
                     if (!continuation.isActive) return

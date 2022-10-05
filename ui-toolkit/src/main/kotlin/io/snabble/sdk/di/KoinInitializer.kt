@@ -7,6 +7,7 @@ import io.snabble.sdk.domain.di.domainModule
 import io.snabble.sdk.ui.toolkit.BuildConfig
 import io.snabble.sdk.ui.widgets.customercard.di.customerCardModule
 import io.snabble.sdk.ui.widgets.locationpermission.di.locationPermissionModule
+import io.snabble.sdk.ui.widgets.purchase.di.purchaseWidgetModule
 import io.snabble.sdk.ui.widgets.stores.di.storesModule
 import io.snabble.sdk.ui.widgets.wifi.di.wifiModule
 import io.snabble.sdk.usecases.di.useCaseModule
@@ -23,14 +24,15 @@ internal class KoinInitializer : Initializer<Koin> {
             if (BuildConfig.DEBUG) printLogger(level = Level.DEBUG)
             androidContext(context)
             modules(
-                coreModule,
                 configModule,
-                domainModule,
-                useCaseModule,
+                coreModule,
                 customerCardModule,
+                domainModule,
                 locationPermissionModule,
+                purchaseWidgetModule,
                 storesModule,
-                wifiModule
+                useCaseModule,
+                wifiModule,
             )
         }
             .koin
