@@ -12,11 +12,12 @@ import io.snabble.sdk.data.ButtonDto
 import io.snabble.sdk.data.ConfigurationDto
 import io.snabble.sdk.data.ConnectWifiDto
 import io.snabble.sdk.data.CustomerCardDto
+import io.snabble.sdk.data.DynamicConfigDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
 import io.snabble.sdk.data.PaddingDto
-import io.snabble.sdk.data.DynamicConfigDto
+import io.snabble.sdk.data.SectionDto
 import io.snabble.sdk.data.SeeAllStoresDto
 import io.snabble.sdk.data.StartShoppingDto
 import io.snabble.sdk.data.TextDto
@@ -29,6 +30,7 @@ import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Padding
+import io.snabble.sdk.domain.SectionItem
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
@@ -347,6 +349,42 @@ internal class ConfigMapperTest : FreeSpec({
                     connectWifiItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
+
+            "SectionDto to SectionItem" - {
+
+                val sectionDto = SectionDto(
+                    id = "a.section",
+                    header = "test",
+                    widgets = listOf(
+                        ConnectWifiDto(
+                            id = "a.wifi",
+                            padding = PaddingDto(0, 0, 0, 0)
+                        )
+                    ),
+                    padding = PaddingDto(0, 0, 0, 0)
+                )
+
+                val rootDto = setUpSutDto(sectionDto)
+                every { context.resolveImageId(rootDto.configuration.image) } returns 1
+
+                val sut = createMapper().mapTo(rootDto)
+
+                val sectionItem = sut.widgets.first().shouldBeTypeOf<SectionItem>()
+
+                "id" {
+                    sectionItem.id shouldBe "a.section"
+                }
+                "header" {
+                    sectionItem.header shouldBe "test"
+                }
+                "items" {
+                    sectionItem.items.first().shouldBeTypeOf<ConnectWifiItem>()
+                }
+                "padding"{
+                    sectionItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+            }
+
         }
     }
 })

@@ -8,7 +8,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.SectionItem
@@ -31,12 +30,17 @@ fun SectionWidget(
     model: SectionItem,
     onAction: OnDynamicAction
 ) {
-    Column(modifier = modifier.fillMaxWidth().padding(top = MaterialTheme.padding.medium)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = MaterialTheme.padding.medium)
+    ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = model.header,
             style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center
+        )
         DynamicView(
             contentPadding = model.padding.toPaddingValues(),
             background = { /*TODO*/ },
@@ -65,19 +69,19 @@ fun SectionPreview() {
                         id = "setup.toggle",
                         text = "Show setup",
                         key = "pref.setup.toggle",
-                        padding = io.snabble.sdk.domain.Padding(horizontal = 16),
+                        padding = io.snabble.sdk.domain.Padding(horizontal = 16, vertical = 5),
                     ),
                     TextItem(
-                            id = "1",
-                            text = "Willkommen bei Snabble",
-                            textColorSource = MaterialTheme.colorScheme.primary.toArgb(),
-                            textStyleSource = "title",
-                            showDisclosure = false,
-                            padding = io.snabble.sdk.domain.Padding(horizontal = 16),
-                        ),
+                        id = "1",
+                        text = "Willkommen bei Snabble",
+                        textStyleSource = "title",
+                        showDisclosure = false,
+                        padding = io.snabble.sdk.domain.Padding(horizontal = 16, vertical = 5),
+                    ),
                 ),
-                padding = io.snabble.sdk.domain.Padding(0,0,0,0),),
-                onAction = {})
+                padding = io.snabble.sdk.domain.Padding(0, 0, 0, 0)
+            ),
+            onAction = {})
     }
 
 }

@@ -50,7 +50,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
                 is InformationDto -> toInformation()
                 is LocationPermissionDto -> toLocationPermission()
                 is PurchasesDto -> toPurchases()
-                is SectionDto -> TODO()
+                is SectionDto -> toSection()
                 is SeeAllStoresDto -> toSeeAllStores()
                 is StartShoppingDto -> toStartShopping()
                 is TextDto -> toText()
@@ -101,6 +101,13 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun PurchasesDto.toPurchases(): PurchasesItem = PurchasesItem(
         id = id,
         projectId = ProjectId(projectId),
+        padding = padding.toPadding()
+    )
+
+    private fun SectionDto.toSection(): SectionItem = SectionItem(
+        id = id,
+        header = header,
+        items = widgets.toWidgets(),
         padding = padding.toPadding()
     )
 
