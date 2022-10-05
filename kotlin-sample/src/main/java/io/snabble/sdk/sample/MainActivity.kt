@@ -141,8 +141,12 @@ class MainActivity : AppCompatActivity() {
     // Can be used to get args from deeplinks. In this case the args are used to
     private fun NavController.setup(toolbar: Toolbar, navBarView: NavigationBarView) {
         addOnDestinationChangedListener { _, destination, arguments ->
-            println("Nav to ${resources.getResourceName(destination.id)}")
-            toolbar.isVisible = arguments?.getBoolean("hideToolbar", false) != true
+            arguments.xx("Nav to ${resources.getResourceName(destination.id)}")
+            toolbar.isVisible = if (destination.id != R.id.navigation_home) {
+                arguments?.getBoolean("hideToolbar", false) != true
+            } else {
+                false
+            }
             navBarView.isVisible = arguments?.getBoolean("hideBottomNavigation", false) != true
             navBarView.isEnabled = arguments?.getBoolean("hideBottomNavigation", false) != true
             toolbar.title = destination.label
