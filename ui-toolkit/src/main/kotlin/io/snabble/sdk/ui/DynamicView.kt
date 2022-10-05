@@ -58,65 +58,25 @@ fun Widget(
     widget: Widget,
     onAction: OnDynamicAction,
 ) = when (widget) {
-    is ButtonItem -> {
-        ButtonWidget(
-            model = widget,
-            onClick = onAction,
-        )
-    }
-    is CustomerCardItem -> {
-        CustomerCardWidget(
-            model = widget,
-            onAction = onAction,
-        )
-    }
-    is ConnectWifiItem -> {
-        ConnectWifiWidget(
-            model = widget,
-            onClick = onAction,
-        )
-    }
-    is ImageItem -> {
-        ImageWidget(
-            model = widget,
-            onClick = onAction,
-        )
-    }
-    is InformationItem -> {
-        InformationWidget(
-            model = widget,
-            onClick = onAction,
-        )
-    }
-    is LocationPermissionItem -> {
-        LocationPermissionWidget(
-            model = widget,
-            onAction = onAction,
-        )
-    }
-    is PurchasesItem -> {
-        PurchaseWidget(
-            model = widget,
-            onAction = onAction,
-        )
-    }
-    is SeeAllStoresItem -> {
-        SeeAllStoresWidget(
-            model = widget,
-            onClick = onAction,
-        )
-    }
-    is StartShoppingItem -> {
-        StartShoppingWidget(
-            model = widget,
-            onAction = onAction,
-        )
-    }
-    is TextItem -> {
-        TextWidget(
-            model = widget,
-            onClick = onAction,
-        )
-    }
+    is ButtonItem -> ButtonWidget(model = widget, onClick = onAction)
+
+    is CustomerCardItem -> CustomerCardWidget(model = widget, onAction = onAction)
+
+    is ConnectWifiItem -> ConnectWifiWidget(model = widget, onClick = onAction)
+
+    is ImageItem -> ImageWidget(model = widget, onClick = onAction)
+
+    is InformationItem -> InformationWidget(model = widget, onClick = onAction)
+
+    is LocationPermissionItem -> LocationPermissionWidget(model = widget, onAction = onAction)
+
+    is PurchasesItem -> PurchaseWidget(model = widget, onAction = onAction)
+
+    is SeeAllStoresItem -> SeeAllStoresWidget(model = widget, onClick = onAction)
+
+    is StartShoppingItem -> StartShoppingWidget(model = widget, onAction = onAction)
+
+    is TextItem -> TextWidget(model = widget, onClick = onAction)
+
     else -> Unit
 }
