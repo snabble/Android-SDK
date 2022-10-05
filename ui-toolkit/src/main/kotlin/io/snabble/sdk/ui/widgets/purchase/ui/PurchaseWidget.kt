@@ -120,7 +120,7 @@ private fun Purchases(
                         color = MaterialTheme.colorScheme.primary
                     ),
                 ) {
-                    onAction(DynamicAction(model, mapOf("more" to Unit)))
+                    onAction(DynamicAction(model, mapOf("action" to "more")))
                 }
         ) {
             Text(
@@ -147,7 +147,17 @@ private fun Purchases(
                     modifier = Modifier
                         .weight(1f),
                     data = purchase,
-                    clickAction = { onAction(DynamicAction(model, mapOf("id" to purchase.id))) }
+                    clickAction = {
+                        onAction(
+                            DynamicAction(
+                                widget = model,
+                                info = mapOf(
+                                    "action" to "purchase",
+                                    "id" to purchase.id,
+                                )
+                            )
+                        )
+                    }
                 )
                 if (index < purchaseList.lastIndex) {
                     Spacer(modifier = Modifier.width(MaterialTheme.padding.large))
