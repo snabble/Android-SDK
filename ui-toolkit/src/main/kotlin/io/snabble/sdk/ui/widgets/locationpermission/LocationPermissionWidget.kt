@@ -36,7 +36,7 @@ internal fun LocationPermissionWidget(
                 widget = model,
                 padding = model.padding,
                 text = stringResource(id = R.string.Snabble_askForPermission),
-                onClick = {
+                onAction = {
                     onAction(DynamicAction(widget = model))
                     launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 },

@@ -21,7 +21,7 @@ fun ImageWidget(
     modifier: Modifier = Modifier,
     model: ImageItem,
     contentScale: ContentScale = ContentScale.Fit,
-    onClick: OnDynamicAction,
+    onAction: OnDynamicAction,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -31,7 +31,7 @@ fun ImageWidget(
             Image(
                 modifier = modifier
                     .fillMaxWidth()
-                    .clickable { onClick(DynamicAction(model)) },
+                    .clickable { onAction(DynamicAction(model)) },
                 contentScale = contentScale,
                 painter = painterResource(id = model.imageSource),
                 contentDescription = "",
@@ -49,6 +49,6 @@ fun ImageWidgetPreview() {
             imageSource = R.drawable.snabble_ic_payment_success_big,
             padding = Padding(horizontal = 8),
         ),
-        onClick = {}
+        onAction = {}
     )
 }

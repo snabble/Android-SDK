@@ -23,13 +23,13 @@ import io.snabble.sdk.ui.toPaddingValues
 fun TextWidget(
     model: TextItem,
     modifier: Modifier = Modifier,
-    onClick: OnDynamicAction,
+    onAction: OnDynamicAction,
 ) {
     Box(
         modifier = modifier
             .wrapContentHeight()
             .padding(model.padding.toPaddingValues())
-            .clickable { onClick(DynamicAction(model)) }
+            .clickable { onAction(DynamicAction(model)) }
     ) {
         Text(
             text = model.text,
@@ -57,7 +57,7 @@ fun TextWidgetPreview() {
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),
             ),
-            onClick = {},
+            onAction = {},
         )
         TextWidget(
             model = TextItem(
@@ -68,7 +68,7 @@ fun TextWidgetPreview() {
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),
             ),
-            onClick = {},
+            onAction = {},
         )
     }
 }

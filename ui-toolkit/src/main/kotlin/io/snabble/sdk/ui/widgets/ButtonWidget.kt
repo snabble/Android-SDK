@@ -22,12 +22,11 @@ import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
 
-
 @Composable
 fun ButtonWidget(
     modifier: Modifier = Modifier,
     model: ButtonItem,
-    onClick: OnDynamicAction = {},
+    onAction: OnDynamicAction = {},
 ) {
     Box(
         modifier = modifier
@@ -35,7 +34,7 @@ fun ButtonWidget(
             .padding(model.padding.toPaddingValues())
     ) {
         Button(
-            onClick = { onClick(DynamicAction(model)) },
+            onClick = { onAction(DynamicAction(model)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(
                     model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
@@ -62,7 +61,7 @@ fun ButtonWidget(
     widget: Widget,
     padding: Padding,
     text: String,
-    onClick: OnDynamicAction = {},
+    onAction: OnDynamicAction = {},
 ) {
     Box(
         modifier = modifier
@@ -70,7 +69,7 @@ fun ButtonWidget(
     ) {
         Button(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onClick(DynamicAction(widget)) },
+            onClick = { onAction(DynamicAction(widget)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer,
             ),

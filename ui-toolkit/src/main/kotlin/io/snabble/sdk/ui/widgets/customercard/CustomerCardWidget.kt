@@ -32,7 +32,7 @@ internal fun CustomerCardWidget(
         InformationWidget(
             modifier = modifier,
             model = (model.toInformationItem()),
-            onClick = { onAction(DynamicAction(model)) },
+            onAction = { onAction(DynamicAction(model)) },
         )
     }
 }

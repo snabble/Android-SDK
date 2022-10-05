@@ -53,7 +53,7 @@ internal fun DynamicScreen(
                         Padding(all = 0)
                     ),
                     contentScale = ContentScale.Fit,
-                    onClick = onAction,
+                    onAction = onAction,
                 )
             }
         },

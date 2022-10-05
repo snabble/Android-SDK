@@ -33,7 +33,7 @@ internal fun SeeAllStoresWidget(
     modifier: Modifier = Modifier,
     model: SeeAllStoresItem,
     viewModel: StoresViewModel = getViewModel(scope = KoinProvider.scope),
-    onClick: OnDynamicAction = {},
+    onAction: OnDynamicAction = {},
 ) {
 
     Box(modifier = modifier.fillMaxWidth()) {
@@ -44,7 +44,7 @@ internal fun SeeAllStoresWidget(
                 widget = model,
                 padding = model.padding,
                 text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
-                onClick = onClick
+                onAction = onAction
             )
         } else {
             Box(
@@ -53,7 +53,7 @@ internal fun SeeAllStoresWidget(
                     .align(Alignment.Center)
                     .height(48.dp)
                     .padding(model.padding.toPaddingValues())
-                    .clickable { onClick(DynamicAction(model)) },
+                    .clickable { onAction(DynamicAction(model)) },
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),

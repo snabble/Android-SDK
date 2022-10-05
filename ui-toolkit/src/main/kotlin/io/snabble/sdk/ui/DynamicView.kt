@@ -20,7 +20,7 @@ import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.ToggleItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.ui.widgets.ButtonWidget
-import io.snabble.sdk.ui.widgets.ConnectWifiWidget
+import io.snabble.sdk.ui.widgets.wifi.ConnectWifiWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.InformationWidget
 import io.snabble.sdk.ui.widgets.TextWidget
@@ -60,25 +60,25 @@ fun Widget(
     widget: Widget,
     onAction: OnDynamicAction,
 ) = when (widget) {
-    is ButtonItem -> ButtonWidget(model = widget, onClick = onAction)
+    is ButtonItem -> ButtonWidget(model = widget, onAction = onAction)
 
     is CustomerCardItem -> CustomerCardWidget(model = widget, onAction = onAction)
 
-    is ConnectWifiItem -> ConnectWifiWidget(model = widget, onClick = onAction)
+    is ConnectWifiItem -> ConnectWifiWidget(model = widget, onAction = onAction)
 
-    is ImageItem -> ImageWidget(model = widget, onClick = onAction)
+    is ImageItem -> ImageWidget(model = widget, onAction = onAction)
 
-    is InformationItem -> InformationWidget(model = widget, onClick = onAction)
+    is InformationItem -> InformationWidget(model = widget, onAction = onAction)
 
     is LocationPermissionItem -> LocationPermissionWidget(model = widget, onAction = onAction)
 
     is PurchasesItem -> PurchaseWidget(model = widget, onAction = onAction)
 
-    is SeeAllStoresItem -> SeeAllStoresWidget(model = widget, onClick = onAction)
+    is SeeAllStoresItem -> SeeAllStoresWidget(model = widget, onAction = onAction)
 
     is StartShoppingItem -> StartShoppingWidget(model = widget, onAction = onAction)
 
-    is TextItem -> TextWidget(model = widget, onClick = onAction)
+    is TextItem -> TextWidget(model = widget, onAction = onAction)
 
     is ToggleItem -> ToggleWidget(model = widget, onAction = onAction)
 

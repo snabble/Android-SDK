@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.widgets
+package io.snabble.sdk.ui.widgets.wifi
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.indication
@@ -51,7 +51,7 @@ fun ConnectWifiWidget(
     modifier: Modifier = Modifier,
     model: ConnectWifiItem,
     viewModel: WifiViewModel = getViewModel(scope = KoinProvider.scope),
-    onClick: OnDynamicAction,
+    onAction: OnDynamicAction,
 ) {
     if (viewModel.wifiButtonIsVisible.collectAsState().value) {
         CompositionLocalProvider(
@@ -68,7 +68,7 @@ fun ConnectWifiWidget(
         ) {
             rememberRipple()
             Card(
-                onClick = { onClick(DynamicAction(model)) },
+                onClick = { onAction(DynamicAction(model)) },
                 modifier = Modifier
                     .indication(
                         interactionSource = MutableInteractionSource(),
@@ -118,7 +118,7 @@ fun WifiWidgetPreview() {
                 id = "wifiii",
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
-            onClick = {}
+            onAction = {}
         )
     }
 }

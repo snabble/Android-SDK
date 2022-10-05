@@ -45,7 +45,7 @@ import io.snabble.sdk.ui.toolkit.R
 fun InformationWidget(
     modifier: Modifier = Modifier,
     model: InformationItem,
-    onClick: OnDynamicAction
+    onAction: OnDynamicAction
 ) {
     CompositionLocalProvider(
         // TODO: Providing this app wide?
@@ -61,7 +61,7 @@ fun InformationWidget(
     ) {
         rememberRipple()
         Card(
-            onClick = { onClick(DynamicAction(model)) },
+            onClick = { onAction(DynamicAction(model)) },
             modifier = Modifier
                 .padding(model.padding.toPaddingValues())
                 .indication(
@@ -116,7 +116,7 @@ fun InformationWidgetPreview() {
                 imageSource = R.drawable.store_logo,
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
-            onClick = {}
+            onAction = {}
         )
     }
 }
