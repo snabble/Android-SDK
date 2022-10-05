@@ -65,7 +65,7 @@ android {
 
 dependencies {
     def nav_version = "2.5.2"
-    def koin_version =  "3.2.0"
+    def koin_version = "3.2.0"
 
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
@@ -97,7 +97,7 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.6.0'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
-
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     implementation "androidx.startup:startup-runtime:1.1.1"
     implementation "io.insert-koin:koin-core:$koin_version"
@@ -110,7 +110,7 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 
     // Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363
-    debugImplementation "androidx.customview:customview:1.2.0-alpha01"
+    debugImplementation "androidx.customview:customview:1.2.0-alpha02"
     debugImplementation "androidx.customview:customview-poolingcontainer:1.0.0"
 
     implementation "com.google.android.material:compose-theme-adapter-3:1.0.19"

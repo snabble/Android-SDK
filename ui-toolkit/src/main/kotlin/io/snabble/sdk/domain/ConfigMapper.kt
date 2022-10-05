@@ -5,11 +5,11 @@ import io.snabble.sdk.data.ButtonDto
 import io.snabble.sdk.data.ConfigurationDto
 import io.snabble.sdk.data.ConnectWifiDto
 import io.snabble.sdk.data.CustomerCardDto
+import io.snabble.sdk.data.DynamicConfigDto
 import io.snabble.sdk.data.ImageDto
 import io.snabble.sdk.data.InformationDto
 import io.snabble.sdk.data.LocationPermissionDto
 import io.snabble.sdk.data.PurchasesDto
-import io.snabble.sdk.data.DynamicConfigDto
 import io.snabble.sdk.data.SectionDto
 import io.snabble.sdk.data.SeeAllStoresDto
 import io.snabble.sdk.data.StartShoppingDto
@@ -54,7 +54,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
                 is SeeAllStoresDto -> toSeeAllStores()
                 is StartShoppingDto -> toStartShopping()
                 is TextDto -> toText()
-                is ToggleDto -> TODO()
+                is ToggleDto -> toToggle()
             }
         }
     }
@@ -120,6 +120,13 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         textColorSource = context.getComposeColor(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
+        padding = padding.toPadding()
+    )
+
+    private fun ToggleDto.toToggle(): ToggleItem = ToggleItem(
+        id = id,
+        text = text,
+        key = key,
         padding = padding.toPadding()
     )
 }

@@ -93,6 +93,15 @@
       "padding": [
         0
       ]
+    },
+    {
+      "type": "toggle",
+      "id": "onboarding.toggle",
+      "text": "Show onboarding",
+      "key": "snabble.show.onboarding",
+      "padding": [
+        0
+      ]
     }
   ]
 }

@@ -9,6 +9,7 @@ import io.snabble.sdk.ui.widgets.customercard.di.customerCardModule
 import io.snabble.sdk.ui.widgets.locationpermission.di.locationPermissionModule
 import io.snabble.sdk.ui.widgets.purchase.di.purchaseWidgetModule
 import io.snabble.sdk.ui.widgets.stores.di.storesModule
+import io.snabble.sdk.ui.widgets.toggle.di.toggleWidgetModule
 import io.snabble.sdk.ui.widgets.wifi.di.wifiModule
 import io.snabble.sdk.usecases.di.useCaseModule
 import org.koin.android.ext.koin.androidContext
@@ -31,6 +32,7 @@ internal class KoinInitializer : Initializer<Koin> {
                 locationPermissionModule,
                 purchaseWidgetModule,
                 storesModule,
+                toggleWidgetModule,
                 useCaseModule,
                 wifiModule,
             )

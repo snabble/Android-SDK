@@ -17,6 +17,7 @@ import io.snabble.sdk.domain.PurchasesItem
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.domain.ToggleItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ConnectWifiWidget
@@ -28,6 +29,7 @@ import io.snabble.sdk.ui.widgets.locationpermission.LocationPermissionWidget
 import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseWidget
 import io.snabble.sdk.ui.widgets.stores.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.stores.StartShoppingWidget
+import io.snabble.sdk.ui.widgets.toggle.ToggleWidget
 
 typealias OnDynamicAction = (action: DynamicAction) -> Unit
 
@@ -77,6 +79,8 @@ fun Widget(
     is StartShoppingItem -> StartShoppingWidget(model = widget, onAction = onAction)
 
     is TextItem -> TextWidget(model = widget, onClick = onAction)
+
+    is ToggleItem -> ToggleWidget(model = widget, onAction = onAction)
 
     else -> Unit
 }
