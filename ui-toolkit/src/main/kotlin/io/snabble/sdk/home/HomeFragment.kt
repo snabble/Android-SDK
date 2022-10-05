@@ -22,7 +22,7 @@ class HomeFragment : Fragment(R.layout.snabble_fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<ComposeView>(R.id.composable).apply {
+        view.findViewById<ComposeView>(R.id.compose_view).apply {
             setContent {
                 ThemeWrapper {
                     // ViewModelStoreOwnerLocalProvider {
