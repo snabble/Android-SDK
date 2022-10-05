@@ -3,10 +3,13 @@ package io.snabble.sdk.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.CustomerCardItem
@@ -20,7 +23,6 @@ import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.ToggleItem
 import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.ui.widgets.ButtonWidget
-import io.snabble.sdk.ui.widgets.wifi.ConnectWifiWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.InformationWidget
 import io.snabble.sdk.ui.widgets.TextWidget
@@ -30,6 +32,7 @@ import io.snabble.sdk.ui.widgets.purchase.ui.PurchaseWidget
 import io.snabble.sdk.ui.widgets.stores.SeeAllStoresWidget
 import io.snabble.sdk.ui.widgets.stores.StartShoppingWidget
 import io.snabble.sdk.ui.widgets.toggle.ToggleWidget
+import io.snabble.sdk.ui.widgets.wifi.ConnectWifiWidget
 
 typealias OnDynamicAction = (action: DynamicAction) -> Unit
 
@@ -38,6 +41,7 @@ fun DynamicView(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
     background: @Composable (() -> Unit),
+    divider: Boolean = false,
     widgets: List<Widget>,
     onAction: OnDynamicAction,
 ) {
@@ -50,6 +54,12 @@ fun DynamicView(
         ) {
             items(items = widgets) { widget ->
                 Widget(widget = widget, onAction)
+                if (divider) {
+                    Divider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.Black
+                    )
+                }
             }
         }
     }
