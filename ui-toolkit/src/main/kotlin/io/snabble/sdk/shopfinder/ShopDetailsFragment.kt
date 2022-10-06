@@ -38,12 +38,12 @@ import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
-import io.snabble.sdk.shopfinder.utils.distanceTo
-import io.snabble.sdk.shopfinder.utils.formatDistance
-import io.snabble.sdk.shopfinder.utils.toLatLng
 import io.snabble.sdk.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.shopfinder.utils.OneShotClickListener
 import io.snabble.sdk.shopfinder.utils.ShopFinderPreferences
+import io.snabble.sdk.shopfinder.utils.distanceTo
+import io.snabble.sdk.shopfinder.utils.formatDistance
+import io.snabble.sdk.shopfinder.utils.toLatLng
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.ui.utils.dpInPx
@@ -68,6 +68,7 @@ import java.util.*
  * setUiAction for this event to declare the action for the button click.
  */
 open class ShopDetailsFragment : Fragment() {
+
     private val dayTable: Map<String, String>
     private val sortedWeek: List<String>
     private lateinit var locationManager: CheckInLocationManager
@@ -99,12 +100,12 @@ open class ShopDetailsFragment : Fragment() {
     private var storePinned = false
 
     private val isMultiProject: Boolean
-    get() = Snabble.projects.size > 1
+        get() = Snabble.projects.size > 1
 
     private val isCheckedInToShop: Boolean
         get() = Snabble.currentCheckedInShop.value != null
-            && Snabble.checkedInProject.value != null
-            && Snabble.currentCheckedInShop.value?.id == shop.id
+                && Snabble.checkedInProject.value != null
+                && Snabble.currentCheckedInShop.value?.id == shop.id
 
     init {
         val usWeekdays = DateFormatSymbols.getInstance(Locale.US).weekdays.drop(1)
@@ -123,7 +124,7 @@ open class ShopDetailsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = inflater.inflate(R.layout.snabble_shop_details_fragment, container, false).apply{
+    ): View? = inflater.inflate(R.layout.snabble_shop_details_fragment, container, false).apply {
         val view = this
 
         image = findViewById(R.id.image)
@@ -340,7 +341,7 @@ open class ShopDetailsFragment : Fragment() {
         }
 
         if (!isCheckedInToShop) {
-            if (locationManager.location.value == null){
+            if (locationManager.location.value == null) {
                 distance.isVisible = false
             }
             locationManager.location.observe(viewLifecycleOwner) { location ->
@@ -424,6 +425,7 @@ open class ShopDetailsFragment : Fragment() {
             debugCheckin.isVisible = false
         }
     }
+
     private fun updateDebugCheckInText() {
         debugCheckin.text = if (isCheckedInToShop) {
             "Checkout"
@@ -521,7 +523,7 @@ open class ShopDetailsFragment : Fragment() {
     }
 
     fun zoomToHome() {
-        locationManager.location.observe(viewLifecycleOwner){ currentLocation ->
+        locationManager.location.observe(viewLifecycleOwner) { currentLocation ->
             currentLocation?.let {
                 if (storePinned) {
                     storePinned = false
@@ -547,41 +549,42 @@ open class ShopDetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+
         mapView?.onStart()
 
-        val supportActionBar = (context as? AppCompatActivity)?.supportActionBar
-        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Detail_title)
-
-        if (actionbarTitle == "Details") {
-            supportActionBar?.title = shop.name
-        } else {
-            supportActionBar?.title = actionbarTitle
-        }
+        val toolbarTitle = resources.getText(R.string.Snabble_Shop_Detail_title)
+            .let { it.ifBlank { shop.name } }
+        (context as? AppCompatActivity)?.supportActionBar?.title = toolbarTitle
     }
 
     override fun onResume() {
         super.onResume()
+
         mapView?.onResume()
     }
 
     override fun onPause() {
         super.onPause()
+
         mapView?.onPause()
     }
 
     override fun onStop() {
-        super.onStop()
         mapView?.onStop()
+
+        super.onStop()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         mapView?.onDestroy()
+
+        super.onDestroyView()
     }
 
     override fun onLowMemory() {
-        super.onLowMemory()
         mapView?.onLowMemory()
+
+        super.onLowMemory()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -597,6 +600,7 @@ open class ShopDetailsFragment : Fragment() {
     }
 
     companion object {
+
         const val BUNDLE_KEY_SHOP = "shop"
         private const val BUNDLE_KEY_MAPVIEW = "mapView"
 

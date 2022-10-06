@@ -6,10 +6,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Padding
@@ -26,10 +27,11 @@ internal fun LocationPermissionWidget(
     viewModel: LocationPermissionViewModel = getViewModel(scope = KoinProvider.scope),
     onAction: OnDynamicAction,
 ) {
-    val launcher =
-        createActivityResultLauncher(viewModel)
+    val launcher = createActivityResultLauncher(viewModel)
 
-    if (!viewModel.permissionButtonIsVisible.collectAsState().value) {
+    @OptIn(ExperimentalLifecycleComposeApi::class)
+    val isButtonVisibleState = viewModel.permissionButtonIsVisible.collectAsStateWithLifecycle()
+    if (!isButtonVisibleState.value) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
                 modifier = modifier.fillMaxWidth(),

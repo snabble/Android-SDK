@@ -35,23 +35,33 @@
         android:name="io.snabble.sdk.onboarding.OnboardingFragment"
         android:label="OnboardingFragment"
         tools:layout="@layout/snabble_fragment_onboarding">
+
         <argument
             android:name="hideToolbar"
             android:defaultValue="true"
             app:argType="boolean" />
+
         <argument
             android:name="hideBottomNavigation"
             android:defaultValue="true"
             app:argType="boolean" />
+
         <argument
             android:name="@string/bundle_key_model"
             app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
+
     </fragment>
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="io.snabble.sdk.home.HomeFragment"
-        android:label="@string/Sample.home" />
+        android:name="io.snabble.sdk.home.HomeFragment">
+
+        <argument
+            android:name="hideToolbar"
+            android:defaultValue="true"
+            app:argType="boolean" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -75,17 +85,27 @@
     <navigation
         android:id="@+id/navigation_shop"
         app:startDestination="@id/navigation_shops">
+
         <fragment
             android:id="@+id/navigation_shops"
-            android:name="io.snabble.sdk.shopfinder.ShopListFragment">
+            android:name="io.snabble.sdk.shopfinder.ShopListFragment"
+            android:label="@string/Snabble.Shop.Finder.title">
+
             <action
                 android:id="@+id/shop_details"
                 app:destination="@id/navigation_shops_details" />
+
+            <argument
+                android:name="hideToolbar"
+                android:defaultValue="false"
+                app:argType="boolean" />
+
         </fragment>
 
         <fragment
             android:id="@+id/navigation_shops_details"
             android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment" />
+
     </navigation>
 
     <fragment

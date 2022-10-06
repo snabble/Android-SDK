@@ -8,9 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkin.CheckInLocationManager
+import io.snabble.sdk.home.addLifecycleObserverForToolbarVisibility
 import io.snabble.sdk.shopfinder.shoplist.ExpandableShopListRecyclerView
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.isNotNullOrBlank
 
 /**
  * Displays the ExpandableShopList of the selected shop.
@@ -27,7 +27,7 @@ open class ShopListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         setupActionBar()
         locationManager = Snabble.checkInLocationManager
@@ -53,6 +53,7 @@ open class ShopListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
         shopListRecyclerView.update()
     }
 
@@ -61,11 +62,6 @@ open class ShopListFragment : Fragment() {
 
         if (Snabble.projects.size == 1) {
             supportActionBar.setDisplayHomeAsUpEnabled(false)
-        }
-
-        val actionbarTitle = resources.getText(R.string.Snabble_Shop_Finder_title)
-        if (actionbarTitle.isNotNullOrBlank()) {
-            supportActionBar.title = actionbarTitle
         }
     }
 }
