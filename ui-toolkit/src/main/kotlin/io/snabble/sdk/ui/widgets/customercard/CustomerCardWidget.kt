@@ -32,9 +32,9 @@ internal fun CustomerCardWidget(
     @OptIn(ExperimentalLifecycleComposeApi::class)
     val isCardVisibleState = customerCardViewModel.isCustomerCardVisible.collectAsStateWithLifecycle()
     if (isCardVisibleState.value) {
-        InformationWidget(
+        CustomerCard(
             modifier = modifier,
-            model = (model.toInformationItem()),
+            model = (model),
             onAction = { onAction(DynamicAction(model)) },
         )
     }
