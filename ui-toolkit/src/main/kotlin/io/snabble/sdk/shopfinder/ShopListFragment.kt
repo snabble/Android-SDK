@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkin.CheckInLocationManager
-import io.snabble.sdk.home.addLifecycleObserverForToolbarVisibility
 import io.snabble.sdk.shopfinder.shoplist.ExpandableShopListRecyclerView
 import io.snabble.sdk.ui.toolkit.R
 
