@@ -3,7 +3,6 @@ package io.snabble.sdk.usecases
 import android.annotation.SuppressLint
 import android.util.Log
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.utils.xx
 
 internal class GetPermissionStateUseCase(
     private val snabble: Snabble
@@ -26,9 +25,9 @@ internal class UpdateChechkinManagerUseCase(
     @SuppressLint("MissingPermission")
     operator fun invoke() {
         if (getPermissionState()) {
-            snabble.checkInManager.startUpdating().xx("StartStopUseCase")
+            snabble.checkInManager.startUpdating()
         } else {
-            snabble.checkInManager.stopUpdating().xx("sooooo")
+            snabble.checkInManager.stopUpdating()
         }
     }
 }

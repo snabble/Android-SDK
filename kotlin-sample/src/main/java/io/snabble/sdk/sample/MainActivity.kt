@@ -41,8 +41,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var locationPermission: ActivityResultLauncher<String>
-
     private lateinit var locationManager: CheckInLocationManager
 
     private val sharedPreferences: SharedPreferences
@@ -255,26 +253,7 @@ class MainActivity : AppCompatActivity() {
             onboardingSeen = true
         }
 
-        // listens to permission result and start tracking if permission is granted
-        locationPermission =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted) {
-                    if (isHoldingPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                        || isHoldingPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    ) {
-                        // noinspection MissingPermission
-                        Snabble.checkInManager.startUpdating()
-                        locationManager.startTrackingLocation()
-                    } else {
-                        locationManager.stopTrackingLocation()
-                        Snabble.checkInManager.stopUpdating()
-                    }
-                }
-            }
     }
-
-    private fun isHoldingPermission(permission: String): Boolean =
-        ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
     private fun setupToolbar(
         toolbar: Toolbar,
