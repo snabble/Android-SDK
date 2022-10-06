@@ -1,18 +1,12 @@
 package io.snabble.sdk.sample
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
@@ -26,11 +20,8 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationBarView
 import com.google.gson.Gson
-import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
-import io.snabble.sdk.checkin.CheckInLocationManager
-import io.snabble.sdk.checkin.OnCheckInStateChangedListener
 import io.snabble.sdk.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.home.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
@@ -40,8 +31,6 @@ import io.snabble.sdk.utils.xx
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var locationManager: CheckInLocationManager
 
     private val sharedPreferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(this)
@@ -61,18 +50,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        locationManager = Snabble.checkInLocationManager
-        // start location tracking after permission is granted
-        locationManager.startTrackingLocation()
 
         setContentView(R.layout.activity_main)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         val navBarView: NavigationBarView = findViewById(R.id.nav_view)
-        navBarView.setOnItemReselectedListener {
-            // No action needed on re-selecting
-        }
+
         navBarView.setupWithNavController(navController)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -107,8 +91,6 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
-
-        addSnabbleSdkCheckInListener()
     }
 
     @SuppressLint("MissingPermission")
@@ -122,31 +104,6 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
 
         Snabble.checkInManager.stopUpdating()
-    }
-
-    private fun addSnabbleSdkCheckInListener() {
-        // add a check in state listener to observe when a user enters or leaves a shop
-        Snabble.checkInManager.addOnCheckInStateChangedListener(
-            object : OnCheckInStateChangedListener {
-
-                override fun onCheckIn(shop: Shop) {
-                    Toast.makeText(this@MainActivity, "Check in: " + shop.name, Toast.LENGTH_LONG)
-                        .show()
-                }
-
-                override fun onCheckOut() {
-                    Toast.makeText(this@MainActivity, "Check out", Toast.LENGTH_LONG).show()
-                }
-
-                override fun onMultipleCandidatesAvailable(candidates: List<Shop>) {
-                    // if multiple shops are in range a list will be provided
-                    // a valid implementation of this can be just doing nothing
-                    // as this will use the first shop (the nearest) of the list and stick to it
-                    //
-                    // a proper implementation would hint the user to select the shop he is currently in
-                }
-            }
-        )
     }
 
     // Can be used to get args from deeplinks. In this case the args are used to
@@ -263,6 +220,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
+        navBarView.setOnItemReselectedListener {
+            // No action needed on re-selecting
+        }
+
         navController.setup(toolbar, navBarView)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -276,29 +237,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Check in example if the "Snabble" "CheckInManager" is not used, otherwise it is handled
-    @Suppress("unused")
-    fun checkIn() {
-        val shopList = Snabble.projects[0].shops
-        // CheckinRadius in Meters
-        val checkInRadius = 15.0f
-
-        // Observe the current location via the locationManager to track if a shop matches
-        // the check in radius. If yes check in.
-        locationManager.location.observe(this) { currentLocation ->
-            val nearestshop = currentLocation?.let { location ->
-                shopList.firstOrNull { it.location.distanceTo(location) < checkInRadius }
-            }
-
-            // Set shop and project on check in
-            if (nearestshop != null) {
-                Snabble.checkedInShop = nearestshop
-                Snabble.checkedInProject.setValue(Snabble.projects.first())
-            } else {
-                Snabble.checkedInShop = null
-                Snabble.checkedInProject.setValue(null)
-            }
-        }
-    }
+//    @Suppress("unused")
+//    fun checkIn() {
+//        val shopList = Snabble.projects[0].shops
+//        // CheckinRadius in Meters
+//        val checkInRadius = 15.0f
+//
+//        // Observe the current location via the locationManager to track if a shop matches
+//        // the check in radius. If yes check in.
+//        locationManager.location.observe(this) { currentLocation ->
+//            val nearestshop = currentLocation?.let { location ->
+//                shopList.firstOrNull { it.location.distanceTo(location) < checkInRadius }
+//            }
+//
+//            // Set shop and project on check in
+//            if (nearestshop != null) {
+//                Snabble.checkedInShop = nearestshop
+//                Snabble.checkedInProject.setValue(Snabble.projects.first())
+//            } else {
+//                Snabble.checkedInShop = null
+//                Snabble.checkedInProject.setValue(null)
+//            }
+//        }
+//    }
 
     companion object {
 
