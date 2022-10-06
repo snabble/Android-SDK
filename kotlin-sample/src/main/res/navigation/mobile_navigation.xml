@@ -54,6 +54,11 @@
         android:label="@string/Sample.home" />
 
     <fragment
+        android:id="@+id/navigation_profile"
+        android:name="io.snabble.sdk.profil.ProfileFragment"
+        android:label="@string/Sample.profile" />
+
+    <fragment
         android:id="@+id/navigation_scanner"
         android:name="io.snabble.sdk.ui.scanner.SelfScanningFragment"
         android:label="@string/Sample.scanner">

@@ -1,0 +1,69 @@
+{
+  "configuration": {
+    "image": "",
+    "style": "scroll",
+    "padding": [
+     0
+    ]
+  },
+  "widgets": [
+    {
+      "type": "section",
+      "id": "section1",
+      "header": "Your Profile",
+      "items": [
+        {
+          "type": "text",
+          "id": "2",
+          "text": "My profile",
+          "textColor": "black",
+          "textStyle": "body",
+          "padding": [
+            16,
+            8,
+            8,
+            16
+          ]
+        },
+        {
+          "type": "text",
+          "id": "3",
+          "text": "Terms of Conditions",
+          "textColor": "black",
+          "textStyle": "body",
+          "padding": [
+            16,
+            8,
+            8,
+            16
+          ]
+        }
+      ],
+      "padding": [
+        16,
+        8,
+        8,
+        16
+      ]
+    }, {
+      "type": "section",
+      "id": "section1",
+      "header": "Settings",
+      "items": [
+        {
+          "type": "toggle",
+          "id": "onboarding.toggle",
+          "text": "Show onboarding",
+          "key": "snabble.show.onboarding",
+          "padding": [
+            16,
+            8,
+            8,
+            16
+          ]
+        }
+      ],
+      "padding": [ 8, 5 ]
+    }
+  ]
+}

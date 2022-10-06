@@ -1,8 +1,8 @@
 package io.snabble.sdk.ui.widgets
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,6 +22,7 @@ import io.snabble.sdk.ui.theme.properties.LocalPadding
 import io.snabble.sdk.ui.theme.properties.Padding
 import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
+import io.snabble.sdk.ui.toPaddingValues
 
 @Composable
 fun SectionWidget(
@@ -30,7 +31,9 @@ fun SectionWidget(
     onAction: OnDynamicAction
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(model.padding.toPaddingValues()),
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
