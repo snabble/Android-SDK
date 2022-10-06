@@ -2,7 +2,6 @@ package io.snabble.sdk.sample
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -26,7 +24,6 @@ import io.snabble.sdk.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.home.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.xx
 import kotlinx.coroutines.launch
 
@@ -61,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setupToolbar(toolbar, navController, navBarView)
+        setUpUiEvents(this, navController, navBarView)
 
         profileViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
@@ -72,11 +70,8 @@ class MainActivity : AppCompatActivity() {
         homeViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
                 when (action.widget.id) {
-                    "location" -> {}
-                    "start" -> navBarView.selectedItemId = R.id.navigation_cart
-                    "stores" -> {
-                        SnabbleUiToolkit.executeAction(this, SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
-                    }
+                    "start" -> navBarView.selectedItemId = R.id.navigation_scanner
+                    "stores" -> navBarView.selectedItemId = R.id.navigation_shop
                     else -> action.xx("DynamicAction ->")
                 }
             }
@@ -115,94 +110,6 @@ class MainActivity : AppCompatActivity() {
             navBarView.isVisible = isBottomNavigationVisible
             navBarView.isEnabled = isBottomNavigationVisible
         }
-
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_BARCODE_SEARCH
-        ) { _, args ->
-            navigate(R.id.navigation_barcode_search, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_SCANNER
-        ) { _, args ->
-            navigate(R.id.navigation_scanner, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_SHOPPING_CART
-        ) { _, args ->
-            navigate(R.id.navigation_cart, args)
-            // navigate(R.id.navigation_dummy_cart, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_SEPA_CARD_INPUT
-        ) { _, args ->
-            navigate(R.id.navigation_sepa_card_input, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT
-        ) { _, args ->
-            navigate(R.id.navigation_credit_card_input, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_PAYDIREKT_INPUT
-        ) { _, args ->
-            navigate(R.id.navigation_paydirekt_input, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_PAYONE_INPUT
-        ) { _, args ->
-            navigate(R.id.navigation_payone_input, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.SHOW_AGE_VERIFICATION
-        ) { _, args ->
-            navigate(R.id.navigation_age_verification, args)
-        }
-        SnabbleUI.setUiAction(
-            this@MainActivity,
-            SnabbleUI.Event.GO_BACK
-        ) { _, _ ->
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
-        ) { _, args ->
-            navigate(R.id.navigation_shops_details, args)
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
-        ) { _, _ ->
-            navBarView.selectedItemId = R.id.navigation_scanner
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.SHOW_DEEPLINK
-        ) { _, args ->
-            val uri = Uri.parse(requireNotNull(args?.getString(SnabbleUiToolkit.DEEPLINK)))
-            navigate(NavDeepLinkRequest.Builder.fromUri(uri).build())
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.SHOW_ONBOARDING
-        ) { _, args ->
-            navigate(R.id.frag_onboarding, args)
-        }
-        SnabbleUiToolkit.setUiAction(
-            this@MainActivity,
-            SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
-        ) { _, _ ->
-            popBackStack()
-            onboardingSeen = true
-        }
-
     }
 
     private fun setupToolbar(
@@ -229,33 +136,8 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
-    // Check in example if the "Snabble" "CheckInManager" is not used, otherwise it is handled
-//    @Suppress("unused")
-//    fun checkIn() {
-//        val shopList = Snabble.projects[0].shops
-//        // CheckinRadius in Meters
-//        val checkInRadius = 15.0f
-//
-//        // Observe the current location via the locationManager to track if a shop matches
-//        // the check in radius. If yes check in.
-//        locationManager.location.observe(this) { currentLocation ->
-//            val nearestshop = currentLocation?.let { location ->
-//                shopList.firstOrNull { it.location.distanceTo(location) < checkInRadius }
-//            }
-//
-//            // Set shop and project on check in
-//            if (nearestshop != null) {
-//                Snabble.checkedInShop = nearestshop
-//                Snabble.checkedInProject.setValue(Snabble.projects.first())
-//            } else {
-//                Snabble.checkedInShop = null
-//                Snabble.checkedInProject.setValue(null)
-//            }
-//        }
-//    }
-
     companion object {
 
-        private const val ONBOARDING_SEEN = "onboarding_seen"
+        const val ONBOARDING_SEEN = "onboarding_seen"
     }
 }
