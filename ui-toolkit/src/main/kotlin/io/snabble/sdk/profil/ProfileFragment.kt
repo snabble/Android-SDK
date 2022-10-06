@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -25,4 +26,11 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
+
+    override fun onStart() {
+        super.onStart()
+
+        val supportActionBar = (context as? AppCompatActivity)?.supportActionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
 }

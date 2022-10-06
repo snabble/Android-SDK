@@ -40,10 +40,10 @@
         }
       ],
       "padding": [
+        0,
         16,
         8,
-        8,
-        16
+        0
       ]
     }, {
       "type": "section",
@@ -57,13 +57,15 @@
           "key": "snabble.show.onboarding",
           "padding": [
             16,
-            8,
-            8,
-            16
+            0
           ]
         }
       ],
-      "padding": [ 8, 5 ]
+      "padding": [
+        0,
+        16,
+        8,
+        0]
     }
   ]
 }

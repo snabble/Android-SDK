@@ -19,7 +19,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -33,6 +32,7 @@ import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
 import io.snabble.sdk.home.viewmodel.DynamicHomeViewModel
+import io.snabble.sdk.home.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.ui.SnabbleUI
@@ -54,7 +54,8 @@ class MainActivity : AppCompatActivity() {
             .putBoolean(ONBOARDING_SEEN, onboardingSeen)
             .apply()
 
-    private val dynamicViewModel: DynamicHomeViewModel by viewModels()
+    private val homeViewModel: DynamicHomeViewModel by viewModels()
+    private val profileViewModel: DynamicProfileViewModel by viewModels()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -71,12 +72,22 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         val navBarView: NavigationBarView = findViewById(R.id.nav_view)
+        navBarView.setOnItemReselectedListener {
+            // No action needed on re-selecting
+        }
         navBarView.setupWithNavController(navController)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setupToolbar(toolbar, navController, navBarView)
 
-        dynamicViewModel.xx("MainActivity:").actions.asLiveData()
+        profileViewModel.xx("MainActivity:").actions.asLiveData()
+            .observe(this) { action ->
+                when (action.widget.id) {
+                    else -> action.xx("ProfileAction")
+                }
+
+            }
+        homeViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
                 when (action.widget.id) {
                     "location" -> {}
