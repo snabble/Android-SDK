@@ -3,13 +3,10 @@ package io.snabble.sdk.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import io.snabble.sdk.domain.ButtonItem
 import io.snabble.sdk.domain.ConnectWifiItem
 import io.snabble.sdk.domain.CustomerCardItem
@@ -17,6 +14,7 @@ import io.snabble.sdk.domain.ImageItem
 import io.snabble.sdk.domain.InformationItem
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.PurchasesItem
+import io.snabble.sdk.domain.SectionItem
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
@@ -25,6 +23,7 @@ import io.snabble.sdk.domain.Widget
 import io.snabble.sdk.ui.widgets.ButtonWidget
 import io.snabble.sdk.ui.widgets.ImageWidget
 import io.snabble.sdk.ui.widgets.InformationWidget
+import io.snabble.sdk.ui.widgets.SectionWidget
 import io.snabble.sdk.ui.widgets.TextWidget
 import io.snabble.sdk.ui.widgets.customercard.CustomerCardWidget
 import io.snabble.sdk.ui.widgets.locationpermission.LocationPermissionWidget
@@ -41,7 +40,6 @@ fun DynamicView(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
     background: @Composable (() -> Unit),
-    divider: Boolean = false,
     widgets: List<Widget>,
     onAction: OnDynamicAction,
 ) {
@@ -54,12 +52,6 @@ fun DynamicView(
         ) {
             items(items = widgets) { widget ->
                 Widget(widget = widget, onAction)
-                if (divider) {
-                    Divider(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color.Black
-                    )
-                }
             }
         }
     }
@@ -92,5 +84,6 @@ fun Widget(
 
     is ToggleItem -> ToggleWidget(model = widget, onAction = onAction)
 
-    else -> Unit
+    is SectionItem -> SectionWidget(model = widget, onAction = onAction)
+
 }

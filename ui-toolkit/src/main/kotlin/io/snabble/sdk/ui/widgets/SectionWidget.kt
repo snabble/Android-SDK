@@ -1,8 +1,9 @@
 package io.snabble.sdk.ui.widgets
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,16 +14,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.domain.SectionItem
 import io.snabble.sdk.domain.TextItem
 import io.snabble.sdk.domain.ToggleItem
-import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.OnDynamicAction
+import io.snabble.sdk.ui.Widget
 import io.snabble.sdk.ui.theme.properties.Elevation
 import io.snabble.sdk.ui.theme.properties.LocalElevation
 import io.snabble.sdk.ui.theme.properties.LocalPadding
 import io.snabble.sdk.ui.theme.properties.Padding
 import io.snabble.sdk.ui.theme.properties.applyElevation
 import io.snabble.sdk.ui.theme.properties.applyPadding
-import io.snabble.sdk.ui.theme.properties.padding
-import io.snabble.sdk.ui.toPaddingValues
 
 @Composable
 fun SectionWidget(
@@ -31,9 +30,7 @@ fun SectionWidget(
     onAction: OnDynamicAction
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = MaterialTheme.padding.medium)
+        modifier = modifier.fillMaxWidth(),
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -41,13 +38,12 @@ fun SectionWidget(
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
         )
-        DynamicView(
-            contentPadding = model.padding.toPaddingValues(),
-            background = { /*TODO*/ },
-            divider = true,
-            widgets = model.items,
-            onAction = onAction
-        )
+        Column(Modifier.fillMaxWidth()) {
+            model.items.forEach { widget ->
+                Widget(widget = widget, onAction = onAction)
+                Divider(modifier = modifier.fillMaxWidth())
+            }
+        }
 
     }
 }

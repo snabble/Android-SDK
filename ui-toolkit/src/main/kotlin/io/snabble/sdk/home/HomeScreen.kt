@@ -19,9 +19,11 @@ import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ProjectId
 import io.snabble.sdk.domain.PurchasesItem
+import io.snabble.sdk.domain.SectionItem
 import io.snabble.sdk.domain.SeeAllStoresItem
 import io.snabble.sdk.domain.StartShoppingItem
 import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.domain.ToggleItem
 import io.snabble.sdk.ui.DynamicView
 import io.snabble.sdk.ui.DynamicViewModel
 import io.snabble.sdk.ui.OnDynamicAction
@@ -119,6 +121,49 @@ private fun HomeScreenPreview() {
                         projectId = ProjectId("0123"),
                         padding = Padding(0),
                     ),
+                )
+            )
+            setConfig(config)
+        }
+    DynamicScreen(dynamicViewModel = viewModel)
+}
+
+@Preview(
+    backgroundColor = 0xFFFFFF,
+    showBackground = true,
+    showSystemUi = true,
+)
+@Composable
+private fun ProfileScreenPreview() {
+    val viewModel: DynamicViewModel = DynamicViewModel()
+        .apply {
+            val config = DynamicConfig(
+                configuration = Configuration(
+                    image = null,
+                    style = "",
+                    padding = Padding(0)
+                ),
+                widgets = listOf(
+                    SectionItem(
+                        id = "section",
+                        header = "Profil",
+                        items = listOf(
+                            ToggleItem(
+                                id = "setup.toggle",
+                                text = "Show setup",
+                                key = "pref.setup.toggle",
+                                padding = Padding(horizontal = 16, vertical = 5),
+                            ),
+                            TextItem(
+                                id = "1",
+                                text = "Willkommen bei Snabble",
+                                textStyleSource = "title",
+                                showDisclosure = false,
+                                padding = Padding(horizontal = 16, vertical = 5),
+                            ),
+                        ),
+                        padding = Padding(0, 0, 0, 0)
+                    )
                 )
             )
             setConfig(config)
