@@ -22,20 +22,19 @@ import io.snabble.sdk.ui.DynamicAction
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toPaddingValues
 import io.snabble.sdk.ui.widgets.toggle.viewmodel.ToggleViewModel
+import io.snabble.sdk.ui.widgets.toggle.viewmodel.ToggleViewModelFactory
 
 @Composable
 internal fun ToggleWidget(
     modifier: Modifier = Modifier,
-    viewModel: ToggleViewModel = viewModel(),
     model: ToggleItem,
+    viewModel: ToggleViewModel = viewModel(factory = ToggleViewModelFactory(prefKey = model.key)),
     onAction: OnDynamicAction,
 ) {
-    viewModel.setPrefKey(model.key) // TODO: Make this nice!
     val toggleState = viewModel.toggleState.collectAsState()
     Toggle(
         modifier = modifier,
         model = model,
-        isChecked = toggleState.value,
         onCheckedChange = { viewModel.setToggleState(model.key, isChecked = it) },
         onAction = onAction,
     )
