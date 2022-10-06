@@ -1,7 +1,7 @@
 package io.snabble.sdk.usecases.di
 
 import io.snabble.sdk.usecases.GetAvailableWifiUseCase
-import io.snabble.sdk.usecases.GetCustomerCardInfo
+import io.snabble.sdk.usecases.HasCustomerCardUseCase
 import io.snabble.sdk.usecases.GetHomeConfigUseCase
 import io.snabble.sdk.usecases.GetPermissionStateUseCase
 import io.snabble.sdk.usecases.GetProfileConfigUseCase
@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 internal val useCaseModule = module {
     factoryOf(::GetAvailableWifiUseCase)
-    factoryOf(::GetCustomerCardInfo)
+    factoryOf(::HasCustomerCardUseCase)
     factoryOf(::GetHomeConfigUseCase)
     factoryOf(::GetProfileConfigUseCase)
     factoryOf(::GetPermissionStateUseCase)

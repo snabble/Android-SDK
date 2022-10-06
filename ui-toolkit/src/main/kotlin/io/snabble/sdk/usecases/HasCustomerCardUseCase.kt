@@ -2,7 +2,7 @@ package io.snabble.sdk.usecases
 
 import io.snabble.sdk.Snabble
 
-internal class GetCustomerCardInfo(
+internal class HasCustomerCardUseCase(
     private val snabble: Snabble,
 ) {
 

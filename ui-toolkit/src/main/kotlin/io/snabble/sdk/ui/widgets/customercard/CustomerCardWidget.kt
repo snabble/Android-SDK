@@ -40,15 +40,27 @@ internal fun CustomerCardWidget(
     }
 }
 
+@Composable
+private fun CustomerCard(
+    modifier: Modifier = Modifier,
+    model: CustomerCardItem,
+    onAction: OnDynamicAction,
+) {
+    InformationWidget(
+        modifier = modifier,
+        model = (model.toInformationItem()),
+        onAction = { onAction(DynamicAction(model)) },
+    )
+}
+
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun CustomerCardWidgetPreview() {
+private fun CustomerCardPreview() {
     CompositionLocalProvider(
         LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()
     ) {
-
-        CustomerCardWidget(
+        CustomerCard(
             model = CustomerCardItem(
                 id = "an.image",
                 text = "Füge deine Kundenkarte hinzu.",
