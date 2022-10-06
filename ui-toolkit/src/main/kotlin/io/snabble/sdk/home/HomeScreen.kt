@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Magenta
@@ -12,6 +11,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.domain.Configuration
 import io.snabble.sdk.domain.DynamicConfig
 import io.snabble.sdk.domain.ImageItem
@@ -37,7 +38,8 @@ internal fun DynamicScreen(
     dynamicViewModel: DynamicViewModel,
     onAction: OnDynamicAction = dynamicViewModel::sendAction,
 ) {
-    val configState = dynamicViewModel.dynamicConfig.collectAsState()
+    @OptIn(ExperimentalLifecycleComposeApi::class)
+    val configState = dynamicViewModel.dynamicConfig.collectAsStateWithLifecycle()
     val config = configState.value ?: return
     DynamicView(
         modifier = Modifier

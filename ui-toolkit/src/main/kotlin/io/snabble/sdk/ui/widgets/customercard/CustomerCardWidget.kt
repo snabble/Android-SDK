@@ -2,9 +2,10 @@ package io.snabble.sdk.ui.widgets.customercard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.CustomerCardItem
 import io.snabble.sdk.domain.Padding
@@ -28,7 +29,9 @@ internal fun CustomerCardWidget(
     model: CustomerCardItem,
     onAction: OnDynamicAction,
 ) {
-    if (customerCardViewModel.isCustomerCardVisible.collectAsState().value) {
+    @OptIn(ExperimentalLifecycleComposeApi::class)
+    val isCardVisibleState = customerCardViewModel.isCustomerCardVisible.collectAsStateWithLifecycle()
+    if (isCardVisibleState.value) {
         InformationWidget(
             modifier = modifier,
             model = (model.toInformationItem()),

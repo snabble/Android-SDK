@@ -7,7 +7,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -15,6 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.domain.Padding
 import io.snabble.sdk.domain.ToggleItem
@@ -31,10 +32,12 @@ internal fun ToggleWidget(
     viewModel: ToggleViewModel = viewModel(factory = ToggleViewModelFactory(prefKey = model.key)),
     onAction: OnDynamicAction,
 ) {
-    val toggleState = viewModel.toggleState.collectAsState()
+    @OptIn(ExperimentalLifecycleComposeApi::class)
+    val isCheckedState = viewModel.toggleState.collectAsStateWithLifecycle()
     Toggle(
         modifier = modifier,
         model = model,
+        isChecked = isCheckedState.value,
         onCheckedChange = { viewModel.setToggleState(model.key, isChecked = it) },
         onAction = onAction,
     )
