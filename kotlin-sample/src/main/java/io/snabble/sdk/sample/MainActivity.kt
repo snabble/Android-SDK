@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         locationManager = Snabble.checkInLocationManager
         // start location tracking after permission is granted
         locationManager.startTrackingLocation()
@@ -155,17 +156,10 @@ class MainActivity : AppCompatActivity() {
     private fun NavController.setup(toolbar: Toolbar, navBarView: NavigationBarView) {
         addOnDestinationChangedListener { _, destination, arguments ->
             arguments.xx("Nav to ${resources.getResourceName(destination.id)}")
-            toolbar.isVisible = if (destination.id != R.id.navigation_home) {
-                arguments?.getBoolean("hideToolbar", false) != true
-            } else {
-                false
-            }
-            navBarView.isVisible = arguments?.getBoolean("hideBottomNavigation", false) != true
-            navBarView.isEnabled = arguments?.getBoolean("hideBottomNavigation", false) != true
-            toolbar.title = destination.label
-            arguments?.getString("title")?.let {
-                toolbar.title = it.replace("...", "…")
-            }
+            toolbar.isVisible = arguments?.getBoolean("hideToolbar") != true
+            val isBottomNavigationVisible = arguments?.getBoolean("hideBottomNavigation") != true
+            navBarView.isVisible = isBottomNavigationVisible
+            navBarView.isEnabled = isBottomNavigationVisible
         }
 
         SnabbleUI.setUiAction(
