@@ -14,10 +14,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.domain.LocationPermissionItem
 import io.snabble.sdk.domain.Padding
-import io.snabble.sdk.ui.DynamicAction
 import io.snabble.sdk.ui.OnDynamicAction
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.ButtonWidget
+import io.snabble.sdk.ui.widgets.locationpermission.viewmodel.LocationPermissionViewModel
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -30,18 +30,33 @@ internal fun LocationPermissionWidget(
     val launcher = createActivityResultLauncher(viewModel)
 
     @OptIn(ExperimentalLifecycleComposeApi::class)
-    val isButtonVisibleState = viewModel.permissionButtonIsVisible.collectAsStateWithLifecycle()
-    if (!isButtonVisibleState.value) {
+    val hasLocationPermissionState = viewModel.hasLocationPermission.collectAsStateWithLifecycle()
+    LocationPermission(
+        modifier = modifier,
+        model = model,
+        isButtonVisible = !hasLocationPermissionState.value,
+        onAction = {
+            onAction(it)
+            launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    )
+}
+
+@Composable
+private fun LocationPermission(
+    modifier: Modifier = Modifier,
+    model: LocationPermissionItem,
+    isButtonVisible: Boolean,
+    onAction: OnDynamicAction,
+) {
+    if (isButtonVisible) {
         Box(modifier = Modifier.fillMaxWidth()) {
             ButtonWidget(
                 modifier = modifier.fillMaxWidth(),
                 widget = model,
                 padding = model.padding,
                 text = stringResource(id = R.string.Snabble_askForPermission),
-                onAction = {
-                    onAction(DynamicAction(widget = model))
-                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                },
+                onAction = onAction,
             )
         }
     }
@@ -49,18 +64,19 @@ internal fun LocationPermissionWidget(
 
 @Composable
 private fun createActivityResultLauncher(viewModel: LocationPermissionViewModel) =
-    rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
-        viewModel.update(true)
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { granted ->
+        viewModel.update(hasPermission = !granted)
     }
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun LocationPermissionPreview() {
-    LocationPermissionWidget(
+private fun LocationPermissionPreview() {
+    LocationPermission(
         model = LocationPermissionItem(
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)
         ),
+        isButtonVisible = true,
         onAction = {},
     )
 }

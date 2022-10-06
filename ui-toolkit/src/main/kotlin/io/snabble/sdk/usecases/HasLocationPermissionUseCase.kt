@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.util.Log
 import io.snabble.sdk.Snabble
 
-internal class GetPermissionStateUseCase(
-    private val snabble: Snabble
+internal class HasLocationPermissionUseCase(
+    private val snabble: Snabble,
 ) {
 
     operator fun invoke(): Boolean =
@@ -17,14 +17,14 @@ internal class GetPermissionStateUseCase(
         }
 }
 
-internal class UpdateChechkinManagerUseCase(
-    private val getPermissionState: GetPermissionStateUseCase,
+internal class UpdateCheckInManagerUseCase(
+    private val hasLocationPermission: HasLocationPermissionUseCase,
     private val snabble: Snabble,
 ) {
 
     @SuppressLint("MissingPermission")
     operator fun invoke() {
-        if (getPermissionState()) {
+        if (hasLocationPermission()) {
             snabble.checkInManager.startUpdating()
         } else {
             snabble.checkInManager.stopUpdating()

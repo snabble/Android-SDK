@@ -1,25 +1,25 @@
-package io.snabble.sdk.ui.widgets.locationpermission
+package io.snabble.sdk.ui.widgets.locationpermission.viewmodel
 
 import androidx.lifecycle.ViewModel
-import io.snabble.sdk.usecases.GetPermissionStateUseCase
-import io.snabble.sdk.usecases.UpdateChechkinManagerUseCase
+import io.snabble.sdk.usecases.HasLocationPermissionUseCase
+import io.snabble.sdk.usecases.UpdateCheckInManagerUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 internal class LocationPermissionViewModel(
-    getPermissionState: GetPermissionStateUseCase,
-    private val updateChechkinManager: UpdateChechkinManagerUseCase,
+    hasLocationPermission: HasLocationPermissionUseCase,
+    private val updateCheckInManager: UpdateCheckInManagerUseCase,
 ) : ViewModel() {
 
-    private val _permissionButtonIsVisible = MutableStateFlow(getPermissionState())
-    val permissionButtonIsVisible: StateFlow<Boolean> = _permissionButtonIsVisible
+    private val _hasLocationPermission = MutableStateFlow(hasLocationPermission())
+    val hasLocationPermission: StateFlow<Boolean> = _hasLocationPermission
 
-    internal fun update(showPermissionButton: Boolean) {
-        updatePermissionButtonIsVisible(showPermissionButton)
-        updateChechkinManager()
+    internal fun update(hasPermission: Boolean) {
+        updateLocationPermission(hasPermission)
+        updateCheckInManager()
     }
 
-    private fun updatePermissionButtonIsVisible(showPermissionButton: Boolean) {
-        _permissionButtonIsVisible.tryEmit(showPermissionButton)
+    private fun updateLocationPermission(hasPermission: Boolean) {
+        _hasLocationPermission.tryEmit(hasPermission)
     }
 }

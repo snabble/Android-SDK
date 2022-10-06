@@ -2,8 +2,6 @@ package io.snabble.sdk.ui.widgets.stores
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,12 +32,24 @@ internal fun SeeAllStoresWidget(
     modifier: Modifier = Modifier,
     model: SeeAllStoresItem,
     viewModel: StoresViewModel = getViewModel(scope = KoinProvider.scope),
-    onAction: OnDynamicAction = {},
+    onAction: OnDynamicAction,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
         @OptIn(ExperimentalLifecycleComposeApi::class)
         val isCheckedInState = viewModel.isCheckedInFlow.collectAsStateWithLifecycle()
-        if (!isCheckedInState.value) {
+        SeeAllStores(model = model, isChecked = isCheckedInState.value, onAction = onAction)
+    }
+}
+
+@Composable
+private fun SeeAllStores(
+    modifier: Modifier = Modifier,
+    model: SeeAllStoresItem,
+    isChecked: Boolean,
+    onAction: OnDynamicAction,
+) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        if (!isChecked) {
             ButtonWidget(
                 modifier = modifier.align(Alignment.Center),
                 widget = model,
@@ -69,19 +79,26 @@ internal fun SeeAllStoresWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun SeeAllStoresPreview() {
-    Column(Modifier.fillMaxSize()) {
-        SeeAllStoresWidget(
-            model = SeeAllStoresItem(
-                id = "1",
-                padding = Padding(horizontal = 16, vertical = 5)
-            ),
-        )
-        SeeAllStoresWidget(
-            model = SeeAllStoresItem(
-                id = "1",
-                padding = Padding(horizontal = 16, vertical = 5)
-            ),
-        )
-    }
+private fun SeeAllStoresCheckedInPreview() {
+    SeeAllStores(
+        model = SeeAllStoresItem(
+            id = "1",
+            padding = Padding(horizontal = 16, vertical = 5)
+        ),
+        isChecked = true,
+        onAction = {},
+    )
+}
+
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+private fun SeeAllStoresNotCheckedInPreview() {
+    SeeAllStores(
+        model = SeeAllStoresItem(
+            id = "1",
+            padding = Padding(horizontal = 16, vertical = 5)
+        ),
+        isChecked = false,
+        onAction = {},
+    )
 }
