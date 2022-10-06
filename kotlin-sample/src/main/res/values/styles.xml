@@ -17,8 +17,8 @@
         <item name="colorTertiaryContainer">@color/snabbleBlue</item>
         <item name="colorOnTertiaryContainer">@color/grey</item>
 
-        <item name="textAppearanceBodyLarge">@style/TextAppearance.Snabble.BodyLarge</item>
-        <item name="textAppearanceBodyMedium">@style/TextAppearance.Snabble.BodyMedium</item>
+<!--        <item name="textAppearanceBodyLarge">@style/TextAppearance.Snabble.BodyLarge</item>-->
+<!--        <item name="textAppearanceBodyMedium">@style/TextAppearance.Snabble.BodyMedium</item>-->
 <!--        <item name="textAppearanceBodyLarge">@style/TextAppearance.Material3.BodyMedium</item>-->
 <!--        <item name="textAppearanceBodyMedium">@style/TextAppearance.Material3.BodySmall</item>-->
 <!--        <item name="textAppearanceTitleLarge">@style/TextAppearance.Material3.TitleMedium</item>-->
