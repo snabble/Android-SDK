@@ -46,9 +46,8 @@ import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.widgets.stores.WifiViewModel
 import org.koin.androidx.compose.getViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConnectWifiWidget(
+internal fun ConnectWifiWidget(
     modifier: Modifier = Modifier,
     model: ConnectWifiItem,
     viewModel: WifiViewModel = getViewModel(scope = KoinProvider.scope),
@@ -56,7 +55,23 @@ fun ConnectWifiWidget(
 ) {
     @OptIn(ExperimentalLifecycleComposeApi::class)
     val isButtonVisibleState = viewModel.wifiButtonIsVisible.collectAsStateWithLifecycle()
-    if (isButtonVisibleState.value) {
+    ConnectWifi(
+        modifier = modifier,
+        model = model,
+        isButtonVisible = isButtonVisibleState.value,
+        onAction = onAction
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ConnectWifi(
+    modifier: Modifier = Modifier,
+    model: ConnectWifiItem,
+    isButtonVisible: Boolean,
+    onAction: OnDynamicAction,
+) {
+    if (isButtonVisible) {
         CompositionLocalProvider(
             // TODO: Providing this app wide?
             LocalRippleTheme provides object : RippleTheme {
@@ -111,16 +126,17 @@ fun ConnectWifiWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun WifiWidgetPreview() {
+private fun WifiWidgetPreview() {
     CompositionLocalProvider(
         LocalPadding provides io.snabble.sdk.ui.theme.properties.Padding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()
     ) {
-        ConnectWifiWidget(
+        ConnectWifi(
             model = ConnectWifiItem(
                 id = "wifiii",
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
+            isButtonVisible = true,
             onAction = {}
         )
     }
