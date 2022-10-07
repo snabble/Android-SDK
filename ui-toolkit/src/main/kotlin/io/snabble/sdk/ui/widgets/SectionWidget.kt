@@ -55,7 +55,8 @@ fun SectionWidget(
                     is TextItem -> TextWidget(
                         model = widget,
                         onAction = onAction,
-                        modifier = Modifier.heightIn(min = 48.dp)
+                        modifier = Modifier
+                            .heightIn(min = 48.dp)
                     )
 
                     is ButtonItem -> ButtonWidget(

@@ -27,11 +27,12 @@ fun TextWidget(
     onAction: OnDynamicAction,
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(model.padding.toPaddingValues())
             .clickable
             { onAction(DynamicAction(model)) }
+            .padding(model.padding.toPaddingValues())
+            .then(modifier)
     ) {
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
