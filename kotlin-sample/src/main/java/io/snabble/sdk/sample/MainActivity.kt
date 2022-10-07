@@ -62,17 +62,17 @@ class MainActivity : AppCompatActivity() {
 
         profileViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
-                when (action.widget.id) {
-                    else -> action.xx("ProfileAction")
+                when (action.xx("ProfileAction").widget.id) {
+                    else -> Unit
                 }
-
             }
+
         homeViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
-                when (action.widget.id) {
+                when (action.xx("DynamicAction ->").widget.id) {
                     "start" -> navBarView.selectedItemId = R.id.navigation_scanner
                     "stores" -> navBarView.selectedItemId = R.id.navigation_shop
-                    else -> action.xx("DynamicAction ->")
+                    else -> Unit
                 }
             }
 

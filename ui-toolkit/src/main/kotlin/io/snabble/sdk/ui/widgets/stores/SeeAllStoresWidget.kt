@@ -37,7 +37,12 @@ internal fun SeeAllStoresWidget(
     Box(modifier = modifier.fillMaxWidth()) {
         @OptIn(ExperimentalLifecycleComposeApi::class)
         val isCheckedInState = viewModel.isCheckedInFlow.collectAsStateWithLifecycle()
-        SeeAllStores(model = model, isChecked = isCheckedInState.value, onAction = onAction)
+        SeeAllStores(
+            modifier = modifier,
+            model = model,
+            isChecked = isCheckedInState.value,
+            onAction = onAction
+        )
     }
 }
 
