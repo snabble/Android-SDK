@@ -65,7 +65,7 @@ private fun LocationPermission(
 @Composable
 private fun createActivityResultLauncher(viewModel: LocationPermissionViewModel) =
     rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { granted ->
-        viewModel.update(hasPermission = !granted)
+        viewModel.update(hasPermission = true)
     }
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
