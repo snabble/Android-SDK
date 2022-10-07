@@ -1,6 +1,5 @@
 package io.snabble.sdk.usecases
 
-import android.annotation.SuppressLint
 import android.util.Log
 import io.snabble.sdk.Snabble
 
