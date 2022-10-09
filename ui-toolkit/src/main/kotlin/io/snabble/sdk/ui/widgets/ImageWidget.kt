@@ -29,9 +29,10 @@ fun ImageWidget(
     ) {
         if (model.imageSource != null) {
             Image(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onAction(DynamicAction(model)) },
+                    .clickable { onAction(DynamicAction(model)) }
+                    .then(modifier),
                 contentScale = contentScale,
                 painter = painterResource(id = model.imageSource),
                 contentDescription = "",

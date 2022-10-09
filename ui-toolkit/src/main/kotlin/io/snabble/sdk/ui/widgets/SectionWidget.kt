@@ -37,9 +37,10 @@ fun SectionWidget(
     onAction: OnDynamicAction
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(model.padding.toPaddingValues())
+            .then(modifier)
     ) {
         Text(
             modifier = Modifier

@@ -67,7 +67,8 @@ fun InformationWidget(
                 .indication(
                     interactionSource = MutableInteractionSource(),
                     indication = rememberRipple()
-                ),
+                )
+                .then(modifier),
             shape = MaterialTheme.shapes.small,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),

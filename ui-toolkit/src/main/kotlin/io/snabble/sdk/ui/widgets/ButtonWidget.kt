@@ -29,9 +29,10 @@ fun ButtonWidget(
     onAction: OnDynamicAction = {},
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(model.padding.toPaddingValues())
+            .then(modifier)
     ) {
         Button(
             onClick = { onAction(DynamicAction(model)) },
