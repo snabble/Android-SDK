@@ -22,12 +22,12 @@ import io.snabble.sdk.utils.getResourceString
 import io.snabble.sdk.utils.resolveColorId
 import io.snabble.sdk.utils.resolveImageId
 
-interface ConfigMapper {
+internal interface ConfigMapper {
 
     fun mapTo(dynamicConfigDto: DynamicConfigDto): DynamicConfig
 }
 
-class ConfigMapperImpl(private val context: Context) : ConfigMapper {
+internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     override fun mapTo(dynamicConfigDto: DynamicConfigDto): DynamicConfig = DynamicConfig(
         configuration = dynamicConfigDto.configuration.toConfiguration(),
@@ -74,7 +74,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     private fun CustomerCardDto.toCustomCardItem(): CustomerCardItem = CustomerCardItem(
         id = id,
-        text = text,
+        text = "${context.getResourceString(text)}",
         imageSource = context.resolveImageId(imageSource),
         padding = padding.toPadding()
     )
@@ -87,7 +87,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     private fun InformationDto.toInformation(): InformationItem = InformationItem(
         id = id,
-        text = text,
+        text = "${context.getResourceString(text)}",
         imageSource = context.resolveImageId(imageSource),
         padding = padding.toPadding()
     )
@@ -106,7 +106,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     private fun SectionDto.toSection(): SectionItem = SectionItem(
         id = id,
-        header = header,
+        header = "${context.getResourceString(header)}",
         items = widgets.toWidgets(),
         padding = padding.toPadding()
     )
@@ -123,7 +123,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     private fun TextDto.toText(): TextItem = TextItem(
         id = id,
-        text = text,
+        text = "${context.getResourceString(text)}",
         textColorSource = context.getComposeColor(textColorSource),
         textStyleSource = textStyleSource,
         showDisclosure = showDisclosure ?: false,
@@ -132,7 +132,7 @@ class ConfigMapperImpl(private val context: Context) : ConfigMapper {
 
     private fun ToggleDto.toToggle(): ToggleItem = ToggleItem(
         id = id,
-        text = text,
+        text = "${context.getResourceString(text)}",
         key = key,
         padding = padding.toPadding()
     )
