@@ -1,25 +1,32 @@
 package io.snabble.sdk.config
 
+import android.content.Context
+import android.graphics.Color
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
-import io.snabble.sdk.data.ButtonDto
-import io.snabble.sdk.data.ConfigurationDto
-import io.snabble.sdk.data.ConnectWifiDto
-import io.snabble.sdk.data.CustomerCardDto
-import io.snabble.sdk.data.ImageDto
-import io.snabble.sdk.data.InformationDto
-import io.snabble.sdk.data.LocationPermissionDto
-import io.snabble.sdk.data.PaddingDto
-import io.snabble.sdk.data.PurchasesDto
-import io.snabble.sdk.data.DynamicConfigDto
-import io.snabble.sdk.data.SectionDto
-import io.snabble.sdk.data.SeeAllStoresDto
-import io.snabble.sdk.data.StartShoppingDto
-import io.snabble.sdk.data.TextDto
-import io.snabble.sdk.data.ToggleDto
+import io.mockk.mockkStatic
+import io.snabble.sdk.domain.ButtonItem
+import io.snabble.sdk.domain.ConfigMapperImpl
+import io.snabble.sdk.domain.Configuration
+import io.snabble.sdk.domain.ConnectWifiItem
+import io.snabble.sdk.domain.CustomerCardItem
+import io.snabble.sdk.domain.DynamicConfig
+import io.snabble.sdk.domain.ImageItem
+import io.snabble.sdk.domain.InformationItem
+import io.snabble.sdk.domain.LocationPermissionItem
+import io.snabble.sdk.domain.Padding
+import io.snabble.sdk.domain.ProjectId
+import io.snabble.sdk.domain.PurchasesItem
+import io.snabble.sdk.domain.SectionItem
+import io.snabble.sdk.domain.SeeAllStoresItem
+import io.snabble.sdk.domain.StartShoppingItem
+import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.domain.ToggleItem
 import kotlinx.serialization.json.Json
 
 internal class ConfigRepositoryTest : FreeSpec({
@@ -33,28 +40,35 @@ internal class ConfigRepositoryTest : FreeSpec({
               "widgets": $widgetsJson
             }"""
 
-    fun createSut(json: String) = ConfigRepository(
+    fun createSut(json: String, mapping: Context.() -> Unit = {}) = ConfigRepository(
         fileProvider = mockk { coEvery { getFile(any()) } returns json },
-        json = Json { ignoreUnknownKeys = true }
+        json = Json { ignoreUnknownKeys = true },
+        configMapper = ConfigMapperImpl(context = mockk(relaxed = true, block = mapping)),
     )
+
+    beforeEach {
+        clearAllMocks()
+    }
 
     "Parsing" - {
 
         "the configuration object" {
-            val sut = createSut(createJson())
-            val config: DynamicConfigDto = sut.getConfig("")
+            val sut = createSut(createJson()) {
+                every { resources.getIdentifier("home_default_background", any(), any()) } returns 42
+            }
+            val config: DynamicConfig = sut.getConfig("")
 
-            config.configuration shouldBe ConfigurationDto(
-                image = "home_default_background",
+            config.configuration shouldBe Configuration(
+                image = 42,
                 style = "scroll",
-                padding = PaddingDto(16, 16, 16, 16)
+                padding = Padding(16, 16, 16, 16)
             )
         }
 
         "a configuration w/ widgets being empty" {
             val sut = createSut(createJson())
 
-            sut.getConfig<DynamicConfigDto>("").widgets.shouldBeEmpty()
+            sut.getConfig("").widgets.shouldBeEmpty()
         }
 
         "a widget configuration w/" - {
@@ -71,13 +85,18 @@ internal class ConfigRepositoryTest : FreeSpec({
                             "padding": [ 16, 4 ]
                           }]"""
                     )
-                )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ButtonDto(
+                ) {
+                    every { resources.getIdentifier("Submit", any(), any()) } returns 1
+                    every { resources.getText(1) } returns "Submit"
+                    every { resources.getIdentifier("white", any(), any()) } returns 7
+                    every { resources.getIdentifier("blue", any(), any()) } returns 21
+                }
+                sut.getConfig("").widgets.first() shouldBe ButtonItem(
                     id = "submit",
                     text = "Submit",
-                    foregroundColorSource = "white",
-                    backgroundColorSource = "blue",
-                    padding = PaddingDto(start = 16, top = 4, end = 16, bottom = 4)
+                    foregroundColorSource = 7,
+                    backgroundColorSource = 21,
+                    padding = Padding(start = 16, top = 4, end = 16, bottom = 4)
                 )
             }
 
@@ -91,11 +110,13 @@ internal class ConfigRepositoryTest : FreeSpec({
                             "padding": [ 4 ]
                           }]"""
                     )
-                )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ImageDto(
+                ) {
+                    every { resources.getIdentifier("snabble_logo", any(), any()) } returns 7
+                }
+                sut.getConfig("").widgets.first() shouldBe ImageItem(
                     id = "logo",
-                    imageSource = "snabble_logo",
-                    padding = PaddingDto(4, 4, 4, 4)
+                    imageSource = 7,
+                    padding = Padding(4, 4, 4, 4)
                 )
             }
 
@@ -105,17 +126,21 @@ internal class ConfigRepositoryTest : FreeSpec({
                         """[{
                             "type": "information",
                             "id": "info",
-                            "text": "Some useful information here.",
+                            "text": "info_description",
                             "imageSource": "snabble_logo",
                             "padding": [ 16, 12, 4, 16 ]
                           }]"""
                     )
-                )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe InformationDto(
+                ) {
+                    every { resources.getIdentifier("info_description", any(), any()) } returns 2
+                    every { resources.getText(2) } returns "Some useful information here."
+                    every { resources.getIdentifier("snabble_logo", any(), any()) } returns 7
+                }
+                sut.getConfig("").widgets.first() shouldBe InformationItem(
                     id = "info",
                     text = "Some useful information here.",
-                    imageSource = "snabble_logo",
-                    padding = PaddingDto(start = 16, top = 12, end = 16, bottom = 4)
+                    imageSource = 7,
+                    padding = Padding(start = 16, top = 12, end = 16, bottom = 4)
                 )
             }
 
@@ -125,17 +150,21 @@ internal class ConfigRepositoryTest : FreeSpec({
                         """[{
                             "type": "snabble.customerCard",
                             "id": "info",
-                            "text": "Some useful information here.",
+                            "text": "card_info",
                             "imageSource": "snabble_logo",
                             "padding": [ 16, 12, 4, 16 ]
                           }]"""
                     )
-                )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe CustomerCardDto(
+                ) {
+                    every { resources.getIdentifier("card_info", any(), any()) } returns 3
+                    every { resources.getText(3) } returns "Some useful information here."
+                    every { resources.getIdentifier("snabble_logo", any(), any()) } returns 7
+                }
+                sut.getConfig("").widgets.first() shouldBe CustomerCardItem(
                     id = "info",
                     text = "Some useful information here.",
-                    imageSource = "snabble_logo",
-                    padding = PaddingDto(start = 16, top = 12, end = 16, bottom = 4)
+                    imageSource = 7,
+                    padding = Padding(start = 16, top = 12, end = 16, bottom = 4)
                 )
             }
 
@@ -149,9 +178,9 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe LocationPermissionDto(
+                sut.getConfig("").widgets.first() shouldBe LocationPermissionItem(
                     id = "location_permission",
-                    padding = PaddingDto(16, 16, 16, 16)
+                    padding = Padding(16, 16, 16, 16)
                 )
             }
 
@@ -165,9 +194,9 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ConnectWifiDto(
+                sut.getConfig("").widgets.first() shouldBe ConnectWifiItem(
                     id = "connect_wifi",
-                    padding = PaddingDto(16, 16, 16, 16)
+                    padding = Padding(16, 16, 16, 16)
                 )
             }
 
@@ -182,10 +211,10 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe PurchasesDto(
+                sut.getConfig("").widgets.first() shouldBe PurchasesItem(
                     id = "purchases",
-                    projectId = "ab1234",
-                    padding = PaddingDto(16, 16, 16, 16)
+                    projectId = ProjectId("ab1234"),
+                    padding = Padding(16, 16, 16, 16)
                 )
             }
 
@@ -195,17 +224,20 @@ internal class ConfigRepositoryTest : FreeSpec({
                         """[{
                             "type": "section",
                             "id": "section1",
-                            "header": "Settings",
+                            "header": "section1_header",
                             "items": [],
                             "padding": [ 8 ]
                           }]"""
                     )
-                )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe SectionDto(
+                ) {
+                    every { resources.getIdentifier("section1_header", any(), any()) } returns 4
+                    every { resources.getText(4) } returns "Settings"
+                }
+                sut.getConfig("").widgets.first() shouldBe SectionItem(
                     id = "section1",
                     header = "Settings",
-                    widgets = emptyList(),
-                    padding = PaddingDto(8, 8, 8, 8)
+                    items = emptyList(),
+                    padding = Padding(8, 8, 8, 8)
                 )
             }
 
@@ -219,9 +251,9 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe SeeAllStoresDto(
+                sut.getConfig("").widgets.first() shouldBe SeeAllStoresItem(
                     id = "all_stores",
-                    padding = PaddingDto(8, 8, 8, 8)
+                    padding = Padding(8, 8, 8, 8)
                 )
             }
 
@@ -235,9 +267,9 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe StartShoppingDto(
+                sut.getConfig("").widgets.first() shouldBe StartShoppingItem(
                     id = "start_shopping",
-                    padding = PaddingDto(8, 8, 8, 8)
+                    padding = Padding(8, 8, 8, 8)
                 )
             }
 
@@ -247,21 +279,27 @@ internal class ConfigRepositoryTest : FreeSpec({
                         """[{
                             "type": "text",
                             "id": "title",
-                            "text": "Hello World!",
+                            "text": "hello_world_text",
                             "textColor": "black",
                             "textStyle": "body",
                             "showDisclosure": false,
                             "padding": [ 8 ]
                           }]"""
                     )
-                )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe TextDto(
+                ) {
+                    every { resources.getIdentifier("hello_world_text", any(), any()) } returns 5
+                    every { resources.getText(5) } returns "Hello World!"
+                    every { resources.getIdentifier("black", any(), any()) } returns 999
+                }
+                mockkStatic(Color::class)
+                every { Color.parseColor(any()) } returns 5
+                sut.getConfig("").widgets.first() shouldBe TextItem(
                     id = "title",
                     text = "Hello World!",
-                    textColorSource = "black",
+                    textColorSource = 5,
                     textStyleSource = "body",
                     showDisclosure = false,
-                    padding = PaddingDto(8, 8, 8, 8)
+                    padding = Padding(8, 8, 8, 8)
                 )
             }
 
@@ -271,17 +309,20 @@ internal class ConfigRepositoryTest : FreeSpec({
                         """[{
                             "type": "toggle",
                             "id": "onboarding_toggle",
-                            "text": "Show Onboarding",
+                            "text": "onboarding_title",
                             "key": "show_onboarding",
                             "padding": [ 8 ]
                           }]"""
                     )
-                )
-                sut.getConfig<DynamicConfigDto>("").widgets.first() shouldBe ToggleDto(
+                ) {
+                    every { resources.getIdentifier("onboarding_title", any(), any()) } returns 6
+                    every { resources.getText(6) } returns "Show Onboarding"
+                }
+                sut.getConfig("").widgets.first() shouldBe ToggleItem(
                     id = "onboarding_toggle",
                     text = "Show Onboarding",
                     key = "show_onboarding",
-                    padding = PaddingDto(8, 8, 8, 8)
+                    padding = Padding(8, 8, 8, 8)
                 )
             }
         }

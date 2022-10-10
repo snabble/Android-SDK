@@ -1,24 +1,29 @@
 package io.snabble.sdk.config
 
+import io.snabble.sdk.data.DynamicConfigDto
+import io.snabble.sdk.domain.ConfigMapper
+import io.snabble.sdk.domain.DynamicConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-class ConfigRepository(
+internal class ConfigRepository(
     private val fileProvider: ConfigFileProvider,
     val json: Json,
+    private val configMapper: ConfigMapper,
 ) {
 
-    suspend inline fun <reified T> getConfig(jsonFileName: String): T {
-        val json = getFile(jsonFileName)
-        return parse(json)
+    suspend inline fun getConfig(jsonFileName: String): DynamicConfig {
+        val configJson = getFile(jsonFileName)
+        val configDto = parse<DynamicConfigDto>(configJson)
+        return configMapper.mapTo(configDto)
     }
 
-    suspend fun getFile(jsonFileName: String): String =
+    private suspend fun getFile(jsonFileName: String): String =
         fileProvider.getFile(jsonFileName)
 
-    suspend inline fun <reified T> parse(json: String): T =
+    private suspend inline fun <reified T> parse(json: String): T =
         withContext(Dispatchers.Default) {
             this@ConfigRepository.json.decodeFromString(json)
         }

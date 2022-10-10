@@ -1,19 +1,13 @@
 package io.snabble.sdk.usecases
 
 import io.snabble.sdk.config.ConfigRepository
-import io.snabble.sdk.data.DynamicConfigDto
-import io.snabble.sdk.domain.ConfigMapper
 import io.snabble.sdk.domain.DynamicConfig
 
 internal class GetHomeConfigUseCase(
     private val configRepository: ConfigRepository,
-    private val configMapper: ConfigMapper,
 ) {
 
-    suspend operator fun invoke(): DynamicConfig {
-        val configDto: DynamicConfigDto = configRepository.getConfig(CONFIG_FILE_NAME)
-        return configMapper.mapTo(configDto)
-    }
+    suspend operator fun invoke(): DynamicConfig = configRepository.getConfig(CONFIG_FILE_NAME)
 
     companion object {
 
