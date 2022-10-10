@@ -20,10 +20,10 @@ import com.google.android.material.navigation.NavigationBarView
 import com.google.gson.Gson
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
-import io.snabble.sdk.home.viewmodel.DynamicHomeViewModel
-import io.snabble.sdk.home.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
+import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
+import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.utils.xx
 import kotlinx.coroutines.launch
 
@@ -141,3 +141,4 @@ class MainActivity : AppCompatActivity() {
         const val ONBOARDING_SEEN = "onboarding_seen"
     }
 }
+

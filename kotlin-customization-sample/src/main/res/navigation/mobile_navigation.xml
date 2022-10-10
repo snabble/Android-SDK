@@ -12,7 +12,7 @@
 
     <fragment
         android:id="@+id/frag_tos"
-        android:name="io.snabble.sdk.onboarding.terms.LegalFragment"
+        android:name="io.snabble.sdk.screens.onboarding.ui.terms.LegalFragment"
         android:label="Terms of service">
         <argument
             android:name="resId"
@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/frag_onboarding"
-        android:name="io.snabble.sdk.onboarding.OnboardingFragment"
+        android:name="io.snabble.sdk.screens.onboarding.ui.OnboardingFragment"
         android:label="OnboardingFragment"
         tools:layout="@layout/snabble_fragment_onboarding">
         <argument

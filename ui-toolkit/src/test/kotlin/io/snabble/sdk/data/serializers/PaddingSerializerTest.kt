@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
-import io.snabble.sdk.data.PaddingDto
+import io.snabble.sdk.dynamicview.data.PaddingDto
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
