@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.snabble.sdk.shopfinder.shoplist.ExpandableShopListRecyclerView
+    <io.snabble.sdk.screens.shopfinder.shoplist.ExpandableShopListRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

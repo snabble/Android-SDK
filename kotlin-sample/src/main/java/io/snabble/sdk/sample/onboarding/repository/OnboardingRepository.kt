@@ -2,7 +2,7 @@ package io.snabble.sdk.sample.onboarding.repository
 
 import android.content.res.AssetManager
 import com.google.gson.Gson
-import io.snabble.sdk.onboarding.entities.OnboardingModel
+import io.snabble.sdk.screens.onboarding.data.OnboardingModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

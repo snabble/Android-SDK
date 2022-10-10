@@ -16,9 +16,9 @@ import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_SHOP_LIST
 import io.snabble.sdk.SnabbleUiToolkit.Event.START_NAVIGATION
-import io.snabble.sdk.onboarding.OnboardingActivity
-import io.snabble.sdk.shopfinder.ShopDetailsActivity
-import io.snabble.sdk.shopfinder.ShopListActivity
+import io.snabble.sdk.screens.onboarding.ui.OnboardingActivity
+import io.snabble.sdk.screens.shopfinder.ShopDetailsActivity
+import io.snabble.sdk.screens.shopfinder.ShopListActivity
 import io.snabble.sdk.ui.Action
 import io.snabble.sdk.ui.BaseFragmentActivity
 import io.snabble.sdk.ui.utils.UIUtils.getHostFragmentActivity

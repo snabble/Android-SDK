@@ -7,13 +7,13 @@
 
     <application>
         <activity
-            android:name="io.snabble.sdk.onboarding.OnboardingActivity"
+            android:name="io.snabble.sdk.screens.onboarding.ui.OnboardingActivity"
             android:exported="false" />
         <activity
-            android:name="io.snabble.sdk.shopfinder.ShopListActivity"
+            android:name="io.snabble.sdk.screens.shopfinder.ShopListActivity"
             android:exported="false" />
         <activity
-            android:name="io.snabble.sdk.shopfinder.ShopDetailsActivity"
+            android:name="io.snabble.sdk.screens.shopfinder.ShopDetailsActivity"
             android:exported="false" />
 
         <provider

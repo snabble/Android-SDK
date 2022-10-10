@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:parentTag="android.widget.RelativeLayout">
 
-    <io.snabble.sdk.view.HideWhenTinyFrameLayout
+    <io.snabble.sdk.screens.onboarding.view.HideWhenTinyFrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,7 +27,7 @@
             tools:src="@drawable/snabble_onboarding_step3"
             tools:visibility="visible" />
 
-    </io.snabble.sdk.view.HideWhenTinyFrameLayout>
+    </io.snabble.sdk.screens.onboarding.view.HideWhenTinyFrameLayout>
 
     <ScrollView
         android:id="@+id/scroll_view"

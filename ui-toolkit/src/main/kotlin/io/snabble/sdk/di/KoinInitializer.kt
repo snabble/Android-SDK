@@ -2,16 +2,16 @@ package io.snabble.sdk.di
 
 import android.content.Context
 import androidx.startup.Initializer
-import io.snabble.sdk.config.di.configModule
-import io.snabble.sdk.domain.di.domainModule
+import io.snabble.sdk.dynamicview.domain.config.di.configModule
+import io.snabble.sdk.screens.home.di.homeModule
+import io.snabble.sdk.screens.profile.di.profileModule
 import io.snabble.sdk.ui.toolkit.BuildConfig
-import io.snabble.sdk.ui.widgets.customercard.di.customerCardModule
-import io.snabble.sdk.ui.widgets.locationpermission.di.locationPermissionModule
-import io.snabble.sdk.ui.widgets.purchase.di.purchaseWidgetModule
-import io.snabble.sdk.ui.widgets.stores.di.storesModule
-import io.snabble.sdk.ui.widgets.toggle.di.toggleWidgetModule
-import io.snabble.sdk.ui.widgets.wifi.di.wifiModule
-import io.snabble.sdk.usecases.di.useCaseModule
+import io.snabble.sdk.widgets.snabble.customercard.di.customerCardModule
+import io.snabble.sdk.widgets.snabble.locationpermission.di.locationPermissionModule
+import io.snabble.sdk.widgets.snabble.purchase.di.purchaseWidgetModule
+import io.snabble.sdk.widgets.snabble.stores.di.storesModule
+import io.snabble.sdk.widgets.snabble.toggle.di.toggleWidgetModule
+import io.snabble.sdk.widgets.snabble.wifi.di.wifiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.Koin
 import org.koin.core.logger.Level
@@ -28,13 +28,13 @@ internal class KoinInitializer : Initializer<Koin> {
                 configModule,
                 coreModule,
                 customerCardModule,
-                domainModule,
                 locationPermissionModule,
                 purchaseWidgetModule,
                 storesModule,
                 toggleWidgetModule,
-                useCaseModule,
                 wifiModule,
+                homeModule,
+                profileModule
             )
         }
             .koin

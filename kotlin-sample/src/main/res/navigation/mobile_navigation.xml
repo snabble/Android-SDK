@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/frag_tos"
-        android:name="io.snabble.sdk.onboarding.terms.LegalFragment"
+        android:name="io.snabble.sdk.screens.onboarding.ui.terms.LegalFragment"
         android:label="Terms of service">
         <argument
             android:name="resId"
@@ -32,7 +32,7 @@
 
     <fragment
         android:id="@+id/frag_onboarding"
-        android:name="io.snabble.sdk.onboarding.OnboardingFragment"
+        android:name="io.snabble.sdk.screens.onboarding.ui.OnboardingFragment"
         android:label="OnboardingFragment"
         tools:layout="@layout/snabble_fragment_onboarding">
 
@@ -48,13 +48,13 @@
 
         <argument
             android:name="@string/bundle_key_model"
-            app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
+            app:argType="io.snabble.sdk.screens.onboarding.data.OnboardingModel" />
 
     </fragment>
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="io.snabble.sdk.home.HomeFragment">
+        android:name="io.snabble.sdk.screens.home.ui.HomeFragment">
 
         <argument
             android:name="hideToolbar"
@@ -65,7 +65,7 @@
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="io.snabble.sdk.profil.ProfileFragment"
+        android:name="io.snabble.sdk.screens.profile.ProfileFragment"
         android:label="@string/Sample.profile" />
 
     <fragment
@@ -88,7 +88,7 @@
 
         <fragment
             android:id="@+id/navigation_shops"
-            android:name="io.snabble.sdk.shopfinder.ShopListFragment"
+            android:name="io.snabble.sdk.screens.shopfinder.ShopListFragment"
             android:label="@string/Snabble.Shop.Finder.title">
 
             <action
@@ -104,7 +104,7 @@
 
         <fragment
             android:id="@+id/navigation_shops_details"
-            android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment" />
+            android:name="io.snabble.sdk.screens.shopfinder.ShopDetailsFragment" />
 
     </navigation>
 

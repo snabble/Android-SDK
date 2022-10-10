@@ -8,32 +8,32 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.snabble.sdk.data.ButtonDto
-import io.snabble.sdk.data.ConfigurationDto
-import io.snabble.sdk.data.ConnectWifiDto
-import io.snabble.sdk.data.CustomerCardDto
-import io.snabble.sdk.data.DynamicConfigDto
-import io.snabble.sdk.data.ImageDto
-import io.snabble.sdk.data.InformationDto
-import io.snabble.sdk.data.LocationPermissionDto
-import io.snabble.sdk.data.PaddingDto
-import io.snabble.sdk.data.SectionDto
-import io.snabble.sdk.data.SeeAllStoresDto
-import io.snabble.sdk.data.StartShoppingDto
-import io.snabble.sdk.data.TextDto
-import io.snabble.sdk.data.WidgetDto
-import io.snabble.sdk.domain.ButtonItem
-import io.snabble.sdk.domain.ConfigMapperImpl
-import io.snabble.sdk.domain.ConnectWifiItem
-import io.snabble.sdk.domain.CustomerCardItem
-import io.snabble.sdk.domain.ImageItem
-import io.snabble.sdk.domain.InformationItem
-import io.snabble.sdk.domain.LocationPermissionItem
-import io.snabble.sdk.domain.Padding
-import io.snabble.sdk.domain.SectionItem
-import io.snabble.sdk.domain.SeeAllStoresItem
-import io.snabble.sdk.domain.StartShoppingItem
-import io.snabble.sdk.domain.TextItem
+import io.snabble.sdk.dynamicview.data.ButtonDto
+import io.snabble.sdk.dynamicview.data.ConfigurationDto
+import io.snabble.sdk.dynamicview.data.ConnectWifiDto
+import io.snabble.sdk.dynamicview.data.CustomerCardDto
+import io.snabble.sdk.dynamicview.data.DynamicConfigDto
+import io.snabble.sdk.dynamicview.data.ImageDto
+import io.snabble.sdk.dynamicview.data.InformationDto
+import io.snabble.sdk.dynamicview.data.LocationPermissionDto
+import io.snabble.sdk.dynamicview.data.PaddingDto
+import io.snabble.sdk.dynamicview.data.SectionDto
+import io.snabble.sdk.dynamicview.data.SeeAllStoresDto
+import io.snabble.sdk.dynamicview.data.StartShoppingDto
+import io.snabble.sdk.dynamicview.data.TextDto
+import io.snabble.sdk.dynamicview.data.WidgetDto
+import io.snabble.sdk.dynamicview.domain.ButtonItem
+import io.snabble.sdk.dynamicview.domain.ConfigMapperImpl
+import io.snabble.sdk.dynamicview.domain.ConnectWifiItem
+import io.snabble.sdk.dynamicview.domain.CustomerCardItem
+import io.snabble.sdk.dynamicview.domain.ImageItem
+import io.snabble.sdk.dynamicview.domain.InformationItem
+import io.snabble.sdk.dynamicview.domain.LocationPermissionItem
+import io.snabble.sdk.dynamicview.domain.Padding
+import io.snabble.sdk.dynamicview.domain.SectionItem
+import io.snabble.sdk.dynamicview.domain.SeeAllStoresItem
+import io.snabble.sdk.dynamicview.domain.StartShoppingItem
+import io.snabble.sdk.dynamicview.domain.TextItem
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
 import io.snabble.sdk.utils.resolveColorId
@@ -77,7 +77,7 @@ internal class ConfigMapperTest : FreeSpec({
 
             every { context.resolveImageId(rootDto.configuration.image) } returns 1
 
-            val sut = createMapper().mapTo(rootDto)
+            val sut = createMapper().mapDtoToItems(rootDto)
 
             "configurationDto to ConfigurationItem" - {
 
@@ -111,7 +111,7 @@ internal class ConfigMapperTest : FreeSpec({
                 every { context.resolveImageId(imageDto.imageSource) } returns 1
 
                 val rootDto = setUpSutDto(imageDto)
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val imageItem = sut.widgets.first().shouldBeTypeOf<ImageItem>()
 
@@ -141,7 +141,7 @@ internal class ConfigMapperTest : FreeSpec({
                 val rootDto = setUpSutDto(textDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 5
                 every { context.getComposeColor(textDto.textColorSource) } returns 8
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val textItem = sut.widgets.first().shouldBeTypeOf<TextItem>()
 
@@ -179,7 +179,7 @@ internal class ConfigMapperTest : FreeSpec({
                 every { context.resolveColorId(buttonDto.foregroundColorSource) } returns 2
                 every { context.resolveColorId(buttonDto.backgroundColorSource) } returns 3
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val buttonItem = sut.widgets.first().shouldBeTypeOf<ButtonItem>()
 
@@ -210,7 +210,7 @@ internal class ConfigMapperTest : FreeSpec({
                 val rootDto = setUpSutDto(locationPermissionDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val locationPermissionItem = sut.widgets.first().shouldBeTypeOf<LocationPermissionItem>()
 
@@ -232,7 +232,7 @@ internal class ConfigMapperTest : FreeSpec({
                 val rootDto = setUpSutDto(seeAllStoreDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val seeAllStoresItem = sut.widgets.first().shouldBeTypeOf<SeeAllStoresItem>()
 
@@ -254,7 +254,7 @@ internal class ConfigMapperTest : FreeSpec({
                 val rootDto = setUpSutDto(startShoppingDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val startShoppingItem = sut.widgets.first().shouldBeTypeOf<StartShoppingItem>()
 
@@ -279,7 +279,7 @@ internal class ConfigMapperTest : FreeSpec({
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
                 every { context.resolveImageId(informationDto.imageSource) } returns 2
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val informationItem = sut.widgets.first().shouldBeTypeOf<InformationItem>()
 
@@ -310,7 +310,7 @@ internal class ConfigMapperTest : FreeSpec({
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
                 every { context.resolveImageId(customerCardDto.imageSource) } returns 2
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val customerCardItem = sut.widgets.first().shouldBeTypeOf<CustomerCardItem>()
 
@@ -338,7 +338,7 @@ internal class ConfigMapperTest : FreeSpec({
                 val rootDto = setUpSutDto(connectWifiDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val connectWifiItem = sut.widgets.first().shouldBeTypeOf<ConnectWifiItem>()
 
@@ -367,7 +367,7 @@ internal class ConfigMapperTest : FreeSpec({
                 val rootDto = setUpSutDto(sectionDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
 
-                val sut = createMapper().mapTo(rootDto)
+                val sut = createMapper().mapDtoToItems(rootDto)
 
                 val sectionItem = sut.widgets.first().shouldBeTypeOf<SectionItem>()
 

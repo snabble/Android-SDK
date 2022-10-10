@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        app:layout_behavior="io.snabble.sdk.shopfinder.MapPushUpBehavior" />
+        app:layout_behavior="io.snabble.sdk.screens.shopfinder.MapPushUpBehavior" />
 
     <LinearLayout
         android:id="@+id/map_controls"
