@@ -13,7 +13,7 @@ internal class ConfigRepository(
     private val configMapper: ConfigMapper,
 ) {
 
-    suspend inline fun getConfig(jsonFileName: String): DynamicConfig {
+    suspend fun getConfig(jsonFileName: String): DynamicConfig {
         val configJson = getFile(jsonFileName)
         val configDto = parse<DynamicConfigDto>(configJson)
         return configMapper.mapDtoToItems(configDto)
