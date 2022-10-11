@@ -232,7 +232,7 @@ public class SEPACardInputView extends FrameLayout {
             nameTextInputLayout.setErrorEnabled(false);
         } else {
             nameTextInputLayout.setErrorEnabled(true);
-            nameTextInputLayout.setError(getResources().getString(R.string.Snabble_Payment_SEPA_InvalidName));
+            nameTextInputLayout.setError(getResources().getString(R.string.Snabble_Payment_SEPA_invalidName));
             ok = false;
         }
 
@@ -240,7 +240,7 @@ public class SEPACardInputView extends FrameLayout {
             ibanTextInputLayout.setErrorEnabled(false);
         } else {
             ibanTextInputLayout.setErrorEnabled(true);
-            ibanTextInputLayout.setError(getResources().getString(R.string.Snabble_Payment_SEPA_InvalidIBAN));
+            ibanTextInputLayout.setError(getResources().getString(R.string.Snabble_Payment_SEPA_invalidIBAN));
             ok = false;
         }
 
