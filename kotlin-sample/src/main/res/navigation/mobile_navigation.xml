@@ -65,7 +65,7 @@
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="io.snabble.sdk.screens.profile.ProfileFragment"
+        android:name="io.snabble.sdk.screens.profile.ui.ProfileFragment"
         android:label="@string/Sample.profile" />
 
     <fragment

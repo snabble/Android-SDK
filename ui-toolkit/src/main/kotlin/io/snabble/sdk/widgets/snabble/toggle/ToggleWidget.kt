@@ -17,7 +17,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.snabble.sdk.dynamicview.OnDynamicAction
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
 import io.snabble.sdk.dynamicview.utils.toPaddingValues

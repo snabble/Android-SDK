@@ -1,4 +1,4 @@
-package io.snabble.sdk.screens.profile
+package io.snabble.sdk.screens.profile.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package io.snabble.sdk.dynamicview
+package io.snabble.sdk.dynamicview.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
