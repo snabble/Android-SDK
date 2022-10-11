@@ -1,14 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.69.0] (not yet released)
+## [0.69.0]
 
 ### Changed
 - Added ui-toolkit for more realistic sample app with onboarding
 - Moved accessibility toolbox to an own dependency
+- Report cart change events only on user interactions (#67)
+- Phrase content and keys updated
 
 ### Breaking Changes
-- Renamed some colors which should be only used internal only
+- Renamed some colors which should be used internally only
 
 ## [0.68.6]
 

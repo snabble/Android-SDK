@@ -64,12 +64,24 @@
     <string name="Snabble.Coupons.none">Aucun coupon disponible</string>
     <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Payer maintenant avec une carte de crédit</string>
-    <string name="Snabble.Dashboard.lastPurchase">Votre dernier achat</string>
-    <string name="Snabble.Dashboard.lastPurchases">Vos derniers achats</string>
-    <string name="Snabble.Dashboard.lastPurchasesShowAll">Tous</string>
     <string name="Snabble.delete">Effacer</string>
     <string name="Snabble.done">Terminé</string>
-    <string name="Snabble.DynamicStack.Shop.show">Afficher les filiales</string>
+    <string name="Snabble.DynamicView.AllStores.button">See all stores</string>
+    <string name="Snabble.DynamicView.connectWifi">Use the free “%s” wifi</string>
+    <string name="Snabble.DynamicView.ConnectWifi.noSSID">Unfortunately there is no WLAN available</string>
+    <string name="Snabble.DynamicView.customerCard">Take advantage of your store cards automatically.</string>
+    <string name="Snabble.DynamicView.lastPurchase">Votre dernier achat</string>
+    <string name="Snabble.DynamicView.lastPurchases">Vos derniers achats</string>
+    <string name="Snabble.DynamicView.LastPurchases.all">Tous</string>
+    <string name="Snabble.DynamicView.LocationPermission.Button.notDetermined">Grant permission</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.message">Ceci est la seule façon pour nous d\'afficher les magasins les plus proches de chez vous et de vous permettre de faire vos achats.</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.title">Snabble a besoin de votre localisation</string>
+    <string name="Snabble.DynamicView.LocationPermission.notNow">Pas maintenant</string>
+    <string name="Snabble.DynamicView.LocationPermission.openSettings">Ouvrir les réglages</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.message">Veuillez ouvrir les réglages, sélectionner \"Emplacement\" et activer \"Emplacement exact\"</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.title">Snabble a besoin de votre position exacte pour savoir dans quel magasin vous faites vos achats.</string>
+    <string name="Snabble.DynamicView.Shop.show">Afficher les filiales</string>
+    <string name="Snabble.DynamicView.StartShopping.button">Start shopping</string>
     <string name="Snabble.edit">Modifier</string>
     <string name="Snabble.goToSettings">Aller aux réglages</string>
     <string name="Snabble.Hints.closedBags">Parfait, continuez ! S\'il vous plaît, facilitez la tâche du personnel de caisse et ne déposez pas vos articles directement dans des sacs fermés. Merci !</string>
@@ -84,12 +96,6 @@
     <string name="Snabble.LimitsAlert.notAllMethodsAvailable">Tous les modes de paiement ne sont plus disponibles à partir d\'une valeur de %s.</string>
     <string name="Snabble.LimitsAlert.title">Veuillez noter</string>
     <string name="Snabble.loadingProductInformation">Chargement des informations produit en cours...</string>
-    <string name="Snabble.LocationRequired.MissingPermission.message">Ceci est la seule façon pour nous d\'afficher les magasins les plus proches de chez vous et de vous permettre de faire vos achats.</string>
-    <string name="Snabble.LocationRequired.MissingPermission.title">Snabble a besoin de votre localisation</string>
-    <string name="Snabble.LocationRequired.notNow">Pas maintenant</string>
-    <string name="Snabble.LocationRequired.openSettings">Ouvrir les réglages</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.message">Veuillez ouvrir les réglages, sélectionner \"Emplacement\" et activer \"Emplacement exact\"</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.title">Snabble a besoin de votre position exacte pour savoir dans quel magasin vous faites vos achats.</string>
     <string name="Snabble.networkError">Erreur de connexion réseau</string>
     <string name="Snabble.no">Non</string>
     <string name="Snabble.noDiscount">Aucune réduction</string>
@@ -134,16 +140,12 @@
     <string name="Snabble.Payment.rejected">Achat refusé</string>
     <string name="Snabble.Payment.rejectedHint">Votre achat a été refusé. Vérifiez votre panier et recommencez le processus de paiement.</string>
     <string name="Snabble.Payment.SEPA.hint">Remarque : afin de vous protéger, ainsi que nos commerçants, contre les abus, le commerçant demandera à voir votre carte bancaire lors de votre premier paiement par prélèvement SEPA.</string>
-    <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
-    <string name="Snabble.Payment.SEPA.InvalidIBAN">L\'IBAN que vous avez saisi n\'est pas valide.</string>
-    <string name="Snabble.Payment.SEPA.InvalidName">Veuillez entrer un nom.</string>
+    <string name="Snabble.Payment.SEPA.iban">IBAN</string>
+    <string name="Snabble.Payment.SEPA.invalidIBAN">L\'IBAN que vous avez saisi n\'est pas valide.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Veuillez entrer un nom.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Le code du pays ne doit pas rester vide.</string>
-    <string name="Snabble.Payment.SEPA.Name">Nom</string>
-    <!--
-  ********* iOS SEPA and Creditcard Data *********
-  iOS only, this is used for the iOS-specific SEPA data entry and payment
-  -->
-    <string name="Snabble.Payment.SEPA.Title">Prélèvement SEPA</string>
+    <string name="Snabble.Payment.SEPA.name">Nom</string>
+    <string name="Snabble.Payment.SEPA.title">Prélèvement SEPA</string>
     <string name="Snabble.Payment.success">Merci beaucoup pour votre achat</string>
     <string name="Snabble.Payment.Twint.error">Une erreur est survenue lors du traitement de votre compte TWINT.</string>
     <string name="Snabble.Payment.usableAt">À utiliser jusqu\'au : %s</string>
@@ -300,6 +302,7 @@
         <item quantity="other">Filiales %d</item>
         <item quantity="zero">Aucune filiale</item>
     </plurals>
+    <string name="Snabble.Shop.Finder.title">Boutiques</string>
     <string name="Snabble.Shop.Finder.youarehere">Vous êtes ici</string>
     <string name="Snabble.Shop.List.Colapse.accessibility">fermer</string>
     <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s fermé</string>

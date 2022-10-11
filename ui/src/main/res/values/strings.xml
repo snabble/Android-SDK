@@ -60,12 +60,24 @@
     <string name="Snabble.Coupons.none">No Coupons available</string>
     <string name="Snabble.Coupons.title">Coupons</string>
     <string name="Snabble.CreditCard.payNow">Pay now using Credit card</string>
-    <string name="Snabble.Dashboard.lastPurchase">Your last purchase</string>
-    <string name="Snabble.Dashboard.lastPurchases">Your last purchases</string>
-    <string name="Snabble.Dashboard.lastPurchasesShowAll">Show All</string>
     <string name="Snabble.delete">Delete</string>
     <string name="Snabble.done">Done</string>
-    <string name="Snabble.DynamicStack.Shop.show">Show stores</string>
+    <string name="Snabble.DynamicView.AllStores.button">See all stores</string>
+    <string name="Snabble.DynamicView.connectWifi">Use the free “%s” wifi</string>
+    <string name="Snabble.DynamicView.ConnectWifi.noSSID">Unfortunately there is no WLAN available</string>
+    <string name="Snabble.DynamicView.customerCard">Take advantage of your store cards automatically.</string>
+    <string name="Snabble.DynamicView.lastPurchase">Your last purchase</string>
+    <string name="Snabble.DynamicView.lastPurchases">Your last purchases</string>
+    <string name="Snabble.DynamicView.LastPurchases.all">Show All</string>
+    <string name="Snabble.DynamicView.LocationPermission.Button.notDetermined">Grant permission</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.message">This is necessary to show stores in your vicinity and allow you to shop there.</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.title">Snabble needs your location</string>
+    <string name="Snabble.DynamicView.LocationPermission.notNow">Ask me later</string>
+    <string name="Snabble.DynamicView.LocationPermission.openSettings">Open Settings</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.message">Please go to Settings &gt; Privacy, then select “Location Services” and activate “Precise Location”</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.title">Snabble requires your precise location to identify in which store you are currently shopping</string>
+    <string name="Snabble.DynamicView.Shop.show">Show stores</string>
+    <string name="Snabble.DynamicView.StartShopping.button">Start shopping</string>
     <string name="Snabble.edit">Edit</string>
     <string name="Snabble.goToSettings">Go to settings</string>
     <string name="Snabble.Hints.closedBags">Well done! Please make things easy for the cashier and don\'t store your products in closed bags. Thank you!</string>
@@ -80,12 +92,6 @@
     <string name="Snabble.LimitsAlert.notAllMethodsAvailable">With a total of more than %s, not all payment methods are available.</string>
     <string name="Snabble.LimitsAlert.title">Note</string>
     <string name="Snabble.loadingProductInformation">Loading product data…</string>
-    <string name="Snabble.LocationRequired.MissingPermission.message">This is necessary to show stores in your vicinity and allow you to shop there.</string>
-    <string name="Snabble.LocationRequired.MissingPermission.title">Snabble needs your location</string>
-    <string name="Snabble.LocationRequired.notNow">Ask me later</string>
-    <string name="Snabble.LocationRequired.openSettings">Open Settings</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.message">Please go to Settings &gt; Privacy, then select “Location Services” and activate “Precise Location”</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.title">Snabble requires your precise location to identify in which store you are currently shopping</string>
     <string name="Snabble.networkError">Connection error</string>
     <string name="Snabble.no">No</string>
     <string name="Snabble.noDiscount">no discount</string>
@@ -130,16 +136,12 @@
     <string name="Snabble.Payment.rejected">Purchase denied</string>
     <string name="Snabble.Payment.rejectedHint">Your purchase was denied. Please check your cart and start the checkout again.</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
-    <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
-    <string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
-    <string name="Snabble.Payment.SEPA.InvalidName">Please enter a valid name.</string>
+    <string name="Snabble.Payment.SEPA.iban">IBAN</string>
+    <string name="Snabble.Payment.SEPA.invalidIBAN">Please enter a valid IBAN.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Please enter a valid name.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Country code cannot be empty.</string>
-    <string name="Snabble.Payment.SEPA.Name">Name</string>
-    <!--
-  ********* iOS SEPA and Creditcard Data *********
-  iOS only, this is used for the iOS-specific SEPA data entry and payment
-  -->
-    <string name="Snabble.Payment.SEPA.Title">SEPA direct debit</string>
+    <string name="Snabble.Payment.SEPA.name">Name</string>
+    <string name="Snabble.Payment.SEPA.title">SEPA direct debit</string>
     <string name="Snabble.Payment.success">Thank you for shopping</string>
     <string name="Snabble.Payment.Twint.error">There was an error processing your TWINT account</string>
     <string name="Snabble.Payment.usableAt">Usable at: %s</string>
@@ -295,6 +297,7 @@
         <item quantity="other">%d stores</item>
         <item quantity="zero">No stores</item>
     </plurals>
+    <string name="Snabble.Shop.Finder.title">Shop</string>
     <string name="Snabble.Shop.Finder.youarehere">You are here</string>
     <string name="Snabble.Shop.List.Colapse.accessibility">collapse</string>
     <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s collapsed</string>
