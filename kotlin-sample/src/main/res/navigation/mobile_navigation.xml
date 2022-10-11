@@ -19,7 +19,7 @@
             app:argType="string" />
         <argument
             android:name="headerTitle"
-            android:defaultValue="@string/Sample.Onboarding.message3"
+            android:defaultValue="@string/Onboarding.message3"
             app:argType="reference" />
         <argument
             android:name="hideBottomNavigation"
@@ -54,6 +54,8 @@
 
     <fragment
         android:id="@+id/navigation_home"
+        android:name="io.snabble.sdk.sample.HomeFragment"
+        android:label="@string/home" />
         android:name="io.snabble.sdk.screens.home.ui.HomeFragment">
 
         <argument
@@ -71,7 +73,7 @@
     <fragment
         android:id="@+id/navigation_scanner"
         android:name="io.snabble.sdk.ui.scanner.SelfScanningFragment"
-        android:label="@string/Sample.scanner">
+        android:label="@string/scanner">
         <argument
             android:name="showProductCode"
             app:argType="string" />
@@ -80,7 +82,7 @@
     <fragment
         android:id="@+id/navigation_cart"
         android:name="io.snabble.sdk.ui.cart.ShoppingCartFragment"
-        android:label="@string/Sample.shoppingCart" />
+        android:label="@string/shoppingCart" />
 
     <navigation
         android:id="@+id/navigation_shop"
@@ -107,6 +109,11 @@
             android:name="io.snabble.sdk.screens.shopfinder.ShopDetailsFragment" />
 
     </navigation>
+
+    <fragment
+        android:id="@+id/navigation_dummy_cart"
+        android:name="io.snabble.sdk.sample.CustomShoppingCartDummy"
+        android:label="@string/shoppingCart" />
 
     <fragment
         android:id="@+id/navigation_barcode_search"

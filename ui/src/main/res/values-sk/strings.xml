@@ -68,12 +68,24 @@
     <string name="Snabble.Coupons.none">Kupóny nie sú k dispozícii</string>
     <string name="Snabble.Coupons.title">Kupóny</string>
     <string name="Snabble.CreditCard.payNow">Teraz zaplatiť kreditnou kartou</string>
-    <string name="Snabble.Dashboard.lastPurchase">Tvoj posledný nákup</string>
-    <string name="Snabble.Dashboard.lastPurchases">Tvoje posledné nákupy</string>
-    <string name="Snabble.Dashboard.lastPurchasesShowAll">Všetko</string>
     <string name="Snabble.delete">Vymazať</string>
     <string name="Snabble.done">Hotovo</string>
-    <string name="Snabble.DynamicStack.Shop.show">Zobraziť obchody</string>
+    <string name="Snabble.DynamicView.AllStores.button">Prezrieť všetky obchody</string>
+    <string name="Snabble.DynamicView.connectWifi">Pripojiť sa k bezplatnej WLAN sieti „%s“ teraz</string>
+    <string name="Snabble.DynamicView.ConnectWifi.noSSID">Ľutujeme, nie je k dispozícii žiadna WLAN sieť.</string>
+    <string name="Snabble.DynamicView.customerCard">Využi automaticky výhody svojej zákazníckej karty.</string>
+    <string name="Snabble.DynamicView.lastPurchase">Tvoj posledný nákup</string>
+    <string name="Snabble.DynamicView.lastPurchases">Tvoje posledné nákupy</string>
+    <string name="Snabble.DynamicView.LastPurchases.all">Všetko</string>
+    <string name="Snabble.DynamicView.LocationPermission.Button.notDetermined">Povoliť polohu</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.message">Len tak môžeme zobraziť obchody v tvojej blízkosti a umožniť nákup.</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.title">Snabble potrebuje zistiť tvoju polohu</string>
+    <string name="Snabble.DynamicView.LocationPermission.notNow">Teraz nie</string>
+    <string name="Snabble.DynamicView.LocationPermission.openSettings">Otvoriť nastavenia</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.message">Otvor nastavenia, zvoľ položku „Poloha“ a aktivuj možnosť „Presná poloha“.</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.title">Snabble potrebuje tvoju presnú polohu, aby rozpoznal, v ktorom obchode práve nakupuješ</string>
+    <string name="Snabble.DynamicView.Shop.show">Zobraziť obchody</string>
+    <string name="Snabble.DynamicView.StartShopping.button">Teraz nakúpiť tu</string>
     <string name="Snabble.edit">Upraviť</string>
     <string name="Snabble.goToSettings">Prejsť na nastavenia</string>
     <string name="Snabble.Hints.closedBags">Len tak ďalej! Prosím, uľahči prácu pokladníkom a nevkladaj svoje produkty priamo do uzavretých tašiek. Ďakujem!</string>
@@ -88,12 +100,6 @@
     <string name="Snabble.LimitsAlert.notAllMethodsAvailable">Nad hodnotu tovaru %s nie sú k dispozícii všetky spôsoby platby</string>
     <string name="Snabble.LimitsAlert.title">Pozor</string>
     <string name="Snabble.loadingProductInformation">Načítanie informácií o produkte…</string>
-    <string name="Snabble.LocationRequired.MissingPermission.message">Len tak môžeme zobraziť obchody v tvojej blízkosti a umožniť nákup.</string>
-    <string name="Snabble.LocationRequired.MissingPermission.title">Snabble potrebuje zistiť tvoju polohu</string>
-    <string name="Snabble.LocationRequired.notNow">Teraz nie</string>
-    <string name="Snabble.LocationRequired.openSettings">Otvoriť nastavenia</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.message">Otvor nastavenia, zvoľ položku „Poloha“ a aktivuj možnosť „Presná poloha“.</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.title">Snabble potrebuje tvoju presnú polohu, aby rozpoznal, v ktorom obchode práve nakupuješ</string>
     <string name="Snabble.networkError">Chyba spojenia</string>
     <string name="Snabble.no">Nie</string>
     <string name="Snabble.noDiscount">žiadna zľava</string>
@@ -138,16 +144,12 @@
     <string name="Snabble.Payment.rejected">Nákup zamietnutý</string>
     <string name="Snabble.Payment.rejectedHint">Tvoj nákup bol zamietnutý. Skontroluj svoj košík a začni platobný proces znovu.</string>
     <string name="Snabble.Payment.SEPA.hint">Poznámka: Za účelom tvojej ochrany a ochrany našich obchodníkov pred zneužitím si obchodník pri tvojej prvej platbe prostredníctvom SEPA inkasa vyžiada tvoju bankovú kartu.</string>
-    <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
-    <string name="Snabble.Payment.SEPA.InvalidIBAN">Zadaný IBAN je neplatný.</string>
-    <string name="Snabble.Payment.SEPA.InvalidName">Zadaj meno, prosím.</string>
+    <string name="Snabble.Payment.SEPA.iban">IBAN</string>
+    <string name="Snabble.Payment.SEPA.invalidIBAN">Zadaný IBAN je neplatný.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Zadaj meno, prosím.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Kód krajiny nesmie zostať prázdny.</string>
-    <string name="Snabble.Payment.SEPA.Name">Meno</string>
-    <!--
-  ********* iOS SEPA and Creditcard Data *********
-  iOS only, this is used for the iOS-specific SEPA data entry and payment
-  -->
-    <string name="Snabble.Payment.SEPA.Title">SEPA inkaso</string>
+    <string name="Snabble.Payment.SEPA.name">Meno</string>
+    <string name="Snabble.Payment.SEPA.title">SEPA inkaso</string>
     <string name="Snabble.Payment.success">Ďakujeme za tvoj nákup</string>
     <string name="Snabble.Payment.Twint.error">Pri spracovaní tvojho účtu TWINT sa vyskytla chyba</string>
     <string name="Snabble.Payment.usableAt">Použiteľné tu: %s</string>
@@ -305,6 +307,7 @@
         <item quantity="other">%d  obchody/obchodov</item>
         <item quantity="zero">Žiadne obchody</item>
     </plurals>
+    <string name="Snabble.Shop.Finder.title">Obchod</string>
     <string name="Snabble.Shop.Finder.youarehere">Nachádzate sa tu</string>
     <string name="Snabble.Shop.List.Colapse.accessibility">zatvoriť</string>
     <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s zatvorený</string>
