@@ -76,12 +76,13 @@ fun Context.getResourceId(resource: String): Int =
     resources.getIdentifier(resource, "string", packageName)
 
 fun Context.resolveResourceString(resource: String): CharSequence {
-    return if (getResourceId(resource) == Resources.ID_NULL){
+    return if (getResourceId(resource) == Resources.ID_NULL) {
         resource
-    }else{
+    } else {
         getResourceString(resource)
     }
 }
+
 /**
  * Converts the string into a resource id and returns the matching resource String
  */

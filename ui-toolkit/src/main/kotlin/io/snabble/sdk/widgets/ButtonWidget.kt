@@ -13,10 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.Widget
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.utils.getComposeColor
@@ -87,7 +87,7 @@ fun ButtonWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun ButtonPreview() {
+private fun ButtonPreview() {
     ButtonWidget(
         model = ButtonItem(
             id = "a.button",

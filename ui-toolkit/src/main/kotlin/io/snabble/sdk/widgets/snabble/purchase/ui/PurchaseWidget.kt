@@ -77,7 +77,7 @@ internal fun PurchaseWidget(
 }
 
 @Composable
-private fun Purchases(
+fun Purchases(
     model: PurchasesItem,
     purchaseList: List<Purchase>,
     onAction: OnDynamicAction,

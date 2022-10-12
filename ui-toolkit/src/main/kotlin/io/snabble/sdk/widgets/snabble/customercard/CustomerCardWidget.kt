@@ -7,7 +7,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.CustomerCardItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
@@ -15,6 +14,7 @@ import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
 import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toInformationItem
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.toolkit.R
@@ -41,7 +41,7 @@ internal fun CustomerCardWidget(
 }
 
 @Composable
-private fun CustomerCard(
+fun CustomerCard(
     modifier: Modifier = Modifier,
     model: CustomerCardItem,
     onAction: OnDynamicAction,

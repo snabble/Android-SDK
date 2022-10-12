@@ -35,7 +35,7 @@ import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
 fun SectionWidget(
     modifier: Modifier = Modifier,
     model: SectionItem,
-    onAction: OnDynamicAction
+    onAction: OnDynamicAction,
 ) {
     Column(
         modifier = Modifier
@@ -84,7 +84,7 @@ fun SectionWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun SectionPreview() {
+private fun SectionPreview() {
     CompositionLocalProvider(
         LocalPadding provides OuterPadding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()

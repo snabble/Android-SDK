@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.TextItem
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 
@@ -50,7 +50,7 @@ fun TextWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
 @Composable
-fun TextWidgetPreview() {
+private fun TextWidgetPreview() {
     Column(Modifier.fillMaxSize()) {
         TextWidget(
             model = TextItem(
