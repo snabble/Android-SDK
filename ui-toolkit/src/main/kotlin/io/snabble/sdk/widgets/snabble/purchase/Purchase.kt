@@ -2,7 +2,7 @@ package io.snabble.sdk.widgets.snabble.purchase
 
 import io.snabble.sdk.ReceiptInfo
 
-internal data class Purchase(
+data class Purchase(
     val id: String,
     val amount: String,
     val title: String,

@@ -30,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.ConnectWifiItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
@@ -40,6 +39,7 @@ import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.elevation
 import io.snabble.sdk.dynamicview.theme.properties.padding
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.toolkit.R
@@ -133,7 +133,7 @@ private fun WifiWidgetPreview() {
     ) {
         ConnectWifi(
             model = ConnectWifiItem(
-                id = "wifiii",
+                id = "wifi",
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
             isButtonVisible = true,

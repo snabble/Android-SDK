@@ -17,9 +17,9 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.widgets.snabble.toggle.viewmodel.ToggleViewModel
@@ -44,7 +44,7 @@ internal fun ToggleWidget(
 }
 
 @Composable
-private fun Toggle(
+fun Toggle(
     modifier: Modifier = Modifier,
     model: ToggleItem,
     isChecked: Boolean,
