@@ -1,4 +1,4 @@
-package io.snabble.sdk.screens.home.domain
+package io.snabble.sdk.screens.home.usecases
 
 import io.snabble.sdk.dynamicview.domain.config.ConfigRepository
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
