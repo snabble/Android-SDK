@@ -26,7 +26,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.InformationItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
@@ -36,6 +35,7 @@ import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.elevation
 import io.snabble.sdk.dynamicview.theme.properties.padding
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.toolkit.R
@@ -45,7 +45,7 @@ import io.snabble.sdk.ui.toolkit.R
 fun InformationWidget(
     modifier: Modifier = Modifier,
     model: InformationItem,
-    onAction: OnDynamicAction
+    onAction: OnDynamicAction,
 ) {
     CompositionLocalProvider(
         // TODO: Providing this app wide?
@@ -105,7 +105,7 @@ fun InformationWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun InformationWidgetPreview() {
+private fun InformationWidgetPreview() {
     CompositionLocalProvider(
         LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()

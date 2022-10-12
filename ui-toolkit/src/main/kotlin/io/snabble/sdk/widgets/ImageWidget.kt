@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.R
 
@@ -43,7 +43,7 @@ fun ImageWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-fun ImageWidgetPreview() {
+private fun ImageWidgetPreview() {
     ImageWidget(
         model = ImageItem(
             id = "an.image",
