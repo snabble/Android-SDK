@@ -29,10 +29,10 @@ import io.snabble.sdk.widgets.InformationWidget
 import io.snabble.sdk.widgets.SectionWidget
 import io.snabble.sdk.widgets.TextWidget
 import io.snabble.sdk.widgets.snabble.customercard.CustomerCardWidget
-import io.snabble.sdk.widgets.snabble.locationpermission.LocationPermissionWidget
+import io.snabble.sdk.widgets.snabble.locationpermission.ui.LocationPermissionWidget
 import io.snabble.sdk.widgets.snabble.purchase.ui.PurchaseWidget
-import io.snabble.sdk.widgets.snabble.stores.SeeAllStoresWidget
-import io.snabble.sdk.widgets.snabble.stores.StartShoppingWidget
+import io.snabble.sdk.widgets.snabble.stores.ui.SeeAllStoresWidget
+import io.snabble.sdk.widgets.snabble.stores.ui.StartShoppingWidget
 import io.snabble.sdk.widgets.snabble.toggle.ToggleWidget
 import io.snabble.sdk.widgets.snabble.wifi.ConnectWifiWidget
 

@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.locationpermission
+package io.snabble.sdk.widgets.snabble.locationpermission.ui
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -31,34 +31,32 @@ internal fun LocationPermissionWidget(
 
     @OptIn(ExperimentalLifecycleComposeApi::class)
     val hasLocationPermissionState = viewModel.hasLocationPermission.collectAsStateWithLifecycle()
-    LocationPermission(
-        modifier = modifier,
-        model = model,
-        isButtonVisible = !hasLocationPermissionState.value,
-        onAction = {
-            onAction(it)
-            launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    )
+    if (!hasLocationPermissionState.value) {
+        LocationPermission(
+            modifier = modifier,
+            model = model,
+            onAction = {
+                onAction(it)
+                launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        )
+    }
 }
 
 @Composable
 fun LocationPermission(
     modifier: Modifier = Modifier,
     model: LocationPermissionItem,
-    isButtonVisible: Boolean,
     onAction: OnDynamicAction,
 ) {
-    if (isButtonVisible) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            ButtonWidget(
-                modifier = modifier.fillMaxWidth(),
-                widget = model,
-                padding = model.padding,
-                text = stringResource(id = R.string.Snabble_askForPermission),
-                onAction = onAction,
-            )
-        }
+    Box(modifier = Modifier.fillMaxWidth()) {
+        ButtonWidget(
+            modifier = modifier.fillMaxWidth(),
+            widget = model,
+            padding = model.padding,
+            text = stringResource(id = R.string.Snabble_askForPermission),
+            onAction = onAction,
+        )
     }
 }
 
@@ -76,7 +74,6 @@ private fun LocationPermissionPreview() {
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)
         ),
-        isButtonVisible = true,
         onAction = {},
     )
 }

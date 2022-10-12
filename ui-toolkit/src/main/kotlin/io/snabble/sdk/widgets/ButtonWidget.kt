@@ -1,6 +1,5 @@
 package io.snabble.sdk.widgets
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
@@ -28,31 +27,26 @@ fun ButtonWidget(
     model: ButtonItem,
     onAction: OnDynamicAction = {},
 ) {
-    Box(
+    Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(model.padding.toPaddingValues())
-            .then(modifier)
-    ) {
-        Button(
-            onClick = { onAction(DynamicAction(model)) },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color(
-                    model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
-                ),
+            .then(modifier),
+        onClick = { onAction(DynamicAction(model)) },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(
+                model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
             ),
-            shape = MaterialTheme.shapes.small,
-            modifier = Modifier
-                .fillMaxWidth(),
-        ) {
-            Text(
-                text = model.text,
-                style = MaterialTheme.typography.labelLarge,
-                color = Color(
-                    model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb()
-                )
+        ),
+        shape = MaterialTheme.shapes.small,
+    ) {
+        Text(
+            text = model.text,
+            style = MaterialTheme.typography.labelLarge,
+            color = Color(
+                model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb()
             )
-        }
+        )
     }
 }
 
@@ -64,24 +58,22 @@ fun ButtonWidget(
     text: String,
     onAction: OnDynamicAction = {},
 ) {
-    Box(
-        modifier = modifier
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(padding.toPaddingValues())
+            .then(modifier),
+        onClick = { onAction(DynamicAction(widget)) },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+        shape = MaterialTheme.shapes.small,
     ) {
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { onAction(DynamicAction(widget)) },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-            ),
-            shape = MaterialTheme.shapes.small,
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge, //TODO: Evaluate right typo
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     }
 }
 

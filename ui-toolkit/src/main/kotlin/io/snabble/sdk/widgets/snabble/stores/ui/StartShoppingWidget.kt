@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.stores
+package io.snabble.sdk.widgets.snabble.stores.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,38 +27,39 @@ internal fun StartShoppingWidget(
 ) {
     @OptIn(ExperimentalLifecycleComposeApi::class)
     val isCheckedInState = viewModel.isCheckedInFlow.collectAsStateWithLifecycle()
-    StartShopping(
-        modifier = modifier,
-        model = model,
-        isCheckedIn = isCheckedInState.value,
-        onAction = onAction,
-    )
+    if (isCheckedInState.value) {
+        StartShopping(
+            modifier = modifier,
+            model = model,
+            onAction = onAction,
+        )
+    }
 }
 
 @Composable
 fun StartShopping(
     modifier: Modifier = Modifier,
     model: StartShoppingItem,
-    isCheckedIn: Boolean,
     onAction: OnDynamicAction,
 ) {
-    if (isCheckedIn) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            ButtonWidget(
-                modifier = modifier.align(Alignment.Center),
-                widget = model,
-                padding = model.padding,
-                text = stringResource(id = R.string.Snabble_Shop_Detail_shopNow),
-                onAction = onAction
-            )
-        }
+    Box(modifier = Modifier.fillMaxWidth()) {
+        ButtonWidget(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .then(modifier),
+            widget = model,
+            padding = model.padding,
+            text = stringResource(id = R.string.Snabble_Shop_Detail_shopNow),
+            onAction = onAction
+        )
     }
+
 }
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 private fun StartShoppingPreview() {
-    StartShoppingWidget(
+    StartShopping(
         model = StartShoppingItem(
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)

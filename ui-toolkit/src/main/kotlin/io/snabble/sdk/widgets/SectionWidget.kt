@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
@@ -27,6 +26,7 @@ import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
 import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.padding
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.widgets.snabble.toggle.ToggleWidget
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
@@ -94,16 +94,17 @@ private fun SectionPreview() {
                 id = "section",
                 header = "Profil",
                 items = listOf(
-                    ToggleItem(
-                        id = "setup.toggle",
-                        text = "Show setup",
-                        key = "pref.setup.toggle",
+                    TextItem(
+                        id = "1",
+                        text = "Setup",
+                        textStyleSource = "body",
+                        showDisclosure = false,
                         padding = Padding(horizontal = 16, vertical = 5),
                     ),
                     TextItem(
                         id = "1",
-                        text = "Willkommen bei Snabble",
-                        textStyleSource = "title",
+                        text = "Terms",
+                        textStyleSource = "body",
                         showDisclosure = false,
                         padding = Padding(horizontal = 16, vertical = 5),
                     ),

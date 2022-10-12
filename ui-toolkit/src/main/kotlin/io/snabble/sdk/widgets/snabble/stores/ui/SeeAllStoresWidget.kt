@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.stores
+package io.snabble.sdk.widgets.snabble.stores.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,15 +11,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.toolkit.R
@@ -47,7 +48,7 @@ internal fun SeeAllStoresWidget(
 }
 
 @Composable
-private fun SeeAllStores(
+fun SeeAllStores(
     modifier: Modifier = Modifier,
     model: SeeAllStoresItem,
     isChecked: Boolean,
@@ -56,7 +57,9 @@ private fun SeeAllStores(
     Box(modifier = modifier.fillMaxWidth()) {
         if (!isChecked) {
             ButtonWidget(
-                modifier = modifier.align(Alignment.Center),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .then(modifier),
                 widget = model,
                 padding = model.padding,
                 text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
@@ -69,7 +72,9 @@ private fun SeeAllStores(
                     .align(Alignment.Center)
                     .height(48.dp)
                     .padding(model.padding.toPaddingValues())
-                    .clickable { onAction(DynamicAction(model)) },
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .clickable { onAction(DynamicAction(model)) }
+                    .then(modifier),
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),

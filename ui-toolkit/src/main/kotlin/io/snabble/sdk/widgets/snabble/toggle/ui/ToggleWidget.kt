@@ -52,10 +52,11 @@ fun Toggle(
     onAction: OnDynamicAction,
 ) {
     ConstraintLayout(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 48.dp)
             .padding(model.padding.toPaddingValues())
+            .then(modifier)
     ) {
         val (label, switch) = createRefs()
         Text(

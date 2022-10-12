@@ -55,70 +55,69 @@ internal fun ConnectWifiWidget(
 ) {
     @OptIn(ExperimentalLifecycleComposeApi::class)
     val isButtonVisibleState = viewModel.wifiButtonIsVisible.collectAsStateWithLifecycle()
-    ConnectWifi(
-        modifier = modifier,
-        model = model,
-        isButtonVisible = isButtonVisibleState.value,
-        onAction = onAction
-    )
+    if (isButtonVisibleState.value) {
+        ConnectWifi(
+            modifier = modifier,
+            model = model,
+            onAction = onAction
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ConnectWifi(
+fun ConnectWifi(
     modifier: Modifier = Modifier,
     model: ConnectWifiItem,
-    isButtonVisible: Boolean,
     onAction: OnDynamicAction,
 ) {
-    if (isButtonVisible) {
-        CompositionLocalProvider(
-            // TODO: Providing this app wide?
-            LocalRippleTheme provides object : RippleTheme {
+    CompositionLocalProvider(
+        // TODO: Providing this app wide?
+        LocalRippleTheme provides object : RippleTheme {
 
-                @Composable
-                override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
+            @Composable
+            override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
 
-                @Composable
-                override fun rippleAlpha(): RippleAlpha =
-                    RippleTheme.defaultRippleAlpha(Color.Black, lightTheme = !isSystemInDarkTheme())
-            }
+            @Composable
+            override fun rippleAlpha(): RippleAlpha =
+                RippleTheme.defaultRippleAlpha(Color.Black, lightTheme = !isSystemInDarkTheme())
+        }
+    ) {
+        rememberRipple()
+        Card(
+            onClick = { onAction(DynamicAction(model)) },
+            modifier = Modifier
+                .indication(
+                    interactionSource = MutableInteractionSource(),
+                    indication = rememberRipple()
+                ),
+            shape = MaterialTheme.shapes.small,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
         ) {
-            rememberRipple()
-            Card(
-                onClick = { onAction(DynamicAction(model)) },
+            Row(
                 modifier = Modifier
-                    .indication(
-                        interactionSource = MutableInteractionSource(),
-                        indication = rememberRipple()
-                    ),
-                shape = MaterialTheme.shapes.small,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
+                    .fillMaxWidth()
+                    .padding(model.padding.toPaddingValues())
+                    .then(modifier),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(model.padding.toPaddingValues()),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        text = "Connect to free Wifi",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Image(
-                        modifier = Modifier
-                            .padding(start = MaterialTheme.padding.large)
-                            .wrapContentSize(),
-                        contentScale = ContentScale.Fit,
-                        painter = painterResource(id = R.drawable.snabble_wifi),
-                        contentDescription = "",
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                    )
-                }
+                Text(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    text = "Connect to free Wifi",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Image(
+                    modifier = Modifier
+                        .padding(start = MaterialTheme.padding.large)
+                        .wrapContentSize(),
+                    contentScale = ContentScale.Fit,
+                    painter = painterResource(id = R.drawable.snabble_wifi),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                )
             }
         }
     }
@@ -136,7 +135,6 @@ private fun WifiWidgetPreview() {
                 id = "wifi",
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
-            isButtonVisible = true,
             onAction = {}
         )
     }
