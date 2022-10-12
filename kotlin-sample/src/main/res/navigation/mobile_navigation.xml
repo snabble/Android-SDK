@@ -54,9 +54,8 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="io.snabble.sdk.sample.HomeFragment"
-        android:label="@string/home" />
-        android:name="io.snabble.sdk.screens.home.ui.HomeFragment">
+        android:name="io.snabble.sdk.screens.home.ui.HomeFragment"
+        android:label="@string/home" >
 
         <argument
             android:name="hideToolbar"
@@ -109,11 +108,6 @@
             android:name="io.snabble.sdk.screens.shopfinder.ShopDetailsFragment" />
 
     </navigation>
-
-    <fragment
-        android:id="@+id/navigation_dummy_cart"
-        android:name="io.snabble.sdk.sample.CustomShoppingCartDummy"
-        android:label="@string/shoppingCart" />
 
     <fragment
         android:id="@+id/navigation_barcode_search"

@@ -59,7 +59,7 @@ private fun SeeAllStores(
                 modifier = modifier.align(Alignment.Center),
                 widget = model,
                 padding = model.padding,
-                text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
+                text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
                 onAction = onAction
             )
         } else {
@@ -73,7 +73,7 @@ private fun SeeAllStores(
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(id = R.string.Snabble_DynamicStack_Shop_show),
+                    text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
