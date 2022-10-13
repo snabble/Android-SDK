@@ -1,6 +1,5 @@
 package io.snabble.sdk.widgets.snabble.locationpermission.di
 
-
 import io.snabble.sdk.widgets.snabble.locationpermission.domain.HasLocationPermissionUseCase
 import io.snabble.sdk.widgets.snabble.locationpermission.domain.UpdateCheckInManagerUseCase
 import io.snabble.sdk.widgets.snabble.locationpermission.viewmodel.LocationPermissionViewModel
@@ -12,5 +11,4 @@ internal val locationPermissionModule = module {
     viewModelOf(::LocationPermissionViewModel)
     factoryOf(::HasLocationPermissionUseCase)
     factoryOf(::UpdateCheckInManagerUseCase)
-
 }

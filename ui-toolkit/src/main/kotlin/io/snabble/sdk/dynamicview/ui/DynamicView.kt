@@ -95,5 +95,4 @@ fun Widget(
     is ToggleItem -> ToggleWidget(model = widget, onAction = onAction)
 
     is SectionItem -> SectionWidget(model = widget, onAction = onAction)
-
 }
