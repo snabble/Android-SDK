@@ -3,7 +3,6 @@ package io.snabble.sdk.widgets.snabble.purchase.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,13 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,18 +19,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.ProjectId
 import io.snabble.sdk.dynamicview.domain.model.PurchasesItem
@@ -46,10 +36,11 @@ import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
 import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
-import io.snabble.sdk.dynamicview.theme.properties.elevation
 import io.snabble.sdk.dynamicview.theme.properties.padding
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.widgets.snabble.SnabbleCard
 import io.snabble.sdk.widgets.snabble.purchase.OnLifecycleEvent
 import io.snabble.sdk.widgets.snabble.purchase.Purchase
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.Loading
@@ -163,90 +154,74 @@ fun Purchases(
     }
 }
 
-@OptIn(ExperimentalUnitApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun PurchaseDetail(
     modifier: Modifier = Modifier,
     data: Purchase,
     clickAction: () -> Unit,
 ) {
-    CompositionLocalProvider(
-        // TODO: Providing this app wide?
-        LocalRippleTheme provides object : RippleTheme {
-
-            @Composable
-            override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
-
-            @Composable
-            override fun rippleAlpha(): RippleAlpha =
-                RippleTheme.defaultRippleAlpha(Color.Black, lightTheme = !isSystemInDarkTheme())
-        }
+    SnabbleCard(
+        modifier = modifier,
+        padding = PaddingValues(0.dp),
+        onClick = clickAction
     ) {
-        Card(
-            modifier = modifier,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
-            shape = MaterialTheme.shapes.small,
-            onClick = clickAction
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingValues(MaterialTheme.padding.medium))
         ) {
-            ConstraintLayout(
+            val (icon, amount, title, time) = createRefs()
+            Image(
+                painter = painterResource(id = R.drawable.ic_snabble),
+                contentDescription = "",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(PaddingValues(MaterialTheme.padding.medium))
-            ) {
-                val (icon, amount, title, time) = createRefs()
-                Image(
-                    painter = painterResource(id = R.drawable.ic_snabble),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .constrainAs(icon) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                        }
-                )
-                Text(
-                    text = data.amount,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .constrainAs(amount) {
-                            top.linkTo(icon.top)
-                            bottom.linkTo(icon.bottom)
-                            linkTo(
-                                start = icon.end,
-                                end = parent.end,
-                                bias = 1f,
-                                startMargin = 4.dp
-                            )
-                            width = Dimension.fillToConstraints
-                        }
-                )
-                Text(
-                    text = "${data.title}\n",
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .constrainAs(title) {
-                            top.linkTo(icon.bottom, margin = 12.dp)
-                        }
-                )
-                Text(
-                    text = data.time,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .constrainAs(time) {
-                            top.linkTo(title.bottom, margin = 4.dp)
-                        }
-                )
-            }
+                    .size(24.dp)
+                    .constrainAs(icon) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                    }
+            )
+            Text(
+                text = data.amount,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .constrainAs(amount) {
+                        top.linkTo(icon.top)
+                        bottom.linkTo(icon.bottom)
+                        linkTo(
+                            start = icon.end,
+                            end = parent.end,
+                            bias = 1f,
+                            startMargin = 4.dp
+                        )
+                        width = Dimension.fillToConstraints
+                    }
+            )
+            Text(
+                text = "${data.title}\n",
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .constrainAs(title) {
+                        top.linkTo(icon.bottom, margin = 12.dp)
+                    }
+            )
+            Text(
+                text = data.time,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .constrainAs(time) {
+                        top.linkTo(title.bottom, margin = 4.dp)
+                    }
+            )
         }
     }
 }

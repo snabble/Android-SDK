@@ -75,7 +75,7 @@
       ]
     },
     {
-      "type": "snabble.customerCard",
+      "type": "information",
       "id": "card",
       "text": "Füge eine KundenKarte hinzu",
       "imageSource": "store_logo",
