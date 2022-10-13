@@ -95,8 +95,10 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
         SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
     ) { _, _ ->
         navController.popBackStack()
-        sharedPreferences.edit()
-            .putBoolean(MainActivity.ONBOARDING_SEEN, true)
-            .apply()
+        if (!sharedPreferences.contains(MainActivity.PREF_KEY_SHOW_ONBOARDING)) {
+            sharedPreferences.edit()
+                .putBoolean(MainActivity.PREF_KEY_SHOW_ONBOARDING, false)
+                .apply()
+        }
     }
 }
