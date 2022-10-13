@@ -1,13 +1,9 @@
 package io.snabble.sdk.widgets.snabble.toggle.repository
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
+import android.content.SharedPreferences
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.callbackFlow
 
 internal interface ToggleRepository {
 
@@ -16,22 +12,24 @@ internal interface ToggleRepository {
     suspend fun getToggleState(key: String): Flow<Boolean>
 }
 
-private const val STORE_NAME = "snabble_toggle_settings"
-
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = STORE_NAME)
-
-internal class ToggleRepositoryImpl(
-    private val context: Context,
-) : ToggleRepository {
+internal class ToggleRepositoryImpl(private val sharedPrefs: SharedPreferences) : ToggleRepository {
 
     override suspend fun saveToggleState(key: String, isChecked: Boolean) {
-        context.dataStore.edit { mutablePrefs ->
-            mutablePrefs[booleanPreferencesKey(key)] = isChecked
-        }
+        sharedPrefs.edit().putBoolean(key, isChecked).apply()
     }
 
-    override suspend fun getToggleState(key: String): Flow<Boolean> =
-        context.dataStore.data.map { prefs ->
-            prefs[booleanPreferencesKey(key)] ?: false
+    override suspend fun getToggleState(key: String): Flow<Boolean> = callbackFlow {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, changedKey ->
+            if (changedKey == key) {
+                trySend(prefs.getBoolean(key, false))
+            }
         }
+        sharedPrefs.registerOnSharedPreferenceChangeListener(listener)
+
+        trySend(sharedPrefs.getBoolean(key, false))
+
+        awaitClose {
+            sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }
 }

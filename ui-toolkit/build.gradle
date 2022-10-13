@@ -98,14 +98,13 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha02'
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     implementation "androidx.startup:startup-runtime:1.1.1"
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
     implementation "io.insert-koin:koin-android-compat:$koin_version"
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
-
+    implementation 'com.github.sebaslogen.resaca:resaca:2.3.0'
 
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
