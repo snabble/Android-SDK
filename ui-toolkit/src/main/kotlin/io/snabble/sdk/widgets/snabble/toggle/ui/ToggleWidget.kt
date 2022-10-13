@@ -16,20 +16,21 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebaslogen.resaca.viewModelScoped
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.widgets.snabble.toggle.viewmodel.ToggleViewModel
-import io.snabble.sdk.widgets.snabble.toggle.viewmodel.ToggleViewModelFactory
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun ToggleWidget(
     modifier: Modifier = Modifier,
     model: ToggleItem,
-    viewModel: ToggleViewModel = viewModel(factory = ToggleViewModelFactory(prefKey = model.key)),
+    viewModel: ToggleViewModel = viewModelScoped(model.key) { KoinProvider.getKoin().get { parametersOf(model.key) } },
     onAction: OnDynamicAction,
 ) {
     @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -38,7 +39,7 @@ internal fun ToggleWidget(
         modifier = modifier,
         model = model,
         isChecked = isCheckedState.value,
-        onCheckedChange = { viewModel.setToggleState(model.key, isChecked = it) },
+        onCheckedChange = { viewModel.setToggleState(isChecked = it) },
         onAction = onAction,
     )
 }
