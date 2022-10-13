@@ -27,7 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebaslogen.resaca.viewModelScoped
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.ProjectId
 import io.snabble.sdk.dynamicview.domain.model.PurchasesItem
@@ -50,7 +51,7 @@ import io.snabble.sdk.widgets.snabble.purchase.viewmodel.ShowPurchases
 @Composable
 internal fun PurchaseWidget(
     model: PurchasesItem,
-    viewModel: PurchaseViewModel = viewModel(),
+    viewModel: PurchaseViewModel = viewModelScoped { KoinProvider.scope.get() },
     onAction: OnDynamicAction,
 ) {
     OnLifecycleEvent(Lifecycle.Event.ON_RESUME) { _, _ ->

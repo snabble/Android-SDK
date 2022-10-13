@@ -4,18 +4,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.StartShopping
 import io.snabble.sdk.widgets.snabble.stores.viewmodel.StoresViewModel
-import org.koin.androidx.compose.getViewModel
 
 @Composable
 internal fun StartShoppingWidget(
     modifier: Modifier = Modifier,
     model: StartShoppingItem,
-    viewModel: StoresViewModel = getViewModel(scope = KoinProvider.scope),
+    viewModel: StoresViewModel = viewModelScoped { KoinProvider.scope.get() },
     onAction: OnDynamicAction,
 ) {
     @OptIn(ExperimentalLifecycleComposeApi::class)

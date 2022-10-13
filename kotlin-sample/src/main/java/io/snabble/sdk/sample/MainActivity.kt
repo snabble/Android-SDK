@@ -32,11 +32,23 @@ class MainActivity : AppCompatActivity() {
     private val sharedPreferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(this)
 
-    private var onboardingSeen: Boolean
-        get() = sharedPreferences.getBoolean(ONBOARDING_SEEN, false)
-        set(onboardingSeen) = sharedPreferences.edit()
-            .putBoolean(ONBOARDING_SEEN, onboardingSeen)
-            .apply()
+    private var showOnboarding: Boolean?
+        get() {
+            return if (sharedPreferences.contains(PREF_KEY_SHOW_ONBOARDING)) {
+                sharedPreferences.getBoolean(PREF_KEY_SHOW_ONBOARDING, true)
+            } else {
+                null
+            }
+        }
+        set(showOnboardingSeen) {
+            if (showOnboardingSeen != null) {
+                sharedPreferences.edit()
+                    .putBoolean(PREF_KEY_SHOW_ONBOARDING, showOnboardingSeen)
+                    .apply()
+            } else {
+                sharedPreferences.edit().remove(PREF_KEY_SHOW_ONBOARDING).apply()
+            }
+        }
 
     private val homeViewModel: DynamicHomeViewModel by viewModels()
     private val profileViewModel: DynamicProfileViewModel by viewModels()
@@ -76,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        if (savedInstanceState == null && !onboardingSeen) {
+        if (savedInstanceState == null && showOnboarding != false) {
             lifecycleScope.launch {
                 val model = onboardingRepo.getOnboardingModel()
                 SnabbleUiToolkit.executeAction(
@@ -138,7 +150,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
 
-        const val ONBOARDING_SEEN = "onboarding_seen"
+        const val PREF_KEY_SHOW_ONBOARDING = "snabble.show.onboarding"
     }
 }
 

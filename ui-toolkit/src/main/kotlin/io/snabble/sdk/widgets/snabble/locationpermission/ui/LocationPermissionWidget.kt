@@ -7,18 +7,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.LocationPermission
 import io.snabble.sdk.widgets.snabble.locationpermission.viewmodel.LocationPermissionViewModel
-import org.koin.androidx.compose.getViewModel
 
 @Composable
 internal fun LocationPermissionWidget(
     modifier: Modifier = Modifier,
     model: LocationPermissionItem,
-    viewModel: LocationPermissionViewModel = getViewModel(scope = KoinProvider.scope),
+    viewModel: LocationPermissionViewModel = viewModelScoped { KoinProvider.scope.get() },
     onAction: OnDynamicAction,
 ) {
     val launcher = createActivityResultLauncher(viewModel)
