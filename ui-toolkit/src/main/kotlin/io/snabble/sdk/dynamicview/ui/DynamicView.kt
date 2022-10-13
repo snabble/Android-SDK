@@ -28,7 +28,7 @@ import io.snabble.sdk.widgets.ImageWidget
 import io.snabble.sdk.widgets.InformationWidget
 import io.snabble.sdk.widgets.SectionWidget
 import io.snabble.sdk.widgets.TextWidget
-import io.snabble.sdk.widgets.snabble.customercard.CustomerCardWidget
+import io.snabble.sdk.widgets.snabble.customercard.ui.CustomerCardWidget
 import io.snabble.sdk.widgets.snabble.locationpermission.ui.LocationPermissionWidget
 import io.snabble.sdk.widgets.snabble.purchase.ui.PurchaseWidget
 import io.snabble.sdk.widgets.snabble.stores.ui.SeeAllStoresWidget

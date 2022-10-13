@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.customercard
+package io.snabble.sdk.widgets.snabble.customercard.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
