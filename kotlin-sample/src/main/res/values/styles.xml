@@ -17,21 +17,29 @@
         <item name="colorTertiaryContainer">@color/snabbleBlue</item>
         <item name="colorOnTertiaryContainer">@color/grey</item>
 
-<!--        <item name="textAppearanceBodyLarge">@style/TextAppearance.Snabble.BodyLarge</item>-->
-<!--        <item name="textAppearanceBodyMedium">@style/TextAppearance.Snabble.BodyMedium</item>-->
-<!--        <item name="textAppearanceBodyLarge">@style/TextAppearance.Material3.BodyMedium</item>-->
-<!--        <item name="textAppearanceBodyMedium">@style/TextAppearance.Material3.BodySmall</item>-->
-<!--        <item name="textAppearanceTitleLarge">@style/TextAppearance.Material3.TitleMedium</item>-->
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Snabble.TitleLarge</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Snabble.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Snabble.BodyMedium</item>
 
-        <!--        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.App.Medium</item>-->
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Snabble.HeadlineLarge</item>
+    </style>
+
+    <style name="TextAppearance.Snabble.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="TextAppearance.Snabble.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
-        <item name="android:letterSpacing">-0.01714285714</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <style name="TextAppearance.Snabble.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:letterSpacing">-0.015</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="TextAppearance.Snabble.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">40sp</item>
     </style>
 
 
