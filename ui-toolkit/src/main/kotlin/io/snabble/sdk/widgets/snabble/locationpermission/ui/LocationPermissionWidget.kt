@@ -13,12 +13,13 @@ import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.LocationPermission
 import io.snabble.sdk.widgets.snabble.locationpermission.viewmodel.LocationPermissionViewModel
+import org.koin.core.component.get
 
 @Composable
 internal fun LocationPermissionWidget(
     modifier: Modifier = Modifier,
     model: LocationPermissionItem,
-    viewModel: LocationPermissionViewModel = viewModelScoped { KoinProvider.scope.get() },
+    viewModel: LocationPermissionViewModel = viewModelScoped { KoinProvider.get() },
     onAction: OnDynamicAction,
 ) {
     val launcher = createActivityResultLauncher(viewModel)

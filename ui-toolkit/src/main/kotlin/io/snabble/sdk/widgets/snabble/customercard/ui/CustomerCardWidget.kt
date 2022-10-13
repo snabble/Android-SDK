@@ -11,11 +11,12 @@ import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.widgets.CustomerCardWidget
 import io.snabble.sdk.widgets.snabble.customercard.viewmodel.CustomerCardViewModel
+import org.koin.core.component.get
 
 @Composable
 internal fun CustomerCardWidget(
     modifier: Modifier = Modifier,
-    customerCardViewModel: CustomerCardViewModel = viewModelScoped { KoinProvider.scope.get() },
+    customerCardViewModel: CustomerCardViewModel = viewModelScoped { KoinProvider.get() },
     model: CustomerCardItem,
     onAction: OnDynamicAction,
 ) {

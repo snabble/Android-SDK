@@ -12,12 +12,13 @@ import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.SeeAllStoresWidget
 import io.snabble.sdk.widgets.snabble.stores.viewmodel.StoresViewModel
+import org.koin.core.component.get
 
 @Composable
 internal fun SeeAllStoresWidget(
     modifier: Modifier = Modifier,
     model: SeeAllStoresItem,
-    viewModel: StoresViewModel = viewModelScoped { KoinProvider.scope.get() },
+    viewModel: StoresViewModel = viewModelScoped { KoinProvider.get() },
     onAction: OnDynamicAction,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {

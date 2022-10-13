@@ -47,11 +47,12 @@ import io.snabble.sdk.widgets.snabble.purchase.Purchase
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.Loading
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.PurchaseViewModel
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.ShowPurchases
+import org.koin.core.component.get
 
 @Composable
 internal fun PurchaseWidget(
     model: PurchasesItem,
-    viewModel: PurchaseViewModel = viewModelScoped { KoinProvider.scope.get() },
+    viewModel: PurchaseViewModel = viewModelScoped { KoinProvider.get() },
     onAction: OnDynamicAction,
 ) {
     OnLifecycleEvent(Lifecycle.Event.ON_RESUME) { _, _ ->

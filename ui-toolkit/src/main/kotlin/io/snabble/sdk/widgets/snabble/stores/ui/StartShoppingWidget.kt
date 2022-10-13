@@ -10,12 +10,13 @@ import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.StartShopping
 import io.snabble.sdk.widgets.snabble.stores.viewmodel.StoresViewModel
+import org.koin.core.component.get
 
 @Composable
 internal fun StartShoppingWidget(
     modifier: Modifier = Modifier,
     model: StartShoppingItem,
-    viewModel: StoresViewModel = viewModelScoped { KoinProvider.scope.get() },
+    viewModel: StoresViewModel = viewModelScoped { KoinProvider.get() },
     onAction: OnDynamicAction,
 ) {
     @OptIn(ExperimentalLifecycleComposeApi::class)

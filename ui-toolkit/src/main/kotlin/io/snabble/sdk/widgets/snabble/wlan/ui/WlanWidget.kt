@@ -10,13 +10,14 @@ import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.ConnectWlanWidget
 import io.snabble.sdk.widgets.snabble.wlan.viewmodel.WlanViewModel
+import org.koin.core.component.get
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun ConnectWlanWidget(
     modifier: Modifier = Modifier,
     model: ConnectWlanItem,
-    viewModel: WlanViewModel = viewModelScoped { KoinProvider.scope.get() },
+    viewModel: WlanViewModel = viewModelScoped { KoinProvider.get() },
     onAction: OnDynamicAction,
 ) {
     val isButtonVisibleState = viewModel.wifiButtonIsVisible.collectAsStateWithLifecycle()

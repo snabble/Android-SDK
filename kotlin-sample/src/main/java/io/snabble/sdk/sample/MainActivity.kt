@@ -74,14 +74,14 @@ class MainActivity : AppCompatActivity() {
 
         profileViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
-                when (action.xx("ProfileAction").widget.id) {
+                when (action.xx("Profile DynamicAction").widget.id) {
                     else -> Unit
                 }
             }
 
         homeViewModel.xx("MainActivity:").actions.asLiveData()
             .observe(this) { action ->
-                when (action.xx("DynamicAction ->").widget.id) {
+                when (action.xx("Home DynamicAction ->").widget.id) {
                     "start" -> navBarView.selectedItemId = R.id.navigation_scanner
                     "stores" -> navBarView.selectedItemId = R.id.navigation_shop
                     else -> Unit
@@ -153,4 +153,3 @@ class MainActivity : AppCompatActivity() {
         const val PREF_KEY_SHOW_ONBOARDING = "snabble.show.onboarding"
     }
 }
-

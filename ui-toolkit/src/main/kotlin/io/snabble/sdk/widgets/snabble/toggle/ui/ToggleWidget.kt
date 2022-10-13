@@ -10,13 +10,14 @@ import io.snabble.sdk.dynamicview.domain.model.ToggleItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.ToggleWidget
 import io.snabble.sdk.widgets.snabble.toggle.viewmodel.ToggleViewModel
+import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun ToggleWidget(
     modifier: Modifier = Modifier,
     model: ToggleItem,
-    viewModel: ToggleViewModel = viewModelScoped(model.key) { KoinProvider.scope.get { parametersOf(model.key) } },
+    viewModel: ToggleViewModel = viewModelScoped(model.key) { KoinProvider.get { parametersOf(model.key) } },
     onAction: OnDynamicAction,
 ) {
     @OptIn(ExperimentalLifecycleComposeApi::class)
