@@ -83,7 +83,7 @@ fun Purchases(
         val (title, more, purchases) = createRefs()
         Text(
             text = "Previous purchases",
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -116,9 +116,8 @@ fun Purchases(
         ) {
             Text(
                 text = "More",
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -184,8 +183,7 @@ private fun PurchaseDetail(
             )
             Text(
                 text = data.amount,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.End,
@@ -214,8 +212,7 @@ private fun PurchaseDetail(
             )
             Text(
                 text = data.time,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

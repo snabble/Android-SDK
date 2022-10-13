@@ -62,7 +62,7 @@ fun InformationWidget(
             Text(
                 text = model.text,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyLarge
             )
         }
     }

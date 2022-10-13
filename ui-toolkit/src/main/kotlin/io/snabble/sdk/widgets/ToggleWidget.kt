@@ -2,6 +2,7 @@ package io.snabble.sdk.widgets
 
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -31,7 +32,7 @@ fun ToggleWidget(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 48.dp)
+            .heightIn(min = 48.dp)
             .padding(model.padding.toPaddingValues())
             .then(modifier)
     ) {

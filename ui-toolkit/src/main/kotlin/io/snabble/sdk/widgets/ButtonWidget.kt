@@ -46,9 +46,7 @@ fun ButtonWidget(
         Text(
             text = model.text,
             style = MaterialTheme.typography.labelLarge,
-            color = Color(
-                model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb()
-            )
+            color = Color(model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb())
         )
     }
 }

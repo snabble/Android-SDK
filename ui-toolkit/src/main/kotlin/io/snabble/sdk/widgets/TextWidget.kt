@@ -39,9 +39,9 @@ fun TextWidget(
             text = model.text,
             color = Color(model.textColorSource ?: Color.Black.toArgb()),
             style = when (model.textStyleSource) {
+                "title" -> MaterialTheme.typography.headlineLarge
                 "body" -> MaterialTheme.typography.bodyLarge
-                "footer" -> MaterialTheme.typography.bodySmall
-                "title" -> MaterialTheme.typography.headlineMedium
+                "footer" -> MaterialTheme.typography.bodyMedium
                 else -> MaterialTheme.typography.bodyLarge
             }
         )

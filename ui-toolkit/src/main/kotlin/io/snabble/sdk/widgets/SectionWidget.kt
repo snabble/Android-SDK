@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -48,8 +47,7 @@ fun SectionWidget(
                 .fillMaxWidth()
                 .padding(start = MaterialTheme.padding.large),
             text = model.header,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.titleSmall
         )
         Column(Modifier.fillMaxWidth()) {
             for (widget in model.items) {
