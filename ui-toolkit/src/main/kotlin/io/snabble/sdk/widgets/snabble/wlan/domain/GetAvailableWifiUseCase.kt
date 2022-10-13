@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.wifi.domain
+package io.snabble.sdk.widgets.snabble.wlan.domain
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities

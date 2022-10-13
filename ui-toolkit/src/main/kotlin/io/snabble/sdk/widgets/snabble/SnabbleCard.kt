@@ -23,7 +23,6 @@ import io.snabble.sdk.dynamicview.theme.properties.elevation
 @Composable
 fun SnabbleCard(
     modifier: Modifier,
-    padding: PaddingValues,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -40,13 +39,11 @@ fun SnabbleCard(
     ) {
         Card(
             modifier = Modifier
-
                 .indication(
                     interactionSource = MutableInteractionSource(),
                     indication = rememberRipple()
                 )
-                .then(modifier)
-                .padding(padding),
+                .then(modifier),
             shape = MaterialTheme.shapes.small,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),

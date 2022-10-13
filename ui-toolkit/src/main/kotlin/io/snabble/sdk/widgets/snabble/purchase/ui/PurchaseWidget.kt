@@ -162,7 +162,6 @@ private fun PurchaseDetail(
 ) {
     SnabbleCard(
         modifier = modifier,
-        padding = PaddingValues(0.dp),
         onClick = clickAction
     ) {
         ConstraintLayout(

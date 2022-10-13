@@ -11,7 +11,7 @@ import io.snabble.sdk.widgets.snabble.locationpermission.di.locationPermissionMo
 import io.snabble.sdk.widgets.snabble.purchase.di.purchaseWidgetModule
 import io.snabble.sdk.widgets.snabble.stores.di.storesModule
 import io.snabble.sdk.widgets.snabble.toggle.di.toggleWidgetModule
-import io.snabble.sdk.widgets.snabble.wifi.di.wifiModule
+import io.snabble.sdk.widgets.snabble.wlan.di.wifiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.Koin
 import org.koin.core.logger.Level

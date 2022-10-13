@@ -34,7 +34,7 @@ import io.snabble.sdk.widgets.snabble.purchase.ui.PurchaseWidget
 import io.snabble.sdk.widgets.snabble.stores.ui.SeeAllStoresWidget
 import io.snabble.sdk.widgets.snabble.stores.ui.StartShoppingWidget
 import io.snabble.sdk.widgets.snabble.toggle.ToggleWidget
-import io.snabble.sdk.widgets.snabble.wifi.ConnectWifiWidget
+import io.snabble.sdk.widgets.snabble.wlan.ui.ConnectWifiWidget
 
 typealias OnDynamicAction = (action: DynamicAction) -> Unit
 

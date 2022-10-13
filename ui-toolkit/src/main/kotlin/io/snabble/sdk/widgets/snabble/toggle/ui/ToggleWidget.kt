@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.toggle
+package io.snabble.sdk.widgets.snabble.toggle.ui
 
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
