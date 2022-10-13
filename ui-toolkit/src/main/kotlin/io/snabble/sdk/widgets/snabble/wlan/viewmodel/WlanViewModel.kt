@@ -5,7 +5,7 @@ import io.snabble.sdk.widgets.snabble.wlan.domain.GetAvailableWifiUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class WifiViewModel internal constructor(
+class WlanViewModel internal constructor(
     getAvailableWifiUseCase: GetAvailableWifiUseCase
 ) : ViewModel() {
 

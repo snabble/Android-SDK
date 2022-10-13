@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
-import io.snabble.sdk.widgets.snabble.toggle.ToggleWidget
+import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
 
 @Composable
 fun OnboardingToggle(

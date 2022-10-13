@@ -3,7 +3,7 @@ package io.snabble.sdk.dynamicview.domain.config
 import android.content.Context
 import io.snabble.sdk.dynamicview.data.ButtonDto
 import io.snabble.sdk.dynamicview.data.ConfigurationDto
-import io.snabble.sdk.dynamicview.data.ConnectWifiDto
+import io.snabble.sdk.dynamicview.data.ConnectWlanDto
 import io.snabble.sdk.dynamicview.data.CustomerCardDto
 import io.snabble.sdk.dynamicview.data.DynamicConfigDto
 import io.snabble.sdk.dynamicview.data.ImageDto
@@ -18,7 +18,7 @@ import io.snabble.sdk.dynamicview.data.ToggleDto
 import io.snabble.sdk.dynamicview.data.WidgetDto
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Configuration
-import io.snabble.sdk.dynamicview.domain.model.ConnectWifiItem
+import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.CustomerCardItem
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
@@ -60,7 +60,7 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         with(widget) {
             when (this) {
                 is ButtonDto -> toButton()
-                is ConnectWifiDto -> toConnectWifi()
+                is ConnectWlanDto -> toConnectWlan()
                 is CustomerCardDto -> toCustomCardItem()
                 is ImageDto -> toImage()
                 is InformationDto -> toInformation()
@@ -83,7 +83,7 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         padding = padding.toPadding()
     )
 
-    private fun ConnectWifiDto.toConnectWifi(): ConnectWifiItem = ConnectWifiItem(
+    private fun ConnectWlanDto.toConnectWlan(): ConnectWlanItem = ConnectWlanItem(
         id = id,
         padding = padding.toPadding()
     )

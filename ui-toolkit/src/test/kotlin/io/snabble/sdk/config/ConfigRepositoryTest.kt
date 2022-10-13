@@ -14,7 +14,7 @@ import io.snabble.sdk.dynamicview.domain.config.ConfigMapperImpl
 import io.snabble.sdk.dynamicview.domain.config.ConfigRepository
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Configuration
-import io.snabble.sdk.dynamicview.domain.model.ConnectWifiItem
+import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.CustomerCardItem
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
@@ -195,7 +195,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig("").widgets.first() shouldBe ConnectWifiItem(
+                sut.getConfig("").widgets.first() shouldBe ConnectWlanItem(
                     id = "connect_wifi",
                     padding = Padding(16, 16, 16, 16)
                 )

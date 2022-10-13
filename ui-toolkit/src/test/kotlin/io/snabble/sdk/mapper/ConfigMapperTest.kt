@@ -10,7 +10,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.snabble.sdk.dynamicview.data.ButtonDto
 import io.snabble.sdk.dynamicview.data.ConfigurationDto
-import io.snabble.sdk.dynamicview.data.ConnectWifiDto
+import io.snabble.sdk.dynamicview.data.ConnectWlanDto
 import io.snabble.sdk.dynamicview.data.CustomerCardDto
 import io.snabble.sdk.dynamicview.data.DynamicConfigDto
 import io.snabble.sdk.dynamicview.data.ImageDto
@@ -24,7 +24,7 @@ import io.snabble.sdk.dynamicview.data.TextDto
 import io.snabble.sdk.dynamicview.data.WidgetDto
 import io.snabble.sdk.dynamicview.domain.config.ConfigMapperImpl
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
-import io.snabble.sdk.dynamicview.domain.model.ConnectWifiItem
+import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.CustomerCardItem
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
 import io.snabble.sdk.dynamicview.domain.model.InformationItem
@@ -330,23 +330,23 @@ internal class ConfigMapperTest : FreeSpec({
 
             "ConnectWifiDto to ConnectWifiItem" - {
 
-                val connectWifiDto = ConnectWifiDto(
+                val connectWlanDto = ConnectWlanDto(
                     id = "a.wifi",
                     padding = PaddingDto(0, 0, 0, 0)
                 )
 
-                val rootDto = setUpSutDto(connectWifiDto)
+                val rootDto = setUpSutDto(connectWlanDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
 
                 val sut = createMapper().mapDtoToItems(rootDto)
 
-                val connectWifiItem = sut.widgets.first().shouldBeTypeOf<ConnectWifiItem>()
+                val connectWlanItem = sut.widgets.first().shouldBeTypeOf<ConnectWlanItem>()
 
                 "id" {
-                    connectWifiItem.id shouldBe "a.wifi"
+                    connectWlanItem.id shouldBe "a.wifi"
                 }
                 "padding"{
-                    connectWifiItem.padding shouldBe Padding(0, 0, 0, 0)
+                    connectWlanItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
 
@@ -356,7 +356,7 @@ internal class ConfigMapperTest : FreeSpec({
                     id = "a.section",
                     header = "test",
                     widgets = listOf(
-                        ConnectWifiDto(
+                        ConnectWlanDto(
                             id = "a.wifi",
                             padding = PaddingDto(0, 0, 0, 0)
                         )
@@ -378,7 +378,7 @@ internal class ConfigMapperTest : FreeSpec({
                     sectionItem.header shouldBe "test"
                 }
                 "items" {
-                    sectionItem.items.first().shouldBeTypeOf<ConnectWifiItem>()
+                    sectionItem.items.first().shouldBeTypeOf<ConnectWlanItem>()
                 }
                 "padding"{
                     sectionItem.padding shouldBe Padding(0, 0, 0, 0)

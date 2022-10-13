@@ -3,6 +3,7 @@ package io.snabble.sdk.widgets
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -16,7 +17,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import io.snabble.sdk.dynamicview.domain.model.ConnectWifiItem
+import androidx.compose.ui.unit.dp
+import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
@@ -33,18 +35,18 @@ import io.snabble.sdk.widgets.snabble.SnabbleCard
 @Composable
 fun ConnectWlanWidget(
     modifier: Modifier = Modifier,
-    model: ConnectWifiItem,
+    model: ConnectWlanItem,
     onAction: OnDynamicAction,
 ) {
     SnabbleCard(
         onClick = { onAction(DynamicAction(model)) },
-        modifier = Modifier
+        modifier = modifier.padding(model.padding.toPaddingValues())
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(model.padding.toPaddingValues())
-                .then(modifier),
+                .defaultMinSize(minHeight = 48.dp)
+                .padding(horizontal = MaterialTheme.padding.medium)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -69,15 +71,15 @@ fun ConnectWlanWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-private fun WifiWidgetPreview() {
+private fun WlanWidgetPreview() {
     CompositionLocalProvider(
         LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
         LocalElevation provides Elevation().applyElevation()
     ) {
         ConnectWlanWidget(
-            model = ConnectWifiItem(
+            model = ConnectWlanItem(
                 id = "wifi",
-                padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
+                padding = Padding(horizontal = 16, vertical = 8),
             ),
             onAction = {}
         )

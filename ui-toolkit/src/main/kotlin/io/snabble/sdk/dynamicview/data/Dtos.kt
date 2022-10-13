@@ -75,7 +75,7 @@ data class CustomerCardDto(
 
 @Serializable
 @SerialName("snabble.connectWifi")
-data class ConnectWifiDto(
+data class ConnectWlanDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding

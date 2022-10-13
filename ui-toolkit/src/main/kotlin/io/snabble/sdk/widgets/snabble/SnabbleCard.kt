@@ -3,8 +3,6 @@ package io.snabble.sdk.widgets.snabble
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
@@ -19,10 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import io.snabble.sdk.dynamicview.theme.properties.elevation
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SnabbleCard(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -37,6 +34,7 @@ fun SnabbleCard(
                 RippleTheme.defaultRippleAlpha(Color.Black, lightTheme = !isSystemInDarkTheme())
         }
     ) {
+        @OptIn(ExperimentalMaterial3Api::class)
         Card(
             modifier = Modifier
                 .indication(

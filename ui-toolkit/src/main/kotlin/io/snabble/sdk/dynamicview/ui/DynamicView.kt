@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
-import io.snabble.sdk.dynamicview.domain.model.ConnectWifiItem
+import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.CustomerCardItem
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
 import io.snabble.sdk.dynamicview.domain.model.InformationItem
@@ -33,8 +33,8 @@ import io.snabble.sdk.widgets.snabble.locationpermission.ui.LocationPermissionWi
 import io.snabble.sdk.widgets.snabble.purchase.ui.PurchaseWidget
 import io.snabble.sdk.widgets.snabble.stores.ui.SeeAllStoresWidget
 import io.snabble.sdk.widgets.snabble.stores.ui.StartShoppingWidget
-import io.snabble.sdk.widgets.snabble.toggle.ToggleWidget
-import io.snabble.sdk.widgets.snabble.wlan.ui.ConnectWifiWidget
+import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
+import io.snabble.sdk.widgets.snabble.wlan.ui.ConnectWlanWidget
 
 typealias OnDynamicAction = (action: DynamicAction) -> Unit
 
@@ -69,7 +69,7 @@ fun Widget(
 
     is CustomerCardItem -> CustomerCardWidget(model = widget, onAction = onAction)
 
-    is ConnectWifiItem -> ConnectWifiWidget(model = widget, onAction = onAction)
+    is ConnectWlanItem -> ConnectWlanWidget(model = widget, onAction = onAction)
 
     is ImageItem -> ImageWidget(model = widget, onAction = onAction)
 
