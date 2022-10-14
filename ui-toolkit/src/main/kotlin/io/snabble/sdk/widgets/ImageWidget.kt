@@ -2,6 +2,7 @@ package io.snabble.sdk.widgets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -31,7 +32,10 @@ fun ImageWidget(
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onAction(DynamicAction(model)) }
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                    ) { onAction(DynamicAction(model)) }
                     .then(modifier),
                 contentScale = contentScale,
                 painter = painterResource(id = model.imageSource),

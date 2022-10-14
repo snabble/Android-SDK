@@ -44,7 +44,7 @@ fun SeeAllStoresWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.Center)
-                    .heightIn(min = 48.dp)
+                    .heightIn(min = 36.dp)
                     .padding(model.padding.toPaddingValues())
                     .clip(MaterialTheme.shapes.extraSmall)
                     .clickable { onAction(DynamicAction(model)) }
