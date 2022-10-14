@@ -22,7 +22,11 @@ internal class ToggleViewModel(
     init {
         viewModelScope.launch {
             getToggleState()
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+                .stateIn(
+                    scope = viewModelScope,
+                    initialValue = false,
+                    started = SharingStarted.WhileSubscribed(5000),
+                )
                 .collect(_toggleState::emit)
         }
     }

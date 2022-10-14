@@ -5,10 +5,11 @@ import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.viewmodel.DynamicViewModel
 import io.snabble.sdk.screens.home.usecases.GetHomeConfigUseCase
 import kotlinx.coroutines.launch
+import org.koin.core.component.inject
 
 class DynamicHomeViewModel : DynamicViewModel() {
 
-    private val getHomeConfig: GetHomeConfigUseCase by lazy { KoinProvider.getKoin().get() }
+    private val getHomeConfig: GetHomeConfigUseCase by KoinProvider.inject()
 
     init {
         fetchHomeConfig()

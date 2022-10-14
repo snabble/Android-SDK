@@ -13,8 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.snabble.sdk.dynamicview.ui.DynamicView
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.domain.model.Configuration
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
@@ -27,6 +25,8 @@ import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
 import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
+import io.snabble.sdk.dynamicview.ui.DynamicView
+import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicViewModel
 import io.snabble.sdk.ui.toolkit.R

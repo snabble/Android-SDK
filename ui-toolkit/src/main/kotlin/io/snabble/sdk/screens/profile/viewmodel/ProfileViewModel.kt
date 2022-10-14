@@ -5,11 +5,11 @@ import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.viewmodel.DynamicViewModel
 import io.snabble.sdk.screens.profile.usecases.GetProfileConfigUseCase
 import kotlinx.coroutines.launch
-import org.koin.core.component.get
+import org.koin.core.component.inject
 
 class DynamicProfileViewModel : DynamicViewModel() {
 
-    private val getProfileConfig: GetProfileConfigUseCase by lazy { KoinProvider.get() }
+    private val getProfileConfig: GetProfileConfigUseCase by KoinProvider.inject()
 
     init {
         fetchHomeConfig()

@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.Padding
@@ -59,11 +61,18 @@ internal fun PurchaseWidget(
         viewModel.updatePurchases()
     }
 
-    when (val state = viewModel.state) {
+    @OptIn(ExperimentalLifecycleComposeApi::class)
+    val state = viewModel.state.collectAsStateWithLifecycle()
+
+    when (val uiState = state.value) {
         Loading -> Unit
         is ShowPurchases -> {
-            if (state.data.isNotEmpty()) {
-                Purchases(model = model, purchaseList = state.data, onAction)
+            if (uiState.purchases.isNotEmpty()) {
+                Purchases(
+                    model = model,
+                    purchaseList = uiState.purchases,
+                    onAction = onAction,
+                )
             }
         }
     }
