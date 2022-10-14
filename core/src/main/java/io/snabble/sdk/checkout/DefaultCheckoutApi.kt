@@ -11,6 +11,9 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.lang.Exception
+import java.net.HttpURLConnection.HTTP_CONFLICT
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
+import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -165,7 +168,7 @@ class DefaultCheckoutApi(private val project: Project,
             }
 
             override fun error(t: Throwable) {
-                if (responseCode() == 404) {
+                if (responseCode() == HTTP_NOT_FOUND) {
                     paymentProcessResult?.onNotFound()
                 } else {
                     paymentProcessResult?.onError()
@@ -261,12 +264,12 @@ class DefaultCheckoutApi(private val project: Project,
             }
 
             override fun error(t: Throwable) {
-                // Legacy: In case of a conflicting checkout process
-                // the backend currently responds with a 403. This
-                // will change in the future to the correct status 409
-                if (responseCode() == 403 || responseCode() == 409) {
+                // Legacy: In case of a conflicting checkout process the backend currently responds
+                // with a 403 (FORBIDDEN).
+                // This will change in the future to the correct status 409 (CONFLICT).
+                if (responseCode() == HTTP_FORBIDDEN || responseCode() == HTTP_CONFLICT) {
                     updatePaymentProcess(url, paymentProcessResult)
-                } else if (responseCode() == 404) {
+                } else if (responseCode() == HTTP_NOT_FOUND) {
                     paymentProcessResult?.onNotFound()
                 } else {
                     paymentProcessResult?.onError()
