@@ -1,12 +1,14 @@
 package io.snabble.sdk.widgets
 
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,12 +27,17 @@ fun TextWidget(
     model: TextItem,
     modifier: Modifier = Modifier,
     onAction: OnDynamicAction,
+    indication: Indication? = rememberRipple(),
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable
-            { onAction(DynamicAction(model)) }
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = indication,
+            ) {
+                onAction(DynamicAction(model))
+            }
             .padding(model.padding.toPaddingValues())
             .then(modifier)
     ) {
@@ -48,10 +55,10 @@ fun TextWidget(
     }
 }
 
-@Preview(backgroundColor = 0xFFFFFF, showBackground = true, showSystemUi = true)
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 private fun TextWidgetPreview() {
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxWidth()) {
         TextWidget(
             model = TextItem(
                 id = "1",

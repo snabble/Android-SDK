@@ -1,7 +1,5 @@
 package io.snabble.sdk.dynamicview.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -83,14 +81,7 @@ fun Widget(
 
     is StartShoppingItem -> StartShoppingWidget(model = widget, onAction = onAction)
 
-    is TextItem -> TextWidget(
-        modifier = Modifier.clickable(
-            interactionSource = MutableInteractionSource(),
-            indication = null
-        ) {},
-        model = widget,
-        onAction = onAction
-    )
+    is TextItem -> TextWidget(model = widget, onAction = onAction, indication = null)
 
     is ToggleItem -> ToggleWidget(model = widget, onAction = onAction)
 
