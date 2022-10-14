@@ -1,6 +1,6 @@
 package io.snabble.sdk.widgets
 
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -33,6 +33,10 @@ fun ToggleWidget(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
+            .clickable {
+                onCheckedChange(!isChecked)
+                onAction(DynamicAction(model, mapOf("checked" to !isChecked)))
+            }
             .padding(model.padding.toPaddingValues())
             .then(modifier)
     ) {

@@ -117,6 +117,7 @@ fun Purchases(
             Text(
                 text = "More",
                 style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.inversePrimary,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -184,6 +185,7 @@ private fun PurchaseDetail(
             Text(
                 text = data.amount,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.End,
@@ -213,6 +215,7 @@ private fun PurchaseDetail(
             Text(
                 text = data.time,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

@@ -1,8 +1,10 @@
 package io.snabble.sdk.widgets
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
@@ -47,8 +49,10 @@ fun SectionWidget(
                 .fillMaxWidth()
                 .padding(start = MaterialTheme.padding.large),
             text = model.header,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
             style = MaterialTheme.typography.titleSmall
         )
+        Spacer(modifier = Modifier.height(MaterialTheme.padding.default))
         Column(Modifier.fillMaxWidth()) {
             for (widget in model.items) {
                 when (widget) {

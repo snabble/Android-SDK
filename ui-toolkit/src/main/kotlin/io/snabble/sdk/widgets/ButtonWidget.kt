@@ -1,7 +1,7 @@
 package io.snabble.sdk.widgets
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.Widget
@@ -29,25 +28,27 @@ fun ButtonWidget(
     model: ButtonItem,
     onAction: OnDynamicAction = {},
 ) {
-    Button(
-        modifier = Modifier
-            .heightIn(min = 48.dp)
-            .fillMaxWidth()
-            .padding(model.padding.toPaddingValues())
-            .then(modifier),
-        onClick = { onAction(DynamicAction(model)) },
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(
-                model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
-            ),
-        ),
-        shape = MaterialTheme.shapes.small,
+    Box(modifier = Modifier
+        .padding(model.padding.toPaddingValues())
+        .then(modifier)
     ) {
-        Text(
-            text = model.text,
-            style = MaterialTheme.typography.labelLarge,
-            color = Color(model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb())
-        )
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = { onAction(DynamicAction(model)) },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(
+                    model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
+                ),
+            ),
+            shape = MaterialTheme.shapes.small,
+        ) {
+            Text(
+                text = model.text,
+                style = MaterialTheme.typography.labelLarge,
+                color = Color(model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb())
+            )
+        }
     }
 }
 
@@ -59,23 +60,26 @@ fun ButtonWidget(
     text: String,
     onAction: OnDynamicAction = {},
 ) {
-    Button(
+    Box(
         modifier = Modifier
-            .heightIn(min = 48.dp)
-            .fillMaxWidth()
             .padding(padding.toPaddingValues())
             .then(modifier),
-        onClick = { onAction(DynamicAction(widget)) },
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-        ),
-        shape = MaterialTheme.shapes.small,
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = { onAction(DynamicAction(widget)) },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
+            shape = MaterialTheme.shapes.small,
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
     }
 }
 
@@ -91,7 +95,7 @@ private fun ButtonPreview() {
             foregroundColorSource = null,
             backgroundColorSource = LocalContext.current
                 .getComposeColor("snabble_onboarding_primary"),
-            padding = Padding(horizontal = 8),
+            padding = Padding(horizontal = 0),
         )
     )
 }
