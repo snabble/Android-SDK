@@ -261,7 +261,10 @@ class DefaultCheckoutApi(private val project: Project,
             }
 
             override fun error(t: Throwable) {
-                if (responseCode() == 403) {
+                // Legacy: In case of a conflicting checkout process
+                // the backend currently responds with a 403. This
+                // will change in the future to the correct status 409
+                if (responseCode() == 403 || responseCode() == 409) {
                     updatePaymentProcess(url, paymentProcessResult)
                 } else if (responseCode() == 404) {
                     paymentProcessResult?.onNotFound()
