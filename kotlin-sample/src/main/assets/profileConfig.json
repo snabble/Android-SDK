@@ -10,7 +10,7 @@
     {
       "type": "section",
       "id": "section1",
-      "header": "Your Profile",
+      "header": "Profile.header",
       "padding": [
         0,
         16,
@@ -21,9 +21,7 @@
         {
           "type": "text",
           "id": "2",
-          "text": "My profile",
-          "textColor": "black",
-          "textStyle": "body",
+          "text": "Profile.customerCard",
           "padding": [
             16,
             8,
@@ -34,9 +32,25 @@
         {
           "type": "text",
           "id": "3",
-          "text": "Terms of Conditions",
-          "textColor": "black",
-          "textStyle": "body",
+          "text": "Profile.lastPurchases",
+          "padding": [
+            16,
+            8
+          ]
+        },
+        {
+          "type": "text",
+          "id": "5",
+          "text": "Profile.paymentMethods",
+          "padding": [
+            16,
+            8
+          ]
+        },
+        {
+          "type": "text",
+          "id": "4",
+          "text": "Profile.deleteAccount",
           "padding": [
             16,
             8
@@ -47,22 +61,32 @@
     {
       "type": "section",
       "id": "section1",
-      "header": "Settings",
+      "header": "Profile.settings",
       "padding": [
         0,
         16,
-        8,
+        0,
         0
       ],
       "items": [
         {
           "type": "toggle",
           "id": "onboarding.toggle",
-          "text": "Show onboarding",
+          "text": "Profile.showOnboarding",
           "key": "snabble.show.onboarding",
           "padding": [
             16,
-            8
+            6
+          ]
+        },
+        {
+          "type": "toggle",
+          "id": "pushMessages.toggle",
+          "text": "Profile.pushMessages",
+          "key": "io.snabble.sample.pushMessages",
+          "padding": [
+            16,
+            6
           ]
         }
       ]

@@ -60,19 +60,19 @@ fun SectionWidget(
                         model = widget,
                         onAction = onAction,
                         modifier = Modifier
-                            .heightIn(min = 48.dp)
+                            .heightIn(min = 36.dp)
                     )
 
                     is ButtonItem -> ButtonWidget(
                         model = widget,
                         onAction = onAction,
-                        modifier = Modifier.heightIn(min = 48.dp)
+                        modifier = Modifier.heightIn(min = 36.dp)
                     )
 
                     is ToggleItem -> ToggleWidget(
                         model = widget,
                         onAction = onAction,
-                        modifier = Modifier.heightIn(min = 48.dp)
+                        modifier = Modifier.heightIn(min = 36.dp)
                     )
 
                     else -> Unit
