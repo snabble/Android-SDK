@@ -90,6 +90,55 @@
           ]
         }
       ]
+    },
+    {
+      "type": "section",
+      "id": "3",
+      "header": "Profile.legalNotes",
+      "padding": [
+        0,
+        16,
+        0,
+        0
+      ],
+      "items" : [
+        {
+          "type": "text",
+          "id": "1",
+          "text": "Profile.imprint",
+          "padding": [
+            16,
+            8
+          ]
+        },
+        {
+          "type": "text",
+          "id": "2",
+          "text": "Profile.terms",
+          "padding": [
+            16,
+            8
+          ]
+        },
+        {
+          "type": "text",
+          "id": "3",
+          "text": "Profile.privacy",
+          "padding": [
+            16,
+            8
+          ]
+        },
+        {
+          "type": "text",
+          "id": "4",
+          "text": "Profile.licences",
+          "padding": [
+            16,
+            8
+          ]
+        }
+      ]
     }
   ]
 }

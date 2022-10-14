@@ -10,7 +10,7 @@
     {
       "type": "text",
       "id": "2",
-      "text": "Willkommen bei \nSnabble",
+      "text": "Dashboard.title",
       "textColor": "snabbleBlue",
       "textStyle": "title",
       "padding": [
@@ -23,24 +23,12 @@
     {
       "type": "text",
       "id": "3",
-      "text": "Begib dich zum Einkaufen in den nächsten Shop.",
+      "text": "Dashboard.text",
       "textStyle": "body",
       "padding": [
         0,
         0,
         5,
-        0
-      ]
-    },
-    {
-      "type": "text",
-      "id": "4",
-      "text": "Scanne Produkte und bezahle direkt über die App! Alles bequem, schnell und einfach.",
-      "textStyle": "footer",
-      "padding": [
-        0,
-        0,
-        4,
         0
       ]
     },
@@ -77,7 +65,7 @@
     {
       "type": "information",
       "id": "card",
-      "text": "Füge eine KundenKarte hinzu",
+      "text": "Füge eine Kundenkarte hinzu",
       "imageSource": "store_logo",
       "padding": [
         0,
