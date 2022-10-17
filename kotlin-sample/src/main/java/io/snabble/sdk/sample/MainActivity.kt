@@ -24,7 +24,6 @@ import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
-import io.snabble.sdk.utils.xx
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -72,16 +71,16 @@ class MainActivity : AppCompatActivity() {
         setupToolbar(toolbar, navController, navBarView)
         setUpUiEvents(this, navController, navBarView)
 
-        profileViewModel.xx("MainActivity:").actions.asLiveData()
+        profileViewModel.actions.asLiveData()
             .observe(this) { action ->
-                when (action.xx("Profile DynamicAction").widget.id) {
+                when (action.widget.id) {
                     else -> Unit
                 }
             }
 
-        homeViewModel.xx("MainActivity:").actions.asLiveData()
+        homeViewModel.actions.asLiveData()
             .observe(this) { action ->
-                when (action.xx("Home DynamicAction ->").widget.id) {
+                when (action.widget.id) {
                     "start" -> navBarView.selectedItemId = R.id.navigation_scanner
                     "stores" -> navBarView.selectedItemId = R.id.navigation_shop
                     else -> Unit
@@ -116,7 +115,7 @@ class MainActivity : AppCompatActivity() {
     // Can be used to get args from deeplinks. In this case the args are used to
     private fun NavController.setup(toolbar: Toolbar, navBarView: NavigationBarView) {
         addOnDestinationChangedListener { _, destination, arguments ->
-            arguments.xx("Nav to ${resources.getResourceName(destination.id)}")
+            "Nav to ${resources.getResourceName(destination.id)}"
             toolbar.isVisible = arguments?.getBoolean("hideToolbar") != true
             val isBottomNavigationVisible = arguments?.getBoolean("hideBottomNavigation") != true
             navBarView.isVisible = isBottomNavigationVisible
