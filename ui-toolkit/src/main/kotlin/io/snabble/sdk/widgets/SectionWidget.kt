@@ -99,14 +99,14 @@ private fun SectionPreview() {
                     TextItem(
                         id = "1",
                         text = "Setup",
-                        textStyleSource = "body",
+                        textStyle = "body",
                         showDisclosure = false,
                         padding = Padding(horizontal = 16, vertical = 5),
                     ),
                     TextItem(
                         id = "1",
                         text = "Terms",
-                        textStyleSource = "body",
+                        textStyle = "body",
                         showDisclosure = false,
                         padding = Padding(horizontal = 16, vertical = 5),
                     ),

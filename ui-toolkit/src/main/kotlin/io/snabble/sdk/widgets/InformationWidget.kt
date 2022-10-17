@@ -46,7 +46,7 @@ fun InformationWidget(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (model.imageSource != null) {
+            if (model.image != null) {
                 Image(
                     modifier = Modifier
                         .padding(
@@ -55,7 +55,7 @@ fun InformationWidget(
                             end = MaterialTheme.padding.large
                         ),
                     contentScale = ContentScale.Fit,
-                    painter = painterResource(id = model.imageSource),
+                    painter = painterResource(id = model.image),
                     contentDescription = "",
                 )
             }
@@ -79,7 +79,7 @@ private fun InformationWidgetPreview() {
             model = InformationItem(
                 id = "an.image",
                 text = "Füge deine Kundenkarte hinzu.",
-                imageSource = R.drawable.store_logo,
+                image = R.drawable.store_logo,
                 padding = Padding(start = 16, top = 8, end = 16, bottom = 8),
             ),
             onAction = {}

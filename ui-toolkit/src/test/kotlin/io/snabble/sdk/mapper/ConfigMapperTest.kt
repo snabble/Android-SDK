@@ -104,11 +104,11 @@ internal class ConfigMapperTest : FreeSpec({
 
                 val imageDto = ImageDto(
                     id = "an.image",
-                    imageSource = "R.drawable.abc",
+                    image = "R.drawable.abc",
                     padding = PaddingDto(0, 0, 0, 0)
                 )
 
-                every { context.resolveImageId(imageDto.imageSource) } returns 1
+                every { context.resolveImageId(imageDto.image) } returns 1
 
                 val rootDto = setUpSutDto(imageDto)
                 val sut = createMapper().mapDtoToItems(rootDto)
@@ -119,7 +119,7 @@ internal class ConfigMapperTest : FreeSpec({
                     imageItem.id shouldBe "an.image"
                 }
                 "image" {
-                    imageItem.imageSource shouldBe 1
+                    imageItem.image shouldBe 1
                 }
                 "padding"{
                     imageItem.padding shouldBe Padding(0, 0, 0, 0)
@@ -132,15 +132,15 @@ internal class ConfigMapperTest : FreeSpec({
                 val textDto = TextDto(
                     id = "a.title",
                     text = "Hello World",
-                    textColorSource = "asd",
-                    textStyleSource = null,
+                    textColor = "asd",
+                    textStyle = null,
                     showDisclosure = null,
                     PaddingDto(0, 0, 0, 0)
                 )
 
                 val rootDto = setUpSutDto(textDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 5
-                every { context.getComposeColor(textDto.textColorSource) } returns 8
+                every { context.getComposeColor(textDto.textColor) } returns 8
                 val sut = createMapper().mapDtoToItems(rootDto)
 
                 val textItem = sut.widgets.first().shouldBeTypeOf<TextItem>()
@@ -153,10 +153,10 @@ internal class ConfigMapperTest : FreeSpec({
                     textItem.text shouldBe "Hello World"
                 }
                 "text color"{
-                    textItem.textColorSource shouldBe 8
+                    textItem.textColor shouldBe 8
                 }
                 "text style"{
-                    textItem.textStyleSource shouldBe null
+                    textItem.textStyle shouldBe null
                 }
                 "padding"{
                     textItem.padding shouldBe Padding(0, 0, 0, 0)
@@ -168,16 +168,16 @@ internal class ConfigMapperTest : FreeSpec({
                 val buttonDto = ButtonDto(
                     id = "a.button",
                     text = "Hello World",
-                    foregroundColorSource = "test",
-                    backgroundColorSource = null,
+                    foregroundColor = "test",
+                    backgroundColor = null,
                     padding = PaddingDto(0, 0, 0, 0)
                 )
 
                 val rootDto = setUpSutDto(buttonDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
                 every { context.getResourceString(buttonDto.text) } returns "Hello World"
-                every { context.resolveColorId(buttonDto.foregroundColorSource) } returns 2
-                every { context.resolveColorId(buttonDto.backgroundColorSource) } returns 3
+                every { context.resolveColorId(buttonDto.foregroundColor) } returns 2
+                every { context.resolveColorId(buttonDto.backgroundColor) } returns 3
 
                 val sut = createMapper().mapDtoToItems(rootDto)
 
@@ -190,10 +190,10 @@ internal class ConfigMapperTest : FreeSpec({
                     buttonItem.text shouldBe "Hello World"
                 }
                 "foreground color"{
-                    buttonItem.foregroundColorSource shouldBe 2
+                    buttonItem.foregroundColor shouldBe 2
                 }
                 "background color"{
-                    buttonItem.backgroundColorSource shouldBe 3
+                    buttonItem.backgroundColor shouldBe 3
                 }
                 "padding"{
                     buttonItem.padding shouldBe Padding(0, 0, 0, 0)
@@ -271,13 +271,13 @@ internal class ConfigMapperTest : FreeSpec({
                 val informationDto = InformationDto(
                     id = "a.info",
                     text = "information",
-                    imageSource = null,
+                    image = null,
                     padding = PaddingDto(0, 0, 0, 0)
                 )
 
                 val rootDto = setUpSutDto(informationDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
-                every { context.resolveImageId(informationDto.imageSource) } returns 2
+                every { context.resolveImageId(informationDto.image) } returns 2
 
                 val sut = createMapper().mapDtoToItems(rootDto)
 
@@ -290,7 +290,7 @@ internal class ConfigMapperTest : FreeSpec({
                     informationItem.text shouldBe "information"
                 }
                 "image" {
-                    informationItem.imageSource shouldBe 2
+                    informationItem.image shouldBe 2
                 }
                 "padding"{
                     informationItem.padding shouldBe Padding(0, 0, 0, 0)
@@ -302,13 +302,13 @@ internal class ConfigMapperTest : FreeSpec({
                 val customerCardDto = CustomerCardDto(
                     id = "a.card",
                     text = "customerCard",
-                    imageSource = null,
+                    image = null,
                     padding = PaddingDto(0, 0, 0, 0)
                 )
 
                 val rootDto = setUpSutDto(customerCardDto)
                 every { context.resolveImageId(rootDto.configuration.image) } returns 1
-                every { context.resolveImageId(customerCardDto.imageSource) } returns 2
+                every { context.resolveImageId(customerCardDto.image) } returns 2
 
                 val sut = createMapper().mapDtoToItems(rootDto)
 
@@ -321,7 +321,7 @@ internal class ConfigMapperTest : FreeSpec({
                     customerCardItem.text shouldBe "customerCard"
                 }
                 "image" {
-                    customerCardItem.imageSource shouldBe 2
+                    customerCardItem.image shouldBe 2
                 }
                 "padding"{
                     customerCardItem.padding shouldBe Padding(0, 0, 0, 0)

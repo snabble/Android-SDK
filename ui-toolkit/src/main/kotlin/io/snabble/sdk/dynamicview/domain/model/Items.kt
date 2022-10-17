@@ -24,15 +24,15 @@ interface HasText {
 data class ButtonItem(
     override val id: String,
     override val text: String,
-    val foregroundColorSource: Int?,
-    val backgroundColorSource: Int?,
+    val foregroundColor: Int?,
+    val backgroundColor: Int?,
     override val padding: Padding,
 ) : Widget, HasPadding, HasText
 
 data class CustomerCardItem(
     override val id: String,
     override val text: String,
-    val imageSource: Int?,
+    val image: Int?,
     override val padding: Padding,
 ) : Widget, HasPadding, HasText
 
@@ -43,14 +43,14 @@ data class ConnectWlanItem(
 
 data class ImageItem(
     override val id: String,
-    val imageSource: Int?,
+    val image: Int?,
     override val padding: Padding,
 ) : Widget, HasPadding
 
 data class InformationItem(
     override val id: String,
     override val text: String,
-    val imageSource: Int?,
+    val image: Int?,
     override val padding: Padding,
 ) : Widget, HasPadding, HasText
 
@@ -85,8 +85,8 @@ data class StartShoppingItem(
 data class TextItem(
     override val id: String,
     override val text: String,
-    val textColorSource: Int? = null,
-    val textStyleSource: String? = null,
+    val textColor: Int? = null,
+    val textStyle: String? = null,
     val showDisclosure: Boolean,
     override val padding: Padding,
 ) : Widget, HasPadding, HasText

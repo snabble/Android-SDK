@@ -38,7 +38,7 @@ fun ButtonWidget(
             onClick = { onAction(DynamicAction(model)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(
-                    model.backgroundColorSource ?: MaterialTheme.colorScheme.primary.toArgb()
+                    model.backgroundColor ?: MaterialTheme.colorScheme.primary.toArgb()
                 ),
             ),
             shape = MaterialTheme.shapes.small,
@@ -46,7 +46,7 @@ fun ButtonWidget(
             Text(
                 text = model.text,
                 style = MaterialTheme.typography.labelLarge,
-                color = Color(model.foregroundColorSource ?: MaterialTheme.colorScheme.onPrimary.toArgb())
+                color = Color(model.foregroundColor ?: MaterialTheme.colorScheme.onPrimary.toArgb())
             )
         }
     }
@@ -92,8 +92,8 @@ private fun ButtonPreview() {
             text = LocalContext.current
                 .getResourceString("Sample_Dashboard_button")
                 .toString(),
-            foregroundColorSource = null,
-            backgroundColorSource = LocalContext.current
+            foregroundColor = null,
+            backgroundColor = LocalContext.current
                 .getComposeColor("snabble_onboarding_primary"),
             padding = Padding(horizontal = 0),
         )

@@ -78,8 +78,8 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun ButtonDto.toButton(): ButtonItem = ButtonItem(
         id = id,
         text = "${context.resolveResourceString(text)}",
-        foregroundColorSource = context.resolveColorId(foregroundColorSource),
-        backgroundColorSource = context.resolveColorId(backgroundColorSource),
+        foregroundColor = context.resolveColorId(foregroundColor),
+        backgroundColor = context.resolveColorId(backgroundColor),
         padding = padding.toPadding()
     )
 
@@ -91,20 +91,20 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun CustomerCardDto.toCustomCardItem(): CustomerCardItem = CustomerCardItem(
         id = id,
         text = "${context.resolveResourceString(text)}",
-        imageSource = context.resolveImageId(imageSource),
+        image = context.resolveImageId(image),
         padding = padding.toPadding()
     )
 
     private fun ImageDto.toImage(): ImageItem = ImageItem(
         id = id,
-        imageSource = context.resolveImageId(imageSource),
+        image = context.resolveImageId(image),
         padding = padding.toPadding()
     )
 
     private fun InformationDto.toInformation(): InformationItem = InformationItem(
         id = id,
         text = "${context.resolveResourceString(text)}",
-        imageSource = context.resolveImageId(imageSource),
+        image = context.resolveImageId(image),
         padding = padding.toPadding()
     )
 
@@ -140,8 +140,8 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
     private fun TextDto.toText(): TextItem = TextItem(
         id = id,
         text = "${context.resolveResourceString(text)}",
-        textColorSource = context.getComposeColor(textColorSource),
-        textStyleSource = textStyleSource,
+        textColor = context.getComposeColor(textColor),
+        textStyle = textStyle,
         showDisclosure = showDisclosure ?: false,
         padding = padding.toPadding()
     )

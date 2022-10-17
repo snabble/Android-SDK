@@ -44,8 +44,8 @@ fun TextWidget(
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
             text = model.text,
-            color = Color(model.textColorSource ?: Color.Black.toArgb()),
-            style = when (model.textStyleSource) {
+            color = Color(model.textColor ?: Color.Black.toArgb()),
+            style = when (model.textStyle) {
                 "title" -> MaterialTheme.typography.headlineLarge
                 "body" -> MaterialTheme.typography.bodyLarge
                 "footer" -> MaterialTheme.typography.bodyMedium
@@ -63,8 +63,8 @@ private fun TextWidgetPreview() {
             model = TextItem(
                 id = "1",
                 text = "Willkommen bei Snabble",
-                textColorSource = MaterialTheme.colorScheme.primary.toArgb(),
-                textStyleSource = "title",
+                textColor = MaterialTheme.colorScheme.primary.toArgb(),
+                textStyle = "title",
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),
             ),
@@ -74,8 +74,8 @@ private fun TextWidgetPreview() {
             model = TextItem(
                 id = "2",
                 text = "Scanne deine Produkte und kaufe jetzt ein",
-                textColorSource = MaterialTheme.colorScheme.primary.toArgb(),
-                textStyleSource = "body",
+                textColor = MaterialTheme.colorScheme.primary.toArgb(),
+                textStyle = "body",
                 showDisclosure = false,
                 padding = Padding(horizontal = 16),
             ),

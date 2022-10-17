@@ -15,6 +15,6 @@ internal fun PaddingDto.toPadding() = Padding(start, top, end, bottom)
 internal fun CustomerCardItem.toInformationItem(): InformationItem = InformationItem(
     id = id,
     text = text,
-    imageSource = imageSource,
+    image = image,
     padding = padding
 )

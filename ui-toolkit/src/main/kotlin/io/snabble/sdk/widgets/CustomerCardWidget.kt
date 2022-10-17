@@ -40,7 +40,7 @@ private fun CustomerCardPreview() {
             model = CustomerCardItem(
                 id = "an.image",
                 text = "Füge deine Kundenkarte hinzu.",
-                imageSource = R.drawable.store_logo,
+                image = R.drawable.store_logo,
                 padding = Padding(start = 8, top = 8, end = 8, bottom = 8),
             ),
             onAction = {}

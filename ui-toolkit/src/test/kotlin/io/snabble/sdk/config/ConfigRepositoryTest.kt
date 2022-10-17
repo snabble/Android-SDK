@@ -81,8 +81,8 @@ internal class ConfigRepositoryTest : FreeSpec({
                             "type": "button",
                             "id": "submit",
                             "text": "Submit",
-                            "foregroundColorSource": "white",
-                            "backgroundColorSource": "blue",
+                            "foregroundColor": "white",
+                            "backgroundColor": "blue",
                             "padding": [ 16, 4 ]
                           }]"""
                     )
@@ -95,8 +95,8 @@ internal class ConfigRepositoryTest : FreeSpec({
                 sut.getConfig("").widgets.first() shouldBe ButtonItem(
                     id = "submit",
                     text = "Submit",
-                    foregroundColorSource = 7,
-                    backgroundColorSource = 21,
+                    foregroundColor = 7,
+                    backgroundColor = 21,
                     padding = Padding(start = 16, top = 4, end = 16, bottom = 4)
                 )
             }
@@ -107,7 +107,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                         """[{
                             "type": "image",
                             "id": "logo",
-                            "imageSource": "snabble_logo",
+                            "image": "snabble_logo",
                             "padding": [ 4 ]
                           }]"""
                     )
@@ -116,7 +116,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                 }
                 sut.getConfig("").widgets.first() shouldBe ImageItem(
                     id = "logo",
-                    imageSource = 7,
+                    image = 7,
                     padding = Padding(4, 4, 4, 4)
                 )
             }
@@ -128,7 +128,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                             "type": "information",
                             "id": "info",
                             "text": "info_description",
-                            "imageSource": "snabble_logo",
+                            "image": "snabble_logo",
                             "padding": [ 16, 12, 4, 16 ]
                           }]"""
                     )
@@ -140,7 +140,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                 sut.getConfig("").widgets.first() shouldBe InformationItem(
                     id = "info",
                     text = "Some useful information here.",
-                    imageSource = 7,
+                    image = 7,
                     padding = Padding(start = 16, top = 12, end = 16, bottom = 4)
                 )
             }
@@ -152,7 +152,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                             "type": "snabble.customerCard",
                             "id": "info",
                             "text": "card_info",
-                            "imageSource": "snabble_logo",
+                            "image": "snabble_logo",
                             "padding": [ 16, 12, 4, 16 ]
                           }]"""
                     )
@@ -164,7 +164,7 @@ internal class ConfigRepositoryTest : FreeSpec({
                 sut.getConfig("").widgets.first() shouldBe CustomerCardItem(
                     id = "info",
                     text = "Some useful information here.",
-                    imageSource = 7,
+                    image = 7,
                     padding = Padding(start = 16, top = 12, end = 16, bottom = 4)
                 )
             }
@@ -297,8 +297,8 @@ internal class ConfigRepositoryTest : FreeSpec({
                 sut.getConfig("").widgets.first() shouldBe TextItem(
                     id = "title",
                     text = "Hello World!",
-                    textColorSource = 5,
-                    textStyleSource = "body",
+                    textColor = 5,
+                    textStyle = "body",
                     showDisclosure = false,
                     padding = Padding(8, 8, 8, 8)
                 )

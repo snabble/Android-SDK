@@ -66,7 +66,7 @@
       "type": "information",
       "id": "card",
       "text": "Füge eine Kundenkarte hinzu",
-      "imageSource": "store_logo",
+      "image": "store_logo",
       "padding": [
         0,
         6,

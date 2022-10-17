@@ -42,8 +42,8 @@ sealed interface WidgetDto {
 data class ButtonDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
-    @SerialName("foregroundColorSource") val foregroundColorSource: String? = null,
-    @SerialName("backgroundColorSource") val backgroundColorSource: String? = null,
+    @SerialName("foregroundColor") val foregroundColor: String? = null,
+    @SerialName("backgroundColor") val backgroundColor: String? = null,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
@@ -51,7 +51,7 @@ data class ButtonDto(
 @SerialName("image")
 data class ImageDto(
     @SerialName("id") override val id: String,
-    @SerialName("imageSource") val imageSource: String,
+    @SerialName("image") val image: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
@@ -60,7 +60,7 @@ data class ImageDto(
 data class InformationDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
-    @SerialName("imageSource") val imageSource: String? = null,
+    @SerialName("image") val image: String? = null,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
@@ -69,7 +69,7 @@ data class InformationDto(
 data class CustomerCardDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
-    @SerialName("imageSource") val imageSource: String? = null,
+    @SerialName("image") val image: String? = null,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
@@ -123,8 +123,8 @@ data class StartShoppingDto(
 data class TextDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
-    @SerialName("textColor") val textColorSource: String? = null,
-    @SerialName("textStyle") val textStyleSource: String? = null,
+    @SerialName("textColor") val textColor: String? = null,
+    @SerialName("textStyle") val textStyle: String? = null,
     @SerialName("showDisclosure") val showDisclosure: Boolean? = null,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding

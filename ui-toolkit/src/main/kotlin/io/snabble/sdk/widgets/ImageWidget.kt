@@ -28,7 +28,7 @@ fun ImageWidget(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (model.imageSource != null) {
+        if (model.image != null) {
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -38,7 +38,7 @@ fun ImageWidget(
                     ) { onAction(DynamicAction(model)) }
                     .then(modifier),
                 contentScale = contentScale,
-                painter = painterResource(id = model.imageSource),
+                painter = painterResource(id = model.image),
                 contentDescription = "",
             )
         }
@@ -51,7 +51,7 @@ private fun ImageWidgetPreview() {
     ImageWidget(
         model = ImageItem(
             id = "an.image",
-            imageSource = R.drawable.snabble_ic_payment_success_big,
+            image = R.drawable.snabble_ic_payment_success_big,
             padding = Padding(horizontal = 8),
         ),
         onAction = {}
