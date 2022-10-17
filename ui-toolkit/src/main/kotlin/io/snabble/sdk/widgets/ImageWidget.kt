@@ -1,10 +1,12 @@
 package io.snabble.sdk.widgets
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +25,7 @@ fun ImageWidget(
     model: ImageItem,
     contentScale: ContentScale = ContentScale.Fit,
     onAction: OnDynamicAction,
+    indication: Indication? = rememberRipple(),
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -34,7 +37,7 @@ fun ImageWidget(
                     .fillMaxWidth()
                     .clickable(
                         interactionSource = MutableInteractionSource(),
-                        indication = null,
+                        indication = indication,
                     ) { onAction(DynamicAction(model)) }
                     .then(modifier),
                 contentScale = contentScale,
@@ -54,6 +57,7 @@ private fun ImageWidgetPreview() {
             image = R.drawable.snabble_ic_payment_success_big,
             padding = Padding(horizontal = 8),
         ),
-        onAction = {}
+        onAction = {},
+        indication = null
     )
 }

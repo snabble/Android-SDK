@@ -69,7 +69,7 @@ fun Widget(
 
     is ConnectWlanItem -> ConnectWlanWidget(model = widget, onAction = onAction)
 
-    is ImageItem -> ImageWidget(model = widget, onAction = onAction)
+    is ImageItem -> ImageWidget(model = widget, onAction = onAction, indication = null)
 
     is InformationItem -> InformationWidget(model = widget, onAction = onAction)
 
