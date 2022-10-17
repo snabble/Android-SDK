@@ -8,8 +8,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
+import io.snabble.sdk.dynamicview.ui.DynamicScreen
+import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 
 class HomeFragment : Fragment() {
 

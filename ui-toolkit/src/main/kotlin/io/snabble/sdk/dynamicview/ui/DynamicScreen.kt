@@ -1,9 +1,10 @@
-package io.snabble.sdk.screens.home.ui
+package io.snabble.sdk.dynamicview.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Magenta
@@ -16,17 +17,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.dynamicview.domain.model.Configuration
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
-import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
+import io.snabble.sdk.dynamicview.domain.model.InformationItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
-import io.snabble.sdk.dynamicview.domain.model.ProjectId
-import io.snabble.sdk.dynamicview.domain.model.PurchasesItem
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
-import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
-import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
-import io.snabble.sdk.dynamicview.domain.model.ToggleItem
-import io.snabble.sdk.dynamicview.ui.DynamicView
-import io.snabble.sdk.dynamicview.ui.OnDynamicAction
+import io.snabble.sdk.dynamicview.theme.properties.Elevation
+import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
+import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
+import io.snabble.sdk.dynamicview.theme.properties.applyElevation
+import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicViewModel
 import io.snabble.sdk.ui.toolkit.R
@@ -83,51 +82,45 @@ private fun HomeScreenPreview() {
                 ),
                 widgets = listOf(
                     TextItem(
-                        id = "hello.world.text",
+                        id = "header",
                         text = "Willkommen bei Snabble",
                         textColor = MaterialTheme.colorScheme.primary.toArgb(),
-                        textStyle = "header",
+                        textStyle = "title",
                         showDisclosure = false,
                         padding = Padding(start = 16, top = 16, end = 16, bottom = 0),
                     ),
                     TextItem(
-                        id = "title",
+                        id = "body",
                         text = "Deine App für Scan and Go!",
                         textColor = MaterialTheme.colorScheme.primary.toArgb(),
                         textStyle = "body",
                         showDisclosure = false,
-                        padding = Padding(16, 0),
+                        padding = Padding(16, 5),
                     ),
                     TextItem(
-                        id = "brand",
+                        id = "footer",
                         text = "Snabble",
                         textColor = null,
                         textStyle = "footer",
                         showDisclosure = false,
-                        padding = Padding(start = 16, top = 10, end = 16, bottom = 0),
+                        padding = Padding(start = 16, top = 0, end = 16, bottom = 16),
                     ),
-                    StartShoppingItem(
-                        id = "start",
-                        padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
-                    ),
-                    SeeAllStoresItem(
-                        id = "stores",
-                        padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
-                    ),
-                    LocationPermissionItem(
-                        id = "location",
-                        padding = Padding(start = 16, top = 5, end = 16, bottom = 5),
-                    ),
-                    PurchasesItem(
-                        id = "last.purchases",
-                        projectId = ProjectId("0123"),
-                        padding = Padding(0),
-                    ),
+                    InformationItem(
+                        id = "info",
+                        text = "Your information",
+                        image = R.drawable.store_logo,
+                        padding = Padding(16, 16)
+                    )
                 )
             )
             setConfig(config)
         }
-    DynamicScreen(dynamicViewModel = viewModel)
+    CompositionLocalProvider(
+        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+        DynamicScreen(dynamicViewModel = viewModel)
+    }
 }
 
 @Preview(
@@ -148,27 +141,38 @@ private fun ProfileScreenPreview() {
                 widgets = listOf(
                     SectionItem(
                         id = "section",
-                        header = "Profil",
+                        header = "Profile",
+                        padding = Padding(0),
                         items = listOf(
-                            ToggleItem(
-                                id = "setup.toggle",
-                                text = "Show setup",
-                                key = "pref.setup.toggle",
+                            TextItem(
+                                id = "1",
+                                text = "My Profile",
+                                showDisclosure = false,
                                 padding = Padding(horizontal = 16, vertical = 5),
                             ),
                             TextItem(
                                 id = "1",
-                                text = "Willkommen bei Snabble",
-                                textStyle = "title",
+                                text = "Settings",
+                                showDisclosure = false,
+                                padding = Padding(horizontal = 16, vertical = 5),
+                            ),
+                            TextItem(
+                                id = "1",
+                                text = "Delete Account",
                                 showDisclosure = false,
                                 padding = Padding(horizontal = 16, vertical = 5),
                             ),
                         ),
-                        padding = Padding(0, 0, 0, 0)
-                    )
+
+                        )
                 )
             )
             setConfig(config)
         }
-    DynamicScreen(dynamicViewModel = viewModel)
+    CompositionLocalProvider(
+        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+        DynamicScreen(dynamicViewModel = viewModel)
+    }
 }

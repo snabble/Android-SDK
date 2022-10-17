@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
-import io.snabble.sdk.screens.home.ui.DynamicScreen
+import io.snabble.sdk.dynamicview.ui.DynamicScreen
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
 
 class ProfileFragment : Fragment() {
@@ -20,7 +20,7 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(inflater.context).apply {
             setContent {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
                 ThemeWrapper {
                     DynamicScreen(dynamicViewModel = viewModel)
                 }
