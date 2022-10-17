@@ -1,5 +1,6 @@
 package io.snabble.sdk.screens.shopfinder.shoplist
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
@@ -34,7 +35,7 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 class ExpandableShopListRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyle: Int = 0
+    defStyle: Int = 0,
 ) : RecyclerView(context, attrs, defStyle),
     Snabble.OnMetadataUpdateListener {
 
@@ -165,13 +166,30 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         chosenProjects?.let(::setShopsByProjects)
     }
 
-    class SavedState(superState: Parcelable) : AbsSavedState(superState) {
+    class SavedState(parcelable: Parcelable) : AbsSavedState(parcelable) {
+
         var expanded: Array<String> = emptyArray()
 
         override fun writeToParcel(out: Parcel, flags: Int) {
             super.writeToParcel(out, flags)
+
             out.writeParcelable(superState, flags)
             out.writeStringArray(expanded)
+        }
+
+        @SuppressLint("RestrictedApi")
+        private constructor(source: Parcel) : this(requireNotNull(source.readParcelable(RecyclerView.SavedState::class.java.classLoader))) {
+            expanded = source.createStringArray() ?: emptyArray()
+        }
+
+        companion object {
+
+            @Suppress("unused") // CREATOR is needed by Android
+            @JvmField
+            val CREATOR: Parcelable.Creator<SavedState?> = object : Parcelable.Creator<SavedState?> {
+                override fun createFromParcel(source: Parcel) = SavedState(source)
+                override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
+            }
         }
     }
 }
