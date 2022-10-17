@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Magenta
@@ -21,11 +20,7 @@ import io.snabble.sdk.dynamicview.domain.model.InformationItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
-import io.snabble.sdk.dynamicview.theme.properties.Elevation
-import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
-import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
-import io.snabble.sdk.dynamicview.theme.properties.applyElevation
-import io.snabble.sdk.dynamicview.theme.properties.applyPadding
+import io.snabble.sdk.dynamicview.theme.ThemeWrapper
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicViewModel
 import io.snabble.sdk.ui.toolkit.R
@@ -65,61 +60,10 @@ internal fun DynamicScreen(
     )
 }
 
-@Preview(
-    backgroundColor = 0xFFFFFF,
-    showBackground = true,
-    showSystemUi = true,
-)
 @Composable
-private fun HomeScreenPreview() {
-    val viewModel: DynamicViewModel = DynamicViewModel()
-        .apply {
-            val config = DynamicConfig(
-                configuration = Configuration(
-                    image = R.drawable.home_default_background,
-                    style = "",
-                    padding = Padding(16)
-                ),
-                widgets = listOf(
-                    TextItem(
-                        id = "header",
-                        text = "Willkommen bei Snabble",
-                        textColor = MaterialTheme.colorScheme.primary.toArgb(),
-                        textStyle = "title",
-                        showDisclosure = false,
-                        padding = Padding(start = 16, top = 16, end = 16, bottom = 0),
-                    ),
-                    TextItem(
-                        id = "body",
-                        text = "Deine App für Scan and Go!",
-                        textColor = MaterialTheme.colorScheme.primary.toArgb(),
-                        textStyle = "body",
-                        showDisclosure = false,
-                        padding = Padding(16, 5),
-                    ),
-                    TextItem(
-                        id = "footer",
-                        text = "Snabble",
-                        textColor = null,
-                        textStyle = "footer",
-                        showDisclosure = false,
-                        padding = Padding(start = 16, top = 0, end = 16, bottom = 16),
-                    ),
-                    InformationItem(
-                        id = "info",
-                        text = "Your information",
-                        image = R.drawable.store_logo,
-                        padding = Padding(16, 16)
-                    )
-                )
-            )
-            setConfig(config)
-        }
-    CompositionLocalProvider(
-        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
-        LocalElevation provides Elevation().applyElevation()
-    ) {
-        DynamicScreen(dynamicViewModel = viewModel)
+private fun DynamicScreenPreviewWith(config: DynamicConfig) {
+    ThemeWrapper {
+        DynamicScreen(dynamicViewModel = DynamicViewModel().apply { setConfig(config) })
     }
 }
 
@@ -129,50 +73,89 @@ private fun HomeScreenPreview() {
     showSystemUi = true,
 )
 @Composable
-private fun ProfileScreenPreview() {
-    val viewModel: DynamicViewModel = DynamicViewModel()
-        .apply {
-            val config = DynamicConfig(
-                configuration = Configuration(
-                    image = null,
-                    style = "",
-                    padding = Padding(0)
-                ),
-                widgets = listOf(
-                    SectionItem(
-                        id = "section",
-                        header = "Profile",
-                        padding = Padding(0),
-                        items = listOf(
-                            TextItem(
-                                id = "1",
-                                text = "My Profile",
-                                showDisclosure = false,
-                                padding = Padding(horizontal = 16, vertical = 5),
-                            ),
-                            TextItem(
-                                id = "1",
-                                text = "Settings",
-                                showDisclosure = false,
-                                padding = Padding(horizontal = 16, vertical = 5),
-                            ),
-                            TextItem(
-                                id = "1",
-                                text = "Delete Account",
-                                showDisclosure = false,
-                                padding = Padding(horizontal = 16, vertical = 5),
-                            ),
-                        ),
-
-                        )
-                )
+private fun HomeScreenPreview() {
+    val config = DynamicConfig(
+        configuration = Configuration(
+            image = R.drawable.home_default_background,
+            style = "",
+            padding = Padding(16)
+        ),
+        widgets = listOf(
+            TextItem(
+                id = "header",
+                text = "Willkommen bei Snabble",
+                textColor = MaterialTheme.colorScheme.primary.toArgb(),
+                textStyle = "title",
+                showDisclosure = false,
+                padding = Padding(start = 16, top = 16, end = 16, bottom = 0),
+            ),
+            TextItem(
+                id = "body",
+                text = "Deine App für Scan and Go!",
+                textColor = MaterialTheme.colorScheme.primary.toArgb(),
+                textStyle = "body",
+                showDisclosure = false,
+                padding = Padding(16, 5),
+            ),
+            TextItem(
+                id = "footer",
+                text = "Snabble",
+                textColor = null,
+                textStyle = "footer",
+                showDisclosure = false,
+                padding = Padding(start = 16, top = 0, end = 16, bottom = 16),
+            ),
+            InformationItem(
+                id = "info",
+                text = "Your information",
+                image = R.drawable.store_logo,
+                padding = Padding(16, 16)
             )
-            setConfig(config)
-        }
-    CompositionLocalProvider(
-        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
-        LocalElevation provides Elevation().applyElevation()
-    ) {
-        DynamicScreen(dynamicViewModel = viewModel)
-    }
+        )
+    )
+    DynamicScreenPreviewWith(config = config)
+}
+
+@Preview(
+    backgroundColor = 0xFFFFFF,
+    showBackground = true,
+    showSystemUi = true,
+)
+@Composable
+private fun ProfileScreenPreview() {
+    val config = DynamicConfig(
+        configuration = Configuration(
+            image = null,
+            style = "",
+            padding = Padding(0)
+        ),
+        widgets = listOf(
+            SectionItem(
+                id = "section",
+                header = "Profile",
+                padding = Padding(0),
+                items = listOf(
+                    TextItem(
+                        id = "1",
+                        text = "My Profile",
+                        showDisclosure = false,
+                        padding = Padding(horizontal = 16, vertical = 5),
+                    ),
+                    TextItem(
+                        id = "1",
+                        text = "Settings",
+                        showDisclosure = false,
+                        padding = Padding(horizontal = 16, vertical = 5),
+                    ),
+                    TextItem(
+                        id = "1",
+                        text = "Delete Account",
+                        showDisclosure = false,
+                        padding = Padding(horizontal = 16, vertical = 5),
+                    ),
+                ),
+            )
+        )
+    )
+    DynamicScreenPreviewWith(config = config)
 }

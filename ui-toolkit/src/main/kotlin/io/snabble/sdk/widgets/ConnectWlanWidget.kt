@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -20,11 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
-import io.snabble.sdk.dynamicview.theme.properties.Elevation
-import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
-import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
-import io.snabble.sdk.dynamicview.theme.properties.applyElevation
-import io.snabble.sdk.dynamicview.theme.properties.applyPadding
+import io.snabble.sdk.dynamicview.theme.ThemeWrapper
 import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.utils.toPaddingValues
@@ -72,10 +67,7 @@ fun ConnectWlanWidget(
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 private fun WlanWidgetPreview() {
-    CompositionLocalProvider(
-        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
-        LocalElevation provides Elevation().applyElevation()
-    ) {
+    ThemeWrapper {
         ConnectWlanWidget(
             model = ConnectWlanItem(
                 id = "wifi",

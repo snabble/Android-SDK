@@ -15,7 +15,6 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,11 +33,7 @@ import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.ProjectId
 import io.snabble.sdk.dynamicview.domain.model.PurchasesItem
-import io.snabble.sdk.dynamicview.theme.properties.Elevation
-import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
-import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
-import io.snabble.sdk.dynamicview.theme.properties.applyElevation
-import io.snabble.sdk.dynamicview.theme.properties.applyPadding
+import io.snabble.sdk.dynamicview.theme.ThemeWrapper
 import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
@@ -239,10 +234,7 @@ private fun PurchaseDetail(
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun PurchaseDetailPreview() {
-    CompositionLocalProvider(
-        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
-        LocalElevation provides Elevation().applyElevation()
-    ) {
+    ThemeWrapper {
         PurchaseDetail(
             data = Purchase("a01", "7,56 €", "Snabble Store Bonn Dransdorf", "Yesterday"),
             clickAction = {},
@@ -253,10 +245,7 @@ private fun PurchaseDetailPreview() {
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun PurchaseWidgetPreview() {
-    CompositionLocalProvider(
-        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
-        LocalElevation provides Elevation().applyElevation()
-    ) {
+    ThemeWrapper {
         Purchases(
             model = PurchasesItem(
                 id = "last.purchases",
@@ -272,10 +261,7 @@ private fun PurchaseWidgetPreview() {
 @Preview(backgroundColor = 0xEBEBEB, showBackground = true)
 @Composable
 private fun TwoPurchasesPreview() {
-    CompositionLocalProvider(
-        LocalPadding provides io.snabble.sdk.dynamicview.theme.properties.Padding().applyPadding(),
-        LocalElevation provides Elevation().applyElevation()
-    ) {
+    ThemeWrapper {
         Purchases(
             model = PurchasesItem(
                 id = "last.purchases",

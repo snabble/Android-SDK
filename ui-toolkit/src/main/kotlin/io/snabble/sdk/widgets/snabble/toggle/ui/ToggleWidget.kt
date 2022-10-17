@@ -30,4 +30,3 @@ internal fun ToggleWidget(
         onAction = onAction,
     )
 }
-

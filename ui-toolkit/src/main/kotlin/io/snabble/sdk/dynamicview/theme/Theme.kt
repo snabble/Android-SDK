@@ -4,7 +4,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.LayoutDirection
+import com.google.android.material.composethemeadapter3.Theme3Parameters
 import com.google.android.material.composethemeadapter3.createMdc3Theme
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
@@ -15,10 +17,14 @@ import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 
 @Composable
 fun ThemeWrapper(content: @Composable () -> Unit) {
-    val (colorScheme, typography, shapes) = createMdc3Theme(
-        context = LocalContext.current,
-        layoutDirection = LayoutDirection.Ltr
-    )
+    val (colorScheme, typography, shapes) = if (!LocalInspectionMode.current) {
+        createMdc3Theme(
+            context = LocalContext.current,
+            layoutDirection = LayoutDirection.Ltr
+        )
+    } else {
+        Theme3Parameters(null, null, null)
+    }
     CompositionLocalProvider(
         LocalElevation provides Elevation().applyElevation(),
         LocalPadding provides Padding().applyPadding()
