@@ -12,6 +12,7 @@ import io.snabble.sdk.utils.Dispatch
 import java.util.*
 
 object AssetHelper {
+
     @JvmStatic
     fun load(assets: Assets?, name: String, imageView: ImageView) = assets?.let {
 
@@ -27,7 +28,7 @@ object AssetHelper {
         imageView: ImageView,
         extendBackground: Boolean,
         @DrawableRes defaultImageResource: Int,
-        async: Boolean
+        async: Boolean,
     ) {
         val randomUUID = UUID.randomUUID().toString()
         imageView.setTag(R.id.asset_load_id, randomUUID)
@@ -62,5 +63,4 @@ object AssetHelper {
             imageView.setBackgroundColor(Color.TRANSPARENT)
         }
     }
-
 }
