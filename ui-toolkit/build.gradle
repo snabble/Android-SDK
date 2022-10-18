@@ -1,14 +1,14 @@
 plugins {
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.dokka'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.20'
 }
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+
 apply from: '../scripts/maven.gradle'
-apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
 
-
-description = "Snabble UI-Toolkit: Attentional views for simple and sample apps for using the snabble SDK"
+description = "Snabble UI-Toolkit: Additional views for simple and sample apps using the Snabble SDK"
 
 android {
     namespace 'io.snabble.sdk.ui.toolkit'
@@ -39,12 +39,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
-        getByName("test").java.srcDirs("src/test/kotlin")
-        getByName("androidTest").java.srcDirs("src/androidTest/kotlin")
-    }
-
     kotlinOptions {
         freeCompilerArgs = ['-Xjvm-default=all']
         jvmTarget = '1.8'
@@ -64,62 +58,58 @@ android {
 }
 
 dependencies {
-    def nav_version = "2.5.2"
-    def koin_version = "3.2.0"
+    def koin_version = '3.2.0'
+    def kotest_version = '5.4.0'
+    def nav_version = '2.5.2'
 
-    implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
+
+    api 'androidx.preference:preference-ktx:1.2.0'
 
     implementation project(':accessibility-toolbox')
     implementation project(':utils')
     implementation project(':ui')
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation "androidx.navigation:navigation-runtime-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-
-    implementation 'com.google.android.material:material:1.6.1'
-    api 'androidx.preference:preference-ktx:1.2.0'
-
-    implementation 'com.squareup.picasso:picasso:2.8'
-    implementation 'io.coil-kt:coil:2.2.1'
-    implementation 'io.coil-kt:coil-compose:2.2.1'
-
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0'
-
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.material3:material3:1.0.0-rc01"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation "androidx.compose.ui:ui-util:$compose_version"
     implementation 'androidx.activity:activity-compose:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation 'androidx.compose.material3:material3:1.0.0-rc01'
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha02'
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-runtime-ktx:$nav_version"
+    implementation 'androidx.startup:startup-runtime:1.1.1'
 
-    implementation "androidx.startup:startup-runtime:1.1.1"
+    implementation 'com.github.sebaslogen.resaca:resaca:2.3.0'
+
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.material:compose-theme-adapter-3:1.0.20'
+    implementation 'com.google.android.material:material:1.6.1'
+
+    implementation 'com.squareup.picasso:picasso:2.8'
+
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
     implementation "io.insert-koin:koin-android-compat:$koin_version"
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
-    implementation 'com.github.sebaslogen.resaca:resaca:2.3.0'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0'
 
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 
     // Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363
-    debugImplementation "androidx.customview:customview:1.2.0-alpha02"
-    debugImplementation "androidx.customview:customview-poolingcontainer:1.0.0"
+    debugImplementation 'androidx.customview:customview:1.2.0-alpha02'
+    debugImplementation 'androidx.customview:customview-poolingcontainer:1.0.0'
 
-    implementation "com.google.android.material:compose-theme-adapter-3:1.0.20"
-
-    def kotest_version = '5.4.0'
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version"
     testImplementation "io.kotest:kotest-assertions-core:$kotest_version"
     testImplementation 'io.mockk:mockk:1.12.7'
-
 }
 
 android.testOptions {
