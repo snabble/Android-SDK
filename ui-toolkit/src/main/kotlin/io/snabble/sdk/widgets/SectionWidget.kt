@@ -21,6 +21,7 @@ import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
+import io.snabble.sdk.dynamicview.domain.model.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
@@ -28,7 +29,6 @@ import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
-import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
 
@@ -83,7 +83,6 @@ fun SectionWidget(
     }
 }
 
-
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 private fun SectionPreview() {
@@ -115,5 +114,4 @@ private fun SectionPreview() {
             ),
             onAction = {})
     }
-
 }

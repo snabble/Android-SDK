@@ -6,7 +6,7 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import io.snabble.sdk.Snabble
 
-interface HasWlanConnectionUseCase {
+internal interface HasWlanConnectionUseCase {
 
     operator fun invoke(): Boolean
 }

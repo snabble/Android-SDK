@@ -3,7 +3,7 @@ package io.snabble.sdk.widgets.snabble.locationpermission.usecases
 import android.util.Log
 import io.snabble.sdk.Snabble
 
-interface HasLocationPermissionUseCase {
+internal interface HasLocationPermissionUseCase {
 
     operator fun invoke(): Boolean
 }

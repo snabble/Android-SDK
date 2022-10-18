@@ -1,4 +1,4 @@
-package io.snabble.sdk.dynamicview.utils
+package io.snabble.sdk.dynamicview.domain.model.utils
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp

@@ -3,7 +3,7 @@ package io.snabble.sdk.screens.profile.usecases
 import io.snabble.sdk.dynamicview.domain.config.ConfigRepository
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 
-interface GetProfileConfigUseCase {
+internal interface GetProfileConfigUseCase {
 
     suspend operator fun invoke(): DynamicConfig
 }

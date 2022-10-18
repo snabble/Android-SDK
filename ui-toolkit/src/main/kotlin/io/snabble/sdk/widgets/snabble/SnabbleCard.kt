@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import io.snabble.sdk.dynamicview.theme.properties.elevation
 
 @Composable
-fun SnabbleCard(
+internal fun SnabbleCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     content: @Composable () -> Unit,
@@ -50,5 +50,4 @@ fun SnabbleCard(
             content()
         }
     }
-
 }

@@ -2,7 +2,7 @@ package io.snabble.sdk.widgets.snabble.customercard.usecases
 
 import io.snabble.sdk.Snabble
 
-interface HasCustomerCardUseCase {
+internal interface HasCustomerCardUseCase {
 
     operator fun invoke(): Boolean
 }

@@ -32,7 +32,7 @@ import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
 import io.snabble.sdk.dynamicview.domain.model.Widget
-import io.snabble.sdk.dynamicview.utils.toPadding
+import io.snabble.sdk.dynamicview.domain.model.utils.toPadding
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.resolveColorId
 import io.snabble.sdk.utils.resolveImageId

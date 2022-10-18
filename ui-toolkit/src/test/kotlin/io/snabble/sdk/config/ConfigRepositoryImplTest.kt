@@ -11,7 +11,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.snabble.sdk.dynamicview.domain.config.ConfigMapperImpl
-import io.snabble.sdk.dynamicview.domain.config.ConfigRepository
+import io.snabble.sdk.dynamicview.domain.config.ConfigRepositoryImpl
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Configuration
 import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
@@ -30,7 +30,7 @@ import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
 import kotlinx.serialization.json.Json
 
-internal class ConfigRepositoryTest : FreeSpec({
+internal class ConfigRepositoryImplTest : FreeSpec({
 
     fun createJson(widgetsJson: String = "[]"): String = """{
               "configuration": {
@@ -41,7 +41,7 @@ internal class ConfigRepositoryTest : FreeSpec({
               "widgets": $widgetsJson
             }"""
 
-    fun createSut(json: String, mapping: Context.() -> Unit = {}) = ConfigRepository(
+    fun createSut(json: String, mapping: Context.() -> Unit = {}) = ConfigRepositoryImpl(
         fileProvider = mockk { coEvery { getFile(any()) } returns json },
         json = Json { ignoreUnknownKeys = true },
         configMapper = ConfigMapperImpl(context = mockk(relaxed = true, block = mapping)),

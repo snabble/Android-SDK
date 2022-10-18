@@ -20,8 +20,8 @@ import io.snabble.sdk.dynamicview.domain.model.InformationItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
+import io.snabble.sdk.dynamicview.domain.model.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
-import io.snabble.sdk.dynamicview.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.viewmodel.DynamicViewModel
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.getComposeColor

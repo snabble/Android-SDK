@@ -59,7 +59,7 @@ fun DynamicView(
 }
 
 @Composable
-fun Widget(
+internal fun Widget(
     widget: Widget,
     onAction: OnDynamicAction,
 ) = when (widget) {

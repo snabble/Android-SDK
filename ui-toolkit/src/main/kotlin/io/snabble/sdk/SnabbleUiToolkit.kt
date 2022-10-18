@@ -35,6 +35,7 @@ import kotlin.collections.set
  */
 @Suppress("unused")
 object SnabbleUiToolkit {
+
     const val DEEPLINK = "deeplink"
 
     enum class Event {
@@ -125,7 +126,8 @@ object SnabbleUiToolkit {
                 GO_BACK,
                 DETAILS_SHOP_BUTTON_ACTION,
                 START_NAVIGATION,
-                null -> Unit // unhandled actions
+                null,
+                -> Unit // unhandled actions
             }
         }
     }

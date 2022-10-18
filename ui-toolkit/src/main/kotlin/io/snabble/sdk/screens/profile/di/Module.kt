@@ -1,6 +1,5 @@
 package io.snabble.sdk.screens.profile.di
 
-import io.snabble.sdk.screens.profile.ui.ProfileFragment
 import io.snabble.sdk.screens.profile.usecases.GetProfileConfigUseCase
 import io.snabble.sdk.screens.profile.usecases.GetProfileConfigUseCaseImpl
 import org.koin.core.module.dsl.factoryOf

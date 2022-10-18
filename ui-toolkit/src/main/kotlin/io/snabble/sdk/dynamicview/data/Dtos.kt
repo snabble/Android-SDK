@@ -5,41 +5,41 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DynamicConfigDto(
+internal data class DynamicConfigDto(
     @SerialName("configuration") val configuration: ConfigurationDto,
     @SerialName("widgets") val widgets: List<WidgetDto>,
 )
 
 @Serializable(with = PaddingValueListSerializer::class)
 @SerialName("padding")
-data class PaddingDto(
+internal data class PaddingDto(
     @SerialName("left") val start: Int,
     @SerialName("top") val top: Int,
     @SerialName("right") val end: Int,
     @SerialName("bottom") val bottom: Int,
 )
 
-interface HasPadding {
+internal interface HasPadding {
 
     val padding: PaddingDto
 }
 
 @Serializable
-data class ConfigurationDto(
+internal data class ConfigurationDto(
     @SerialName("image") val image: String,
     @SerialName("style") val style: String,
     @SerialName("padding") val padding: PaddingDto,
 )
 
 @Serializable
-sealed interface WidgetDto {
+internal sealed interface WidgetDto {
 
     val id: String
 }
 
 @Serializable
 @SerialName("button")
-data class ButtonDto(
+internal data class ButtonDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("foregroundColor") val foregroundColor: String? = null,
@@ -49,7 +49,7 @@ data class ButtonDto(
 
 @Serializable
 @SerialName("image")
-data class ImageDto(
+internal data class ImageDto(
     @SerialName("id") override val id: String,
     @SerialName("image") val image: String,
     @SerialName("padding") override val padding: PaddingDto,
@@ -57,7 +57,7 @@ data class ImageDto(
 
 @Serializable
 @SerialName("information")
-data class InformationDto(
+internal data class InformationDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("image") val image: String? = null,
@@ -66,7 +66,7 @@ data class InformationDto(
 
 @Serializable
 @SerialName("snabble.customerCard")
-data class CustomerCardDto(
+internal data class CustomerCardDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("image") val image: String? = null,
@@ -75,21 +75,21 @@ data class CustomerCardDto(
 
 @Serializable
 @SerialName("snabble.connectWifi")
-data class ConnectWlanDto(
+internal data class ConnectWlanDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("snabble.locationPermission")
-data class LocationPermissionDto(
+internal data class LocationPermissionDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("purchases")
-data class PurchasesDto(
+internal data class PurchasesDto(
     @SerialName("id") override val id: String,
     @SerialName("projectId") val projectId: String,
     @SerialName("padding") override val padding: PaddingDto,
@@ -97,7 +97,7 @@ data class PurchasesDto(
 
 @Serializable
 @SerialName("section")
-data class SectionDto(
+internal data class SectionDto(
     @SerialName("id") override val id: String,
     @SerialName("header") val header: String,
     @SerialName("items") val widgets: List<WidgetDto>,
@@ -106,21 +106,21 @@ data class SectionDto(
 
 @Serializable
 @SerialName("snabble.allStores")
-data class SeeAllStoresDto(
+internal data class SeeAllStoresDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("snabble.startShopping")
-data class StartShoppingDto(
+internal data class StartShoppingDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") override val padding: PaddingDto,
 ) : WidgetDto, HasPadding
 
 @Serializable
 @SerialName("text")
-data class TextDto(
+internal data class TextDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("textColor") val textColor: String? = null,
@@ -131,7 +131,7 @@ data class TextDto(
 
 @Serializable
 @SerialName("toggle")
-data class ToggleDto(
+internal data class ToggleDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("key") val key: String,

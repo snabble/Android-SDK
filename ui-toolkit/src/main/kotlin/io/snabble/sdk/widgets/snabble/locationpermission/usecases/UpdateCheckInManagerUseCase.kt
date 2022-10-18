@@ -3,7 +3,7 @@ package io.snabble.sdk.widgets.snabble.locationpermission.usecases
 import android.annotation.SuppressLint
 import io.snabble.sdk.Snabble
 
-interface UpdateCheckInManagerUseCase {
+internal interface UpdateCheckInManagerUseCase {
 
     operator fun invoke()
 }

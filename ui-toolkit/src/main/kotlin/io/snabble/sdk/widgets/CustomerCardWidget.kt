@@ -5,9 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.dynamicview.domain.model.CustomerCardItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
+import io.snabble.sdk.dynamicview.domain.model.utils.toInformationItem
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
-import io.snabble.sdk.dynamicview.utils.toInformationItem
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.toolkit.R
 
