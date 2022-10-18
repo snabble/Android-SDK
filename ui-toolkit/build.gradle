@@ -53,7 +53,7 @@ android {
     }
 
     lint {
-        disable 'LabelFor', 'MissingTranslation'
+        disable 'MissingTranslation'
     }
 }
 
