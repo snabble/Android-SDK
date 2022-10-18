@@ -1,8 +1,8 @@
 package io.snabble.sdk.widgets.snabble.locationpermission.viewmodel
 
 import androidx.lifecycle.ViewModel
-import io.snabble.sdk.widgets.snabble.locationpermission.domain.HasLocationPermissionUseCase
-import io.snabble.sdk.widgets.snabble.locationpermission.domain.UpdateCheckInManagerUseCase
+import io.snabble.sdk.widgets.snabble.locationpermission.usecases.HasLocationPermissionUseCase
+import io.snabble.sdk.widgets.snabble.locationpermission.usecases.UpdateCheckInManagerUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.wlan.domain
+package io.snabble.sdk.widgets.snabble.wlan.usecases
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -6,12 +6,18 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import io.snabble.sdk.Snabble
 
-internal class HasWlanConnectionUseCase(
+interface HasWlanConnectionUseCase {
+
+    operator fun invoke(): Boolean
+}
+
+internal class HasWlanConnectionUseCaseImpl(
+    private val Snabble: Snabble,
     private val wifiManager: WifiManager,
     private val connectivityManager: ConnectivityManager,
-) {
+) : HasWlanConnectionUseCase {
 
-    operator fun invoke(): Boolean =
+    override operator fun invoke(): Boolean =
         Snabble.currentCheckedInShop.value != null
                 && wifiManager.isWifiEnabled
                 && !isConnectedToStoreWifi()

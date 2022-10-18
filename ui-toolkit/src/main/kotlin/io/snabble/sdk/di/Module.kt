@@ -11,7 +11,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val coreModule = module {
-    factory { Snabble }
+    single { Snabble }
 
     factory {
         androidContext().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager

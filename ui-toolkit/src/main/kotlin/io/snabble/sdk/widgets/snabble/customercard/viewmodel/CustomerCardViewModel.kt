@@ -1,7 +1,7 @@
 package io.snabble.sdk.widgets.snabble.customercard.viewmodel
 
 import androidx.lifecycle.ViewModel
-import io.snabble.sdk.widgets.snabble.customercard.domain.HasCustomerCardUseCase
+import io.snabble.sdk.widgets.snabble.customercard.usecases.HasCustomerCardUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
